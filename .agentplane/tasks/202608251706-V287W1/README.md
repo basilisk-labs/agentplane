@@ -4,7 +4,7 @@ title: "AP-RUNTIME-001 Make local execution runtime deterministic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -27,10 +27,10 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user standing authorization for all subsequent in-scope Clean Task Core plans and the explicit instruction to finish the refactoring. This retained runtime prerequisite covers local executable resolution, environment propagation, tests and evidence only; no release, credential or remote-runtime changes."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-30T03:40:59.794Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -92,12 +92,12 @@ execution_contract:
       - "packages/agentplane/src/runner"
       - "packages/agentplane/src/shared"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
+    authority_violations: []
     changed_components:
       - "docs"
       - "packages/agentplane"
     changed_paths:
+      - "docs/developer/harness-dev.mdx"
       - "docs/developer/local-runtime-resolution.md"
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
@@ -118,7 +118,55 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -159,7 +207,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:643596199b41560f87e2087d39ea8bf2d5b646e82c4851763eaacff46ffe8f11"
+      digest: "sha256:3fb5782b59bee02bd4796e2e31caf958dd39775e3b6f444a3d06ea9db63bff8b"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/pr-meta"
         - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
@@ -174,6 +222,7 @@ execution_contract:
           - "docs"
           - "packages/agentplane"
         changed_files:
+          - "docs/developer/harness-dev.mdx"
           - "docs/developer/local-runtime-resolution.md"
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
@@ -225,8 +274,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-commit: null
+commit:
+  hash: "eaf67c9057bbb3ac9334088848157986aa890290"
+  message: "🚧 V287W1 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -234,6 +284,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 846ffaccbdec. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: eaf67c9057bb. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -256,8 +309,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-30T03:33:39.107Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: eaf67c9057bb. CLI accepted one state-bound external-agent semantic result."
+    commit: "eaf67c9057bbb3ac9334088848157986aa890290"
+  -
+    type: "verify"
+    at: "2026-08-30T03:40:59.794Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T03:30:54.407Z"
+doc_updated_at: "2026-08-30T03:41:01.778Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
@@ -297,6 +364,138 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202608251706-V287W1 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+    - old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T03:40:59.794Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:93f0c2f9a7d14a5849b3db10b7424a0fb057a30c09ba061f2e1ff13b77382ab8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (4/4)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (1/4)
+
+    Check: docs_contract
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (2/4)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (3/4)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (4/4)
 
     BlueprintSnapshotRef:
     - state: current
@@ -610,41 +809,33 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 21
     schema_version: 1
-    updated_at: "2026-08-30T03:30:55.573Z"
+    updated_at: "2026-08-30T03:41:02.880Z"
     work_items:
       deterministic-local-runtime:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "deterministic-local-runtime"
-        last_failure:
-          cause_refs:
-            - "runtime-resolution"
-            - "runtime-launches"
-            - "runtime-evidence"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Implemented deterministic local runtime discovery and shared environment normalization for runner and verification/recovery launch paths. Explicit profile PATH wins. Runtime identity and infrastructure failures are recorded through existing evidence/receipt contracts."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:1f80652b8223a305224f9f55d75cd3414a6abd9ca974e49cc2140a5c299a2b78"
+            digest: "sha256:e65ddd981d0804acc7298c3df7d00a53a709f334bfee0e14145bb596704b8080"
             id: "deterministic-local-runtime-implementation"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 1
               task_id: "202608251706-V287W1"
               work_item_id: "deterministic-local-runtime"
             provenance:
-              - "sha256:af3696eea5f8d64dfcbfed1bb2234dbf23e409f5547b74c2761558479b5235dd"
+              - "sha256:448da228a84294b151b493f4720a59d1b5cc42a7ded2c8f8a84793a163ee82f3"
               - ".agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:0b25625e060609e6f41fd970dcc070a9c942c24f21e152ee1d582697a4f28b5a"
+            repository_snapshot_digest: "sha256:66e2633c70abade4ffef99a3c6ce80af7daecc40013d6cd60a2317b3bb9e71c2"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 3
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -652,28 +843,25 @@ extensions:
                 - ".agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json"
               check_id: "runtime-full-ci"
               command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-08-30T03:30:55.566Z"
-              repository_snapshot_digest: "sha256:0b25625e060609e6f41fd970dcc070a9c942c24f21e152ee1d582697a4f28b5a"
-              status: "failed"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-08-30T03:41:02.874Z"
+              repository_snapshot_digest: "sha256:66e2633c70abade4ffef99a3c6ce80af7daecc40013d6cd60a2317b3bb9e71c2"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json"
               check_id: "runtime-diff-check"
               command_identity: "git diff --check"
-              detail: "Declared validation command git diff --check was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-30T03:30:55.566Z"
-              repository_snapshot_digest: "sha256:0b25625e060609e6f41fd970dcc070a9c942c24f21e152ee1d582697a4f28b5a"
-              status: "unsupported"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-30T03:41:02.874Z"
+              repository_snapshot_digest: "sha256:66e2633c70abade4ffef99a3c6ce80af7daecc40013d6cd60a2317b3bb9e71c2"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "runtime-resolution"
-            - "runtime-launches"
-            - "runtime-evidence"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -701,9 +889,34 @@ extensions:
         previous_revision: 16
         schema_version: 1
         task_id: "202608251706-V287W1"
+      external-result:work-order-202608251706-V287W1-executor-76fde4d6d989b04e2dc87a66:
+        aggregate_digest: "sha256:892ad99a97e58a6ac71a31c5fe5d11d711d8a2ee0d4a3d85bf289169c5929975"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T03:41:02.880Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_668ce7c454684628833bacbc"
+          mutation_id: "external-result:work-order-202608251706-V287W1-executor-76fde4d6d989b04e2dc87a66"
+          plan_digest: "sha256:0a32be0fe48f48a34d82bc81aa1c7b858cb333250aede98c0e3e543061660753"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608251706-V287W1"
+          task_revision: 20
+          to: "COMPLETED"
+          work_item_id: "deterministic-local-runtime"
+        mutation_id: "external-result:work-order-202608251706-V287W1-executor-76fde4d6d989b04e2dc87a66"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202608251706-V287W1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "eaf67c9057bbb3ac9334088848157986aa890290"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -760,6 +973,138 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202608251706-V287W1 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+- old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T03:40:59.794Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:93f0c2f9a7d14a5849b3db10b7424a0fb057a30c09ba061f2e1ff13b77382ab8
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check critical_paths (4/4)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (1/4)
+
+Check: docs_contract
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (2/4)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (3/4)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check docs_contract (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608251706-V287W1 Verification Contract check task_outcome (4/4)
 
 BlueprintSnapshotRef:
 - state: current

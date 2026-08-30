@@ -20,8 +20,8 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
