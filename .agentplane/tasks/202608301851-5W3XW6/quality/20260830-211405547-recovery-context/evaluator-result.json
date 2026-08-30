@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Frozen evaluator input and every evidence digest match. Native full CI, fast tests, typecheck, policy routing and doctor passed for the reviewed implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "A fresh GitContext provides one shared NUL-delimited status snapshot per guarded check. Normalized allowed paths handle the configured prefix, spaces and Unicode without accepting tracked changes or unknown untracked files.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The publication callback reserves exactly one extra candidate slot while preserving the initial eight-orphan cap, identity validation, native lock and exact candidate count. Regression proves eight-orphan recovery and rejects nine preexisting candidates.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The real missing-dependency and crash recovery regressions remain passing. No CLI contract, immutable baseline or verification criterion was weakened.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Recovery intentionally refuses more than eight preexisting candidates and any unknown or modified candidate.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Actual M3 recovery and refactoring completion remain pending.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

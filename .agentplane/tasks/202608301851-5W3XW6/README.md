@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -33,34 +33,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T20:21:16.206Z"
+  updated_at: "2026-08-30T21:15:09.921Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "753ed95d1d782fe03e1aec40f72508750ee84c2a"
+  evaluated_sha: "7ca52b1ef21b99a156d02ef2ee0f55a9dd7f6756"
   blueprint_digest: "c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649"
   evidence_refs:
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608301851-5W3XW6/README.md"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
-    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
-    - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+    - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+    - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
     - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "All frozen evaluator evidence digests match. Native persisted checks passed: full CI, fast tests, typecheck, policy routing and doctor."
-    - "The new test uses actual Task records and native route construction. It proves absent dependency and dependency_wait on the creation snapshot, preserved nonempty depends_on, and DONE dependency visibility with no dependency blocker after recovery in all three crash modes."
-    - "Implementation preserves the approved plan and WorkItems, rejects explicit pins and started or dirty work, uses native revision locking, preserves verified crash candidates in an audit archive, and leaves default work resume behavior unchanged."
-    - "The exact CLI candidate delta adds only the three reviewed recovery options and Task provenance. The immutable compatibility anchor is unchanged."
-    - "Residual risk: Explicit recovery remains limited to an unstarted creation-checkout base with a descendant approved planning commit. Unknown artifacts, active work and divergent histories intentionally remain blocked."
-    - "Residual risk: Hosted integration and actual M3 recovery are still pending."
+    - "Frozen evaluator input and every evidence digest match. Native full CI, fast tests, typecheck, policy routing and doctor passed for the reviewed implementation."
+    - "A fresh GitContext provides one shared NUL-delimited status snapshot per guarded check. Normalized allowed paths handle the configured prefix, spaces and Unicode without accepting tracked changes or unknown untracked files."
+    - "The publication callback reserves exactly one extra candidate slot while preserving the initial eight-orphan cap, identity validation, native lock and exact candidate count. Regression proves eight-orphan recovery and rejects nine preexisting candidates."
+    - "The real missing-dependency and crash recovery regressions remain passing. No CLI contract, immutable baseline or verification criterion was weakened."
+    - "Residual risk: Recovery intentionally refuses more than eight preexisting candidates and any unknown or modified candidate."
+    - "Residual risk: Actual M3 recovery and refactoring completion remain pending."
 token_usage:
   agent_runs: 9
   input_tokens: null
@@ -511,7 +511,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T21:13:55.708Z"
+doc_updated_at: "2026-08-30T21:15:09.954Z"
 doc_updated_by: "SUPERVISOR"
 description: "M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor."
 sections:
