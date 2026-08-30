@@ -2,10 +2,10 @@
 id: "202608300119-ZHYXRS"
 title: "Preserve WorkItem results during plan reapproval and recover evidence-only implementation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
     - "All nine frozen evidence hashes match. Required fresh core suite and full local CI succeeded. Existing negative recovery boundaries remain intact."
     - "Residual risk: Hosted checks must run on the newly published exact head. Resolve the addressed review thread only after publication and then confirm merge and Task Hosted Close."
 token_usage:
-  agent_runs: 6
+  agent_runs: 8
   input_tokens: null
-  journal_digest: "sha256:2c4146665c944cf66537daa655abd1db29135abbb7b6df5acd07b105b2ef4bad"
+  journal_digest: "sha256:d1f250e4f614bd128cf4e4617f8768d04c7a905c47a976f05c03fed20ff0896f"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-30T01:43:10.640Z"
+  updated_at: "2026-08-30T02:48:49.112Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -248,8 +248,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8"
-  message: "🚧 ZHYXRS task: apply external agent result"
+  hash: "61698416e1f98bac88fc984c11c04fa53beccc2f"
+  message: "🚧 ZHYXRS task: record external evaluator result"
 comments:
   -
     author: "PLANNER"
@@ -269,6 +269,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1f4efb60bc7f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "comment"
@@ -338,9 +341,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T02:48:49.112Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "61698416e1f98bac88fc984c11c04fa53beccc2f"
 doc_version: 3
-doc_updated_at: "2026-08-30T02:28:45.848Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T02:48:49.139Z"
+doc_updated_by: "CODER"
 description: "Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1."
 sections:
   Summary: |-
@@ -987,6 +998,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8"
+    message: "🚧 ZHYXRS task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "71519a0e675d7d460d27e7c5aea87d1f2363b9e2"
@@ -1252,12 +1264,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/6` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:2c4146665c944cf66537daa655abd1db29135abbb7b6df5acd07b105b2ef4bad`
+- Journal digest: `sha256:d1f250e4f614bd128cf4e4617f8768d04c7a905c47a976f05c03fed20ff0896f`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-30T01:43:10.640Z`
+- Updated at: `2026-08-30T02:48:49.112Z`
