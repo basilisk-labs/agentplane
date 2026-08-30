@@ -1,12 +1,16 @@
 import { execFileSync } from "node:child_process";
-import { rm, writeFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { KernelBackendAdapter } from "./kernel-backend-adapter.js";
 import { makeKernelRecord } from "./kernel-record.js";
 import { compareKernelReadPaths } from "./kernel-replay.js";
 import { bindKernelWorkItemEvidence, readKernelReview } from "./kernel-observations.js";
-import { captureKernelPersistenceFixture } from "./kernel-replay-capture.testkit.js";
+import {
+  captureKernelPersistenceFixture,
+  replayKernelPersistenceFixture,
+  type KernelPersistenceFixture,
+} from "./kernel-replay-capture.testkit.js";
 import {
   kernelReplayStorage,
   replayBackendKinds,
@@ -46,6 +50,56 @@ if (process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT) {
     );
   });
 }
+
+const frozen = JSON.parse(
+  await readFile(new URL("kernel-replay-persistence.corpus.json", import.meta.url), "utf8"),
+) as { schema_version: 1; source_anchor: string; fixtures: KernelPersistenceFixture[] };
+
+describe("frozen persistence replay", () => {
+  it("retains the captured five-class, three-backend observation matrix", () => {
+    expect(frozen.source_anchor).toBe("8e92d66b8671d083b9928ef04b15a49dfece4292");
+    expect(frozen.fixtures.map((fixture) => fixture.identity.fixture_id).toSorted()).toEqual(
+      replayBackendKinds
+        .flatMap((backend) => replayTaskClasses.map((taskClass) => `${backend}-${taskClass}`))
+        .toSorted(),
+    );
+    expect(frozen.fixtures.reduce((count, fixture) => count + fixture.expected.length, 0)).toBe(
+      246,
+    );
+    for (const fixture of frozen.fixtures)
+      expect(fixture.identity.implementation_anchor).toBe(frozen.source_anchor);
+  });
+
+  for (const fixture of frozen.fixtures) {
+    it(`replays ${fixture.identity.fixture_id} against independently frozen observations`, async () => {
+      const comparison = await replayKernelPersistenceFixture(fixture);
+      expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
+    });
+  }
+
+  it("rejects changed source bytes before opening storage or parsing commands", async () => {
+    const comparison = await replayKernelPersistenceFixture({
+      ...frozen.fixtures[0]!,
+      source_bytes: "not JSON",
+    });
+    expect(comparison).toMatchObject({
+      matched: false,
+      first_divergent_field: '$["source_digest"]',
+    });
+  });
+
+  it("reports a bounded difference against the frozen event history", async () => {
+    const fixture = structuredClone(frozen.fixtures[0]!);
+    fixture.expected[0]!.events = [];
+    const comparison = await replayKernelPersistenceFixture(fixture);
+    expect(comparison).toMatchObject({
+      matched: false,
+      first_divergent_field: '$[0]["events"][0]',
+      implementation_anchor: frozen.source_anchor,
+    });
+    expect(JSON.stringify(comparison).length).toBeLessThan(1000);
+  });
+});
 
 describe("canonical replay through persistence and restart", () => {
   for (const taskClass of replayTaskClasses) {

@@ -150,6 +150,7 @@ export default {
     "kernel-replay.corpus.json",
     "kernel-replay-migration.corpus.json",
     "kernel-replay-evidence.corpus.json",
+    "kernel-replay-persistence.corpus.json",
   ];
   process.stdout.write(
     JSON.stringify(

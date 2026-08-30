@@ -2,7 +2,11 @@ import { rm } from "node:fs/promises";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { KernelBackendAdapter } from "./kernel-backend-adapter.js";
 import { projectKernelTask } from "./kernel-projector.js";
-import { compareKernelReadPaths, replayBytesDigest } from "./kernel-replay.js";
+import {
+  compareKernelReadPaths,
+  compareReplayObservations,
+  replayBytesDigest,
+} from "./kernel-replay.js";
 import {
   kernelReplayJourney,
   replayRepositoryIdentity,
@@ -87,4 +91,26 @@ export async function captureKernelPersistenceFixture(
   } finally {
     await Promise.all(roots.map((root) => rm(root, { recursive: true, force: true })));
   }
+}
+
+export type KernelPersistenceFixture = Awaited<ReturnType<typeof captureKernelPersistenceFixture>>;
+
+/** Replay independently captured inputs. Never generate an expectation from the current code. */
+export async function replayKernelPersistenceFixture(fixture: KernelPersistenceFixture) {
+  const digest = replayBytesDigest(fixture.source_bytes);
+  if (digest !== fixture.identity.source_digest) {
+    return compareReplayObservations(
+      fixture.identity,
+      { source_digest: fixture.identity.source_digest },
+      { source_digest: digest },
+    );
+  }
+  const journey = JSON.parse(fixture.source_bytes) as ReturnType<typeof kernelReplayJourney>;
+  const actual = await captureKernelPersistenceFixture(
+    fixture.backend,
+    fixture.task_class,
+    fixture.identity.implementation_anchor,
+    journey,
+  );
+  return compareReplayObservations(fixture.identity, fixture.expected, actual.expected);
 }

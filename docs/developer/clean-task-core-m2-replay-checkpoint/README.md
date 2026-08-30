@@ -39,6 +39,19 @@ validation and Task completion. Commit, review, provider and cleanup effects are
 fixture ledger effects. They are not real GitHub, registry, evaluator or workspace operations.
 M3 must separately qualify those production adapters.
 
+The persistence corpus is now frozen from independently qualified source anchor
+`8e92d66b8671d083b9928ef04b15a49dfece4292`. Its original capture byte digest is
+`sha256:976dedefa309ba4dd46656b721ded26990a2b2281faaa52bb2192d392d75bff4`.
+The repository copy preserves all 15 fixture inputs and 246 expected observations.
+JSON formatting may change the file digest, but command source strings and expected values
+must remain unchanged. Normal tests replay those saved command bytes through actual storage
+clients and compare each event history, receipt, digest, effect state and routing observation.
+They never rewrite the corpus. The isolated report separately identifies the current
+implementation anchor and every frozen corpus digest. All 517 replay and persistence tests
+passed on Node 24 after adding this corpus. Corrupt source bytes fail before storage opens;
+a changed expected event reports the first divergent field with bounded diagnostics.
+This subset does not replace the complete twelve-family manifest required below.
+
 ## Remaining mandatory acceptance
 
 The initial checkpoint's full `test:fast` run failed 12 tests across seven suites after
@@ -68,8 +81,8 @@ The supervisor then saved `2b787ce10` and ran with explicitly selected Node 26.8
 The full CI runtime, docs/schema, core and CLI groups also passed. The later website step
 failed because this internal checkpoint was treated as a public page without a generated
 social image. Moving the checkpoint to this README location follows the existing website
-exclusion; no CI check or generated-asset requirement is removed. Final full CI and hosted
-Node 24 verification remain mandatory.
+exclusion; no CI check or generated-asset requirement is removed. The subsequent full local CI passed at implementation
+`cd3252423edf12da15d601d82fd8eb31662dac28`. Hosted Node 24 verification remains mandatory.
 
 Migration qualification now exercises real linked Git worktrees. For each legacy status,
 the selected worktree alone receives the canonical or archived record, repeat application
