@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608301851-5W3XW6-8d4b3a584180d4129577abb1",
+  "prepared_at": "2026-08-30T21:14:05.547Z",
+  "task": {
+    "id": "202608301851-5W3XW6",
+    "revision": 33,
+    "objective": "Recover unstarted task worktrees pinned before the approved planning baseline\n\nM3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run test:fast",
+      "bun run typecheck",
+      "- In scope: M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor.\n- Out of scope: unrelated refactors not required for \"Recover unstarted task worktrees pinned before the approved planning baseline\".",
+      "Plan a bounded native recovery for an unstarted workspace pinned before approved planning.",
+      "PLANNER fallback scaffold for \"Recover unstarted task worktrees pinned before the approved planning baseline\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover unstarted task worktrees pinned before the approved planning baseline\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "7ca52b1ef21b99a156d02ef2ee0f55a9dd7f6756",
+  "diff_base_sha": "36741ce5160d452ca9660a388241cb4da32f842a",
+  "blueprint_digest": "c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2cdbc60e3109d2b457d82e7dedc5ce3dddda93fc00a7f8f5fae6a824b14a6e06",
+    "prompt_path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md",
+    "result_schema_path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608301851-5W3XW6/README.md",
+      "sha256": "sha256:ecb89fc3a350a2862f7c2c0db88dfe44eee4c45a28a60e9a5743ac5efdfc6300",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch",
+      "sha256": "sha256:72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json",
+      "sha256": "sha256:312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json",
+      "sha256": "sha256:62e547c29b9ee0d7e3a07b0d96774b301cbd46967cf293c89de5e89333de8865",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json",
+      "sha256": "sha256:8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
