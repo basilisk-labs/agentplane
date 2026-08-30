@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 25e9e0556517312df860333e4bb0ab6bdbf63728..5ea8af080c331eed2528c34e67c15188a70a6291",
+      "command": "git diff --check 5ea8af080c331eed2528c34e67c15188a70a6291..447e42b16e053477a6e8ec77ac590269ee2e43e2",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,25 +13,34 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 25e9e0556517312df860333e4bb0ab6bdbf63728..5ea8af080c331eed2528c34e67c15188a70a6291",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5ea8af080c331eed2528c34e67c15188a70a6291..447e42b16e053477a6e8ec77ac590269ee2e43e2",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608291006-2A6BJC/README.md",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/review.md",
+        "M\t.agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202608291006-2A6BJC/verification/20260830055644233-df85b01a25d7da96.json",
         "M\tdocs/developer/harness-dev.mdx",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
-        "A\tpackages/agentplane/src/adapters/task-backend/kernel-migration-source.ts",
-        "A\tpackages/agentplane/src/adapters/task-backend/kernel-migration.test.ts",
-        "A\tpackages/agentplane/src/adapters/task-backend/kernel-migration.ts",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
-        "A\tpackages/agentplane/src/backends/task-backend/local-task-byte-store.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-migrate.command.ts",
-        "A\tpackages/agentplane/src/ports/task-byte-store.ts"
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-evidence.corpus.json",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-journey.test-fixtures.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-migration.corpus.json",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay.corpus.json",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay.test.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
+        "M\tpackages/core/src/tasks/task-kernel/model.ts",
+        "A\tscripts/bench/capture-kernel-evidence-replay.ts",
+        "A\tscripts/bench/capture-kernel-migration-replay.ts",
+        "A\tscripts/bench/capture-kernel-replay.ts",
+        "A\tscripts/bench/qualify-kernel-replay.mjs"
       ]
     },
     {
@@ -41,15 +50,60 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "25e9e0556517312df860333e4bb0ab6bdbf63728",
-  "implementation_commit": "5ea8af080c331eed2528c34e67c15188a70a6291",
+  "execution_base_commit": "5ea8af080c331eed2528c34e67c15188a70a6291",
+  "implementation_commit": "447e42b16e053477a6e8ec77ac590269ee2e43e2",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202608291006-2A6BJC/README.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830055644233-df85b01a25d7da96.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830055644233-df85b01a25d7da96.json"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608291006-2A6BJC/README.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830055644233-df85b01a25d7da96.json"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

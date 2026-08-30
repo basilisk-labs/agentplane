@@ -15,8 +15,8 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
