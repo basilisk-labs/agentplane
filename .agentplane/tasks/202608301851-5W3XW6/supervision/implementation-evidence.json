@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check e4dc06db8a3b250a12f69466223acdb3c78aa237..01bb6b501547edd924695f6d5a1379911466dbe8",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e4dc06db8a3b250a12f69466223acdb3c78aa237..01bb6b501547edd924695f6d5a1379911466dbe8",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608301851-5W3XW6/pr/github-body.md",
+        "M\t.agentplane/tasks/202608301851-5W3XW6/pr/meta.json",
+        "M\t.agentplane/tasks/202608301851-5W3XW6/pr/review.md",
+        "M\tdocs/developer/harness-dev.mdx",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "A\tpackages/agentplane/src/commands/branch/work-resume-planning-base.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-resume.command.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "e4dc06db8a3b250a12f69466223acdb3c78aa237",
+  "implementation_commit": "01bb6b501547edd924695f6d5a1379911466dbe8",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608301851-5W3XW6"
+}
