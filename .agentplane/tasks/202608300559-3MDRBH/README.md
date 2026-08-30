@@ -2,10 +2,10 @@
 id: "202608300559-3MDRBH"
 title: "Preserve semantic conflict resolutions in evaluator target selection"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "Standing user approval: finish the clean-core refactor and all necessary in-scope bootstrap fixes without repeated confirmation. Approve plan sha256:77597494a805283885bca86072e69ea8e5a7dd0bf39da19904c3660a37253bf9."
 verification:
-  state: "ok"
-  updated_at: "2026-08-30T06:43:24.827Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-30T07:18:24.636Z"
+  updated_by: "REVIEWER"
+  note: "Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or disable rename detection and add real Git regressions before fresh qualification."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -126,7 +126,8 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
       - "packages/agentplane/src/commands/shared/quality-review-target.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -169,6 +170,9 @@ execution_contract:
       -
         id: "recorded-check-9"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -258,9 +262,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "6a342eba3d5a9771e767129ae3de8c4adab1a85d"
-  message: "🚧 3MDRBH task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -312,8 +315,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "6a342eba3d5a9771e767129ae3de8c4adab1a85d"
+  -
+    type: "verify"
+    at: "2026-08-30T07:18:24.636Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or disable rename detection and add real Git regressions before fresh qualification."
 doc_version: 3
-doc_updated_at: "2026-08-30T06:50:32.073Z"
+doc_updated_at: "2026-08-30T07:18:30.983Z"
 doc_updated_by: "CODER"
 description: "Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks."
 sections:
@@ -404,6 +413,36 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300559-3MDRBH-preserve-semantic-conflict-resolutions-in-evalua/.agentplane/tasks/202608300559-3MDRBH/blueprint/resolved-snapshot.json
+    - old_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+    - current_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608300559-3MDRBH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T07:18:24.636Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or disable rename detection and add real Git regressions before fresh qualification.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d5a4f7d337f82861d80a37345238a05a117669c13aa7872d2464ed149fc26aee, input_digest=sha256:2e7497ef6017cf210b4149e6369d506b322ec1d3c1a5172e595792818f422020
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -795,9 +834,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "3174c719467932a7d3408465af4960a643bce595"
-    message: "🚧 3MDRBH task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "cbc5d79d1510293de3b4c30b61679cdef85d0fdb"
@@ -905,6 +941,36 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300559-3MDRBH-preserve-semantic-conflict-resolutions-in-evalua/.agentplane/tasks/202608300559-3MDRBH/blueprint/resolved-snapshot.json
+- old_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+- current_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608300559-3MDRBH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T07:18:24.636Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or disable rename detection and add real Git regressions before fresh qualification.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d5a4f7d337f82861d80a37345238a05a117669c13aa7872d2464ed149fc26aee, input_digest=sha256:2e7497ef6017cf210b4149e6369d506b322ec1d3c1a5172e595792818f422020
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
