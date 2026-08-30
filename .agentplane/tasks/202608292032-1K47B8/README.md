@@ -1,10 +1,10 @@
 ---
 id: "202608292032-1K47B8"
 title: "Implement the isolated canonical Task kernel"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 52
+revision: 53
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ plan_approval:
   note: "Standing user approval covers the unchanged M1 qualification scope and its required documentation effect."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-08-30T00:35:52.047Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -43,6 +43,7 @@ execution_contract:
   authority:
     allowed_external_effects: []
     allowed_repository_effects:
+      - "documentation"
       - "public_api"
       - "repository_write"
       - "source_code"
@@ -55,7 +56,6 @@ execution_contract:
       - "deploy"
       - "destructive_git"
     forbidden_repository_effects:
-      - "documentation"
       - "schema"
       - "dependencies"
       - "ci"
@@ -74,8 +74,10 @@ execution_contract:
     rationale:
       - "Branch isolation and hosted integration are required by repository policy."
       - "The approved M1 plan adds an internal kernel, its tests, and a namespaced core tasks export."
+      - "USER-approved blocked-result scope extension: repository_effects=documentation"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/pr-meta; repository_effects=source_code,tests"
     repository_effects:
+      - "documentation"
       - "public_api"
       - "repository_write"
       - "source_code"
@@ -90,8 +92,7 @@ execution_contract:
       - "packages/core/src/tasks/task-centric"
       - "packages/core/src/tasks/task-kernel"
   observed:
-    authority_violations:
-      - "repository_effect:documentation"
+    authority_violations: []
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -115,46 +116,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -186,6 +148,7 @@ execution_contract:
           - "task_outcome"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "public_api"
           - "repository_write"
           - "source_code"
@@ -194,7 +157,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:d5d47b13b9835f22b47bfdd0f000d66cf194d46d48247883f5949d876ce19689"
+      digest: "sha256:44e48b72dc9e096d3baa20d7ed533ad88cd9372c4a0e0b3ae51a867269e7b704"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/pr-meta"
         - "central_component:packages/core/src/tasks/index.ts"
@@ -275,9 +238,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "a93e60a494d0c241ef6f56d46c87016d2d199b57"
-  message: "🚧 1K47B8 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -324,6 +285,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved M1 qualification receipt requires the documentation repository effect that is absent from the task execution contract. Recommended action: Apply the state-bound documentation effect extension, then resume the qualification WorkItem. Requested scope: roots=unchanged; repository effects=documentation; request digest=sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3. Agentplane receipt: external-agent-blocker/tr_233e8b9d1a63dbd74f0064ef65bef111/sha256:1e7af0d9fe2828dbd6084632b1ff868d9898cf61330b1fe2ba247347a727e853/sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: ; repository effects: documentation."
 events:
   -
     type: "status"
@@ -1189,7 +1153,7 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:6aa8d5650f6f74e7a3fef6ce4da5cecc664b9091f566013419b5a54d5295e1b1"
-    digest: "sha256:8aaa1954316d9accee7d2e9323d413125bf5a12ed2fafaf6a4cf8c6b3c66d219"
+    digest: "sha256:e638843ebb39ebd1b2e8e67f69191f8b0047dae12a0a8c53c94b1486fb91e3ed"
     grant_id: "01673c15-4658-43fb-8ac0-13b194d713c7"
     issued_at: "2026-08-30T00:34:43.780Z"
     kind: "agentplane.execution_grant"
@@ -1197,10 +1161,12 @@ extensions:
     plan_revision: 49
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    scope_digest: "sha256:1616ddcb213db7f09d7baf7bb8228589ff7160c875bcf927122c2747903a3935"
+    scope_digest: "sha256:a294ca95e0d5d41b2dca7577f5d9c04d7a86440d40105cbe63cfedcbaaaac69b"
     status: "active"
     task_id: "202608292032-1K47B8"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-30T00:35:52.047Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:1e7af0d9fe2828dbd6084632b1ff868d9898cf61330b1fe2ba247347a727e853"
     kind: "task_scope_extension_request"
     request:
@@ -1211,7 +1177,7 @@ extensions:
       scope_roots: []
     request_digest: "sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_233e8b9d1a63dbd74f0064ef65bef111"
   agentplane.task_centric:
     current_plan:
