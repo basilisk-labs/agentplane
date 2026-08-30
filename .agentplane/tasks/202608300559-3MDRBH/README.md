@@ -4,7 +4,7 @@ title: "Preserve semantic conflict resolutions in evaluator target selection"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-30T06:50:22.752Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "3174c719467932a7d3408465af4960a643bce595"
+  blueprint_digest: "9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d"
+  evidence_refs:
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/20260830-064344232-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/20260830-064344232-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/f3a95d542f1a49cf007b1077ca4f55167b68b193b50b4bd5f64cdb7b33df9083.md"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/20260830-064344232-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/20260830-064344232-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/20260830-064344232-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608300559-3MDRBH/README.md"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/302124e70da7ead923e39a7045b29fea7e43d66ac27904adfcde0c1a878e3b4b.patch"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/f8d523bcc63d791903fa4ebe0bd7c1b503f615e3dc8b70cc211fbc9b366246d2.json"
+    - ".agentplane/tasks/202608300559-3MDRBH/verification/20260830064324827-7aae53f4e1138d7f.json"
+    - ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/454559bbdf43e63f531eaec3b6d6ff2b9d820eb5a6a7bab1d7043cda2bada027.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Reviewed the complete cbc5d79d..3174c719 diff. Shared-path resolutions, exact-parent choices, manual merge changes, missing history and unsupported parent counts select fresh review. Proven clean base-only synchronization retains review reuse. Evidence: actual-diff."
+    - "The resolver uses existing ancestry and tree differences only. Regression coverage includes octopus history and unchanged Git object counts. All 31 focused tests pass. Evidence: actual-diff and observed-checks."
+    - "All nine frozen evidence hashes match. Verification record binds full regression, typecheck and diff checks to 3174c719467932a7d3408465af4960a643bce595 against cbc5d79d1510293de3b4c30b61679cdef85d0fdb. Evidence: verification-record-1 and observed-checks."
+    - "Residual risk: Shared paths conservatively require fresh review even when independent hunks could merge cleanly."
+    - "Residual risk: AP-RUNTIME-001 must be freshly qualified after this bootstrap is integrated; its old evaluator target is not valid evidence for the conflict resolution."
 execution_route:
   frozen: true
   reason_codes:
