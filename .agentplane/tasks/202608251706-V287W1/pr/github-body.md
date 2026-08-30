@@ -21,7 +21,12 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note:
+
+```text
+Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe;
+hosted integration remains pending.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

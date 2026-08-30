@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: "Approved under the user standing authorization for all subsequent in-scope Clean Task Core plans and the explicit instruction to finish the refactoring. This retained runtime prerequisite covers local executable resolution, environment propagation, tests and evidence only; no release, credential or remote-runtime changes."
 verification:
   state: "ok"
-  updated_at: "2026-08-30T04:59:53.524Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-08-30T05:56:53.203Z"
+  updated_by: "TESTER"
+  note: "Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe; hosted integration remains pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -446,8 +446,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "00207fd19a5fa292172b6a09d9affe297a227668"
+  -
+    type: "verify"
+    at: "2026-08-30T05:56:53.203Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe; hosted integration remains pending."
 doc_version: 3
-doc_updated_at: "2026-08-30T05:20:24.213Z"
+doc_updated_at: "2026-08-30T05:56:57.870Z"
 doc_updated_by: "CODER"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
@@ -962,6 +968,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608251706-V287W1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T05:56:53.203Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe; hosted integration remains pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:0bf070b6569b257fe541d64d43cf16d2b4a6a2952a41346f895a9190e1c5160b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+    Scope: deterministic local runtime and verification integration after base reconciliation
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+    Scope: deterministic local runtime and verification integration after base reconciliation
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+    Scope: deterministic local runtime and verification integration after base reconciliation
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+    Scope: deterministic local runtime and verification integration after base reconciliation
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+    Scope: deterministic local runtime and verification integration after base reconciliation
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/shared/runtime-env.test.ts packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts
+    Result: pass
+    Evidence: 34 tests in 3 files passed; preserved dotenv isolation, explicit parent values, runtime normalization and frozen verification mapping.
+    Scope: semantic conflict resolution
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+    - old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1953,6 +2025,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608251706-V287W1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T05:56:53.203Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe; hosted integration remains pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:0bf070b6569b257fe541d64d43cf16d2b4a6a2952a41346f895a9190e1c5160b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+Scope: deterministic local runtime and verification integration after base reconciliation
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+Scope: deterministic local runtime and verification integration after base reconciliation
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+Scope: deterministic local runtime and verification integration after base reconciliation
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+Scope: deterministic local runtime and verification integration after base reconciliation
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.
+Scope: deterministic local runtime and verification integration after base reconciliation
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/shared/runtime-env.test.ts packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts
+Result: pass
+Evidence: 34 tests in 3 files passed; preserved dotenv isolation, explicit parent values, runtime normalization and frozen verification mapping.
+Scope: semantic conflict resolution
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+- old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
