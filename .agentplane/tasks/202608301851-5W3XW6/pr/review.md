@@ -12,8 +12,8 @@ Created: 2026-08-30T18:53:26.210Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,12 +29,16 @@ Created: 2026-08-30T18:53:26.210Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  25 ++
+ docs/developer/harness-dev.mdx                     |  29 +++
  docs/user/cli-reference.generated.mdx              |   3 +
- ...i.core.task-advance.worktree-resolution.test.ts | 188 ++++++++++++++-
- .../commands/branch/work-resume-planning-base.ts   | 260 +++++++++++++++++++++
+ ...i.core.task-advance.worktree-resolution.test.ts | 267 ++++++++++++++++++++-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+ .../src/commands/branch/work-resume-candidate.ts   | 102 ++++++++
+ .../commands/branch/work-resume-planning-base.ts   | 248 +++++++++++++++++++
  .../src/commands/branch/work-resume.command.ts     |  51 +++-
- 5 files changed, 523 insertions(+), 4 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  54 ++++-
+ .../check-compatibility-contract-baseline.mjs      |  28 +++
+ 9 files changed, 774 insertions(+), 15 deletions(-)
 ```
 
 </details>

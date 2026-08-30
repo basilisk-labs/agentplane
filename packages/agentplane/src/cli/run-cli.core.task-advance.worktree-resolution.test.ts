@@ -1,8 +1,8 @@
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { LocalBackend } from "../backends/task-backend.js";
 import { recoverWorkPlanningBase } from "../commands/branch/work-resume-planning-base.js";
-import { execFile } from "node:child_process";
-import { mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { execFile, spawn } from "node:child_process";
+import { mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -285,7 +285,7 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
 }
 
 describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
-  it.each([false, true])(
+  it.each([false, true, "process"] as const)(
     "recovers an unstarted approved planning base (interrupted=%s)",
     async (interrupted) => {
       const root = await mkGitRepoRootWithBranch("main");
@@ -412,7 +412,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         ).toBe(initial);
         await rm(path.join(taskRoot, "prerequisite.txt"));
       }
-      if (interrupted) {
+      if (interrupted === true) {
         const originalWrite = LocalBackend.prototype.writeTaskWithReceipt;
         const spy = vi
           .spyOn(LocalBackend.prototype, "writeTaskWithReceipt")
@@ -436,6 +436,72 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
           (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
         ).toEqual(priorBase);
       }
+      let orphanBytes: string | null = null;
+      if (interrupted === "process") {
+        const marker = path.join(root, ".git", "recovery-kill-marker.json");
+        const hook = path.join(root, ".git", "hooks", "post-merge");
+        await writeFile(
+          hook,
+          '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.AGENTPLANE_RECOVERY_TEST_MARKER, JSON.stringify({hookPid:process.pid,gitPid:process.ppid})); setTimeout(() => {}, 10000);\n',
+          { mode: 0o755 },
+        );
+        const child = spawn(
+          process.execPath,
+          [
+            path.join(process.cwd(), "packages/agentplane/dist/cli.js"),
+            "work",
+            "resume",
+            taskId,
+            "--refresh-planning-base",
+            "--apply",
+            "--expect-token",
+            ready.token,
+            "--root",
+            root,
+          ],
+          {
+            cwd: root,
+            env: { ...process.env, AGENTPLANE_RECOVERY_TEST_MARKER: marker },
+            stdio: "ignore",
+          },
+        );
+        const exited = new Promise((resolve) => child.once("exit", resolve));
+        let hookPids: { hookPid: number; gitPid: number } | null = null;
+        try {
+          for (let poll = 0; poll < 200; poll++) {
+            const raw = await readFile(marker, "utf8").catch(() => null);
+            if (raw) {
+              hookPids = JSON.parse(raw);
+              break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+          expect(hookPids, "isolated CLI must reach the post-merge crash boundary").not.toBeNull();
+          child.kill("SIGKILL");
+          await exited;
+        } finally {
+          if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL");
+          if (hookPids)
+            for (const pid of [hookPids.hookPid, hookPids.gitPid]) {
+              try {
+                process.kill(pid, "SIGKILL");
+              } catch {}
+            }
+          await rm(hook, { force: true });
+        }
+        const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
+        const orphans = (await readdir(directory)).filter((name) =>
+          name.startsWith("README.md.tmp-"),
+        );
+        expect(orphans).toHaveLength(1);
+        orphanBytes = await readFile(path.join(directory, orphans[0]!), "utf8");
+        expect(
+          (await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskRoot })).stdout.trim(),
+        ).toBe(target);
+        expect(
+          (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
+        ).toEqual(priorBase);
+      }
       const fresh = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
       const applied = await recoverWorkPlanningBase({
         ctx,
@@ -444,6 +510,17 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         expectedToken: fresh.token,
       });
       expect(applied.status).toBe("applied");
+      if (orphanBytes !== null) {
+        const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
+        expect(
+          (await readdir(directory)).filter((name) => name.startsWith("README.md.tmp-")),
+        ).toEqual([]);
+        const archiveRoot = path.join(root, ".git", "agentplane", "planning-base-recovery", taskId);
+        const archived = await readdir(archiveRoot);
+        expect(archived).toHaveLength(1);
+        expect(await readFile(path.join(archiveRoot, archived[0]!), "utf8")).toBe(orphanBytes);
+      }
+
       const after = (await taskCtx.taskBackend.getTask(taskId))!;
       expect(taskCentricAggregateFromExtensions(after.extensions)).toEqual(
         taskCentricAggregateFromExtensions(original.extensions),

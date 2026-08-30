@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba",
+      "cli_topology": "c36d98412cae805197772c9fb706af33e68b27f32e27c6d8943662ecbafa91ed",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "e6a4bdd25cb0318efb7364e7ff0c0b69ae739251af1218b81bc7fbf805048bf5"
+    "surface_sha256": "a5e491720d1bd3da5f9a50b581e63ebf84d49470b063d80992004023a0b77f56"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -1457,6 +1457,26 @@
             "valueHint": "<sha256:...>"
           },
           {
+            "command": "work resume",
+            "default": false,
+            "kind": "boolean",
+            "name": "apply",
+            "valueHint": null
+          },
+          {
+            "command": "work resume",
+            "kind": "string",
+            "name": "expect-token",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "work resume",
+            "default": false,
+            "kind": "boolean",
+            "name": "refresh-planning-base",
+            "valueHint": null
+          },
+          {
             "command": "workflow migrate",
             "default": false,
             "kind": "boolean",
@@ -2124,6 +2144,24 @@
             "kind": "option",
             "name": "yes",
             "source_task": "202608291006-2A6BJC"
+          },
+          {
+            "command": "work resume",
+            "kind": "option",
+            "name": "apply",
+            "source_task": "202608301851-5W3XW6"
+          },
+          {
+            "command": "work resume",
+            "kind": "option",
+            "name": "expect-token",
+            "source_task": "202608301851-5W3XW6"
+          },
+          {
+            "command": "work resume",
+            "kind": "option",
+            "name": "refresh-planning-base",
+            "source_task": "202608301851-5W3XW6"
           }
         ],
         "command_count": { "from": 243, "to": 265 },
@@ -2323,7 +2361,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 863 },
+        "option_count": { "from": 767, "to": 866 },
         "positional_count": { "from": 165, "to": 182 },
         "removed_command_descriptors": [],
         "removed_commands": [],
@@ -2364,10 +2402,11 @@
         "202608200903-J459C2",
         "202608211020-FGAPJC",
         "202608212244-6XZAYD",
-        "202608291006-2A6BJC"
+        "202608291006-2A6BJC",
+        "202608301851-5W3XW6"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
-      "to_sha256": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba"
+      "to_sha256": "c36d98412cae805197772c9fb706af33e68b27f32e27c6d8943662ecbafa91ed"
     },
     {
       "classification": "additive",
@@ -2575,7 +2614,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "84a8a3952f39a9ca74380db2ddb193fc8fb6493f479f634909a12424d5712071",
+    "surface_sha256": "84507015d339c4edd22738588848d00507b165eeae76f402636231885aed6dc7",
     "to_sha256": "d449602b1ca11e75c32b0dbecf50ff0d2729c67ce6ff64a2e4bf1b5f12955ee4",
     "to_version": "0.7.8-beta.1"
   },
@@ -2631,6 +2670,7 @@
     "202608200903-J459C2",
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
-    "202608291006-2A6BJC"
+    "202608291006-2A6BJC",
+    "202608301851-5W3XW6"
   ]
 }

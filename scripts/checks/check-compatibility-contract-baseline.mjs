@@ -351,6 +351,7 @@ function validateReviewedCandidate({
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
     "202608291006-2A6BJC",
+    "202608301851-5W3XW6",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -394,6 +395,7 @@ function validateReviewedCandidate({
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
     "202608291006-2A6BJC",
+    "202608301851-5W3XW6",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -2183,6 +2185,26 @@ function validateReviewedCandidate({
       valueHint: "<sha256:...>",
     },
     {
+      command: "work resume",
+      name: "apply",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "work resume",
+      name: "expect-token",
+      kind: "string",
+      valueHint: "<sha256:digest>",
+    },
+    {
+      command: "work resume",
+      name: "refresh-planning-base",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "workflow migrate",
       name: "dry-run",
       kind: "boolean",
@@ -2713,6 +2735,12 @@ function validateReviewedCandidate({
       name: "yes",
       source_task: "202608291006-2A6BJC",
     },
+    ...["apply", "expect-token", "refresh-planning-base"].map((name) => ({
+      kind: "option",
+      command: "work resume",
+      name,
+      source_task: "202608301851-5W3XW6",
+    })),
   ];
   const expectedVisibilityMutations = [
     ["task begin", "user", "advanced", "title", "<title>"],

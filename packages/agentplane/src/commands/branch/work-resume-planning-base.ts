@@ -4,7 +4,6 @@ import { gitEnv, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/cor
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   createTaskPlanRevision,
-  parseTaskReadme,
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
   taskExecutionBaseFromExtensions,
@@ -12,7 +11,10 @@ import {
 import { loadTaskRunnerDiagnosticInspection } from "../../runner/usecases/task-run-inspect.js";
 import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { LocalBackend } from "../../backends/task-backend.js";
-import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+import {
+  readPlanningBaseCandidate,
+  archivePlanningBaseCandidate,
+} from "./work-resume-candidate.js";
 import { CliError } from "../../shared/errors.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
@@ -143,51 +145,6 @@ export async function recoverWorkPlanningBase(opts: {
   });
   if (resume.pr_branch || resume.runner.run_id || resume.runner.status || resume.latest_handoff)
     refuse("runner, handoff or provider state already exists");
-  // A never-started worktree has only its transported README. Reject unknown artifacts.
-  const assertPristine = async (locked: boolean, expectedRecoveryToken?: string) => {
-    const entries = await readdir(taskDir);
-    const temps = locked
-      ? entries.filter((name) => /^README\.md\.tmp-[a-f0-9]{32}$/.test(name))
-      : [];
-    if (temps.length > 1 || entries.some((name) => name !== "README.md" && !temps.includes(name)))
-      refuse("Task execution artifacts already exist");
-    if (locked && temps.length === 1) {
-      const candidate = parseTaskReadme(
-        await readContainedStableTextNoFollow({
-          repository_root: root,
-          file_path: path.join(taskDir, temps[0]!),
-          label: "native Task recovery candidate",
-          max_bytes: 32 * 1024 * 1024,
-        }),
-      );
-      const extensions = candidate.frontmatter.extensions as Record<string, unknown> | undefined;
-      const receipt = extensions?.task_planning_base_recovery as
-        | Record<string, unknown>
-        | undefined;
-      if (
-        !expectedRecoveryToken ||
-        candidate.frontmatter.id !== task.id ||
-        receipt?.token !== expectedRecoveryToken
-      )
-        refuse("unknown Task publication candidate");
-    }
-    const status = await git(root, ["status", "--porcelain=v1", "--untracked-files=all"]);
-    const allowed = new Set([
-      `?? ${readme}`,
-      ...temps.map((name) => `?? ${path.posix.dirname(readme)}/${name}`),
-      ...(locked ? [`?? ${ctx.config.paths.workflow_dir}/.${task.id}.README.md.lock`] : []),
-    ]);
-    const unexpected = status
-      .split("\n")
-      .filter(Boolean)
-      .filter((line) => !allowed.has(line));
-    if (unexpected.length)
-      refuse(`tracked or unrelated untracked changes exist: ${unexpected.slice(0, 8).join(", ")}`);
-    // Git must not replace the transported Task document during the fast-forward.
-    if ((await git(root, ["ls-tree", "--name-only", target, "--", path.dirname(readme)])) !== "")
-      refuse("target snapshot contains Task-owned paths");
-  };
-  await assertPristine(false);
   const identity = {
     schema_version: 1,
     task_id: task.id,
@@ -200,6 +157,33 @@ export async function recoverWorkPlanningBase(opts: {
     target_sha: target,
     plan_digest: plan.digest,
   };
+  // A never-started worktree has only its transported README. Reject unknown artifacts.
+  const assertPristine = async () => {
+    const entries = await readdir(taskDir);
+    const temps = entries.filter((name) => /^README\.md\.tmp-[a-f0-9]{32}$/.test(name));
+    if (temps.length > 8 || entries.some((name) => name !== "README.md" && !temps.includes(name)))
+      refuse("Task execution artifacts already exist");
+    const candidates = await Promise.all(
+      temps.map((name) => readPlanningBaseCandidate(root, path.join(taskDir, name), identity)),
+    );
+    const status = await git(root, ["status", "--porcelain=v1", "--untracked-files=all"]);
+    const allowed = new Set([
+      `?? ${readme}`,
+      ...temps.map((name) => `?? ${path.posix.dirname(readme)}/${name}`),
+      `?? ${ctx.config.paths.workflow_dir}/.${task.id}.README.md.lock`,
+    ]);
+    const unexpected = status
+      .split("\n")
+      .filter(Boolean)
+      .filter((line) => !allowed.has(line));
+    if (unexpected.length)
+      refuse(`tracked or unrelated untracked changes exist: ${unexpected.slice(0, 8).join(", ")}`);
+    // Git must not replace the transported Task document during the fast-forward.
+    if ((await git(root, ["ls-tree", "--name-only", target, "--", path.dirname(readme)])) !== "")
+      refuse("target snapshot contains Task-owned paths");
+    return candidates;
+  };
+  const orphans = await assertPristine();
   const token = taskCentricDigest(identity);
   if (base.base_sha === target) {
     const previous = task.extensions?.task_planning_base_recovery;
@@ -228,7 +212,11 @@ export async function recoverWorkPlanningBase(opts: {
   // If Git lands but publication is interrupted, the original Task and approved plan still
   // bind both SHAs. A fresh inspection can reconcile HEAD=target without another Git effect.
   await backend.writeTaskWithReceipt(next, { expectedRevision: task.revision }, async () => {
-    await assertPristine(true, token);
+    const candidates = await assertPristine();
+    if (candidates.length !== orphans.length + 1) refuse("unexpected Task publication candidates");
+    const commonDir = await git(root, ["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+    for (const candidate of orphans)
+      await archivePlanningBaseCandidate({ root, commonDir, taskId: task.id, identity, candidate });
     await assertNoRunner();
     if (
       (await git(root, ["rev-parse", "HEAD"])) !== head ||
@@ -253,7 +241,7 @@ export async function recoverWorkPlanningBase(opts: {
       await git(root, ["merge", "--ff-only", "--no-edit", "--no-overwrite-ignore", target]);
     if ((await git(root, ["rev-parse", "HEAD"])) !== target)
       refuse("Git advancement is not confirmed");
-    await assertPristine(true, token);
+    await assertPristine();
     await assertNoRunner();
   });
   return { ...identity, token, status: "applied" };
