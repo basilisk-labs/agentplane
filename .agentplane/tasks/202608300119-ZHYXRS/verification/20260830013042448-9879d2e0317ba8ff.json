@@ -1,0 +1,116 @@
+{
+  "details": "Command: bun run test:project core\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608300119-ZHYXRS declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608300119-ZHYXRS declared verification",
+  "digest": "sha256:9879d2e0317ba8ff05ef74eb4f74855216d443d88a5afe53c79eeab194d9a2f8",
+  "implementation_sha": "01974c4594b14c86c2705a1b586d3cb90a3b6f08",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ca9f5123bc2ab03729a08040396c3ded88c391125b776b4c378b586712b653be",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:da0e97ba082610014e31025c85441a778ffc7115cc3da19fa431691a0ac36485",
+      "digest": "sha256:73b32008f105556a1df62bd18e5c30749b995b75e0a1c842989f3fcc05bf9468",
+      "references": [
+        {
+          "digest": "sha256:41fd1ee6de2cc035848b2a6dd57e462af724abbb18a9f07836cda5dd7a37096d",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:41fd1ee6de2cc035848b2a6dd57e462af724abbb18a9f07836cda5dd7a37096d",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+      "digest": "sha256:a73235b415e2fab045960a4062960dfc28bc21b8f7489e27c6179080abd3df26",
+      "primary_task_id": "202608300119-ZHYXRS",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608300119-ZHYXRS"
+      ]
+    },
+    "implementation": {
+      "base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+      "digest": "sha256:34ef3e98df890430aadbd4d008e7fb23e12e7b0d5cd52a3b48f386723374aa43",
+      "strategy": "branch_diff",
+      "target_sha": "01974c4594b14c86c2705a1b586d3cb90a3b6f08"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:9b32c27a551fe07f89ded9baf48dc67ab77e452421d44ad81e4726f76c2b1037",
+    "verify_steps_digest": "sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-08-30T01:30:42.448Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project core`. Confirm that same-plan reapproval preserves WorkItem state, manifests, validation, and attempts; mismatched plans remain rejected.\n2. Run focused implementation recovery tests. Confirm exact recorded evidence can be reused only for the matching WorkItem and unchanged authority, and stale or ambiguous evidence fails closed.\n3. Run `bun run ci:local:full`. Require all configured checks to pass.\n4. Require exact-head hosted checks, merge, and Task Hosted Close before calling this task delivered.",
+  "scope_digest": "sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54",
+  "task_id": "202608300119-ZHYXRS",
+  "verification_command": "agentplane verify 202608300119-ZHYXRS --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

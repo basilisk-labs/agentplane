@@ -271,8 +271,7 @@ export function materializeApprovedWorkItems(opts: {
     const current = opts.task.current_plan;
     const planned = opts.plan.proposal.work_items.work_items;
     if (
-      !current ||
-      current.revision !== opts.plan.revision ||
+      current?.revision !== opts.plan.revision ||
       current.approval.state !== "approved" ||
       current.approval.approved_digest !== opts.plan.digest ||
       taskCentricDigest(current.proposal) !== taskCentricDigest(opts.plan.proposal) ||
