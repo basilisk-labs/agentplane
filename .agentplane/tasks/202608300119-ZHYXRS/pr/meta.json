@@ -3,8 +3,8 @@
   "branch": "task/202608300119-ZHYXRS/preserve-workitem-results-during-plan-reapproval",
   "created_at": "2026-08-30T01:23:12.595Z",
   "diffstat_sha256": "sha256:aab27800027ca5c735799e88888ae28ffadb1dc25e6ea61c2e122b14659ebf49",
-  "last_verified_at": "2026-08-30T02:14:28.357Z",
-  "last_verified_diffstat_sha256": "sha256:8d1e77f49e1467724ad8931376daa4e9a05d0afa90ce69f243e8f4a673ab395c",
+  "last_verified_at": "2026-08-30T02:27:21.719Z",
+  "last_verified_diffstat_sha256": "sha256:aab27800027ca5c735799e88888ae28ffadb1dc25e6ea61c2e122b14659ebf49",
   "pr_number": 5879,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5879",
   "provider": {
@@ -20,6 +20,6 @@
   "task_id": "202608300119-ZHYXRS",
   "updated_at": "2026-08-30T01:41:31.076Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
