@@ -334,22 +334,22 @@ describe("CustomRunnerAdapter security boundaries", () => {
       switch (failure) {
       case "digest_mismatch": {
         await writeFile(invocation.bootstrap_path!, "tampered bootstrap\n", "utf8");
-      
+
       break;
       }
       case "read_failure": {
         await unlink(invocation.bootstrap_path!);
-      
+
       break;
       }
       case "profile_path": {
         invocation.env.PATH = `${path.join(root, "different-bin")}:${invocation.env.PATH}`;
-      
+
       break;
       }
       case "inherited_path": {
         vi.stubEnv("PATH", `${path.join(root, "inherited-bin")}:${process.env.PATH ?? ""}`);
-      
+
       break;
       }
       default: {

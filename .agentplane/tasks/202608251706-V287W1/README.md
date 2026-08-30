@@ -4,7 +4,7 @@ title: "AP-RUNTIME-001 Make local execution runtime deterministic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: "Approved under the user standing authorization for all subsequent in-scope Clean Task Core plans and the explicit instruction to finish the refactoring. This retained runtime prerequisite covers local executable resolution, environment propagation, tests and evidence only; no release, credential or remote-runtime changes."
 verification:
-  state: "ok"
-  updated_at: "2026-08-30T03:40:59.794Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-30T04:06:29.644Z"
+  updated_by: "TESTER"
+  note: "Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet."
+  attempts: 1
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -122,7 +122,8 @@ execution_contract:
       - "packages/agentplane/src/runner"
       - "packages/agentplane/src/shared"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -197,6 +198,9 @@ execution_contract:
       -
         id: "recorded-check-9"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -304,9 +308,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "eaf67c9057bbb3ac9334088848157986aa890290"
-  message: "🚧 V287W1 task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -353,8 +356,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-08-30T04:06:29.644Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet."
 doc_version: 3
-doc_updated_at: "2026-08-30T03:41:01.778Z"
+doc_updated_at: "2026-08-30T04:06:30.810Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
@@ -540,6 +549,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T04:06:29.644Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:5e5785f7dbf868f12f3f7ce627af61ab0f610ba934819952bf4c544bdc57ec87
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+    - old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608251706-V287W1
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -945,8 +984,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "eaf67c9057bbb3ac9334088848157986aa890290"
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
@@ -1149,6 +1186,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T04:06:29.644Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:5e5785f7dbf868f12f3f7ce627af61ab0f610ba934819952bf4c544bdc57ec87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+- old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608251706-V287W1
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

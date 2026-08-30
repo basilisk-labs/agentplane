@@ -20,8 +20,14 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing
+whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure.
+Remove whitespace and requalify through a fresh executor packet.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
