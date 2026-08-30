@@ -75,13 +75,17 @@ Empty manager variables never become implicit working-directory executable candi
 Discovery rejects non-executable files and ignores relative PATH entries for identity resolution.
 An explicit relative executable argument is resolved against the invocation working directory.
 Windows executable discovery additionally uses PATHEXT.
+When the CLI runs under Bun, the Node resolver never uses Bun as a Node fallback.
+Missing Node returns an `ENOENT` infrastructure error.
 
 ### Evidence and failure classification
 
 The runner observes the executable content SHA-256 and a digest of runtime-selection inputs.
 The observed runtime is attached to the process-start event and to a required execution-receipt
 check. Receipts do not store environment values or use environment data as authorization.
-An unreadable executable identity remains unqualified.
+An unreadable executable identity remains unqualified. The prepared invocation snapshot also
+binds runtime identity. A changed inherited/profile PATH or executable content invalidates
+prepared input before another child can launch.
 
 Declared checks store runtime identity with their recorded command and outcome.
 A missing/inaccessible executable is infrastructure evidence and returns the existing

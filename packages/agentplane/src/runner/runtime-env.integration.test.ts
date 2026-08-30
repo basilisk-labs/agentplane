@@ -1,3 +1,5 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { EXECUTION_RECEIPT_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
 import { createExecutionReceipt, writeExecutionReceipt } from "./execution-receipt.js";
 import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
@@ -7,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { runSupervisedProcess } from "./process-supervision/run.js";
 import type { RunnerInvocation } from "./types.js";
 import { runShellCommand } from "../commands/shared/pr-meta/verify-log.js";
-import { resolveLocalExecutable } from "../shared/runtime-env.js";
+import { resolveLocalExecutable, withPreferredRuntimePath } from "../shared/runtime-env.js";
 const roots: string[] = [];
 afterEach(async () => {
   vi.unstubAllEnvs();
@@ -19,6 +21,16 @@ async function fixture(prefix: string): Promise<string> {
   return root;
 }
 describe("production local subprocess runtime", () => {
+  it("reports absent Node instead of selecting Bun as Node under a Bun-hosted CLI", async () => {
+    const home = await fixture("agentplane-node-absent-");
+    const bun = resolveLocalExecutable("bun", withPreferredRuntimePath(process.env));
+    if (!bun) throw new Error("This subprocess regression requires the repository Bun toolchain.");
+    const moduleUrl = new URL("../shared/runtime-env.ts", import.meta.url).href;
+    const script = `import {resolvePreferredNodeExecutable} from ${JSON.stringify(moduleUrl)}; try { resolvePreferredNodeExecutable({HOME:${JSON.stringify(home)},PATH:""}); process.exitCode=2; } catch(error) { console.log(error.code); }`;
+    const result = await promisify(execFile)(bun, ["-e", script], { cwd: home });
+    expect(result.stdout.trim()).toBe("ENOENT");
+  });
+
   it.skipIf(process.platform === "win32")(
     "discovers a fixture HOME executable from both runner transports and verification",
     async () => {

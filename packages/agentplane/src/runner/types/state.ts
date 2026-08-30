@@ -1,3 +1,4 @@
+import type { LocalRuntimeEvidence } from "../../shared/runtime-env.js";
 import type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 import type {
   RunnerEffectOperationRef,
@@ -74,6 +75,7 @@ export type RunnerSupervisionState = {
 export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;
 
 export type RunnerInvocationSnapshot = {
+  runtime?: LocalRuntimeEvidence | null;
   executable: string | null;
   argv: string[];
   argv_count: number;

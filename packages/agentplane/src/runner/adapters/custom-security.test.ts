@@ -10,7 +10,7 @@ import {
   setRunnerBundleRunDir,
   writeRunnerExecutable,
 } from "@agentplane/testkit/runner";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { readRunnerRunState, writePreparedRunnerArtifacts } from "../artifacts.js";
 import { createRunnerAdapter } from "./index.js";
@@ -29,6 +29,8 @@ const customBundleDefaults = {
   description: "Custom adapter security test task",
   status: "DOING",
 };
+
+afterEach(() => vi.unstubAllEnvs());
 
 describe("CustomRunnerAdapter security boundaries", () => {
   it("rejects actual out-of-scope and gitignored protected writes after a clean agent exit", async () => {
@@ -292,8 +294,14 @@ describe("CustomRunnerAdapter security boundaries", () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
-  it.each(["digest_mismatch", "read_failure"] as const)(
-    "refuses bootstrap %s before spawning the custom runner",
+  it.each([
+    "digest_mismatch",
+    "read_failure",
+    "profile_path",
+    "inherited_path",
+    "binary_changed",
+  ] as const)(
+    "refuses stale prepared input %s before spawning the custom runner",
     async (failure) => {
       const raw = defaultConfig();
       raw.runner.default_adapter = "custom";
@@ -323,10 +331,30 @@ describe("CustomRunnerAdapter security boundaries", () => {
         bootstrap_markdown: "Use this exact prepared bootstrap.\n",
         invocation,
       });
-      if (failure === "digest_mismatch") {
+      switch (failure) {
+      case "digest_mismatch": {
         await writeFile(invocation.bootstrap_path!, "tampered bootstrap\n", "utf8");
-      } else {
+      
+      break;
+      }
+      case "read_failure": {
         await unlink(invocation.bootstrap_path!);
+      
+      break;
+      }
+      case "profile_path": {
+        invocation.env.PATH = `${path.join(root, "different-bin")}:${invocation.env.PATH}`;
+      
+      break;
+      }
+      case "inherited_path": {
+        vi.stubEnv("PATH", `${path.join(root, "inherited-bin")}:${process.env.PATH ?? ""}`);
+      
+      break;
+      }
+      default: {
+        await writeRunnerExecutable(root, "custom-runner", ["#!/bin/sh", "exit 0"]);
+      }
       }
 
       await expect(adapter.execute(invocation)).rejects.toMatchObject({

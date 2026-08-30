@@ -82,7 +82,7 @@ export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = proc
     baseEnv.VOLTA_HOME ? path.join(baseEnv.VOLTA_HOME, "bin", "node") : null,
     resolveLocalExecutable("node", baseEnv),
     homeDir ? readLatestNvmNodeBin(homeDir) : null,
-    process.execPath,
+    typeof process.versions.bun === "string" ? null : process.execPath,
   ];
 
   for (const candidate of candidates) {
@@ -90,7 +90,9 @@ export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = proc
       return candidate;
     }
   }
-  return process.execPath;
+  throw Object.assign(new Error("Node executable is unavailable in the selected local runtime."), {
+    code: "ENOENT",
+  });
 }
 
 export function resolveLocalExecutable(command: string, env: NodeJS.ProcessEnv): string | null {

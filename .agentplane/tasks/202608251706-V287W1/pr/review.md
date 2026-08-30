@@ -24,23 +24,26 @@ Created: 2026-08-30T03:06:28.413Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T03:06:28.413Z
+- Updated: 2026-08-30T03:41:12.713Z
 - Branch: task/202608251706-V287W1/ap-runtime-001-make-local-execution-runtime-dete
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  48 +++++++
+ docs/developer/harness-dev.mdx                     |  52 +++++++
  .../src/commands/shared/pr-meta/verify-log.ts      |  19 ++-
  .../commands/task/direct-task-verification.test.ts |  27 ++++
  .../src/commands/task/direct-task-verification.ts  |  26 +++-
+ .../src/runner/adapters/custom-security.test.ts    |  38 ++++-
+ packages/agentplane/src/runner/artifacts.ts        |   8 +
  .../agentplane/src/runner/execution-receipt.ts     |  17 ++-
  .../src/runner/process-supervision/result.ts       |  42 ++++++
  .../src/runner/process-supervision/run.ts          |  45 ++----
  .../src/runner/process-supervision/state.ts        |   3 +
- .../src/runner/runtime-env.integration.test.ts     | 154 +++++++++++++++++++++
+ .../src/runner/runtime-env.integration.test.ts     | 166 +++++++++++++++++++++
+ packages/agentplane/src/runner/types/state.ts      |   2 +
  packages/agentplane/src/shared/runtime-env.test.ts |  76 +++++++++-
- packages/agentplane/src/shared/runtime-env.ts      | 145 ++++++++++++++-----
- 11 files changed, 517 insertions(+), 85 deletions(-)
+ packages/agentplane/src/shared/runtime-env.ts      | 151 ++++++++++++++-----
+ 14 files changed, 580 insertions(+), 92 deletions(-)
 ```
 
 </details>
