@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -4987,6 +4987,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Read-only inspection completed. Four untracked Task-owned quality artifacts are genuine output from the earlier prepare step. Preserve them as historical evidence. They target daf594dbe372635d26bb67af0b9ee83ef6ac3c40 and cannot qualify semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. No source conflict or unrelated change is present. The supervisor may preserve these exact artifacts through its lifecycle path; fresh exact-merge verification is required after bootstrap 3MDRBH is integrated."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The five untracked quality files are intended AgentPlane-generated frozen evaluator inputs for implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. They were produced by the fresh evaluator preparation at 2026-08-30T08:15:35.655Z. Preserve and record these task-owned artifacts. No source changes, manual quality edits or external effects were made. The stale evaluator envelope was retired by AgentPlane; request a fresh evaluator episode after recording the observation."
 events:
   -
     type: "status"
@@ -5096,8 +5099,13 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "comment"
+    at: "2026-08-30T08:25:53.268Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The five untracked quality files are intended AgentPlane-generated frozen evaluator inputs for implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. They were produced by the fresh evaluator preparation at 2026-08-30T08:15:35.655Z. Preserve and record these task-owned artifacts. No source changes, manual quality edits or external effects were made. The stale evaluator envelope was retired by AgentPlane; request a fresh evaluator episode after recording the observation."
 doc_version: 3
-doc_updated_at: "2026-08-30T08:11:19.960Z"
+doc_updated_at: "2026-08-30T08:25:53.340Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
