@@ -299,6 +299,8 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
+      const workflowDir = interrupted === true ? "./.agent plane/задачи" : ".agentplane/tasks";
+      config.paths.workflow_dir = workflowDir;
       await writeConfig(root, config);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await writeFile(
@@ -336,7 +338,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
           root,
         ]),
       ).toBe(0);
-      await execFileAsync("git", ["add", `.agentplane/tasks/${dependencyId}`], { cwd: root });
+      await execFileAsync("git", ["add", `${workflowDir}/${dependencyId}`], { cwd: root });
       await writeFile(path.join(root, "prerequisite.txt"), "completed prerequisite\n");
       await execFileAsync("git", ["add", "prerequisite.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: prerequisite landed"], { cwd: root });
@@ -534,11 +536,25 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
             }
           await rm(hook, { force: true });
         }
-        const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
+        const directory = path.join(taskRoot, workflowDir, taskId);
         const entries = await readdir(directory);
         const orphans = entries.filter((name) => name.startsWith("README.md.tmp-"));
         expect(orphans).toHaveLength(1);
         orphanBytes = await readFile(path.join(directory, orphans[0]!), "utf8");
+        // Eight valid interrupted candidates must leave room for the next atomic publication.
+        for (let candidate = 1; candidate < 8; candidate++) {
+          await writeFile(
+            path.join(directory, `README.md.tmp-${String(candidate).padStart(32, "0")}`),
+            orphanBytes,
+          );
+        }
+        const excess = path.join(directory, `README.md.tmp-${"9".repeat(32)}`);
+        await writeFile(excess, orphanBytes);
+        await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
+          "Task execution artifacts already exist",
+        );
+        await rm(excess);
+
         expect(await readHead(taskRoot)).toBe(target);
         expect(
           (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
@@ -553,7 +569,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       });
       expect(applied.status).toBe("applied");
       if (orphanBytes !== null) {
-        const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
+        const directory = path.join(taskRoot, workflowDir, taskId);
         const remainingEntries = await readdir(directory);
         expect(remainingEntries.filter((name) => name.startsWith("README.md.tmp-"))).toEqual([]);
         const archiveRoot = path.join(root, ".git", "agentplane", "planning-base-recovery", taskId);
@@ -587,7 +603,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
         "completed prerequisite\n",
       );
-      const readmePath = path.join(taskRoot, ".agentplane", "tasks", taskId, "README.md");
+      const readmePath = path.join(taskRoot, workflowDir, taskId, "README.md");
       const completedBytes = await readFile(readmePath, "utf8");
       const repeated = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
       expect(repeated.status).toBe("already_applied");
