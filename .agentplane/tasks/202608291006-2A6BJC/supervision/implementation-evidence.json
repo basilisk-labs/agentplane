@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4b00960ebfb34f320348cad4c460c97c146d6691..2b964f7cbfc47b64d8ba8345211d806c59b6337c",
+      "command": "git diff --check 2b964f7cbfc47b64d8ba8345211d806c59b6337c..1bac24a6960b557b29e02c15353466cee019d49f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4b00960ebfb34f320348cad4c460c97c146d6691..2b964f7cbfc47b64d8ba8345211d806c59b6337c",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2b964f7cbfc47b64d8ba8345211d806c59b6337c..1bac24a6960b557b29e02c15353466cee019d49f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,8 +22,12 @@
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/review.md",
-        "A\t.agentplane/tasks/202608291006-2A6BJC/verification/20260830073628040-6a2414dd41d25395.json",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+        "M\t.agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202608291006-2A6BJC/verification/20260830075116632-19aedf754eb84cd1.json",
+        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
       ]
     },
     {
@@ -33,8 +37,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "4b00960ebfb34f320348cad4c460c97c146d6691",
-  "implementation_commit": "2b964f7cbfc47b64d8ba8345211d806c59b6337c",
+  "execution_base_commit": "2b964f7cbfc47b64d8ba8345211d806c59b6337c",
+  "implementation_commit": "1bac24a6960b557b29e02c15353466cee019d49f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -42,7 +46,9 @@
       " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
       " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
       " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md",
-      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830073628040-6a2414dd41d25395.json"
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830075116632-19aedf754eb84cd1.json"
     ],
     "classification": [
       {
@@ -63,7 +69,15 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830073628040-6a2414dd41d25395.json"
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830075116632-19aedf754eb84cd1.json"
       }
     ],
     "final": [],
@@ -73,7 +87,9 @@
       " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
       " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
       " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md",
-      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830073628040-6a2414dd41d25395.json"
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830075116632-19aedf754eb84cd1.json"
     ],
     "unchanged_from_execution_baseline": []
   },

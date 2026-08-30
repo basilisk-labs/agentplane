@@ -12,8 +12,8 @@ Created: 2026-08-30T04:09:19.506Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -43,7 +43,7 @@ Created: 2026-08-30T04:09:19.506Z
  .../kernel-replay-journey.test-fixtures.ts         |  216 +
  .../kernel-replay-migration.corpus.json            |  468 ++
  .../task-backend/kernel-replay-migration.test.ts   |  115 +
- .../task-backend/kernel-replay-persistence.test.ts |  221 +
+ .../task-backend/kernel-replay-persistence.test.ts |  241 +
  .../task-backend/kernel-replay.corpus.json         | 8712 ++++++++++++++++++++
  .../adapters/task-backend/kernel-replay.test.ts    |  103 +
  .../src/adapters/task-backend/kernel-replay.ts     |  128 +
@@ -67,7 +67,7 @@ Created: 2026-08-30T04:09:19.506Z
  scripts/bench/capture-kernel-replay.ts             |  181 +
  scripts/bench/qualify-kernel-replay.mjs            |  146 +
  .../check-compatibility-contract-baseline.mjs      |   91 +
- 38 files changed, 13998 insertions(+), 13 deletions(-)
+ 38 files changed, 14018 insertions(+), 13 deletions(-)
 ```
 
 </details>

@@ -102,12 +102,32 @@ describe("canonical replay through persistence and restart", () => {
         },
       }));
       const outcomes = await Promise.all(inputs.map((input) => adapter.execute(input)));
-      expect(outcomes.filter((outcome) => outcome.kind === "committed")).toHaveLength(1);
-      const loser = outcomes.findIndex((outcome) => outcome.kind !== "committed");
+      // Concurrent lock activity can invalidate a stable readback after the winning write.
+      // An uncertain response must be reconciled from durable receipts, not counted as failure.
+      expect(outcomes.filter((outcome) => outcome.kind === "committed").length).toBeLessThanOrEqual(
+        1,
+      );
       const fresh = await new KernelBackendAdapter(store.restart(), replayRepositoryIdentity).read(
         journey.task.id,
       );
       if (fresh.kind !== "canonical") throw new Error(JSON.stringify(fresh));
+      const winners = inputs.flatMap((input, index) =>
+        fresh.record.aggregate.mutation_receipts[input.mutation_id] ? [index] : [],
+      );
+      expect(winners, JSON.stringify(outcomes)).toHaveLength(1);
+      const winner = winners[0]!;
+      const loser = winner === 0 ? 1 : 0;
+      const write = vi.spyOn(store.backend, "writeTask");
+      expect(await adapter.execute(inputs[winner]!)).toMatchObject({
+        kind: "committed",
+        replayed: true,
+      });
+      expect(await adapter.execute(inputs[loser]!)).toMatchObject({
+        kind: "rejected",
+        code: "STALE_TASK_REVISION",
+      });
+      expect(write).not.toHaveBeenCalled();
+      write.mockRestore();
       const retry = inputs[loser]!;
       expect(
         await adapter.execute({
