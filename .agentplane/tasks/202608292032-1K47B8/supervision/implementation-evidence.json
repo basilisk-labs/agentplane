@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4f71923961a191e78f4119fabb6746b79f301c76..a93e60a494d0c241ef6f56d46c87016d2d199b57",
+      "command": "git diff --check c35740905de616953e011a8f124029a6a6f81c9a..e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,20 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4f71923961a191e78f4119fabb6746b79f301c76..a93e60a494d0c241ef6f56d46c87016d2d199b57",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c35740905de616953e011a8f124029a6a6f81c9a..e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608292032-1K47B8/README.md",
         "M\t.agentplane/tasks/202608292032-1K47B8/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608292032-1K47B8/pr/github-body.md",
         "M\t.agentplane/tasks/202608292032-1K47B8/pr/meta.json",
         "M\t.agentplane/tasks/202608292032-1K47B8/pr/review.md",
-        "A\tpackages/core/src/tasks/task-kernel/M1-QUALIFICATION.md"
+        "M\tpackages/core/src/tasks/task-kernel/M1-QUALIFICATION.md",
+        "M\tpackages/core/src/tasks/task-kernel/invariants.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/invariants.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts"
       ]
     },
     {
@@ -31,15 +36,24 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "4f71923961a191e78f4119fabb6746b79f301c76",
-  "implementation_commit": "a93e60a494d0c241ef6f56d46c87016d2d199b57",
+  "execution_base_commit": "c35740905de616953e011a8f124029a6a6f81c9a",
+  "implementation_commit": "e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202608292032-1K47B8/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608292032-1K47B8/README.md"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608292032-1K47B8/README.md"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
