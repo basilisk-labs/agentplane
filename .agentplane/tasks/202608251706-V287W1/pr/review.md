@@ -6,7 +6,7 @@ Created: 2026-08-30T03:06:28.413Z
 
 - Task: `202608251706-V287W1`
 - Title: AP-RUNTIME-001 Make local execution runtime deterministic
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608251706-V287W1/ap-runtime-001-make-local-execution-runtime-dete`
 - Canonical task record: `.agentplane/tasks/202608251706-V287W1/README.md`
 
