@@ -4,6 +4,8 @@ Task: `202608291006-2A6BJC`.
 
 This is an implementation checkpoint, not final M2 qualification or M3 cutover approval.
 The legacy production lifecycle remains authoritative.
+This internal checkpoint uses the repository's existing README convention. It is not a
+published documentation page.
 
 ## Implemented boundaries
 
@@ -60,6 +62,22 @@ exclusive file creation. Effect resolution now reuses the existing staged hard-l
 helper. Readers see a complete immutable artifact, and competing identical resolutions converge.
 The three regressions failed before this change; all eleven effect-resolution tests passed on
 Node 24 afterward. Existing conflict checks and independent readback remain required.
+
+The supervisor then saved `2b787ce10` and ran with explicitly selected Node 26.8.1.
+`test:fast` passed 5,193 tests across 617 suites, with one skipped test, in 301 seconds.
+The full CI runtime, docs/schema, core and CLI groups also passed. The later website step
+failed because this internal checkpoint was treated as a public page without a generated
+social image. Moving the checkpoint to this README location follows the existing website
+exclusion; no CI check or generated-asset requirement is removed. Final full CI and hosted
+Node 24 verification remain mandatory.
+
+Migration qualification now exercises real linked Git worktrees. For each legacy status,
+the selected worktree alone receives the canonical or archived record, repeat application
+leaves its bytes unchanged, and rollback restores its exact original bytes. A missing
+worktree document returns `missing` through the operator command. It does not fall back to
+the base checkout and does not call backup or CAS. The base document remains unchanged in
+all cases. All 50 migration and frozen-migration tests passed on Node 24. The complete docs
+site check also passed after the internal README relocation.
 
 Further persistence tests exposed two read-projection defects on all three backends: an
 unclaimed optional WorkItem was selected after all required work completed, and a blocked

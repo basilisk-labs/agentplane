@@ -29,12 +29,12 @@ Created: 2026-08-30T04:09:19.506Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../clean-task-core-m2-replay-checkpoint.md        |   84 +
+ .../clean-task-core-m2-replay-checkpoint/README.md |  102 +
  docs/developer/harness-dev.mdx                     |   85 +
  .../task-backend/kernel-backend-adapter.test.ts    |  610 ++
  .../task-backend/kernel-backend-adapter.ts         |  202 +
  .../task-backend/kernel-migration-source.ts        |  161 +
- .../adapters/task-backend/kernel-migration.test.ts |  350 +
+ .../adapters/task-backend/kernel-migration.test.ts |  441 +
  .../src/adapters/task-backend/kernel-migration.ts  |  341 +
  .../adapters/task-backend/kernel-next-action.ts    |  106 +
  .../adapters/task-backend/kernel-observations.ts   |  122 +
@@ -78,7 +78,7 @@ Created: 2026-08-30T04:09:19.506Z
  scripts/bench/internal/kernel-replay-isolation.mjs |  105 +
  scripts/bench/qualify-kernel-replay.mjs            |  191 +
  .../check-compatibility-contract-baseline.mjs      |   91 +
- 49 files changed, 15298 insertions(+), 29 deletions(-)
+ 49 files changed, 15407 insertions(+), 29 deletions(-)
 ```
 
 </details>

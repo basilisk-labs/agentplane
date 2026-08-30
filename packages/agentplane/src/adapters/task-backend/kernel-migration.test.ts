@@ -1,6 +1,8 @@
 import { mkdtemp, readFile, writeFile, rm, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { gitEnv } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { parseTaskReadme, renderTaskReadme, taskKernel } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { LocalBackend } from "../../backends/task-backend.js";
@@ -54,7 +56,96 @@ async function fixture(status = "TODO") {
   return { root, file, text, backend, store, migration: new KernelMigration(store, identity) };
 }
 
+async function frozenWorktree(source: Awaited<ReturnType<typeof fixture>>) {
+  const parent = await mkdtemp(path.join(os.tmpdir(), "agentplane-migration-worktree-"));
+  paths.push(parent);
+  const root = path.join(parent, "frozen");
+  const env = {
+    ...gitEnv(),
+    GIT_CONFIG_GLOBAL: "/dev/null",
+    GIT_CONFIG_SYSTEM: "/dev/null",
+    GIT_AUTHOR_NAME: "Migration Test",
+    GIT_AUTHOR_EMAIL: "migration@example.invalid",
+    GIT_COMMITTER_NAME: "Migration Test",
+    GIT_COMMITTER_EMAIL: "migration@example.invalid",
+  };
+  const git = (args: string[]) => execFileAsync("git", args, { cwd: source.root, env });
+  await git(["init", "-q"]);
+  await git(["-c", "core.autocrlf=false", "add", "--", `${taskId}/README.md`]);
+  await git(["commit", "-q", "-m", "Seed exact migration source"]);
+  await git(["-c", "core.autocrlf=false", "worktree", "add", "--detach", root, "HEAD"]);
+  const backend = new LocalBackend({ dir: root });
+  const store = new LocalTaskByteStore(backend);
+  return {
+    root,
+    file: path.join(root, taskId, "README.md"),
+    backend,
+    store,
+    migration: new KernelMigration(store, identity),
+  };
+}
+
 describe("explicit canonical migration", () => {
+  it.each(["TODO", "DOING", "BLOCKED", "DONE"])(
+    "migrates and rolls back %s only in the selected real Git worktree",
+    async (status) => {
+      const base = await fixture(status);
+      const worktree = await frozenWorktree(base);
+      expect(await readFile(worktree.file, "utf8")).toBe(base.text);
+      const applied = await worktree.migration.apply(taskId, taskBytesDigest(base.text));
+      if (applied.kind !== "applied") throw new Error(JSON.stringify(applied));
+      expect(await new KernelBackendAdapter(worktree.backend, identity).read(taskId)).toMatchObject(
+        status === "DONE"
+          ? { kind: "archived" }
+          : { kind: "canonical", record: { aggregate: { state: "PLANNING" } } },
+      );
+      const bytes = await readFile(worktree.file);
+      expect(await worktree.migration.apply(taskId, taskBytesDigest(base.text))).toEqual({
+        kind: "already_applied",
+        proof: applied.proof,
+      });
+      expect(await readFile(worktree.file)).toEqual(bytes);
+      expect(await worktree.migration.rollback(applied.proof)).toMatchObject({
+        kind: "rolled_back",
+      });
+      expect(await readFile(worktree.file, "utf8")).toBe(base.text);
+      expect(await readFile(base.file, "utf8")).toBe(base.text);
+    },
+  );
+
+  it("refuses a missing frozen-worktree source instead of migrating the base checkout copy", async () => {
+    const base = await fixture();
+    const worktree = await frozenWorktree(base);
+    await rm(worktree.file);
+    mocks.identity.mockResolvedValue(identity);
+    const ctx = makeTaskCommandContext({ taskBackend: worktree.backend });
+    ctx.resolvedProject.gitRoot = worktree.root;
+    const stdout = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+    const backup = vi.spyOn(LocalTaskByteStore.prototype, "backup");
+    const write = vi.spyOn(LocalTaskByteStore.prototype, "compareAndSwap");
+    expect(await runKernelMigration(ctx, { taskId, apply: false, yes: false })).toBe(1);
+    expect(JSON.parse(String(stdout.mock.calls.at(-1)?.[0]))).toMatchObject({
+      classification: "missing",
+      source_digest: null,
+    });
+    expect(
+      await runKernelMigration(ctx, {
+        taskId,
+        apply: true,
+        yes: true,
+        sourceDigest: taskBytesDigest(base.text),
+      }),
+    ).toBe(1);
+    expect(JSON.parse(String(stdout.mock.calls.at(-1)?.[0]))).toEqual({
+      kind: "refused",
+      reason: "missing",
+    });
+    expect(backup).not.toHaveBeenCalled();
+    expect(write).not.toHaveBeenCalled();
+    await expect(readFile(worktree.file)).rejects.toMatchObject({ code: "ENOENT" });
+    expect(await readFile(base.file, "utf8")).toBe(base.text);
+  });
+
   it.each(["TODO", "DOING", "BLOCKED"])(
     "dry-runs %s, atomically applies an empty PLANNING record, repeats and restores exact bytes",
     async (status) => {
