@@ -1,10 +1,11 @@
 ---
 id: "202608300559-3MDRBH"
 title: "Preserve semantic conflict resolutions in evaluator target selection"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,20 @@ quality_review:
     - "All nine frozen evidence hashes match. Verification record binds full regression, typecheck and diff checks to 3174c719467932a7d3408465af4960a643bce595 against cbc5d79d1510293de3b4c30b61679cdef85d0fdb. Evidence: verification-record-1 and observed-checks."
     - "Residual risk: Shared paths conservatively require fresh review even when independent hunks could merge cleanly."
     - "Residual risk: AP-RUNTIME-001 must be freshly qualified after this bootstrap is integrated; its old evaluator target is not valid evidence for the conflict resolution."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:7ce4cdf8158320240c6b2f00428946b98fce244021c56962f1f2f7e7b27ad472"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-30T06:50:32.063Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -244,8 +259,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3174c719467932a7d3408465af4960a643bce595"
-  message: "🚧 3MDRBH task: apply external agent result"
+  hash: "6a342eba3d5a9771e767129ae3de8c4adab1a85d"
+  message: "🚧 3MDRBH task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -256,6 +271,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3174c7194679. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -286,9 +304,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T06:50:32.063Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "6a342eba3d5a9771e767129ae3de8c4adab1a85d"
 doc_version: 3
-doc_updated_at: "2026-08-30T06:43:27.108Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T06:50:32.073Z"
+doc_updated_by: "CODER"
 description: "Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks."
 sections:
   Summary: |-
@@ -610,7 +636,34 @@ extensions:
       schema_version: 1
       task_id: "202608300559-3MDRBH"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608300559-3MDRBH"
+            - "git:3174c719467932a7d3408465af4960a643bce595"
+          check_id: "types"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T06:43:24.827Z"
+          repository_snapshot_digest: "sha256:bd8902b8307ed96f202a1faa0b1649569574266d408515dc0462739c776efa5b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608300559-3MDRBH"
+            - "git:3174c719467932a7d3408465af4960a643bce595"
+          check_id: "diff"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T06:43:24.827Z"
+          repository_snapshot_digest: "sha256:bd8902b8307ed96f202a1faa0b1649569574266d408515dc0462739c776efa5b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608300559-3MDRBH"
     intent:
       acceptance_criteria:
@@ -631,12 +684,12 @@ extensions:
 
         Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks.
       task_id: "202608300559-3MDRBH"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 12
     schema_version: 1
-    updated_at: "2026-08-30T06:43:28.328Z"
+    updated_at: "2026-08-30T06:50:32.063Z"
     work_items:
       merge-review-target:
         attempt: 1
@@ -714,11 +767,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202608300559-3MDRBH"
+      legacy-finish:202608300559-3MDRBH:2026-08-30T06:43:24.827Z:3174c719467932a7d3408465af4960a643bce595:
+        aggregate_digest: "sha256:594758121551796d34b03fcbe9e14cdd15ebe5f5ed0e9271f8307a6f1d5aeb65"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-30T06:50:32.063Z"
+          cause_refs:
+            - "task-verification:202608300559-3MDRBH"
+            - "git:3174c719467932a7d3408465af4960a643bce595"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c932640e040a15847c664cd9"
+          mutation_id: "legacy-finish:202608300559-3MDRBH:2026-08-30T06:43:24.827Z:3174c719467932a7d3408465af4960a643bce595"
+          plan_digest: "sha256:77597494a805283885bca86072e69ea8e5a7dd0bf39da19904c3660a37253bf9"
+          plan_revision: 1
+          repository_fingerprint: "sha256:bd8902b8307ed96f202a1faa0b1649569574266d408515dc0462739c776efa5b"
+          schema_version: 1
+          task_id: "202608300559-3MDRBH"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608300559-3MDRBH:2026-08-30T06:43:24.827Z:3174c719467932a7d3408465af4960a643bce595"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608300559-3MDRBH"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "3174c719467932a7d3408465af4960a643bce595"
+    message: "🚧 3MDRBH task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "cbc5d79d1510293de3b4c30b61679cdef85d0fdb"
@@ -854,3 +933,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:7ce4cdf8158320240c6b2f00428946b98fce244021c56962f1f2f7e7b27ad472`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-30T06:50:32.063Z`
