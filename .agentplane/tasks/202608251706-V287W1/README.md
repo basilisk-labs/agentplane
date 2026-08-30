@@ -4,7 +4,7 @@ title: "AP-RUNTIME-001 Make local execution runtime deterministic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -92,12 +92,33 @@ execution_contract:
       - "packages/agentplane/src/runner"
       - "packages/agentplane/src/shared"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+    changed_paths:
+      - "docs/developer/local-runtime-resolution.md"
+      - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/runner/execution-receipt.ts"
+      - "packages/agentplane/src/runner/process-supervision/result.ts"
+      - "packages/agentplane/src/runner/process-supervision/run.ts"
+      - "packages/agentplane/src/runner/process-supervision/state.ts"
+      - "packages/agentplane/src/runner/runtime-env.integration.test.ts"
+      - "packages/agentplane/src/shared/runtime-env.test.ts"
+      - "packages/agentplane/src/shared/runtime-env.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -138,9 +159,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:dfbf8c8fbd89c5c06d7d1e266aa13a27df6357613c330a04f4c5cacd671c22e1"
+      digest: "sha256:643596199b41560f87e2087d39ea8bf2d5b646e82c4851763eaacff46ffe8f11"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/pr-meta"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
         - "effect_security_boundary"
       execution_groups:
         - "docs-schema"
@@ -148,10 +170,27 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+        changed_files:
+          - "docs/developer/local-runtime-resolution.md"
+          - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/runner/execution-receipt.ts"
+          - "packages/agentplane/src/runner/process-supervision/result.ts"
+          - "packages/agentplane/src/runner/process-supervision/run.ts"
+          - "packages/agentplane/src/runner/process-supervision/state.ts"
+          - "packages/agentplane/src/runner/runtime-env.integration.test.ts"
+          - "packages/agentplane/src/shared/runtime-env.test.ts"
+          - "packages/agentplane/src/shared/runtime-env.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -186,11 +225,15 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 846ffaccbdec. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -199,9 +242,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-30T03:24:14.153Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 846ffaccbdec. CLI accepted one state-bound external-agent semantic result."
+    commit: "846ffaccbdecfdfb07eb4000e6a943616090ad70"
+  -
+    type: "verify"
+    at: "2026-08-30T03:30:52.423Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-30T03:06:28.261Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T03:30:54.407Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
   Summary: |-
@@ -225,6 +282,41 @@ sections:
     5. Run runtime, subprocess, receipt, installed CLI, and root-child integration tests.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-30T03:30:52.423Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:662550a4afa531436620a3de058c0263090e62afd93530949292d244e87808e7
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608251706-V287W1 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+    - old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -518,25 +610,105 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 17
     schema_version: 1
-    updated_at: "2026-08-30T02:57:20.979Z"
+    updated_at: "2026-08-30T03:30:55.573Z"
     work_items:
       deterministic-local-runtime:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "deterministic-local-runtime"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "runtime-resolution"
+            - "runtime-launches"
+            - "runtime-evidence"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Implemented deterministic local runtime discovery and shared environment normalization for runner and verification/recovery launch paths. Explicit profile PATH wins. Runtime identity and infrastructure failures are recorded through existing evidence/receipt contracts."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:1f80652b8223a305224f9f55d75cd3414a6abd9ca974e49cc2140a5c299a2b78"
+            id: "deterministic-local-runtime-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608251706-V287W1"
+              work_item_id: "deterministic-local-runtime"
+            provenance:
+              - "sha256:af3696eea5f8d64dfcbfed1bb2234dbf23e409f5547b74c2761558479b5235dd"
+              - ".agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0b25625e060609e6f41fd970dcc070a9c942c24f21e152ee1d582697a4f28b5a"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json"
+              check_id: "runtime-full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-08-30T03:30:55.566Z"
+              repository_snapshot_digest: "sha256:0b25625e060609e6f41fd970dcc070a9c942c24f21e152ee1d582697a4f28b5a"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json"
+              check_id: "runtime-diff-check"
+              command_identity: "git diff --check"
+              detail: "Declared validation command git diff --check was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-30T03:30:55.566Z"
+              repository_snapshot_digest: "sha256:0b25625e060609e6f41fd970dcc070a9c942c24f21e152ee1d582697a4f28b5a"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "runtime-resolution"
+            - "runtime-launches"
+            - "runtime-evidence"
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608251706-V287W1-executor-4039265a31e04da683b4c138:
+        aggregate_digest: "sha256:1432c3dd16fa68442e57fabb7994f3009804027c2ce20b7e4b2308f2e714b00a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T03:30:55.573Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_582243aea031db2947888577"
+          mutation_id: "external-result:work-order-202608251706-V287W1-executor-4039265a31e04da683b4c138"
+          plan_digest: "sha256:0a32be0fe48f48a34d82bc81aa1c7b858cb333250aede98c0e3e543061660753"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608251706-V287W1"
+          task_revision: 16
+          to: "REWORK_READY"
+          work_item_id: "deterministic-local-runtime"
+        mutation_id: "external-result:work-order-202608251706-V287W1-executor-4039265a31e04da683b4c138"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202608251706-V287W1"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "main"
     base_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "8ea1cefbbc96a8da5595fce36325ec0c1194a360"
     version: 1
@@ -573,6 +745,41 @@ Plan one cohesive runtime implementation WorkItem with shared resolver hardening
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-30T03:30:52.423Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656, input_digest=sha256:662550a4afa531436620a3de058c0263090e62afd93530949292d244e87808e7
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608251706-V287W1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608251706-V287W1 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608251706-V287W1-ap-runtime-001-make-local-execution-runtime-dete/.agentplane/tasks/202608251706-V287W1/blueprint/resolved-snapshot.json
+- old_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- current_digest: 1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608251706-V287W1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

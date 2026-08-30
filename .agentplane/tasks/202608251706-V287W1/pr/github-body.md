@@ -32,7 +32,7 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/local-runtime-resolution.md         |  49 +++++++
+ docs/developer/harness-dev.mdx                     |  48 +++++++
  .../src/commands/shared/pr-meta/verify-log.ts      |  19 ++-
  .../commands/task/direct-task-verification.test.ts |  27 ++++
  .../src/commands/task/direct-task-verification.ts  |  26 +++-
@@ -43,7 +43,7 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
  .../src/runner/runtime-env.integration.test.ts     | 154 +++++++++++++++++++++
  packages/agentplane/src/shared/runtime-env.test.ts |  76 +++++++++-
  packages/agentplane/src/shared/runtime-env.ts      | 145 ++++++++++++++-----
- 11 files changed, 518 insertions(+), 85 deletions(-)
+ 11 files changed, 517 insertions(+), 85 deletions(-)
 ```
 
 </details>
