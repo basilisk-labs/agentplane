@@ -8,6 +8,7 @@ import {
 import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
+import { baseSyncMergeReviewPaths } from "./quality-review-merge.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
 const WORKFLOW_ROUTE_BASELINE_EXTENSION_KEY = "workflow_route_baseline";
@@ -441,6 +442,26 @@ export async function resolveQualityReviewTargetSha(opts: {
     if (mergeParent && isBaseSyncMerge && previousEvaluatedSha) {
       const taskParent = await gitRevParse(opts.gitRoot, [`${current}^1`]).catch(() => null);
       if (taskParent && (await gitIsAncestor(opts.gitRoot, previousEvaluatedSha, taskParent))) {
+        const resolutionPaths = await baseSyncMergeReviewPaths({
+          gitRoot: opts.gitRoot,
+          merge: current,
+          taskParent,
+          baseParent: mergeParent,
+        });
+        if (
+          resolutionPaths === null ||
+          (await hasReviewableChangesAgainstMergeParent({
+            gitRoot: opts.gitRoot,
+            parent: taskParent,
+            current,
+            changed: resolutionPaths,
+            workflowArtifactPrefix,
+            lifecycleTaskIdSet,
+            taskIdForPath,
+            taskRelativePath,
+          }))
+        )
+          return currentTaskArtifactHead ?? current;
         current = taskParent;
         continue;
       }

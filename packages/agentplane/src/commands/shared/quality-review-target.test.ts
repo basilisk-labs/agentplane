@@ -591,6 +591,123 @@ describe("quality review target resolver", () => {
     ).resolves.toBe(changedSha);
   });
 
+  it.each(["combined", "task", "base"])(
+    "requires a fresh review when a conflict is resolved to %s content",
+    async (resolution) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202608300559-MERGE-RESOLUTION";
+      await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/README.md`,
+        taskReadme({ taskId, revision: 1 }),
+        "docs: task",
+      );
+      await commitPath(root, "src/shared.ts", "export const value = 0;\n", "feat: base");
+      const { stdout: baseName } = await execFileAsync("git", ["branch", "--show-current"], {
+        cwd: root,
+      });
+      const baseRef = baseName.trim();
+      await execFileAsync("git", ["checkout", "-b", "task/conflict-resolution"], { cwd: root });
+      const reviewedSha = await commitPath(
+        root,
+        "src/shared.ts",
+        "export const value = 1;\n",
+        "feat: task",
+      );
+      await execFileAsync("git", ["checkout", baseRef], { cwd: root });
+      await commitPath(root, "src/shared.ts", "export const value = 2;\n", "feat: changed base");
+      await execFileAsync("git", ["checkout", "task/conflict-resolution"], { cwd: root });
+      await expect(
+        execFileAsync("git", ["merge", "--no-commit", "--no-ff", baseRef], { cwd: root }),
+      ).rejects.toThrow();
+      const value = resolution === "task" ? 1 : resolution === "base" ? 2 : 3;
+      const resolvedSha = await commitPath(
+        root,
+        "src/shared.ts",
+        `export const value = ${value};\n`,
+        "fix: resolve semantic conflict",
+      );
+      await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/quality/new/quality-report.json`,
+        "{}\n",
+        "test: managed artifact",
+      );
+      await expect(
+        resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef }),
+      ).resolves.toBe(resolvedSha);
+    },
+  );
+
+  it.each(["new", "base-only"])(
+    "detects manual %s source edits inside an otherwise clean base merge",
+    async (change) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202608300559-MERGE-MANUAL";
+      await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/README.md`,
+        taskReadme({ taskId, revision: 1 }),
+        "docs: task",
+      );
+      const { stdout: baseName } = await execFileAsync("git", ["branch", "--show-current"], {
+        cwd: root,
+      });
+      const baseRef = baseName.trim();
+      await execFileAsync("git", ["checkout", "-b", "task/manual-merge"], { cwd: root });
+      const reviewedSha = await commitPath(
+        root,
+        "src/task.ts",
+        "export const task = true;\n",
+        "feat: task",
+      );
+      await execFileAsync("git", ["checkout", baseRef], { cwd: root });
+      await commitPath(root, "src/base.ts", "export const base = true;\n", "feat: base");
+      await execFileAsync("git", ["checkout", "task/manual-merge"], { cwd: root });
+      await execFileAsync("git", ["merge", "--no-commit", "--no-ff", baseRef], { cwd: root });
+      const resolvedSha = await commitPath(
+        root,
+        change === "new" ? "src/new.ts" : "src/base.ts",
+        "export const manual = true;\n",
+        "fix: manual merge edit",
+      );
+      await expect(
+        resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef }),
+      ).resolves.toBe(resolvedSha);
+    },
+  );
+
+  it("preserves review reuse for clean base-only implementation changes", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202608300559-MERGE-CLEAN";
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: task",
+    );
+    const { stdout: baseName } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseRef = baseName.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/clean-source-merge"], { cwd: root });
+    const reviewedSha = await commitPath(
+      root,
+      "src/task.ts",
+      "export const task = true;\n",
+      "feat: task",
+    );
+    await execFileAsync("git", ["checkout", baseRef], { cwd: root });
+    await commitPath(root, "src/base.ts", "export const base = true;\n", "feat: base");
+    await execFileAsync("git", ["checkout", "task/clean-source-merge"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", baseRef, "-m", "merge: clean base"], {
+      cwd: root,
+    });
+    await expect(
+      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef }),
+    ).resolves.toBe(reviewedSha);
+  });
+
   it("does not treat a non-base merge as a base-sync work unit", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-NON-BASE-MERGE";

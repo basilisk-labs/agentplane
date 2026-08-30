@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua",
+  "created_at": "2026-08-30T06:04:22.120Z",
+  "diffstat_sha256": "sha256:19e2d0277bc6472ca19b7ad8faf0f6d19232ef8588b2585f27cafb861e5e7a59",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608300559-3MDRBH",
+  "updated_at": "2026-08-30T06:04:22.120Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
