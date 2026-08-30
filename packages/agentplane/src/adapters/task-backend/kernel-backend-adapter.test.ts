@@ -453,4 +453,110 @@ it("persists approved plan and materialized WorkItems atomically through kernel 
     "work_items_materialized",
   ]);
   expect(read.task.status).toBe("DOING");
+  const resultDigest = taskKernel.kernelDigest("completed-build");
+  const envelope = { task_id: taskId, expected_state_fingerprint: fingerprint };
+  const output: taskKernel.OutputManifest = {
+    id: "built",
+    kind: "file",
+    digest: resultDigest,
+    task_id: taskId,
+    plan_revision: 1,
+    work_item_id: "build",
+    attempt: 1,
+    repository_fingerprint: fingerprint,
+  };
+  const commands: taskKernel.TaskCommand[] = [
+    {
+      ...envelope,
+      expected_task_revision: 4,
+      kind: "transition_work_item",
+      work_item_id: "build",
+      action: "claim",
+      claim_id: "claim",
+    },
+    {
+      ...envelope,
+      expected_task_revision: 5,
+      kind: "transition_work_item",
+      work_item_id: "build",
+      action: "begin",
+      claim_id: "claim",
+    },
+    {
+      ...envelope,
+      expected_task_revision: 6,
+      kind: "accept_work_item_result",
+      plan_revision: 1,
+      plan_digest: plan.digest,
+      work_item_id: "build",
+      result_digest: resultDigest,
+      output_manifests: [output],
+    },
+    {
+      ...envelope,
+      expected_task_revision: 7,
+      kind: "transition_work_item",
+      work_item_id: "build",
+      action: "inspect",
+      claim_id: "claim",
+    },
+    {
+      ...envelope,
+      expected_task_revision: 8,
+      kind: "record_work_item_validation",
+      work_item_id: "build",
+      validation: {
+        status: "PASSED",
+        identity: {
+          implementation_identity: resultDigest,
+          check_id: "build-test",
+          command_digest: fingerprint,
+          toolchain_digest: fingerprint,
+          environment_digest: fingerprint,
+        },
+        evidence_digests: [resultDigest],
+        observed_at: input().occurred_at,
+      },
+    },
+    {
+      ...envelope,
+      expected_task_revision: 9,
+      kind: "transition_work_item",
+      work_item_id: "build",
+      action: "complete",
+      claim_id: "claim",
+    },
+  ];
+  for (const command of commands) {
+    expect(
+      await adapter.execute({
+        ...input(),
+        command,
+        authority: { ...authority, work_item_id: "build" },
+        mutation_id: `step-${command.expected_task_revision}`,
+      }),
+    ).toMatchObject({ kind: "committed" });
+  }
+  const proposedAmendment = { revision: 2, work_items: plan.work_items };
+  const amendedPlan = { ...proposedAmendment, digest: taskKernel.kernelDigest(proposedAmendment) };
+  const amended = await adapter.execute({
+    ...input(),
+    authority,
+    mutation_id: "amend",
+    command: {
+      ...envelope,
+      expected_task_revision: 10,
+      kind: "amend_plan",
+      plan_revision: 1,
+      plan_digest: plan.digest,
+      amendment_digest: taskKernel.kernelDigest(amendedPlan),
+      amended_plan: amendedPlan,
+      authority_delta_digest: null,
+    },
+  });
+  expect(amended).toMatchObject({ kind: "committed" });
+  const after = await adapter.read(taskId);
+  expect(after.kind).toBe("canonical");
+  if (after.kind !== "canonical") throw new Error(JSON.stringify(after));
+  expect(after.record.aggregate.work_items.build?.output_manifests).toEqual([output]);
 });

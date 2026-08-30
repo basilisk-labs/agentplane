@@ -83,3 +83,27 @@ The adapter tests cover real local atomic writes, cloud-fake CAS equivalence, co
 response loss, missing readback, idempotency conflicts, malformed state and projection isolation.
 Migration backups, rollback receipts, the full replay corpus and production cutover have separate
 milestone gates; these adapter tests do not prove those gates.
+
+### Explicit Task migration
+
+`ap task kernel-migrate <task-id>` performs a read-only dry run against the canonical local Task
+README. It reports the raw source digest, classification, proposed canonical and projection
+identities, expected output bytes, and rollback capability. It does not print source text or opaque
+extension values. Unknown schemas, malformed records, ambiguous required inputs, and unreconciled
+runtime leases or effects are quarantined. This command does not implicitly migrate Tasks used by
+normal execution.
+
+Apply the first Task as a canary with `--apply --source-digest <dry-run-digest> --yes`. Capture the
+emitted JSON result as a repository-local proof file. The byte store uses the existing Task README
+transaction owner. It saves an immutable content-addressed source copy, compares the source digest
+and revision, and atomically writes the canonical record and migration receipt in that README.
+An independent readback must match before the command reports success. A repeated apply with the
+original source digest returns the same proof without changing bytes. A lost write response is
+resolved by readback; unavailable readback is `write_in_doubt`, never assumed success.
+
+`ap task kernel-migrate <task-id> --rollback <proof.json> --yes` restores the exact original bytes
+only while the complete migrated output bytes, revision, receipt identity, and backup still match.
+Later notes and metadata changes also block rollback. The batch adapter applies the first entry as
+a canary and stops immediately on a refusal. The operator must not continue to later Tasks after an
+unexplained canary mismatch. Backends without a proven raw-byte CAS and backup capability are
+unsupported. Real repository corpus migration and legacy-route deletion remain behind the M3 gate.

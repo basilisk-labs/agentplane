@@ -353,6 +353,10 @@ export const loadTaskObsidianCleanSpec = () =>
   import("../../../commands/task/obsidian.command.js").then((m) =>
     m.makeRunTaskObsidianCleanHandler(),
   );
+export const loadTaskKernelMigrateSpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/kernel-migrate.command.js").then((m) =>
+    m.makeRunTaskKernelMigrateHandler(getSessionContext(session, "task.write")),
+  );
 export const loadTaskMigrateSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/migrate.command.js").then((m) =>
     m.makeRunTaskMigrateHandler(getSessionContext(session, "task.write")),

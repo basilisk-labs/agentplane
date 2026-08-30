@@ -61,7 +61,18 @@ export function kernelRecordIssues(
         (output) =>
           output.task_id !== aggregate.id ||
           output.work_item_id !== id ||
-          output.plan_revision !== plan?.revision ||
+          ![...(plan ? [plan] : []), ...aggregate.plan_history].some(
+            (sourcePlan) =>
+              sourcePlan.revision === output.plan_revision &&
+              ["APPROVED", "SUPERSEDED"].includes(sourcePlan.state) &&
+              sourcePlan.approval_actor_id !== null &&
+              sourcePlan.approval_evidence_digest !== null &&
+              sourcePlan.work_items.some(
+                (definition) =>
+                  definition.id === id &&
+                  taskKernel.kernelDigest(definition) === taskKernel.kernelDigest(item.definition),
+              ),
+          ) ||
           output.attempt !== item.attempt,
       )
     )
