@@ -29,6 +29,52 @@ import {
 } from "./kernel.test-fixtures.js";
 
 describe("canonical task kernel reducer", () => {
+  it.each([
+    "CLAIMED",
+    "EXECUTING",
+    "RESULT_RECEIVED",
+    "INSPECTING",
+    "VALIDATING",
+    "BLOCKED",
+    "EFFECT_IN_DOUBT",
+  ] as const)(
+    "refuses a claim while another %s WorkItem holds an overlapping resource",
+    (otherState) => {
+      const other = { ...plan.work_items[0]!, id: "other", expected_outputs: ["other-output"] };
+      const state = aggregate({
+        current_plan: { ...plan, work_items: [plan.work_items[0]!, other] },
+        work_items: {
+          kernel: runtime("READY"),
+          other: { ...runtime(otherState), definition: other },
+        },
+      });
+      const before = JSON.stringify(state);
+      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
+        kind: "rejected",
+        code: "WORK_ITEM_RESOURCE_CONFLICT",
+        facts: ["other:kernel-work"],
+      });
+      expect(JSON.stringify(state)).toBe(before);
+    },
+  );
+
+  it.each(["PLANNED", "READY", "REWORK_READY", "COMPLETED", "CANCELLED"] as const)(
+    "does not retain a resource claim for an idle or terminal %s WorkItem",
+    (otherState) => {
+      const other = { ...plan.work_items[0]!, id: "other", expected_outputs: ["other-output"] };
+      const state = aggregate({
+        current_plan: { ...plan, work_items: [plan.work_items[0]!, other] },
+        work_items: {
+          kernel: runtime("READY"),
+          other: { ...runtime(otherState), definition: other },
+        },
+      });
+      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim"))).kind).toBe(
+        "accepted",
+      );
+    },
+  );
+
   it("orders digest keys by code units independent of locale", () => {
     const expected = createHash("sha256").update('{"Z":2,"a":3,"ä":1}').digest("hex");
     expect(kernelDigest({ ä: 1, Z: 2, a: 3 })).toBe(`sha256:${expected}`);

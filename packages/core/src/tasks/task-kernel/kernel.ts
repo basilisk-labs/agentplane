@@ -719,6 +719,31 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (command.action === "claim" && !requiredInputsPresent(runtime, aggregate.work_items)) {
         return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", runtime.definition.required_inputs);
       }
+      if (command.action === "claim") {
+        const requested = new Set(runtime.definition.execution_requirements.resources);
+        const conflicts = Object.values(aggregate.work_items)
+          .filter(
+            (other) =>
+              other.definition.id !== command.work_item_id &&
+              other.claim_id !== null &&
+              [
+                "CLAIMED",
+                "EXECUTING",
+                "RESULT_RECEIVED",
+                "INSPECTING",
+                "VALIDATING",
+                "BLOCKED",
+                "EFFECT_IN_DOUBT",
+              ].includes(other.state),
+          )
+          .flatMap((other) =>
+            other.definition.execution_requirements.resources
+              .filter((resource) => requested.has(resource))
+              .map((resource) => `${other.definition.id}:${resource}`),
+          )
+          .toSorted();
+        if (conflicts.length > 0) return rejected("WORK_ITEM_RESOURCE_CONFLICT", conflicts);
+      }
       if (command.action === "complete") {
         if (!hasEveryExpectedOutput(runtime, runtime.output_manifests)) {
           return rejected("WORK_ITEM_OUTPUT_MISSING", runtime.definition.expected_outputs);

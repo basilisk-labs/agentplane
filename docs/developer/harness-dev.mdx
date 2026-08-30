@@ -107,3 +107,35 @@ Later notes and metadata changes also block rollback. The batch adapter applies 
 a canary and stops immediately on a refusal. The operator must not continue to later Tasks after an
 unexplained canary mismatch. Backends without a proven raw-byte CAS and backup capability are
 unsupported. Real repository corpus migration and legacy-route deletion remain behind the M3 gate.
+
+### Frozen replay and restart qualification
+
+The `kernel-replay*.corpus.json` files preserve exact source bytes, digests, reference commit,
+expected observations and a reproduction command. Tests replay these inputs without refreshing
+their expectations. The explicit capture scripts refuse to overwrite an existing corpus. A
+capture requires a committed reference whose relevant implementation paths match the source.
+Comparison reports both digests and the first divergent field, including event or receipt order.
+
+`node scripts/bench/qualify-kernel-replay.mjs <exact-commit>` prepares an isolated checkout through
+the existing exact-anchor clone helper. It removes the remote, uses the anchored workspace source,
+rejects source resolution outside that checkout, checks dependency identity before and after the
+run, and verifies that tracked files remain unchanged. Its JSON result identifies the commit,
+tree, driver, dependencies, corpus files and test report. Run it on the committed implementation;
+a successful test in a dirty development checkout is not this qualification evidence.
+
+Persistence replay covers direct, branch PR, context, release and batch model journeys through
+real local storage and an explicit cloud CAS fake. Interruption tests cover every atomic-write
+boundary in the journey, before write, after write and with unavailable readback. A new adapter
+instance must recover without applying a second mutation. Provider observations remain fakes;
+these tests do not constitute live publication, production self-hosting or release drills.
+
+A WorkItem claim cannot overlap a resource held by another claimed, executing, inspecting,
+validating, blocked or uncertain WorkItem in the same Task. Idle, rework-ready and terminal items
+do not retain the claim. The aggregate CAS serializes competing claims; a retry must observe the
+new revision and resource owner. Cross-Task scheduling still requires the supervisor's resource
+ownership boundary. This kernel check does not replace that boundary.
+
+The complete twelve-family corpus, comparison-only legacy/canonical read qualification, and
+exact-anchor report remain required M2 gates. M3 separately requires the production cutover,
+repository corpus migration, legacy deletion, full crash matrix, twenty self-hosted Tasks and
+three release drills. Do not infer those outcomes from the replay test count.
