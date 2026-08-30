@@ -10,6 +10,7 @@ import {
   recordedTaskImplementationCommitSha,
   resolveQualityReviewTargetSha,
 } from "./quality-review-target.js";
+import { baseSyncMergeReviewPaths } from "./quality-review-merge.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -706,6 +707,48 @@ describe("quality review target resolver", () => {
     await expect(
       resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef }),
     ).resolves.toBe(reviewedSha);
+  });
+
+  it("requires fresh review for an octopus base merge without creating Git objects", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202608300559-MERGE-OCTOPUS";
+    const initial = await commitPath(root, "src/start.ts", "export {};\n", "feat: initial");
+    const { stdout: branch } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: root,
+    });
+    const baseRef = branch.trim();
+    await execFileAsync("git", ["checkout", "-b", "task/octopus"], { cwd: root });
+    const reviewedSha = await commitPath(root, "src/task.ts", "export {};\n", "feat: task");
+    await execFileAsync("git", ["checkout", baseRef], { cwd: root });
+    await commitPath(root, "src/base.ts", "export {};\n", "feat: base");
+    await execFileAsync("git", ["checkout", "-b", "support/octopus", initial], { cwd: root });
+    await commitPath(root, "src/support.ts", "export {};\n", "feat: support");
+    await execFileAsync("git", ["checkout", "task/octopus"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", baseRef, "support/octopus", "-m", "merge: octopus"],
+      { cwd: root },
+    );
+    const { stdout: head } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const before = await execFileAsync("git", ["count-objects", "-v"], { cwd: root });
+    await expect(
+      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, baseRef }),
+    ).resolves.toBe(head.trim());
+    const after = await execFileAsync("git", ["count-objects", "-v"], { cwd: root });
+    expect(after.stdout).toBe(before.stdout);
+  });
+
+  it("does not infer clean synchronization from unavailable parent history", async () => {
+    const root = await mkGitRepoRoot();
+    const head = await commitPath(root, "src/start.ts", "export {};\n", "feat: initial");
+    await expect(
+      baseSyncMergeReviewPaths({
+        gitRoot: root,
+        merge: head,
+        taskParent: head,
+        baseParent: "0".repeat(40),
+      }),
+    ).resolves.toBeNull();
   });
 
   it("does not treat a non-base merge as a base-sync work unit", async () => {

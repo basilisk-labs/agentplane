@@ -29,10 +29,10 @@ Created: 2026-08-30T06:04:22.120Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/quality-review-merge.ts    |  59 +++++++++++
- .../commands/shared/quality-review-target.test.ts  | 117 +++++++++++++++++++++
- .../src/commands/shared/quality-review-target.ts   |  21 ++++
- 3 files changed, 197 insertions(+)
+ .../src/commands/shared/quality-review-merge.ts    |  59 ++++++++
+ .../commands/shared/quality-review-target.test.ts  | 160 +++++++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   |  21 +++
+ 3 files changed, 240 insertions(+)
 ```
 
 </details>
