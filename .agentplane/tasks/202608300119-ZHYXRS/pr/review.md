@@ -6,7 +6,7 @@ Created: 2026-08-30T01:23:12.595Z
 
 - Task: `202608300119-ZHYXRS`
 - Title: Preserve WorkItem results during plan reapproval and recover evidence-only implementation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608300119-ZHYXRS/preserve-workitem-results-during-plan-reapproval`
 - Canonical task record: `.agentplane/tasks/202608300119-ZHYXRS/README.md`
 
