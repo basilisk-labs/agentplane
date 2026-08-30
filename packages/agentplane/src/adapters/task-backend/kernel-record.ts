@@ -65,7 +65,7 @@ const mutationReceipt = z.strictObject({
   event_digests: z.array(digest),
   effect_ids: strings,
 });
-export const kernelAggregateSchema = z.strictObject({
+const kernelAggregateSchema = z.strictObject({
   schema_version: z.literal(1),
   id: z.string().min(1),
   revision,
@@ -149,7 +149,7 @@ const event = z.strictObject({
   command_digest: digest,
   payload_digest: digest,
 });
-export const kernelRecordSchema = z.strictObject({
+const kernelRecordSchema = z.strictObject({
   schema_version: z.literal(1),
   kind: z.literal("canonical_task"),
   repository_identity: digest,
@@ -158,7 +158,7 @@ export const kernelRecordSchema = z.strictObject({
   digest,
 });
 export type KernelRecord = z.infer<typeof kernelRecordSchema>;
-export const kernelArchiveSchema = z.strictObject({
+const kernelArchiveSchema = z.strictObject({
   schema_version: z.literal(1),
   kind: z.literal("archived_task"),
   task_id: z.string().min(1),

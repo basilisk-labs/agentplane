@@ -6,14 +6,14 @@ import { classifyMigrationSource, type MigrationSource } from "./kernel-migratio
 import { makeKernelRecord, TASK_KERNEL_EXTENSION, type KernelArchive } from "./kernel-record.js";
 import { projectKernelTask } from "./kernel-projector.js";
 
-export const KERNEL_MIGRATION_VERSION = "clean-task-core-v1";
+const KERNEL_MIGRATION_VERSION = "clean-task-core-v1";
 export const KERNEL_MIGRATION_EXTENSION = "task_kernel_migration";
 const digest = z
   .string()
   .regex(/^sha256:[a-f0-9]{64}$/u)
   .transform((value) => value as taskKernel.Sha256Digest);
 const revision = z.number().int().nonnegative();
-export const kernelMigrationReceiptSchema = z.strictObject({
+const kernelMigrationReceiptSchema = z.strictObject({
   schema_version: z.literal(1),
   migration_version: z.literal(KERNEL_MIGRATION_VERSION),
   task_id: z.string().min(1),
@@ -34,7 +34,7 @@ export const kernelMigrationReceiptSchema = z.strictObject({
   }),
   digest,
 });
-export type KernelMigrationReceipt = z.infer<typeof kernelMigrationReceiptSchema>;
+type KernelMigrationReceipt = z.infer<typeof kernelMigrationReceiptSchema>;
 export const kernelMigrationProofSchema = z.strictObject({
   receipt: kernelMigrationReceiptSchema,
   output_bytes_digest: digest,

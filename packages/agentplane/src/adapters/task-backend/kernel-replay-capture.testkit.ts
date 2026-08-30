@@ -129,12 +129,12 @@ export async function replayKernelPersistenceFixture(fixture: KernelPersistenceF
   return compareReplayObservations(fixture.identity, fixture.expected, actual.expected);
 }
 
-export type FrozenObservationFixture = {
+type FrozenObservationFixture = {
   identity: ReplayIdentity;
   source_bytes: string;
   expected: unknown;
 };
-export type KernelQualificationCorpus = {
+type KernelQualificationCorpus = {
   schema_version: 1;
   source_anchor: string;
   fixtures: KernelPersistenceFixture[];

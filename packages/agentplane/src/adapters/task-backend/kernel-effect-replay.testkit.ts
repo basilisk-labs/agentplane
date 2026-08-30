@@ -15,7 +15,7 @@ import {
   type ReplayBackendKind,
 } from "./kernel-replay-storage.testkit.js";
 
-export const effectReplayScenarios = [
+const effectReplayScenarios = [
   "not-issued",
   "applied",
   "not-applied",
