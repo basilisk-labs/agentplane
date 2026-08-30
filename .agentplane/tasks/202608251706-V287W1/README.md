@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 42
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -36,18 +36,18 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T08:28:55.539Z"
+  updated_at: "2026-08-30T08:36:18.504Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
   evaluated_sha: "26b69b0fece6e4d9a8dfd013d6cafefadd4acf61"
   blueprint_digest: "1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981"
   evidence_refs:
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/664fd24ccab5f37a056a6f4a99cf91bd9c3965a1b79376b5a382ee6c8c7ef90c.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-083531347-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-083531347-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/a97c0bc6c09677173c191f887123546cf6b6600e571ddfcc30a92f48c4791120.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-083531347-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-083531347-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-083531347-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608251706-V287W1/README.md"
     - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch"
     - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/748cd92033b5ef7ccd952b387c265796da22207b471f228e089eb4a916d80ca5.json"
@@ -4993,6 +4993,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): All dirty files are intended Task-owned review artifacts. The operator recovery command evaluator apply validated the frozen 08:26:09 work order and recorded PASS for exact implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. Preserve the README quality-review update and generated quality evidence. No implementation, policy, verification input or provider state was changed. AgentPlane owns recording these artifacts and continuing through fresh pre-merge closure and hosted qualification."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Preserve all intended Task-owned quality artifacts and the README review update. The 08:31:41 work order is historical retired input. The independent operator-prepared 08:35:31 work order and its evaluator apply PASS are current evidence for exact semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. All nine hashes were verified; implementation, checks and verification bytes are unchanged. No source, policy or provider mutation occurred. AgentPlane should record these artifacts and recompute the normal closeout route."
 events:
   -
     type: "status"
@@ -5112,8 +5115,13 @@ events:
     at: "2026-08-30T08:31:26.308Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): All dirty files are intended Task-owned review artifacts. The operator recovery command evaluator apply validated the frozen 08:26:09 work order and recorded PASS for exact implementation 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. Preserve the README quality-review update and generated quality evidence. No implementation, policy, verification input or provider state was changed. AgentPlane owns recording these artifacts and continuing through fresh pre-merge closure and hosted qualification."
+  -
+    type: "comment"
+    at: "2026-08-30T08:37:14.337Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Preserve all intended Task-owned quality artifacts and the README review update. The 08:31:41 work order is historical retired input. The independent operator-prepared 08:35:31 work order and its evaluator apply PASS are current evidence for exact semantic merge 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61. All nine hashes were verified; implementation, checks and verification bytes are unchanged. No source, policy or provider mutation occurred. AgentPlane should record these artifacts and recompute the normal closeout route."
 doc_version: 3
-doc_updated_at: "2026-08-30T08:31:26.366Z"
+doc_updated_at: "2026-08-30T08:37:14.397Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the observed defect where verification reports `bun: command not found` even though Bun is installed and available on the host. Confirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths instead of assuming it is Supervisor-only. Establish one centralized executable resolver and normalized local runtime environment shared by default across those paths, without user-specific absolute paths and without per-agent PATH configuration by default. Explicit runtime profiles and task or execution overrides must take precedence over normalized defaults. Preserve inherited host PATH entries while resolving supported standard runtime locations deterministically. Distinguish executable-resolution or environment failure from implementation or test failure; if that typed classification requires a separate architectural change beyond this resolver, create a follow-up Task rather than widening this Task. Regression acceptance must exercise the production execution path with a deliberately reduced parent PATH, prove Bun resolution from a supported standard location, and prove fail-closed behavior with an explicit infrastructure-classified result when Bun is genuinely absent."
 sections:
