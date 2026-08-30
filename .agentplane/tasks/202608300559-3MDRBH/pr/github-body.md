@@ -22,7 +22,7 @@ Fix the reproduced review-target defect that skips every base-sync merge when an
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T06:04:22.120Z
+- Updated: 2026-08-30T06:43:40.429Z
 - Branch: task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

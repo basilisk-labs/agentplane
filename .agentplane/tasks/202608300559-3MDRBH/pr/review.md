@@ -6,7 +6,7 @@ Created: 2026-08-30T06:04:22.120Z
 
 - Task: `202608300559-3MDRBH`
 - Title: Preserve semantic conflict resolutions in evaluator target selection
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua`
 - Canonical task record: `.agentplane/tasks/202608300559-3MDRBH/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-30T06:04:22.120Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T06:04:22.120Z
+- Updated: 2026-08-30T06:43:40.429Z
 - Branch: task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
