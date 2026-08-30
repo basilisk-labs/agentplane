@@ -1,10 +1,10 @@
 ---
 id: "202608292032-1K47B8"
 title: "Implement the isolated canonical Task kernel"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 52
 origin:
   system: "manual"
 depends_on:
@@ -20,9 +20,9 @@ verify:
   - "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-30T00:17:59.885Z"
+  updated_at: "2026-08-30T00:34:43.780Z"
   updated_by: "USER"
-  note: "Explicit standing user approval in this conversation covers this unchanged plan and its technical scope reconciliation."
+  note: "Standing user approval covers the unchanged M1 qualification scope and its required documentation effect."
 verification:
   state: "pending"
   updated_at: null
@@ -90,7 +90,8 @@ execution_contract:
       - "packages/core/src/tasks/task-centric"
       - "packages/core/src/tasks/task-kernel"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "repository_effect:documentation"
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -100,6 +101,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
       - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md"
       - "packages/core/src/tasks/task-kernel/index.ts"
       - "packages/core/src/tasks/task-kernel/invariants.test.ts"
       - "packages/core/src/tasks/task-kernel/invariants.ts"
@@ -109,6 +111,7 @@ execution_contract:
       - "packages/core/src/tasks/task-kernel/model.ts"
     external_effects: []
     repository_effects:
+      - "documentation"
       - "repository_write"
       - "source_code"
       - "tests"
@@ -175,6 +178,7 @@ execution_contract:
           - "packages/core/src/tasks/task-kernel"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:public_api"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
@@ -190,7 +194,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ab952cdd9ef2a2be15e062daa5ecf6926993569b864ee20fe8ca56ecba9583ef"
+      digest: "sha256:d5d47b13b9835f22b47bfdd0f000d66cf194d46d48247883f5949d876ce19689"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/pr-meta"
         - "central_component:packages/core/src/tasks/index.ts"
@@ -199,6 +203,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
         - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md"
         - "central_path:packages/core/src/tasks/task-kernel/index.ts"
         - "central_path:packages/core/src/tasks/task-kernel/invariants.test.ts"
         - "central_path:packages/core/src/tasks/task-kernel/invariants.ts"
@@ -222,6 +227,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
           - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md"
           - "packages/core/src/tasks/task-kernel/index.ts"
           - "packages/core/src/tasks/task-kernel/invariants.test.ts"
           - "packages/core/src/tasks/task-kernel/invariants.ts"
@@ -231,6 +237,7 @@ execution_contract:
           - "packages/core/src/tasks/task-kernel/model.ts"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -245,6 +252,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "task_outcome"
@@ -261,12 +269,15 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:public_api"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a93e60a494d0c241ef6f56d46c87016d2d199b57"
+  message: "🚧 1K47B8 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -307,6 +318,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e381232abf9f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a93e60a494d0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved M1 qualification receipt requires the documentation repository effect that is absent from the task execution contract. Recommended action: Apply the state-bound documentation effect extension, then resume the qualification WorkItem. Requested scope: roots=unchanged; repository effects=documentation; request digest=sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3. Agentplane receipt: external-agent-blocker/tr_233e8b9d1a63dbd74f0064ef65bef111/sha256:1e7af0d9fe2828dbd6084632b1ff868d9898cf61330b1fe2ba247347a727e853/sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3."
 events:
   -
     type: "status"
@@ -449,8 +466,23 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T00:33:57.435Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a93e60a494d0. CLI accepted one state-bound external-agent semantic result."
+    commit: "a93e60a494d0c241ef6f56d46c87016d2d199b57"
+  -
+    type: "status"
+    at: "2026-08-30T00:35:20.414Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved M1 qualification receipt requires the documentation repository effect that is absent from the task execution contract. Recommended action: Apply the state-bound documentation effect extension, then resume the qualification WorkItem. Requested scope: roots=unchanged; repository effects=documentation; request digest=sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3. Agentplane receipt: external-agent-blocker/tr_233e8b9d1a63dbd74f0064ef65bef111/sha256:1e7af0d9fe2828dbd6084632b1ff868d9898cf61330b1fe2ba247347a727e853/sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3."
 doc_version: 3
-doc_updated_at: "2026-08-30T00:30:08.171Z"
+doc_updated_at: "2026-08-30T00:35:20.414Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
 sections:
@@ -1156,35 +1188,31 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:d2dbeffb7a18a2aa14d9095ec35f3fa073d62f607cb5ca32fdc0f809ae5952ac"
-    digest: "sha256:a5ef163444e5cc41f0187a11857495ff5120f997b172957bea1cbd94446e6d3b"
-    grant_id: "445a8d0c-9b4e-487d-bb50-d49d203deeaf"
-    issued_at: "2026-08-30T00:17:59.885Z"
+    completion_contract_digest: "sha256:6aa8d5650f6f74e7a3fef6ce4da5cecc664b9091f566013419b5a54d5295e1b1"
+    digest: "sha256:8aaa1954316d9accee7d2e9323d413125bf5a12ed2fafaf6a4cf8c6b3c66d219"
+    grant_id: "01673c15-4658-43fb-8ac0-13b194d713c7"
+    issued_at: "2026-08-30T00:34:43.780Z"
     kind: "agentplane.execution_grant"
     plan_digest: "sha256:87855c31accc765b71614fbb29ee30d3e090d41e335dbe7e919e54079669bda1"
-    plan_revision: 38
+    plan_revision: 49
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:1616ddcb213db7f09d7baf7bb8228589ff7160c875bcf927122c2747903a3935"
     status: "active"
     task_id: "202608292032-1K47B8"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-30T00:18:45.444Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:d078d688007a185b74edb86275e6f4c91926dd9d87ff0e0d732830fb24a615d7"
+    blocker_state_fingerprint: "sha256:1e7af0d9fe2828dbd6084632b1ff868d9898cf61330b1fe2ba247347a727e853"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Reconcile the execution contract with the approved isolate-supervisor-verification-environment WorkItem. Preserve all existing scope, acceptance criteria, and completed kernel work."
+      rationale: "Allow the Markdown qualification receipt already required by requalify-isolated-kernel without adding paths, external effects, or acceptance criteria."
       repository_effects:
-        - "source_code"
-        - "tests"
+        - "documentation"
       schema_version: 1
-      scope_roots:
-        - "packages/agentplane/src/commands/shared/pr-meta"
-    request_digest: "sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4"
+      scope_roots: []
+    request_digest: "sha256:7d6d7739c8bba23592fe51af54467ae72f9d3f22df9e82b317307c6c74296ba3"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_c5b78b2440fe67fe629876f5992151c2"
+    status: "pending"
+    transition_id: "tr_233e8b9d1a63dbd74f0064ef65bef111"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -2452,49 +2480,19 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608292032-1K47B8"
-    revision: 46
+    revision: 47
     schema_version: 1
-    updated_at: "2026-08-30T00:30:13.123Z"
+    updated_at: "2026-08-30T00:34:43.780Z"
     work_items:
       isolate-supervisor-verification-environment:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "isolate-supervisor-verification-environment"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:365a2021000f0f6b8ae62ec39f0434ba77b70553fa1f449bf4db091098458218"
-            id: "verification-child-environment-isolation"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 3
-              task_id: "202608292032-1K47B8"
-              work_item_id: "isolate-supervisor-verification-environment"
-            provenance:
-              - "sha256:d0274fa0a48e1958a8a1063291d0e0f25e1b160464ec08f934f4188a34ad0cb7"
-              - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d80773b04ec97a5d307d9bd2afb2e99967c277798b9efadfbe9f8c2d845642c4"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json"
-              check_id: "check-verification-env"
-              command_identity: "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-              detail: "Observed by bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts."
-              exit_code: 0
-              observed_at: "2026-08-30T00:30:13.111Z"
-              repository_snapshot_digest: "sha256:d80773b04ec97a5d307d9bd2afb2e99967c277798b9efadfbe9f8c2d845642c4"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
       requalify-isolated-kernel:
         attempt: 0
         claim_id: null
@@ -2675,7 +2673,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "e381232abf9f5dd613ec048c592a0b4e9ccecdb2"
+    hash: "a93e60a494d0c241ef6f56d46c87016d2d199b57"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
