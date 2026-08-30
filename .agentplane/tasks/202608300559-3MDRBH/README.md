@@ -2,10 +2,10 @@
 id: "202608300559-3MDRBH"
 title: "Preserve semantic conflict resolutions in evaluator target selection"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,9 @@ quality_review:
     - "All nine frozen evidence hashes match, including the exact implementation diff and passing verification record."
     - "Residual risk: Same-file nonconflicting merges intentionally require fresh review. Hosted checks, review-thread resolution and merge remain separate gates."
 token_usage:
-  agent_runs: 4
+  agent_runs: 6
   input_tokens: null
-  journal_digest: "sha256:7ce4cdf8158320240c6b2f00428946b98fce244021c56962f1f2f7e7b27ad472"
+  journal_digest: "sha256:fdd4c5704ed3c2d591155fdb0f4c65e58c1b3ac7bdaa8dc204739d80a267fa59"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +70,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-30T06:50:32.063Z"
+  updated_at: "2026-08-30T07:43:53.401Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -262,8 +262,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "4965f5946821add1c769ac4ec22d3067dc58965b"
-  message: "🚧 3MDRBH task: apply external agent result"
+  hash: "7225102b0880bd2c6a387cc4d7d4c4c59c9cc02c"
+  message: "🚧 3MDRBH task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -280,6 +280,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4965f5946821. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -338,9 +341,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T07:43:53.401Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "7225102b0880bd2c6a387cc4d7d4c4c59c9cc02c"
 doc_version: 3
-doc_updated_at: "2026-08-30T07:43:07.560Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T07:43:53.448Z"
+doc_updated_by: "CODER"
 description: "Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks."
 sections:
   Summary: |-
@@ -943,6 +954,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "4965f5946821add1c769ac4ec22d3067dc58965b"
+    message: "🚧 3MDRBH task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "cbc5d79d1510293de3b4c30b61679cdef85d0fdb"
@@ -1202,12 +1214,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/4` agent runs
+- Completeness: `0/6` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:7ce4cdf8158320240c6b2f00428946b98fce244021c56962f1f2f7e7b27ad472`
+- Journal digest: `sha256:fdd4c5704ed3c2d591155fdb0f4c65e58c1b3ac7bdaa8dc204739d80a267fa59`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-30T06:50:32.063Z`
+- Updated at: `2026-08-30T07:43:53.401Z`
