@@ -117,3 +117,31 @@ describe("deterministic local runtime resolution", () => {
       expect(resolveLocalExecutable(file, { PATH: home })).toBeNull();
   });
 });
+
+it("honors normalized profile PATH before inherited Node manager locations", async () => {
+  const root = await fixture("agentplane-runtime-node-priority-");
+  const explicit = path.join(root, "profile");
+  const manager = path.join(root, "manager");
+  for (const dir of [explicit, manager]) {
+    await mkdir(dir);
+    await writeFile(path.join(dir, "node"), "#!/bin/sh\nexit 0\n");
+    await chmod(path.join(dir, "node"), 0o755);
+  }
+  const env = withPreferredRuntimePath(
+    { HOME: root, NVM_BIN: manager, PATH: manager },
+    { PATH: explicit },
+  );
+  expect(resolvePreferredNodeExecutable(env)).toBe(path.join(explicit, "node"));
+});
+
+it.each(["node", "bun"])("binds %s toolchain bytes behind an unchanged runner", async (tool) => {
+  const root = await fixture("agentplane-runtime-toolchain-");
+  for (const name of ["runner", tool]) {
+    await writeFile(path.join(root, name), "#!/bin/sh\nexit 0\n");
+    await chmod(path.join(root, name), 0o755);
+  }
+  const env = { HOME: root, PATH: root };
+  const before = localRuntimeEvidence("runner", env);
+  await writeFile(path.join(root, tool), "#!/bin/sh\nexit 1\n");
+  expect(localRuntimeEvidence("runner", env)).not.toEqual(before);
+});

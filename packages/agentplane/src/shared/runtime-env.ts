@@ -78,9 +78,10 @@ function readLatestNvmNodeBin(homeDir: string): string | null {
 export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = process.env): string {
   const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
   const candidates = [
+    // Callers pass the shared normalized PATH, including explicit profile precedence.
+    resolveLocalExecutable("node", baseEnv),
     baseEnv.NVM_BIN ? path.join(baseEnv.NVM_BIN, "node") : null,
     baseEnv.VOLTA_HOME ? path.join(baseEnv.VOLTA_HOME, "bin", "node") : null,
-    resolveLocalExecutable("node", baseEnv),
     homeDir ? readLatestNvmNodeBin(homeDir) : null,
     typeof process.versions.bun === "string" ? null : process.execPath,
   ];
@@ -117,6 +118,7 @@ export type LocalRuntimeEvidence = {
   status: "resolved" | "unavailable";
   executable_digest: string | null;
   environment_digest: string;
+  toolchain_digest: string;
 };
 
 function digest(value: string | Buffer): string {
@@ -131,18 +133,30 @@ export function localRuntimeEvidence(
   const candidate =
     cwd && (command.includes("/") || command.includes("\\")) ? path.resolve(cwd, command) : command;
   const executable = resolveLocalExecutable(candidate, env);
-  let executableDigest: string | null = null;
-  if (executable) {
+  const observed = new Map<string, string | null>();
+  const executableDigestFor = (file: string | null): string | null => {
+    if (!file) return null;
+    if (observed.has(file)) return observed.get(file) ?? null;
+    let value: string | null = null;
     try {
-      executableDigest = digest(fs.readFileSync(executable));
+      value = digest(fs.readFileSync(file));
     } catch {
       /* Unreadable identity remains unqualified. */
     }
-  }
+    observed.set(file, value);
+    return value;
+  };
+  const executableDigest = executableDigestFor(executable);
+  // A shell or script digest alone does not identify its supported Node/Bun toolchain.
+  const toolchain = ["node", "bun"].map((name) => ({
+    name,
+    executable_digest: executableDigestFor(resolveLocalExecutable(name, env)),
+  }));
   return {
     kind: "local_runtime_resolution",
     status: executableDigest ? "resolved" : "unavailable",
     executable_digest: executableDigest,
+    toolchain_digest: digest(JSON.stringify(toolchain)),
     // Only runtime-selection inputs are bound. Secret environment values are never retained.
     environment_digest: digest(
       JSON.stringify([

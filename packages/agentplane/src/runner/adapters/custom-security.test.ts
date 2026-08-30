@@ -300,6 +300,8 @@ describe("CustomRunnerAdapter security boundaries", () => {
     "profile_path",
     "inherited_path",
     "binary_changed",
+    "toolchain_node_changed",
+    "toolchain_bun_changed",
   ] as const)(
     "refuses stale prepared input %s before spawning the custom runner",
     async (failure) => {
@@ -323,6 +325,12 @@ describe("CustomRunnerAdapter security boundaries", () => {
         "exit 0",
       ]);
 
+      if (failure === "toolchain_node_changed" || failure === "toolchain_bun_changed") {
+        await writeRunnerExecutable(root, failure === "toolchain_node_changed" ? "node" : "bun", [
+          "#!/bin/sh",
+          "exit 0",
+        ]);
+      }
       const invocation = await adapter.prepare(bundle);
       invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
       invocation.env.TEST_SPAWN_MARKER = markerPath;
@@ -350,6 +358,14 @@ describe("CustomRunnerAdapter security boundaries", () => {
         case "inherited_path": {
           vi.stubEnv("PATH", `${path.join(root, "inherited-bin")}:${process.env.PATH ?? ""}`);
 
+          break;
+        }
+        case "toolchain_node_changed":
+        case "toolchain_bun_changed": {
+          await writeRunnerExecutable(root, failure === "toolchain_node_changed" ? "node" : "bun", [
+            "#!/bin/sh",
+            "exit 1",
+          ]);
           break;
         }
         default: {

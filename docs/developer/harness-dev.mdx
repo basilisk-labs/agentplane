@@ -106,3 +106,9 @@ portable resolver and receipt tests remain enabled.
 
 Full local CI, evaluator acceptance, exact-head hosted checks and hosted closure remain required.
 This change does not install a runtime, change remote/container execution, or publish 0.7.8.
+
+Runtime evidence also fingerprints the selected Node and Bun executable contents behind shell or
+script launchers. Replacing either runtime under an unchanged PATH invalidates prepared input even
+when the outer runner script is unchanged. Runtime digests are computed from bytes for each
+observation; file metadata alone is not a freshness proof. The Node selector reads the normalized
+PATH first, so an explicit profile path wins over inherited manager locations.

@@ -32,11 +32,11 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  52 +++++++
+ docs/developer/harness-dev.mdx                     |  58 +++++++
  .../src/commands/shared/pr-meta/verify-log.ts      |  19 ++-
  .../commands/task/direct-task-verification.test.ts |  27 ++++
  .../src/commands/task/direct-task-verification.ts  |  26 +++-
- .../src/runner/adapters/custom-security.test.ts    |  42 +++++-
+ .../src/runner/adapters/custom-security.test.ts    |  58 ++++++-
  packages/agentplane/src/runner/artifacts.ts        |   8 +
  .../agentplane/src/runner/execution-receipt.ts     |  17 ++-
  .../src/runner/process-supervision/result.ts       |  42 ++++++
@@ -44,9 +44,9 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
  .../src/runner/process-supervision/state.ts        |   3 +
  .../src/runner/runtime-env.integration.test.ts     | 166 +++++++++++++++++++++
  packages/agentplane/src/runner/types/state.ts      |   2 +
- packages/agentplane/src/shared/runtime-env.test.ts |  76 +++++++++-
- packages/agentplane/src/shared/runtime-env.ts      | 151 ++++++++++++++-----
- 14 files changed, 582 insertions(+), 94 deletions(-)
+ packages/agentplane/src/shared/runtime-env.test.ts | 104 ++++++++++++-
+ packages/agentplane/src/shared/runtime-env.ts      | 165 +++++++++++++++-----
+ 14 files changed, 646 insertions(+), 94 deletions(-)
 ```
 
 </details>
