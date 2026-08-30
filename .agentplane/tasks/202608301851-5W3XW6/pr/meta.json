@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608301851-5W3XW6/recover-unstarted-task-worktrees-pinned-before-t",
   "created_at": "2026-08-30T18:53:26.210Z",
-  "diffstat_sha256": "sha256:0d465a6a8d4677332c4df8befb06e6a72f6d873d19cfe62993756807c0ab4338",
+  "diffstat_sha256": "sha256:23b722ff62edb2f6fbcd554ac6898fd6fbc26d6374cef0b7254194675c278262",
   "last_verified_at": "2026-08-30T19:17:15.634Z",
   "last_verified_diffstat_sha256": "sha256:0d465a6a8d4677332c4df8befb06e6a72f6d873d19cfe62993756807c0ab4338",
   "provider": {

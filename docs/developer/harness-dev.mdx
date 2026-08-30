@@ -218,7 +218,11 @@ transported Task README cannot collide with a tracked path in the target snapsho
 AgentPlane holds the native Task revision lock, fast-forwards Git, confirms the new HEAD, and records
 the recovered execution base. It preserves the plan, dependency list and WorkItems. If interrupted
 after Git advancement but before Task publication, inspect again and apply the fresh token to
-reconcile the recorded base without repeating the Git effect. Explicit base pins, divergent history,
+reconcile the recorded base without repeating the Git effect. After a process crash, recovery validates
+any orphaned native publication candidate against the same Task revision, plan, repository and Git
+identities. It archives the exact bytes under the common Git directory at
+`agentplane/planning-base-recovery/<task-id>/` before removing that candidate from the worktree.
+Unknown or changed candidates remain untouched and block recovery. Explicit base pins, divergent history,
 started work and unknown artifacts fail closed. The command does not fetch, publish, weaken checks,
 or start a runner. After recovery, bootstrap the framework runtime if its source changed, then request
 a fresh `task advance --agent-json` packet.
