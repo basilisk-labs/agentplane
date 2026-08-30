@@ -227,7 +227,7 @@ function workspacePackageRoots(checkoutRoot) {
     .map((packageRoot) => path.resolve(realpathSync(packageRoot)));
 }
 
-function resolveExistingSeedRealPath(seed) {
+export function resolveExistingSeedRealPath(seed) {
   const stats = lstatSync(seed.path, { throwIfNoEntry: false });
   if (!stats) return null;
   try {
@@ -370,10 +370,10 @@ function resolvePackageDependency(packageRoot, dependencyName, modulesRoot) {
   return null;
 }
 
-export function createReplayDependencyManifest(repoRoot) {
+export function createReplayDependencyManifest(repoRoot, additionalSeeds = []) {
   const entries = [];
   const totals = { bytes: 0, files: 0 };
-  const seeds = replayDependencySeeds(repoRoot);
+  const seeds = [...replayDependencySeeds(repoRoot), ...additionalSeeds];
   const modulesRoot = path.resolve(realpathSync(path.join(repoRoot, "node_modules")));
   const seedMappings = seeds.map((seed) => {
     const actualPath = path.resolve(realpathSync(seed.path));

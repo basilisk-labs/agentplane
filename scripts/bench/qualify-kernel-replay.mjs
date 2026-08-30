@@ -1,24 +1,21 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import {
-  mkdtempSync,
-  mkdirSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { collectReplayHarnessFiles } from "../lib/agent-efficiency-replay-harness.mjs";
 import { initializeAnchorCheckout } from "./internal/agent-efficiency-capture-runtime.mjs";
+import {
+  linkReplayDependencies,
+  summarizeReplayReport,
+} from "./internal/kernel-replay-isolation.mjs";
 import {
   createReplayDependencyManifest,
   assertReplayDependencyManifestUnchanged,
 } from "./internal/agent-efficiency-dependency-manifest.mjs";
 
-const sourceRoot = process.cwd();
+const sourceRoot = realpathSync(process.cwd());
 const anchor = process.argv[2];
 if (!anchor || !/^[a-f0-9]{40}$/u.test(anchor))
   throw new Error("Pass an exact committed replay anchor.");
@@ -29,16 +26,28 @@ const anchoredDriver = execFileSync("git", ["show", `${anchor}:${relativeDriver}
 });
 if (!driver.equals(anchoredDriver))
   throw new Error("Replay driver does not match the requested anchor.");
-const dependencies = createReplayDependencyManifest(sourceRoot);
-const temporary = mkdtempSync(path.join(os.tmpdir(), "qualified-kernel-replay-"));
-const checkout = path.join(temporary, "checkout");
+const harnessFiles = collectReplayHarnessFiles(sourceRoot, relativeDriver);
 const sha256 = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+function captureHarness() {
+  return harnessFiles.map((file) => {
+    const bytes = readFileSync(path.join(sourceRoot, file));
+    const anchored = execFileSync("git", ["show", `${anchor}:${file}`], { cwd: sourceRoot });
+    if (!bytes.equals(anchored)) throw new Error(`Replay helper differs from anchor: ${file}`);
+    return { path: file, digest: sha256(bytes) };
+  });
+}
+const harness = captureHarness();
+const runnerSeeds = [
+  { label: "node_modules/vitest", path: path.join(sourceRoot, "node_modules/vitest") },
+];
+const dependencies = createReplayDependencyManifest(sourceRoot, runnerSeeds);
+const temporary = realpathSync(mkdtempSync(path.join(os.tmpdir(), "qualified-kernel-replay-")));
+const checkout = path.join(temporary, "checkout");
 try {
   // The existing exact-anchor helper removes the origin and checks the committed tree.
   mkdirSync(checkout);
   initializeAnchorCheckout(sourceRoot, checkout, anchor);
-  const modules = realpathSync(path.join(sourceRoot, "node_modules"));
-  symlinkSync(modules, path.join(checkout, "node_modules"), "dir");
+  const { modules, mappings } = linkReplayDependencies(sourceRoot, checkout);
   const config = path.join(checkout, ".kernel-replay.config.mjs");
   const reportFile = path.join(temporary, "report.json");
   // The anchored config resolves workspace packages from this checkout. Reject a source leak.
@@ -47,6 +56,10 @@ try {
     `import original from ${JSON.stringify(path.join(checkout, "vitest.config.ts"))};
 export default {
   ...original,
+  resolve: { ...original.resolve, alias: [
+    { find: /^@agentplaneorg\\/recipes$/, replacement: ${JSON.stringify(path.join(checkout, "packages/recipes/src/index.ts"))} },
+    ...(original.resolve?.alias ?? []),
+  ] },
   plugins: [...(original.plugins ?? []), {
     name: 'kernel-replay-source-containment', enforce: 'pre',
     transform(_code, id) {
@@ -86,17 +99,30 @@ export default {
   } catch (error) {
     failure = error;
   }
-  const reportBytes = readFileSync(reportFile);
-  const report = JSON.parse(reportBytes.toString("utf8"));
-  assertReplayDependencyManifestUnchanged(dependencies, createReplayDependencyManifest(sourceRoot));
+  let reportBytes = null;
+  let report = null;
+  let reportFailure = null;
+  try {
+    reportBytes = readFileSync(reportFile);
+    report = JSON.parse(reportBytes.toString("utf8"));
+  } catch (error) {
+    reportFailure = `Unable to read the test report: ${error.message}`;
+  }
+  const runnerFailure = failure
+    ? [failure.message, failure.stderr?.toString()].filter(Boolean).join("\n").slice(-16_000)
+    : reportFailure;
+  const outcome = summarizeReplayReport(report, runnerFailure);
+  assertReplayDependencyManifestUnchanged(
+    dependencies,
+    createReplayDependencyManifest(sourceRoot, runnerSeeds),
+  );
+  if (JSON.stringify(harness) !== JSON.stringify(captureHarness()))
+    throw new Error("Replay harness changed during qualification.");
   const dirty = execFileSync("git", ["status", "--porcelain", "--untracked-files=no"], {
     cwd: checkout,
     encoding: "utf8",
   });
   if (dirty !== "") throw new Error("Replay changed exact-anchor tracked files.");
-  const firstFailure = report.testResults
-    ?.flatMap((suite) => suite.assertionResults ?? [])
-    .find((result) => result.status === "failed");
   const corpusPaths = [
     "kernel-replay.corpus.json",
     "kernel-replay-migration.corpus.json",
@@ -113,6 +139,8 @@ export default {
           encoding: "utf8",
         }).trim(),
         driver_digest: sha256(driver),
+        harness,
+        dependency_mappings: mappings,
         dependency_manifest: dependencies,
         corpus: corpusPaths.map((name) => ({
           path: name,
@@ -122,14 +150,8 @@ export default {
             ),
           ),
         })),
-        report_digest: sha256(reportBytes),
-        success: !failure && report.success === true,
-        tests: {
-          passed: report.numPassedTests,
-          failed: report.numFailedTests,
-          total: report.numTotalTests,
-        },
-        first_failure: firstFailure?.fullName ?? null,
+        report_digest: reportBytes ? sha256(reportBytes) : null,
+        ...outcome,
         reproduction_command: `node ${relativeDriver} ${anchor}`,
         limitations: [
           "Provider effects use explicit fakes.",
@@ -140,7 +162,7 @@ export default {
       2,
     ) + "\n",
   );
-  if (failure || report.success !== true) process.exitCode = 1;
+  if (!outcome.success) process.exitCode = 1;
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }

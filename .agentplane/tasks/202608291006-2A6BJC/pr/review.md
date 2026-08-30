@@ -12,8 +12,8 @@ Created: 2026-08-30T04:09:19.506Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -45,7 +45,7 @@ Created: 2026-08-30T04:09:19.506Z
  .../task-backend/kernel-replay-migration.test.ts   |  115 +
  .../task-backend/kernel-replay-persistence.test.ts |  241 +
  .../task-backend/kernel-replay.corpus.json         | 8712 ++++++++++++++++++++
- .../adapters/task-backend/kernel-replay.test.ts    |  103 +
+ .../adapters/task-backend/kernel-replay.test.ts    |  282 +
  .../src/adapters/task-backend/kernel-replay.ts     |  128 +
  .../task-backend/task-centric-backend-runtime.ts   |   13 +-
  .../src/backends/task-backend/local-backend.ts     |    1 +
@@ -65,9 +65,11 @@ Created: 2026-08-30T04:09:19.506Z
  scripts/bench/capture-kernel-evidence-replay.ts    |  213 +
  scripts/bench/capture-kernel-migration-replay.ts   |  191 +
  scripts/bench/capture-kernel-replay.ts             |  181 +
- scripts/bench/qualify-kernel-replay.mjs            |  146 +
+ .../agent-efficiency-dependency-manifest.mjs       |    6 +-
+ scripts/bench/internal/kernel-replay-isolation.mjs |  105 +
+ scripts/bench/qualify-kernel-replay.mjs            |  168 +
  .../check-compatibility-contract-baseline.mjs      |   91 +
- 38 files changed, 14032 insertions(+), 13 deletions(-)
+ 40 files changed, 14341 insertions(+), 16 deletions(-)
 ```
 
 </details>
