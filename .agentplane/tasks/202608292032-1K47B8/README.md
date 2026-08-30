@@ -1,10 +1,10 @@
 ---
 id: "202608292032-1K47B8"
 title: "Implement the isolated canonical Task kernel"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -20,9 +20,9 @@ verify:
   - "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-29T22:00:01.526Z"
-  updated_by: "HOST:codex:USER"
-  note: "host_user_decision=sha256:de1e4365a77311e0e93dcb8de235ef1a4e9b8d90a1c759e96c7657e362ca6356"
+  updated_at: "2026-08-30T00:17:59.885Z"
+  updated_by: "USER"
+  note: "Explicit standing user approval in this conversation covers this unchanged plan and its technical scope reconciliation."
 verification:
   state: "ok"
   updated_at: "2026-08-29T22:12:18.641Z"
@@ -299,7 +299,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "2f2884012e7ad5ebfe14a78f93747f9e29bb005f"
+  hash: "f17852a298075c10fcb0d3650d25ec5a456fa34e"
   message: "🚧 1K47B8 task: apply external agent result"
 comments:
   -
@@ -329,6 +329,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2f2884012e7a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f17852a29807. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The selected verification-environment WorkItem requires a repository scope root absent from the task execution contract. Recommended action: Apply a state-bound task scope extension for the already approved pr-meta WorkItem, then resume it with a fresh packet. Requested scope: roots=packages/agentplane/src/commands/shared/pr-meta; repository effects=source_code,tests; request digest=sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4. Agentplane receipt: external-agent-blocker/tr_c5b78b2440fe67fe629876f5992151c2/sha256:d078d688007a185b74edb86275e6f4c91926dd9d87ff0e0d732830fb24a615d7/sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4."
 events:
   -
     type: "status"
@@ -442,8 +448,23 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-08-29T23:58:38.009Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f17852a29807. CLI accepted one state-bound external-agent semantic result."
+    commit: "f17852a298075c10fcb0d3650d25ec5a456fa34e"
+  -
+    type: "status"
+    at: "2026-08-30T00:18:37.388Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The selected verification-environment WorkItem requires a repository scope root absent from the task execution contract. Recommended action: Apply a state-bound task scope extension for the already approved pr-meta WorkItem, then resume it with a fresh packet. Requested scope: roots=packages/agentplane/src/commands/shared/pr-meta; repository effects=source_code,tests; request digest=sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4. Agentplane receipt: external-agent-blocker/tr_c5b78b2440fe67fe629876f5992151c2/sha256:d078d688007a185b74edb86275e6f4c91926dd9d87ff0e0d732830fb24a615d7/sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4."
 doc_version: 3
-doc_updated_at: "2026-08-29T22:12:19.830Z"
+doc_updated_at: "2026-08-30T00:18:37.388Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
 sections:
@@ -1031,9 +1052,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:de1e4365a77311e0e93dcb8de235ef1a4e9b8d90a1c759e96c7657e362ca6356"
-    approval_kind: "host_user_decision"
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -1041,18 +1062,33 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:3f017782c7e828d1d0ec979b22f5fb301db214f01483d8987154deea287144a4"
-    digest: "sha256:8abb6e1fbcaa796518c52e8422133667b4fe451d95f2e4fd80e207e00f66a48b"
-    grant_id: "7a1166ae-ab51-47ec-bd18-7e5186cdf6b7"
-    issued_at: "2026-08-29T22:00:01.526Z"
+    completion_contract_digest: "sha256:d2dbeffb7a18a2aa14d9095ec35f3fa073d62f607cb5ca32fdc0f809ae5952ac"
+    digest: "sha256:a5ef163444e5cc41f0187a11857495ff5120f997b172957bea1cbd94446e6d3b"
+    grant_id: "445a8d0c-9b4e-487d-bb50-d49d203deeaf"
+    issued_at: "2026-08-30T00:17:59.885Z"
     kind: "agentplane.execution_grant"
     plan_digest: "sha256:87855c31accc765b71614fbb29ee30d3e090d41e335dbe7e919e54079669bda1"
-    plan_revision: 29
+    plan_revision: 38
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:1616ddcb213db7f09d7baf7bb8228589ff7160c875bcf927122c2747903a3935"
     status: "active"
     task_id: "202608292032-1K47B8"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:d078d688007a185b74edb86275e6f4c91926dd9d87ff0e0d732830fb24a615d7"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Reconcile the execution contract with the approved isolate-supervisor-verification-environment WorkItem. Preserve all existing scope, acceptance criteria, and completed kernel work."
+      repository_effects:
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/shared/pr-meta"
+    request_digest: "sha256:a65b86b31e953834d498124c2274baf775d6d4ce05199a9d9624d2deb5b8a7d4"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_c5b78b2440fe67fe629876f5992151c2"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -2015,9 +2051,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608292032-1K47B8"
-    revision: 29
+    revision: 30
     schema_version: 1
-    updated_at: "2026-08-29T22:00:01.526Z"
+    updated_at: "2026-08-30T00:17:59.885Z"
     work_items:
       isolate-supervisor-verification-environment:
         attempt: 0
@@ -2185,7 +2221,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "2f2884012e7ad5ebfe14a78f93747f9e29bb005f"
+    hash: "f17852a298075c10fcb0d3650d25ec5a456fa34e"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
