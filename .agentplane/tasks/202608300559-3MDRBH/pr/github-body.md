@@ -15,14 +15,8 @@ Fix the reproduced review-target defect that skips every base-sync merge when an
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Confirmed P1 review 3888685658: rename detection hides source endpoints in name-only diffs, so
-divergent renames resolved to a parent can reuse stale evaluation. Require both-endpoint proof or
-disable rename detection and add real Git regressions before fresh qualification.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
