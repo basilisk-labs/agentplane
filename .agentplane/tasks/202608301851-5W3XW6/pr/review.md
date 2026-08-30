@@ -12,8 +12,8 @@ Created: 2026-08-30T18:53:26.210Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

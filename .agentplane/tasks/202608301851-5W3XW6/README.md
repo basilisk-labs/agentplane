@@ -1,10 +1,10 @@
 ---
 id: "202608301851-5W3XW6"
 title: "Recover unstarted task worktrees pinned before the approved planning baseline"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "User authorized necessary bootstrap fixes and all in-scope plans for completion of the clean core refactor. This bounded recovery unblocks M3 without changing dependencies or bypassing gates."
 verification:
   state: "pending"
-  updated_at: "2026-08-30T19:09:00.939Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -95,12 +95,27 @@ execution_contract:
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/runtime/task-execution-context"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+    changed_paths:
+      - "docs/developer/harness-dev.mdx"
+      - "docs/user/cli-reference.generated.mdx"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+      - "packages/agentplane/src/commands/branch/work-resume.command.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -144,8 +159,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:52637c0891988239300cf060bb94c262b694b26a5ea6f4427cac5caac5fe4153"
+      digest: "sha256:76edd9c64bb16b5d2c69269cc337c812e905ce0299f7ebf08cd79b6cb0150d9c"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
         - "effect_public_api"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -155,10 +171,21 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+        changed_files:
+          - "docs/developer/harness-dev.mdx"
+          - "docs/user/cli-reference.generated.mdx"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+          - "packages/agentplane/src/commands/branch/work-resume.command.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -194,6 +221,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -205,6 +233,12 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: docs/user/cli-reference.generated.mdx; repository effects: documentation."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 01bb6b501547. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Full CI requires an exact additive compatibility candidate update for the three new work resume options. Recommended action: Extend the two exact paths, record the additive CLI options with Task provenance, and retain all existing compatibility guards. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json,scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=tests; request digest=sha256:19307380a094c86cc2e266383bcc28b0a97460389271f31631b63de319e6ab99. Agentplane receipt: external-agent-blocker/tr_ae976010dabc522e1afc92f4f365ab8a/sha256:0b4142ecab862e09e2eacf54caf2310339f5f2fb514c6819b513eac7561ec183/sha256:19307380a094c86cc2e266383bcc28b0a97460389271f31631b63de319e6ab99."
 events:
   -
     type: "status"
@@ -220,8 +254,29 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The native recovery needs its generated CLI reference in the writable scope. Source work is preserved outside the checkout in tool state; the emitted baseline is restored before requesting the extension. Recommended action: Extend scope to docs/user/cli-reference.generated.mdx, then restore the preserved candidate and regenerate documentation. Requested scope: roots=docs/user/cli-reference.generated.mdx; repository effects=documentation; request digest=sha256:a535e9018c1817707007f02cb7ec0edcb62bb11cbbf324bd535d216fb308f360. Agentplane receipt: external-agent-blocker/tr_359012ee79b8ac83b73d24a7f02d9132/sha256:8efcdc33bc75000d5291750a49bda8a7d3f596bdffb17e3116492c890657fcaa/sha256:a535e9018c1817707007f02cb7ec0edcb62bb11cbbf324bd535d216fb308f360."
+  -
+    type: "status"
+    at: "2026-08-30T19:15:26.128Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 01bb6b501547. CLI accepted one state-bound external-agent semantic result."
+    commit: "01bb6b501547edd924695f6d5a1379911466dbe8"
+  -
+    type: "verify"
+    at: "2026-08-30T19:17:15.634Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-30T19:19:36.266Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Full CI requires an exact additive compatibility candidate update for the three new work resume options. Recommended action: Extend the two exact paths, record the additive CLI options with Task provenance, and retain all existing compatibility guards. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json,scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=tests; request digest=sha256:19307380a094c86cc2e266383bcc28b0a97460389271f31631b63de319e6ab99. Agentplane receipt: external-agent-blocker/tr_ae976010dabc522e1afc92f4f365ab8a/sha256:0b4142ecab862e09e2eacf54caf2310339f5f2fb514c6819b513eac7561ec183/sha256:19307380a094c86cc2e266383bcc28b0a97460389271f31631b63de319e6ab99."
 doc_version: 3
-doc_updated_at: "2026-08-30T19:08:49.791Z"
+doc_updated_at: "2026-08-30T19:19:36.266Z"
 doc_updated_by: "SUPERVISOR"
 description: "M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor."
 sections:
@@ -241,6 +296,41 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-30T19:17:15.634Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d9a2b1806b690cbefd91d020ef39915ec1c9bdbe00cb131dc7a044c63418182f, input_digest=sha256:3e63b0e72fda4a091c203a19c5d38abff3856650fec3dd734951b2b33a786ebe
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608301851-5W3XW6 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608301851-5W3XW6-recover-unstarted-task-worktrees-pinned-before-t/.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json
+    - old_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+    - current_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608301851-5W3XW6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -271,21 +361,20 @@ extensions:
     status: "active"
     task_id: "202608301851-5W3XW6"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-30T19:09:00.939Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:8efcdc33bc75000d5291750a49bda8a7d3f596bdffb17e3116492c890657fcaa"
+    blocker_state_fingerprint: "sha256:0b4142ecab862e09e2eacf54caf2310339f5f2fb514c6819b513eac7561ec183"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Keep mandatory CLI reference freshness for the newly implemented work resume recovery options."
+      rationale: "The full CI failure requires registering three additive work resume options and their exact candidate digest. Do not modify the immutable baseline, remove existing expected options, or loosen guard comparisons."
       repository_effects:
-        - "documentation"
+        - "tests"
       schema_version: 1
       scope_roots:
-        - "docs/user/cli-reference.generated.mdx"
-    request_digest: "sha256:a535e9018c1817707007f02cb7ec0edcb62bb11cbbf324bd535d216fb308f360"
+        - "scripts/baselines/v0.7-compatibility-candidate.json"
+        - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    request_digest: "sha256:19307380a094c86cc2e266383bcc28b0a97460389271f31631b63de319e6ab99"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_359012ee79b8ac83b73d24a7f02d9132"
+    status: "pending"
+    transition_id: "tr_ae976010dabc522e1afc92f4f365ab8a"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -754,25 +843,111 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608301851-5W3XW6"
-    revision: 3
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-30T19:09:00.939Z"
+    updated_at: "2026-08-30T19:17:19.116Z"
     work_items:
       recover-planning-base:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-planning-base"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "bootstrap-recovery"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Implemented an explicit native work resume planning-base recovery with digest-bound inspection, guarded fast-forward and native revision-locked Task publication."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:0351e82515a81e5b8d64db78912aa67c76ee8c8babd8997cb0fbac7581bddb4a"
+            id: "planning-base-recovery-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202608301851-5W3XW6"
+              work_item_id: "recover-planning-base"
+            provenance:
+              - "sha256:5bf5f9442103590ffabb0f70b00e328072d14b0f2d9ff84de68539b67916fba5"
+              - ".agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:87d35e4575fa46aa2490d0dbe2db40e48a8f26d4cf03236506fbc6b3ec0d6c06"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+              check_id: "bootstrap-tests"
+              command_identity: "bun run test:fast"
+              detail: "Declared validation command bun run test:fast was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-30T19:17:19.112Z"
+              repository_snapshot_digest: "sha256:87d35e4575fa46aa2490d0dbe2db40e48a8f26d4cf03236506fbc6b3ec0d6c06"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+              check_id: "bootstrap-types"
+              command_identity: "bun run typecheck"
+              detail: "Declared validation command bun run typecheck was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-30T19:17:19.112Z"
+              repository_snapshot_digest: "sha256:87d35e4575fa46aa2490d0dbe2db40e48a8f26d4cf03236506fbc6b3ec0d6c06"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+              check_id: "bootstrap-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-08-30T19:17:19.112Z"
+              repository_snapshot_digest: "sha256:87d35e4575fa46aa2490d0dbe2db40e48a8f26d4cf03236506fbc6b3ec0d6c06"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "bootstrap-recovery"
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608301851-5W3XW6-executor-6b6609fbe405fbedbcf84955:
+        aggregate_digest: "sha256:2fed1ce220a5ce5174e446dccf204d62bd92c3fc563ca8e45e9c77142596f7eb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T19:17:19.116Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_9f377eecbddd94d1879a1e55"
+          mutation_id: "external-result:work-order-202608301851-5W3XW6-executor-6b6609fbe405fbedbcf84955"
+          plan_digest: "sha256:d663e6bac12833b8d35484614ee257149909e035d31d4292546978ee52b1f860"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608301851-5W3XW6"
+          task_revision: 10
+          to: "REWORK_READY"
+          work_item_id: "recover-planning-base"
+        mutation_id: "external-result:work-order-202608301851-5W3XW6-executor-6b6609fbe405fbedbcf84955"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608301851-5W3XW6"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
     version: 1
@@ -804,6 +979,41 @@ PLANNER fallback scaffold for "Recover unstarted task worktrees pinned before th
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-30T19:17:15.634Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d9a2b1806b690cbefd91d020ef39915ec1c9bdbe00cb131dc7a044c63418182f, input_digest=sha256:3e63b0e72fda4a091c203a19c5d38abff3856650fec3dd734951b2b33a786ebe
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608301851-5W3XW6 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608301851-5W3XW6-recover-unstarted-task-worktrees-pinned-before-t/.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json
+- old_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+- current_digest: c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608301851-5W3XW6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
