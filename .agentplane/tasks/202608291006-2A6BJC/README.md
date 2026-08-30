@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 95
+revision: 96
 origin:
   system: "manual"
 depends_on:
@@ -32,35 +32,35 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T16:29:06.948Z"
+  updated_at: "2026-08-30T17:01:24.856Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 6 typed finding(s)."
-  evaluated_sha: "28bb93866062ab8faa171d82b71a1a110ecd46da"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "6de58ebe8753e4edf24647d9075ed4169b22bf30"
   blueprint_digest: "de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9"
   evidence_refs:
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bd96d1ec4e46917ad62fe4bdd41cd6e6173ad2d5687af7faadaefa015bb55788.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-165700135-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-165700135-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/8f0f1288f21f6918f32e753604475a5b5b35c206a89285237166cd50d1be2dc3.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-165700135-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-165700135-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-165700135-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291006-2A6BJC/README.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/448ebc737ffc0b7479149082fa8637c058914ea5495ae8e25c31da0906d05783.patch"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/6ff44128a6c44c553210fd106687a298a7b783b81cdba294ce4b97a4898a4c4f.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830161420472-8fdd80cd6ac5097d.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/4889f6ae2695ce99a32ae22be0d1ea7a3e0e167f7deb358bb6677efe1e361d62.patch"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/ce129e82632843060f8fc4e49f74214652a247442622d7a8b503bb4d8c03cc83.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830165646015-234261df55de1743.json"
     - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/beedd395f8c752c2788d7739e0c540e8e1fa9200654d224fcd4c08c39aced7d1.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "Blocking: kernel-record.ts exports kernelAggregateSchema, kernelRecordSchema and kernelArchiveSchema without external consumers. They are internal schema details."
-    - "Blocking: kernel-migration.ts unnecessarily exports KERNEL_MIGRATION_VERSION, kernelMigrationReceiptSchema and KernelMigrationReceipt. Their actual consumers are within the same file."
-    - "Blocking: kernel-effect-replay.testkit.ts exports effectReplayScenarios, and kernel-replay-capture.testkit.ts exports FrozenObservationFixture and KernelQualificationCorpus, although these helpers are file-local."
-    - "The read-only Knip report identifies exactly nine budget-counted findings. The exact command bun run knip:check fails locally with agentplane CLI files=0/0,total=9/0. This matches the previously fetched hosted verify-static failure."
-    - "Make the nine bindings internal by removing export. Preserve the bindings, behavior, schemas, corpus bytes, existing tests and zero-unused budget. Add an explicit successful knip:check observation before reporting recovery."
-    - "Residual risk: Hosted integration remains blocked until current-head static checks pass."
+    - "The complete non-operational delta from 28bb93866 to 6de58ebe8 is nine removed export modifiers in four adapter files. All internal bindings, schema definitions, migration/rollback semantics and effect replay cases remain."
+    - "All nine prior unused-export findings are resolved. Searches show no external consumers of those bindings, and the existing Knip check now reports agentplane CLI total=0/0 without changing the baseline or budget. Exported migration proof and record types needed by other modules remain available."
+    - "The immutable replay sources and expected observations are unchanged. The exact committed implementation passes the isolated twelve-family replay qualification with all 749 reported tests executed and passed."
+    - "The fresh supervisor verification record covers 6de58ebe8753e4edf24647d9075ed4169b22bf30. Architecture, lifecycle invariants, test:fast, typecheck, policy routing, doctor and full local CI all pass. Test:fast reports 5316 passed and one skipped in 618 suites."
+    - "The documentation conflict resolution and the main runtime changes remain present in the current ancestry. Rework does not change the production cutover boundary or claim real release/self-hosting acceptance."
+    - "Residual risk: M3 must complete actual production cutover, repository corpus migration, legacy retirement, twenty self-hosting Tasks and three release drills. M2 replay uses explicit provider fakes."
+    - "Residual risk: Legacy DONE-task evaluator preparation exposed an artifact-dirtiness freshness loop and required native operator recovery. M3 self-hosting qualification must cover this boundary rather than assume it is solved by the adapter work."
 token_usage:
   agent_runs: 26
   input_tokens: null
@@ -3509,7 +3509,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T16:56:49.995Z"
+doc_updated_at: "2026-08-30T17:01:24.918Z"
 doc_updated_by: "SUPERVISOR"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
