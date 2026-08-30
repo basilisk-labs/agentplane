@@ -1,0 +1,12 @@
+ docs/developer/local-runtime-resolution.md         |  49 +++++++
+ .../src/commands/shared/pr-meta/verify-log.ts      |  19 ++-
+ .../commands/task/direct-task-verification.test.ts |  27 ++++
+ .../src/commands/task/direct-task-verification.ts  |  26 +++-
+ .../agentplane/src/runner/execution-receipt.ts     |  17 ++-
+ .../src/runner/process-supervision/result.ts       |  42 ++++++
+ .../src/runner/process-supervision/run.ts          |  45 ++----
+ .../src/runner/process-supervision/state.ts        |   3 +
+ .../src/runner/runtime-env.integration.test.ts     | 154 +++++++++++++++++++++
+ packages/agentplane/src/shared/runtime-env.test.ts |  76 +++++++++-
+ packages/agentplane/src/shared/runtime-env.ts      | 145 ++++++++++++++-----
+ 11 files changed, 518 insertions(+), 85 deletions(-)

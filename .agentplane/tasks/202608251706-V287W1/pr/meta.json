@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608251706-V287W1/ap-runtime-001-make-local-execution-runtime-dete",
+  "created_at": "2026-08-30T03:06:28.413Z",
+  "diffstat_sha256": "sha256:f82dc2d53f3a642367f1e3470e927f6933f401298480b1af16d20781daaa156f",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608251706-V287W1",
+  "updated_at": "2026-08-30T03:06:28.413Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

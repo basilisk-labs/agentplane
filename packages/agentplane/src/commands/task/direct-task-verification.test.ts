@@ -97,6 +97,33 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
+  it("records missing executable as infrastructure evidence rather than a failing implementation", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockRejectedValueOnce(
+      Object.assign(new Error("spawn bun ENOENT"), { code: "ENOENT" }),
+    );
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { id: TASK_ID, verify: ["bun test"] } as TaskData,
+      task_id: TASK_ID,
+      cwd,
+      run_process: mocks.runProcess,
+    });
+    expect(result.status).toBe("unsupported");
+    expect(result.checks[0]).toMatchObject({
+      exit_code: null,
+      failure_kind: "infrastructure",
+      runtime: {
+        kind: "local_runtime_resolution",
+        environment_digest: expect.stringMatching(/^sha256:/) as unknown,
+      },
+    });
+    const persisted = JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8")) as {
+      checks: { failure_kind: string }[];
+    };
+    expect(persisted.checks[0]!.failure_kind).toBe("infrastructure");
+  });
+
   it("reuses only the exact unchanged implementation identity at a rework boundary", () => {
     const eligible = {
       purpose: "implementation" as const,
