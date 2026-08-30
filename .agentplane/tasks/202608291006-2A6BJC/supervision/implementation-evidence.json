@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8b9a98f8b45539d01f59c73209947d74f738d4a6..2b787ce106bcb68f7abd1f2c45887eae8563f1cf",
+      "command": "git diff --check 2b787ce106bcb68f7abd1f2c45887eae8563f1cf..cd3252423edf12da15d601d82fd8eb31662dac28",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8b9a98f8b45539d01f59c73209947d74f738d4a6..2b787ce106bcb68f7abd1f2c45887eae8563f1cf",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2b787ce106bcb68f7abd1f2c45887eae8563f1cf..cd3252423edf12da15d601d82fd8eb31662dac28",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,10 +24,9 @@
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/review.md",
         "M\t.agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202608291006-2A6BJC/verification/20260830105946329-92020e2250ef8954.json",
-        "M\tdocs/developer/clean-task-core-m2-replay-checkpoint.md",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-effect-resolution.ts"
+        "A\t.agentplane/tasks/202608291006-2A6BJC/verification/20260830113308691-d4cf9270fd8bef0b.json",
+        "R081\tdocs/developer/clean-task-core-m2-replay-checkpoint.md\tdocs/developer/clean-task-core-m2-replay-checkpoint/README.md",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
       ]
     },
     {
@@ -37,19 +36,18 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8b9a98f8b45539d01f59c73209947d74f738d4a6",
-  "implementation_commit": "2b787ce106bcb68f7abd1f2c45887eae8563f1cf",
+  "execution_base_commit": "2b787ce106bcb68f7abd1f2c45887eae8563f1cf",
+  "implementation_commit": "cd3252423edf12da15d601d82fd8eb31662dac28",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202608291006-2A6BJC/README.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
       " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md",
       " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
       " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
-      " M docs/developer/clean-task-core-m2-replay-checkpoint.md",
-      " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
-      " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts",
-      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830105946329-92020e2250ef8954.json"
+      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830113308691-d4cf9270fd8bef0b.json"
     ],
     "classification": [
       {
@@ -58,7 +56,15 @@
       },
       {
         "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md"
       },
       {
         "classification": "removed_during_execution",
@@ -70,32 +76,19 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M docs/developer/clean-task-core-m2-replay-checkpoint.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830105946329-92020e2250ef8954.json"
+        "line": "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830113308691-d4cf9270fd8bef0b.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202608291006-2A6BJC/README.md",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
       " M .agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
+      " M .agentplane/tasks/202608291006-2A6BJC/pr/review.md",
       " M .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json",
       " M .agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json",
-      " M docs/developer/clean-task-core-m2-replay-checkpoint.md",
-      " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
-      " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts",
-      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830105946329-92020e2250ef8954.json"
+      "?? .agentplane/tasks/202608291006-2A6BJC/verification/20260830113308691-d4cf9270fd8bef0b.json"
     ],
     "unchanged_from_execution_baseline": []
   },
