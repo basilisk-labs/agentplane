@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608301851-5W3XW6/recover-unstarted-task-worktrees-pinned-before-t",
+  "created_at": "2026-08-30T18:53:26.210Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608301851-5W3XW6",
+  "updated_at": "2026-08-30T18:53:26.210Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
