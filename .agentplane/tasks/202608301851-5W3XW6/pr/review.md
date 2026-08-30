@@ -6,7 +6,7 @@ Created: 2026-08-30T18:53:26.210Z
 
 - Task: `202608301851-5W3XW6`
 - Title: Recover unstarted task worktrees pinned before the approved planning baseline
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608301851-5W3XW6/recover-unstarted-task-worktrees-pinned-before-t`
 - Canonical task record: `.agentplane/tasks/202608301851-5W3XW6/README.md`
 
