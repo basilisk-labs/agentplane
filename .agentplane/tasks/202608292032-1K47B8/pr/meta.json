@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:75f1a9ae077efe6d9b517513890e7358126dcc7f63095ec755e0153a1e80f2b7",
   "pr_number": 5877,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5877",
+  "pre_merge_closure": {
+    "basis_commit": "dea2cc09b5ed426496c80db10c12530f0123ace4",
+    "branch": "task/202608292032-1K47B8/implement-the-isolated-canonical-task-kernel",
+    "pr_number": 5877,
+    "recorded_at": "2026-08-30T03:20:06.729Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
