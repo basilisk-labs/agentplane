@@ -1,3 +1,4 @@
+import { localRuntimeEvidence, withPreferredRuntimePath } from "../shared/runtime-env.js";
 import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -38,6 +39,13 @@ export function createRunnerInvocationSnapshot(
   invocation?: RunnerInvocation | null,
 ): RunnerInvocationSnapshot {
   return {
+    runtime: invocation
+      ? localRuntimeEvidence(
+          invocation.argv[0] ?? "",
+          withPreferredRuntimePath(process.env, invocation.env),
+          invocation.repository_root,
+        )
+      : null,
     executable: invocation?.argv[0] ?? null,
     argv: [...(invocation?.argv ?? [])],
     argv_count: invocation?.argv.length ?? 0,

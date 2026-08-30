@@ -141,11 +141,24 @@ export function createExecutionReceipt(opts: {
       provenance: OBSERVED_PROVENANCE,
       state: "not_evaluated",
     } satisfies ExecutionReceiptScopeEvaluation);
+  const runtime = opts.process_result?.runtime;
+  const checks: ExecutionReceiptObservedCheck[] = runtime
+    ? [
+        ...opts.checks,
+        {
+          provenance: OBSERVED_PROVENANCE,
+          id: "local-runtime-resolution",
+          required: true,
+          status: runtime.status === "resolved" ? "passed" : "failed",
+          details: JSON.stringify(runtime),
+        },
+      ]
+    : opts.checks;
   const successPolicy = evaluateExecutionSuccessPolicy({
     process,
     git: opts.git,
     artifacts: opts.artifacts,
-    checks: opts.checks,
+    checks,
     collection,
     scope_evaluation: scopeEvaluation,
   });
@@ -158,7 +171,7 @@ export function createExecutionReceipt(opts: {
     process,
     git: opts.git,
     artifacts: opts.artifacts,
-    checks: opts.checks,
+    checks,
     collection,
     scope_evaluation: scopeEvaluation,
     success_policy: successPolicy,
