@@ -288,12 +288,34 @@ function refreshReadyItems(
   for (const [id, runtime] of Object.entries(next)) {
     if (
       runtime.state === "PLANNED" &&
-      runtime.definition.depends_on.every((dependency) => next[dependency]?.state === "COMPLETED")
+      runtime.definition.depends_on.every(
+        (dependency) => next[dependency]?.state === "COMPLETED",
+      ) &&
+      requiredInputsPresent(runtime, next)
     ) {
       next[id] = { ...runtime, state: "READY", revision: runtime.revision + 1 };
     }
   }
   return next;
+}
+
+function requiredInputsPresent(
+  runtime: WorkItemRuntime,
+  workItems: Readonly<Record<string, WorkItemRuntime>>,
+): boolean {
+  return runtime.definition.required_inputs.every((id) =>
+    Object.values(workItems).some(
+      (producer) =>
+        producer.definition.id !== runtime.definition.id &&
+        producer.state === "COMPLETED" &&
+        producer.definition.expected_outputs.includes(id) &&
+        validationMatchesResult(producer.validation, producer.result_digest) &&
+        hasEveryExpectedOutput(producer, producer.output_manifests) &&
+        producer.output_manifests.some(
+          (output) => output.id === id && outputManifestIsValid(output),
+        ),
+    ),
+  );
 }
 
 function effectTransition(effect: ExternalEffect, state: EffectState): ExternalEffect {
@@ -371,7 +393,24 @@ function preconditions(input: KernelInput): KernelResult | null {
   ) {
     return rejected("EFFECT_RECONCILIATION_REQUIRED", [uncertain.id], "reconcile_effect");
   }
-  return requiredAuthority(input, authorityWorkItem(input.command));
+  const workItemId = authorityWorkItem(input.command);
+  if (workItemId !== null) {
+    if (input.aggregate.state !== "ACTIVE") {
+      return rejected("ILLEGAL_TASK_TRANSITION", [input.aggregate.state, input.command.kind]);
+    }
+    if (!input.aggregate.current_plan) return rejected("CURRENT_PLAN_MISSING", []);
+    if (input.aggregate.current_plan.state !== "APPROVED") {
+      return rejected("CURRENT_PLAN_NOT_APPROVED", [input.aggregate.current_plan.state]);
+    }
+    const runtime = input.aggregate.work_items[workItemId];
+    const definition = input.aggregate.current_plan.work_items.find(
+      (item) => item.id === workItemId,
+    );
+    if (runtime && (!definition || kernelDigest(runtime.definition) !== kernelDigest(definition))) {
+      return rejected("PLAN_DIGEST_MISMATCH", [workItemId, "runtime_definition_mismatch"]);
+    }
+  }
+  return requiredAuthority(input, workItemId);
 }
 
 export function reduceTaskCommand(input: KernelInput): KernelResult {
@@ -469,6 +508,9 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "materialize_work_items": {
+      if (aggregate.state !== "ACTIVE") {
+        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
+      }
       if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
         return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
       }
@@ -487,7 +529,10 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
           definition.id,
           {
             definition,
-            state: definition.depends_on.length === 0 ? "READY" : "PLANNED",
+            state:
+              definition.depends_on.length === 0 && definition.required_inputs.length === 0
+                ? "READY"
+                : "PLANNED",
             revision: 1,
             attempt: 0,
             claim_id: null,
@@ -519,6 +564,9 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       }
       if (command.action === "claim" && !command.claim_id) {
         return rejected("ILLEGAL_WORK_ITEM_TRANSITION", ["claim_id_missing"]);
+      }
+      if (command.action === "claim" && !requiredInputsPresent(runtime, aggregate.work_items)) {
+        return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", runtime.definition.required_inputs);
       }
       if (command.action === "complete") {
         if (!hasEveryExpectedOutput(runtime, runtime.output_manifests)) {
@@ -763,13 +811,8 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         ["PREPARED", "PENDING", "IN_DOUBT"].includes(effect.state),
       );
       if (
-        aggregate.state !== "FINAL_VALIDATION" ||
-        aggregate.final_validation?.status !== "PASSED" ||
-        aggregate.final_validation.identity.implementation_identity !==
-          input.repository_fingerprint ||
-        incomplete.length > 0 ||
-        invalidOutputs.length > 0 ||
-        unresolvedEffects.length > 0
+        input.repository_fingerprint === null ||
+        !isTaskCompletionEligible(aggregate, input.repository_fingerprint)
       ) {
         return rejected("TASK_COMPLETION_INELIGIBLE", [
           ...incomplete.map((item) => `incomplete:${item.id}`),

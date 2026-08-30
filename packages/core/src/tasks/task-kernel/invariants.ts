@@ -186,17 +186,26 @@ export function validateWorkItemDefinitions(
 ): readonly string[] {
   const issues: string[] = [];
   const ids = new Set<string>();
+  const producers = new Map<string, string[]>();
   for (const definition of definitions) {
     if (!definition.id || ids.has(definition.id)) issues.push(`duplicate:${definition.id}`);
     ids.add(definition.id);
     if (new Set(definition.expected_outputs).size !== definition.expected_outputs.length) {
       issues.push(`duplicate_output:${definition.id}`);
     }
+    for (const output of definition.expected_outputs) {
+      producers.set(output, [...(producers.get(output) ?? []), definition.id]);
+    }
   }
   for (const definition of definitions) {
     for (const dependency of definition.depends_on) {
       if (!ids.has(dependency)) issues.push(`missing_dependency:${definition.id}:${dependency}`);
       if (dependency === definition.id) issues.push(`cycle:${definition.id}`);
+    }
+    for (const input of definition.required_inputs) {
+      const sources = producers.get(input) ?? [];
+      if (sources.length !== 1) issues.push(`invalid_input:${definition.id}:${input}`);
+      if (sources.includes(definition.id)) issues.push(`self_input:${definition.id}:${input}`);
     }
   }
   const byId = new Map(definitions.map((definition) => [definition.id, definition]));
@@ -206,7 +215,12 @@ export function validateWorkItemDefinitions(
     if (visiting.has(id)) return true;
     if (visited.has(id)) return false;
     visiting.add(id);
-    for (const dependency of byId.get(id)?.depends_on ?? []) {
+    const definition = byId.get(id);
+    const dependencies = [
+      ...(definition?.depends_on ?? []),
+      ...(definition?.required_inputs.flatMap((input) => producers.get(input) ?? []) ?? []),
+    ];
+    for (const dependency of dependencies) {
       if (byId.has(dependency) && visit(dependency)) return true;
     }
     visiting.delete(id);

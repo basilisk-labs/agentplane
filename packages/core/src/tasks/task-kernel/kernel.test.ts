@@ -353,6 +353,106 @@ describe("canonical task kernel reducer", () => {
     expect(state.work_items.kernel?.state).toBe("READY");
   });
 
+  it.each<TaskState>(["CANCELLED", "COMPLETED", "PLANNING", "BLOCKED", "FINAL_VALIDATION"])(
+    "rejects WorkItem execution while the Task is %s",
+    (taskState) => {
+      const state = aggregate({ state: taskState });
+      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
+        kind: "rejected",
+        code: "ILLEGAL_TASK_TRANSITION",
+      });
+    },
+  );
+
+  it("requires the current approved plan before executing WorkItems", () => {
+    for (const current_plan of [null, { ...plan, state: "PROPOSED" as const }]) {
+      const state = aggregate({ current_plan });
+      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim"))).kind).toBe(
+        "rejected",
+      );
+    }
+  });
+
+  it("blocks missing input manifests and permits validated producer outputs", () => {
+    const consumer = {
+      ...runtime("READY"),
+      definition: { ...plan.work_items[0]!, required_inputs: ["upstream"] },
+    };
+    const current_plan = {
+      ...plan,
+      work_items: [
+        consumer.definition,
+        { ...plan.work_items[0]!, id: "producer", expected_outputs: ["upstream"] },
+      ],
+    };
+    const state = aggregate({ current_plan, work_items: { kernel: consumer } });
+    const empty = aggregate({ current_plan, work_items: {} });
+    expect(
+      reduceTaskCommand(
+        input(empty, {
+          kind: "materialize_work_items",
+          task_id: empty.id,
+          expected_task_revision: empty.revision,
+          expected_state_fingerprint: fingerprint,
+          plan_revision: plan.revision,
+          plan_digest: plan.digest,
+        }),
+      ),
+    ).toMatchObject({
+      kind: "accepted",
+      aggregate: {
+        work_items: {
+          kernel: { state: "PLANNED" },
+          producer: { state: "READY" },
+        },
+      },
+    });
+    expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
+      kind: "rejected",
+      code: "WORK_ITEM_DEPENDENCY_INCOMPLETE",
+    });
+    const producer = {
+      ...runtime("COMPLETED"),
+      definition: { ...plan.work_items[0]!, id: "producer", expected_outputs: ["upstream"] },
+      result_digest: resultDigest,
+      validation: validation(resultDigest),
+      output_manifests: [{ ...manifest(), id: "upstream", work_item_id: "producer" }],
+    };
+    const ready = aggregate({ current_plan, work_items: { kernel: consumer, producer } });
+    expect(reduceTaskCommand(input(ready, transitionCommand(ready, "claim"))).kind).toBe(
+      "accepted",
+    );
+    for (const source of [
+      { ...producer, state: "EXECUTING" as const },
+      { ...producer, output_manifests: [] },
+      { ...producer, validation: null },
+    ]) {
+      const invalid = aggregate({
+        current_plan,
+        work_items: { kernel: consumer, producer: source },
+      });
+      expect(reduceTaskCommand(input(invalid, transitionCommand(invalid, "claim"))).kind).toBe(
+        "rejected",
+      );
+    }
+    const waiting = aggregate({
+      current_plan,
+      work_items: {
+        kernel: { ...consumer, state: "PLANNED" },
+        producer: { ...producer, state: "VALIDATING" },
+      },
+    });
+    const completion = { ...transitionCommand(waiting, "complete"), work_item_id: "producer" };
+    expect(reduceTaskCommand(input(waiting, completion))).toMatchObject({
+      kind: "accepted",
+      aggregate: { work_items: { kernel: { state: "READY" } } },
+    });
+    const mismatched = aggregate({ work_items: { kernel: consumer } });
+    expect(
+      reduceTaskCommand(input(mismatched, transitionCommand(mismatched, "claim"))),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_DIGEST_MISMATCH" });
+  });
+
   it("returns the original receipt for an exact mutation replay", () => {
     const state = aggregate();
     const command = transitionCommand(state, "claim");
@@ -470,6 +570,21 @@ describe("canonical task kernel reducer", () => {
       expected_task_revision: eligible.revision,
       expected_state_fingerprint: fingerprint,
     };
+    for (const missing of [
+      null,
+      { ...validation(resultDigest), status: "FAILED" as const },
+      validation(kernelDigest("stale")),
+    ]) {
+      const invalid = {
+        ...eligible,
+        work_items: { kernel: { ...validRuntime, validation: missing } },
+      };
+      expect(isTaskCompletionEligible(invalid, fingerprint)).toBe(false);
+      expect(reduceTaskCommand(input(invalid, complete))).toMatchObject({
+        kind: "rejected",
+        code: "TASK_COMPLETION_INELIGIBLE",
+      });
+    }
     expect(reduceTaskCommand(input(eligible, complete))).toMatchObject({
       kind: "accepted",
       aggregate: { state: "COMPLETED" },

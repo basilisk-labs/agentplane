@@ -33,15 +33,15 @@ Created: 2026-08-29T20:33:30.307Z
  .../src/commands/shared/pr-meta/verify-log.test.ts |  60 ++
  .../src/commands/shared/pr-meta/verify-log.ts      |   4 +
  packages/core/src/tasks/index.ts                   |   2 +
- .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |  69 ++
+ .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |  76 ++
  packages/core/src/tasks/task-kernel/index.ts       |  23 +
- .../core/src/tasks/task-kernel/invariants.test.ts  | 388 ++++++++++
- packages/core/src/tasks/task-kernel/invariants.ts  | 229 ++++++
- packages/core/src/tasks/task-kernel/kernel.test.ts | 483 ++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      | 853 +++++++++++++++++++++
+ .../core/src/tasks/task-kernel/invariants.test.ts  | 412 ++++++++++
+ packages/core/src/tasks/task-kernel/invariants.ts  | 243 ++++++
+ packages/core/src/tasks/task-kernel/kernel.test.ts | 598 ++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      | 896 +++++++++++++++++++++
  packages/core/src/tasks/task-kernel/model.test.ts  | 108 +++
  packages/core/src/tasks/task-kernel/model.ts       | 367 +++++++++
- 12 files changed, 2599 insertions(+)
+ 12 files changed, 2802 insertions(+)
 ```
 
 </details>
