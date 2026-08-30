@@ -22,7 +22,7 @@ Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagno
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T01:23:12.595Z
+- Updated: 2026-08-30T01:41:31.076Z
 - Branch: task/202608300119-ZHYXRS/preserve-workitem-results-during-plan-reapproval
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
