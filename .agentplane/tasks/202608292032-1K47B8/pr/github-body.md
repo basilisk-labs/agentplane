@@ -15,8 +15,8 @@ Implement a pure deterministic Task and WorkItem kernel behind a new internal mo
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,15 +31,16 @@ Implement a pure deterministic Task and WorkItem kernel behind a new internal mo
  .../src/commands/shared/pr-meta/verify-log.test.ts |   60 ++
  .../src/commands/shared/pr-meta/verify-log.ts      |    4 +
  packages/core/src/tasks/index.ts                   |    2 +
- .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |   91 ++
+ .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |   93 ++
  packages/core/src/tasks/task-kernel/index.ts       |   23 +
  .../core/src/tasks/task-kernel/invariants.test.ts  |  427 ++++++++
  packages/core/src/tasks/task-kernel/invariants.ts  |  257 +++++
- packages/core/src/tasks/task-kernel/kernel.test.ts | 1021 +++++++++++++++++++
+ .../src/tasks/task-kernel/kernel.test-fixtures.ts  |  207 ++++
+ packages/core/src/tasks/task-kernel/kernel.test.ts |  833 +++++++++++++++
  packages/core/src/tasks/task-kernel/kernel.ts      | 1061 ++++++++++++++++++++
  packages/core/src/tasks/task-kernel/model.test.ts  |  108 ++
  packages/core/src/tasks/task-kernel/model.ts       |  375 +++++++
- 12 files changed, 3442 insertions(+)
+ 13 files changed, 3463 insertions(+)
 ```
 
 </details>

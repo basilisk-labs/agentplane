@@ -39,6 +39,8 @@ subprocess fix. Qualification found and corrected authority defects in the kerne
 
 New regression tests reproduced these defects before the fixes. After correction,
 the focused kernel and subprocess suite passes 73 tests across four files.
+Test fixture builders are shared in `kernel.test-fixtures.ts` to keep the reducer
+suite below the existing hotspot limit without dropping coverage or changing budgets.
 The kernel still uses only deterministic inputs; it does not read wall-clock time,
 the filesystem, environment, Git, providers, or compatibility projections.
 
