@@ -2,12 +2,12 @@
  .../src/commands/shared/pr-meta/verify-log.test.ts |  60 ++
  .../src/commands/shared/pr-meta/verify-log.ts      |   4 +
  packages/core/src/tasks/index.ts                   |   2 +
- .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |  49 ++
+ .../core/src/tasks/task-kernel/M1-QUALIFICATION.md |  69 ++
  packages/core/src/tasks/task-kernel/index.ts       |  23 +
- .../core/src/tasks/task-kernel/invariants.test.ts  | 316 ++++++++
- packages/core/src/tasks/task-kernel/invariants.ts  | 214 ++++++
- packages/core/src/tasks/task-kernel/kernel.test.ts | 456 +++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      | 848 +++++++++++++++++++++
+ .../core/src/tasks/task-kernel/invariants.test.ts  | 388 ++++++++++
+ packages/core/src/tasks/task-kernel/invariants.ts  | 229 ++++++
+ packages/core/src/tasks/task-kernel/kernel.test.ts | 483 ++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      | 853 +++++++++++++++++++++
  packages/core/src/tasks/task-kernel/model.test.ts  | 108 +++
  packages/core/src/tasks/task-kernel/model.ts       | 367 +++++++++
- 12 files changed, 2460 insertions(+)
+ 12 files changed, 2599 insertions(+)

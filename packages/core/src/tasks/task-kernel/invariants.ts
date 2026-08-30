@@ -45,9 +45,21 @@ function setIsSubset(child: readonly string[], parent: readonly string[]): boole
   return child.every((value) => allowed.has(value));
 }
 
+function canonicalAuthorityPath(value: string): string | null {
+  const normalized = value.replaceAll("\\", "/");
+  if (!normalized || normalized.includes("\0") || normalized.includes("//")) return null;
+  if (normalized === "." || normalized === "/") return normalized;
+  const trimmed = normalized.replace(/\/$/u, "");
+  if (trimmed.split("/").some((part) => part === "." || part === "..")) return null;
+  return trimmed;
+}
+
 function pathIsWithin(path: string, root: string): boolean {
-  const normalizedPath = path.replaceAll("\\", "/").replace(/\/$/u, "");
-  const normalizedRoot = root.replaceAll("\\", "/").replace(/\/$/u, "");
+  const normalizedPath = canonicalAuthorityPath(path);
+  const normalizedRoot = canonicalAuthorityPath(root);
+  if (normalizedPath === null || normalizedRoot === null) return false;
+  if (normalizedRoot === ".") return !/^(?:\/|[a-z]:)/iu.test(normalizedPath);
+  if (normalizedRoot === "/") return normalizedPath.startsWith("/");
   return normalizedPath === normalizedRoot || normalizedPath.startsWith(`${normalizedRoot}/`);
 }
 
@@ -60,8 +72,9 @@ function workItemIsSubset(child: string | null, parent: string | null): boolean 
 }
 
 function expiryIsSubset(child: string | null, parent: string | null): boolean {
-  if (parent === null) return true;
-  return child !== null && child <= parent;
+  const childTime = child === null ? Infinity : Date.parse(child);
+  const parentTime = parent === null ? Infinity : Date.parse(parent);
+  return !Number.isNaN(childTime) && !Number.isNaN(parentTime) && childTime <= parentTime;
 }
 
 function addViolation(
@@ -137,7 +150,9 @@ export function compareExecutionAuthority(
   addViolation(violations, expiryIsSubset(child.expires_at, parent.expires_at), "expiry");
   addViolation(
     violations,
-    child.provenance.kind !== "USER" && child.provenance.parent_authority_digest === parent.digest,
+    child.provenance.kind !== "USER" &&
+      child.provenance.parent_authority_digest === parent.digest &&
+      child.provenance.evidence_digest === parent.provenance.evidence_digest,
     "provenance",
   );
   const unique = [...new Set(violations)];

@@ -190,6 +190,11 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
   if (authority.task_id !== input.aggregate.id) {
     return rejected("AUTHORITY_TASK_MISMATCH", [authority.task_id, input.aggregate.id]);
   }
+  const occurredAt = Date.parse(input.occurred_at);
+  const expiresAt = authority.expires_at === null ? Infinity : Date.parse(authority.expires_at);
+  if (!Number.isFinite(occurredAt) || Number.isNaN(expiresAt) || occurredAt >= expiresAt) {
+    return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_expired_or_invalid_time"]);
+  }
   const currentPlan = input.aggregate.current_plan;
   if (
     input.repository_fingerprint === null ||
