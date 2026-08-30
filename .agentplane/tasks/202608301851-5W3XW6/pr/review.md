@@ -13,7 +13,7 @@ Created: 2026-08-30T18:53:26.210Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,12 @@ Created: 2026-08-30T18:53:26.210Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/developer/harness-dev.mdx                     |  25 ++
+ docs/user/cli-reference.generated.mdx              |   3 +
+ ...i.core.task-advance.worktree-resolution.test.ts | 188 ++++++++++++++-
+ .../commands/branch/work-resume-planning-base.ts   | 260 +++++++++++++++++++++
+ .../src/commands/branch/work-resume.command.ts     |  51 +++-
+ 5 files changed, 523 insertions(+), 4 deletions(-)
 ```
 
 </details>

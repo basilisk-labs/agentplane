@@ -197,3 +197,28 @@ script launchers. Replacing either runtime under an unchanged PATH invalidates p
 when the outer runner script is unchanged. Runtime digests are computed from bytes for each
 observation; file metadata alone is not a freshness proof. The Node selector reads the normalized
 PATH first, so an explicit profile path wins over inherited manager locations.
+
+## Recover an unstarted planning-base worktree
+
+A queued Task can retain a creation commit older than its approved planning snapshot. If native
+workspace preparation then reports already-completed dependencies as missing, inspect both commit
+identities before changing any dependency.
+
+```bash
+agentplane work resume <task-id> --refresh-planning-base --json
+agentplane work resume <task-id> --refresh-planning-base --apply --expect-token <sha256:digest>
+```
+
+The first command only inspects. The second consumes the exact inspection token. Recovery accepts
+only a local, uniquely owned, unstarted Task worktree with an approved structured plan, an implicit
+creation-checkout base, no runner/provider history or active claims, and no source changes. The
+approved snapshot must descend from the original base and remain on the development branch. The
+transported Task README cannot collide with a tracked path in the target snapshot.
+
+AgentPlane holds the native Task revision lock, fast-forwards Git, confirms the new HEAD, and records
+the recovered execution base. It preserves the plan, dependency list and WorkItems. If interrupted
+after Git advancement but before Task publication, inspect again and apply the fresh token to
+reconcile the recorded base without repeating the Git effect. Explicit base pins, divergent history,
+started work and unknown artifacts fail closed. The command does not fetch, publish, weaken checks,
+or start a runner. After recovery, bootstrap the framework runtime if its source changed, then request
+a fresh `task advance --agent-json` packet.

@@ -1,0 +1,6 @@
+ docs/developer/harness-dev.mdx                     |  25 ++
+ docs/user/cli-reference.generated.mdx              |   3 +
+ ...i.core.task-advance.worktree-resolution.test.ts | 188 ++++++++++++++-
+ .../commands/branch/work-resume-planning-base.ts   | 260 +++++++++++++++++++++
+ .../src/commands/branch/work-resume.command.ts     |  51 +++-
+ 5 files changed, 523 insertions(+), 4 deletions(-)
