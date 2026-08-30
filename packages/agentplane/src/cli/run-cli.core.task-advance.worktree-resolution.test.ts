@@ -284,6 +284,11 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
   ).toBe(0);
 }
 
+async function readHead(root: string): Promise<string> {
+  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  return result.stdout.trim();
+}
+
 describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
   it.each([false, true, "process"] as const)(
     "recovers an unstarted approved planning base (interrupted=%s)",
@@ -300,15 +305,11 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       await execFileAsync("git", ["add", ".agentplane", ".gitignore"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: initial workflow"], { cwd: root });
       const taskId = await createTask(root);
-      const initial = (
-        await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root })
-      ).stdout.trim();
+      const initial = await readHead(root);
       await writeFile(path.join(root, "prerequisite.txt"), "completed prerequisite\n");
       await execFileAsync("git", ["add", "prerequisite.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: prerequisite landed"], { cwd: root });
-      const target = (
-        await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root })
-      ).stdout.trim();
+      const target = await readHead(root);
       await approveStructuredPlan(root, taskId);
       expect(
         await runCliSilent([
@@ -393,7 +394,8 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
           ]),
           io.stderr,
         ).toBe(0);
-        expect(JSON.parse(io.stdout).target_sha).toBe(target);
+        const result = JSON.parse(io.stdout) as { target_sha: string };
+        expect(result.target_sha).toBe(target);
       } finally {
         io.restore();
       }
@@ -407,17 +409,17 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
           "preserve ignored local bytes\n",
         );
-        expect(
-          (await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskRoot })).stdout.trim(),
-        ).toBe(initial);
+        expect(await readHead(taskRoot)).toBe(initial);
         await rm(path.join(taskRoot, "prerequisite.txt"));
       }
       if (interrupted === true) {
-        const originalWrite = LocalBackend.prototype.writeTaskWithReceipt;
+        if (!(taskCtx.taskBackend instanceof LocalBackend))
+          throw new Error("Expected local fixture backend");
+        const originalWrite = LocalBackend.prototype.writeTaskWithReceipt.bind(taskCtx.taskBackend);
         const spy = vi
           .spyOn(LocalBackend.prototype, "writeTaskWithReceipt")
-          .mockImplementationOnce(function (this: LocalBackend, task, options, beforePublication) {
-            return originalWrite.call(this, task, options, async () => {
+          .mockImplementationOnce((task, options, beforePublication) => {
+            return originalWrite(task, options, async () => {
               await beforePublication();
               throw new Error("injected interruption after Git before Task publication");
             });
@@ -429,9 +431,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         } finally {
           spy.mockRestore();
         }
-        expect(
-          (await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskRoot })).stdout.trim(),
-        ).toBe(target);
+        expect(await readHead(taskRoot)).toBe(target);
         expect(
           (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
         ).toEqual(priorBase);
@@ -471,7 +471,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
           for (let poll = 0; poll < 200; poll++) {
             const raw = await readFile(marker, "utf8").catch(() => null);
             if (raw) {
-              hookPids = JSON.parse(raw);
+              hookPids = JSON.parse(raw) as { hookPid: number; gitPid: number };
               break;
             }
             await new Promise((resolve) => setTimeout(resolve, 50));
@@ -485,19 +485,18 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
             for (const pid of [hookPids.hookPid, hookPids.gitPid]) {
               try {
                 process.kill(pid, "SIGKILL");
-              } catch {}
+              } catch {
+                // The owned fixture subprocess may already have exited.
+              }
             }
           await rm(hook, { force: true });
         }
         const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
-        const orphans = (await readdir(directory)).filter((name) =>
-          name.startsWith("README.md.tmp-"),
-        );
+        const entries = await readdir(directory);
+        const orphans = entries.filter((name) => name.startsWith("README.md.tmp-"));
         expect(orphans).toHaveLength(1);
         orphanBytes = await readFile(path.join(directory, orphans[0]!), "utf8");
-        expect(
-          (await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskRoot })).stdout.trim(),
-        ).toBe(target);
+        expect(await readHead(taskRoot)).toBe(target);
         expect(
           (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
         ).toEqual(priorBase);
@@ -512,9 +511,8 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       expect(applied.status).toBe("applied");
       if (orphanBytes !== null) {
         const directory = path.join(taskRoot, ".agentplane", "tasks", taskId);
-        expect(
-          (await readdir(directory)).filter((name) => name.startsWith("README.md.tmp-")),
-        ).toEqual([]);
+        const remainingEntries = await readdir(directory);
+        expect(remainingEntries.filter((name) => name.startsWith("README.md.tmp-"))).toEqual([]);
         const archiveRoot = path.join(root, ".git", "agentplane", "planning-base-recovery", taskId);
         const archived = await readdir(archiveRoot);
         expect(archived).toHaveLength(1);
@@ -536,9 +534,8 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       );
       const readmePath = path.join(taskRoot, ".agentplane", "tasks", taskId, "README.md");
       const completedBytes = await readFile(readmePath, "utf8");
-      expect((await recoverWorkPlanningBase({ ctx, taskId, apply: false })).status).toBe(
-        "already_applied",
-      );
+      const repeated = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+      expect(repeated.status).toBe("already_applied");
       expect(await readFile(readmePath, "utf8")).toBe(completedBytes);
     },
   );
