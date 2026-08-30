@@ -1,10 +1,11 @@
 ---
 id: "202608301851-5W3XW6"
 title: "Recover unstarted task worktrees pinned before the approved planning baseline"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - "The exact CLI candidate delta adds only the three reviewed recovery options and Task provenance. The immutable compatibility anchor is unchanged."
     - "Residual risk: Explicit recovery remains limited to an unstarted creation-checkout base with a descendant approved planning commit. Unknown artifacts, active work and divergent histories intentionally remain blocked."
     - "Residual risk: Hosted integration and actual M3 recovery are still pending."
+token_usage:
+  agent_runs: 9
+  input_tokens: null
+  journal_digest: "sha256:60d14c4efaede81016b93088fb57d0e7fcfcfc53d6fbe4b3158948c0abf3f251"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-30T20:21:53.863Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -348,8 +363,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "753ed95d1d782fe03e1aec40f72508750ee84c2a"
-  message: "🚧 5W3XW6 task: apply external agent result"
+  hash: "bcf2f38f73d05fc2878983c72ca0a4a9e2f066c2"
+  message: "🚧 5W3XW6 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -378,6 +393,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 753ed95d1d78. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -456,9 +474,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T20:21:53.863Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "bcf2f38f73d05fc2878983c72ca0a4a9e2f066c2"
 doc_version: 3
-doc_updated_at: "2026-08-30T20:15:32.828Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T20:21:53.872Z"
+doc_updated_by: "CODER"
 description: "M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor."
 sections:
   Summary: |-
@@ -1175,7 +1201,45 @@ extensions:
       schema_version: 1
       task_id: "202608301851-5W3XW6"
     event_cursor: 2
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608301851-5W3XW6"
+            - "git:753ed95d1d782fe03e1aec40f72508750ee84c2a"
+          check_id: "bootstrap-tests"
+          command_identity: "bun run test:fast"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T20:15:30.164Z"
+          repository_snapshot_digest: "sha256:30997e424d643359a5eb7a7511e4eeac2ee158e51f5a4fcb161f553c1af6908b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608301851-5W3XW6"
+            - "git:753ed95d1d782fe03e1aec40f72508750ee84c2a"
+          check_id: "bootstrap-types"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T20:15:30.164Z"
+          repository_snapshot_digest: "sha256:30997e424d643359a5eb7a7511e4eeac2ee158e51f5a4fcb161f553c1af6908b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608301851-5W3XW6"
+            - "git:753ed95d1d782fe03e1aec40f72508750ee84c2a"
+          check_id: "bootstrap-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-30T20:15:30.164Z"
+          repository_snapshot_digest: "sha256:30997e424d643359a5eb7a7511e4eeac2ee158e51f5a4fcb161f553c1af6908b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608301851-5W3XW6"
     intent:
       acceptance_criteria:
@@ -1201,7 +1265,7 @@ extensions:
 
         M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor.
       task_id: "202608301851-5W3XW6"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1641,9 +1705,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608301851-5W3XW6"
-    revision: 22
+    revision: 29
     schema_version: 1
-    updated_at: "2026-08-30T19:54:54.976Z"
+    updated_at: "2026-08-30T20:21:53.863Z"
     work_items:
       recover-planning-base:
         attempt: 3
@@ -1777,11 +1841,37 @@ extensions:
         previous_revision: 21
         schema_version: 1
         task_id: "202608301851-5W3XW6"
+      legacy-finish:202608301851-5W3XW6:2026-08-30T20:15:30.164Z:753ed95d1d782fe03e1aec40f72508750ee84c2a:
+        aggregate_digest: "sha256:65a4aeb8cc50e3e2e63406b82c66daac738e8f2ccd2fe0b752efac08c882d62e"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-30T20:21:53.863Z"
+          cause_refs:
+            - "task-verification:202608301851-5W3XW6"
+            - "git:753ed95d1d782fe03e1aec40f72508750ee84c2a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d7dc730ecd157f2906854b32"
+          mutation_id: "legacy-finish:202608301851-5W3XW6:2026-08-30T20:15:30.164Z:753ed95d1d782fe03e1aec40f72508750ee84c2a"
+          plan_digest: "sha256:51825cff1368eee485df886ea4a23f64fe590c5e5db1a9817e59fb6c9f4e679d"
+          plan_revision: 3
+          repository_fingerprint: "sha256:30997e424d643359a5eb7a7511e4eeac2ee158e51f5a4fcb161f553c1af6908b"
+          schema_version: 1
+          task_id: "202608301851-5W3XW6"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608301851-5W3XW6:2026-08-30T20:15:30.164Z:753ed95d1d782fe03e1aec40f72508750ee84c2a"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202608301851-5W3XW6"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "753ed95d1d782fe03e1aec40f72508750ee84c2a"
+    message: "🚧 5W3XW6 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -2268,3 +2358,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:60d14c4efaede81016b93088fb57d0e7fcfcfc53d6fbe4b3158948c0abf3f251`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-30T20:21:53.863Z`
