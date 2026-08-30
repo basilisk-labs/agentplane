@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project core\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run test:project core\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run test:project core\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608300119-ZHYXRS Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:a78ca4036e517933b24dabeb8e71fb7c5678c1e56505d0c915215a632b55b648",
+  "implementation_sha": "403edee0581fa08fb661c60487dcde7bd2f5bd88",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:68a59b239f2b1bdc7b8d6f4b0c9e4a8bcd76c8893ee7d22c2b1f3d1c2d862f9a",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:02bcaf9ed981a9d5fe2fea010f270c0855f48a25a44da15ce0427d4680868ed3",
+      "digest": "sha256:1e527f0373e49146299f91cbdd11a1bd58d124f4576f8b750c7edf68091380e2",
+      "references": [
+        {
+          "digest": "sha256:fd1978e581920fa73e84a4b91d145ebf24655bd22d6b8782a4dfc65eb8dd9b91",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:fd1978e581920fa73e84a4b91d145ebf24655bd22d6b8782a4dfc65eb8dd9b91",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+      "digest": "sha256:a73235b415e2fab045960a4062960dfc28bc21b8f7489e27c6179080abd3df26",
+      "primary_task_id": "202608300119-ZHYXRS",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608300119-ZHYXRS"
+      ]
+    },
+    "implementation": {
+      "base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+      "digest": "sha256:2016414e35694f75cf58c8aaa5f626ae1bf18cdfcaf9ce5091fa81e87dc27e99",
+      "strategy": "branch_diff",
+      "target_sha": "403edee0581fa08fb661c60487dcde7bd2f5bd88"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:9b32c27a551fe07f89ded9baf48dc67ab77e452421d44ad81e4726f76c2b1037",
+    "verify_steps_digest": "sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-30T01:41:06.431Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project core`. Confirm that same-plan reapproval preserves WorkItem state, manifests, validation, and attempts; mismatched plans remain rejected.\n2. Run focused implementation recovery tests. Confirm exact recorded evidence can be reused only for the matching WorkItem and unchanged authority, and stale or ambiguous evidence fails closed.\n3. Run `bun run ci:local:full`. Require all configured checks to pass.\n4. Require exact-head hosted checks, merge, and Task Hosted Close before calling this task delivered.",
+  "scope_digest": "sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54",
+  "task_id": "202608300119-ZHYXRS",
+  "verification_command": "agentplane verify 202608300119-ZHYXRS --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

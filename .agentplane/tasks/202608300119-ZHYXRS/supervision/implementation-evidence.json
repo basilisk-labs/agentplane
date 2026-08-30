@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 71519a0e675d7d460d27e7c5aea87d1f2363b9e2..01974c4594b14c86c2705a1b586d3cb90a3b6f08",
+      "command": "git diff --check 01974c4594b14c86c2705a1b586d3cb90a3b6f08..403edee0581fa08fb661c60487dcde7bd2f5bd88",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,19 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 71519a0e675d7d460d27e7c5aea87d1f2363b9e2..01974c4594b14c86c2705a1b586d3cb90a3b6f08",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 01974c4594b14c86c2705a1b586d3cb90a3b6f08..403edee0581fa08fb661c60487dcde7bd2f5bd88",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/README.md",
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md",
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/pr/github-title.txt",
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/pr/meta.json",
-        "A\t.agentplane/tasks/202608300119-ZHYXRS/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
-        "M\tpackages/core/src/tasks/task-centric/graph.ts",
-        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts"
+        "M\t.agentplane/tasks/202608300119-ZHYXRS/README.md",
+        "M\t.agentplane/tasks/202608300119-ZHYXRS/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md",
+        "M\t.agentplane/tasks/202608300119-ZHYXRS/pr/meta.json",
+        "M\t.agentplane/tasks/202608300119-ZHYXRS/pr/review.md",
+        "A\t.agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202608300119-ZHYXRS/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202608300119-ZHYXRS/verification/20260830013042448-9879d2e0317ba8ff.json",
+        "M\tpackages/core/src/tasks/task-centric/graph.ts"
       ]
     },
     {
@@ -36,59 +35,59 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
-  "implementation_commit": "01974c4594b14c86c2705a1b586d3cb90a3b6f08",
+  "execution_base_commit": "01974c4594b14c86c2705a1b586d3cb90a3b6f08",
+  "implementation_commit": "403edee0581fa08fb661c60487dcde7bd2f5bd88",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "?? .agentplane/tasks/202608300119-ZHYXRS/README.md",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/github-title.txt",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/meta.json",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/review.md"
+      " M .agentplane/tasks/202608300119-ZHYXRS/README.md",
+      " M .agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md",
+      " M .agentplane/tasks/202608300119-ZHYXRS/pr/meta.json",
+      " M .agentplane/tasks/202608300119-ZHYXRS/pr/review.md",
+      "?? .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202608300119-ZHYXRS/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608300119-ZHYXRS/verification/20260830013042448-9879d2e0317ba8ff.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/README.md"
+        "line": " M .agentplane/tasks/202608300119-ZHYXRS/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json"
+        "line": " M .agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/pr/diffstat.txt"
+        "line": " M .agentplane/tasks/202608300119-ZHYXRS/pr/meta.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md"
+        "line": " M .agentplane/tasks/202608300119-ZHYXRS/pr/review.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/pr/github-title.txt"
+        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/pr/meta.json"
+        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/supervision/implementation-evidence.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/pr/review.md"
+        "line": "?? .agentplane/tasks/202608300119-ZHYXRS/verification/20260830013042448-9879d2e0317ba8ff.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202608300119-ZHYXRS/README.md",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/diffstat.txt",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/github-title.txt",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/meta.json",
-      "?? .agentplane/tasks/202608300119-ZHYXRS/pr/review.md"
+      " M .agentplane/tasks/202608300119-ZHYXRS/README.md",
+      " M .agentplane/tasks/202608300119-ZHYXRS/pr/github-body.md",
+      " M .agentplane/tasks/202608300119-ZHYXRS/pr/meta.json",
+      " M .agentplane/tasks/202608300119-ZHYXRS/pr/review.md",
+      "?? .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202608300119-ZHYXRS/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608300119-ZHYXRS/verification/20260830013042448-9879d2e0317ba8ff.json"
     ],
     "unchanged_from_execution_baseline": []
   },
