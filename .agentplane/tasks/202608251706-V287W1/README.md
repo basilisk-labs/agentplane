@@ -4,7 +4,7 @@ title: "AP-RUNTIME-001 Make local execution runtime deterministic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -35,33 +35,33 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T03:44:08.965Z"
+  updated_at: "2026-08-30T04:42:27.247Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "eaf67c9057bbb3ac9334088848157986aa890290"
+  evaluated_sha: "bf870e63a2cdbdb52fda9bb60176ddeab3a924f7"
   blueprint_digest: "1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981"
   evidence_refs:
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-034116164-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-034116164-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/793a023904d855b080598f7e69dbffcd63257f75fb91f07ce998c5a8e34ab60d.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-034116164-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-034116164-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-034116164-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-034116164-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/479785466f9d430f586b62cc08ba3dfe3c5bac213b4399e12c0d8577022b3b42.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608251706-V287W1/README.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/84b34e43a9175513d2ac3cad4912251e034226b23fbd494ec15f867284bb6995.patch"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/dd528e364ea3f5b0072b9876f1cf7fcf6fa04154803a078509ff485981cf96c2.json"
-    - ".agentplane/tasks/202608251706-V287W1/verification/20260830034059794-f60bd8839a5b13f5.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/e3b16efe0d529b7ee241f16c1c0df3ca0a8289fbec15ea52de0052e01564b33a.patch"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/7785258fca1472972cf0712505f5a528733361227b226d397567a295e8703028.json"
+    - ".agentplane/tasks/202608251706-V287W1/verification/20260830043936670-0c9898ab3a3b63e0.json"
     - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/b724ae0edf9bc8c91af145edbf996f54aea38e60d9a39f39c83a0e333a911643.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Read-only Bun probe reproduces selected_running_bun_as_node=true when resolvePreferredNodeExecutable receives an empty PATH and an absent fixture HOME. Its unconditional process.execPath fallback returns Bun as Node. Do not substitute runtimes when Node is absent."
-    - "Read-only probe shows changed_profile_path_has_identical_prepared_snapshot=true. createRunnerInvocationSnapshot records environment key names only, and readValidatedPreparedRunnerStdin validates only that snapshot digest. Changing a profile PATH value or replacing the selected binary therefore leaves prepared input reusable. Bind runtime selection and executable identity to the prepared snapshot or the corresponding freshness guard."
-    - "Runtime normalization, executable permission checks, numeric NVM selection, real subprocess launch, typed unavailable verification evidence, receipt recording and documentation consolidation otherwise satisfy the reviewed bounded scope. All full local CI and docs-site checks pass."
-    - "Residual risk: The runtime branch predates merged M1. Preserve M1 verification dotenv isolation when the branch is updated before integration."
+    - "At evaluated SHA bf870e63a2cdbdb52fda9bb60176ddeab3a924f7, a read-only Bun fixture probe with different executable Node candidates in explicit PATH and inherited NVM_BIN returns node_override_wins=false. resolvePreferredNodeExecutable checks NVM_BIN/VOLTA_HOME before PATH, contradicting the approved explicit override priority."
+    - "A second fixture probe records localRuntimeEvidence for an unchanged runner, replaces the selected Node executable bytes under the same PATH, and returns runtime_identity_changes_with_node=false. Shell-based verification likewise hashes the shell, not the Node/Bun toolchain. Prepared invocation snapshots therefore remain reusable after this toolchain change."
+    - "The previous Bun-as-Node and PATH/outer-binary freshness findings are fixed and tested. Formatting, full local CI, exact frozen evidence integrity and implementation identity are confirmed. These results do not establish hosted integration."
+    - "Residual risk: Preserve merged M1 verification dotenv isolation when updating this older runtime branch before integration."
 execution_route:
   frozen: true
   reason_codes:

@@ -1,0 +1,1032 @@
+diff --git a/docs/developer/harness-dev.mdx b/docs/developer/harness-dev.mdx
+index c0f521381..f08f9bb3c 100644
+--- a/docs/developer/harness-dev.mdx
++++ b/docs/developer/harness-dev.mdx
+@@ -54,3 +54,55 @@ then verify the repo-local handoff with:
+ node packages/agentplane/bin/agentplane.js runtime explain
+ agentplane runtime explain
+ ```
++
++## Deterministic local subprocess runtime
++
++`packages/agentplane/src/shared/runtime-env.ts` owns local executable discovery.
++The runner and declared-check execution paths use the same environment normalization.
++Recovery that resumes either path uses the same implementation.
++
++### Resolution order
++
++1. Explicit invocation/profile PATH entries.
++2. Explicit absolute `NVM_BIN`, `VOLTA_HOME/bin`, and `BUN_INSTALL/bin` locations.
++3. Inherited PATH entries in their original order.
++4. The highest executable semantic-version Node installation under `HOME/.nvm/versions/node`.
++5. `HOME/.bun/bin` and the running executable directory.
++
++Normalization returns a copy. It does not mutate the parent environment or any authority.
++Explicit executable arguments remain unchanged. No per-agent runtime path is required.
++Empty manager variables never become implicit working-directory executable candidates.
++Discovery rejects non-executable files and ignores relative PATH entries for identity resolution.
++An explicit relative executable argument is resolved against the invocation working directory.
++Windows executable discovery additionally uses PATHEXT.
++When the CLI runs under Bun, the Node resolver never uses Bun as a Node fallback.
++Missing Node returns an `ENOENT` infrastructure error.
++
++### Evidence and failure classification
++
++The runner observes the executable content SHA-256 and a digest of runtime-selection inputs.
++The observed runtime is attached to the process-start event and to a required execution-receipt
++check. Receipts do not store environment values or use environment data as authorization.
++An unreadable executable identity remains unqualified. The prepared invocation snapshot also
++binds runtime identity. A changed inherited/profile PATH or executable content invalidates
++prepared input before another child can launch.
++
++Declared checks store runtime identity with their recorded command and outcome.
++A missing/inaccessible executable is infrastructure evidence and returns the existing
++`unsupported` verification status instead of an implementation-failure verdict.
++A real process failure with a resolved runtime remains an implementation check failure.
++The shell-check helper exposes `failure_kind: infrastructure` for launch failures.
++
++### Qualification
++
++Existing resolver and direct-verification tests cover override precedence, numeric NVM ordering,
++non-executable candidates, missing commands, parent-environment preservation and typed evidence.
++`packages/agentplane/src/runner/runtime-env.integration.test.ts` launches actual child processes
++with a fixture HOME and reduced PATH. Its executable shim verifies lookup independently of a
++machine-specific Bun installation. Standalone and root-referenced invocation identities share
++resolution; a profile PATH wins. The test also writes and reads the execution receipt and
++checks a genuinely absent executable. The POSIX executable-shim test is skipped on Windows;
++portable resolver and receipt tests remain enabled.
++
++Full local CI, evaluator acceptance, exact-head hosted checks and hosted closure remain required.
++This change does not install a runtime, change remote/container execution, or publish 0.7.8.
+diff --git a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+index 652e87c3b..f065339a0 100644
+--- a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
++++ b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+@@ -3,6 +3,11 @@ import path from "node:path";
+ import type { Readable } from "node:stream";
+ 
+ import { startProcess } from "@agentplaneorg/core/process";
++import {
++  withPreferredRuntimePath,
++  isRuntimeInfrastructureError,
++  localRuntimeEvidence,
++} from "../../../shared/runtime-env.js";
+ import { resolveDeclaredTaskCheck } from "../declared-check.js";
+ 
+ export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
+@@ -20,7 +25,7 @@ const VERIFY_RUNTIME_ENV_KEYS = [
+ ] as const;
+ 
+ export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+-  const env = { ...source };
++  const env = withPreferredRuntimePath(source);
+   for (const key of VERIFY_RUNTIME_ENV_KEYS) delete env[key];
+   return env;
+ }
+@@ -53,6 +58,7 @@ export async function runShellCommand(
+ ): Promise<{
+   code: number;
+   output: string;
++  failure_kind?: "infrastructure";
+ }> {
+   const resolved = resolveDeclaredTaskCheck(command);
+   if (!resolved.ok) {
+@@ -81,6 +87,11 @@ export async function runShellCommand(
+     return {
+       code: Number.isInteger(result.exitCode) ? result.exitCode : 1,
+       output: combineOutput(stdout.render(), stderr.render()),
++      ...(result.exitCode !== 0 &&
++      (isRuntimeInfrastructureError(result) ||
++        localRuntimeEvidence(invocation.executable, env).status === "unavailable")
++        ? { failure_kind: "infrastructure" as const }
++        : {}),
+     };
+   } catch (err) {
+     const error = err as {
+@@ -95,7 +106,11 @@ export async function runShellCommand(
+       error.stderr ? String(error.stderr) : (error.message ?? ""),
+     );
+     const code = typeof error.code === "number" ? error.code : 1;
+-    return { code: error.exitCode ?? code, output };
++    return {
++      code: error.exitCode ?? code,
++      output,
++      ...(isRuntimeInfrastructureError(err) ? { failure_kind: "infrastructure" as const } : {}),
++    };
+   }
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 57e503086..835aa0ede 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -97,6 +97,33 @@ afterEach(async () => {
+ });
+ 
+ describe("direct task verification", () => {
++  it("records missing executable as infrastructure evidence rather than a failing implementation", async () => {
++    const cwd = await root();
++    mocks.runProcess.mockRejectedValueOnce(
++      Object.assign(new Error("spawn bun ENOENT"), { code: "ENOENT" }),
++    );
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { id: TASK_ID, verify: ["bun test"] } as TaskData,
++      task_id: TASK_ID,
++      cwd,
++      run_process: mocks.runProcess,
++    });
++    expect(result.status).toBe("unsupported");
++    expect(result.checks[0]).toMatchObject({
++      exit_code: null,
++      failure_kind: "infrastructure",
++      runtime: {
++        kind: "local_runtime_resolution",
++        environment_digest: expect.stringMatching(/^sha256:/) as unknown,
++      },
++    });
++    const persisted = JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8")) as {
++      checks: { failure_kind: string }[];
++    };
++    expect(persisted.checks[0]!.failure_kind).toBe("infrastructure");
++  });
++
+   it("reuses only the exact unchanged implementation identity at a rework boundary", () => {
+     const eligible = {
+       purpose: "implementation" as const,
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 851895ec8..08dc685e0 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -7,6 +7,11 @@ import path from "node:path";
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+ import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
++import {
++  localRuntimeEvidence,
++  isRuntimeInfrastructureError,
++  type LocalRuntimeEvidence,
++} from "../../shared/runtime-env.js";
+ import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
+ import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ 
+@@ -25,6 +30,8 @@ const BUN_ZERO_TEST_PATTERNS = [
+ ] as const;
+ 
+ type DirectTaskCheck = {
++  runtime?: LocalRuntimeEvidence;
++  failure_kind?: "infrastructure";
+   command: string;
+   declared_command?: string;
+   script: string | null;
+@@ -492,30 +499,36 @@ export async function runDirectTaskVerification(opts: {
+       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+     }
+     const started = Date.now();
++    const env = verificationChildEnv();
++    const runtime = localRuntimeEvidence(parsed.executable, env);
+     try {
+       const executed = await (opts.run_process ?? runProcess)({
+         command: parsed.executable,
+         args: parsed.args,
+         cwd: opts.cwd,
+-        env: verificationChildEnv(),
++        env,
+         timeoutMs:
+           additionalTimeouts.get(declaredCommand) ?? directTaskCheckTimeoutMs(parsed.script),
+         maxBuffer: 1024 * 1024,
+         reject: false,
+       });
+       checks.push({
++        runtime,
+         command,
+         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+         script: parsed.script,
+         check_ids: checkIdsForCommand(command, selectedChecks),
+-        exit_code: executed.exitCode,
++        exit_code: Number.isInteger(executed.exitCode) ? executed.exitCode : null,
+         duration_ms: Math.max(0, Date.now() - started),
+         stdout_tail: tail(executed.stdout),
+         stderr_tail: tail(executed.stderr),
+       });
+       if (executed.exitCode !== 0) {
++        const infrastructure =
++          runtime.status === "unavailable" || isRuntimeInfrastructureError(executed);
++        if (infrastructure) checks[checks.length - 1]!.failure_kind = "infrastructure";
+         const result = {
+-          status: "failed" as const,
++          status: infrastructure ? ("unsupported" as const) : ("failed" as const),
+           checks,
+           reason: `Declared check failed: ${command}`,
+         };
+@@ -531,6 +544,7 @@ export async function runDirectTaskVerification(opts: {
+       }
+     } catch (error) {
+       checks.push({
++        runtime,
+         command,
+         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+         script: parsed.script,
+@@ -540,8 +554,12 @@ export async function runDirectTaskVerification(opts: {
+         stdout_tail: "",
+         stderr_tail: error instanceof Error ? tail(error.message) : "unknown process failure",
+       });
++      if (isRuntimeInfrastructureError(error))
++        checks[checks.length - 1]!.failure_kind = "infrastructure";
+       const result = {
+-        status: "failed" as const,
++        status: isRuntimeInfrastructureError(error)
++          ? ("unsupported" as const)
++          : ("failed" as const),
+         checks,
+         reason: `Declared check could not run: ${command}`,
+       };
+diff --git a/packages/agentplane/src/runner/adapters/custom-security.test.ts b/packages/agentplane/src/runner/adapters/custom-security.test.ts
+index fc9ddeda4..873ce3246 100644
+--- a/packages/agentplane/src/runner/adapters/custom-security.test.ts
++++ b/packages/agentplane/src/runner/adapters/custom-security.test.ts
+@@ -10,7 +10,7 @@ import {
+   setRunnerBundleRunDir,
+   writeRunnerExecutable,
+ } from "@agentplane/testkit/runner";
+-import { describe, expect, it } from "vitest";
++import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import { readRunnerRunState, writePreparedRunnerArtifacts } from "../artifacts.js";
+ import { createRunnerAdapter } from "./index.js";
+@@ -30,6 +30,8 @@ const customBundleDefaults = {
+   status: "DOING",
+ };
+ 
++afterEach(() => vi.unstubAllEnvs());
++
+ describe("CustomRunnerAdapter security boundaries", () => {
+   it("rejects actual out-of-scope and gitignored protected writes after a clean agent exit", async () => {
+     const raw = defaultConfig();
+@@ -292,8 +294,14 @@ describe("CustomRunnerAdapter security boundaries", () => {
+     await rm(tempDir, { recursive: true, force: true });
+   });
+ 
+-  it.each(["digest_mismatch", "read_failure"] as const)(
+-    "refuses bootstrap %s before spawning the custom runner",
++  it.each([
++    "digest_mismatch",
++    "read_failure",
++    "profile_path",
++    "inherited_path",
++    "binary_changed",
++  ] as const)(
++    "refuses stale prepared input %s before spawning the custom runner",
+     async (failure) => {
+       const raw = defaultConfig();
+       raw.runner.default_adapter = "custom";
+@@ -323,10 +331,30 @@ describe("CustomRunnerAdapter security boundaries", () => {
+         bootstrap_markdown: "Use this exact prepared bootstrap.\n",
+         invocation,
+       });
+-      if (failure === "digest_mismatch") {
+-        await writeFile(invocation.bootstrap_path!, "tampered bootstrap\n", "utf8");
+-      } else {
+-        await unlink(invocation.bootstrap_path!);
++      switch (failure) {
++        case "digest_mismatch": {
++          await writeFile(invocation.bootstrap_path!, "tampered bootstrap\n", "utf8");
++
++          break;
++        }
++        case "read_failure": {
++          await unlink(invocation.bootstrap_path!);
++
++          break;
++        }
++        case "profile_path": {
++          invocation.env.PATH = `${path.join(root, "different-bin")}:${invocation.env.PATH}`;
++
++          break;
++        }
++        case "inherited_path": {
++          vi.stubEnv("PATH", `${path.join(root, "inherited-bin")}:${process.env.PATH ?? ""}`);
++
++          break;
++        }
++        default: {
++          await writeRunnerExecutable(root, "custom-runner", ["#!/bin/sh", "exit 0"]);
++        }
+       }
+ 
+       await expect(adapter.execute(invocation)).rejects.toMatchObject({
+diff --git a/packages/agentplane/src/runner/artifacts.ts b/packages/agentplane/src/runner/artifacts.ts
+index e920cf6da..a0a549813 100644
+--- a/packages/agentplane/src/runner/artifacts.ts
++++ b/packages/agentplane/src/runner/artifacts.ts
+@@ -1,3 +1,4 @@
++import { localRuntimeEvidence, withPreferredRuntimePath } from "../shared/runtime-env.js";
+ import { createHash } from "node:crypto";
+ import { mkdir } from "node:fs/promises";
+ import path from "node:path";
+@@ -38,6 +39,13 @@ export function createRunnerInvocationSnapshot(
+   invocation?: RunnerInvocation | null,
+ ): RunnerInvocationSnapshot {
+   return {
++    runtime: invocation
++      ? localRuntimeEvidence(
++          invocation.argv[0] ?? "",
++          withPreferredRuntimePath(process.env, invocation.env),
++          invocation.repository_root,
++        )
++      : null,
+     executable: invocation?.argv[0] ?? null,
+     argv: [...(invocation?.argv ?? [])],
+     argv_count: invocation?.argv.length ?? 0,
+diff --git a/packages/agentplane/src/runner/execution-receipt.ts b/packages/agentplane/src/runner/execution-receipt.ts
+index d1a1815af..0a64d624e 100644
+--- a/packages/agentplane/src/runner/execution-receipt.ts
++++ b/packages/agentplane/src/runner/execution-receipt.ts
+@@ -141,11 +141,24 @@ export function createExecutionReceipt(opts: {
+       provenance: OBSERVED_PROVENANCE,
+       state: "not_evaluated",
+     } satisfies ExecutionReceiptScopeEvaluation);
++  const runtime = opts.process_result?.runtime;
++  const checks: ExecutionReceiptObservedCheck[] = runtime
++    ? [
++        ...opts.checks,
++        {
++          provenance: OBSERVED_PROVENANCE,
++          id: "local-runtime-resolution",
++          required: true,
++          status: runtime.status === "resolved" ? "passed" : "failed",
++          details: JSON.stringify(runtime),
++        },
++      ]
++    : opts.checks;
+   const successPolicy = evaluateExecutionSuccessPolicy({
+     process,
+     git: opts.git,
+     artifacts: opts.artifacts,
+-    checks: opts.checks,
++    checks,
+     collection,
+     scope_evaluation: scopeEvaluation,
+   });
+@@ -158,7 +171,7 @@ export function createExecutionReceipt(opts: {
+     process,
+     git: opts.git,
+     artifacts: opts.artifacts,
+-    checks: opts.checks,
++    checks,
+     collection,
+     scope_evaluation: scopeEvaluation,
+     success_policy: successPolicy,
+diff --git a/packages/agentplane/src/runner/process-supervision/result.ts b/packages/agentplane/src/runner/process-supervision/result.ts
+new file mode 100644
+index 000000000..f7ac1189e
+--- /dev/null
++++ b/packages/agentplane/src/runner/process-supervision/result.ts
+@@ -0,0 +1,42 @@
++import type { LocalRuntimeEvidence } from "../../shared/runtime-env.js";
++import type {
++  RunnerProcessSignal,
++  RunnerTimeoutReason,
++  RunnerProcessTreeObservation,
++} from "../types.js";
++
++export type SupervisedProcessResult = {
++  runtime?: LocalRuntimeEvidence;
++  exit_code: number | null;
++  exit_signal: RunnerProcessSignal | null;
++  stdout_tail: string;
++  stderr_tail: string;
++  stdout_bytes: number;
++  stderr_bytes: number;
++  pid: number | null;
++  started_at: string;
++  ended_at: string;
++  cancel_requested_at: string | null;
++  cancel_signal: RunnerProcessSignal | null;
++  timeout_reason: RunnerTimeoutReason | null;
++  timeout_requested_at: string | null;
++  terminate_sent_at: string | null;
++  kill_sent_at: string | null;
++  force_killed: boolean;
++  process_tree: RunnerProcessTreeObservation;
++  heartbeat_at: string;
++  trace_artifact_path: string | null;
++  trace_archive_path: string | null;
++  stderr_artifact_path: string | null;
++  stderr_archive_path: string | null;
++};
++
++export class SupervisedProcessExecutionError extends Error {
++  constructor(
++    readonly primary_error: Error,
++    readonly process_result: SupervisedProcessResult,
++  ) {
++    super(primary_error.message, { cause: primary_error });
++    this.name = "SupervisedProcessExecutionError";
++  }
++}
+diff --git a/packages/agentplane/src/runner/process-supervision/run.ts b/packages/agentplane/src/runner/process-supervision/run.ts
+index 180662d40..ce4d2b08a 100644
+--- a/packages/agentplane/src/runner/process-supervision/run.ts
++++ b/packages/agentplane/src/runner/process-supervision/run.ts
+@@ -1,3 +1,4 @@
++import { withPreferredRuntimePath, localRuntimeEvidence } from "../../shared/runtime-env.js";
+ import { startProcess } from "@agentplaneorg/core/process";
+ 
+ import {
+@@ -31,40 +32,8 @@ import { createTraceSession } from "./trace-session.js";
+ import { createTimeoutController } from "./timeout-controller.js";
+ import { createRunnerTerminationArbiter } from "./termination-arbiter.js";
+ 
+-export type SupervisedProcessResult = {
+-  exit_code: number | null;
+-  exit_signal: RunnerProcessSignal | null;
+-  stdout_tail: string;
+-  stderr_tail: string;
+-  stdout_bytes: number;
+-  stderr_bytes: number;
+-  pid: number | null;
+-  started_at: string;
+-  ended_at: string;
+-  cancel_requested_at: string | null;
+-  cancel_signal: RunnerProcessSignal | null;
+-  timeout_reason: RunnerTimeoutReason | null;
+-  timeout_requested_at: string | null;
+-  terminate_sent_at: string | null;
+-  kill_sent_at: string | null;
+-  force_killed: boolean;
+-  process_tree: RunnerProcessTreeObservation;
+-  heartbeat_at: string;
+-  trace_artifact_path: string | null;
+-  trace_archive_path: string | null;
+-  stderr_artifact_path: string | null;
+-  stderr_archive_path: string | null;
+-};
+-
+-export class SupervisedProcessExecutionError extends Error {
+-  constructor(
+-    readonly primary_error: Error,
+-    readonly process_result: SupervisedProcessResult,
+-  ) {
+-    super(primary_error.message, { cause: primary_error });
+-    this.name = "SupervisedProcessExecutionError";
+-  }
+-}
++import { SupervisedProcessExecutionError, type SupervisedProcessResult } from "./result.js";
++export { SupervisedProcessExecutionError, type SupervisedProcessResult } from "./result.js";
+ 
+ function errorFromUnknown(error: unknown): Error {
+   return error instanceof Error ? error : new Error(String(error));
+@@ -98,11 +67,13 @@ export async function runSupervisedProcess(opts: {
+       return;
+     }
+ 
++    const runtimeEnv = withPreferredRuntimePath(process.env, opts.invocation.env);
++    const runtime = localRuntimeEvidence(command, runtimeEnv, opts.invocation.repository_root);
+     const child = startProcess({
+       command,
+       args,
+       cwd: opts.invocation.repository_root,
+-      env: { ...process.env, ...opts.invocation.env },
++      env: runtimeEnv,
+       stdin: "pipe",
+       stdout: "pipe",
+       stderr: "pipe",
+@@ -222,7 +193,7 @@ export async function runSupervisedProcess(opts: {
+           at: started_at,
+           type: "runner_execute_start",
+           message: opts.start_message,
+-          data: buildInvocationEventData(opts.invocation, pid),
++          data: buildInvocationEventData(opts.invocation, pid, runtime),
+         },
+       });
+       await opts.assert_artifact_boundary?.("after recording process start");
+@@ -349,6 +320,7 @@ export async function runSupervisedProcess(opts: {
+       const supervision = currentState?.supervision;
+       const endedAt = processGroupObservation.completed_at;
+       const processResult: SupervisedProcessResult = {
++        runtime,
+         exit_code: typeof child.exitCode === "number" ? child.exitCode : null,
+         exit_signal: normalizeSignal(child.signalCode),
+         stdout_tail,
+@@ -558,6 +530,7 @@ export async function runSupervisedProcess(opts: {
+         await opts.assert_artifact_boundary?.("after finalizing process artifacts");
+         settled = true;
+         resolve({
++          runtime,
+           exit_code: code,
+           exit_signal: normalizedSignal,
+           stdout_tail,
+diff --git a/packages/agentplane/src/runner/process-supervision/state.ts b/packages/agentplane/src/runner/process-supervision/state.ts
+index 0154cbee8..3d41bec7b 100644
+--- a/packages/agentplane/src/runner/process-supervision/state.ts
++++ b/packages/agentplane/src/runner/process-supervision/state.ts
+@@ -1,3 +1,4 @@
++import type { LocalRuntimeEvidence } from "../../shared/runtime-env.js";
+ import { readRunnerRunState } from "../artifacts.js";
+ import type { RunnerInvocation, RunnerRunState, RunnerSupervisionState } from "../types.js";
+ import { monotonicNowMs } from "./clock.js";
+@@ -23,8 +24,10 @@ export function mergeSupervisionState(
+ export function buildInvocationEventData(
+   invocation: RunnerInvocation,
+   pid: number | null,
++  runtime?: LocalRuntimeEvidence,
+ ): Record<string, unknown> {
+   return {
++    ...(runtime ? { runtime } : {}),
+     executable: invocation.argv[0] ?? null,
+     argv_count: invocation.argv.length,
+     cwd: invocation.repository_root,
+diff --git a/packages/agentplane/src/runner/runtime-env.integration.test.ts b/packages/agentplane/src/runner/runtime-env.integration.test.ts
+new file mode 100644
+index 000000000..6aab98f2a
+--- /dev/null
++++ b/packages/agentplane/src/runner/runtime-env.integration.test.ts
+@@ -0,0 +1,166 @@
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { EXECUTION_RECEIPT_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
++import { createExecutionReceipt, writeExecutionReceipt } from "./execution-receipt.js";
++import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import path from "node:path";
++import os from "node:os";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { runSupervisedProcess } from "./process-supervision/run.js";
++import type { RunnerInvocation } from "./types.js";
++import { runShellCommand } from "../commands/shared/pr-meta/verify-log.js";
++import { resolveLocalExecutable, withPreferredRuntimePath } from "../shared/runtime-env.js";
++const roots: string[] = [];
++afterEach(async () => {
++  vi.unstubAllEnvs();
++  await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++async function fixture(prefix: string): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), prefix));
++  roots.push(root);
++  return root;
++}
++describe("production local subprocess runtime", () => {
++  it("reports absent Node instead of selecting Bun as Node under a Bun-hosted CLI", async () => {
++    const home = await fixture("agentplane-node-absent-");
++    const bun = resolveLocalExecutable("bun", withPreferredRuntimePath(process.env));
++    if (!bun) throw new Error("This subprocess regression requires the repository Bun toolchain.");
++    const moduleUrl = new URL("../shared/runtime-env.ts", import.meta.url).href;
++    const script = `import {resolvePreferredNodeExecutable} from ${JSON.stringify(moduleUrl)}; try { resolvePreferredNodeExecutable({HOME:${JSON.stringify(home)},PATH:""}); process.exitCode=2; } catch(error) { console.log(error.code); }`;
++    const result = await promisify(execFile)(bun, ["-e", script], { cwd: home });
++    expect(result.stdout.trim()).toBe("ENOENT");
++  });
++
++  it.skipIf(process.platform === "win32")(
++    "discovers a fixture HOME executable from both runner transports and verification",
++    async () => {
++      const home = await fixture("agentplane-runtime-production-");
++      const bin = path.join(home, ".bun", "bin");
++      await mkdir(bin, { recursive: true });
++      const executable = path.join(bin, "bun");
++      await writeFile(
++        executable,
++        `#!${process.execPath}\nprocess.stdout.write("fixture-runtime-ok\\n");\n`,
++      );
++      await chmod(executable, 0o755);
++      vi.stubEnv("HOME", home);
++      vi.stubEnv("PATH", "/usr/bin:/bin");
++      vi.stubEnv("BUN_INSTALL", "");
++      vi.stubEnv("NVM_BIN", "");
++      vi.stubEnv("VOLTA_HOME", "");
++      const parentPath = process.env.PATH;
++      for (const workOrder of ["standalone", "root:work-item", "profile-override"]) {
++        const runDir = path.join(home, workOrder.replace(":", "-"));
++        await mkdir(runDir);
++        const invocation: RunnerInvocation = {
++          adapter_id: "custom",
++          run_id: workOrder,
++          work_order_id: workOrder,
++          repository_root: home,
++          run_dir: runDir,
++          bundle_path: path.join(runDir, "bundle.json"),
++          state_path: path.join(runDir, "state.json"),
++          events_path: path.join(runDir, "events.jsonl"),
++          result_path: path.join(runDir, "result.json"),
++          receipt_path: path.join(runDir, "receipt.json"),
++          trace_path: path.join(runDir, "trace.jsonl"),
++          stderr_path: path.join(runDir, "stderr.log"),
++          trace_policy: { mode: "raw", max_tail_bytes: 65_536, capture_stderr: true },
++          timeout_policy: { wall_clock_ms: 10_000, idle_ms: 10_000, terminate_grace_ms: 100 },
++          bootstrap_path: null,
++          output_last_message_path: null,
++          argv: ["bun", "--version"],
++          env: {},
++          dry_run: false,
++        };
++        if (workOrder === "profile-override") {
++          const profileBin = path.join(runDir, "bin");
++          await mkdir(profileBin);
++          const profileExecutable = path.join(profileBin, "bun");
++          await writeFile(
++            profileExecutable,
++            `#!${process.execPath}\nprocess.stdout.write("profile-runtime-ok\\n");\n`,
++          );
++          await chmod(profileExecutable, 0o755);
++          invocation.env.PATH = profileBin;
++        }
++        await writeFile(
++          invocation.state_path,
++          JSON.stringify({
++            schema_version: 1,
++            runner_api_version: "1",
++            run_id: invocation.run_id,
++            adapter_id: invocation.adapter_id,
++            target: { kind: "task", task_id: "runtime-test" },
++            status: "prepared",
++            mode: "execute",
++            bundle_path: invocation.bundle_path,
++            result_path: invocation.result_path,
++            receipt_path: invocation.receipt_path,
++            bootstrap_path: null,
++            events_path: invocation.events_path,
++            trace_path: invocation.trace_path,
++            stderr_path: invocation.stderr_path,
++            trace_policy: invocation.trace_policy,
++            timeout_policy: invocation.timeout_policy,
++            created_at: "2026-08-30T00:00:00Z",
++            updated_at: "2026-08-30T00:00:00Z",
++          }),
++        );
++        const result = await runSupervisedProcess({
++          invocation,
++          stdin_text: "",
++          start_message: "runtime regression",
++        });
++        expect(result.exit_code).toBe(0);
++        expect(result.stdout_tail).toContain(
++          workOrder === "profile-override" ? "profile-runtime-ok" : "fixture-runtime-ok",
++        );
++        const baseline = structuredClone(EXECUTION_RECEIPT_V2_VALID_FIXTURE);
++        const receipt = createExecutionReceipt({
++          run_id: invocation.run_id,
++          work_order_id: invocation.work_order_id,
++          process_result: result,
++          started_at: result.started_at,
++          ended_at: result.ended_at,
++          capabilities_invoked: [],
++          git: baseline.git,
++          artifacts: [],
++          checks: [],
++          scope_evaluation: baseline.scope_evaluation,
++        });
++        await writeExecutionReceipt({
++          receipt_path: invocation.receipt_path,
++          reference_path: "receipt.json",
++          receipt,
++        });
++        const recorded = await readFile(invocation.receipt_path, "utf8");
++        expect(recorded).toContain(result.runtime!.environment_digest);
++        expect(
++          receipt.checks.find((check) => check.id === "local-runtime-resolution")?.status,
++        ).toBe("passed");
++        const eventText = await readFile(invocation.events_path, "utf8");
++        const events = eventText
++          .trim()
++          .split("\n")
++          .map(
++            (line) => JSON.parse(line) as { type: string; data: { runtime: { status: string } } },
++          );
++        expect(
++          events.find((event) => event.type === "runner_execute_start")?.data.runtime.status,
++        ).toBe("resolved");
++      }
++      expect(await runShellCommand("bun --version", home)).toMatchObject({
++        code: 0,
++        output: "fixture-runtime-ok\n",
++      });
++      expect(process.env.PATH).toBe(parentPath);
++      await rm(executable);
++      expect(resolveLocalExecutable("bun", { PATH: bin })).toBeNull();
++      expect(await runShellCommand("bun --version", home)).toMatchObject({
++        code: 1,
++        failure_kind: "infrastructure",
++      });
++    },
++  );
++});
+diff --git a/packages/agentplane/src/runner/types/state.ts b/packages/agentplane/src/runner/types/state.ts
+index a6e1f0f50..695cbc208 100644
+--- a/packages/agentplane/src/runner/types/state.ts
++++ b/packages/agentplane/src/runner/types/state.ts
+@@ -1,3 +1,4 @@
++import type { LocalRuntimeEvidence } from "../../shared/runtime-env.js";
+ import type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
+ import type {
+   RunnerEffectOperationRef,
+@@ -74,6 +75,7 @@ export type RunnerSupervisionState = {
+ export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;
+ 
+ export type RunnerInvocationSnapshot = {
++  runtime?: LocalRuntimeEvidence | null;
+   executable: string | null;
+   argv: string[];
+   argv_count: number;
+diff --git a/packages/agentplane/src/shared/runtime-env.test.ts b/packages/agentplane/src/shared/runtime-env.test.ts
+index 21b20784d..e1ead0aaf 100644
+--- a/packages/agentplane/src/shared/runtime-env.test.ts
++++ b/packages/agentplane/src/shared/runtime-env.test.ts
+@@ -1,16 +1,32 @@
+-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
++import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import os from "node:os";
+-import { describe, expect, it } from "vitest";
++import { afterEach, describe, expect, it } from "vitest";
+ 
+-import { resolvePreferredNodeExecutable, withPreferredRuntimePath } from "./runtime-env.js";
++import {
++  resolvePreferredNodeExecutable,
++  withPreferredRuntimePath,
++  resolveLocalExecutable,
++  localRuntimeEvidence,
++} from "./runtime-env.js";
++
++const roots: string[] = [];
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++async function fixture(prefix: string): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), prefix));
++  roots.push(root);
++  return root;
++}
+ 
+ describe("withPreferredRuntimePath", () => {
+-  it("prepends the preferred node runtime directory ahead of inherited PATH entries", async () => {
+-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-runtime-env-"));
++  it("preserves inherited PATH order and adds the available node runtime directory", async () => {
++    const root = await fixture("agentplane-runtime-env-");
+     const nvmBin = path.join(root, ".nvm", "versions", "node", "v24.11.1", "bin");
+     await mkdir(nvmBin, { recursive: true });
+     await writeFile(path.join(nvmBin, "node"), "", "utf8");
++    await chmod(path.join(nvmBin, "node"), 0o755);
+ 
+     const env = withPreferredRuntimePath({
+       PATH: "/tmp/custom/bin:/usr/bin",
+@@ -18,7 +34,8 @@ describe("withPreferredRuntimePath", () => {
+     });
+     const entries = String(env.PATH ?? "").split(path.delimiter);
+ 
+-    expect(entries[0]).toBe(nvmBin);
++    expect(entries[0]).toBe("/tmp/custom/bin");
++    expect(entries).toContain(nvmBin);
+     expect(entries).toContain("/tmp/custom/bin");
+     expect(entries).toContain("/usr/bin");
+   });
+@@ -46,12 +63,57 @@ describe("withPreferredRuntimePath", () => {
+ 
+ describe("resolvePreferredNodeExecutable", () => {
+   it("prefers NVM_BIN when available", async () => {
+-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-runtime-node-"));
++    const root = await fixture("agentplane-runtime-node-");
+     const nvmBin = path.join(root, "bin");
+     const nodePath = path.join(nvmBin, "node");
+     await mkdir(nvmBin, { recursive: true });
+     await writeFile(nodePath, "", "utf8");
++    await chmod(nodePath, 0o755);
+ 
+     expect(resolvePreferredNodeExecutable({ NVM_BIN: nvmBin })).toBe(nodePath);
+   });
+ });
++
++describe("deterministic local runtime resolution", () => {
++  it("keeps explicit profile PATH first and does not mutate either source", () => {
++    const base = { PATH: "/inherited/bin", HOME: "/fixture/home", SECRET: "not-evidence" };
++    const overrides = { PATH: "/profile/bin", BUN_INSTALL: "/profile/bun" };
++    const env = withPreferredRuntimePath(base, overrides);
++    expect(env.PATH!.split(path.delimiter).slice(0, 3)).toEqual([
++      "/profile/bin",
++      "/profile/bun/bin",
++      "/inherited/bin",
++    ]);
++    expect(base.PATH).toBe("/inherited/bin");
++    expect(overrides.PATH).toBe("/profile/bin");
++    expect(JSON.stringify(localRuntimeEvidence("missing-test-runtime", env))).not.toContain(
++      base.SECRET,
++    );
++  });
++
++  it("chooses the highest executable NVM version numerically", async () => {
++    const home = await fixture("agentplane-runtime-versions-");
++    for (const version of ["v9.0.0", "v24.1.0", "v25.0.0"]) {
++      const file = path.join(home, ".nvm", "versions", "node", version, "bin", "node");
++      await mkdir(path.dirname(file), { recursive: true });
++      await writeFile(file, "");
++      if (version !== "v25.0.0") await chmod(file, 0o755);
++    }
++    if (process.platform !== "win32")
++      expect(resolvePreferredNodeExecutable({ HOME: home, PATH: "" })).toContain("v24.1.0");
++  });
++
++  it("rejects implicit relative candidates and true absence", async () => {
++    const home = await fixture("agentplane-runtime-absent-");
++    expect(resolveLocalExecutable("node", { PATH: "." })).toBeNull();
++    expect(resolveLocalExecutable("./node", { PATH: home })).toBeNull();
++    expect(localRuntimeEvidence("absent-agentplane-runtime", { PATH: home })).toMatchObject({
++      status: "unavailable",
++      executable_digest: null,
++    });
++    const file = path.join(home, "node");
++    await writeFile(file, "not executable");
++    if (process.platform !== "win32")
++      expect(resolveLocalExecutable(file, { PATH: home })).toBeNull();
++  });
++});
+diff --git a/packages/agentplane/src/shared/runtime-env.ts b/packages/agentplane/src/shared/runtime-env.ts
+index bf8893746..54102b23f 100644
+--- a/packages/agentplane/src/shared/runtime-env.ts
++++ b/packages/agentplane/src/shared/runtime-env.ts
+@@ -1,4 +1,5 @@
+ import fs from "node:fs";
++import { createHash } from "node:crypto";
+ import os from "node:os";
+ import path from "node:path";
+ 
+@@ -10,37 +11,38 @@ function pushUnique(entries: string[], value: string): void {
+ 
+ export function withPreferredRuntimePath(
+   baseEnv: NodeJS.ProcessEnv = process.env,
++  overrides: NodeJS.ProcessEnv = {},
+ ): NodeJS.ProcessEnv {
+-  const env: NodeJS.ProcessEnv = { ...baseEnv };
+-  const pathEntries = String(baseEnv.PATH ?? "")
+-    .split(path.delimiter)
+-    .map((entry) => entry.trim())
+-    .filter(Boolean);
+-
+-  const preferredEntries: string[] = [];
+-  pushUnique(preferredEntries, path.dirname(resolvePreferredNodeExecutable(baseEnv)));
+-
+-  const bunInstallDir = String(baseEnv.BUN_INSTALL ?? "").trim();
+-  if (bunInstallDir) {
+-    pushUnique(preferredEntries, path.join(bunInstallDir, "bin"));
+-  }
+-
+-  const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
+-  if (homeDir) {
+-    pushUnique(preferredEntries, path.join(homeDir, ".bun", "bin"));
++  const env = { ...baseEnv, ...overrides };
++  const entries: string[] = [];
++  // Explicit profile PATH remains first. Inherited PATH keeps its original order.
++  for (const entry of String(overrides.PATH ?? "").split(path.delimiter))
++    pushUnique(entries, entry);
++  for (const [key, suffix] of [
++    ["NVM_BIN", ""],
++    ["VOLTA_HOME", "bin"],
++    ["BUN_INSTALL", "bin"],
++  ]) {
++    const root = env[key!]?.trim();
++    if (root && path.isAbsolute(root)) pushUnique(entries, path.join(root, suffix!));
+   }
+-
+-  for (const entry of pathEntries) {
+-    pushUnique(preferredEntries, entry);
++  for (const entry of String(baseEnv.PATH ?? "").split(path.delimiter)) pushUnique(entries, entry);
++  const home = env.HOME ?? os.homedir();
++  if (home && path.isAbsolute(home)) {
++    const nvmNode = readLatestNvmNodeBin(home);
++    if (nvmNode) pushUnique(entries, path.dirname(nvmNode));
++    pushUnique(entries, path.join(home, ".bun", "bin"));
+   }
+-
+-  env.PATH = preferredEntries.join(path.delimiter);
++  pushUnique(entries, path.dirname(process.execPath));
++  env.PATH = entries.join(path.delimiter);
+   return env;
+ }
+ 
+ function isExecutableFile(filePath: string): boolean {
+   try {
+-    return fs.statSync(filePath).isFile();
++    if (!path.isAbsolute(filePath) || !fs.statSync(filePath).isFile()) return false;
++    fs.accessSync(filePath, process.platform === "win32" ? fs.constants.F_OK : fs.constants.X_OK);
++    return true;
+   } catch {
+     return false;
+   }
+@@ -55,24 +57,32 @@ function readLatestNvmNodeBin(homeDir: string): string | null {
+     return null;
+   }
+ 
+-  const latest = entries
+-    .map((entry) => entry.trim())
+-    .filter(Boolean)
+-    .toSorted()
+-    .at(-1);
+-  if (!latest) return null;
+-
+-  const candidate = path.join(versionsDir, latest, "bin", "node");
+-  return isExecutableFile(candidate) ? candidate : null;
++  const versions = entries
++    .filter((entry) => /^v\d+\.\d+\.\d+$/.test(entry))
++    .toSorted((a, b) => {
++      const left = a.slice(1).split(".").map(Number);
++      const right = b.slice(1).split(".").map(Number);
++      for (let i = 0; i < 3; i++) {
++        const difference = right[i]! - left[i]!;
++        if (difference) return difference;
++      }
++      return 0;
++    });
++  for (const version of versions) {
++    const candidate = path.join(versionsDir, version, "bin", "node");
++    if (isExecutableFile(candidate)) return candidate;
++  }
++  return null;
+ }
+ 
+ export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = process.env): string {
+   const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
+   const candidates = [
+-    path.join(String(baseEnv.NVM_BIN ?? "").trim(), "node"),
+-    path.join(String(baseEnv.VOLTA_HOME ?? "").trim(), "bin", "node"),
++    baseEnv.NVM_BIN ? path.join(baseEnv.NVM_BIN, "node") : null,
++    baseEnv.VOLTA_HOME ? path.join(baseEnv.VOLTA_HOME, "bin", "node") : null,
++    resolveLocalExecutable("node", baseEnv),
+     homeDir ? readLatestNvmNodeBin(homeDir) : null,
+-    process.execPath,
++    typeof process.versions.bun === "string" ? null : process.execPath,
+   ];
+ 
+   for (const candidate of candidates) {
+@@ -80,5 +90,74 @@ export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = proc
+       return candidate;
+     }
+   }
+-  return process.execPath;
++  throw Object.assign(new Error("Node executable is unavailable in the selected local runtime."), {
++    code: "ENOENT",
++  });
++}
++
++export function resolveLocalExecutable(command: string, env: NodeJS.ProcessEnv): string | null {
++  if (path.isAbsolute(command)) return isExecutableFile(command) ? command : null;
++  if (command.includes("/") || command.includes("\\")) return null;
++  const extensions =
++    process.platform === "win32"
++      ? ["", ...(env.PATHEXT ?? ".EXE;.CMD;.BAT;.COM").split(";")]
++      : [""];
++  for (const directory of (env.PATH ?? "").split(path.delimiter)) {
++    if (!path.isAbsolute(directory)) continue;
++    for (const extension of extensions) {
++      const candidate = path.join(directory, command + extension);
++      if (isExecutableFile(candidate)) return candidate;
++    }
++  }
++  return null;
++}
++
++export type LocalRuntimeEvidence = {
++  kind: "local_runtime_resolution";
++  status: "resolved" | "unavailable";
++  executable_digest: string | null;
++  environment_digest: string;
++};
++
++function digest(value: string | Buffer): string {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++export function localRuntimeEvidence(
++  command: string,
++  env: NodeJS.ProcessEnv,
++  cwd?: string,
++): LocalRuntimeEvidence {
++  const candidate =
++    cwd && (command.includes("/") || command.includes("\\")) ? path.resolve(cwd, command) : command;
++  const executable = resolveLocalExecutable(candidate, env);
++  let executableDigest: string | null = null;
++  if (executable) {
++    try {
++      executableDigest = digest(fs.readFileSync(executable));
++    } catch {
++      /* Unreadable identity remains unqualified. */
++    }
++  }
++  return {
++    kind: "local_runtime_resolution",
++    status: executableDigest ? "resolved" : "unavailable",
++    executable_digest: executableDigest,
++    // Only runtime-selection inputs are bound. Secret environment values are never retained.
++    environment_digest: digest(
++      JSON.stringify([
++        env.PATH ?? "",
++        env.HOME ?? "",
++        env.NVM_BIN ?? "",
++        env.VOLTA_HOME ?? "",
++        env.BUN_INSTALL ?? "",
++        env.PATHEXT ?? "",
++      ]),
++    ),
++  };
++}
++
++export function isRuntimeInfrastructureError(error: unknown): boolean {
++  const code = (error as NodeJS.ErrnoException | null)?.code;
++  return code === "ENOENT" || code === "EACCES" || code === "ENOEXEC";
+ }
