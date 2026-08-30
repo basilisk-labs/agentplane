@@ -9,6 +9,7 @@ import {
   type KernelRecord,
 } from "./kernel-record.js";
 import { projectKernelTask } from "./kernel-projector.js";
+import { readKernelNextAction } from "./kernel-next-action.js";
 
 export type KernelAdapterResult =
   | {
@@ -45,6 +46,10 @@ export class KernelBackendAdapter {
     return readKernelRecord(await this.backend.getTask(taskId), this.repositoryIdentity);
   }
 
+  async nextAction(taskId: string, repositoryFingerprint: taskKernel.Sha256Digest) {
+    return readKernelNextAction(await this.read(taskId), repositoryFingerprint);
+  }
+
   private unavailable(
     code: Extract<KernelAdapterResult, { kind: "unavailable" }>["code"],
     ...facts: string[]
@@ -63,8 +68,9 @@ export class KernelBackendAdapter {
     );
   }
 
-  async create(task: TaskData, input: KernelCommandInput): Promise<KernelAdapterResult> {
-    if (!this.supportsMutation()) return this.unavailable("backend_capability_missing");
+  private repositoryRejection(
+    input: KernelCommandInput,
+  ): Extract<taskKernel.KernelResult, { kind: "rejected" }> | null {
     if (input.authority && input.authority.repository_identity !== this.repositoryIdentity) {
       return {
         kind: "rejected",
@@ -73,6 +79,13 @@ export class KernelBackendAdapter {
         required_action: null,
       };
     }
+    return null;
+  }
+
+  async create(task: TaskData, input: KernelCommandInput): Promise<KernelAdapterResult> {
+    if (!this.supportsMutation()) return this.unavailable("backend_capability_missing");
+    const rejection = this.repositoryRejection(input);
+    if (rejection) return rejection;
     if (input.command.kind !== "capture_intent" || input.command.task_id !== task.id) {
       return {
         kind: "rejected",
@@ -111,14 +124,8 @@ export class KernelBackendAdapter {
 
   async execute(input: KernelCommandInput): Promise<KernelAdapterResult> {
     if (!this.supportsMutation()) return this.unavailable("backend_capability_missing");
-    if (input.authority && input.authority.repository_identity !== this.repositoryIdentity) {
-      return {
-        kind: "rejected",
-        code: "AUTHORITY_SCOPE_EXCEEDED",
-        facts: ["repository_identity"],
-        required_action: null,
-      };
-    }
+    const rejection = this.repositoryRejection(input);
+    if (rejection) return rejection;
     const current = await this.read(input.command.task_id);
     if (current.kind !== "canonical")
       return this.unavailable(current.kind, ...("reason" in current ? [current.reason] : []));
@@ -144,6 +151,8 @@ export class KernelBackendAdapter {
 
   /** Comparison only: never writes or invokes a provider. */
   async preview(input: KernelCommandInput): Promise<taskKernel.KernelResult | KernelRead> {
+    const rejection = this.repositoryRejection(input);
+    if (rejection) return rejection;
     const current = await this.read(input.command.task_id);
     return current.kind === "canonical"
       ? taskKernel.reduceTaskCommand({ ...input, aggregate: current.record.aggregate })

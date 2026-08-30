@@ -759,6 +759,10 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         revision: runtime.revision + 1,
         attempt: command.action === "claim" ? runtime.attempt + 1 : runtime.attempt,
         claim_id: command.action === "claim" ? command.claim_id : runtime.claim_id,
+        // A new attempt cannot inherit the previous attempt's result or evidence.
+        result_digest: command.action === "claim" ? null : runtime.result_digest,
+        output_manifests: command.action === "claim" ? [] : runtime.output_manifests,
+        validation: command.action === "claim" ? null : runtime.validation,
       };
       const workItems = { ...aggregate.work_items, [command.work_item_id]: updated };
       next = {

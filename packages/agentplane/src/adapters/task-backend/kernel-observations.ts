@@ -2,6 +2,7 @@ import { taskKernel } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
 import { kernelValidationSchema } from "./kernel-record.js";
+import type { KernelRead } from "./kernel-record.js";
 
 const digest = z
   .string()
@@ -42,8 +43,34 @@ export type ObservationRejection = {
   code:
     | "observation_schema_invalid"
     | "observation_binding_mismatch"
+    | "observation_binding_unavailable"
     | "observation_effect_mismatch";
 };
+
+/** Operational document metadata does not participate in WorkItem review or validation identity. */
+export function bindKernelWorkItemEvidence(
+  read: KernelRead,
+  workItemId: string,
+  repositoryFingerprint: taskKernel.Sha256Digest,
+): { kind: "binding"; binding: KernelEvidenceBinding } | ObservationRejection {
+  if (read.kind !== "canonical")
+    return { kind: "rejected", code: "observation_binding_unavailable" };
+  const aggregate = read.record.aggregate;
+  const item = aggregate.work_items[workItemId];
+  if (aggregate.current_plan?.state !== "APPROVED" || !item?.result_digest)
+    return { kind: "rejected", code: "observation_binding_unavailable" };
+  return {
+    kind: "binding",
+    binding: binding.parse({
+      task_id: aggregate.id,
+      plan_revision: aggregate.current_plan.revision,
+      plan_digest: aggregate.current_plan.digest,
+      work_item_id: workItemId,
+      repository_fingerprint: repositoryFingerprint,
+      implementation_identity: item.result_digest,
+    }),
+  };
+}
 
 /** Validation transport returns evidence only. The supervisor separately submits a kernel command. */
 export function readKernelValidation(

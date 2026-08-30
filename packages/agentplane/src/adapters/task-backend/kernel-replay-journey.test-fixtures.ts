@@ -12,7 +12,14 @@ const effects: Record<ReplayTaskClass, string[]> = {
   direct: [],
   context: [],
   batch: ["pr.open", "pr.merge", "hosted.close"],
-  branch_pr: ["pr.open", "pr.merge", "hosted.close"],
+  branch_pr: [
+    "repository.commit",
+    "evaluator.review",
+    "pr.open",
+    "pr.merge",
+    "hosted.close",
+    "workspace.cleanup",
+  ],
   release: ["release.publish", "registry.publish"],
 };
 
@@ -38,7 +45,11 @@ export function kernelReplayJourney(taskClass: ReplayTaskClass) {
     repository_identity: replayRepositoryIdentity,
     repository_fingerprint: fingerprint,
     scope_roots: ["."],
-    repository_effects: ["repository_write"],
+    repository_effects: [
+      "repository_write",
+      ...effects[taskClass].filter((kind) => isRepositoryEffect(kind)),
+    ],
+    // Every ledger effect is external to the pure kernel. Requirements retain repository/provider scope.
     external_effects: effects[taskClass],
     capabilities: ["repository_write", "provider_write"],
     resources: [],
@@ -78,13 +89,33 @@ export function kernelReplayJourney(taskClass: ReplayTaskClass) {
     approval_evidence_digest: null,
     work_items: definitions,
   };
-  const steps: { label: string; input: KernelCommandInput }[] = [];
+  const steps: { label: string; input: KernelCommandInput; expected_next_reason: string }[] = [];
   type Payload = k.TaskCommand extends infer C
     ? C extends k.TaskCommand
       ? Omit<C, "task_id" | "expected_task_revision" | "expected_state_fingerprint">
       : never
     : never;
   function add(label: string, payload: Payload) {
+    const reasons: Record<string, string> = {
+      creation: "kernel_plan_required",
+      plan: "kernel_plan_approval_required",
+      approval: "kernel_work_item_materialization_required",
+      materialize: "kernel_work_item_claim_required",
+      claim: "kernel_work_item_execution_required",
+      begin: "kernel_work_item_result_required",
+      result: "kernel_work_item_inspection_required",
+      inspection: "kernel_work_item_validation_required",
+      validation: "kernel_work_item_validation_resolution_required",
+      "work-item-completion": "kernel_final_validation_required",
+      "final-validation": "kernel_task_completion_required",
+      completion: "kernel_task_completed",
+    };
+    const expectedNextReason = label.startsWith("prepare-")
+      ? "kernel_effect_dispatch_required"
+      : label.startsWith("observe-")
+        ? "kernel_final_validation_required"
+        : reasons[label];
+    if (!expectedNextReason) throw new Error(`Missing route expectation for ${label}`);
     const planAuthority =
       steps.length > 1 ? { ...authority, plan_revision: 1, plan_digest: plan.digest } : authority;
     const command = {
@@ -95,6 +126,7 @@ export function kernelReplayJourney(taskClass: ReplayTaskClass) {
     } as k.TaskCommand;
     steps.push({
       label,
+      expected_next_reason: expectedNextReason,
       input: {
         command,
         authority: {
@@ -196,9 +228,9 @@ export function kernelReplayJourney(taskClass: ReplayTaskClass) {
         observed_state_digest: null,
         execution_requirements: {
           scope_roots: [],
-          repository_effects: [],
-          external_effects: [kind],
-          capabilities: ["provider_write"],
+          repository_effects: isRepositoryEffect(kind) ? [kind] : [],
+          external_effects: isRepositoryEffect(kind) ? [] : [kind],
+          capabilities: [isRepositoryEffect(kind) ? "repository_write" : "provider_write"],
           resources: [],
         },
       },
@@ -213,4 +245,20 @@ export function kernelReplayJourney(taskClass: ReplayTaskClass) {
   add("final-validation", { kind: "record_final_validation", validation: validation(fingerprint) });
   add("completion", { kind: "complete_task" });
   return { task, steps };
+}
+
+function isRepositoryEffect(kind: string) {
+  return kind === "repository.commit" || kind === "workspace.cleanup";
+}
+
+/** Ledger checkpoints only. M3 must separately crash real commit, review, publish and cleanup adapters. */
+export function kernelReplayCrashPoints() {
+  const branch = kernelReplayJourney("branch_pr");
+  const release = kernelReplayJourney("release");
+  const seen = new Set(branch.steps.map((step) => step.label));
+  return [branch, release].flatMap((journey) =>
+    journey.steps.flatMap((step, index) =>
+      journey === release && seen.has(step.label) ? [] : [{ journey, step, index }],
+    ),
+  );
 }

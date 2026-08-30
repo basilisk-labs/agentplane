@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 import { taskKernel } from "@agentplaneorg/core/tasks";
+import type { TaskBackend } from "../../backends/task-backend.js";
+import type { KernelBackendAdapter } from "./kernel-backend-adapter.js";
 
 import { projectKernelTask } from "./kernel-projector.js";
 import {
@@ -44,6 +46,50 @@ export type ReplayIdentity = Readonly<{
   implementation_anchor: string;
   reproduction_command: string;
 }>;
+
+/** Compare actual read surfaces. No write or provider capability is accepted by this boundary. */
+export async function compareKernelReadPaths(
+  legacy: Pick<TaskBackend, "getTask">,
+  canonical: Pick<KernelBackendAdapter, "read" | "nextAction">,
+  taskId: string,
+  repositoryFingerprint: taskKernel.Sha256Digest,
+  identity: Omit<ReplayIdentity, "source_digest">,
+) {
+  const legacyTask = await legacy.getTask(taskId);
+  const canonicalRead = await canonical.read(taskId);
+  const sourceBytes = JSON.stringify(legacyTask);
+  const expected = legacyTask
+    ? {
+        task_id: legacyTask.id,
+        storage_revision: legacyTask.revision ?? null,
+        status: legacyTask.status,
+      }
+    : { kind: "missing" };
+  const actual =
+    canonicalRead.kind === "canonical"
+      ? {
+          task_id: canonicalRead.record.aggregate.id,
+          storage_revision: canonicalRead.task.revision ?? null,
+          status: projectKernelTask(canonicalRead.record.aggregate).status,
+        }
+      : canonicalRead.kind === "archived"
+        ? {
+            task_id: canonicalRead.archive.task_id,
+            storage_revision: canonicalRead.task.revision ?? null,
+            status: "DONE",
+          }
+        : { kind: canonicalRead.kind };
+  return {
+    source_bytes: sourceBytes,
+    comparison_scope: ["task_id", "storage_revision", "status"],
+    comparison: compareReplayObservations(
+      { ...identity, source_digest: replayBytesDigest(sourceBytes) },
+      expected,
+      actual,
+    ),
+    next_action: await canonical.nextAction(taskId, repositoryFingerprint),
+  };
+}
 
 export function replayBytesDigest(bytes: string): taskKernel.Sha256Digest {
   return `sha256:${createHash("sha256").update(bytes).digest("hex")}`;

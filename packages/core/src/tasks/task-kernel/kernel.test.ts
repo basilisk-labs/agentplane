@@ -415,6 +415,36 @@ describe("canonical task kernel reducer", () => {
     }
   });
 
+  it("starts rework with no result or validation inherited from the previous attempt", () => {
+    const state = aggregate({
+      work_items: {
+        kernel: {
+          ...runtime("REWORK_READY"),
+          result_digest: resultDigest,
+          output_manifests: [manifest()],
+          validation: validation(resultDigest),
+        },
+      },
+    });
+    const command = transitionCommand(state, "claim");
+    const result = reduceTaskCommand(input(state, command));
+    expect(result.kind).toBe("accepted");
+    if (result.kind !== "accepted") throw new Error("Rework claim rejected");
+    expect(result.aggregate.work_items.kernel).toMatchObject({
+      state: "CLAIMED",
+      attempt: 2,
+      result_digest: null,
+      output_manifests: [],
+      validation: null,
+    });
+    // A receipt replay does not advance the attempt again.
+    const replay = reduceTaskCommand({ ...input(state, command), aggregate: result.aggregate });
+    expect(replay.kind).toBe("accepted");
+    if (replay.kind !== "accepted") throw new Error("Claim replay rejected");
+    expect(replay.aggregate).toEqual(result.aggregate);
+    expect(replay.events).toEqual([]);
+  });
+
   it("rejects every WorkItem edge outside the closed action table", () => {
     const states: readonly WorkItemState[] = [
       "PLANNED",

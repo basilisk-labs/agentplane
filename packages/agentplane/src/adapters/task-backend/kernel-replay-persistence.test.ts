@@ -1,14 +1,20 @@
-import { mkdtemp, rm } from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
-import { makeTaskBackendDouble } from "@agentplane/testkit/task";
+import { execFileSync } from "node:child_process";
+import { rm, writeFile } from "node:fs/promises";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LocalBackend, type TaskBackend, type TaskData } from "../../backends/task-backend.js";
 import { KernelBackendAdapter } from "./kernel-backend-adapter.js";
 import { makeKernelRecord } from "./kernel-record.js";
+import { compareKernelReadPaths } from "./kernel-replay.js";
+import { bindKernelWorkItemEvidence, readKernelReview } from "./kernel-observations.js";
+import { captureKernelPersistenceFixture } from "./kernel-replay-capture.testkit.js";
+import {
+  kernelReplayStorage,
+  replayBackendKinds,
+  type ReplayBackendKind,
+} from "./kernel-replay-storage.testkit.js";
 import {
   kernelReplayJourney,
+  kernelReplayCrashPoints,
   replayRepositoryIdentity,
   replayTaskClasses,
 } from "./kernel-replay-journey.test-fixtures.js";
@@ -18,32 +24,179 @@ afterEach(async () => {
   vi.restoreAllMocks();
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
-async function storage(kind: "local" | "cloud-fake") {
-  if (kind === "local") {
-    const dir = await mkdtemp(path.join(os.tmpdir(), "kernel-replay-"));
-    roots.push(dir);
-    return { backend: new LocalBackend({ dir }), restart: () => new LocalBackend({ dir }) };
-  }
-  let saved: TaskData | null = null;
-  function client(): TaskBackend {
-    const base = makeTaskBackendDouble();
-    return makeTaskBackendDouble({
-      id: "cloud-fake",
-      capabilities: { ...base.capabilities, canonical_source: "remote", atomic_task_record: true },
-      getTask: () => Promise.resolve(structuredClone(saved)),
-      writeTask: (next, options) => {
-        if ((saved?.revision ?? 0) !== options?.expectedRevision)
-          return Promise.reject(new Error("CAS conflict"));
-        saved = structuredClone(next);
-        return Promise.resolve();
-      },
-    });
-  }
-  return { backend: client(), restart: client };
+const storage = (kind: ReplayBackendKind) => kernelReplayStorage(kind, roots);
+
+// The isolated driver alone supplies this destination. Normal tests never update frozen inputs.
+if (process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT) {
+  it("captures persistence observations at the isolated exact anchor", async () => {
+    const anchor = process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR;
+    if (!anchor || !/^[a-f0-9]{40}$/u.test(anchor)) throw new Error("Missing capture anchor");
+    expect(execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim()).toBe(anchor);
+    expect(
+      execFileSync("git", ["status", "--porcelain", "--untracked-files=no"], { encoding: "utf8" }),
+    ).toBe("");
+    const fixtures = [];
+    for (const backend of replayBackendKinds)
+      for (const taskClass of replayTaskClasses)
+        fixtures.push(await captureKernelPersistenceFixture(backend, taskClass, anchor));
+    await writeFile(
+      process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT!,
+      JSON.stringify({ schema_version: 1, source_anchor: anchor, fixtures }, null, 2) + "\n",
+      { flag: "wx" },
+    );
+  });
 }
 
 describe("canonical replay through persistence and restart", () => {
-  for (const backendKind of ["local", "cloud-fake"] as const) {
+  for (const taskClass of replayTaskClasses) {
+    it(`${taskClass} captures equal semantic observations across all storage modes`, async () => {
+      // This anchor belongs to the unit fixture. Only the isolated driver produces qualification proof.
+      const fixtures = [];
+      for (const backend of replayBackendKinds)
+        fixtures.push(await captureKernelPersistenceFixture(backend, taskClass, "0".repeat(40)));
+      for (const fixture of fixtures.slice(1)) {
+        expect(fixture.source_bytes).toBe(fixtures[0]!.source_bytes);
+        expect(fixture.expected).toEqual(fixtures[0]!.expected);
+      }
+      expect(fixtures[0]!.expected.at(-1)?.next_action.reason_code).toBe("kernel_task_completed");
+    });
+  }
+  for (const backendKind of replayBackendKinds) {
+    it(`${backendKind} keeps review fresh across metadata changes and rejects a replaced semantic result`, async () => {
+      const store = await storage(backendKind);
+      const journey = kernelReplayJourney("direct");
+      const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
+      for (const [index, step] of journey.steps.slice(0, 7).entries()) {
+        const result =
+          index === 0
+            ? await adapter.create(journey.task, step.input)
+            : await adapter.execute(step.input);
+        expect(result.kind).toBe("committed");
+      }
+      const fingerprint = journey.steps[0]!.input.repository_fingerprint;
+      const before = bindKernelWorkItemEvidence(
+        await adapter.read(journey.task.id),
+        "build",
+        fingerprint,
+      );
+      if (before.kind !== "binding") throw new Error(JSON.stringify(before));
+      const review = {
+        kind: "review",
+        binding: before.binding,
+        verdict: "PASS",
+        evidence_digests: [k.kernelDigest("review-evidence")],
+        findings: [],
+      };
+      const saved = await store.backend.getTask(journey.task.id);
+      if (!saved) throw new Error("Missing saved Task");
+      await store.backend.writeTask(
+        {
+          ...saved,
+          doc_updated_at: "2026-08-30T01:00:00.000Z",
+          doc_updated_by: "fixture-operator",
+          revision: saved.revision! + 1,
+        },
+        { expectedRevision: saved.revision },
+      );
+      const updated = await store.backend.getTask(journey.task.id);
+      expect(updated?.revision).toBe(saved.revision! + 1);
+      const metadata = bindKernelWorkItemEvidence(
+        await adapter.read(journey.task.id),
+        "build",
+        fingerprint,
+      );
+      expect(metadata).toEqual(before);
+      expect(readKernelReview(review, before.binding)).toMatchObject({
+        kind: "review",
+        verdict: "PASS",
+      });
+      let counter = 0;
+      const run = async (command: k.TaskCommand) => {
+        const current = await adapter.read(journey.task.id);
+        if (current.kind !== "canonical") throw new Error(JSON.stringify(current));
+        const result = await adapter.execute({
+          ...journey.steps[6]!.input,
+          command: { ...command, expected_task_revision: current.record.aggregate.revision },
+          mutation_id: `review-rework-${counter++}`,
+        });
+        expect(result.kind, JSON.stringify(result)).toBe("committed");
+      };
+      await run(journey.steps[7]!.input.command);
+      const validation = journey.steps[8]!.input.command;
+      if (validation.kind !== "record_work_item_validation")
+        throw new Error("Missing validation fixture");
+      await run({ ...validation, validation: { ...validation.validation, status: "FAILED" } });
+      const claim = journey.steps[4]!.input.command;
+      if (claim.kind !== "transition_work_item") throw new Error("Missing claim fixture");
+      await run({ ...claim, action: "rework" });
+      await run(claim);
+      const claimed = await adapter.read(journey.task.id);
+      expect(bindKernelWorkItemEvidence(claimed, "build", fingerprint)).toEqual({
+        kind: "rejected",
+        code: "observation_binding_unavailable",
+      });
+      await run(journey.steps[5]!.input.command);
+      const result = journey.steps[6]!.input.command;
+      if (result.kind !== "accept_work_item_result") throw new Error("Missing result fixture");
+      const changed = k.kernelDigest("changed-implementation");
+      await run({
+        ...result,
+        result_digest: changed,
+        output_manifests: result.output_manifests.map((output) => ({
+          ...output,
+          digest: changed,
+          attempt: 2,
+        })),
+      });
+      const after = bindKernelWorkItemEvidence(
+        await adapter.read(journey.task.id),
+        "build",
+        fingerprint,
+      );
+      if (after.kind !== "binding") throw new Error(JSON.stringify(after));
+      expect(readKernelReview(review, after.binding)).toEqual({
+        kind: "rejected",
+        code: "observation_binding_mismatch",
+      });
+    });
+
+    it(`${backendKind} reports an actual legacy projection mismatch without repairing or writing it`, async () => {
+      const store = await storage(backendKind);
+      const journey = kernelReplayJourney("direct");
+      const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
+      await adapter.create(journey.task, journey.steps[0]!.input);
+      const legacy = store.restart();
+      const read = legacy.getTask.bind(legacy);
+      vi.spyOn(legacy, "getTask").mockImplementation(async (id) => {
+        const task = await read(id);
+        return task ? { ...task, status: "DONE" } : task;
+      });
+      const legacyWrite = vi.spyOn(legacy, "writeTask");
+      const canonicalWrite = vi.spyOn(store.backend, "writeTask");
+      const comparison = await compareKernelReadPaths(
+        legacy,
+        adapter,
+        journey.task.id,
+        journey.steps[0]!.input.repository_fingerprint,
+        {
+          fixture_id: `${backendKind}-legacy-projection-mismatch`,
+          implementation_anchor: "runtime-test",
+          reproduction_command:
+            "bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
+        },
+      );
+      expect(comparison.comparison).toMatchObject({
+        matched: false,
+        first_divergent_field: '$["status"]',
+      });
+      expect(comparison.next_action).toMatchObject({
+        reason_code: "kernel_plan_required",
+        grants_authority: false,
+      });
+      expect(legacyWrite).not.toHaveBeenCalled();
+      expect(canonicalWrite).not.toHaveBeenCalled();
+    });
+
     it(`${backendKind} serializes competing resource claims and rejects a fresh conflicting retry`, async () => {
       const store = await storage(backendKind);
       const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
@@ -175,6 +328,29 @@ describe("canonical replay through persistence and restart", () => {
             record: result.record,
           });
           const write = vi.spyOn(reader.backend, "writeTask");
+          const legacyReader = store.restart();
+          const legacyWrite = vi.spyOn(legacyReader, "writeTask");
+          const comparison = await compareKernelReadPaths(
+            legacyReader,
+            reader,
+            task.id,
+            step.input.repository_fingerprint,
+            {
+              fixture_id: `${backendKind}-${taskClass}-${step.label}`,
+              implementation_anchor: "runtime-test",
+              reproduction_command: `bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts`,
+            },
+          );
+          expect(comparison.comparison, JSON.stringify(comparison)).toMatchObject({
+            matched: true,
+            first_divergent_field: null,
+          });
+          expect(comparison.next_action).toMatchObject({
+            reason_code: step.expected_next_reason,
+            grants_authority: false,
+          });
+          expect(legacyWrite).not.toHaveBeenCalled();
+          legacyWrite.mockRestore();
           expect(await reader.execute(step.input)).toMatchObject({
             kind: "committed",
             replayed: true,
@@ -189,8 +365,7 @@ describe("canonical replay through persistence and restart", () => {
       });
     }
     for (const mode of ["before-write", "after-write", "unknown-readback"] as const) {
-      const journey = kernelReplayJourney("branch_pr");
-      for (const [crashIndex, crashStep] of journey.steps.entries()) {
+      for (const { journey, step: crashStep, index: crashIndex } of kernelReplayCrashPoints()) {
         it(`${backendKind} ${mode} at ${crashStep.label} recovers without a duplicate mutation`, async () => {
           const store = await storage(backendKind);
           const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
@@ -234,6 +409,9 @@ describe("canonical replay through persistence and restart", () => {
             crashIndex + 1,
           );
           expect(resumedWrite).toHaveBeenCalledTimes(mode === "before-write" ? 1 : 0);
+          expect(
+            await restarted.nextAction(journey.task.id, crashStep.input.repository_fingerprint),
+          ).toMatchObject({ reason_code: crashStep.expected_next_reason, grants_authority: false });
         });
       }
     }

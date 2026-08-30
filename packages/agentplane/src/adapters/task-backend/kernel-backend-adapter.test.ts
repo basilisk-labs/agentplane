@@ -270,6 +270,29 @@ describe("canonical kernel persistence boundary", () => {
     ).toMatchObject({ kind: "rejected" });
     expect(write).not.toHaveBeenCalled();
   });
+
+  it("rejects foreign repository authority equally for preview, creation and execution", async () => {
+    const { adapter, backend } = await fixture();
+    await adapter.create(task(), input());
+    const before = await adapter.read(taskId);
+    const command = input();
+    command.authority = {
+      ...command.authority!,
+      repository_identity: taskKernel.kernelDigest("foreign-repository"),
+    };
+    const write = vi.spyOn(backend, "writeTask");
+    const refusal = {
+      kind: "rejected",
+      code: "AUTHORITY_SCOPE_EXCEEDED",
+      facts: ["repository_identity"],
+      required_action: null,
+    };
+    expect(await adapter.preview(command)).toEqual(refusal);
+    expect(await adapter.create(task(), command)).toEqual(refusal);
+    expect(await adapter.execute(command)).toEqual(refusal);
+    expect(write).not.toHaveBeenCalled();
+    expect(await adapter.read(taskId)).toEqual(before);
+  });
 });
 
 describe("kernel observation and backend contracts", () => {

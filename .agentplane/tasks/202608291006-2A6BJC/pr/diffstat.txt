@@ -1,24 +1,29 @@
+ .../clean-task-core-m2-replay-checkpoint.md        |   55 +
  docs/developer/harness-dev.mdx                     |   85 +
- .../task-backend/kernel-backend-adapter.test.ts    |  587 ++
- .../task-backend/kernel-backend-adapter.ts         |  193 +
+ .../task-backend/kernel-backend-adapter.test.ts    |  610 ++
+ .../task-backend/kernel-backend-adapter.ts         |  202 +
  .../task-backend/kernel-migration-source.ts        |  161 +
  .../adapters/task-backend/kernel-migration.test.ts |  350 +
  .../src/adapters/task-backend/kernel-migration.ts  |  341 +
- .../adapters/task-backend/kernel-observations.ts   |   95 +
+ .../adapters/task-backend/kernel-next-action.ts    |   94 +
+ .../adapters/task-backend/kernel-observations.ts   |  122 +
  .../src/adapters/task-backend/kernel-projector.ts  |   36 +
  .../task-backend/kernel-record-invariants.ts       |  101 +
  .../src/adapters/task-backend/kernel-record.ts     |  271 +
+ .../task-backend/kernel-replay-capture.testkit.ts  |   84 +
  .../kernel-replay-evidence.corpus.json             |  433 +
- .../kernel-replay-journey.test-fixtures.ts         |  216 +
+ .../kernel-replay-journey.test-fixtures.ts         |  264 +
  .../kernel-replay-migration.corpus.json            |  468 ++
  .../task-backend/kernel-replay-migration.test.ts   |  115 +
- .../task-backend/kernel-replay-persistence.test.ts |  241 +
+ .../task-backend/kernel-replay-persistence.test.ts |  419 +
+ .../task-backend/kernel-replay-storage.testkit.ts  |   48 +
  .../task-backend/kernel-replay.corpus.json         | 8712 ++++++++++++++++++++
  .../adapters/task-backend/kernel-replay.test.ts    |  282 +
- .../src/adapters/task-backend/kernel-replay.ts     |  128 +
+ .../src/adapters/task-backend/kernel-replay.ts     |  174 +
  .../task-backend/task-centric-backend-runtime.ts   |   13 +-
  .../src/backends/task-backend/local-backend.ts     |    1 +
  .../backends/task-backend/local-task-byte-store.ts |  128 +
+ .../task-backend/serialized-kernel-backend.ts      |   53 +
  .../src/backends/task-backend/shared/types.ts      |    2 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |    7 +-
  .../src/cli/run-cli/command-catalog/task.ts        |    8 +
@@ -27,8 +32,9 @@
  .../src/commands/task/show-kernel.test.ts          |   69 +
  packages/agentplane/src/commands/task/show.ts      |   40 +
  packages/agentplane/src/ports/task-byte-store.ts   |   19 +
- packages/core/src/tasks/task-kernel/kernel.test.ts |   46 +
- packages/core/src/tasks/task-kernel/kernel.ts      |   25 +
+ .../src/ports/task-record-serialization.ts         |    4 +
+ packages/core/src/tasks/task-kernel/kernel.test.ts |   76 +
+ packages/core/src/tasks/task-kernel/kernel.ts      |   29 +
  packages/core/src/tasks/task-kernel/model.ts       |    1 +
  .../baselines/v0.7-compatibility-candidate.json    |   90 +-
  scripts/bench/capture-kernel-evidence-replay.ts    |  213 +
@@ -36,6 +42,6 @@
  scripts/bench/capture-kernel-replay.ts             |  181 +
  .../agent-efficiency-dependency-manifest.mjs       |    6 +-
  scripts/bench/internal/kernel-replay-isolation.mjs |  105 +
- scripts/bench/qualify-kernel-replay.mjs            |  168 +
+ scripts/bench/qualify-kernel-replay.mjs            |  191 +
  .../check-compatibility-contract-baseline.mjs      |   91 +
- 40 files changed, 14341 insertions(+), 16 deletions(-)
+ 46 files changed, 15067 insertions(+), 16 deletions(-)

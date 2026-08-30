@@ -17,6 +17,12 @@ import {
 
 const sourceRoot = realpathSync(process.cwd());
 const anchor = process.argv[2];
+const captureOutput =
+  process.argv[3] === "--capture" && process.argv.length === 5
+    ? path.resolve(process.argv[4])
+    : null;
+if (process.argv.length > 3 && !captureOutput)
+  throw new Error("Expected --capture <new-output-file>");
 if (!anchor || !/^[a-f0-9]{40}$/u.test(anchor))
   throw new Error("Pass an exact committed replay anchor.");
 const relativeDriver = "scripts/bench/qualify-kernel-replay.mjs";
@@ -50,6 +56,7 @@ try {
   const { modules, mappings } = linkReplayDependencies(sourceRoot, checkout);
   const config = path.join(checkout, ".kernel-replay.config.mjs");
   const reportFile = path.join(temporary, "report.json");
+  const capturedFile = path.join(temporary, "persistence-corpus.json");
   // The anchored config resolves workspace packages from this checkout. Reject a source leak.
   writeFileSync(
     config,
@@ -76,8 +83,11 @@ export default {
     "packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts",
     "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
     "packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts",
+    "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts",
     "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
     "packages/core/src/tasks/task-kernel/kernel.test.ts",
+    "packages/core/src/tasks/task-kernel/invariants.test.ts",
+    "packages/core/src/tasks/task-kernel/model.test.ts",
   ];
   const command = [
     path.join(modules, "vitest/vitest.mjs"),
@@ -95,6 +105,11 @@ export default {
       timeout: 600_000,
       maxBuffer: 32 * 1024 * 1024,
       stdio: "pipe",
+      env: {
+        ...process.env,
+        AGENTPLANE_KERNEL_CAPTURE_OUTPUT: captureOutput ? capturedFile : "",
+        AGENTPLANE_KERNEL_CAPTURE_ANCHOR: captureOutput ? anchor : "",
+      },
     });
   } catch (error) {
     failure = error;
@@ -123,6 +138,14 @@ export default {
     encoding: "utf8",
   });
   if (dirty !== "") throw new Error("Replay changed exact-anchor tracked files.");
+  // Export only after all tests, dependency checks and source-containment checks pass.
+  if (captureOutput && outcome.success) {
+    const captured = readFileSync(capturedFile);
+    const value = JSON.parse(captured.toString("utf8"));
+    if (value.source_anchor !== anchor || value.fixtures.length !== 15)
+      throw new Error("Incomplete or incorrectly anchored persistence capture");
+    writeFileSync(captureOutput, captured, { flag: "wx" });
+  }
   const corpusPaths = [
     "kernel-replay.corpus.json",
     "kernel-replay-migration.corpus.json",
