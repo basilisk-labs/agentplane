@@ -1,0 +1,102 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.\nScope: deterministic local runtime and verification integration after base reconciliation\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.\nScope: deterministic local runtime and verification integration after base reconciliation\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.\nScope: deterministic local runtime and verification integration after base reconciliation\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.\nScope: deterministic local runtime and verification integration after base reconciliation\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: Full local CI exited 0 after conflict resolution. Implementation SHA 26b69b0fece6e4d9a8dfd013d6cafefadd4acf61; published artifact-only descendant a5debd7e6387a3ac88fc32f5adc9379b52d76972. Build, runtime, docs-schema, core and CLI groups passed; Windows platform-critical 98 tests passed; significant coverage passed. Raw log sha256:48c10c7a0636aa08814235dc605e50125c1412ae96b7e0d68c6c6c79a1524c06. Hosted integration remains a separate pending gate.\nScope: deterministic local runtime and verification integration after base reconciliation\n\nCheck: affected_unit_integration\nCommand: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/shared/runtime-env.test.ts packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts\nResult: pass\nEvidence: 34 tests in 3 files passed; preserved dotenv isolation, explicit parent values, runtime normalization and frozen verification mapping.\nScope: semantic conflict resolution",
+  "digest": "sha256:d90a1a6cc3ce13d126465b57baafc2c5ad18835cd0666c9c776bf531b8fa36b9",
+  "implementation_sha": "daf594dbe372635d26bb67af0b9ee83ef6ac3c40",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:0bf070b6569b257fe541d64d43cf16d2b4a6a2952a41346f895a9190e1c5160b",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:6080777549fd448fc7d9696af1d4ca7a7b605c4e4c868ca9ec6cc7b9227c263a",
+      "digest": "sha256:5fe59d691b60e0cf5d2b237106eb7bada3634af2b5508bde8eacff374630d630",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:640f8aec48127e3ba302a59bafeded23ebf7d2e8e6f87d95933381f13e024f8d",
+      "primary_task_id": "202608251706-V287W1",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608251706-V287W1"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:53b4a1558f746393b33c387eefb753f0241e151383dd9e58e4482dd3c4694a4f",
+      "strategy": "branch_diff",
+      "target_sha": "daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:46d9f32d322f7fa9527cfcdce93be5264c1b4c6ef44e77a59bafcb0d1bebfe1a",
+    "verify_steps_digest": "sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: full local CI and 34 control tests passed after semantic conflict resolution at 26b69b0fe; hosted integration remains pending.",
+  "recorded_at": "2026-08-30T05:56:53.203Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run standalone and root-referenced child Tasks through agent, Supervisor, verification, and recovery subprocesses. Expected: identical executable resolution and shared environment semantics.\n2. Restart from base and child worktree. Expected: deterministic toolchain identity and preserved root provenance.\n3. Change PATH or toolchain. Expected: old receipts cannot be reused and authority remains canonical rather than environment-derived.\n4. Omit a required executable. Expected: typed infrastructure failure, not product failure or authority widening.\n5. Run runtime, subprocess, receipt, installed CLI, and root-child integration tests.",
+  "scope_digest": "sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656",
+  "task_id": "202608251706-V287W1",
+  "verification_command": "agentplane verify 202608251706-V287W1 --ok --by TESTER",
+  "verifier": "TESTER"
+}

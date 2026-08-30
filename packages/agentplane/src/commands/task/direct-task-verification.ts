@@ -7,6 +7,11 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
+import {
+  localRuntimeEvidence,
+  isRuntimeInfrastructureError,
+  type LocalRuntimeEvidence,
+} from "../../shared/runtime-env.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
@@ -26,6 +31,8 @@ const BUN_ZERO_TEST_PATTERNS = [
 ] as const;
 
 type DirectTaskCheck = {
+  runtime?: LocalRuntimeEvidence;
+  failure_kind?: "infrastructure";
   command: string;
   declared_command?: string;
   script: string | null;
@@ -451,30 +458,36 @@ export async function runDirectTaskVerification(opts: {
       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
     }
     const started = Date.now();
+    const env = verificationChildEnv();
+    const runtime = localRuntimeEvidence(parsed.executable, env);
     try {
       const executed = await (opts.run_process ?? runProcess)({
         command: parsed.executable,
         args: parsed.args,
         cwd: opts.cwd,
-        env: verificationChildEnv(),
+        env,
         timeoutMs:
           additionalTimeouts.get(declaredCommand) ?? directTaskCheckTimeoutMs(parsed.script),
         maxBuffer: 1024 * 1024,
         reject: false,
       });
       checks.push({
+        runtime,
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
         check_ids: checkIdsForCommand(command, selectedChecks),
-        exit_code: executed.exitCode,
+        exit_code: Number.isInteger(executed.exitCode) ? executed.exitCode : null,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: tail(executed.stdout),
         stderr_tail: tail(executed.stderr),
       });
       if (executed.exitCode !== 0) {
+        const infrastructure =
+          runtime.status === "unavailable" || isRuntimeInfrastructureError(executed);
+        if (infrastructure) checks[checks.length - 1]!.failure_kind = "infrastructure";
         const result = {
-          status: "failed" as const,
+          status: infrastructure ? ("unsupported" as const) : ("failed" as const),
           checks,
           reason: `Declared check failed: ${command}`,
         };
@@ -490,6 +503,7 @@ export async function runDirectTaskVerification(opts: {
       }
     } catch (error) {
       checks.push({
+        runtime,
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
@@ -499,8 +513,12 @@ export async function runDirectTaskVerification(opts: {
         stdout_tail: "",
         stderr_tail: error instanceof Error ? tail(error.message) : "unknown process failure",
       });
+      if (isRuntimeInfrastructureError(error))
+        checks[checks.length - 1]!.failure_kind = "infrastructure";
       const result = {
-        status: "failed" as const,
+        status: isRuntimeInfrastructureError(error)
+          ? ("unsupported" as const)
+          : ("failed" as const),
         checks,
         reason: `Declared check could not run: ${command}`,
       };

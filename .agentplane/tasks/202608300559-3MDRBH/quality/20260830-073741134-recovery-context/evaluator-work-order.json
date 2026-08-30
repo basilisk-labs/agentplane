@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608300559-3MDRBH-a9b2c15a2b1bafb09f3d2a77",
+  "prepared_at": "2026-08-30T07:37:41.134Z",
+  "task": {
+    "id": "202608300559-3MDRBH",
+    "revision": 16,
+    "objective": "Preserve semantic conflict resolutions in evaluator target selection\n\nFix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "git diff --check",
+      "- In scope: Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks.\n- Out of scope: unrelated refactors not required for \"Preserve semantic conflict resolutions in evaluator target selection\".",
+      "Fix the proven semantic-merge review-target omission in one bounded bootstrap WorkItem. Preserve clean-merge reuse and all current verification gates.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "4965f5946821add1c769ac4ec22d3067dc58965b",
+  "diff_base_sha": "cbc5d79d1510293de3b4c30b61679cdef85d0fdb",
+  "blueprint_digest": "9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608300559-3MDRBH/quality/20260830-073741134-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:196a3bf38270e27c9973947c634f9b1a1cf07a49994be79a38db05252f935864",
+    "prompt_path": ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/130cadecdd31dc99c96a1a4189b3fe56146738b9fd2cf80d7af9bf01d7aa734d.md",
+    "result_schema_path": ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608300559-3MDRBH/README.md",
+      "sha256": "sha256:0b0858eab73b515374c4c9186f476c391673ef59acea076e8c65616d4cfc63eb",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/02f578d2ea062c5565f0bba0d4b1dc388af995ca5758fda778bea0f1f463c8b9.patch",
+      "sha256": "sha256:02f578d2ea062c5565f0bba0d4b1dc388af995ca5758fda778bea0f1f463c8b9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/99309024825c358babd09f5e173e52ceb1ee8cb295cbb9ad66872385dc2a3815.json",
+      "sha256": "sha256:99309024825c358babd09f5e173e52ceb1ee8cb295cbb9ad66872385dc2a3815",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608300559-3MDRBH/verification/20260830073707987-6ce4f8a4b341d25d.json",
+      "sha256": "sha256:6ce395c4f1a7d03b5286556f61b053e9d2799285e6deabc0613dc5713265c767",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608300559-3MDRBH/quality/objects/sha256/454559bbdf43e63f531eaec3b6d6ff2b9d820eb5a6a7bab1d7043cda2bada027.json",
+      "sha256": "sha256:454559bbdf43e63f531eaec3b6d6ff2b9d820eb5a6a7bab1d7043cda2bada027",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

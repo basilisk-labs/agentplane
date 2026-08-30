@@ -19,7 +19,9 @@ describe("verification child environment", () => {
       AGENTPLANE_RUNTIME_ACTIVE_BIN: "/repo/packages/agentplane/bin/agentplane.js",
     };
 
-    expect(verificationChildEnv(source)).toEqual({ SAFE_PARENT_VALUE: "preserved" });
+    const { PATH: runtimePath, ...clean } = verificationChildEnv(source);
+    expect(clean).toEqual({ SAFE_PARENT_VALUE: "preserved" });
+    expect(runtimePath).toBeTruthy();
     expect(source).toHaveProperty("AGENTPLANE_CLOUD_ENDPOINT");
     expect(source).toHaveProperty("AGENTPLANE_DOTENV_LOADED_KEYS");
   });
@@ -30,7 +32,10 @@ describe("verification child environment", () => {
       GITHUB_TOKEN: "explicit-parent-token",
     };
 
-    expect(verificationChildEnv(source)).toEqual(source);
+    const { PATH: runtimePath, ...clean } = verificationChildEnv(source);
+    expect(clean).toEqual(source);
+    expect(runtimePath).toBeTruthy();
+    expect(source).not.toHaveProperty("PATH");
   });
 
   it("isolates dotenv values in the declared verification subprocess", async () => {

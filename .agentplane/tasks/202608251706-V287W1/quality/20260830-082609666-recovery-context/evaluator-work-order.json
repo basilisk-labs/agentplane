@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608251706-V287W1-114e29af509e77cb1a2ba72d",
+  "prepared_at": "2026-08-30T08:26:09.666Z",
+  "task": {
+    "id": "202608251706-V287W1",
+    "revision": 40,
+    "objective": "AP-RUNTIME-001 Make local execution runtime deterministic\n\nObserved symptom: verification can report `bun: command not found` even though Bun is installed and available on the host. The violated invariant is that verification of the same execution contract on the same repository state must not depend on the parent shell PATH.\n\nConfirm the root cause across agents, Supervisor, verification, and recovery subprocess production paths; do not assume Supervisor is the sole owner. Implement one centralized executable resolver and normalized local runtime environment shared by those local paths by default. Explicit runtime profiles and task or execution overrides take precedence. Do not encode user-specific absolute paths or create per-agent PATH configuration as the default. Distinguish executable-resolution or environment failure from implementation or test failure; split a follow-up Task if typed classification requires a separate architectural change.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "git diff --check",
+      "- In scope: trace executable and environment propagation through the production launch paths for agents, Supervisor, verification, and recovery subprocesses; define and implement one shared local runtime resolver; preserve inherited host PATH entries while adding supported standard runtime locations deterministically; enforce precedence for explicit runtime profiles and task or execution overrides; emit enough structured evidence to distinguish resolution failure from implementation or test failure; add production-path regressions for reduced PATH and true executable absence.\n- Required invariant: verification of one execution contract on one repository state does not change solely because AgentPlane was launched from a different parent shell PATH.\n- Required regression: launch the production execution path with a deliberately reduced parent PATH and an isolated fixture home containing Bun in a supported standard location; prove the resolved Bun is executed.\n- Required fail-closed regression: remove Bun from both PATH and every supported standard location; prove no unrelated executable is selected and the outcome is an explicit infrastructure or executable-resolution failure, not an implementation failure.\n- Out of scope: user-specific absolute paths; per-agent PATHs as the default model; container or remote runtime unification; release 0.7.8 scope; redesign of the full verification-result taxonomy when it can be isolated as a follow-up Task.",
+      "Plan one cohesive runtime implementation WorkItem with shared resolver hardening, production propagation and evidence qualification. Reuse runtime-env.ts; preserve explicit overrides and canonical authority.",
+      "1. Run standalone and root-referenced child Tasks through agent, Supervisor, verification, and recovery subprocesses. Expected: identical executable resolution and shared environment semantics.\n2. Restart from base and child worktree. Expected: deterministic toolchain identity and preserved root provenance.\n3. Change PATH or toolchain. Expected: old receipts cannot be reused and authority remains canonical rather than environment-derived.\n4. Omit a required executable. Expected: typed infrastructure failure, not product failure or authority widening.\n5. Run runtime, subprocess, receipt, installed CLI, and root-child integration tests."
+    ]
+  },
+  "evaluated_sha": "26b69b0fece6e4d9a8dfd013d6cafefadd4acf61",
+  "diff_base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+  "blueprint_digest": "1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608251706-V287W1/quality/20260830-082609666-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:02850775bee839cb0177f8e54c740d5663c8c8dfc51b221b3f0f1349c051be25",
+    "prompt_path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/664fd24ccab5f37a056a6f4a99cf91bd9c3965a1b79376b5a382ee6c8c7ef90c.md",
+    "result_schema_path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608251706-V287W1/README.md",
+      "sha256": "sha256:3e207074b542b2710b805aaf598ade1beabc0ec293f45e547b51789489e62989",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch",
+      "sha256": "sha256:59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/748cd92033b5ef7ccd952b387c265796da22207b471f228e089eb4a916d80ca5.json",
+      "sha256": "sha256:748cd92033b5ef7ccd952b387c265796da22207b471f228e089eb4a916d80ca5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608251706-V287W1/verification/20260830081115015-c2db9bdb55e298d1.json",
+      "sha256": "sha256:1c1a02b51aee3b7efd86fe988e2fbd1805357868d1bc9a6fae571223cc016689",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/b724ae0edf9bc8c91af145edbf996f54aea38e60d9a39f39c83a0e333a911643.json",
+      "sha256": "sha256:b724ae0edf9bc8c91af145edbf996f54aea38e60d9a39f39c83a0e333a911643",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

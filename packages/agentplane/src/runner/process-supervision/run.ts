@@ -1,3 +1,4 @@
+import { withPreferredRuntimePath, localRuntimeEvidence } from "../../shared/runtime-env.js";
 import { startProcess } from "@agentplaneorg/core/process";
 
 import {
@@ -31,40 +32,8 @@ import { createTraceSession } from "./trace-session.js";
 import { createTimeoutController } from "./timeout-controller.js";
 import { createRunnerTerminationArbiter } from "./termination-arbiter.js";
 
-export type SupervisedProcessResult = {
-  exit_code: number | null;
-  exit_signal: RunnerProcessSignal | null;
-  stdout_tail: string;
-  stderr_tail: string;
-  stdout_bytes: number;
-  stderr_bytes: number;
-  pid: number | null;
-  started_at: string;
-  ended_at: string;
-  cancel_requested_at: string | null;
-  cancel_signal: RunnerProcessSignal | null;
-  timeout_reason: RunnerTimeoutReason | null;
-  timeout_requested_at: string | null;
-  terminate_sent_at: string | null;
-  kill_sent_at: string | null;
-  force_killed: boolean;
-  process_tree: RunnerProcessTreeObservation;
-  heartbeat_at: string;
-  trace_artifact_path: string | null;
-  trace_archive_path: string | null;
-  stderr_artifact_path: string | null;
-  stderr_archive_path: string | null;
-};
-
-export class SupervisedProcessExecutionError extends Error {
-  constructor(
-    readonly primary_error: Error,
-    readonly process_result: SupervisedProcessResult,
-  ) {
-    super(primary_error.message, { cause: primary_error });
-    this.name = "SupervisedProcessExecutionError";
-  }
-}
+import { SupervisedProcessExecutionError, type SupervisedProcessResult } from "./result.js";
+export { SupervisedProcessExecutionError, type SupervisedProcessResult } from "./result.js";
 
 function errorFromUnknown(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
@@ -98,11 +67,13 @@ export async function runSupervisedProcess(opts: {
       return;
     }
 
+    const runtimeEnv = withPreferredRuntimePath(process.env, opts.invocation.env);
+    const runtime = localRuntimeEvidence(command, runtimeEnv, opts.invocation.repository_root);
     const child = startProcess({
       command,
       args,
       cwd: opts.invocation.repository_root,
-      env: { ...process.env, ...opts.invocation.env },
+      env: runtimeEnv,
       stdin: "pipe",
       stdout: "pipe",
       stderr: "pipe",
@@ -222,7 +193,7 @@ export async function runSupervisedProcess(opts: {
           at: started_at,
           type: "runner_execute_start",
           message: opts.start_message,
-          data: buildInvocationEventData(opts.invocation, pid),
+          data: buildInvocationEventData(opts.invocation, pid, runtime),
         },
       });
       await opts.assert_artifact_boundary?.("after recording process start");
@@ -349,6 +320,7 @@ export async function runSupervisedProcess(opts: {
       const supervision = currentState?.supervision;
       const endedAt = processGroupObservation.completed_at;
       const processResult: SupervisedProcessResult = {
+        runtime,
         exit_code: typeof child.exitCode === "number" ? child.exitCode : null,
         exit_signal: normalizeSignal(child.signalCode),
         stdout_tail,
@@ -558,6 +530,7 @@ export async function runSupervisedProcess(opts: {
         await opts.assert_artifact_boundary?.("after finalizing process artifacts");
         settled = true;
         resolve({
+          runtime,
           exit_code: code,
           exit_signal: normalizedSignal,
           stdout_tail,

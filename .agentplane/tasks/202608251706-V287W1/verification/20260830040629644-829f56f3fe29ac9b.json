@@ -1,0 +1,102 @@
+{
+  "details": null,
+  "digest": "sha256:829f56f3fe29ac9b914adfeb636d7be25f21b73441a1b0bf2b9bfab7a794a8ff",
+  "implementation_sha": "eaf67c9057bbb3ac9334088848157986aa890290",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:5e5785f7dbf868f12f3f7ce627af61ab0f610ba934819952bf4c544bdc57ec87",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:640f8aec48127e3ba302a59bafeded23ebf7d2e8e6f87d95933381f13e024f8d",
+      "primary_task_id": "202608251706-V287W1",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608251706-V287W1"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+      "digest": "sha256:f8de01b3ac8d7bf9734bc34126931926017130fc7bf8cf18e925516bf8577020",
+      "strategy": "branch_diff",
+      "target_sha": "eaf67c9057bbb3ac9334088848157986aa890290"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:3fb5782b59bee02bd4796e2e31caf958dd39775e3b6f444a3d06ea9db63bff8b",
+    "verify_steps_digest": "sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656"
+  },
+  "kind": "task_verification_record",
+  "note": "Committed diff check failed after ESLint autofix: custom-security.test.ts contains trailing whitespace at lines 337, 342, 347 and 352 in implementation 9ae23e29f. No semantic test failure. Remove whitespace and requalify through a fresh executor packet.",
+  "recorded_at": "2026-08-30T04:06:29.644Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run standalone and root-referenced child Tasks through agent, Supervisor, verification, and recovery subprocesses. Expected: identical executable resolution and shared environment semantics.\n2. Restart from base and child worktree. Expected: deterministic toolchain identity and preserved root provenance.\n3. Change PATH or toolchain. Expected: old receipts cannot be reused and authority remains canonical rather than environment-derived.\n4. Omit a required executable. Expected: typed infrastructure failure, not product failure or authority widening.\n5. Run runtime, subprocess, receipt, installed CLI, and root-child integration tests.",
+  "scope_digest": "sha256:6b4a90a00629d4251c2e20a1c8d0affcac23f80998acbda3ba0aa60559c77656",
+  "task_id": "202608251706-V287W1",
+  "verification_command": "agentplane task verify rework 202608251706-V287W1 --rework --by TESTER",
+  "verifier": "TESTER"
+}

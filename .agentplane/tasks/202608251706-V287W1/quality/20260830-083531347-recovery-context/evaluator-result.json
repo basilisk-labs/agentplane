@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "runtime-review-1",
+      "severity": "medium",
+      "summary": "Shared runtime normalization reaches supervised process launch, invocation identity and direct verification. Explicit profile PATH precedence and deterministic supported fallback selection are preserved.",
+      "broken_invariant": "Runtime selection must be deterministic and verification must bind the exact semantic merge.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch"
+        }
+      ]
+    },
+    {
+      "id": "runtime-review-2",
+      "severity": "medium",
+      "summary": "Executable, Node/Bun toolchain and runtime-selection environment digests bind prepared input and execution receipts. Missing/unexecutable runtime errors remain infrastructure failures.",
+      "broken_invariant": "Runtime selection must be deterministic and verification must bind the exact semantic merge.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch"
+        }
+      ]
+    },
+    {
+      "id": "runtime-review-3",
+      "severity": "medium",
+      "summary": "Conflict resolution preserves dotenv isolation before runtime selection. No quality receipt or immutable evidence was hand-edited. Historical direct-supervision metadata targets the earlier implementation; the fresh exact-merge verification record is the authoritative check evidence.",
+      "broken_invariant": "Runtime selection must be deterministic and verification must bind the exact semantic merge.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch"
+        }
+      ]
+    },
+    {
+      "id": "runtime-review-4",
+      "severity": "medium",
+      "summary": "All 48 focused tests passed across five runtime, production propagation, verification environment and prepared-input security suites.",
+      "broken_invariant": "Runtime selection must be deterministic and verification must bind the exact semantic merge.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/59372fd7e1eb14ddeee2f0f8a1dd5dc2a6aca5631402b026475a6272cbf93a4b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

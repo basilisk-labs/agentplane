@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 
@@ -10,37 +11,38 @@ function pushUnique(entries: string[], value: string): void {
 
 export function withPreferredRuntimePath(
   baseEnv: NodeJS.ProcessEnv = process.env,
+  overrides: NodeJS.ProcessEnv = {},
 ): NodeJS.ProcessEnv {
-  const env: NodeJS.ProcessEnv = { ...baseEnv };
-  const pathEntries = String(baseEnv.PATH ?? "")
-    .split(path.delimiter)
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-
-  const preferredEntries: string[] = [];
-  pushUnique(preferredEntries, path.dirname(resolvePreferredNodeExecutable(baseEnv)));
-
-  const bunInstallDir = String(baseEnv.BUN_INSTALL ?? "").trim();
-  if (bunInstallDir) {
-    pushUnique(preferredEntries, path.join(bunInstallDir, "bin"));
+  const env = { ...baseEnv, ...overrides };
+  const entries: string[] = [];
+  // Explicit profile PATH remains first. Inherited PATH keeps its original order.
+  for (const entry of String(overrides.PATH ?? "").split(path.delimiter))
+    pushUnique(entries, entry);
+  for (const [key, suffix] of [
+    ["NVM_BIN", ""],
+    ["VOLTA_HOME", "bin"],
+    ["BUN_INSTALL", "bin"],
+  ]) {
+    const root = env[key!]?.trim();
+    if (root && path.isAbsolute(root)) pushUnique(entries, path.join(root, suffix!));
   }
-
-  const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
-  if (homeDir) {
-    pushUnique(preferredEntries, path.join(homeDir, ".bun", "bin"));
+  for (const entry of String(baseEnv.PATH ?? "").split(path.delimiter)) pushUnique(entries, entry);
+  const home = env.HOME ?? os.homedir();
+  if (home && path.isAbsolute(home)) {
+    const nvmNode = readLatestNvmNodeBin(home);
+    if (nvmNode) pushUnique(entries, path.dirname(nvmNode));
+    pushUnique(entries, path.join(home, ".bun", "bin"));
   }
-
-  for (const entry of pathEntries) {
-    pushUnique(preferredEntries, entry);
-  }
-
-  env.PATH = preferredEntries.join(path.delimiter);
+  pushUnique(entries, path.dirname(process.execPath));
+  env.PATH = entries.join(path.delimiter);
   return env;
 }
 
 function isExecutableFile(filePath: string): boolean {
   try {
-    return fs.statSync(filePath).isFile();
+    if (!path.isAbsolute(filePath) || !fs.statSync(filePath).isFile()) return false;
+    fs.accessSync(filePath, process.platform === "win32" ? fs.constants.F_OK : fs.constants.X_OK);
+    return true;
   } catch {
     return false;
   }
@@ -55,24 +57,33 @@ function readLatestNvmNodeBin(homeDir: string): string | null {
     return null;
   }
 
-  const latest = entries
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .toSorted()
-    .at(-1);
-  if (!latest) return null;
-
-  const candidate = path.join(versionsDir, latest, "bin", "node");
-  return isExecutableFile(candidate) ? candidate : null;
+  const versions = entries
+    .filter((entry) => /^v\d+\.\d+\.\d+$/.test(entry))
+    .toSorted((a, b) => {
+      const left = a.slice(1).split(".").map(Number);
+      const right = b.slice(1).split(".").map(Number);
+      for (let i = 0; i < 3; i++) {
+        const difference = right[i]! - left[i]!;
+        if (difference) return difference;
+      }
+      return 0;
+    });
+  for (const version of versions) {
+    const candidate = path.join(versionsDir, version, "bin", "node");
+    if (isExecutableFile(candidate)) return candidate;
+  }
+  return null;
 }
 
 export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = process.env): string {
   const homeDir = String(baseEnv.HOME ?? os.homedir() ?? "").trim();
   const candidates = [
-    path.join(String(baseEnv.NVM_BIN ?? "").trim(), "node"),
-    path.join(String(baseEnv.VOLTA_HOME ?? "").trim(), "bin", "node"),
+    // Callers pass the shared normalized PATH, including explicit profile precedence.
+    resolveLocalExecutable("node", baseEnv),
+    baseEnv.NVM_BIN ? path.join(baseEnv.NVM_BIN, "node") : null,
+    baseEnv.VOLTA_HOME ? path.join(baseEnv.VOLTA_HOME, "bin", "node") : null,
     homeDir ? readLatestNvmNodeBin(homeDir) : null,
-    process.execPath,
+    typeof process.versions.bun === "string" ? null : process.execPath,
   ];
 
   for (const candidate of candidates) {
@@ -80,5 +91,87 @@ export function resolvePreferredNodeExecutable(baseEnv: NodeJS.ProcessEnv = proc
       return candidate;
     }
   }
-  return process.execPath;
+  throw Object.assign(new Error("Node executable is unavailable in the selected local runtime."), {
+    code: "ENOENT",
+  });
+}
+
+export function resolveLocalExecutable(command: string, env: NodeJS.ProcessEnv): string | null {
+  if (path.isAbsolute(command)) return isExecutableFile(command) ? command : null;
+  if (command.includes("/") || command.includes("\\")) return null;
+  const extensions =
+    process.platform === "win32"
+      ? ["", ...(env.PATHEXT ?? ".EXE;.CMD;.BAT;.COM").split(";")]
+      : [""];
+  for (const directory of (env.PATH ?? "").split(path.delimiter)) {
+    if (!path.isAbsolute(directory)) continue;
+    for (const extension of extensions) {
+      const candidate = path.join(directory, command + extension);
+      if (isExecutableFile(candidate)) return candidate;
+    }
+  }
+  return null;
+}
+
+export type LocalRuntimeEvidence = {
+  kind: "local_runtime_resolution";
+  status: "resolved" | "unavailable";
+  executable_digest: string | null;
+  environment_digest: string;
+  toolchain_digest: string;
+};
+
+function digest(value: string | Buffer): string {
+  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+export function localRuntimeEvidence(
+  command: string,
+  env: NodeJS.ProcessEnv,
+  cwd?: string,
+): LocalRuntimeEvidence {
+  const candidate =
+    cwd && (command.includes("/") || command.includes("\\")) ? path.resolve(cwd, command) : command;
+  const executable = resolveLocalExecutable(candidate, env);
+  const observed = new Map<string, string | null>();
+  const executableDigestFor = (file: string | null): string | null => {
+    if (!file) return null;
+    if (observed.has(file)) return observed.get(file) ?? null;
+    let value: string | null = null;
+    try {
+      value = digest(fs.readFileSync(file));
+    } catch {
+      /* Unreadable identity remains unqualified. */
+    }
+    observed.set(file, value);
+    return value;
+  };
+  const executableDigest = executableDigestFor(executable);
+  // A shell or script digest alone does not identify its supported Node/Bun toolchain.
+  const toolchain = ["node", "bun"].map((name) => ({
+    name,
+    executable_digest: executableDigestFor(resolveLocalExecutable(name, env)),
+  }));
+  return {
+    kind: "local_runtime_resolution",
+    status: executableDigest ? "resolved" : "unavailable",
+    executable_digest: executableDigest,
+    toolchain_digest: digest(JSON.stringify(toolchain)),
+    // Only runtime-selection inputs are bound. Secret environment values are never retained.
+    environment_digest: digest(
+      JSON.stringify([
+        env.PATH ?? "",
+        env.HOME ?? "",
+        env.NVM_BIN ?? "",
+        env.VOLTA_HOME ?? "",
+        env.BUN_INSTALL ?? "",
+        env.PATHEXT ?? "",
+      ]),
+    ),
+  };
+}
+
+export function isRuntimeInfrastructureError(error: unknown): boolean {
+  const code = (error as NodeJS.ErrnoException | null)?.code;
+  return code === "ENOENT" || code === "EACCES" || code === "ENOEXEC";
 }

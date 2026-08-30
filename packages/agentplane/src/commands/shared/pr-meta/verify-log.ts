@@ -3,6 +3,11 @@ import path from "node:path";
 import type { Readable } from "node:stream";
 
 import { startProcess } from "@agentplaneorg/core/process";
+import {
+  withPreferredRuntimePath,
+  isRuntimeInfrastructureError,
+  localRuntimeEvidence,
+} from "../../../shared/runtime-env.js";
 import { isDotEnvLoadedKey } from "../../../shared/env.js";
 import { resolveDeclaredTaskCheck } from "../declared-check.js";
 
@@ -26,7 +31,7 @@ export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): N
   for (const key of Object.keys(env)) {
     if (key === "AGENTPLANE_DOTENV_LOADED_KEYS" || isDotEnvLoadedKey(key, source)) delete env[key];
   }
-  return env;
+  return withPreferredRuntimePath(env);
 }
 
 export function extractLastVerifiedSha(logText: string): string | null {
@@ -57,6 +62,7 @@ export async function runShellCommand(
 ): Promise<{
   code: number;
   output: string;
+  failure_kind?: "infrastructure";
 }> {
   const resolved = resolveDeclaredTaskCheck(command);
   if (!resolved.ok) {
@@ -85,6 +91,11 @@ export async function runShellCommand(
     return {
       code: Number.isInteger(result.exitCode) ? result.exitCode : 1,
       output: combineOutput(stdout.render(), stderr.render()),
+      ...(result.exitCode !== 0 &&
+      (isRuntimeInfrastructureError(result) ||
+        localRuntimeEvidence(invocation.executable, env).status === "unavailable")
+        ? { failure_kind: "infrastructure" as const }
+        : {}),
     };
   } catch (err) {
     const error = err as {
@@ -99,7 +110,11 @@ export async function runShellCommand(
       error.stderr ? String(error.stderr) : (error.message ?? ""),
     );
     const code = typeof error.code === "number" ? error.code : 1;
-    return { code: error.exitCode ?? code, output };
+    return {
+      code: error.exitCode ?? code,
+      output,
+      ...(isRuntimeInfrastructureError(err) ? { failure_kind: "infrastructure" as const } : {}),
+    };
   }
 }
 

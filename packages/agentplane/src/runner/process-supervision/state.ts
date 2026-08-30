@@ -1,3 +1,4 @@
+import type { LocalRuntimeEvidence } from "../../shared/runtime-env.js";
 import { readRunnerRunState } from "../artifacts.js";
 import type { RunnerInvocation, RunnerRunState, RunnerSupervisionState } from "../types.js";
 import { monotonicNowMs } from "./clock.js";
@@ -23,8 +24,10 @@ export function mergeSupervisionState(
 export function buildInvocationEventData(
   invocation: RunnerInvocation,
   pid: number | null,
+  runtime?: LocalRuntimeEvidence,
 ): Record<string, unknown> {
   return {
+    ...(runtime ? { runtime } : {}),
     executable: invocation.argv[0] ?? null,
     argv_count: invocation.argv.length,
     cwd: invocation.repository_root,
