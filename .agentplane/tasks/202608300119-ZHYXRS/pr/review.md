@@ -30,9 +30,9 @@ Created: 2026-08-30T01:23:12.595Z
 
 ```text
  .../external-agent-implementation-recovery.test.ts |  17 +++-
- packages/core/src/tasks/task-centric/graph.ts      |  18 ++++
+ packages/core/src/tasks/task-centric/graph.ts      |  17 ++++
  .../src/tasks/task-centric/task-centric.test.ts    | 107 +++++++++++++++++++++
- 3 files changed, 141 insertions(+), 1 deletion(-)
+ 3 files changed, 140 insertions(+), 1 deletion(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Preserve WorkItem results during plan reapproval and recover evidence-on
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -77,12 +77,27 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/tasks/task-centric"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+    changed_components:
+      - "packages/agentplane"
+      - "packages/core"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+      - "packages/core/src/tasks/task-centric/graph.ts"
+      - "packages/core/src/tasks/task-centric/task-centric.test.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -115,19 +130,29 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:6abb56a84603bf99200013c5fd884bafd7eace8fd5c4ec8f05be13da72c63ac7"
+      digest: "sha256:9b32c27a551fe07f89ded9baf48dc67ab77e452421d44ad81e4726f76c2b1037"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-centric"
+        - "central_path:packages/core/src/tasks/task-centric/graph.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "packages/core"
+        changed_files:
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+          - "packages/core/src/tasks/task-centric/graph.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -159,6 +184,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
@@ -167,6 +193,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 01974c4594b1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "comment"
@@ -180,9 +209,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-30T01:27:35.255Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 01974c4594b1. CLI accepted one state-bound external-agent semantic result."
+    commit: "01974c4594b14c86c2705a1b586d3cb90a3b6f08"
+  -
+    type: "verify"
+    at: "2026-08-30T01:30:42.448Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-30T01:23:11.887Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T01:30:44.440Z"
+doc_updated_by: "SUPERVISOR"
 description: "Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1."
 sections:
   Summary: |-
@@ -205,6 +248,46 @@ sections:
     4. Require exact-head hosted checks, merge, and Task Hosted Close before calling this task delivered.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-30T01:30:42.448Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54, input_digest=sha256:ca9f5123bc2ab03729a08040396c3ded88c391125b776b4c378b586712b653be
+
+    Details:
+
+    Command: bun run test:project core
+    Result: pass
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300119-ZHYXRS declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300119-ZHYXRS declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300119-ZHYXRS-preserve-workitem-results-during-plan-reapproval/.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json
+    - old_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+    - current_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608300119-ZHYXRS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -455,25 +538,103 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-30T01:22:55.423Z"
+    updated_at: "2026-08-30T01:30:45.653Z"
     work_items:
       preserve-reapproval-evidence:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "preserve-reapproval-evidence"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "preservation"
+            - "recovery-safety"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Implemented idempotent materialization for an already approved identical current plan. Existing WorkItem states, attempts, claims, output manifests, validation and task lifecycle remain intact. Partial, mismatched, unapproved or different-plan runtime is rejected rather than reset. Extended core regressions across all 12 WorkItem states and recovery guards for changed repository effects and WorkItem identity."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:55415ddc5c30e29e4dcd22200e9f76d11b94fd8e3b2dcb05faafd23a00154beb"
+            id: "reapproval-runtime-fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608300119-ZHYXRS"
+              work_item_id: "preserve-reapproval-evidence"
+            provenance:
+              - "sha256:fea986f2e92bad78577f74b14b7cc6259bb6f9d05b8636454fc4311a2efb720f"
+              - ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:a4a94d3179bfefcbc08a5abfc3b739ad971bb0b15e08e7dfc62c99e9e3a663c7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json"
+              check_id: "core"
+              command_identity: "bun run test:project core"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-30T01:30:45.647Z"
+              repository_snapshot_digest: "sha256:a4a94d3179bfefcbc08a5abfc3b739ad971bb0b15e08e7dfc62c99e9e3a663c7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json"
+              check_id: "full"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-08-30T01:30:45.647Z"
+              repository_snapshot_digest: "sha256:a4a94d3179bfefcbc08a5abfc3b739ad971bb0b15e08e7dfc62c99e9e3a663c7"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "preservation"
+            - "recovery-safety"
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608300119-ZHYXRS-executor-74cd710cc58c74d5b61770c9:
+        aggregate_digest: "sha256:518664286ec5bc8796dafc7e4f878e40a53f3c3e1ec19a42b1e0be0f0b68865b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T01:30:45.653Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_cdfb4346b961138fcab22293"
+          mutation_id: "external-result:work-order-202608300119-ZHYXRS-executor-74cd710cc58c74d5b61770c9"
+          plan_digest: "sha256:55b0da86d389ffee572af9276c362405a7b4f98e4af18f479e5f981f175581a4"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608300119-ZHYXRS"
+          task_revision: 10
+          to: "REWORK_READY"
+          work_item_id: "preserve-reapproval-evidence"
+        mutation_id: "external-result:work-order-202608300119-ZHYXRS-executor-74cd710cc58c74d5b61770c9"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608300119-ZHYXRS"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "main"
     base_sha: "71519a0e675d7d460d27e7c5aea87d1f2363b9e2"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "71519a0e675d7d460d27e7c5aea87d1f2363b9e2"
     version: 1
@@ -508,6 +669,46 @@ Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagno
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-30T01:30:42.448Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54, input_digest=sha256:ca9f5123bc2ab03729a08040396c3ded88c391125b776b4c378b586712b653be
+
+Details:
+
+Command: bun run test:project core
+Result: pass
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300119-ZHYXRS declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608300119-ZHYXRS/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300119-ZHYXRS declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300119-ZHYXRS-preserve-workitem-results-during-plan-reapproval/.agentplane/tasks/202608300119-ZHYXRS/blueprint/resolved-snapshot.json
+- old_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+- current_digest: 4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608300119-ZHYXRS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
