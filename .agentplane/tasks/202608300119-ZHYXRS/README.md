@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -30,34 +30,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T01:43:01.189Z"
+  updated_at: "2026-08-30T02:28:45.823Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "403edee0581fa08fb661c60487dcde7bd2f5bd88"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8"
   blueprint_digest: "4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd"
   evidence_refs:
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/7bd203cf9dcbd8fd7fb54c71fb43608d75f904771948104bd6fb5e32111922c3.md"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-014145339-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-022732861-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-022732861-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/9ca03923fb3436ecdd936ae66f4ce9710cdb58d8bccf37d570410152ec188918.md"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-022732861-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-022732861-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/20260830-022732861-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608300119-ZHYXRS/README.md"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/e4594a5165434d84043609c114251fb1d166c7612623342d185fb34239acfb29.patch"
-    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/68cd886e72e9a681f60c9770ffb31cc09b30751c52abfe3b9d62753ed744f3e9.json"
-    - ".agentplane/tasks/202608300119-ZHYXRS/verification/20260830014106431-a78ca4036e517933.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/efec60e7d3b43883689358d77d2278cfa5e0346ad57e5c8695bdc74cecff1470.patch"
+    - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/085818fb482ed6c75bdcd72074d2a06cd54a8963642055db58f4d5f95a5f417c.json"
+    - ".agentplane/tasks/202608300119-ZHYXRS/verification/20260830022721719-75aba1a0c8379039.json"
     - ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/0ae8f7054187226c4378474e61a236b83e14b480899aed7def309c417740ebc8.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "All nine frozen evidence hashes match. The actual three-file diff is confined to approved scope."
-    - "Repeated materialization returns the unchanged aggregate only after exact current approval/revision/proposal and complete WorkItem identity checks. Claims, attempts, outputs, validation, lifecycle and revision are therefore preserved atomically."
-    - "Tests exercise all twelve WorkItem runtime states, partial and extra runtime, conflicting plan/approval, and fresh-plan materialization. Recovery tests retain rejection for changed effects and WorkItem identity."
-    - "Supervisor core tests (443) and full local CI passed for the evaluated implementation. No blocking code or verification defects found."
-    - "Residual risk: Already-reset historical WorkItems require explicit requalification; this fix intentionally does not reconstruct lost state."
-    - "Residual risk: PR checks, merge and hosted close are not established by this local review."
+    - "Reviewed the new digest helper and both production-shaped regressions. Stored and candidate plans can no longer compare a changed proposal to itself while retaining stale digest authority."
+    - "The digest includes schema_version, task_id, revision and proposal and uses the same function at plan creation and runtime preservation."
+    - "All nine frozen evidence hashes match. Required fresh core suite and full local CI succeeded. Existing negative recovery boundaries remain intact."
+    - "Residual risk: Hosted checks must run on the newly published exact head. Resolve the addressed review thread only after publication and then confirm merge and Task Hosted Close."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -341,7 +339,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T02:27:23.895Z"
+doc_updated_at: "2026-08-30T02:28:45.848Z"
 doc_updated_by: "SUPERVISOR"
 description: "Unblock the approved Clean Task Core rebuild M1 task 202608292032-1K47B8. Diagnose repeated plan approval resetting existing WorkItem runtime and evidence-only recovery rejecting already committed valid implementation. Preserve same-plan WorkItem state and output validation without allowing changed plans, stale identities, or unauthorized effects to reuse results. Add bounded regression coverage for both positive recovery and fail-closed behavior. Scope packages/core/src/tasks/task-centric and packages/agentplane/src/commands/task. Do not edit task state by hand or weaken authority checks. Deliver through verified branch PR and hosted close, then resume M1."
 sections:
