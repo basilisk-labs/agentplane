@@ -27,10 +27,10 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/clean-task-core-cutover.mdx         |  95 ++++++++++++++++
+ docs/developer/clean-task-core-cutover.mdx         | 100 +++++++++++++++++
  docs/developer/harness-dev.mdx                     |   1 +
  .../adapters/task-backend/kernel-next-action.ts    |  10 +-
- .../run-cli.core.task-status-token-usage.test.ts   |  71 ++++++++++++
+ .../run-cli.core.task-status-token-usage.test.ts   |  73 +++++++++++++
  .../agentplane/src/commands/task/active.command.ts | 110 ++++++++++++++-----
  .../src/commands/task/active.command.unit.test.ts  |  51 +++++++++
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
@@ -42,7 +42,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/commands/task/show-kernel.test.ts          | 121 +++++++++++++++++++++
  packages/agentplane/src/commands/task/show.ts      |  15 +--
  .../agentplane/src/commands/task/status.command.ts |   5 +
- 15 files changed, 576 insertions(+), 42 deletions(-)
+ 15 files changed, 583 insertions(+), 42 deletions(-)
 ```
 
 </details>

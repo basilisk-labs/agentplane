@@ -19,7 +19,7 @@ export async function cmdReady(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const task = await ctx.taskBackend.getTask(opts.taskId);
     const canonical = await readTaskKernel(ctx, opts.taskId, task ?? undefined);
-    if (canonical.kind !== "legacy_unmigrated") {
+    if (canonical.kind !== "legacy_unmigrated" && canonical.kind !== "missing") {
       const code = reportTaskKernelRead(canonical, opts.taskId, false);
       return code || (projectTaskKernelRead(canonical, opts.taskId).ready ? 0 : 2);
     }

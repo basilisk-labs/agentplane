@@ -3,7 +3,6 @@ import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { taskKernel } from "@agentplaneorg/core/tasks";
-import { makeKernelRecord } from "../adapters/task-backend/kernel-record.js";
 import { resolveLogicalRepositoryIdentity } from "../commands/task/execution-authority-context.js";
 
 import {
@@ -68,6 +67,13 @@ describe("runCli completed task token usage", () => {
       controller_transfer: null,
       migration_receipts: [],
     };
+    const record = {
+      schema_version: 1,
+      kind: "canonical_task",
+      repository_identity: repositoryIdentity,
+      aggregate,
+      events: [],
+    };
     await seedTaskQueryFixture(root, [
       {
         id: taskId,
@@ -80,11 +86,7 @@ describe("runCli completed task token usage", () => {
         tags: ["workflow"],
         verify: [],
         extensions: {
-          task_kernel: makeKernelRecord(
-            repositoryIdentity as taskKernel.Sha256Digest,
-            aggregate,
-            [],
-          ),
+          task_kernel: { ...record, digest: taskKernel.kernelDigest(record) },
         },
       },
     ]);

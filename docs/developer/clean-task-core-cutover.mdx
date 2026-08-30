@@ -39,6 +39,8 @@ No read projection grants authority or supplies an executable mutation command.
 Without a current implementation fingerprint, final-validation routing returns
 `kernel_repository_fingerprint_required`. It cannot claim completion from stale validation.
 Logical repository identity inspection cannot create identity files in an unborn repository.
+The existing `ready` missing-task contract is preserved: it prints the unknown-task warning and
+returns exit code 2. The typed missing read does not create a synthetic aggregate.
 
 ## Production owner map
 
@@ -85,6 +87,9 @@ Stable release publication is outside this Task's approval.
 The focused command and identity suites passed 15 tests across five files, including a real CLI
 readback that preserves exact Task README bytes. Typecheck, changed-source ESLint, architecture
 checks, documentation IA, and all eight lifecycle invariants passed.
+The first full CI attempt exposed a forbidden test-layer import and the missing-task exit-code
+regression. Both were corrected without changing the guards or assertions. The 30-test control run
+covers the source-layering guard, existing workflow behavior, canonical reads, and real CLI readback.
 
 The broader `run-cli.core.task-next-action-json.test.ts` probe has one existing failing case:
 `stores branch_pr authority without changing the task branch before the authorized PR operation`.

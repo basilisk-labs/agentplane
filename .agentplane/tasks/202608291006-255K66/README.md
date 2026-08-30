@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -126,12 +126,37 @@ execution_contract:
       - "scripts/checks"
       - "scripts/qualification"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+    changed_paths:
+      - "docs/developer/clean-task-core-cutover.mdx"
+      - "docs/developer/harness-dev.mdx"
+      - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+      - "packages/agentplane/src/commands/task/active.command.ts"
+      - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
+      - "packages/agentplane/src/commands/task/brief.command.ts"
+      - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
+      - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+      - "packages/agentplane/src/commands/task/kernel-read.ts"
+      - "packages/agentplane/src/commands/task/next-action.command.ts"
+      - "packages/agentplane/src/commands/task/ready.ts"
+      - "packages/agentplane/src/commands/task/show-kernel.test.ts"
+      - "packages/agentplane/src/commands/task/show.ts"
+      - "packages/agentplane/src/commands/task/status.command.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -204,10 +229,11 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:40fb18b815ba57b409366018f3a3c584f136e35d940cf9c5b9f13c1e5a7ab61c"
+      digest: "sha256:eaebf72750af2f3f59691a928e1eea6f16a592ff8a973aa7c8e004a4cc9767ea"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
         - "effect_public_api"
         - "effect_release_metadata"
         - "effect_schema"
@@ -221,10 +247,31 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+        changed_files:
+          - "docs/developer/clean-task-core-cutover.mdx"
+          - "docs/developer/harness-dev.mdx"
+          - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
+          - "packages/agentplane/src/commands/task/active.command.ts"
+          - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
+          - "packages/agentplane/src/commands/task/brief.command.ts"
+          - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
+          - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+          - "packages/agentplane/src/commands/task/kernel-read.ts"
+          - "packages/agentplane/src/commands/task/next-action.command.ts"
+          - "packages/agentplane/src/commands/task/ready.ts"
+          - "packages/agentplane/src/commands/task/show-kernel.test.ts"
+          - "packages/agentplane/src/commands/task/show.ts"
+          - "packages/agentplane/src/commands/task/status.command.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -267,11 +314,15 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 36e1575c028d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -280,9 +331,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-08-30T22:06:13.020Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 36e1575c028d. CLI accepted one state-bound external-agent semantic result."
+    commit: "36e1575c028d8fe54efb664ac92f745fdcdbcff9"
+  -
+    type: "verify"
+    at: "2026-08-30T22:13:21.915Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-30T21:48:11.738Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T22:13:24.011Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -301,6 +366,41 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-30T22:13:21.915Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:1d3f9ef9693d7e0ddb5a5bb53efbf7ef423d277c12454a560fea222153023b32
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-255K66-cut-over-to-the-canonical-task-kernel-and-retire/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+    - old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1276,9 +1376,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 3
+    revision: 10
     schema_version: 1
-    updated_at: "2026-08-30T18:48:25.201Z"
+    updated_at: "2026-08-30T22:13:25.123Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -1317,14 +1417,51 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-projections:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-projections"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "m3-projections-acceptance"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Implemented m3-projections through one validated canonical read boundary. Preserved explicit legacy inspection and added the M3 code-owner and rollback map."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:e5e87e87232081c582c285116703d1f6381387b43d191f0038240fd16af5ed76"
+            id: "m3-projections-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-projections"
+            provenance:
+              - "sha256:2f27178c81b5167de56cdd39422c81de5385507a63d6355d39cea86bbce53426"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:66593232b18ea0c427e7782aae46ac53cafc810fd6f5ccd7a6481c82671a0ba9"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Declared validation command bun run lifecycle:invariants was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-08-30T22:13:25.115Z"
+              repository_snapshot_digest: "sha256:66593232b18ea0c427e7782aae46ac53cafc810fd6f5ccd7a6481c82671a0ba9"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "m3-projections-acceptance"
       m3-retirement:
         attempt: 0
         claim_id: null
@@ -1352,12 +1489,41 @@ extensions:
         revision: 1
         state: "PLANNED"
         validation_result: null
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608291006-255K66-executor-6e62b32bc555e1f94c3145f2:
+        aggregate_digest: "sha256:21e1fde12f6691e70acc9c2fbc9e2c683b7352cc72878051209a1c59f24591e3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T22:13:25.123Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_c1a17c5cacb34f497f6343f9"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-6e62b32bc555e1f94c3145f2"
+          plan_digest: "sha256:0f06371f343e53a6892d3784f31db1e0c3e91ee8bfbf1dd9d7a646a9f1e3c089"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 9
+          to: "REWORK_READY"
+          work_item_id: "m3-projections"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-6e62b32bc555e1f94c3145f2"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202608291006-255K66"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   task_planning_base_recovery:
     branch: "task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire"
     from_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -1402,6 +1568,41 @@ PLANNER fallback scaffold for "Cut over to the canonical Task kernel and retire 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-30T22:13:21.915Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:1d3f9ef9693d7e0ddb5a5bb53efbf7ef423d277c12454a560fea222153023b32
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-255K66-cut-over-to-the-canonical-task-kernel-and-retire/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+- old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
