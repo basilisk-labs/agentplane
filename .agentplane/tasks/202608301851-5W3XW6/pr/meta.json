@@ -3,8 +3,8 @@
   "branch": "task/202608301851-5W3XW6/recover-unstarted-task-worktrees-pinned-before-t",
   "created_at": "2026-08-30T18:53:26.210Z",
   "diffstat_sha256": "sha256:47cde3ee87e35487dd09aca407f2b33cbf3b78b8f8d9ab53c0626bc50ba8b40f",
-  "last_verified_at": "2026-08-30T19:35:58.462Z",
-  "last_verified_diffstat_sha256": "sha256:23b722ff62edb2f6fbcd554ac6898fd6fbc26d6374cef0b7254194675c278262",
+  "last_verified_at": "2026-08-30T19:54:51.358Z",
+  "last_verified_diffstat_sha256": "sha256:47cde3ee87e35487dd09aca407f2b33cbf3b78b8f8d9ab53c0626bc50ba8b40f",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -17,6 +17,6 @@
   "task_id": "202608301851-5W3XW6",
   "updated_at": "2026-08-30T18:53:26.210Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
