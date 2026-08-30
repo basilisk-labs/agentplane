@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f1fddec51a77d2427d02d270d999ab7ecfd2a603..aed082c956ac100365c53d4835afc1e189f4081b",
+      "command": "git diff --check da2142de0d55a9b860af595d4a3afdacbbeba4bc..aff000cd0100529a60a6d084f98205f83f560ead",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f1fddec51a77d2427d02d270d999ab7ecfd2a603..aed082c956ac100365c53d4835afc1e189f4081b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB da2142de0d55a9b860af595d4a3afdacbbeba4bc..aff000cd0100529a60a6d084f98205f83f560ead",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,8 +22,6 @@
         "M\t.agentplane/tasks/202608292032-1K47B8/pr/meta.json",
         "M\t.agentplane/tasks/202608292032-1K47B8/pr/review.md",
         "M\tpackages/core/src/tasks/task-kernel/M1-QUALIFICATION.md",
-        "M\tpackages/core/src/tasks/task-kernel/invariants.test.ts",
-        "M\tpackages/core/src/tasks/task-kernel/invariants.ts",
         "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
         "M\tpackages/core/src/tasks/task-kernel/kernel.ts"
       ]
@@ -35,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f1fddec51a77d2427d02d270d999ab7ecfd2a603",
-  "implementation_commit": "aed082c956ac100365c53d4835afc1e189f4081b",
+  "execution_base_commit": "da2142de0d55a9b860af595d4a3afdacbbeba4bc",
+  "implementation_commit": "aff000cd0100529a60a6d084f98205f83f560ead",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
