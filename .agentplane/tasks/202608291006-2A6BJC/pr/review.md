@@ -12,8 +12,8 @@ Created: 2026-08-30T04:09:19.506Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run test:fast
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,7 @@ Created: 2026-08-30T04:09:19.506Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../clean-task-core-m2-replay-checkpoint.md        |   68 +
+ .../clean-task-core-m2-replay-checkpoint.md        |   84 +
  docs/developer/harness-dev.mdx                     |   85 +
  .../task-backend/kernel-backend-adapter.test.ts    |  610 ++
  .../task-backend/kernel-backend-adapter.ts         |  202 +
@@ -64,6 +64,8 @@ Created: 2026-08-30T04:09:19.506Z
  packages/agentplane/src/commands/task/show.ts      |   40 +
  packages/agentplane/src/ports/task-byte-store.ts   |   19 +
  .../src/ports/task-record-serialization.ts         |    4 +
+ .../usecases/task-run-effect-resolution.test.ts    |   70 +-
+ .../runner/usecases/task-run-effect-resolution.ts  |   18 +-
  packages/core/src/tasks/task-kernel/index.ts       |    1 +
  packages/core/src/tasks/task-kernel/kernel.test.ts |   76 +
  packages/core/src/tasks/task-kernel/kernel.ts      |   37 +
@@ -76,7 +78,7 @@ Created: 2026-08-30T04:09:19.506Z
  scripts/bench/internal/kernel-replay-isolation.mjs |  105 +
  scripts/bench/qualify-kernel-replay.mjs            |  191 +
  .../check-compatibility-contract-baseline.mjs      |   91 +
- 47 files changed, 15207 insertions(+), 16 deletions(-)
+ 49 files changed, 15298 insertions(+), 29 deletions(-)
 ```
 
 </details>

@@ -45,6 +45,22 @@ all seven suites without code or timeout changes and passed all 104 tests. A lat
 control also passed those 104 tests. The cause of the full-run failure is not established.
 These controls do not replace a successful complete verification run.
 
+The next full run at `8b9a98f8b45539d01f59c73209947d74f738d4a6` also failed:
+5,178 tests passed, 12 failed and one was skipped in 1,286 seconds. No additional heavy
+check ran concurrently. Five failing suites overlapped the preceding run. Local Node
+24.11.1 reproduced timeouts in a seven-suite control. A Node 26.8.1 control passed all
+86 tests in those suites. These observations do not establish the timeout cause, and a
+different-runtime control does not constitute a Node 24 verification pass.
+
+A separate direct Node 24 control exposed a functional publication race during concurrent
+effect resolution. Immutable intent, lease and resolution files were created at their final
+paths before their JSON bytes were written. Another resolver could read an empty file and
+raise `SyntaxError`. Three deterministic tests pause the first publisher immediately after
+exclusive file creation. Effect resolution now reuses the existing staged hard-link publication
+helper. Readers see a complete immutable artifact, and competing identical resolutions converge.
+The three regressions failed before this change; all eleven effect-resolution tests passed on
+Node 24 afterward. Existing conflict checks and independent readback remain required.
+
 Further persistence tests exposed two read-projection defects on all three backends: an
 unclaimed optional WorkItem was selected after all required work completed, and a blocked
 WorkItem hid independent ready work. The projection now permits final validation in the first
