@@ -2,10 +2,10 @@
 id: "202608291006-2A6BJC"
 title: "Add compatibility adapters and replay migration"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 96
+revision: 97
 origin:
   system: "manual"
 depends_on:
@@ -62,9 +62,9 @@ quality_review:
     - "Residual risk: M3 must complete actual production cutover, repository corpus migration, legacy retirement, twenty self-hosting Tasks and three release drills. M2 replay uses explicit provider fakes."
     - "Residual risk: Legacy DONE-task evaluator preparation exposed an artifact-dirtiness freshness loop and required native operator recovery. M3 self-hosting qualification must cover this boundary rather than assume it is solved by the adapter work."
 token_usage:
-  agent_runs: 26
+  agent_runs: 32
   input_tokens: null
-  journal_digest: "sha256:cc83c95dfb9c6ea885a6f39ff0efe996eb3ff92057516ab74da9176333bcd4d4"
+  journal_digest: "sha256:3a4d6be99d1f2f8223e62c686eec544b25fdd647eee9e5ab21c5213abfb59d0c"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-30T15:54:51.798Z"
+  updated_at: "2026-08-30T17:02:15.665Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -3105,8 +3105,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6de58ebe8753e4edf24647d9075ed4169b22bf30"
-  message: "🚧 2A6BJC task: apply external agent result"
+  hash: "629373c376f2e7f4567674b54c868d61e94cf232"
+  message: "🚧 2A6BJC task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -3189,6 +3189,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6de58ebe8753. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -3508,9 +3511,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T17:02:15.665Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "629373c376f2e7f4567674b54c868d61e94cf232"
 doc_version: 3
-doc_updated_at: "2026-08-30T17:01:24.918Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T17:02:15.697Z"
+doc_updated_by: "CODER"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
   Summary: |-
@@ -10107,6 +10118,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "6de58ebe8753e4edf24647d9075ed4169b22bf30"
+    message: "🚧 2A6BJC task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -12878,12 +12890,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/26` agent runs
+- Completeness: `0/32` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:cc83c95dfb9c6ea885a6f39ff0efe996eb3ff92057516ab74da9176333bcd4d4`
+- Journal digest: `sha256:3a4d6be99d1f2f8223e62c686eec544b25fdd647eee9e5ab21c5213abfb59d0c`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-30T15:54:51.798Z`
+- Updated at: `2026-08-30T17:02:15.665Z`

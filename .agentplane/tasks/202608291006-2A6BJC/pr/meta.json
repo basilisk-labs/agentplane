@@ -8,10 +8,10 @@
   "pr_number": 5882,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5882",
   "pre_merge_closure": {
-    "basis_commit": "acea2a5011bf40d650c1081613d79c072e01c083",
+    "basis_commit": "629373c376f2e7f4567674b54c868d61e94cf232",
     "branch": "task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration",
     "pr_number": 5882,
-    "recorded_at": "2026-08-30T15:54:51.912Z",
+    "recorded_at": "2026-08-30T17:02:15.783Z",
     "state": "closed_before_merge"
   },
   "provider": {
