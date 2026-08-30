@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608291006-2A6BJC/add-compatibility-adapters-and-replay-migration",
   "created_at": "2026-08-30T04:09:19.506Z",
-  "diffstat_sha256": "sha256:ccb5d18518ff14ed56539137ddda09e4f0a7414fbfe5996ea05e6d4402564fa2",
+  "diffstat_sha256": "sha256:5416e85c20c6cd89bc48626b498f9565dd0dd787d439556ba59476e9badaa92e",
   "last_verified_at": "2026-08-30T08:32:18.484Z",
   "last_verified_diffstat_sha256": "sha256:ccb5d18518ff14ed56539137ddda09e4f0a7414fbfe5996ea05e6d4402564fa2",
   "provider": {

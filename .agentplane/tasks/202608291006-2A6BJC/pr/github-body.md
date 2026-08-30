@@ -15,8 +15,8 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,7 +31,7 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
  .../task-backend/kernel-backend-adapter.test.ts    |  587 ++
  .../task-backend/kernel-backend-adapter.ts         |  193 +
  .../task-backend/kernel-migration-source.ts        |  161 +
- .../adapters/task-backend/kernel-migration.test.ts |  336 +
+ .../adapters/task-backend/kernel-migration.test.ts |  350 +
  .../src/adapters/task-backend/kernel-migration.ts  |  341 +
  .../adapters/task-backend/kernel-observations.ts   |   95 +
  .../src/adapters/task-backend/kernel-projector.ts  |   36 +
@@ -65,7 +65,7 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
  scripts/bench/capture-kernel-replay.ts             |  181 +
  scripts/bench/qualify-kernel-replay.mjs            |  146 +
  .../check-compatibility-contract-baseline.mjs      |   91 +
- 38 files changed, 14018 insertions(+), 13 deletions(-)
+ 38 files changed, 14032 insertions(+), 13 deletions(-)
 ```
 
 </details>

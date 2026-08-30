@@ -152,6 +152,20 @@ describe("explicit canonical migration", () => {
       );
       if (["backup_failure", "cas_race"].includes(mode))
         expect(await readFile(f.file, "utf8")).toBe(f.text);
+      if (["lost_response", "readback_failure"].includes(mode)) {
+        const restartedStore = new LocalTaskByteStore(new LocalBackend({ dir: f.root }));
+        const restarted = new KernelMigration(restartedStore, identity);
+        const write = vi.spyOn(restartedStore, "compareAndSwap");
+        const recovered = await restarted.apply(taskId, taskBytesDigest(f.text));
+        expect(recovered.kind).toBe("already_applied");
+        expect(write).not.toHaveBeenCalled();
+        if (recovered.kind !== "already_applied") throw new Error(JSON.stringify(recovered));
+        expect(await restarted.rollback(recovered.proof)).toEqual({
+          kind: "rolled_back",
+          source_digest: taskBytesDigest(f.text),
+        });
+        expect(await readFile(f.file, "utf8")).toBe(f.text);
+      }
     },
   );
 
