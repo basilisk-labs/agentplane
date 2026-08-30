@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:626751cc211a144d38c7940f5f66a65722e75cfa32498bc57ea27ffa7869b490",
   "pr_number": 5881,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5881",
+  "pre_merge_closure": {
+    "basis_commit": "6a342eba3d5a9771e767129ae3de8c4adab1a85d",
+    "branch": "task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua",
+    "pr_number": 5881,
+    "recorded_at": "2026-08-30T06:50:32.184Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
