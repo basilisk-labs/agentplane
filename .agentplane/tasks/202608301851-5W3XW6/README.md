@@ -2,10 +2,10 @@
 id: "202608301851-5W3XW6"
 title: "Recover unstarted task worktrees pinned before the approved planning baseline"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,9 @@ quality_review:
     - "Residual risk: Recovery intentionally refuses more than eight preexisting candidates and any unknown or modified candidate."
     - "Residual risk: Actual M3 recovery and refactoring completion remain pending."
 token_usage:
-  agent_runs: 9
+  agent_runs: 11
   input_tokens: null
-  journal_digest: "sha256:60d14c4efaede81016b93088fb57d0e7fcfcfc53d6fbe4b3158948c0abf3f251"
+  journal_digest: "sha256:3abc1a9514524a15e93ae1a4641af4b1c18029c015e7fc351cd1a69354467bcf"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-30T20:21:53.863Z"
+  updated_at: "2026-08-30T21:16:04.108Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -368,8 +368,8 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:verification-record"
 commit:
-  hash: "7ca52b1ef21b99a156d02ef2ee0f55a9dd7f6756"
-  message: "🚧 5W3XW6 task: apply external agent result"
+  hash: "8dfe8e7797fba6df63eb74e2a863e4fbdeee45ad"
+  message: "🚧 5W3XW6 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -404,6 +404,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7ca52b1ef21b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -510,9 +513,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T21:16:04.108Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "8dfe8e7797fba6df63eb74e2a863e4fbdeee45ad"
 doc_version: 3
-doc_updated_at: "2026-08-30T21:15:09.954Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T21:16:04.135Z"
+doc_updated_by: "CODER"
 description: "M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca9660a388241cb4da32f842a but native worktree preparation used creation base 3bcce289091f5e6cbcb1dea87c2964c4f559259d. Its dependency Tasks are absent from that old tree, so advance waits forever. Add a bounded native operator recovery for an unstarted task workspace that verifies approved plan identity, exact old/new Git ancestry, clean source state, Task ownership and absence of active runners or provider effects before fast-forwarding to the approved plan baseline. Preserve the Task, plan, dependencies, history and unrelated artifacts. Never auto-reanchor explicitly pinned bases, started work or divergent histories. Test negative guards and the real dependency-after-planning scenario. This is a prerequisite bootstrap recovery within the authorized clean core refactor."
 sections:
   Summary: |-
@@ -2115,6 +2126,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "7ca52b1ef21b99a156d02ef2ee0f55a9dd7f6756"
+    message: "🚧 5W3XW6 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -2821,12 +2833,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/9` agent runs
+- Completeness: `0/11` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:60d14c4efaede81016b93088fb57d0e7fcfcfc53d6fbe4b3158948c0abf3f251`
+- Journal digest: `sha256:3abc1a9514524a15e93ae1a4641af4b1c18029c015e7fc351cd1a69354467bcf`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-30T20:21:53.863Z`
+- Updated at: `2026-08-30T21:16:04.108Z`
