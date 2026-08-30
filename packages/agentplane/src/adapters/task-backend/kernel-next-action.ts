@@ -61,6 +61,13 @@ export function readKernelNextAction(
   if (definitions.some((definition) => !aggregate.work_items[definition.id]))
     return action("kernel_work_item_materialization_required");
   const items = definitions.map((definition) => aggregate.work_items[definition.id]!);
+  const requiredComplete = items.every(
+    (item) => item.definition.optional || item.state === "COMPLETED",
+  );
+  const unresolvedClaim = items.some(
+    (item) => item.claim_id !== null && item.state !== "COMPLETED" && item.state !== "CANCELLED",
+  );
+  if (requiredComplete && !unresolvedClaim) return action("kernel_final_validation_required");
   // Existing claims and uncertain outcomes precede new claims. This projection never grants a lease.
   for (const state of [
     "EFFECT_IN_DOUBT",
@@ -69,11 +76,16 @@ export function readKernelNextAction(
     "INSPECTING",
     "VALIDATING",
     "CLAIMED",
-    "BLOCKED",
     "REWORK_READY",
     "READY",
+    "BLOCKED",
   ] as const) {
-    const item = items.find((candidate) => candidate.state === state);
+    const item = items.find(
+      (candidate) =>
+        candidate.state === state &&
+        (!(state === "READY" || state === "REWORK_READY") ||
+          taskKernel.workItemResourceConflicts(candidate, items).length === 0),
+    );
     if (!item) continue;
     const reasons: Record<typeof state, string> = {
       EFFECT_IN_DOUBT: "kernel_work_item_reconciliation_required",

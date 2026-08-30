@@ -4,7 +4,7 @@ title: "Add compatibility adapters and replay migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 56
 origin:
   system: "manual"
 depends_on:
@@ -21,15 +21,15 @@ verify:
   - "bun run typecheck"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-30T07:52:14.256Z"
+  updated_at: "2026-08-30T10:24:20.488Z"
   updated_by: "USER"
-  note: "Standing user authorization for subsequent refactoring plans. Approve exact sha256:b44896158ad36a135b4f26fab0d6ad30abf78efcf952d61fc6aaf5a12c44e954. Bound scope correction for compatibility qualification; all original acceptance and safety gates remain."
+  note: "Standing user authorization for all subsequent in-scope refactoring plans. Approve exact sha256:8e32060f888533284a0d0235807cc97a6cad53aa4e1f9d48d24ec527928ae634. Preserve every M0 acceptance gate and the unresolved full-suite verification failure."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-30T10:16:19.892Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run test:fast"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -448,6 +448,7 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
     authority_violations:
+      - "verification:recorded-check-3:fail"
       - "writable_scope:.agentplane/policy/incidents.md"
       - "writable_scope:.agentplane/tasks/202608290844-7JCQPF/README.md"
       - "writable_scope:.agentplane/tasks/202608290844-7JCQPF/blueprint/resolved-snapshot.json"
@@ -1107,6 +1108,7 @@ execution_contract:
       - "depcruise.config.cjs"
       - "docs/adr/0017-clean-task-core-rebuild.md"
       - "docs/adr/README.md"
+      - "docs/developer/clean-task-core-m2-replay-checkpoint.md"
       - "docs/developer/harness-dev.mdx"
       - "docs/reference/clean-task-core-rebuild-spec.mdx"
       - "packages/agentplane/assets/policy/incidents.md"
@@ -1115,21 +1117,25 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/kernel-migration-source.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-migration.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-observations.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-projector.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay-evidence.corpus.json"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay-journey.test-fixtures.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay-migration.corpus.json"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-replay-storage.testkit.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay.corpus.json"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-replay.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
       - "packages/agentplane/src/backends/task-backend/local-backend.ts"
       - "packages/agentplane/src/backends/task-backend/local-task-byte-store.ts"
+      - "packages/agentplane/src/backends/task-backend/serialized-kernel-backend.ts"
       - "packages/agentplane/src/backends/task-backend/shared/types.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
@@ -1153,6 +1159,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
       - "packages/agentplane/src/ports/task-byte-store.ts"
+      - "packages/agentplane/src/ports/task-record-serialization.ts"
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/task-centric/graph.ts"
       - "packages/core/src/tasks/task-centric/task-centric.test.ts"
@@ -1251,7 +1258,7 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-3"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-30"
         result: "pass"
@@ -1671,7 +1678,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a9d2c4bff496c4c7f270db1d2095f7d38301a24b862ef8ffa65008dad473ccc2"
+      digest: "sha256:3fb2f950dca2a2fb645ad64c20e6e0d0afc6f01c9dc2206bf429c646c01e7e03"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli"
         - "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
@@ -2288,6 +2295,7 @@ execution_contract:
           - "depcruise.config.cjs"
           - "docs/adr/0017-clean-task-core-rebuild.md"
           - "docs/adr/README.md"
+          - "docs/developer/clean-task-core-m2-replay-checkpoint.md"
           - "docs/developer/harness-dev.mdx"
           - "docs/reference/clean-task-core-rebuild-spec.mdx"
           - "packages/agentplane/assets/policy/incidents.md"
@@ -2296,21 +2304,25 @@ execution_contract:
           - "packages/agentplane/src/adapters/task-backend/kernel-migration-source.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-migration.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-observations.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-projector.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay-evidence.corpus.json"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay-journey.test-fixtures.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay-migration.corpus.json"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay-migration.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-replay-storage.testkit.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay.corpus.json"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-replay.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
           - "packages/agentplane/src/backends/task-backend/local-backend.ts"
           - "packages/agentplane/src/backends/task-backend/local-task-byte-store.ts"
+          - "packages/agentplane/src/backends/task-backend/serialized-kernel-backend.ts"
           - "packages/agentplane/src/backends/task-backend/shared/types.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
@@ -2334,6 +2346,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
           - "packages/agentplane/src/ports/task-byte-store.ts"
+          - "packages/agentplane/src/ports/task-record-serialization.ts"
           - "packages/core/src/tasks/index.ts"
           - "packages/core/src/tasks/task-centric/graph.ts"
           - "packages/core/src/tasks/task-centric/task-centric.test.ts"
@@ -2399,6 +2412,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-3"
 commit: null
 comments:
   -
@@ -2440,6 +2454,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 57c23559657b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8e92d66b8671. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -2594,9 +2614,30 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T09:54:06.030Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8e92d66b8671. CLI accepted one state-bound external-agent semantic result."
+    commit: "8e92d66b8671d083b9928ef04b15a49dfece4292"
+  -
+    type: "verify"
+    at: "2026-08-30T10:16:19.892Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run test:fast"
+  -
+    type: "status"
+    at: "2026-08-30T10:24:31.681Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-30T09:17:22.071Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-30T10:24:31.681Z"
+doc_updated_by: "CODER"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
   Summary: |-
@@ -2606,7 +2647,7 @@ sections:
   Scope: |-
     - In scope: Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts.
     - Out of scope: unrelated refactors not required for "Add compatibility adapters and replay migration".
-  Plan: "Correct qualification scope for all WorkItems. Include only the reviewed compatibility candidate, exact CLI descriptor/source allowlist and existing critical CLI composition test. Retain immutable baseline, strict freshness checks and every original M0 acceptance gate."
+  Plan: "Preserve all M0 acceptance and the first three WorkItem definitions. Split remaining qualification into supplemental coverage implementation and dependent exact-anchor corpus freeze. Keep the failed full repository gate open. Copy the prepared planning baseline exactly."
   Verify Steps: |-
     PLANNER fallback scaffold for "Add compatibility adapters and replay migration". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -3812,6 +3853,51 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-30T10:16:19.892Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run test:fast
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14f2d1aa148850434712b287721a7e1a35d4528d09687a0f0ef6b8915e5a7bb6, input_digest=sha256:828bba967a98ce750d220c0af94244aa4e26540e01dfc90be6b9faff5e82860f
+
+    Details:
+
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    Command: bun run test:fast
+    Result: fail
+    Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-2A6BJC-add-compatibility-adapters-and-replay-migration/.agentplane/tasks/202608291006-2A6BJC/blueprint/resolved-snapshot.json
+    - old_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+    - current_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291006-2A6BJC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -3829,13 +3915,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:3aa962fe6733f58b5d54f6fbe8f4fd4d6872f975810025922344952639197cb0"
-    digest: "sha256:5bfb2863c5fd8f2c24810511875ff1677f2cce6107d82b9e32378fc3722e2a62"
-    grant_id: "bc4fc123-87d8-4755-a2f8-38ab21323b81"
-    issued_at: "2026-08-30T07:52:14.256Z"
+    completion_contract_digest: "sha256:497631335b4334bcdc13151f2e670eb39084eba3a7889d2290f97df69271f6b7"
+    digest: "sha256:aa2749263c113d64b15398cf5d4b1f94b78ffda858d9819530ed375cb7e99e4d"
+    grant_id: "a8bd867a-50b1-41ff-9416-5935d8c34af9"
+    issued_at: "2026-08-30T10:24:20.488Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:03d67e93c17b945dc7ef413e89559769ce0c8d723c262ec5f465e0f4aa8ae76d"
-    plan_revision: 31
+    plan_digest: "sha256:6c1cfd88e2a1c1e5d9d2a6924667c6b284d668295c87bea1146344959c2e0469"
+    plan_revision: 54
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:e258ddeedc305dcd7b5973bb80268af1359486e241b54d90daf4722c0b34d586"
@@ -3844,26 +3930,29 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-30T07:52:14.256Z"
+        approved_at: "2026-08-30T10:24:20.488Z"
         approved_by: "USER"
-        approved_digest: "sha256:b44896158ad36a135b4f26fab0d6ad30abf78efcf952d61fc6aaf5a12c44e954"
+        approved_digest: "sha256:8e32060f888533284a0d0235807cc97a6cad53aa4e1f9d48d24ec527928ae634"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-08-30T07:52:00.070Z"
-      digest: "sha256:b44896158ad36a135b4f26fab0d6ad30abf78efcf952d61fc6aaf5a12c44e954"
+      created_at: "2026-08-30T10:23:19.724Z"
+      digest: "sha256:8e32060f888533284a0d0235807cc97a6cad53aa4e1f9d48d24ec527928ae634"
       proposal:
         assumptions:
           - "Use M0 specification and M1 kernel as contracts. Preserve kernel purity and typed rejection semantics."
           - "Reuse existing task README transaction and cloud CAS owners. Do not add an independently mutable duplicate canonical store."
           - "All destructive migration qualification uses isolated fixtures. User repository migration and production cutover remain explicit M3 gates. Preserve unrelated task records, worktrees, user data and separate 0.7.8 release lane."
-          - "Preserve completed m2-boundaries and m2-migration results and output manifests. The replay checkpoint is not final M2 acceptance. Full CI currently fails compatibility candidate freshness and must pass before completion."
+          - "Preserve completed predecessor definitions, results and output manifests. Checkpoint 8e92d66b8671d083b9928ef04b15a49dfece4292 passed 640 targeted tests and a clean exact-anchor capture passed 641 tests with 15 fixtures and 246 normalized read observations. Full test:fast failed 12 of 5185 tests across seven suites; a serial unchanged Node 24 control passed all 104 tests in those suites. Do not treat that control as a full gate pass. Do not increase timeouts or weaken checks without a reproduced cause."
           - "Predecessor qualification may update the reviewed compatibility candidate, its exact CLI descriptor and source-provenance allowlist, and the existing critical composition test. Add only the migration command delta. Preserve the immutable 0.6.24 baseline and strict rejection of unlisted changes."
+          - "The original m2-replay-qualification requirement remains a Task-level mandatory criterion. Its remaining work is divided between coverage implementation and m2-corpus-freeze. No M0 acceptance criterion is removed or reduced."
+          - "The current checkpoint is already committed. Do not create an extra no-change implementation episode to acknowledge it. The coverage WorkItem produces real supplemental harness changes; the final dependent WorkItem freezes the resulting exact-anchor corpus and report."
+          - "Keep Task dependencies, production cutover boundary, external authority and all M3 self-hosting/release gates unchanged. No user repository migration or publication is performed in M2."
         planning_baseline:
-          captured_at: "2026-08-30T07:51:22.917Z"
+          captured_at: "2026-08-30T10:16:36.141Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:5d5f25330ad5053a6dd459bc52616cc50680d1dcccaae247efd6ca657ab0f2a2"
+          digest: "sha256:7cbde15b23d6481ac6967502787a62df5e9896be051b005ce8512c7a9de50666"
           dirty_paths:
             - ".agentplane/tasks/202608291006-2A6BJC/README.md"
             - ".agentplane/tasks/202608291006-2A6BJC/pr/github-body.md"
@@ -3871,14 +3960,14 @@ extensions:
             - ".agentplane/tasks/202608291006-2A6BJC/pr/review.md"
             - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
             - ".agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830075116632-19aedf754eb84cd1.json"
+            - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830101619892-7739ec0ad7c72a78.json"
           git:
             kind: "commit"
             ref: null
-            sha: "2b964f7cbfc47b64d8ba8345211d806c59b6337c"
+            sha: "8e92d66b8671d083b9928ef04b15a49dfece4292"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:30"
+          task_history_cursor: "task-revision:53"
         schema_version: 1
         task_id: "202608291006-2A6BJC"
         top_level_validation:
@@ -3954,7 +4043,17 @@ extensions:
               description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
               id: "m2-replay-qualification"
               required: true
-          evidence_fingerprint: "sha256:65a5519f36313e84db86d915c9be805f090d7c0c4fbe1a243e66a05ab9a3ca68"
+            -
+              check_ids:
+                - "m2-architecture"
+                - "m2-invariants"
+                - "m2-tests"
+                - "m2-types"
+                - "m2-diff"
+              description: "Complete the M0 twelve-family qualification harness after checkpoint 8e92d66b8671d083b9928ef04b15a49dfece4292. Preserve the existing reviewed corpora and the new persistence capture proof. Add missing plan rejection and stale-approval cases; WorkItem dependency chains, fan-out, optional and blocked scheduling, missing upstream outputs, rework and duplicate/stale result cases; missing-executable evidence; operational versus semantic review drift; base and frozen-worktree document identity; and timeout-before/after-effect readback and reconciliation. Reproduce suspected scheduling and effect-dispatch gaps before fixing them. Reuse canonical transition guards and existing storage, process, workspace and provider observation owners. Every fixture must expose deterministic source bytes, command sequence and expected events, receipts, aggregate/projection digests, effect state and actual next-action code. Preserve exact-anchor isolation, fail on empty runs, and keep legacy production authoritative. Investigate the failed full test:fast run without weakening timeouts or assertions. The seven failed suites passed a serial Node 24 control run with 104 tests and unchanged code. The full recorded gate still must pass. Commit this harness through the supervisor before final corpus capture in m2-corpus-freeze. This WorkItem does not complete the final M2 gate."
+              id: "m2-corpus-coverage"
+              required: true
+          evidence_fingerprint: "sha256:344821b13199ff01a77ca94c446cae2229eb2dfc5ab3b50005ba5c4af4a9d567"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -4438,8 +4537,8 @@ extensions:
                     - "m2-tests"
                     - "m2-types"
                     - "m2-diff"
-                  description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
-                  id: "m2-replay-qualification"
+                  description: "Complete the M0 twelve-family qualification harness after checkpoint 8e92d66b8671d083b9928ef04b15a49dfece4292. Preserve the existing reviewed corpora and the new persistence capture proof. Add missing plan rejection and stale-approval cases; WorkItem dependency chains, fan-out, optional and blocked scheduling, missing upstream outputs, rework and duplicate/stale result cases; missing-executable evidence; operational versus semantic review drift; base and frozen-worktree document identity; and timeout-before/after-effect readback and reconciliation. Reproduce suspected scheduling and effect-dispatch gaps before fixing them. Reuse canonical transition guards and existing storage, process, workspace and provider observation owners. Every fixture must expose deterministic source bytes, command sequence and expected events, receipts, aggregate/projection digests, effect state and actual next-action code. Preserve exact-anchor isolation, fail on empty runs, and keep legacy production authoritative. Investigate the failed full test:fast run without weakening timeouts or assertions. The seven failed suites passed a serial Node 24 control run with 104 tests and unchanged code. The full recorded gate still must pass. Commit this harness through the supervisor before final corpus capture in m2-corpus-freeze. This WorkItem does not complete the final M2 gate."
+                  id: "m2-corpus-coverage"
                   required: true
               capabilities:
                 - "task.verify"
@@ -4456,9 +4555,9 @@ extensions:
               depends_on:
                 - "m2-replay"
               expected_outputs:
-                - "m2-replay-qualification-report"
+                - "m2-coverage-implementation"
               id: "m2-replay-qualification"
-              objective: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
+              objective: "Complete the M0 twelve-family qualification harness after checkpoint 8e92d66b8671d083b9928ef04b15a49dfece4292. Preserve the existing reviewed corpora and the new persistence capture proof. Add missing plan rejection and stale-approval cases; WorkItem dependency chains, fan-out, optional and blocked scheduling, missing upstream outputs, rework and duplicate/stale result cases; missing-executable evidence; operational versus semantic review drift; base and frozen-worktree document identity; and timeout-before/after-effect readback and reconciliation. Reproduce suspected scheduling and effect-dispatch gaps before fixing them. Reuse canonical transition guards and existing storage, process, workspace and provider observation owners. Every fixture must expose deterministic source bytes, command sequence and expected events, receipts, aggregate/projection digests, effect state and actual next-action code. Preserve exact-anchor isolation, fail on empty runs, and keep legacy production authoritative. Investigate the failed full test:fast run without weakening timeouts or assertions. The seven failed suites passed a serial Node 24 control run with 104 tests and unchanged code. The full recorded gate still must pass. Commit this harness through the supervisor before final corpus capture in m2-corpus-freeze. This WorkItem does not complete the final M2 gate."
               optional: false
               priority: 3
               required_inputs:
@@ -4581,12 +4680,170 @@ extensions:
                       - "m2-tests"
                       - "m2-types"
                       - "m2-diff"
-                    description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
+                    description: "Complete the M0 twelve-family qualification harness after checkpoint 8e92d66b8671d083b9928ef04b15a49dfece4292. Preserve the existing reviewed corpora and the new persistence capture proof. Add missing plan rejection and stale-approval cases; WorkItem dependency chains, fan-out, optional and blocked scheduling, missing upstream outputs, rework and duplicate/stale result cases; missing-executable evidence; operational versus semantic review drift; base and frozen-worktree document identity; and timeout-before/after-effect readback and reconciliation. Reproduce suspected scheduling and effect-dispatch gaps before fixing them. Reuse canonical transition guards and existing storage, process, workspace and provider observation owners. Every fixture must expose deterministic source bytes, command sequence and expected events, receipts, aggregate/projection digests, effect state and actual next-action code. Preserve exact-anchor isolation, fail on empty runs, and keep legacy production authoritative. Investigate the failed full test:fast run without weakening timeouts or assertions. The seven failed suites passed a serial Node 24 control run with 104 tests and unchanged code. The full recorded gate still must pass. Commit this harness through the supervisor before final corpus capture in m2-corpus-freeze. This WorkItem does not complete the final M2 gate."
+                    id: "m2-corpus-coverage"
+                    required: true
+                evidence_fingerprint: "sha256:46119f05c36cf533a63c144eb5a5697c88956f9decce4ea8807cc16f4a398a86"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "m2-architecture"
+                    - "m2-invariants"
+                    - "m2-tests"
+                    - "m2-types"
+                    - "m2-diff"
+                  description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes. Capture only from the committed supplemental harness. Preserve reviewed old vectors. Add a complete coverage manifest and explicit reproduction commands. Replay all frozen inputs rather than regenerating expectations. Confirm local CAS, serialized direct and cloud fake equivalence; all required effect and crash cases; zero unexplained normalized dual-read mismatch; canary, repeat and exact-byte rollback. Include the current full repository checks and supervised hosted delivery in the final report. A control rerun of selected failed suites is not full-suite evidence."
+                  id: "m2-replay-qualification"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 96000
+                optional_sources: []
+                required_sources:
+                  - "repository"
+                  - "task-document"
+                symbol_hints:
+                  - "reduceTaskCommand"
+                  - "TaskCentricBackendAdapter"
+                  - "withTaskReadmeTransaction"
+              depends_on:
+                - "m2-replay-qualification"
+              expected_outputs:
+                - "m2-frozen-qualification-corpus"
+                - "m2-replay-qualification-report"
+              id: "m2-corpus-freeze"
+              objective: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes. Capture only from the committed supplemental harness. Preserve reviewed old vectors. Add a complete coverage manifest and explicit reproduction commands. Replay all frozen inputs rather than regenerating expectations. Confirm local CAS, serialized direct and cloud fake equivalence; all required effect and crash cases; zero unexplained normalized dual-read mismatch; canary, repeat and exact-byte rollback. Include the current full repository checks and supervised hosted delivery in the final report. A control rerun of selected failed suites is not full-suite evidence."
+              optional: false
+              priority: 4
+              required_inputs:
+                - "m2-coverage-implementation"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/adapters/task-backend"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/backends/task-backend"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/ports"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/cli/run-cli"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/runner"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/task-kernel"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/core/src/tasks/index.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/testkit/src"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/bench"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/developer"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+              risk: "high"
+              scope_roots:
+                - "packages/agentplane/src/adapters/task-backend"
+                - "packages/agentplane/src/backends/task-backend"
+                - "packages/agentplane/src/ports"
+                - "packages/agentplane/src/commands/task"
+                - "packages/agentplane/src/cli/run-cli"
+                - "packages/agentplane/src/runner"
+                - "packages/core/src/tasks/task-kernel"
+                - "packages/core/src/tasks/index.ts"
+                - "packages/testkit/src"
+                - "scripts/bench"
+                - "docs/developer"
+                - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                - "scripts/baselines/v0.7-compatibility-candidate.json"
+                - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run arch:check"
+                    id: "m2-architecture"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run lifecycle:invariants"
+                    id: "m2-invariants"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run test:fast"
+                    id: "m2-tests"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "bun run typecheck"
+                    id: "m2-types"
+                    kind: "deterministic"
+                    required: true
+                  -
+                    capability: "task.verify"
+                    command: "git diff --check"
+                    id: "m2-diff"
+                    kind: "deterministic"
+                    required: true
+                criteria:
+                  -
+                    check_ids:
+                      - "m2-architecture"
+                      - "m2-invariants"
+                      - "m2-tests"
+                      - "m2-types"
+                      - "m2-diff"
+                    description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes. Capture only from the committed supplemental harness. Preserve reviewed old vectors. Add a complete coverage manifest and explicit reproduction commands. Replay all frozen inputs rather than regenerating expectations. Confirm local CAS, serialized direct and cloud fake equivalence; all required effect and crash cases; zero unexplained normalized dual-read mismatch; canary, repeat and exact-byte rollback. Include the current full repository checks and supervised hosted delivery in the final report. A control rerun of selected failed suites is not full-suite evidence."
                     id: "m2-replay-qualification"
                     required: true
-                evidence_fingerprint: "sha256:d7b566c238c13b69663d76489aa64bb4fff4d40ac33c147524b56696d743f273"
+                evidence_fingerprint: "sha256:98ce085b4d533f53460c75425ce61f5a7cf65d8bdac10f350aa2c61b4d5d17b3"
                 schema_version: 1
-      revision: 3
+      revision: 4
       schema_version: 1
       task_id: "202608291006-2A6BJC"
     event_cursor: 0
@@ -5891,247 +6148,793 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202608291006-2A6BJC"
-    revision: 49
+      -
+        approval:
+          approved_at: "2026-08-30T07:52:14.256Z"
+          approved_by: "USER"
+          approved_digest: "sha256:b44896158ad36a135b4f26fab0d6ad30abf78efcf952d61fc6aaf5a12c44e954"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-30T07:52:00.070Z"
+        digest: "sha256:b44896158ad36a135b4f26fab0d6ad30abf78efcf952d61fc6aaf5a12c44e954"
+        proposal:
+          assumptions:
+            - "Use M0 specification and M1 kernel as contracts. Preserve kernel purity and typed rejection semantics."
+            - "Reuse existing task README transaction and cloud CAS owners. Do not add an independently mutable duplicate canonical store."
+            - "All destructive migration qualification uses isolated fixtures. User repository migration and production cutover remain explicit M3 gates. Preserve unrelated task records, worktrees, user data and separate 0.7.8 release lane."
+            - "Preserve completed m2-boundaries and m2-migration results and output manifests. The replay checkpoint is not final M2 acceptance. Full CI currently fails compatibility candidate freshness and must pass before completion."
+            - "Predecessor qualification may update the reviewed compatibility candidate, its exact CLI descriptor and source-provenance allowlist, and the existing critical composition test. Add only the migration command delta. Preserve the immutable 0.6.24 baseline and strict rejection of unlisted changes."
+          planning_baseline:
+            captured_at: "2026-08-30T07:51:22.917Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:5d5f25330ad5053a6dd459bc52616cc50680d1dcccaae247efd6ca657ab0f2a2"
+            dirty_paths:
+              - ".agentplane/tasks/202608291006-2A6BJC/README.md"
+              - ".agentplane/tasks/202608291006-2A6BJC/pr/github-body.md"
+              - ".agentplane/tasks/202608291006-2A6BJC/pr/meta.json"
+              - ".agentplane/tasks/202608291006-2A6BJC/pr/review.md"
+              - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608291006-2A6BJC/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830075116632-19aedf754eb84cd1.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "2b964f7cbfc47b64d8ba8345211d806c59b6337c"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:30"
+          schema_version: 1
+          task_id: "202608291006-2A6BJC"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run arch:check"
+                id: "m2-architecture"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run lifecycle:invariants"
+                id: "m2-invariants"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run test:fast"
+                id: "m2-tests"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "m2-types"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "git diff --check"
+                id: "m2-diff"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "m2-architecture"
+                  - "m2-invariants"
+                  - "m2-tests"
+                  - "m2-types"
+                  - "m2-diff"
+                description: "Connect M1 taskKernel to explicit persistence and application adapters. Canonical reads never synthesize aggregates from legacy data. Typed canonical, legacy_unmigrated, malformed and archived results fail closed. Persist aggregate, events, plans and mutation receipts atomically with CAS or proven serialization, validate capabilities, reject changed-command idempotency reuse, and compare independent readback before exposing receipts. CLI/document/status, validation/evaluator, Git/workspace and provider adapters observe or project only; canonical kernel owns transitions. New canonical creation is explicit; existing legacy production remains authoritative only in declared M2 comparison mode until M3 cutover."
+                id: "m2-boundaries"
+                required: true
+              -
+                check_ids:
+                  - "m2-architecture"
+                  - "m2-invariants"
+                  - "m2-tests"
+                  - "m2-types"
+                  - "m2-diff"
+                description: "Implement dry-run, canary-first apply, idempotent repeat and receipt-scoped rollback through supported adapter/CLI surfaces. Preserve exact source bytes before writes. Record source/backend/repository/schema identity and all required digests/CAS/readback. TODO, DOING and BLOCKED migrate to PLANNING without invented plan, WorkItems, authority or evidence; DONE becomes read-only archive. Split required_inputs only with unambiguous typed evidence, quarantine unknown, ambiguous and malformed data. Atomically persist migration receipt and output. Rollback restores exact bytes only when output revision/digest and backup digest still match; otherwise return stable state_changed_after_migration or backup_mismatch without writes."
+                id: "m2-migration"
+                required: true
+              -
+                check_ids:
+                  - "m2-architecture"
+                  - "m2-invariants"
+                  - "m2-tests"
+                  - "m2-types"
+                  - "m2-diff"
+                description: "Qualify the committed replay engine checkpoint at 447e42b16e053477a6e8ec77ac590269ee2e43e2. Preserve frozen kernel, migration and evidence vectors. Prove resource-claim rejection, local and cloud CAS persistence, interrupted write readback, exact-byte migration and rollback. Repair exact-anchor dependency isolation and expose suite-level failures. Update only the reviewed compatibility candidate for the added migration CLI; keep the immutable baseline unchanged. The final twelve-family qualification remains mandatory in m2-replay-qualification."
+                id: "m2-replay"
+                required: true
+              -
+                check_ids:
+                  - "m2-architecture"
+                  - "m2-invariants"
+                  - "m2-tests"
+                  - "m2-types"
+                  - "m2-diff"
+                description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
+                id: "m2-replay-qualification"
+                required: true
+            evidence_fingerprint: "sha256:65a5519f36313e84db86d915c9be805f090d7c0c4fbe1a243e66a05ab9a3ca68"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m2-architecture"
+                      - "m2-invariants"
+                      - "m2-tests"
+                      - "m2-types"
+                      - "m2-diff"
+                    description: "Connect M1 taskKernel to explicit persistence and application adapters. Canonical reads never synthesize aggregates from legacy data. Typed canonical, legacy_unmigrated, malformed and archived results fail closed. Persist aggregate, events, plans and mutation receipts atomically with CAS or proven serialization, validate capabilities, reject changed-command idempotency reuse, and compare independent readback before exposing receipts. CLI/document/status, validation/evaluator, Git/workspace and provider adapters observe or project only; canonical kernel owns transitions. New canonical creation is explicit; existing legacy production remains authoritative only in declared M2 comparison mode until M3 cutover."
+                    id: "m2-boundaries"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "reduceTaskCommand"
+                    - "TaskCentricBackendAdapter"
+                    - "withTaskReadmeTransaction"
+                depends_on: []
+                expected_outputs:
+                  - "m2-boundaries-implementation"
+                id: "m2-boundaries"
+                objective: "Connect M1 taskKernel to explicit persistence and application adapters. Canonical reads never synthesize aggregates from legacy data. Typed canonical, legacy_unmigrated, malformed and archived results fail closed. Persist aggregate, events, plans and mutation receipts atomically with CAS or proven serialization, validate capabilities, reject changed-command idempotency reuse, and compare independent readback before exposing receipts. CLI/document/status, validation/evaluator, Git/workspace and provider adapters observe or project only; canonical kernel owns transitions. New canonical creation is explicit; existing legacy production remains authoritative only in declared M2 comparison mode until M3 cutover."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/index.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli/run-cli"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/index.ts"
+                  - "packages/testkit/src"
+                  - "scripts/bench"
+                  - "docs/developer"
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "m2-architecture"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m2-invariants"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast"
+                      id: "m2-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "m2-types"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "m2-diff"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "m2-architecture"
+                        - "m2-invariants"
+                        - "m2-tests"
+                        - "m2-types"
+                        - "m2-diff"
+                      description: "Connect M1 taskKernel to explicit persistence and application adapters. Canonical reads never synthesize aggregates from legacy data. Typed canonical, legacy_unmigrated, malformed and archived results fail closed. Persist aggregate, events, plans and mutation receipts atomically with CAS or proven serialization, validate capabilities, reject changed-command idempotency reuse, and compare independent readback before exposing receipts. CLI/document/status, validation/evaluator, Git/workspace and provider adapters observe or project only; canonical kernel owns transitions. New canonical creation is explicit; existing legacy production remains authoritative only in declared M2 comparison mode until M3 cutover."
+                      id: "m2-boundaries"
+                      required: true
+                  evidence_fingerprint: "sha256:1634af8127ebf4a1ba7154f01fe0157f9261858c5f79b06bdb71de73b2fe3512"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m2-architecture"
+                      - "m2-invariants"
+                      - "m2-tests"
+                      - "m2-types"
+                      - "m2-diff"
+                    description: "Implement dry-run, canary-first apply, idempotent repeat and receipt-scoped rollback through supported adapter/CLI surfaces. Preserve exact source bytes before writes. Record source/backend/repository/schema identity and all required digests/CAS/readback. TODO, DOING and BLOCKED migrate to PLANNING without invented plan, WorkItems, authority or evidence; DONE becomes read-only archive. Split required_inputs only with unambiguous typed evidence, quarantine unknown, ambiguous and malformed data. Atomically persist migration receipt and output. Rollback restores exact bytes only when output revision/digest and backup digest still match; otherwise return stable state_changed_after_migration or backup_mismatch without writes."
+                    id: "m2-migration"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "reduceTaskCommand"
+                    - "TaskCentricBackendAdapter"
+                    - "withTaskReadmeTransaction"
+                depends_on:
+                  - "m2-boundaries"
+                expected_outputs:
+                  - "m2-migration-implementation"
+                id: "m2-migration"
+                objective: "Implement dry-run, canary-first apply, idempotent repeat and receipt-scoped rollback through supported adapter/CLI surfaces. Preserve exact source bytes before writes. Record source/backend/repository/schema identity and all required digests/CAS/readback. TODO, DOING and BLOCKED migrate to PLANNING without invented plan, WorkItems, authority or evidence; DONE becomes read-only archive. Split required_inputs only with unambiguous typed evidence, quarantine unknown, ambiguous and malformed data. Atomically persist migration receipt and output. Rollback restores exact bytes only when output revision/digest and backup digest still match; otherwise return stable state_changed_after_migration or backup_mismatch without writes."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "m2-boundaries-implementation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/index.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli/run-cli"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/index.ts"
+                  - "packages/testkit/src"
+                  - "scripts/bench"
+                  - "docs/developer"
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "m2-architecture"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m2-invariants"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast"
+                      id: "m2-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "m2-types"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "m2-diff"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "m2-architecture"
+                        - "m2-invariants"
+                        - "m2-tests"
+                        - "m2-types"
+                        - "m2-diff"
+                      description: "Implement dry-run, canary-first apply, idempotent repeat and receipt-scoped rollback through supported adapter/CLI surfaces. Preserve exact source bytes before writes. Record source/backend/repository/schema identity and all required digests/CAS/readback. TODO, DOING and BLOCKED migrate to PLANNING without invented plan, WorkItems, authority or evidence; DONE becomes read-only archive. Split required_inputs only with unambiguous typed evidence, quarantine unknown, ambiguous and malformed data. Atomically persist migration receipt and output. Rollback restores exact bytes only when output revision/digest and backup digest still match; otherwise return stable state_changed_after_migration or backup_mismatch without writes."
+                      id: "m2-migration"
+                      required: true
+                  evidence_fingerprint: "sha256:ec442424abe95444c0aafb75e5b4f8a7daa7b24feb12268b0294e967bb9a4af1"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m2-architecture"
+                      - "m2-invariants"
+                      - "m2-tests"
+                      - "m2-types"
+                      - "m2-diff"
+                    description: "Qualify the committed replay engine checkpoint at 447e42b16e053477a6e8ec77ac590269ee2e43e2. Preserve frozen kernel, migration and evidence vectors. Prove resource-claim rejection, local and cloud CAS persistence, interrupted write readback, exact-byte migration and rollback. Repair exact-anchor dependency isolation and expose suite-level failures. Update only the reviewed compatibility candidate for the added migration CLI; keep the immutable baseline unchanged. The final twelve-family qualification remains mandatory in m2-replay-qualification."
+                    id: "m2-replay"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "reduceTaskCommand"
+                    - "TaskCentricBackendAdapter"
+                    - "withTaskReadmeTransaction"
+                depends_on:
+                  - "m2-migration"
+                expected_outputs:
+                  - "m2-replay-implementation"
+                id: "m2-replay"
+                objective: "Qualify the committed replay engine checkpoint at 447e42b16e053477a6e8ec77ac590269ee2e43e2. Preserve frozen kernel, migration and evidence vectors. Prove resource-claim rejection, local and cloud CAS persistence, interrupted write readback, exact-byte migration and rollback. Repair exact-anchor dependency isolation and expose suite-level failures. Update only the reviewed compatibility candidate for the added migration CLI; keep the immutable baseline unchanged. The final twelve-family qualification remains mandatory in m2-replay-qualification."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "m2-migration-implementation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/index.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli/run-cli"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/index.ts"
+                  - "packages/testkit/src"
+                  - "scripts/bench"
+                  - "docs/developer"
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "m2-architecture"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m2-invariants"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast"
+                      id: "m2-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "m2-types"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "m2-diff"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "m2-architecture"
+                        - "m2-invariants"
+                        - "m2-tests"
+                        - "m2-types"
+                        - "m2-diff"
+                      description: "Qualify the committed replay engine checkpoint at 447e42b16e053477a6e8ec77ac590269ee2e43e2. Preserve frozen kernel, migration and evidence vectors. Prove resource-claim rejection, local and cloud CAS persistence, interrupted write readback, exact-byte migration and rollback. Repair exact-anchor dependency isolation and expose suite-level failures. Update only the reviewed compatibility candidate for the added migration CLI; keep the immutable baseline unchanged. The final twelve-family qualification remains mandatory in m2-replay-qualification."
+                      id: "m2-replay"
+                      required: true
+                  evidence_fingerprint: "sha256:1d1658d2ac8757b0867c97b12229d8145a6915b4103a2b239d67dc6f8a7b5d80"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m2-architecture"
+                      - "m2-invariants"
+                      - "m2-tests"
+                      - "m2-types"
+                      - "m2-diff"
+                    description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
+                    id: "m2-replay-qualification"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "reduceTaskCommand"
+                    - "TaskCentricBackendAdapter"
+                    - "withTaskReadmeTransaction"
+                depends_on:
+                  - "m2-replay"
+                expected_outputs:
+                  - "m2-replay-qualification-report"
+                id: "m2-replay-qualification"
+                objective: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "m2-replay-implementation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/index.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli/run-cli"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/src/tasks/task-kernel"
+                  - "packages/core/src/tasks/index.ts"
+                  - "packages/testkit/src"
+                  - "scripts/bench"
+                  - "docs/developer"
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run arch:check"
+                      id: "m2-architecture"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m2-invariants"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:fast"
+                      id: "m2-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "m2-types"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "m2-diff"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "m2-architecture"
+                        - "m2-invariants"
+                        - "m2-tests"
+                        - "m2-types"
+                        - "m2-diff"
+                      description: "Freeze complete twelve-family corpus from the integrated M0 specification with source bytes/digests, exact implementation anchor, commands, expected events, aggregate/projection digests, effect state and next-route codes. Exercise real local storage, serialized capability mode and cloud fake, interruption, all task classes and listed crash boundaries. Compare legacy and canonical normalized read paths without effects or canonical writes. Report first mismatch and reproducible command. Require zero unexplained mismatch, canary migration, repeated migration without byte changes, exact-byte rollback and full gate checks on one implementation identity. Do not claim M3 production deletion, twenty self-hosting tasks or release drills during M2. Produce an explicit coverage and qualification report. Reject zero-test runs, suite import failures, live workspace source leakage and unanchored transitive harness code. Preserve all M0 gates and report actual normalized legacy/canonical read comparison and actual next-action reason codes."
+                      id: "m2-replay-qualification"
+                      required: true
+                  evidence_fingerprint: "sha256:d7b566c238c13b69663d76489aa64bb4fff4d40ac33c147524b56696d743f273"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202608291006-2A6BJC"
+    revision: 54
     schema_version: 1
-    updated_at: "2026-08-30T09:17:23.281Z"
+    updated_at: "2026-08-30T10:24:20.488Z"
     work_items:
       m2-boundaries:
-        attempt: 2
+        attempt: 0
         claim_id: null
         id: "m2-boundaries"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:6f68ea43c83a22f24b23f9c87546c7239bbbe9159a855fc1d894db3b479192da"
-            id: "m2-boundaries-implementation"
-            kind: "semantic_output"
-            producer:
-              attempt: 2
-              plan_revision: 3
-              task_id: "202608291006-2A6BJC"
-              work_item_id: "m2-boundaries"
-            provenance:
-              - "sha256:f6f47987d0269f743549430ed9767b10a89d3ef89d91c59176705581b0331f37"
-              - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:b8fa10b73bd222dbbe4ae99da0fc2e3683121c12214e908c8496065e078ac1ba"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 3
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-architecture"
-              command_identity: "bun run arch:check"
-              detail: "Observed by bun run arch:check."
-              exit_code: 0
-              observed_at: "2026-08-30T08:32:21.992Z"
-              repository_snapshot_digest: "sha256:b8fa10b73bd222dbbe4ae99da0fc2e3683121c12214e908c8496065e078ac1ba"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-invariants"
-              command_identity: "bun run lifecycle:invariants"
-              detail: "Observed by bun run lifecycle:invariants."
-              exit_code: 0
-              observed_at: "2026-08-30T08:32:21.992Z"
-              repository_snapshot_digest: "sha256:b8fa10b73bd222dbbe4ae99da0fc2e3683121c12214e908c8496065e078ac1ba"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-tests"
-              command_identity: "bun run test:fast"
-              detail: "Observed by bun run test:fast."
-              exit_code: 0
-              observed_at: "2026-08-30T08:32:21.992Z"
-              repository_snapshot_digest: "sha256:b8fa10b73bd222dbbe4ae99da0fc2e3683121c12214e908c8496065e078ac1ba"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-types"
-              command_identity: "bun run typecheck"
-              detail: "Observed by bun run typecheck."
-              exit_code: 0
-              observed_at: "2026-08-30T08:32:21.992Z"
-              repository_snapshot_digest: "sha256:b8fa10b73bd222dbbe4ae99da0fc2e3683121c12214e908c8496065e078ac1ba"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-diff"
-              command_identity: "git diff --check"
-              detail: "Observed by git diff --check."
-              exit_code: 0
-              observed_at: "2026-08-30T08:32:21.992Z"
-              repository_snapshot_digest: "sha256:b8fa10b73bd222dbbe4ae99da0fc2e3683121c12214e908c8496065e078ac1ba"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
+      m2-corpus-freeze:
+        attempt: 0
+        claim_id: null
+        id: "m2-corpus-freeze"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
       m2-migration:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "m2-migration"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:548c343922c94efd83acff8d44f1b6db24f0ed256da743c71da75144c9889415"
-            id: "m2-migration-implementation"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 3
-              task_id: "202608291006-2A6BJC"
-              work_item_id: "m2-migration"
-            provenance:
-              - "sha256:1016793243be986836747f0aa7dfd2689b6fac98bda66d8295e90ad04f4b9fc1"
-              - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:7947a2318ab446a9c8a528779c1c6f9467ccb87086f18215b0f02e27a0738aeb"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-architecture"
-              command_identity: "bun run arch:check"
-              detail: "Observed by bun run arch:check."
-              exit_code: 0
-              observed_at: "2026-08-30T08:50:24.110Z"
-              repository_snapshot_digest: "sha256:7947a2318ab446a9c8a528779c1c6f9467ccb87086f18215b0f02e27a0738aeb"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-invariants"
-              command_identity: "bun run lifecycle:invariants"
-              detail: "Observed by bun run lifecycle:invariants."
-              exit_code: 0
-              observed_at: "2026-08-30T08:50:24.110Z"
-              repository_snapshot_digest: "sha256:7947a2318ab446a9c8a528779c1c6f9467ccb87086f18215b0f02e27a0738aeb"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-tests"
-              command_identity: "bun run test:fast"
-              detail: "Observed by bun run test:fast."
-              exit_code: 0
-              observed_at: "2026-08-30T08:50:24.110Z"
-              repository_snapshot_digest: "sha256:7947a2318ab446a9c8a528779c1c6f9467ccb87086f18215b0f02e27a0738aeb"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-types"
-              command_identity: "bun run typecheck"
-              detail: "Observed by bun run typecheck."
-              exit_code: 0
-              observed_at: "2026-08-30T08:50:24.110Z"
-              repository_snapshot_digest: "sha256:7947a2318ab446a9c8a528779c1c6f9467ccb87086f18215b0f02e27a0738aeb"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-diff"
-              command_identity: "git diff --check"
-              detail: "Observed by git diff --check."
-              exit_code: 0
-              observed_at: "2026-08-30T08:50:24.110Z"
-              repository_snapshot_digest: "sha256:7947a2318ab446a9c8a528779c1c6f9467ccb87086f18215b0f02e27a0738aeb"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
       m2-replay:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "m2-replay"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:a8c34595d69b7900f88e55780182d92e5c3285d72d231691587d043c3528beb2"
-            id: "m2-replay-implementation"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 3
-              task_id: "202608291006-2A6BJC"
-              work_item_id: "m2-replay"
-            provenance:
-              - "sha256:c2812822c9e94fa2f8a3249244e5c47d9efc7f465a6b8011455b8d8c24a7d9bf"
-              - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:eda2b3edb21a6dd0f8954430d0c74bc0186f9d9d236476099b97d5844fc17197"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-architecture"
-              command_identity: "bun run arch:check"
-              detail: "Observed by bun run arch:check."
-              exit_code: 0
-              observed_at: "2026-08-30T09:17:23.257Z"
-              repository_snapshot_digest: "sha256:eda2b3edb21a6dd0f8954430d0c74bc0186f9d9d236476099b97d5844fc17197"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-invariants"
-              command_identity: "bun run lifecycle:invariants"
-              detail: "Observed by bun run lifecycle:invariants."
-              exit_code: 0
-              observed_at: "2026-08-30T09:17:23.258Z"
-              repository_snapshot_digest: "sha256:eda2b3edb21a6dd0f8954430d0c74bc0186f9d9d236476099b97d5844fc17197"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-tests"
-              command_identity: "bun run test:fast"
-              detail: "Observed by bun run test:fast."
-              exit_code: 0
-              observed_at: "2026-08-30T09:17:23.258Z"
-              repository_snapshot_digest: "sha256:eda2b3edb21a6dd0f8954430d0c74bc0186f9d9d236476099b97d5844fc17197"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-types"
-              command_identity: "bun run typecheck"
-              detail: "Observed by bun run typecheck."
-              exit_code: 0
-              observed_at: "2026-08-30T09:17:23.258Z"
-              repository_snapshot_digest: "sha256:eda2b3edb21a6dd0f8954430d0c74bc0186f9d9d236476099b97d5844fc17197"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json"
-              check_id: "m2-diff"
-              command_identity: "git diff --check"
-              detail: "Observed by git diff --check."
-              exit_code: 0
-              observed_at: "2026-08-30T09:17:23.258Z"
-              repository_snapshot_digest: "sha256:eda2b3edb21a6dd0f8954430d0c74bc0186f9d9d236476099b97d5844fc17197"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
       m2-replay-qualification:
         attempt: 0
         claim_id: null
@@ -6308,6 +7111,31 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202608291006-2A6BJC"
+      plan-refinement:work-order-202608291006-2A6BJC-executor-cd8e87cb42603bc899077fee:
+        aggregate_digest: "sha256:00f8674c248bac911e0bf2a1ed22f2925b4bea474d4d85a8001d0e229d6473b9"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-08-30T10:16:34.207Z"
+          cause_refs:
+            - "outputs_changed"
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8dbd42e7d823db727bbe714a"
+          mutation_id: "plan-refinement:work-order-202608291006-2A6BJC-executor-cd8e87cb42603bc899077fee"
+          plan_digest: "sha256:b44896158ad36a135b4f26fab0d6ad30abf78efcf952d61fc6aaf5a12c44e954"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-2A6BJC"
+          task_revision: 52
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608291006-2A6BJC-executor-cd8e87cb42603bc899077fee"
+        next_revision: 53
+        previous_revision: 52
+        schema_version: 1
+        task_id: "202608291006-2A6BJC"
       plan-refinement:work-order-202608291006-2A6BJC-executor-dd7a823f6f10f16bf971c2a7:
         aggregate_digest: "sha256:28433fcf1bed43d76f5d2e7c90dde2296291fe4594d8607e0fdf7fd06b43a7e9"
         event:
@@ -6335,8 +7163,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "57c23559657bc1a7f4df8106da3925668c54c9e9"
   task_execution_context:
     base_ref: "main"
     base_sha: "3bcce289091f5e6cbcb1dea87c2964c4f559259d"
@@ -6360,7 +7186,7 @@ Connect legacy CLI and repository surfaces to the canonical Task kernel through 
 
 ## Plan
 
-Correct qualification scope for all WorkItems. Include only the reviewed compatibility candidate, exact CLI descriptor/source allowlist and existing critical CLI composition test. Retain immutable baseline, strict freshness checks and every original M0 acceptance gate.
+Preserve all M0 acceptance and the first three WorkItem definitions. Split remaining qualification into supplemental coverage implementation and dependent exact-anchor corpus freeze. Keep the failed full repository gate open. Copy the prepared planning baseline exactly.
 
 ## Verify Steps
 
@@ -7550,6 +8376,51 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-8
 Scope: branch_pr task 202608291006-2A6BJC Verification Contract check task_outcome (8/8)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-2A6BJC-add-compatibility-adapters-and-replay-migration/.agentplane/tasks/202608291006-2A6BJC/blueprint/resolved-snapshot.json
+- old_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+- current_digest: de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291006-2A6BJC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T10:16:19.892Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run test:fast
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:14f2d1aa148850434712b287721a7e1a35d4528d09687a0f0ef6b8915e5a7bb6, input_digest=sha256:828bba967a98ce750d220c0af94244aa4e26540e01dfc90be6b9faff5e82860f
+
+Details:
+
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-2A6BJC declared verification
+
+Command: bun run test:fast
+Result: fail
+Evidence: .agentplane/tasks/202608291006-2A6BJC/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-2A6BJC declared verification
 
 BlueprintSnapshotRef:
 - state: current

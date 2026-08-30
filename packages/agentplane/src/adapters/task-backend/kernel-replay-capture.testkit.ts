@@ -53,7 +53,13 @@ export async function captureKernelPersistenceFixture(
         !comparison.comparison.matched ||
         comparison.next_action.reason_code !== step.expected_next_reason
       )
-        throw new Error(`${identity.fixture_id}/${step.label}: ${JSON.stringify(comparison)}`);
+        throw new Error(
+          `${identity.fixture_id}/${step.label}: ${JSON.stringify({
+            comparison: comparison.comparison,
+            next_action: comparison.next_action,
+            expected_next_reason: step.expected_next_reason,
+          })}`,
+        );
       observations.push({
         label: step.label,
         events: read.record.events,

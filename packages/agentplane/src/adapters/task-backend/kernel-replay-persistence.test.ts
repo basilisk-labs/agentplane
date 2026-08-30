@@ -62,6 +62,69 @@ describe("canonical replay through persistence and restart", () => {
     });
   }
   for (const backendKind of replayBackendKinds) {
+    it(`${backendKind} does not require an unclaimed optional WorkItem before final validation`, async () => {
+      const original = kernelReplayJourney("direct").steps[1]!.input.command;
+      if (original.kind !== "propose_plan") throw new Error("Missing fixture plan");
+      const optional = {
+        ...original.plan.work_items[0]!,
+        id: "optional",
+        optional: true,
+        expected_outputs: ["optional-output"],
+      };
+      const fixture = await captureKernelPersistenceFixture(
+        backendKind,
+        "direct",
+        "0".repeat(40),
+        kernelReplayJourney("direct", [optional]),
+      );
+      expect(fixture.expected.at(-1)?.next_action.reason_code).toBe("kernel_task_completed");
+    });
+
+    it(`${backendKind} selects independent ready work while another WorkItem is blocked`, async () => {
+      const original = kernelReplayJourney("direct").steps[1]!.input.command;
+      if (original.kind !== "propose_plan") throw new Error("Missing fixture plan");
+      const other = {
+        ...original.plan.work_items[0]!,
+        id: "other",
+        expected_outputs: ["other-output"],
+      };
+      const journey = kernelReplayJourney("direct", [other]);
+      const store = await storage(backendKind);
+      const adapter = new KernelBackendAdapter(store.backend, replayRepositoryIdentity);
+      for (const [index, step] of journey.steps.slice(0, 4).entries()) {
+        const result =
+          index === 0
+            ? await adapter.create(journey.task, step.input)
+            : await adapter.execute(step.input);
+        expect(result.kind).toBe("committed");
+      }
+      const claim = journey.steps[4]!.input;
+      if (claim.command.kind !== "transition_work_item") throw new Error("Missing claim fixture");
+      expect(
+        await adapter.execute({
+          ...claim,
+          mutation_id: "block-build",
+          command: { ...claim.command, action: "block", claim_id: null },
+        }),
+      ).toMatchObject({ kind: "committed" });
+      const restarted = new KernelBackendAdapter(store.restart(), replayRepositoryIdentity);
+      expect(
+        await restarted.nextAction(journey.task.id, claim.repository_fingerprint),
+      ).toMatchObject({
+        reason_code: "kernel_work_item_claim_required",
+        work_item_id: "other",
+        grants_authority: false,
+      });
+      expect(
+        await restarted.execute({
+          ...claim,
+          mutation_id: "claim-other",
+          authority: { ...claim.authority!, work_item_id: "other" },
+          command: { ...claim.command, expected_task_revision: 5, work_item_id: "other" },
+        }),
+      ).toMatchObject({ kind: "committed" });
+    });
+
     it(`${backendKind} keeps review fresh across metadata changes and rejects a replaced semantic result`, async () => {
       const store = await storage(backendKind);
       const journey = kernelReplayJourney("direct");
@@ -296,6 +359,39 @@ describe("canonical replay through persistence and restart", () => {
       expect(
         Object.values(fresh.record.aggregate.work_items).filter((item) => item.state === "CLAIMED"),
       ).toHaveLength(1);
+      const owner = inputs[winner]!;
+      const blocked = await adapter.execute({
+        ...owner,
+        mutation_id: "block-resource-owner",
+        command: {
+          ...owner.command,
+          action: "block",
+          expected_task_revision: fresh.record.aggregate.revision,
+        },
+      });
+      if (blocked.kind !== "committed") throw new Error(JSON.stringify(blocked));
+      expect(await adapter.nextAction(journey.task.id, owner.repository_fingerprint)).toMatchObject(
+        {
+          reason_code: "kernel_work_item_blocked",
+          work_item_id: owner.command.work_item_id,
+        },
+      );
+      const cancelled = await adapter.execute({
+        ...owner,
+        mutation_id: "cancel-resource-owner",
+        command: {
+          ...owner.command,
+          action: "cancel",
+          expected_task_revision: blocked.record.aggregate.revision,
+        },
+      });
+      expect(cancelled.kind).toBe("committed");
+      expect(await adapter.nextAction(journey.task.id, owner.repository_fingerprint)).toMatchObject(
+        {
+          reason_code: "kernel_work_item_claim_required",
+          work_item_id: retry.command.work_item_id,
+        },
+      );
     });
 
     for (const taskClass of replayTaskClasses) {

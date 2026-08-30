@@ -19,5 +19,6 @@ export {
   TASK_ACTION_TRANSITION_TABLE,
   TASK_TRANSITION_TABLE,
   WORK_ITEM_TRANSITION_TABLE,
+  workItemResourceConflicts,
 } from "./kernel.js";
 export type * from "./model.js";

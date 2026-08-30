@@ -24,7 +24,10 @@ const effects: Record<ReplayTaskClass, string[]> = {
 };
 
 /** A model journey through real adapters. It does not claim a hosted release or self-hosting run. */
-export function kernelReplayJourney(taskClass: ReplayTaskClass) {
+export function kernelReplayJourney(
+  taskClass: ReplayTaskClass,
+  additionalWorkItems: readonly k.WorkItemDefinition[] = [],
+) {
   const task: TaskData = {
     id: taskId,
     title: `Replay ${taskClass}`,
@@ -80,6 +83,7 @@ export function kernelReplayJourney(taskClass: ReplayTaskClass) {
         resources: [],
       },
     },
+    ...additionalWorkItems,
   ];
   const plan: k.PlanRecord = {
     revision: 1,

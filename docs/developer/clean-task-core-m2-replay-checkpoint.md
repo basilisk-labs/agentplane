@@ -39,6 +39,19 @@ M3 must separately qualify those production adapters.
 
 ## Remaining mandatory acceptance
 
+The initial checkpoint's full `test:fast` run failed 12 tests across seven suites after
+1,280 seconds. Its saved predecessor run took 253 seconds. A serial Node 24 control reran
+all seven suites without code or timeout changes and passed all 104 tests. A later four-worker
+control also passed those 104 tests. The cause of the full-run failure is not established.
+These controls do not replace a successful complete verification run.
+
+Further persistence tests exposed two read-projection defects on all three backends: an
+unclaimed optional WorkItem was selected after all required work completed, and a blocked
+WorkItem hid independent ready work. The projection now permits final validation in the first
+case and selects ready work in the second. Ready work must still pass the canonical resource
+conflict rule. The projection and command admission reuse that one rule. A blocked resource
+owner prevents a conflicting claim until its claim is resolved or cancelled.
+
 1. Commit the capture implementation through the supervisor before assigning its exact source
    identity. A working-tree SHA does not identify uncommitted implementation bytes.
 2. Freeze and replay the complete twelve-family manifest from the M0 specification. Preserve

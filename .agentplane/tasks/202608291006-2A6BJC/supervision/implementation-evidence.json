@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3b5212575b43a1298be80f6a779de988c603a4a6..57c23559657bc1a7f4df8106da3925668c54c9e9",
+      "command": "git diff --check c403d60c2f03db17c4676ce5c7070350c5a70b2a..8e92d66b8671d083b9928ef04b15a49dfece4292",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3b5212575b43a1298be80f6a779de988c603a4a6..57c23559657bc1a7f4df8106da3925668c54c9e9",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c403d60c2f03db17c4676ce5c7070350c5a70b2a..8e92d66b8671d083b9928ef04b15a49dfece4292",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,9 +21,20 @@
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-2A6BJC/pr/review.md",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay.test.ts",
-        "M\tscripts/bench/internal/agent-efficiency-dependency-manifest.mjs",
-        "A\tscripts/bench/internal/kernel-replay-isolation.mjs",
+        "A\tdocs/developer/clean-task-core-m2-replay-checkpoint.md",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-next-action.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-observations.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-capture.testkit.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-journey.test-fixtures.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-replay-storage.testkit.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-replay.ts",
+        "A\tpackages/agentplane/src/backends/task-backend/serialized-kernel-backend.ts",
+        "A\tpackages/agentplane/src/ports/task-record-serialization.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
         "M\tscripts/bench/qualify-kernel-replay.mjs"
       ]
     },
@@ -34,8 +45,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3b5212575b43a1298be80f6a779de988c603a4a6",
-  "implementation_commit": "57c23559657bc1a7f4df8106da3925668c54c9e9",
+  "execution_base_commit": "c403d60c2f03db17c4676ce5c7070350c5a70b2a",
+  "implementation_commit": "8e92d66b8671d083b9928ef04b15a49dfece4292",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

@@ -720,28 +720,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", runtime.definition.required_inputs);
       }
       if (command.action === "claim") {
-        const requested = new Set(runtime.definition.execution_requirements.resources);
-        const conflicts = Object.values(aggregate.work_items)
-          .filter(
-            (other) =>
-              other.definition.id !== command.work_item_id &&
-              other.claim_id !== null &&
-              [
-                "CLAIMED",
-                "EXECUTING",
-                "RESULT_RECEIVED",
-                "INSPECTING",
-                "VALIDATING",
-                "BLOCKED",
-                "EFFECT_IN_DOUBT",
-              ].includes(other.state),
-          )
-          .flatMap((other) =>
-            other.definition.execution_requirements.resources
-              .filter((resource) => requested.has(resource))
-              .map((resource) => `${other.definition.id}:${resource}`),
-          )
-          .toSorted();
+        const conflicts = workItemResourceConflicts(runtime, Object.values(aggregate.work_items));
         if (conflicts.length > 0) return rejected("WORK_ITEM_RESOURCE_CONFLICT", conflicts);
       }
       if (command.action === "complete") {
@@ -1085,6 +1064,35 @@ function requiredWorkComplete(aggregate: TaskAggregate): boolean {
 }
 
 export const TASK_TRANSITION_TABLE = TASK_TRANSITIONS;
+/** Read projections and command admission share the same resource conflict rule. */
+export function workItemResourceConflicts(
+  item: WorkItemRuntime,
+  items: readonly WorkItemRuntime[],
+): string[] {
+  const requested = new Set(item.definition.execution_requirements.resources);
+  return items
+    .filter(
+      (other) =>
+        other.definition.id !== item.definition.id &&
+        other.claim_id !== null &&
+        [
+          "CLAIMED",
+          "EXECUTING",
+          "RESULT_RECEIVED",
+          "INSPECTING",
+          "VALIDATING",
+          "BLOCKED",
+          "EFFECT_IN_DOUBT",
+        ].includes(other.state),
+    )
+    .flatMap((other) =>
+      other.definition.execution_requirements.resources
+        .filter((resource) => requested.has(resource))
+        .map((resource) => `${other.definition.id}:${resource}`),
+    )
+    .toSorted();
+}
+
 export const TASK_ACTION_TRANSITION_TABLE = TASK_ACTION_TRANSITIONS;
 export const WORK_ITEM_TRANSITION_TABLE = WORK_ITEM_ACTION_TRANSITIONS;
 export const EFFECT_OBSERVE_TRANSITION_TABLE = EFFECT_OBSERVE_TRANSITIONS;
