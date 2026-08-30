@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608292218-3N0FBK-99543f33b87db9876d3ea0e5",
+  "prepared_at": "2026-08-29T23:20:19.133Z",
+  "task": {
+    "id": "202608292218-3N0FBK",
+    "revision": 26,
+    "objective": "Prevent branch closeout while required WorkItems are incomplete\n\nFix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED.",
+    "acceptance_criteria": [
+      "bun run typecheck",
+      "bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/shared/workflow-step-quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "- In scope: Fix branch_pr route selection so an approved task with any incomplete required canonical WorkItem returns to the bounded EXECUTOR WorkItem episode before verification, quality review, PR publication, or pre-merge closure. Add a regression test for a task that has stale verification, quality review, and commit evidence while a required WorkItem remains READY or PLANNED.\n- Out of scope: unrelated refactors not required for \"Prevent branch closeout while required WorkItems are incomplete\".",
+      "Refined the bootstrap plan with one additional calibration test fixture required by full regression; production scope and risk are unchanged.",
+      "PLANNER fallback scaffold for \"Prevent branch closeout while required WorkItems are incomplete\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Prevent branch closeout while required WorkItems are incomplete\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "f6dae0b382002f07850fd1d5f343eda0b7da6f97",
+  "diff_base_sha": "dbaf4bc2878eab7b50f8ea6d14179d8d91030159",
+  "blueprint_digest": "8b81c44d2d42ad42a5fd11120416523cc699aa4f3f26c2f8502e97d2f3e77a2c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608292218-3N0FBK/quality/20260829-232019133-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:876b1b4ad7d73f7d1235ab8bdd5b4e443e685d581cc5ce881d94005d00ce373c",
+    "prompt_path": ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/0746e6bf83a188f6678201af5c5c2e782aaaa0faebaf297aeaf0f1b9057cf4c2.md",
+    "result_schema_path": ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608292218-3N0FBK/README.md",
+      "sha256": "sha256:2f39f9e9054d117268d350421f2641f82c3f12dfdd86840fca7781f81e23391d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/6508f2281bdb76c7a51465f00997415cbb1144f19fa37a27045d5eb8eeaa13cf.patch",
+      "sha256": "sha256:6508f2281bdb76c7a51465f00997415cbb1144f19fa37a27045d5eb8eeaa13cf",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/705fd23cea4f0661155d847cbe29aa51c0c7ce19052019f39df3424f3d34d10d.json",
+      "sha256": "sha256:705fd23cea4f0661155d847cbe29aa51c0c7ce19052019f39df3424f3d34d10d",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608292218-3N0FBK/verification/20260829232002016-276e3b6422ad5f09.json",
+      "sha256": "sha256:b010199ffc94c05d8ffdf0ed96e2c8cfbd4c7bf4dd51c63dd0ca61b16dab9c13",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608292218-3N0FBK/quality/objects/sha256/9f512f0819486738a0914d14aafef8ee94d25191007e8e94c679c6aedca6fbd9.json",
+      "sha256": "sha256:9f512f0819486738a0914d14aafef8ee94d25191007e8e94c679c6aedca6fbd9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

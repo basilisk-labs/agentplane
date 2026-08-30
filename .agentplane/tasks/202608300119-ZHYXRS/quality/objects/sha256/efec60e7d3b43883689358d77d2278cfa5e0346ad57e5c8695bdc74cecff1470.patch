@@ -1,0 +1,263 @@
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+index 08b165a19..35b6845c1 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -196,7 +196,7 @@ describe("recorded implementation recovery contract", () => {
+     ).toBe(true);
+   });
+ 
+-  it.each(["scope", "authority", "commands", "plan", "receipt", "body"])(
++  it.each(["scope", "authority", "effects", "commands", "plan", "work-item", "receipt", "body"])(
+     "rejects changed %s",
+     (change) => {
+       const before = task();
+@@ -212,6 +212,21 @@ describe("recorded implementation recovery contract", () => {
+           authority: { writable_roots: ["other"] },
+         };
+       if (change === "commands") after.verify = ["bun run weaker-check"];
++      if (change === "effects")
++        after.execution_contract = {
++          ...before.execution_contract,
++          declaration: {
++            ...before.execution_contract.declaration,
++            repository_effects: ["source_code", "documentation"],
++          },
++        };
++      if (change === "work-item")
++        after.extensions = {
++          "agentplane.task_centric": {
++            ...before.extensions["agentplane.task_centric"],
++            work_items: { other: { id: "other", state: "READY" } },
++          },
++        };
+       if (change === "plan")
+         after.extensions = {
+           "agentplane.task_centric": { current_plan: { revision: 2, digest: "different-plan" } },
+diff --git a/packages/core/src/tasks/task-centric/graph.ts b/packages/core/src/tasks/task-centric/graph.ts
+index 4c6012993..0747a1384 100644
+--- a/packages/core/src/tasks/task-centric/graph.ts
++++ b/packages/core/src/tasks/task-centric/graph.ts
+@@ -198,6 +198,17 @@ function pendingApproval(): PlanApproval {
+   });
+ }
+ 
++function planContentDigest(
++  plan: Pick<TaskPlanRevision, "schema_version" | "task_id" | "revision" | "proposal">,
++): Sha256Digest {
++  return taskCentricDigest({
++    schema_version: plan.schema_version,
++    task_id: plan.task_id,
++    revision: plan.revision,
++    proposal: plan.proposal,
++  });
++}
++
+ export function createTaskPlanRevision(opts: {
+   proposal: TaskPlanProposal;
+   revision: number;
+@@ -206,7 +217,7 @@ export function createTaskPlanRevision(opts: {
+   if (!Number.isInteger(opts.revision) || opts.revision < 1) {
+     throw new Error("Task plan revision must be a positive integer.");
+   }
+-  const digest = taskCentricDigest({
++  const digest = planContentDigest({
+     schema_version: 1,
+     task_id: opts.proposal.task_id,
+     revision: opts.revision,
+@@ -266,6 +277,24 @@ export function materializeApprovedWorkItems(opts: {
+   if (opts.task.current_plan && opts.task.current_plan.digest !== opts.plan.digest) {
+     throw new Error("Cannot materialize a plan over a different current revision.");
+   }
++  const existingIds = Object.keys(opts.task.work_items);
++  if (existingIds.length > 0) {
++    const current = opts.task.current_plan;
++    const planned = opts.plan.proposal.work_items.work_items;
++    if (
++      current?.revision !== opts.plan.revision ||
++      current.approval.state !== "approved" ||
++      current.approval.approved_digest !== opts.plan.digest ||
++      planContentDigest(opts.plan) !== opts.plan.digest ||
++      taskCentricDigest(current.proposal) !== taskCentricDigest(opts.plan.proposal) ||
++      existingIds.length !== planned.length ||
++      planned.some((item) => opts.task.work_items[item.id]?.id !== item.id)
++    ) {
++      throw new Error("Existing work item runtime does not match the approved current plan.");
++    }
++    // Reapproval is not a new execution. Preserve claims, outputs and validation atomically.
++    return opts.task;
++  }
+   const workItems: Record<string, WorkItemRuntime> = {};
+   for (const item of opts.plan.proposal.work_items.work_items) {
+     workItems[item.id] = Object.freeze({
+diff --git a/packages/core/src/tasks/task-centric/task-centric.test.ts b/packages/core/src/tasks/task-centric/task-centric.test.ts
+index 92ff9e5a4..e8e1af4c9 100644
+--- a/packages/core/src/tasks/task-centric/task-centric.test.ts
++++ b/packages/core/src/tasks/task-centric/task-centric.test.ts
+@@ -37,6 +37,7 @@ import {
+   type TaskPlanProposal,
+   type ValidationPlan,
+   type WorkItem,
++  type WorkItemState,
+ } from "./index.js";
+ 
+ const NOW = "2026-08-22T00:00:00.000Z";
+@@ -225,6 +226,159 @@ describe("task-centric domain", () => {
+     expect(aggregate.id).toBe("task-1");
+   });
+ 
++  it.each<WorkItemState>([
++    "PLANNED",
++    "READY",
++    "CLAIMED",
++    "EXECUTING",
++    "RESULT_RECEIVED",
++    "INSPECTING",
++    "VALIDATING",
++    "REWORK_READY",
++    "COMPLETED",
++    "BLOCKED",
++    "EFFECT_IN_DOUBT",
++    "CANCELLED",
++  ])("preserves completed evidence and %s runtime on same-plan reapproval", (state) => {
++    const initial = approvedTask([item({ id: "a" }), item({ id: "b", depends_on: ["a"] })]);
++    const validationResult = aggregateValidation(validation("a"), [
++      {
++        check_id: "check-a",
++        status: "passed",
++        observed_at: NOW,
++        repository_snapshot_digest: snapshot().digest,
++        command_identity: "test",
++        exit_code: 0,
++        artifact_refs: ["verification.json"],
++        detail: "passed",
++      },
++    ]);
++    const task: TaskAggregate = {
++      ...initial,
++      work_items: {
++        a: {
++          ...initial.work_items.a!,
++          state: "COMPLETED",
++          revision: 7,
++          attempt: 2,
++          output_manifests: [manifest({ id: "out-a", work_item_id: "a" })],
++          validation_result: validationResult,
++        },
++        b: { ...initial.work_items.b!, state, revision: 4, attempt: 3, claim_id: "claim-b" },
++      },
++      final_validation: validationResult,
++    };
++    const plan = approveTaskPlan({
++      plan: task.current_plan!,
++      expected_digest: task.current_plan!.digest,
++      actor: "operator",
++      approved_at: "2026-08-30T00:00:00.000Z",
++    });
++    const reapplied = materializeApprovedWorkItems({ task, plan, now: "2026-08-30T00:00:00.000Z" });
++    expect(reapplied).toBe(task);
++    expect(materializeApprovedWorkItems({ task: reapplied, plan, now: NOW })).toBe(task);
++  });
++
++  it("rejects ambiguous existing runtime instead of resetting it", () => {
++    const task = approvedTask([item({ id: "a" }), item({ id: "b", depends_on: ["a"] })]);
++    const plan = task.current_plan!;
++    const invalid: TaskAggregate[] = [
++      { ...task, current_plan: null },
++      { ...task, current_plan: { ...plan, revision: plan.revision + 1 } },
++      { ...task, current_plan: { ...plan, approval: { ...plan.approval, state: "pending" } } },
++      {
++        ...task,
++        current_plan: {
++          ...plan,
++          approval: { ...plan.approval, approved_digest: taskCentricDigest("other") },
++        },
++      },
++      { ...task, current_plan: { ...plan, proposal: proposal([item({ id: "changed" })]) } },
++      { ...task, work_items: { a: task.work_items.a! } },
++      {
++        ...task,
++        work_items: { ...task.work_items, extra: { ...task.work_items.a!, id: "extra" } },
++      },
++      { ...task, work_items: { ...task.work_items, a: { ...task.work_items.a!, id: "other" } } },
++    ];
++    for (const candidate of invalid) {
++      expect(() => materializeApprovedWorkItems({ task: candidate, plan, now: NOW })).toThrow(
++        /Existing work item runtime/u,
++      );
++    }
++    const draft = createTaskPlanRevision({
++      proposal: proposal([item({ id: "new" })]),
++      revision: 2,
++      created_at: NOW,
++    });
++    const changed = approveTaskPlan({
++      plan: draft,
++      expected_digest: draft.digest,
++      actor: "operator",
++      approved_at: NOW,
++    });
++    expect(() => materializeApprovedWorkItems({ task, plan: changed, now: NOW })).toThrow(
++      /different current revision/u,
++    );
++    expect(() => materializeApprovedWorkItems({ task, plan: draft, now: NOW })).toThrow(
++      /approved current task plan/u,
++    );
++    expect(
++      materializeApprovedWorkItems({
++        task: { ...task, current_plan: draft, work_items: {} },
++        plan: changed,
++        now: NOW,
++      }).work_items.new?.state,
++    ).toBe("READY");
++  });
++
++  it.each(["scope", "acceptance"] as const)(
++    "rejects reapproval after persisted %s changes with a stale digest",
++    (field) => {
++      const original = approvedTask([item({ id: "a" })]);
++      const originalPlan = original.current_plan!;
++      const definition = originalPlan.proposal.work_items.work_items[0]!;
++      const changed =
++        field === "scope"
++          ? { ...definition, scope_roots: ["packages/expanded"] }
++          : {
++              ...definition,
++              acceptance_criteria: [
++                { ...definition.acceptance_criteria[0]!, description: "Changed acceptance" },
++              ],
++            };
++      const persistedPlan = {
++        ...originalPlan,
++        proposal: {
++          ...originalPlan.proposal,
++          work_items: { ...originalPlan.proposal.work_items, work_items: [changed] },
++        },
++      };
++      const task = {
++        ...original,
++        current_plan: persistedPlan,
++        work_items: {
++          a: {
++            ...original.work_items.a!,
++            state: "COMPLETED" as const,
++            output_manifests: [manifest({ id: "out-a", work_item_id: "a" })],
++          },
++        },
++      };
++      const before = taskCentricDigest(task);
++      const approved = approveTaskPlan({
++        plan: task.current_plan,
++        expected_digest: task.current_plan.digest,
++        actor: "operator",
++        approved_at: NOW,
++      });
++      expect(() => materializeApprovedWorkItems({ task, plan: approved, now: NOW })).toThrow(
++        /Existing work item runtime/u,
++      );
++      expect(taskCentricDigest(task)).toBe(before);
++    },
++  );
++
+   it("rejects malformed plans deterministically before approval", () => {
+     const cyclic = proposal([
+       item({ id: "a", depends_on: ["b"], capabilities: ["missing"] }),

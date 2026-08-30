@@ -196,7 +196,7 @@ describe("recorded implementation recovery contract", () => {
     ).toBe(true);
   });
 
-  it.each(["scope", "authority", "commands", "plan", "receipt", "body"])(
+  it.each(["scope", "authority", "effects", "commands", "plan", "work-item", "receipt", "body"])(
     "rejects changed %s",
     (change) => {
       const before = task();
@@ -212,6 +212,21 @@ describe("recorded implementation recovery contract", () => {
           authority: { writable_roots: ["other"] },
         };
       if (change === "commands") after.verify = ["bun run weaker-check"];
+      if (change === "effects")
+        after.execution_contract = {
+          ...before.execution_contract,
+          declaration: {
+            ...before.execution_contract.declaration,
+            repository_effects: ["source_code", "documentation"],
+          },
+        };
+      if (change === "work-item")
+        after.extensions = {
+          "agentplane.task_centric": {
+            ...before.extensions["agentplane.task_centric"],
+            work_items: { other: { id: "other", state: "READY" } },
+          },
+        };
       if (change === "plan")
         after.extensions = {
           "agentplane.task_centric": { current_plan: { revision: 2, digest: "different-plan" } },

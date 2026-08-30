@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202608300119-ZHYXRS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-30T02:28:45.823Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "1f4efb60bc7f9ee558501ec2601afef9eb1c3ef8",
+  "blueprint_digest": "4432de042f170ef169a8e8d949b70e58013f30ee403a54acdfa985f9ed5169fd",
+  "findings": [
+    "Reviewed the new digest helper and both production-shaped regressions. Stored and candidate plans can no longer compare a changed proposal to itself while retaining stale digest authority.",
+    "The digest includes schema_version, task_id, revision and proposal and uses the same function at plan creation and runtime preservation.",
+    "All nine frozen evidence hashes match. Required fresh core suite and full local CI succeeded. Existing negative recovery boundaries remain intact.",
+    "Residual risk: Hosted checks must run on the newly published exact head. Resolve the addressed review thread only after publication and then confirm merge and Task Hosted Close."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608300119-ZHYXRS/quality/objects/sha256/efec60e7d3b43883689358d77d2278cfa5e0346ad57e5c8695bdc74cecff1470.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

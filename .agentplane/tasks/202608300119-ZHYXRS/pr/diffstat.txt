@@ -1,0 +1,4 @@
+ .../external-agent-implementation-recovery.test.ts |  17 ++-
+ packages/core/src/tasks/task-centric/graph.ts      |  31 ++++-
+ .../src/tasks/task-centric/task-centric.test.ts    | 154 +++++++++++++++++++++
+ 3 files changed, 200 insertions(+), 2 deletions(-)
