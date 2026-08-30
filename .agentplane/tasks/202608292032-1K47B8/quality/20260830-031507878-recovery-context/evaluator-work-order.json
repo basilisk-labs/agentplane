@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608292032-1K47B8-1bf2ed0004f9a09adce0452f",
+  "prepared_at": "2026-08-30T03:15:07.878Z",
+  "task": {
+    "id": "202608292032-1K47B8",
+    "revision": 76,
+    "objective": "Implement the isolated canonical Task kernel\n\nImplement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts",
+      "- In scope: Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged.\n- Out of scope: unrelated refactors not required for \"Implement the isolated canonical Task kernel\".",
+      "1. Preserve the existing kernel and subprocess isolation implementation. The previous execution WorkItems were reset by plan reapproval; do not describe their historical completion as current state.\n2. Execute one current-contract qualification WorkItem. Inspect actual kernel boundaries and rerun focused kernel and subprocess tests.\n3. Correct M1-QUALIFICATION.md with exact implementation SHA, source tree, immutable evidence commit and hashes, and current-versus-historical evidence. Historical evidence is provenance, not authorization to skip fresh checks.\n4. Require fresh arch:check and full local CI through AgentPlane, then evaluator acceptance.\n5. Deliver through exact-head hosted checks, merge and Task Hosted Close before starting M2. No release publication, manual runtime restoration, or cosmetic implementation edits.",
+      "1. Run the kernel model, reducer and invariant tests and the real verification-child subprocess isolation regression. Confirm deterministic transitions, rejection behavior, receipt idempotency and unchanged parent environment.\n2. Run `bun run arch:check`. Confirm the kernel has no filesystem, process, Git, provider, CLI, backend or legacy imports.\n3. Run `bun run ci:local:full`. Require all checks to pass, including fast tests and typechecking.\n4. Correct the qualification receipt to reference exact implementation and immutable evidence identities. Distinguish historical completed WorkItems from current requalification and do not reuse obsolete plan authority.\n5. Require evaluator acceptance, exact-head hosted checks, merge and Task Hosted Close before M2 starts. Do not publish a release."
+    ]
+  },
+  "evaluated_sha": "f4570f15d13b9c88c3ef0d4f8e457fe7525c9b3a",
+  "diff_base_sha": "dbaf4bc2878eab7b50f8ea6d14179d8d91030159",
+  "blueprint_digest": "dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608292032-1K47B8/quality/20260830-031507878-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:9578f40ecd8e1eb24750b249f3e50c60d3de470a3a14d0f3b9a65cb834515d1b",
+    "prompt_path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/862b552d27a033d4119e9ae7e5436b8c29a143456489a4d14fe36e085df344c8.md",
+    "result_schema_path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608292032-1K47B8/README.md",
+      "sha256": "sha256:ead9be9399f4c95f098544d84ceb54677717a9d4fa58f5457ab47686c2d83c1c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch",
+      "sha256": "sha256:31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/2b30736d79fa3985a602ca79b8003a85696c1631aa650eb0a69f4b62a313d474.json",
+      "sha256": "sha256:2b30736d79fa3985a602ca79b8003a85696c1631aa650eb0a69f4b62a313d474",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608292032-1K47B8/verification/20260830031455405-6315535599fc124b.json",
+      "sha256": "sha256:d815fda8e7e76ad3861aaf5b4d13352292be1a877a5ec677c3171e1e35db65c3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/cdccd39e524d1c90764685a8edd6ed62359da3abd8661ae465fa779bd9f3d0f9.json",
+      "sha256": "sha256:cdccd39e524d1c90764685a8edd6ed62359da3abd8661ae465fa779bd9f3d0f9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

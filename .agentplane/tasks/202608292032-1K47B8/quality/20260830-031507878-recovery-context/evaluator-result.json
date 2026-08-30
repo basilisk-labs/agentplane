@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All nine frozen evidence hashes match. Fresh supervisor checks pass architecture, model tests, policy routing, doctor and full local CI. The implementation evidence records a clean final tracked state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Reviewed exact USER actor/root provenance/evidence binding, declared execution requirements against grant and actor, final-validation identity and required work, effect uncertainty recovery, safe canonical amendments and fixed code-unit digest ordering. The earlier reported defects are addressed with positive and negative regression cases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The latest change extracts unchanged fixture builders from the reducer suite. It does not drop tests, alter production transitions or relax hotspot budgets. The four-file focused suite retains 73 passing cases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Qualification receipt separates historical work from current authority and references current source hashes plus supervisor-owned exact implementation/check identities. The kernel remains deterministic and isolated; provider/CLI behavior is unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted PR publication, exact-head required checks, merge and Task Hosted Close are still pending delivery gates. M2 must not start until those gates complete.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: M2 remains responsible for untrusted input validation, persistence and provider adapters around the typed kernel.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/31eb70979ca99b1b7baf8981a0aa4553f7836924a5a994ef188028919b165c2b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
