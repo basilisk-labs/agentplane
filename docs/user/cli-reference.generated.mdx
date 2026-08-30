@@ -1333,6 +1333,9 @@ agentplane work resume <task-id> [options]
 Options:
 
 - `--json`: Emit JSON. (default=false)
+- `--refresh-planning-base`: Inspect recovery of an unstarted worktree to its approved planning snapshot. (default=false)
+- `--apply`: Apply the explicitly inspected planning-base recovery. (default=false)
+- `--expect-token <sha256:digest>`: Exact token from planning-base recovery inspection.
 
 Examples:
 

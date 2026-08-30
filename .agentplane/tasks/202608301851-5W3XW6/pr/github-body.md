@@ -16,7 +16,7 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +27,12 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ docs/developer/harness-dev.mdx                     |  25 ++
+ docs/user/cli-reference.generated.mdx              |   3 +
+ ...i.core.task-advance.worktree-resolution.test.ts | 188 ++++++++++++++-
+ .../commands/branch/work-resume-planning-base.ts   | 260 +++++++++++++++++++++
+ .../src/commands/branch/work-resume.command.ts     |  51 +++-
+ 5 files changed, 523 insertions(+), 4 deletions(-)
 ```
 
 </details>
