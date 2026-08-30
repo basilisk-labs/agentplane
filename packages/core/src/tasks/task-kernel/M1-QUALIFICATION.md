@@ -14,9 +14,16 @@ subprocess fix. Qualification found and corrected authority defects in the kerne
 2. Expiry subset comparison used text order instead of timestamp instants.
 3. The reducer accepted expired authority and invalid supplied timestamps.
 4. Delegated authority could substitute the original user-decision evidence.
+5. WorkItem commands were accepted for cancelled or non-active Tasks and without
+   a current approved plan. Runtime definitions now match the current plan.
+6. Claim readiness ignored required input manifests. Materialization, graph input
+   validation, implicit input-cycle detection, readiness refresh, and claim checks
+   now require valid upstream outputs.
+7. The completion reducer disagreed with the eligibility predicate when WorkItem
+   validation was missing or stale. Both paths now use the same eligibility rule.
 
 New regression tests reproduced these defects before the fixes. After correction,
-the focused kernel and subprocess suite passes 46 tests across four files.
+the focused kernel and subprocess suite passes 54 tests across four files.
 The kernel still uses only deterministic inputs; it does not read wall-clock time,
 the filesystem, environment, Git, providers, or compatibility projections.
 
@@ -25,14 +32,14 @@ Current source SHA-256 identities:
 | Path                                                                 | SHA-256                                                            |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `packages/core/src/tasks/task-kernel/model.ts`                       | `5fba68db83e0623be556146ddcc0b8dfed1ddd4d6bd74ccaa1338614542472fe` |
-| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `c6d3860dedd5707d25ab5c9115952e0604ffeecc09c6768aa45b2d8b7b0a9ca9` |
-| `packages/core/src/tasks/task-kernel/invariants.ts`                  | `7acc9cf3d5c5217ae0e7f289a36c507dfbd043f42b87656d8080aac3f3af6ba7` |
+| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `73a345d0f34cc980594b01adf843f05900f240e3669690d9b461fb2241c1a019` |
+| `packages/core/src/tasks/task-kernel/invariants.ts`                  | `aa07195830ad05fc7ea957fd5993a1b3daf13723eac146ee1fc42ef96f852555` |
 | `packages/core/src/tasks/task-kernel/index.ts`                       | `3f69df84a74372f3a28d16a5816414e6abd69980368d0fe74b0d038de0429c10` |
 | `packages/agentplane/src/commands/shared/pr-meta/verify-log.ts`      | `84025fe05b1220f35fa2282246a83b3948a0baf08ea57475bcab3735a187b47a` |
 | `packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts` | `074a3321f71e777650700938c9e7e140355d2c78204c022164094826e0955757` |
 
 The supervisor assigns the exact implementation commit when it accepts this
-WorkItem. The current commit identity and fresh check results are recorded in the
+qualification WorkItem or its subsequent evaluator rework. The current commit identity and fresh check results are recorded in the
 task's `supervision/implementation-evidence.json` and `supervision/declared-checks.json`.
 The source hashes above identify the code qualified by this receipt without a
 self-referential commit hash. Full supervisor verification and evaluator acceptance

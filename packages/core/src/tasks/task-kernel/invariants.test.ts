@@ -322,6 +322,30 @@ describe("canonical task kernel invariants", () => {
     );
   });
 
+  it("validates required input producers and detects input-only cycles", () => {
+    const a = {
+      id: "a",
+      depends_on: [],
+      required_inputs: [],
+      expected_outputs: ["out-a"],
+      optional: false,
+    };
+    const b = { ...a, id: "b", required_inputs: ["out-a"], expected_outputs: ["out-b"] };
+    expect(validateWorkItemDefinitions([a, b])).toEqual([]);
+    expect(validateWorkItemDefinitions([a, { ...b, required_inputs: ["unknown"] }])).toContain(
+      "invalid_input:b:unknown",
+    );
+    expect(validateWorkItemDefinitions([a, { ...b, required_inputs: ["out-b"] }])).toContain(
+      "self_input:b:out-b",
+    );
+    expect(validateWorkItemDefinitions([a, b, { ...a, id: "duplicate-producer" }])).toContain(
+      "invalid_input:b:out-a",
+    );
+    expect(validateWorkItemDefinitions([{ ...a, required_inputs: ["out-b"] }, b])).toContain(
+      "dependency_cycle",
+    );
+  });
+
   it("blocks unrelated mutations while a non-idempotent effect is uncertain", () => {
     const uncertain: ExternalEffect = {
       id: "provider-effect",
