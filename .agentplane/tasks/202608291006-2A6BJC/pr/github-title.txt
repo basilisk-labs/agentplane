@@ -1,1 +1,1 @@
-🚧 2A6BJC task: Add compatibility adapters and replay migration [202608291006-2A6BJC]
+✅ 2A6BJC task: Add compatibility adapters and replay migration [202608291006-2A6BJC]
