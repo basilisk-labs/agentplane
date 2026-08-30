@@ -3,7 +3,8 @@
   "branch": "task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua",
   "created_at": "2026-08-30T06:04:22.120Z",
   "diffstat_sha256": "sha256:626751cc211a144d38c7940f5f66a65722e75cfa32498bc57ea27ffa7869b490",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-30T06:43:24.827Z",
+  "last_verified_diffstat_sha256": "sha256:626751cc211a144d38c7940f5f66a65722e75cfa32498bc57ea27ffa7869b490",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608300559-3MDRBH",
   "updated_at": "2026-08-30T06:04:22.120Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
