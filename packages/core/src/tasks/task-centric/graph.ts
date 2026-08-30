@@ -266,6 +266,24 @@ export function materializeApprovedWorkItems(opts: {
   if (opts.task.current_plan && opts.task.current_plan.digest !== opts.plan.digest) {
     throw new Error("Cannot materialize a plan over a different current revision.");
   }
+  const existingIds = Object.keys(opts.task.work_items);
+  if (existingIds.length > 0) {
+    const current = opts.task.current_plan;
+    const planned = opts.plan.proposal.work_items.work_items;
+    if (
+      !current ||
+      current.revision !== opts.plan.revision ||
+      current.approval.state !== "approved" ||
+      current.approval.approved_digest !== opts.plan.digest ||
+      taskCentricDigest(current.proposal) !== taskCentricDigest(opts.plan.proposal) ||
+      existingIds.length !== planned.length ||
+      planned.some((item) => opts.task.work_items[item.id]?.id !== item.id)
+    ) {
+      throw new Error("Existing work item runtime does not match the approved current plan.");
+    }
+    // Reapproval is not a new execution. Preserve claims, outputs and validation atomically.
+    return opts.task;
+  }
   const workItems: Record<string, WorkItemRuntime> = {};
   for (const item of opts.plan.proposal.work_items.work_items) {
     workItems[item.id] = Object.freeze({

@@ -37,6 +37,7 @@ import {
   type TaskPlanProposal,
   type ValidationPlan,
   type WorkItem,
+  type WorkItemState,
 } from "./index.js";
 
 const NOW = "2026-08-22T00:00:00.000Z";
@@ -223,6 +224,112 @@ describe("task-centric domain", () => {
     expect(aggregate.work_items.a?.state).toBe("READY");
     expect(aggregate.work_items.b?.state).toBe("PLANNED");
     expect(aggregate.id).toBe("task-1");
+  });
+
+  it.each<WorkItemState>([
+    "PLANNED",
+    "READY",
+    "CLAIMED",
+    "EXECUTING",
+    "RESULT_RECEIVED",
+    "INSPECTING",
+    "VALIDATING",
+    "REWORK_READY",
+    "COMPLETED",
+    "BLOCKED",
+    "EFFECT_IN_DOUBT",
+    "CANCELLED",
+  ])("preserves completed evidence and %s runtime on same-plan reapproval", (state) => {
+    const initial = approvedTask([item({ id: "a" }), item({ id: "b", depends_on: ["a"] })]);
+    const validationResult = aggregateValidation(validation("a"), [
+      {
+        check_id: "check-a",
+        status: "passed",
+        observed_at: NOW,
+        repository_snapshot_digest: snapshot().digest,
+        command_identity: "test",
+        exit_code: 0,
+        artifact_refs: ["verification.json"],
+        detail: "passed",
+      },
+    ]);
+    const task: TaskAggregate = {
+      ...initial,
+      work_items: {
+        a: {
+          ...initial.work_items.a!,
+          state: "COMPLETED",
+          revision: 7,
+          attempt: 2,
+          output_manifests: [manifest({ id: "out-a", work_item_id: "a" })],
+          validation_result: validationResult,
+        },
+        b: { ...initial.work_items.b!, state, revision: 4, attempt: 3, claim_id: "claim-b" },
+      },
+      final_validation: validationResult,
+    };
+    const plan = approveTaskPlan({
+      plan: task.current_plan!,
+      expected_digest: task.current_plan!.digest,
+      actor: "operator",
+      approved_at: "2026-08-30T00:00:00.000Z",
+    });
+    const reapplied = materializeApprovedWorkItems({ task, plan, now: "2026-08-30T00:00:00.000Z" });
+    expect(reapplied).toBe(task);
+    expect(materializeApprovedWorkItems({ task: reapplied, plan, now: NOW })).toBe(task);
+  });
+
+  it("rejects ambiguous existing runtime instead of resetting it", () => {
+    const task = approvedTask([item({ id: "a" }), item({ id: "b", depends_on: ["a"] })]);
+    const plan = task.current_plan!;
+    const invalid: TaskAggregate[] = [
+      { ...task, current_plan: null },
+      { ...task, current_plan: { ...plan, revision: plan.revision + 1 } },
+      { ...task, current_plan: { ...plan, approval: { ...plan.approval, state: "pending" } } },
+      {
+        ...task,
+        current_plan: {
+          ...plan,
+          approval: { ...plan.approval, approved_digest: taskCentricDigest("other") },
+        },
+      },
+      { ...task, current_plan: { ...plan, proposal: proposal([item({ id: "changed" })]) } },
+      { ...task, work_items: { a: task.work_items.a! } },
+      {
+        ...task,
+        work_items: { ...task.work_items, extra: { ...task.work_items.a!, id: "extra" } },
+      },
+      { ...task, work_items: { ...task.work_items, a: { ...task.work_items.a!, id: "other" } } },
+    ];
+    for (const candidate of invalid) {
+      expect(() => materializeApprovedWorkItems({ task: candidate, plan, now: NOW })).toThrow(
+        /Existing work item runtime/u,
+      );
+    }
+    const draft = createTaskPlanRevision({
+      proposal: proposal([item({ id: "new" })]),
+      revision: 2,
+      created_at: NOW,
+    });
+    const changed = approveTaskPlan({
+      plan: draft,
+      expected_digest: draft.digest,
+      actor: "operator",
+      approved_at: NOW,
+    });
+    expect(() => materializeApprovedWorkItems({ task, plan: changed, now: NOW })).toThrow(
+      /different current revision/u,
+    );
+    expect(() => materializeApprovedWorkItems({ task, plan: draft, now: NOW })).toThrow(
+      /approved current task plan/u,
+    );
+    expect(
+      materializeApprovedWorkItems({
+        task: { ...task, current_plan: draft, work_items: {} },
+        plan: changed,
+        now: NOW,
+      }).work_items.new?.state,
+    ).toBe("READY");
   });
 
   it("rejects malformed plans deterministically before approval", () => {
