@@ -4,7 +4,7 @@ title: "AP-RUNTIME-001 Make local execution runtime deterministic"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -33,35 +33,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T04:42:27.247Z"
+  updated_at: "2026-08-30T05:12:54.600Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "bf870e63a2cdbdb52fda9bb60176ddeab3a924f7"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "daf594dbe372635d26bb67af0b9ee83ef6ac3c40"
   blueprint_digest: "1e66c76a78609a97f5cd128422e5e2722d341505f5b69118c1434c54aa793981"
   evidence_refs:
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/479785466f9d430f586b62cc08ba3dfe3c5bac213b4399e12c0d8577022b3b42.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-043948410-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/a597eb1798ab2cd428dee0dc2b5e6f32f172e2274082a7d4e407aaccb570b94a.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/20260830-050004792-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608251706-V287W1/README.md"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/e3b16efe0d529b7ee241f16c1c0df3ca0a8289fbec15ea52de0052e01564b33a.patch"
-    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/7785258fca1472972cf0712505f5a528733361227b226d397567a295e8703028.json"
-    - ".agentplane/tasks/202608251706-V287W1/verification/20260830043936670-0c9898ab3a3b63e0.json"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/43494cdabfe487f720eac3a1fe3a861ef33362b300e1cfcc79da19e4b400c606.patch"
+    - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/7ca2312b760d558a8b86d6ce40a865b1ba946f1c9120eb392c2d0a9518f41bce.json"
+    - ".agentplane/tasks/202608251706-V287W1/verification/20260830045953524-9f44d9d3b5df9734.json"
     - ".agentplane/tasks/202608251706-V287W1/quality/objects/sha256/b724ae0edf9bc8c91af145edbf996f54aea38e60d9a39f39c83a0e333a911643.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "At evaluated SHA bf870e63a2cdbdb52fda9bb60176ddeab3a924f7, a read-only Bun fixture probe with different executable Node candidates in explicit PATH and inherited NVM_BIN returns node_override_wins=false. resolvePreferredNodeExecutable checks NVM_BIN/VOLTA_HOME before PATH, contradicting the approved explicit override priority."
-    - "A second fixture probe records localRuntimeEvidence for an unchanged runner, replaces the selected Node executable bytes under the same PATH, and returns runtime_identity_changes_with_node=false. Shell-based verification likewise hashes the shell, not the Node/Bun toolchain. Prepared invocation snapshots therefore remain reusable after this toolchain change."
-    - "The previous Bun-as-Node and PATH/outer-binary freshness findings are fixed and tested. Formatting, full local CI, exact frozen evidence integrity and implementation identity are confirmed. These results do not establish hosted integration."
-    - "Residual risk: Preserve merged M1 verification dotenv isolation when updating this older runtime branch before integration."
+    - "Reviewed the full runtime boundary and the latest delta. Shared normalization preserves explicit profile PATH precedence, executable permission checks, numeric manager fallback and parent-environment isolation. Node absence under Bun fails with ENOENT instead of selecting Bun."
+    - "Runtime evidence binds selected runner bytes, normalized runtime-selection environment and selected Node/Bun bytes. The prepared-input guard rejects profile/inherited PATH changes, outer executable replacement and toolchain replacement before launch. A separate evaluator run passed 22 resolver/prepared-input tests; the implementation run passed 25 tests across four files."
+    - "The prior evaluator findings are closed by executable regressions. Frozen full local CI, verification identity, actual diff, blueprint and policy evidence are all valid for the evaluated SHA. Runtime infrastructure errors remain distinct from implementation failures; authority and release publication are unchanged."
+    - "Residual risk: The branch predates M1. Preserve its merged verification dotenv isolation during the base update and rerun required exact-head hosted checks. Hosted merge and Task Hosted Close are not yet proven."
 execution_route:
   frozen: true
   reason_codes:
