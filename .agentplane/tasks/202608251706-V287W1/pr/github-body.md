@@ -33,6 +33,7 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
 
 ```text
  docs/developer/harness-dev.mdx                     |  58 +++++++
+ .../src/commands/shared/pr-meta/verify-log.test.ts |   9 +-
  .../src/commands/shared/pr-meta/verify-log.ts      |  19 ++-
  .../commands/task/direct-task-verification.test.ts |  27 ++++
  .../src/commands/task/direct-task-verification.ts  |  26 +++-
@@ -46,7 +47,7 @@ Confirm the root cause across agents, Supervisor, verification, and recovery sub
  packages/agentplane/src/runner/types/state.ts      |   2 +
  packages/agentplane/src/shared/runtime-env.test.ts | 104 ++++++++++++-
  packages/agentplane/src/shared/runtime-env.ts      | 165 +++++++++++++++-----
- 14 files changed, 646 insertions(+), 94 deletions(-)
+ 15 files changed, 653 insertions(+), 96 deletions(-)
 ```
 
 </details>
