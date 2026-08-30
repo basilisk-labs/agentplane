@@ -22,21 +22,21 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T18:53:26.210Z
+- Updated: 2026-08-30T19:55:56.808Z
 - Branch: task/202608301851-5W3XW6/recover-unstarted-task-worktrees-pinned-before-t
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  29 +++
+ docs/developer/harness-dev.mdx                     |  29 ++
  docs/user/cli-reference.generated.mdx              |   3 +
- ...i.core.task-advance.worktree-resolution.test.ts | 264 ++++++++++++++++++++-
+ ...i.core.task-advance.worktree-resolution.test.ts | 323 ++++++++++++++++++++-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
- .../src/commands/branch/work-resume-candidate.ts   | 102 ++++++++
- .../commands/branch/work-resume-planning-base.ts   | 249 +++++++++++++++++++
+ .../src/commands/branch/work-resume-candidate.ts   | 102 +++++++
+ .../commands/branch/work-resume-planning-base.ts   | 249 ++++++++++++++++
  .../src/commands/branch/work-resume.command.ts     |  51 +++-
- .../baselines/v0.7-compatibility-candidate.json    |  54 ++++-
- .../check-compatibility-contract-baseline.mjs      |  28 +++
- 9 files changed, 772 insertions(+), 15 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  54 +++-
+ .../check-compatibility-contract-baseline.mjs      |  28 ++
+ 9 files changed, 829 insertions(+), 17 deletions(-)
 ```
 
 </details>
