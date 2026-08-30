@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 90
+revision: 92
 origin:
   system: "manual"
 depends_on:
@@ -32,35 +32,35 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-30T15:54:02.295Z"
+  updated_at: "2026-08-30T16:29:06.948Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "1e07dd534c782e6ca325623af332e1f0ded85651"
+  note: "EVALUATOR returned rework with 6 typed finding(s)."
+  evaluated_sha: "28bb93866062ab8faa171d82b71a1a110ecd46da"
   blueprint_digest: "de01a169a7c1ba12da99c26a1e9c03024b28e8ea88f99c10758e30b1a931abc9"
   evidence_refs:
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/69ba533f85b17f5fadf64fde36b6756376ed1c6db4c9ed34e3e0c22dcaa6b4a4.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-154200518-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/bd96d1ec4e46917ad62fe4bdd41cd6e6173ad2d5687af7faadaefa015bb55788.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/20260830-162239899-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291006-2A6BJC/README.md"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/aff44745199a43c468c32a725f0f63f664689e6d6e16a8c52558fd260ed3c6d1.patch"
-    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/a4cf59fda65a3e671077194e5c6531d5b59a4dcf5bd71b965b96fedb09b5a162.json"
-    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830153956664-b3aeb2467dce7ece.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/448ebc737ffc0b7479149082fa8637c058914ea5495ae8e25c31da0906d05783.patch"
+    - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/6ff44128a6c44c553210fd106687a298a7b783b81cdba294ce4b97a4898a4c4f.json"
+    - ".agentplane/tasks/202608291006-2A6BJC/verification/20260830161420472-8fdd80cd6ac5097d.json"
     - ".agentplane/tasks/202608291006-2A6BJC/quality/objects/sha256/beedd395f8c752c2788d7739e0c540e8e1fa9200654d224fcd4c08c39aced7d1.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The semantic conflict resolution only relocates existing documentation. The complete line multiset is preserved. Its three-way comparison with the frozen merge base and protected main preserves both the Task adapter section and runtime documentation with no conflict."
-    - "Both overlapping verification source/test paths merge without conflict. The combined content retains runtime infrastructure classification and the M2 correction that persists actual rerun observations. No test, threshold, lifecycle rule, or trust boundary is weakened."
-    - "The current implementation differs from the previously reviewed 2d298871 code only in documentation ordering, excluding framework-owned Task artifacts. The adapter durability, migration backup/CAS/rollback, explicit legacy quarantine, effect admission, uncertain dispatch handling and immutable corpus implementations are unchanged."
-    - "Re-inspection of effect dispatch confirms that only fresh committed PENDING admission calls the provider. Replayed admission and uncertain responses require observation instead of another dispatch. The current exact-anchor replay qualification covers the frozen negative and concurrent cases."
-    - "The work stays inside M2. Production cutover, repository-wide migration, retirement, twenty real self-hosting Tasks, and three release drills remain M3 gates. Fake provider replay is not evidence of those outcomes."
-    - "Residual risk: M3 must enforce the production writer boundary and complete real self-hosting and release qualification before the root refactoring task can close."
-    - "Residual risk: The general test suite contains one skipped test. The separate isolated replay qualification completed every reported test."
+    - "Blocking: kernel-record.ts exports kernelAggregateSchema, kernelRecordSchema and kernelArchiveSchema without external consumers. They are internal schema details."
+    - "Blocking: kernel-migration.ts unnecessarily exports KERNEL_MIGRATION_VERSION, kernelMigrationReceiptSchema and KernelMigrationReceipt. Their actual consumers are within the same file."
+    - "Blocking: kernel-effect-replay.testkit.ts exports effectReplayScenarios, and kernel-replay-capture.testkit.ts exports FrozenObservationFixture and KernelQualificationCorpus, although these helpers are file-local."
+    - "The read-only Knip report identifies exactly nine budget-counted findings. The exact command bun run knip:check fails locally with agentplane CLI files=0/0,total=9/0. This matches the previously fetched hosted verify-static failure."
+    - "Make the nine bindings internal by removing export. Preserve the bindings, behavior, schemas, corpus bytes, existing tests and zero-unused budget. Add an explicit successful knip:check observation before reporting recovery."
+    - "Residual risk: Hosted integration remains blocked until current-head static checks pass."
 token_usage:
   agent_runs: 26
   input_tokens: null
@@ -3079,6 +3079,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Read-only workspace inspection complete. The five untracked files are AgentPlane-generated evaluator input artifacts from the retired 20260830-161438999 review attempt. Preserve them as task evidence; no implementation or manual artifact changes were made."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Read-only recovery inspection complete. The task README quality-review change and seven quality artifacts were produced by the successful native evaluator apply operation. Preserve its recorded rework verdict and continue the scoped export correction."
 events:
   -
     type: "status"
@@ -3379,8 +3382,13 @@ events:
     at: "2026-08-30T16:21:43.299Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Read-only workspace inspection complete. The five untracked files are AgentPlane-generated evaluator input artifacts from the retired 20260830-161438999 review attempt. Preserve them as task evidence; no implementation or manual artifact changes were made."
+  -
+    type: "comment"
+    at: "2026-08-30T16:36:26.827Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Read-only recovery inspection complete. The task README quality-review change and seven quality artifacts were produced by the successful native evaluator apply operation. Preserve its recorded rework verdict and continue the scoped export correction."
 doc_version: 3
-doc_updated_at: "2026-08-30T16:21:43.362Z"
+doc_updated_at: "2026-08-30T16:36:26.887Z"
 doc_updated_by: "SUPERVISOR"
 description: "Connect legacy CLI and repository surfaces to the canonical Task kernel through explicit adapters. Add one-time migration, dual-read or shadow execution where needed, exact replay fixtures, state equivalence checks, rollback receipts, and fail-closed handling for unknown legacy layouts."
 sections:
