@@ -4,7 +4,7 @@ title: "Implement the isolated canonical Task kernel"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 70
+revision: 73
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "Apply Denis standing approval for subsequent in-scope Clean Core plans to current requalification plan c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a. Preserve completed implementation, require fresh qualification, and do not publish a release."
 verification:
-  state: "ok"
-  updated_at: "2026-08-30T02:26:02.801Z"
+  state: "needs_rework"
+  updated_at: "2026-08-30T02:57:15.800Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -125,7 +125,8 @@ execution_contract:
       - "packages/core/src/tasks/task-centric"
       - "packages/core/src/tasks/task-kernel"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-5:fail"
     changed_components:
       - "depcruise.config.cjs"
       - "packages/agentplane"
@@ -200,7 +201,7 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-5"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-6"
         result: "pass"
@@ -334,9 +335,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "aff000cd0100529a60a6d084f98205f83f560ead"
-  message: "🚧 1K47B8 task: apply external agent result"
+      - "verification_recovery:recorded-check-5"
+commit: null
 comments:
   -
     author: "CODER"
@@ -395,6 +395,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: aff000cd0100. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f40d11ec3c70. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -594,8 +597,22 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-30T02:49:28.528Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f40d11ec3c70. CLI accepted one state-bound external-agent semantic result."
+    commit: "f40d11ec3c70427e39ffe9ec784467e714e55076"
+  -
+    type: "verify"
+    at: "2026-08-30T02:57:15.800Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-30T02:26:06.190Z"
+doc_updated_at: "2026-08-30T02:57:18.917Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement a pure deterministic Task and WorkItem kernel behind a new internal module. The kernel owns canonical state, transitions, authority checks, idempotency, and typed results. It must not call Git, providers, the filesystem, process state, or compatibility projections. Existing public CLI behavior remains unchanged."
 sections:
@@ -1737,6 +1754,61 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-5
     Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292032-1K47B8-implement-the-isolated-canonical-task-kernel/.agentplane/tasks/202608292032-1K47B8/blueprint/resolved-snapshot.json
+    - old_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+    - current_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608292032-1K47B8
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608292032-1K47B8
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-30T02:57:15.800Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b2604d3034fe83c6549ba4aff559910e07842a0075180ad24a7b934589864e02, input_digest=sha256:0572849dc514a0e56b2d7f8bddf111bcb455d7f0b8b015e6761c716bbbe80b95
+
+    Details:
+
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+    Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608292032-1K47B8 declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -3452,8 +3524,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "aff000cd0100529a60a6d084f98205f83f560ead"
   task_execution_context:
     base_ref: "main"
     base_sha: "dbaf4bc2878eab7b50f8ea6d14179d8d91030159"
@@ -4611,6 +4681,61 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-5
 Scope: branch_pr task 202608292032-1K47B8 Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608292032-1K47B8-implement-the-isolated-canonical-task-kernel/.agentplane/tasks/202608292032-1K47B8/blueprint/resolved-snapshot.json
+- old_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+- current_digest: dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608292032-1K47B8
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608292032-1K47B8
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-30T02:57:15.800Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b2604d3034fe83c6549ba4aff559910e07842a0075180ad24a7b934589864e02, input_digest=sha256:0572849dc514a0e56b2d7f8bddf111bcb455d7f0b8b015e6761c716bbbe80b95
+
+Details:
+
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+Command: bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608292032-1K47B8 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608292032-1K47B8 declared verification
 
 BlueprintSnapshotRef:
 - state: current
