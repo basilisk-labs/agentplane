@@ -13,6 +13,13 @@ import type { ExecutionAuthority, ExternalEffect, PlanRecord, TaskAggregate } fr
 
 const fingerprint = kernelDigest("state");
 const policyDigest = kernelDigest("policy");
+const requirements = {
+  scope_roots: [],
+  repository_effects: [],
+  external_effects: [],
+  capabilities: [],
+  resources: [],
+};
 
 function parentAuthority(overrides: Partial<ExecutionAuthority> = {}): ExecutionAuthority {
   return {
@@ -91,6 +98,7 @@ function approvedPlan(): PlanRecord {
         depends_on: [],
         required_inputs: [],
         expected_outputs: ["kernel-source"],
+        execution_requirements: requirements,
         optional: false,
       },
     ],
@@ -281,6 +289,7 @@ describe("canonical task kernel invariants", () => {
           depends_on: ["b"],
           required_inputs: [],
           expected_outputs: ["same", "same"],
+          execution_requirements: requirements,
           optional: false,
         },
         {
@@ -288,6 +297,7 @@ describe("canonical task kernel invariants", () => {
           depends_on: ["a", "missing"],
           required_inputs: [],
           expected_outputs: ["b-output"],
+          execution_requirements: requirements,
           optional: false,
         },
         {
@@ -295,6 +305,7 @@ describe("canonical task kernel invariants", () => {
           depends_on: [],
           required_inputs: [],
           expected_outputs: ["a-output"],
+          execution_requirements: requirements,
           optional: false,
         },
         {
@@ -302,6 +313,7 @@ describe("canonical task kernel invariants", () => {
           depends_on: ["d"],
           required_inputs: [],
           expected_outputs: ["c-output"],
+          execution_requirements: requirements,
           optional: false,
         },
         {
@@ -309,6 +321,7 @@ describe("canonical task kernel invariants", () => {
           depends_on: ["c"],
           required_inputs: [],
           expected_outputs: ["d-output"],
+          execution_requirements: requirements,
           optional: false,
         },
       ]),
@@ -328,6 +341,7 @@ describe("canonical task kernel invariants", () => {
       depends_on: [],
       required_inputs: [],
       expected_outputs: ["out-a"],
+      execution_requirements: requirements,
       optional: false,
     };
     const b = { ...a, id: "b", required_inputs: ["out-a"], expected_outputs: ["out-b"] };
@@ -350,6 +364,7 @@ describe("canonical task kernel invariants", () => {
     const uncertain: ExternalEffect = {
       id: "provider-effect",
       kind: "provider_write",
+      execution_requirements: requirements,
       idempotency_key: "provider-key",
       state: "IN_DOUBT",
       request_digest: kernelDigest("request"),

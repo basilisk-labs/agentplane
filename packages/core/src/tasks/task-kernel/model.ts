@@ -128,6 +128,11 @@ export type OutputManifest = Readonly<{
   repository_fingerprint: Sha256Digest;
 }>;
 
+export type ExecutionRequirements = Pick<
+  ExecutionAuthority,
+  "scope_roots" | "repository_effects" | "external_effects" | "capabilities" | "resources"
+>;
+
 export type ValidationIdentity = Readonly<{
   implementation_identity: Sha256Digest;
   check_id: string;
@@ -148,6 +153,7 @@ export type WorkItemDefinition = Readonly<{
   depends_on: readonly string[];
   required_inputs: readonly string[];
   expected_outputs: readonly string[];
+  execution_requirements: ExecutionRequirements;
   optional: boolean;
 }>;
 
@@ -174,6 +180,7 @@ export type PlanRecord = Readonly<{
 export type ExternalEffect = Readonly<{
   id: string;
   kind: string;
+  execution_requirements: ExecutionRequirements;
   idempotency_key: string;
   state: EffectState;
   request_digest: Sha256Digest;
@@ -301,6 +308,7 @@ export type TaskCommand =
         plan_revision: number;
         plan_digest: Sha256Digest;
         amendment_digest: Sha256Digest;
+        amended_plan: Pick<PlanRecord, "revision" | "digest" | "work_items">;
         authority_delta_digest: Sha256Digest | null;
       }
     >

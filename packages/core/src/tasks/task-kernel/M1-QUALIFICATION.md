@@ -28,9 +28,17 @@ subprocess fix. Qualification found and corrected authority defects in the kerne
    preserving replay of an existing mutation receipt.
 10. Effect preparation ignored effect authority and Task execution phase. It now
     requires an exact matching external-effect grant and an active execution phase.
+11. Approval now binds to the USER actor, root USER provenance, and exact decision evidence.
+12. WorkItem and effect execution requirements now enforce scope, effects, capabilities,
+    and resources against the grant and actor capabilities.
+13. Final validation requires completed required work and a complete validation identity.
+14. Typed amendments update canonical plan content and history at a safe boundary.
+    They preserve unchanged completed work, reject authority expansion or weakened
+    completion/dependency requirements, and reset only eligible changed pending work.
+15. Canonical digest keys use fixed code-unit ordering instead of locale-sensitive comparison.
 
 New regression tests reproduced these defects before the fixes. After correction,
-the focused kernel and subprocess suite passes 61 tests across four files.
+the focused kernel and subprocess suite passes 73 tests across four files.
 The kernel still uses only deterministic inputs; it does not read wall-clock time,
 the filesystem, environment, Git, providers, or compatibility projections.
 
@@ -38,9 +46,9 @@ Current source SHA-256 identities:
 
 | Path                                                                 | SHA-256                                                            |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `packages/core/src/tasks/task-kernel/model.ts`                       | `5fba68db83e0623be556146ddcc0b8dfed1ddd4d6bd74ccaa1338614542472fe` |
-| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `9471bfd146a4d49605f7e76ae087f7907ee08044cf85d0b47addd605d8fcea06` |
-| `packages/core/src/tasks/task-kernel/invariants.ts`                  | `aa07195830ad05fc7ea957fd5993a1b3daf13723eac146ee1fc42ef96f852555` |
+| `packages/core/src/tasks/task-kernel/model.ts`                       | `d93dd610744ab995f216e6521440e55e9a6de5b582d4afb3917ca2fd960975e8` |
+| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `37d85ef4a2106d28f6976cf145c223f3562d8b20ffd8167732d075198a34c643` |
+| `packages/core/src/tasks/task-kernel/invariants.ts`                  | `8ba0bc58c9cc3d624fffd721a4a4eafec803476bca23cca4cf38341b30f201f2` |
 | `packages/core/src/tasks/task-kernel/index.ts`                       | `3f69df84a74372f3a28d16a5816414e6abd69980368d0fe74b0d038de0429c10` |
 | `packages/agentplane/src/commands/shared/pr-meta/verify-log.ts`      | `84025fe05b1220f35fa2282246a83b3948a0baf08ea57475bcab3735a187b47a` |
 | `packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts` | `074a3321f71e777650700938c9e7e140355d2c78204c022164094826e0955757` |

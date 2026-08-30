@@ -1,5 +1,6 @@
 import type {
   ExecutionAuthority,
+  ExecutionRequirements,
   KernelResult,
   Sha256Digest,
   WorkItemDefinition,
@@ -65,6 +66,19 @@ function pathIsWithin(path: string, root: string): boolean {
 
 function scopeIsSubset(child: readonly string[], parent: readonly string[]): boolean {
   return child.every((path) => parent.some((root) => pathIsWithin(path, root)));
+}
+
+export function executionRequirementsAreSubset(
+  parent: ExecutionRequirements,
+  child: ExecutionRequirements,
+): boolean {
+  return (
+    scopeIsSubset(child.scope_roots, parent.scope_roots) &&
+    setIsSubset(child.repository_effects, parent.repository_effects) &&
+    setIsSubset(child.external_effects, parent.external_effects) &&
+    setIsSubset(child.capabilities, parent.capabilities) &&
+    setIsSubset(child.resources, parent.resources)
+  );
 }
 
 function workItemIsSubset(child: string | null, parent: string | null): boolean {
