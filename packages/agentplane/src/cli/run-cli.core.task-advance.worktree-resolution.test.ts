@@ -49,14 +49,17 @@ type AgentPacket = {
   };
 };
 
-async function createTask(root: string): Promise<string> {
+async function createTask(
+  root: string,
+  title = "External task-worktree resolution",
+): Promise<string> {
   const io = captureStdIO();
   try {
     const code = await runCli([
       "task",
       "new",
       "--title",
-      "External task-worktree resolution",
+      title,
       "--description",
       "Exercise the state-bound worktree resolution protocol.",
       "--priority",
@@ -306,6 +309,34 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       await execFileAsync("git", ["commit", "-m", "test: initial workflow"], { cwd: root });
       const taskId = await createTask(root);
       const initial = await readHead(root);
+      const dependencyId = await createTask(
+        root,
+        "Completed prerequisite for planning-base recovery",
+      );
+      expect(
+        await runCliSilent([
+          "task",
+          "set-status",
+          dependencyId,
+          "DONE",
+          "--force",
+          "--yes",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      expect(
+        await runCliSilent([
+          "task",
+          "update",
+          taskId,
+          "--depends-on",
+          dependencyId,
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      await execFileAsync("git", ["add", `.agentplane/tasks/${dependencyId}`], { cwd: root });
       await writeFile(path.join(root, "prerequisite.txt"), "completed prerequisite\n");
       await execFileAsync("git", ["add", "prerequisite.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: prerequisite landed"], { cwd: root });
@@ -336,6 +367,18 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       const taskRoot = inspected.worktree;
       const taskCtx = await loadCommandContext({ cwd: taskRoot, rootOverride: null });
       const original = (await taskCtx.taskBackend.getTask(taskId))!;
+      expect(original.depends_on).toEqual([dependencyId]);
+      expect(await taskCtx.taskBackend.getTask(dependencyId)).toBeNull();
+      const beforeRoute = await buildTaskRouteDecision({
+        ctx: taskCtx,
+        cwd: taskRoot,
+        taskId,
+        includeRemote: false,
+      });
+      expect(beforeRoute.oracle.phase).toBe("dependency_wait");
+      expect(beforeRoute.blockers).toEqual(
+        expect.arrayContaining([expect.objectContaining({ code: "dependency_not_ready" })]),
+      );
       await expect(
         recoverWorkPlanningBase({
           ctx,
@@ -524,6 +567,18 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
         taskCentricAggregateFromExtensions(original.extensions),
       );
       expect(after.depends_on).toEqual(original.depends_on);
+      const dependencyAfter = await taskCtx.taskBackend.getTask(dependencyId);
+      expect(dependencyAfter?.status).toBe("DONE");
+      const afterRoute = await buildTaskRouteDecision({
+        ctx: taskCtx,
+        cwd: taskRoot,
+        taskId,
+        includeRemote: false,
+      });
+      expect(afterRoute.oracle.phase).not.toBe("dependency_wait");
+      expect(afterRoute.blockers.some((blocker) => blocker.code === "dependency_not_ready")).toBe(
+        false,
+      );
       expect(after.status).toBe("TODO");
       expect(after.extensions!.task_execution_context).toMatchObject({
         ...priorBase,
