@@ -1,0 +1,215 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts",
+      "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:bd37bb7bf5c5ff66b106f43e65d497b5ef387d0b76bae82b472c9aaf78a38663"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-27T15:55:41.958Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608271538-T21JCA/verification/20260827155541958-c84df617bc1e0c1a.json",
+      "sha256": "sha256:14bb74509219b58afebcbe5941c47e748f69d3f0dae112f9d63f58ed6959d050"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 2c9a2f59146c302c517524136e66abb902f92ba6..da64f2d0ea907c7f18a113743f731db104b0d564",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 2c9a2f59146c302c517524136e66abb902f92ba6..da64f2d0ea907c7f18a113743f731db104b0d564",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202608271538-T21JCA/README.md",
+          "A\t.agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json",
+          "A\t.agentplane/tasks/202608271538-T21JCA/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202608271538-T21JCA/pr/github-body.md",
+          "A\t.agentplane/tasks/202608271538-T21JCA/pr/github-title.txt",
+          "A\t.agentplane/tasks/202608271538-T21JCA/pr/meta.json",
+          "A\t.agentplane/tasks/202608271538-T21JCA/pr/review.md",
+          "M\tpackages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+          "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "2c9a2f59146c302c517524136e66abb902f92ba6",
+    "implementation_commit": "da64f2d0ea907c7f18a113743f731db104b0d564",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202608271538-T21JCA/README.md",
+        "?? .agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/github-body.md",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/github-title.txt",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/meta.json",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/review.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/pr/diffstat.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/pr/github-title.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202608271538-T21JCA/pr/review.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202608271538-T21JCA/README.md",
+        "?? .agentplane/tasks/202608271538-T21JCA/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/diffstat.txt",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/github-body.md",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/github-title.txt",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/meta.json",
+        "?? .agentplane/tasks/202608271538-T21JCA/pr/review.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608271538-T21JCA",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608271538-T21JCA/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

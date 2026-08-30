@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608290920-1PZGG8-1ac38ded8c6c193c6cde3778",
+  "task_id": "202608290920-1PZGG8",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework. Material refinement is now reachable without a schedulable WorkItem, but the move also applies local amendments before the existing null-ID multiple-claim ambiguity guard, changing a previously fail-closed path after mutation.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The intended material-refinement case is correctly recorded before WorkItem selection and returns replan_required with a nullable work_item_id.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6238bed33ff5edad09db6bb76534efbfd68babd7775a75c0db7b0b53a128a033.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The claimedIds ambiguity check moved implicitly after recordPlanRefinement. A local amendment paired with a null-ID result and multiple claimed WorkItems can now mutate plan amendments before the same call rejects as ambiguous.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6238bed33ff5edad09db6bb76534efbfd68babd7775a75c0db7b0b53a128a033.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Compute and reject multiple claimed WorkItems before recording refinement, while retaining material refinement before actual WorkItem selection.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6238bed33ff5edad09db6bb76534efbfd68babd7775a75c0db7b0b53a128a033.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Add a regression proving an ambiguous null-ID local refinement leaves task revision and plan amendments unchanged.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6238bed33ff5edad09db6bb76534efbfd68babd7775a75c0db7b0b53a128a033.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "The prepared verification evidence does not record the task plan's declared bun run ci:local:full check; exact full-regression evidence remains required before PASS.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608290920-1PZGG8/quality/objects/sha256/6238bed33ff5edad09db6bb76534efbfd68babd7775a75c0db7b0b53a128a033.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608290920-1PZGG8/quality/20260829-100207338-recovery-context/evaluator-result.json"
+}

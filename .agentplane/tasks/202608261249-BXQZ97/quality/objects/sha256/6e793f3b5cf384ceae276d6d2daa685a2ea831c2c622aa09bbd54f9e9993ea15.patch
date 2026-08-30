@@ -1,0 +1,1478 @@
+diff --git a/packages/agentplane/src/commands/pr/provider-update-branch.test.ts b/packages/agentplane/src/commands/pr/provider-update-branch.test.ts
+new file mode 100644
+index 000000000..257673639
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/provider-update-branch.test.ts
+@@ -0,0 +1,230 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  observeExistingChangeRequestByNumber: vi.fn(),
++  runGhApiJson: vi.fn(),
++}));
++
++vi.mock("./internal/change-request-provider.js", () => ({
++  observeExistingChangeRequestByNumber: mocks.observeExistingChangeRequestByNumber,
++}));
++vi.mock("./internal/gh-api.js", () => ({ runGhApiJson: mocks.runGhApiJson }));
++
++import type { ObservedChangeRequest } from "./internal/change-request-model.js";
++import type { GitHostIdentity } from "./internal/git-host-identity.js";
++import { updateProviderBranch } from "./provider-update-branch.js";
++
++const oldHead = "1".repeat(40);
++const baseHead = "2".repeat(40);
++const newHead = "3".repeat(40);
++const identity: GitHostIdentity = {
++  provider: "github",
++  hostname: "github.com",
++  remote: "origin",
++  sourceProject: "owner/repo",
++  targetProject: "owner/repo",
++  sourceUrl: "git@github.com:owner/repo.git",
++  targetUrl: "https://github.com/owner/repo.git",
++};
++
++function observed(overrides: Partial<ObservedChangeRequest> = {}): ObservedChangeRequest {
++  return {
++    provider: "github",
++    identity,
++    prNumber: 42,
++    prUrl: "https://github.com/owner/repo/pull/42",
++    status: "OPEN",
++    mergedAt: null,
++    mergeCommit: null,
++    base: "main",
++    baseSha: baseHead,
++    headSha: oldHead,
++    headRef: "task/T-1/work",
++    mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++    ...overrides,
++  };
++}
++
++function request(overrides: Record<string, unknown> = {}) {
++  return {
++    gitRoot: "/repo",
++    identity,
++    prNumber: 42,
++    branch: "task/T-1/work",
++    baseBranch: "main",
++    expectedHeadSha: oldHead,
++    expectedBaseSha: baseHead,
++    ...overrides,
++  };
++}
++
++function comparison(ancestor: string) {
++  return {
++    status: "ahead",
++    base_commit: { sha: ancestor },
++    merge_base_commit: { sha: ancestor },
++  };
++}
++
++describe("provider update-branch effect", () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++  });
++
++  it("binds the GitHub mutation to the expected head and proves both ancestors", async () => {
++    mocks.observeExistingChangeRequestByNumber
++      .mockResolvedValueOnce({ state: "found", pr: observed() })
++      .mockResolvedValueOnce({ state: "found", pr: observed({ headSha: newHead }) });
++    mocks.runGhApiJson
++      .mockResolvedValueOnce({ message: "Updating pull request branch." })
++      .mockResolvedValueOnce(comparison(oldHead))
++      .mockResolvedValueOnce(comparison(baseHead));
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "updated",
++      effect: "applied",
++      evidence: {
++        expectedHeadSha: oldHead,
++        expectedBaseSha: baseHead,
++        observedHeadSha: newHead,
++        containsExpectedHead: true,
++        containsExpectedBase: true,
++      },
++    });
++    expect(mocks.runGhApiJson).toHaveBeenNthCalledWith(1, "/repo", [
++      "repos/owner/repo/pulls/42/update-branch",
++      "-X",
++      "PUT",
++      "-f",
++      `expected_head_sha=${oldHead}`,
++    ]);
++  });
++
++  it("reconciles an already-updated head without repeating the mutation", async () => {
++    mocks.observeExistingChangeRequestByNumber.mockResolvedValueOnce({
++      state: "found",
++      pr: observed({ headSha: newHead }),
++    });
++    mocks.runGhApiJson
++      .mockResolvedValueOnce(comparison(oldHead))
++      .mockResolvedValueOnce(comparison(baseHead));
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "updated",
++      effect: "reconciled",
++    });
++    expect(mocks.runGhApiJson).toHaveBeenCalledTimes(2);
++    expect(mocks.runGhApiJson.mock.calls.flat()).not.toContain(
++      "repos/owner/repo/pulls/42/update-branch",
++    );
++  });
++
++  it.each([
++    ["head drift", { headSha: "4".repeat(40) }, "head_drift"],
++    ["base drift", { baseSha: "5".repeat(40) }, "base_drift"],
++    ["branch drift", { headRef: "task/T-2/other" }, "branch_drift"],
++    ["closed PR", { status: "CLOSED" as const }, "pr_not_open"],
++  ])("fails closed before effect on %s", async (_label, override, reason) => {
++    mocks.observeExistingChangeRequestByNumber.mockResolvedValueOnce({
++      state: "found",
++      pr: observed(override),
++    });
++    if (reason === "head_drift") {
++      mocks.runGhApiJson.mockResolvedValueOnce({ status: "diverged" });
++    }
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "not_applied",
++      reason,
++    });
++    expect(mocks.runGhApiJson.mock.calls.flat()).not.toContain(
++      "repos/owner/repo/pulls/42/update-branch",
++    );
++  });
++
++  it("fails closed for conflicts and unsupported providers", async () => {
++    mocks.observeExistingChangeRequestByNumber.mockResolvedValueOnce({
++      state: "found",
++      pr: observed({
++        mergeability: { state: "conflicting", mergeable: false, providerState: "dirty" },
++      }),
++    });
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "not_applied",
++      reason: "conflict",
++    });
++
++    await expect(
++      updateProviderBranch(
++        request({ identity: { ...identity, provider: "gitlab", hostname: "gitlab.com" } }),
++      ),
++    ).resolves.toMatchObject({ state: "not_applied", reason: "unsupported_provider" });
++  });
++
++  it.each([
++    [
++      "unavailable provider observation",
++      { state: "unavailable", reason: "provider observation timed out" },
++      "observation_unavailable",
++    ],
++    ["missing pull request", { state: "not_found" }, "pr_not_found"],
++  ] as const)("fails closed before effect for %s", async (_label, lookup, reason) => {
++    mocks.observeExistingChangeRequestByNumber.mockResolvedValueOnce(lookup);
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "not_applied",
++      reason,
++      observed: null,
++    });
++    expect(mocks.runGhApiJson).not.toHaveBeenCalled();
++  });
++
++  it("returns effect-in-doubt after a transport error until exact readback proves success", async () => {
++    mocks.observeExistingChangeRequestByNumber
++      .mockResolvedValueOnce({ state: "found", pr: observed() })
++      .mockResolvedValueOnce({ state: "found", pr: observed() });
++    mocks.runGhApiJson.mockRejectedValueOnce(new Error("network timeout"));
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++      observed: { headSha: oldHead },
++    });
++    expect(mocks.runGhApiJson).toHaveBeenCalledTimes(1);
++  });
++
++  it("accepts uncertain transport only after exact provider ancestry readback", async () => {
++    mocks.observeExistingChangeRequestByNumber
++      .mockResolvedValueOnce({ state: "found", pr: observed() })
++      .mockResolvedValueOnce({ state: "found", pr: observed({ headSha: newHead }) });
++    mocks.runGhApiJson
++      .mockRejectedValueOnce(new Error("connection reset after send"))
++      .mockResolvedValueOnce(comparison(oldHead))
++      .mockResolvedValueOnce(comparison(baseHead));
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "updated",
++      effect: "applied",
++      evidence: { observedHeadSha: newHead },
++    });
++  });
++
++  it("keeps a changed head in doubt when exact base ancestry is missing", async () => {
++    mocks.observeExistingChangeRequestByNumber
++      .mockResolvedValueOnce({ state: "found", pr: observed() })
++      .mockResolvedValueOnce({ state: "found", pr: observed({ headSha: newHead }) });
++    mocks.runGhApiJson
++      .mockResolvedValueOnce({ message: "Updating pull request branch." })
++      .mockResolvedValueOnce(comparison(oldHead))
++      .mockResolvedValueOnce({
++        status: "diverged",
++        base_commit: { sha: baseHead },
++        merge_base_commit: { sha: "6".repeat(40) },
++      });
++
++    await expect(updateProviderBranch(request())).resolves.toMatchObject({
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/pr/provider-update-branch.ts b/packages/agentplane/src/commands/pr/provider-update-branch.ts
+new file mode 100644
+index 000000000..39242ec87
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/provider-update-branch.ts
+@@ -0,0 +1,368 @@
++import { normalizeGhTransportError } from "../shared/gh-transport.js";
++
++import type { ObservedChangeRequest } from "./internal/change-request-model.js";
++import { observeExistingChangeRequestByNumber } from "./internal/change-request-provider.js";
++import { runGhApiJson } from "./internal/gh-api.js";
++import type { GitHostIdentity } from "./internal/git-host-identity.js";
++
++const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
++
++export type ProviderUpdateBranchRequest = Readonly<{
++  gitRoot: string;
++  identity: GitHostIdentity;
++  prNumber: number;
++  branch: string;
++  baseBranch: string;
++  expectedHeadSha: string;
++  expectedBaseSha: string;
++}>;
++
++export type ProviderUpdateBranchEvidence = Readonly<{
++  provider: "github";
++  targetProject: string;
++  prNumber: number;
++  branch: string;
++  baseBranch: string;
++  expectedHeadSha: string;
++  expectedBaseSha: string;
++  observedHeadSha: string;
++  containsExpectedHead: boolean;
++  containsExpectedBase: boolean;
++}>;
++
++export type ProviderUpdateBranchResult =
++  | Readonly<{
++      state: "updated";
++      effect: "applied" | "reconciled";
++      observed: ObservedChangeRequest;
++      evidence: ProviderUpdateBranchEvidence;
++    }>
++  | Readonly<{
++      state: "not_applied";
++      reason:
++        | "unsupported_provider"
++        | "invalid_request"
++        | "observation_unavailable"
++        | "pr_not_found"
++        | "identity_drift"
++        | "pr_not_open"
++        | "branch_drift"
++        | "base_drift"
++        | "head_drift"
++        | "conflict";
++      detail: string;
++      observed: ObservedChangeRequest | null;
++    }>
++  | Readonly<{
++      state: "effect_in_doubt";
++      reason: "readback_unavailable" | "readback_unproven";
++      detail: string;
++      observed: ObservedChangeRequest | null;
++    }>;
++
++type ProviderUpdateBranchNotApplied = Extract<ProviderUpdateBranchResult, { state: "not_applied" }>;
++type ProviderUpdateBranchReconciliation = Extract<
++  ProviderUpdateBranchResult,
++  { state: "updated" | "effect_in_doubt" }
++>;
++
++type GithubCompareResponse = {
++  status?: string | null;
++  base_commit?: { sha?: string | null } | null;
++  merge_base_commit?: { sha?: string | null } | null;
++};
++
++function sameIdentity(left: GitHostIdentity, right: GitHostIdentity): boolean {
++  return (
++    left.provider === right.provider &&
++    left.hostname === right.hostname &&
++    left.remote === right.remote &&
++    left.sourceProject === right.sourceProject &&
++    left.targetProject === right.targetProject &&
++    left.sourceUrl === right.sourceUrl &&
++    left.targetUrl === right.targetUrl
++  );
++}
++
++function validateRequest(opts: ProviderUpdateBranchRequest): string | null {
++  if (!Number.isInteger(opts.prNumber) || opts.prNumber <= 0) return "invalid PR number";
++  if (!opts.branch.trim() || !opts.baseBranch.trim()) return "branch identity is incomplete";
++  if (!GIT_OBJECT_ID.test(opts.expectedHeadSha)) return "expected head SHA is invalid";
++  if (!GIT_OBJECT_ID.test(opts.expectedBaseSha)) return "expected base SHA is invalid";
++  if (!/^[-A-Za-z0-9_.]+\/[-A-Za-z0-9_.]+$/u.test(opts.identity.targetProject)) {
++    return "target project identity is invalid";
++  }
++  return null;
++}
++
++function validateObservedIdentity(
++  opts: ProviderUpdateBranchRequest,
++  observed: ObservedChangeRequest,
++): ProviderUpdateBranchNotApplied | null {
++  if (
++    observed.provider !== "github" ||
++    observed.prNumber !== opts.prNumber ||
++    !sameIdentity(observed.identity, opts.identity)
++  ) {
++    return {
++      state: "not_applied",
++      reason: "identity_drift",
++      detail: "Observed provider or pull-request identity does not match the authorized operation.",
++      observed,
++    };
++  }
++  if (observed.status !== "OPEN") {
++    return {
++      state: "not_applied",
++      reason: "pr_not_open",
++      detail: `Pull request #${opts.prNumber} is ${observed.status}, not OPEN.`,
++      observed,
++    };
++  }
++  if (observed.headRef !== opts.branch) {
++    return {
++      state: "not_applied",
++      reason: "branch_drift",
++      detail: `Observed head branch ${observed.headRef ?? "unknown"} does not match ${opts.branch}.`,
++      observed,
++    };
++  }
++  if (observed.base !== opts.baseBranch || observed.baseSha !== opts.expectedBaseSha) {
++    return {
++      state: "not_applied",
++      reason: "base_drift",
++      detail:
++        `Observed base ${observed.base ?? "unknown"}@${observed.baseSha ?? "unknown"} ` +
++        `does not match ${opts.baseBranch}@${opts.expectedBaseSha}.`,
++      observed,
++    };
++  }
++  return null;
++}
++
++async function provesAncestor(opts: {
++  gitRoot: string;
++  project: string;
++  ancestor: string;
++  descendant: string;
++}): Promise<boolean> {
++  const comparison = await runGhApiJson<GithubCompareResponse>(opts.gitRoot, [
++    `repos/${opts.project}/compare/${encodeURIComponent(opts.ancestor)}...${encodeURIComponent(opts.descendant)}`,
++  ]);
++  const status = comparison.status?.trim().toLowerCase() ?? "";
++  return (
++    (status === "ahead" || status === "identical") &&
++    comparison.base_commit?.sha === opts.ancestor &&
++    comparison.merge_base_commit?.sha === opts.ancestor
++  );
++}
++
++async function reconcileUpdatedHead(opts: {
++  request: ProviderUpdateBranchRequest;
++  observed: ObservedChangeRequest;
++  effect: "applied" | "reconciled";
++}): Promise<ProviderUpdateBranchReconciliation> {
++  const identityFailure = validateObservedIdentity(opts.request, opts.observed);
++  if (identityFailure) {
++    return {
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++      detail: identityFailure.detail,
++      observed: opts.observed,
++    };
++  }
++  const observedHeadSha = opts.observed.headSha ?? "";
++  if (!GIT_OBJECT_ID.test(observedHeadSha) || observedHeadSha === opts.request.expectedHeadSha) {
++    return {
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++      detail: "Provider readback did not expose a distinct valid updated head SHA.",
++      observed: opts.observed,
++    };
++  }
++  try {
++    const [containsExpectedHead, containsExpectedBase] = await Promise.all([
++      provesAncestor({
++        gitRoot: opts.request.gitRoot,
++        project: opts.request.identity.targetProject,
++        ancestor: opts.request.expectedHeadSha,
++        descendant: observedHeadSha,
++      }),
++      provesAncestor({
++        gitRoot: opts.request.gitRoot,
++        project: opts.request.identity.targetProject,
++        ancestor: opts.request.expectedBaseSha,
++        descendant: observedHeadSha,
++      }),
++    ]);
++    if (!containsExpectedHead || !containsExpectedBase) {
++      return {
++        state: "effect_in_doubt",
++        reason: "readback_unproven",
++        detail: "Updated hosted head lacks exact expected-head or expected-base ancestry evidence.",
++        observed: opts.observed,
++      };
++    }
++    return {
++      state: "updated",
++      effect: opts.effect,
++      observed: opts.observed,
++      evidence: {
++        provider: "github",
++        targetProject: opts.request.identity.targetProject,
++        prNumber: opts.request.prNumber,
++        branch: opts.request.branch,
++        baseBranch: opts.request.baseBranch,
++        expectedHeadSha: opts.request.expectedHeadSha,
++        expectedBaseSha: opts.request.expectedBaseSha,
++        observedHeadSha,
++        containsExpectedHead,
++        containsExpectedBase,
++      },
++    };
++  } catch (error) {
++    return {
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++      detail: `Provider ancestry readback failed: ${normalizeGhTransportError(error)}`,
++      observed: opts.observed,
++    };
++  }
++}
++
++async function observeAuthorizedPullRequest(
++  opts: ProviderUpdateBranchRequest,
++): Promise<
++  | { state: "found"; observed: ObservedChangeRequest }
++  | { state: "not_applied"; result: ProviderUpdateBranchNotApplied }
++> {
++  const lookup = await observeExistingChangeRequestByNumber({
++    gitRoot: opts.gitRoot,
++    branch: opts.branch,
++    baseBranch: opts.baseBranch,
++    prNumber: opts.prNumber,
++    identity: opts.identity,
++  });
++  if (lookup.state === "unavailable") {
++    return {
++      state: "not_applied",
++      result: {
++        state: "not_applied",
++        reason: "observation_unavailable",
++        detail: lookup.reason,
++        observed: null,
++      },
++    };
++  }
++  if (lookup.state === "not_found") {
++    return {
++      state: "not_applied",
++      result: {
++        state: "not_applied",
++        reason: "pr_not_found",
++        detail: `Pull request #${opts.prNumber} was not found.`,
++        observed: null,
++      },
++    };
++  }
++  const failure = validateObservedIdentity(opts, lookup.pr);
++  return failure
++    ? { state: "not_applied", result: failure }
++    : { state: "found", observed: lookup.pr };
++}
++
++export async function updateProviderBranch(
++  opts: ProviderUpdateBranchRequest,
++): Promise<ProviderUpdateBranchResult> {
++  const invalid = validateRequest(opts);
++  if (invalid) {
++    return {
++      state: "not_applied",
++      reason: "invalid_request",
++      detail: invalid,
++      observed: null,
++    };
++  }
++  if (opts.identity.provider !== "github") {
++    return {
++      state: "not_applied",
++      reason: "unsupported_provider",
++      detail: `Provider ${opts.identity.provider} does not implement update-branch.`,
++      observed: null,
++    };
++  }
++
++  const before = await observeAuthorizedPullRequest(opts);
++  if (before.state === "not_applied") return before.result;
++  if (before.observed.headSha !== opts.expectedHeadSha) {
++    const reconciled = await reconcileUpdatedHead({
++      request: opts,
++      observed: before.observed,
++      effect: "reconciled",
++    });
++    return reconciled.state === "updated"
++      ? reconciled
++      : {
++          state: "not_applied",
++          reason: "head_drift",
++          detail:
++            `Observed head ${before.observed.headSha ?? "unknown"} does not match ` +
++            `${opts.expectedHeadSha} and cannot be proven as its authorized update.`,
++          observed: before.observed,
++        };
++  }
++  if (before.observed.mergeability?.state === "conflicting") {
++    return {
++      state: "not_applied",
++      reason: "conflict",
++      detail: "Provider reports merge conflicts; update-branch was not attempted.",
++      observed: before.observed,
++    };
++  }
++
++  let mutationError: unknown = null;
++  try {
++    await runGhApiJson<Record<string, unknown>>(opts.gitRoot, [
++      `repos/${opts.identity.targetProject}/pulls/${opts.prNumber}/update-branch`,
++      "-X",
++      "PUT",
++      "-f",
++      `expected_head_sha=${opts.expectedHeadSha}`,
++    ]);
++  } catch (error) {
++    mutationError = error;
++  }
++
++  const after = await observeAuthorizedPullRequest(opts).catch((error: unknown) => ({
++    state: "not_applied" as const,
++    result: {
++      state: "effect_in_doubt" as const,
++      reason: "readback_unavailable" as const,
++      detail: `Provider readback failed: ${normalizeGhTransportError(error)}`,
++      observed: null,
++    },
++  }));
++  if (after.state === "not_applied") {
++    if (after.result.state === "effect_in_doubt") return after.result;
++    return {
++      state: "effect_in_doubt",
++      reason: "readback_unavailable",
++      detail:
++        `Provider update-branch ${mutationError ? "failed or remained uncertain" : "returned"}, ` +
++        `but exact readback was unavailable: ${after.result.detail}`,
++      observed: after.result.observed,
++    };
++  }
++  const reconciled = await reconcileUpdatedHead({
++    request: opts,
++    observed: after.observed,
++    effect: "applied",
++  });
++  if (reconciled.state === "updated") return reconciled;
++  return {
++    ...reconciled,
++    detail: mutationError
++      ? `Provider mutation error: ${normalizeGhTransportError(mutationError)}; ${reconciled.detail}`
++      : reconciled.detail,
++  };
++}
+diff --git a/packages/agentplane/src/commands/shared/provider-update-branch-route.ts b/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
+new file mode 100644
+index 000000000..86894b4b6
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
+@@ -0,0 +1,68 @@
++import type { PrFlowStatusReport } from "../pr/flow-status.js";
++import type { GitHostIdentity } from "../pr/internal/git-host-identity.js";
++import { hasCoherentGithubPrMergeability } from "../pr/internal/sync-github.js";
++
++export type ProviderUpdateBranchOperationParams = {
++  taskId: string;
++  identity: GitHostIdentity;
++  prNumber: number;
++  branch: string;
++  baseBranch: string;
++  expectedHeadSha: string;
++  expectedBaseSha: string;
++};
++
++const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
++
++export function providerUpdateBranchParams(
++  prFlow: PrFlowStatusReport | null,
++): ProviderUpdateBranchOperationParams | null {
++  if (
++    prFlow?.pr.state !== "OPEN" ||
++    prFlow.pr.provider !== "github" ||
++    prFlow.pr.source !== "lookup" ||
++    prFlow.pr.prNumber === null ||
++    !prFlow.branch.name ||
++    !prFlow.branch.headSha ||
++    !prFlow.pr.base ||
++    prFlow.providerObservation?.state !== "found" ||
++    prFlow.publication?.state !== "aligned" ||
++    !prFlow.hostedChecks.checked ||
++    prFlow.hostedChecks.failing <= 0
++  ) {
++    return null;
++  }
++  const observed = prFlow.providerObservation.pr;
++  const localHead = prFlow.branch.headSha;
++  const baseSha = observed.baseSha ?? "";
++  const mergeability = observed.mergeability;
++  if (
++    observed.provider !== "github" ||
++    observed.identity.provider !== "github" ||
++    observed.status !== "OPEN" ||
++    observed.prNumber !== prFlow.pr.prNumber ||
++    observed.headRef !== prFlow.branch.name ||
++    observed.headSha !== localHead ||
++    observed.base !== prFlow.pr.base ||
++    !GIT_OBJECT_ID.test(baseSha) ||
++    !hasCoherentGithubPrMergeability(mergeability) ||
++    mergeability?.state !== "not_conflicting" ||
++    mergeability.mergeable !== true ||
++    mergeability.providerState?.trim().toLowerCase() !== "behind" ||
++    prFlow.pr.headSha !== localHead ||
++    prFlow.publication.localHeadSha !== localHead ||
++    prFlow.publication.upstreamHeadSha !== localHead ||
++    prFlow.publication.hostedHeadSha !== localHead
++  ) {
++    return null;
++  }
++  return {
++    taskId: prFlow.task.id,
++    identity: observed.identity,
++    prNumber: observed.prNumber,
++    branch: prFlow.branch.name,
++    baseBranch: observed.base,
++    expectedHeadSha: localHead,
++    expectedBaseSha: baseSha,
++  };
++}
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+index a1cbde286..867980121 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+@@ -94,6 +94,63 @@ function openPrFlow(): PrFlowStatusReport {
+   };
+ }
+ 
++function failingHostedPrFlow(
++  providerState: string,
++  overrides: {
++    observedHeadSha?: string;
++    mergeabilityState?: "conflicting" | "pending" | "unknown";
++  } = {},
++): PrFlowStatusReport {
++  const flow = openPrFlow();
++  flow.providerObservation = {
++    state: "found",
++    pr: {
++      provider: "github",
++      identity: {
++        provider: "github",
++        hostname: "github.com",
++        remote: "origin",
++        sourceProject: "example/repo",
++        targetProject: "example/repo",
++        sourceUrl: "git@github.com:example/repo.git",
++        targetUrl: "https://github.com/example/repo.git",
++      },
++      prNumber: 101,
++      prUrl: "https://github.com/example/repo/pull/101",
++      status: "OPEN",
++      mergedAt: null,
++      mergeCommit: null,
++      base: "main",
++      baseSha: "d".repeat(40),
++      headRef: "task/T-1/metadata-gate",
++      headSha: overrides.observedHeadSha ?? headSha,
++      mergeability: {
++        state: overrides.mergeabilityState ?? "not_conflicting",
++        mergeable: overrides.mergeabilityState ? null : true,
++        providerState,
++      },
++    },
++  };
++  flow.publication = {
++    state: "aligned",
++    branch: "task/T-1/metadata-gate",
++    localHeadSha: headSha,
++    upstreamRef: "origin/task/T-1/metadata-gate",
++    upstreamHeadSha: headSha,
++    hostedHeadSha: headSha,
++  };
++  flow.hostedChecks = {
++    checked: true,
++    total: 2,
++    pending: 0,
++    failing: 1,
++    passing: 1,
++    missingRequired: [],
++    rows: [{ name: "verify-contract", state: "FAILURE" }],
++  };
++  return flow;
++}
++
+ const resume = {
+   task_id: "T-1",
+   task_status: "DONE",
+@@ -384,6 +441,40 @@ describe("DONE route quality-review target", () => {
+     );
+   });
+ 
++  it("routes an exact aligned GitHub behind state to provider update before semantic rework", async () => {
++    const blockers = await blockersFor(reviewedSha, undefined, failingHostedPrFlow("behind"));
++
++    expect(blockers).toEqual(
++      expect.arrayContaining([
++        expect.objectContaining({ code: "provider_pr_update_branch_required" }),
++      ]),
++    );
++    expect(blockers).not.toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++  });
++
++  it.each([
++    ["clean provider state", failingHostedPrFlow("clean")],
++    [
++      "conflicting mergeability",
++      failingHostedPrFlow("dirty", { mergeabilityState: "conflicting" }),
++    ],
++    ["unknown mergeability", failingHostedPrFlow("unknown", { mergeabilityState: "unknown" })],
++    ["stale observed head", failingHostedPrFlow("behind", { observedHeadSha: "c".repeat(40) })],
++  ])("keeps %s out of the provider update route", async (_label, prFlow) => {
++    const blockers = await blockersFor(reviewedSha, undefined, prFlow);
++
++    expect(blockers).not.toEqual(
++      expect.arrayContaining([
++        expect.objectContaining({ code: "provider_pr_update_branch_required" }),
++      ]),
++    );
++    expect(blockers).toEqual(
++      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
++    );
++  });
++
+   it("keeps a newer unpublished head publishable despite stale failed hosted checks", async () => {
+     const providerHeadSha = "c".repeat(40);
+     const staleFailingPrFlow = openPrFlow();
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index 232596183..c2c7f9a47 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -33,6 +33,7 @@ import {
+   filterTaskWorktreeBlockingPaths,
+   isTaskArtifactPath,
+ } from "./route-decision-worktree-cleanliness.js";
++import { providerUpdateBranchParams } from "./provider-update-branch-route.js";
+ 
+ export { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
+ export { routeGatePriority } from "./route-gate-priority.js";
+@@ -120,6 +121,10 @@ function addHostedCheckFailureReworkBlocker(
+   blockers: RouteBlocker[],
+   prFlow: PrFlowStatusReport | null,
+ ): void {
++  if (providerUpdateBranchParams(prFlow)) {
++    addBlocker(blockers, "provider_pr_update_branch_required", "update PR branch before rework");
++    return;
++  }
+   if (prFlow?.pr.state !== "OPEN") return;
+   const localHeadSha = prFlow.branch.headSha;
+   const providerHeadSha = prFlow.pr.headSha;
+diff --git a/packages/agentplane/src/commands/shared/route-gate-priority.ts b/packages/agentplane/src/commands/shared/route-gate-priority.ts
+index 81bdafc5e..859f64b8b 100644
+--- a/packages/agentplane/src/commands/shared/route-gate-priority.ts
++++ b/packages/agentplane/src/commands/shared/route-gate-priority.ts
+@@ -8,7 +8,8 @@ export function routeGatePriority(code: string): number {
+     code === "implementation_rework_required" ||
+     code === "legacy_protected_conflict_adoption_required" ||
+     code === "provider_merge_conflict" ||
+-    code === "provider_conflict_context_invalid"
++    code === "provider_conflict_context_invalid" ||
++    code === "provider_pr_update_branch_required"
+   ) {
+     return 0;
+   }
+diff --git a/packages/agentplane/src/commands/shared/route-oracle.ts b/packages/agentplane/src/commands/shared/route-oracle.ts
+index 47ea4ce75..8740fcd49 100644
+--- a/packages/agentplane/src/commands/shared/route-oracle.ts
++++ b/packages/agentplane/src/commands/shared/route-oracle.ts
+@@ -17,6 +17,7 @@ export type RouteBlockerCode =
+   | "pr_head_unpublished"
+   | "pr_meta_stale"
+   | "provider_pr_unavailable"
++  | "provider_pr_update_branch_required"
+   | "legacy_protected_conflict_adoption_required"
+   | "provider_merge_conflict"
+   | "provider_conflict_context_invalid"
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.test.ts b/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
+index 00ef2e15f..04743c835 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.test.ts
+@@ -159,6 +159,10 @@ describe("side-effect authority", () => {
+       class: "external_pre_authorized",
+       requiresAuthority: false,
+     });
++    expect(WORKFLOW_OPERATION_AUTHORITY_POLICY["provider.pr.update_branch"]).toMatchObject({
++      class: "external_high_risk",
++      requiresAuthority: true,
++    });
+     for (const operationId of [
+       "pr.artifacts.update",
+       "pr.sync_or_verify",
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.ts b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+index 929ed6801..032047637 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+@@ -88,6 +88,7 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
+   "pr.open": EXTERNAL_REVERSIBLE,
+   "pr.head.publish": EXTERNAL_REVERSIBLE,
+   "provider.pr.refresh": EXTERNAL_REVERSIBLE,
++  "provider.pr.update_branch": EXTERNAL_HIGH_RISK,
+   "flow.repair.foreign_task_readme": LOCAL_REVERSIBLE,
+   "route.remote.refresh": EXTERNAL_REVERSIBLE,
+   "task.pre_merge_close": EXTERNAL_HIGH_RISK,
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+index eebae5460..93f75f71c 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+@@ -23,6 +23,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
+   "pr.open": "mutating",
+   "pr.head.publish": "mutating",
+   "provider.pr.refresh": "read_only",
++  "provider.pr.update_branch": "mutating",
+   "flow.repair.foreign_task_readme": "mutating",
+   "route.remote.refresh": "read_only",
+   "task.pre_merge_close": "mutating",
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+index 163ca01ad..00c4241c3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+@@ -12,6 +12,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+   "pr.open": ["agentplane", "pr", "open"],
+   "pr.sync_or_verify": ["agentplane", "pr", "update"],
+   "provider.pr.refresh": ["agentplane", "pr", "flow", "status"],
++  "provider.pr.update_branch": ["agentplane", "pr", "update-branch"],
+   "flow.repair.foreign_task_readme": ["agentplane", "flow", "repair"],
+   "route.remote.refresh": ["agentplane", "task", "next-action"],
+   "runner.follow": ["agentplane", "task"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+index 3db54d0f9..53c5f2d43 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+@@ -120,6 +120,55 @@ describe("Workflow operation projection registry", () => {
+         params: { taskId },
+         argv: ["agentplane", "pr", "flow", "status", taskId],
+       },
++      "provider.pr.update_branch": {
++        params: {
++          taskId,
++          identity: {
++            provider: "github",
++            hostname: "github.com",
++            remote: "origin",
++            sourceProject: "owner/repo",
++            targetProject: "owner/repo",
++            sourceUrl: "git@github.com:owner/repo.git",
++            targetUrl: "https://github.com/owner/repo.git",
++          },
++          prNumber: 42,
++          branch: taskBranch,
++          baseBranch: "main",
++          expectedHeadSha: taskHead,
++          expectedBaseSha: "2222222222222222222222222222222222222222",
++        },
++        argv: [
++          "agentplane",
++          "pr",
++          "update-branch",
++          taskId,
++          "--provider",
++          "github",
++          "--hostname",
++          "github.com",
++          "--remote",
++          "origin",
++          "--source-project",
++          "owner/repo",
++          "--target-project",
++          "owner/repo",
++          "--source-url",
++          "git@github.com:owner/repo.git",
++          "--target-url",
++          "https://github.com/owner/repo.git",
++          "--pr-number",
++          "42",
++          "--branch",
++          taskBranch,
++          "--base",
++          "main",
++          "--expect-head",
++          taskHead,
++          "--expect-base",
++          "2222222222222222222222222222222222222222",
++        ],
++      },
+       "route.remote.refresh": {
+         params: { taskId },
+         argv: ["agentplane", "task", "next-action", taskId, "--remote", "--explain"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index 7770909f9..cb4c69427 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -66,6 +66,39 @@ function operationArgv(operation: WorkflowOperation): string[] {
+     case "provider.pr.refresh": {
+       return ["agentplane", "pr", "flow", "status", operation.params.taskId];
+     }
++    case "provider.pr.update_branch": {
++      const { identity } = operation.params;
++      return [
++        "agentplane",
++        "pr",
++        "update-branch",
++        operation.params.taskId,
++        "--provider",
++        identity.provider,
++        "--hostname",
++        identity.hostname,
++        "--remote",
++        identity.remote,
++        "--source-project",
++        identity.sourceProject,
++        "--target-project",
++        identity.targetProject,
++        "--source-url",
++        identity.sourceUrl,
++        "--target-url",
++        identity.targetUrl,
++        "--pr-number",
++        String(operation.params.prNumber),
++        "--branch",
++        operation.params.branch,
++        "--base",
++        operation.params.baseBranch,
++        "--expect-head",
++        operation.params.expectedHeadSha,
++        "--expect-base",
++        operation.params.expectedBaseSha,
++      ];
++    }
+     case "flow.repair.foreign_task_readme": {
+       return ["agentplane", "flow", "repair", operation.params.taskId, "--safe-apply"];
+     }
+diff --git a/packages/agentplane/src/commands/shared/workflow-postconditions.ts b/packages/agentplane/src/commands/shared/workflow-postconditions.ts
+index bfc2a115e..7d48c120c 100644
+--- a/packages/agentplane/src/commands/shared/workflow-postconditions.ts
++++ b/packages/agentplane/src/commands/shared/workflow-postconditions.ts
+@@ -5,6 +5,7 @@ type WorkflowPostconditionId =
+   | "integration_queue_worker_cycle_completed"
+   | "integration_queue_contains_task"
+   | "pr_artifacts_current"
++  | "provider_branch_updated"
+   | "provider_state_observed"
+   | "remote_pr_head_aligned"
+   | "remote_pr_linked"
+@@ -70,6 +71,11 @@ export const POSTCONDITION = {
+     subject: "provider",
+     expected: "provider state has a fresh observation",
+   },
++  providerBranchUpdated: {
++    id: "provider_branch_updated",
++    subject: "provider",
++    expected: "provider PR head contains the exact expected head and base SHA",
++  },
+   preMergeClosure: {
+     id: "pre_merge_closure_recorded",
+     subject: "task",
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 3618eeb0c..298874d4a 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -10,6 +10,7 @@ import {
+ import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
+ import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
+ import { integrationQueueStep } from "./workflow-step-integration-queue.js";
++import { providerUpdateBranchStep } from "./workflow-step-provider-update-branch.js";
+ import {
+   approvalStep,
+   branchImplementationStep,
+@@ -176,8 +177,8 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
+       worktreeResolutionStep(state, worktreeBlocker)
+     );
+   }
+-  const conflictStep = conflictReworkRouteStep(state);
+-  if (conflictStep) return conflictStep;
++  const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
++  if (recoveryStep) return recoveryStep;
+   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
+     return implementationReworkStep(state);
+   }
+@@ -430,8 +431,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+       worktreeResolutionStep(state, worktreeBlocker)
+     );
+   }
+-  const conflictStep = conflictReworkRouteStep(state);
+-  if (conflictStep) return conflictStep;
++  const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
++  if (recoveryStep) return recoveryStep;
+   if (
+     state.taskWorktree?.state === "not_present" &&
+     state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+index cee441d3d..66ddb0e68 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+@@ -628,6 +628,118 @@ describe("WorkflowStep conflict rework projections", () => {
+     });
+   });
+ 
++  it("routes an exact aligned GitHub behind state to a digest-bound provider update before rework", () => {
++    const baseSha = "2222222222222222222222222222222222222222";
++    const behindPrFlow = {
++      task: { id: task.id, status: "DONE", verification: "ok" },
++      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
++      pr: {
++        provider: "github",
++        state: "OPEN",
++        source: "lookup",
++        prNumber: 4626,
++        prUrl: "https://github.example/acme/agentplane/pull/4626",
++        base: "main",
++        headSha: resume.head_sha,
++        mergeCommit: null,
++      },
++      providerObservation: {
++        state: "found",
++        pr: {
++          provider: "github",
++          identity: {
++            provider: "github",
++            hostname: "github.example",
++            remote: "origin",
++            sourceProject: "acme/agentplane",
++            targetProject: "acme/agentplane",
++            sourceUrl: "git@github.example:acme/agentplane.git",
++            targetUrl: "https://github.example/acme/agentplane.git",
++          },
++          prNumber: 4626,
++          prUrl: "https://github.example/acme/agentplane/pull/4626",
++          status: "OPEN",
++          mergedAt: null,
++          mergeCommit: null,
++          base: "main",
++          baseSha,
++          headRef: taskBranch,
++          headSha: resume.head_sha,
++          mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++        },
++      },
++      publication: {
++        state: "aligned",
++        branch: taskBranch,
++        localHeadSha: resume.head_sha,
++        upstreamRef: `origin/${taskBranch}`,
++        upstreamHeadSha: resume.head_sha,
++        hostedHeadSha: resume.head_sha,
++      },
++      closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
++      hostedChecks: {
++        checked: true,
++        total: 1,
++        pending: 0,
++        failing: 1,
++        passing: 0,
++        missingRequired: [],
++        rows: [{ name: "verify-contract", state: "FAILURE" }],
++      },
++      reviewThreads: { checked: true, unresolved: 0 },
++      queue: { present: false },
++      handoff: { present: false },
++      nextAction: "hosted checks are failing because the PR branch is behind main",
++    } satisfies PrFlowStatusReport;
++    const state = routeState({
++      task: { ...task, status: "DONE", verification: { state: "ok" } },
++      resume: { ...resume, task_status: "DONE" },
++      prFlow: behindPrFlow,
++      conflictRework: null,
++      blockers: [
++        {
++          code: "provider_pr_update_branch_required",
++          summary: "provider branch is behind the exact hosted base",
++        },
++      ],
++    });
++    const step = reduceRouteState(state);
++    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
++
++    expect(step).toMatchObject({
++      kind: "approval",
++      id: "approval.provider.pr.update_branch",
++      request: {
++        type: "side_effect",
++        operationId: "provider.pr.update_branch",
++        operation: {
++          id: "provider.pr.update_branch",
++          params: {
++            taskId: task.id,
++            prNumber: 4626,
++            branch: taskBranch,
++            baseBranch: "main",
++            expectedHeadSha: resume.head_sha,
++            expectedBaseSha: baseSha,
++          },
++        },
++      },
++    });
++    expect(step.id).not.toBe("agent.implementation_rework");
++    expect(oracle).toMatchObject({
++      phase: "side_effect_authority_required",
++      authoritativeCheckout: "task_worktree",
++    });
++    expect(oracle.nextCommand).toContain("--operation provider.pr.update_branch");
++    expect(oracle.nextCommand).toContain("--operation-digest sha256:");
++    expect(oracle.nextCommand).toContain("--state-scope-digest sha256:");
++    expect(packet).toMatchObject({
++      actionKind: "provider_action",
++      safeToMutate: false,
++      exactArgv: null,
++    });
++  });
++
+   it("publishes a newer unpublished head before acting on stale failed hosted checks", () => {
+     const providerHeadSha = "2222222222222222222222222222222222222222";
+     const staleFailedPrFlow = {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
+new file mode 100644
+index 000000000..5398e61a0
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
+@@ -0,0 +1,41 @@
++import { providerUpdateBranchParams } from "./provider-update-branch-route.js";
++import { POSTCONDITION } from "./workflow-postconditions.js";
++import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
++import { cliOperationStep, routeBlockerFor } from "./workflow-step-factory.js";
++
++export const PROVIDER_UPDATE_BRANCH_OPERATION_SPEC = {
++  type: "provider_update_branch",
++  phase: "provider_pr_update_branch_required",
++  checkout: "task_worktree",
++  role: "INTEGRATOR",
++  expectedPostconditions: [
++    POSTCONDITION.providerBranchUpdated,
++    POSTCONDITION.providerObserved,
++    POSTCONDITION.routeRecomputed,
++  ],
++  mustNot: [
++    "do not update a different PR, branch, base, provider identity, or head than the exact approved operation",
++    "do not repeat an effect-in-doubt update; reconcile fresh provider ancestry before another mutation",
++    "do not merge, rebase, force-push, or edit AgentPlane task state as a substitute for provider update-branch",
++  ],
++  triggersGitHooks: false,
++  verificationCandidate: "agentplane task next-action <task-id> --remote --explain",
++  needsVerificationRecord: false,
++} as const;
++
++export function providerUpdateBranchStep(state: WorkflowRouteState): WorkflowStep | null {
++  if (!state.blockers.some((blocker) => blocker.code === "provider_pr_update_branch_required")) {
++    return null;
++  }
++  const params = providerUpdateBranchParams(state.prFlow);
++  if (params?.taskId !== state.task.id) return null;
++  return cliOperationStep({
++    state,
++    operationId: "provider.pr.update_branch",
++    params,
++    code: "update_provider_pr_branch",
++    summary:
++      "update the exact behind provider PR head from its observed base before classifying hosted failures as semantic rework",
++    selectedBlocker: routeBlockerFor(state, "provider_pr_update_branch_required"),
++  });
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index 7beae4ec3..47818309d 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -5,12 +5,14 @@ import type { TaskData } from "../../backends/task-backend.js";
+ import type { PrFlowStatusReport } from "../pr/flow-status.js";
+ import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
+ import type { TaskResumeContext } from "../task/handoff.shared.js";
++import type { ProviderUpdateBranchOperationParams } from "./provider-update-branch-route.js";
+ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
+ import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
+ import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
+ import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
+ import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
+ import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
++import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch.js";
+ import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
+ 
+ export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
+@@ -50,6 +52,7 @@ type WorkflowOperationType =
+   | "integration_run_next"
+   | "pr_sync"
+   | "provider_refresh"
++  | "provider_update_branch"
+   | "runner_follow"
+   | "task_record_result"
+   | "task_scope_extend"
+@@ -70,6 +73,7 @@ export type WorkflowOperationId =
+   | "pr.open"
+   | "pr.sync_or_verify"
+   | "provider.pr.refresh"
++  | "provider.pr.update_branch"
+   | "flow.repair.foreign_task_readme"
+   | "route.remote.refresh"
+   | "runner.follow"
+@@ -103,6 +107,7 @@ export type WorkflowOperationParams = {
+   "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
+   "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
+   "provider.pr.refresh": { taskId: string };
++  "provider.pr.update_branch": ProviderUpdateBranchOperationParams;
+   "flow.repair.foreign_task_readme": { taskId: string };
+   "route.remote.refresh": { taskId: string };
+   "runner.follow":
+@@ -323,6 +328,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
+     verificationCandidate: "agentplane pr flow status <task-id>",
+     needsVerificationRecord: false,
+   },
++  "provider.pr.update_branch": PROVIDER_UPDATE_BRANCH_OPERATION_SPEC,
+   "route.remote.refresh": {
+     type: "provider_refresh",
+     phase: "remote_route_refresh_needed",
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index e11189e78..679c1fec0 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
+   cmdWorkStart: vi.fn(),
+   enqueue: vi.fn(),
+   cmdCleanupMerged: vi.fn(),
++  updateProviderBranch: vi.fn(),
+ }));
+ 
+ vi.mock("../shared/task-backend.js", () => ({
+@@ -38,6 +39,10 @@ vi.mock("../branch/cleanup-merged.js", () => ({
+   cmdCleanupMerged: mocks.cmdCleanupMerged,
+ }));
+ 
++vi.mock("../pr/provider-update-branch.js", () => ({
++  updateProviderBranch: mocks.updateProviderBranch,
++}));
++
+ vi.mock("../integrate-queue.command.js", () => ({
+   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler: vi.fn(),
+   makeRunIntegrateQueueEnqueueHandler: () => mocks.enqueue,
+@@ -130,6 +135,39 @@ function runNextOperation(): Extract<WorkflowOperation, { id: "integration.run_n
+   };
+ }
+ 
++function updateBranchOperation(): Extract<WorkflowOperation, { id: "provider.pr.update_branch" }> {
++  return {
++    id: "provider.pr.update_branch",
++    type: "provider_update_branch",
++    params: {
++      taskId: "202607221852-71SCSW",
++      identity: {
++        provider: "github",
++        hostname: "github.com",
++        remote: "origin",
++        sourceProject: "owner/repo",
++        targetProject: "owner/repo",
++        sourceUrl: "git@github.com:owner/repo.git",
++        targetUrl: "https://github.com/owner/repo.git",
++      },
++      prNumber: 42,
++      branch: "task/202607221852-71SCSW/frozen-base",
++      baseBranch: "main",
++      expectedHeadSha: "b".repeat(40),
++      expectedBaseSha: "a".repeat(40),
++    },
++    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
++    authorityRef: "route:test",
++    idempotencyKey: "provider.pr.update_branch:test",
++    expectedPostconditions: [
++      { id: "provider_branch_updated", subject: "provider", expected: "updated" },
++      { id: "provider_state_observed", subject: "provider", expected: "observed" },
++      { id: "route_state_recomputed", subject: "route", expected: "recomputed" },
++    ],
++    triggersGitHooks: false,
++  };
++}
++
+ describe("branch task supervisor operations", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
+@@ -153,6 +191,75 @@ describe("branch task supervisor operations", () => {
+     mocks.cmdFinish.mockResolvedValue(0);
+     mocks.runNext.mockResolvedValue(0);
+     mocks.cmdCleanupMerged.mockResolvedValue(0);
++    mocks.updateProviderBranch.mockResolvedValue({
++      state: "updated",
++      effect: "applied",
++      observed: {},
++      evidence: {
++        observedHeadSha: "c".repeat(40),
++      },
++    });
++  });
++
++  it("executes the exact provider update-branch operation and reports proven readback", async () => {
++    const operation = updateBranchOperation();
++
++    const result = await executeBranchWorkflowOperation({
++      decision: routeDecision(operation),
++      operation,
++    });
++
++    expect(result.status).toBe("succeeded");
++    expect(result.observed_postconditions).toContain("provider_branch_updated");
++    expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
++      gitRoot: "/repo",
++      identity: operation.params.identity,
++      prNumber: 42,
++      branch: operation.params.branch,
++      baseBranch: "main",
++      expectedHeadSha: "b".repeat(40),
++      expectedBaseSha: "a".repeat(40),
++    });
++  });
++
++  it("requires a distinct supervisor operation after a pre-effect provider failure", async () => {
++    const operation = updateBranchOperation();
++    mocks.updateProviderBranch.mockResolvedValueOnce({
++      state: "not_applied",
++      reason: "head_drift",
++      detail: "provider head changed",
++      observed: null,
++    });
++
++    const result = await executeBranchWorkflowOperation({
++      decision: routeDecision(operation),
++      operation,
++    });
++
++    expect(result.status).toBe("failed");
++    expect(result.detail).toContain("stopped before a proven effect");
++    expect(result.detail).toContain("distinct fresh supervisor operation");
++    expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
++  });
++
++  it("stops effect-in-doubt without repeating the provider mutation", async () => {
++    const operation = updateBranchOperation();
++    mocks.updateProviderBranch.mockResolvedValueOnce({
++      state: "effect_in_doubt",
++      reason: "readback_unproven",
++      detail: "provider ancestry is not yet conclusive",
++      observed: null,
++    });
++
++    const result = await executeBranchWorkflowOperation({
++      decision: routeDecision(operation),
++      operation,
++    });
++
++    expect(result.status).toBe("failed");
++    expect(result.detail).toContain("effect-in-doubt");
++    expect(result.detail).toContain("do not repeat the effect blindly");
++    expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
+   });
+ 
+   it("routes worktree creation and integration through the frozen task base", async () => {
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index 78f8cb7ea..f18a96504 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -11,6 +11,7 @@ import {
+ import { resolvePrFlowStatus } from "../pr/flow-status.js";
+ import { cmdPrOpen } from "../pr/open.js";
+ import { cmdPrUpdate } from "../pr/update.js";
++import { updateProviderBranch } from "../pr/provider-update-branch.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authority.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+@@ -176,6 +177,38 @@ export async function executeBranchWorkflowOperation(opts: {
+         exitCode,
+       );
+     }
++    case "provider.pr.update_branch": {
++      const result = await updateProviderBranch({
++        gitRoot: command.resolvedProject.gitRoot,
++        identity: operation.params.identity,
++        prNumber: operation.params.prNumber,
++        branch: operation.params.branch,
++        baseBranch: operation.params.baseBranch,
++        expectedHeadSha: operation.params.expectedHeadSha,
++        expectedBaseSha: operation.params.expectedBaseSha,
++      });
++      if (result.state === "updated") {
++        return succeeded(
++          operation,
++          `provider PR #${operation.params.prNumber} update-branch ${result.effect}; ` +
++            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base`,
++        );
++      }
++      if (result.state === "not_applied") {
++        return succeeded(
++          operation,
++          `provider update-branch stopped before a proven effect (${result.reason}: ${result.detail}); ` +
++            "a retry requires a distinct fresh supervisor operation",
++          1,
++        );
++      }
++      return succeeded(
++        operation,
++        `provider update-branch is effect-in-doubt (${result.reason}: ${result.detail}); ` +
++          "reconcile fresh provider ancestry before any replacement and do not repeat the effect blindly",
++        1,
++      );
++    }
+     case "flow.repair.foreign_task_readme": {
+       const result = await applyForeignTaskReadmeReplicaRepair({
+         ctx: command,
+diff --git a/packages/agentplane/src/commands/task/configured-authority.test.ts b/packages/agentplane/src/commands/task/configured-authority.test.ts
+index 3dea004de..c70b7e176 100644
+--- a/packages/agentplane/src/commands/task/configured-authority.test.ts
++++ b/packages/agentplane/src/commands/task/configured-authority.test.ts
+@@ -216,6 +216,7 @@ describe("configured repository authority", () => {
+     });
+ 
+     expect(isOperationAuthorizedByExecutionGrant(grant, "pr.open")).toBe(true);
++    expect(isOperationAuthorizedByExecutionGrant(grant, "provider.pr.update_branch")).toBe(true);
+     expect(isOperationAuthorizedByExecutionGrant(grant, "integration.enqueue")).toBe(true);
+     expect(isOperationAuthorizedByExecutionGrant(grant, "task.scope.extend")).toBe(true);
+   });

@@ -1,0 +1,1 @@
+✅ ZHYXRS task: Preserve WorkItem results during plan reapproval and recover evidence-only implementation [202608300119-ZHYXRS]

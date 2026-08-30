@@ -14,6 +14,7 @@ import {
   configureGitUser,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   withEvaluatorPolicyFixture,
   writeConfig,
 } from "@agentplane/testkit";
@@ -69,7 +70,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
   });
 
   it("task begin creates a direct task and stops at semantic planning", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
@@ -412,7 +413,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
   });
 
   it("task complete refuses to synthesize verification from an executor claim", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
@@ -465,7 +466,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
   });
 
   it("task complete records branch_pr verification without implying lifecycle closure", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

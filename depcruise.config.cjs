@@ -54,6 +54,19 @@ module.exports = {
       },
     },
     {
+      name: "canonical-task-kernel-is-pure-domain",
+      severity: "error",
+      comment:
+        "The canonical Task kernel may use deterministic value helpers but not adapters, legacy projections, filesystem, process, Git, provider, backend, CLI, document, clock, randomness, or environment implementations.",
+      from: {
+        path: "^packages/core/src/tasks/task-kernel/",
+        pathNot: "\\.test\\.ts$",
+      },
+      to: {
+        path: "^(packages/core/src/(git|process|fs)/|packages/core/src/tasks/task-centric/|packages/agentplane/src/|node:(fs|fs/promises|process|child_process|os|timers)(/|$))",
+      },
+    },
+    {
       name: "task-centric-backend-adapter-does-not-import-command-handlers",
       severity: "error",
       comment:

@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept",
+  "created_at": "2026-08-28T05:33:24.733Z",
+  "diffstat_sha256": "sha256:757616f5a3ebab6286e8ad569c2d680061a86c1339b5a2e4c8cece6c07e2b7f5",
+  "last_verified_at": "2026-08-28T18:50:32.879Z",
+  "last_verified_diffstat_sha256": "sha256:757616f5a3ebab6286e8ad569c2d680061a86c1339b5a2e4c8cece6c07e2b7f5",
+  "pr_number": 5866,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5866",
+  "pre_merge_closure": {
+    "basis_commit": "0f021b5ae2688de1e9f07975be3e84c94246af3d",
+    "branch": "task/202608280529-59VB06/recover-stale-evaluator-exchanges-without-accept",
+    "pr_number": 5866,
+    "recorded_at": "2026-08-28T18:53:55.367Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608280529-59VB06",
+  "updated_at": "2026-08-28T06:07:05.168Z",
+  "verify": {
+    "status": "pass"
+  }
+}

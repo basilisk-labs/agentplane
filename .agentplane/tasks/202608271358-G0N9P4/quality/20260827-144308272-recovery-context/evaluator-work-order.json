@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271358-G0N9P4-fc419101bc6fb0ad6ac0be7e",
+  "prepared_at": "2026-08-27T14:43:08.272Z",
+  "task": {
+    "id": "202608271358-G0N9P4",
+    "revision": 17,
+    "objective": "Repair verification fixtures on integrated main 5fce04a8\n\nReplace unexecuted task 202608271350-HVGQPQ, which froze its creation base before GHHA0Q integration. Implement only the verification-fixture slice on integrated main 5fce04a8be14816be4cae236d2941dff7045e214. Inspect exact failures in lifecycle.verify, tasks.verify-matrix and incidents CLI tests. Use mkGitRepoRootWithCommit only for scenarios requiring implementation evidence. Preserve all assertions and argument-validation cases. Add an explicit unborn-repository rejection regression in runtime/task-execution-context/resolve.test.ts. Do not change shared helpers, production code, CI gates, release candidate or roadmap dependencies. Canonical verification migration remains AP-CORE-013. Require scoped tests, full CI and hosted integration. User authorizes autonomous execution and normal in-scope approvals.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2",
+      "- In scope: Replace unexecuted task 202608271350-HVGQPQ, which froze its creation base before GHHA0Q integration. Implement only the verification-fixture slice on integrated main 5fce04a8be14816be4cae236d2941dff7045e214. Inspect exact failures in lifecycle.verify, tasks.verify-matrix and incidents CLI tests. Use mkGitRepoRootWithCommit only for scenarios requiring implementation evidence. Preserve all assertions and argument-validation cases. Add an explicit unborn-repository rejection regression in runtime/task-execution-context/resolve.test.ts. Do not change shared helpers, production code, CI gates, release candidate or roadmap dependencies. Canonical verification migration remains AP-CORE-013. Require scoped tests, full CI and hosted integration. User authorizes autonomous execution and normal in-scope approvals.\n- Out of scope: unrelated refactors not required for \"Repair verification fixtures on integrated main 5fce04a8\".",
+      "Reproduce exact errors in the three CLI suites. Replace empty-repository setup only in successful verification/incident scenarios with the existing mkGitRepoRootWithCommit helper. Keep argument-validation fixtures empty. Preserve all behavior assertions and improve captured-error diagnostics. Add an actual unborn-repository negative regression beside the existing zero-SHA and mismatched-base tests. Run the declared four-file command, ESLint, Prettier, git diff --check and mandatory full CI. Stop if production behavior or additional files must change.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/runtime/task-execution-context/resolve.test.ts --pool=threads --maxWorkers=2. Expected: all four suites pass; preserve argument-validation and empty-repository negative behavior.\n2. Run bun run ci:local:full. Expected: mandatory full CI passes; focused results do not substitute for full regression.\n3. Run ESLint and Prettier checks on changed TypeScript files and git diff --check. Expected: no errors.\n4. Review the exact diff. Expected: only the four planned test files change; no skips, removed assertions, shared helper mutation, production changes or release gate changes.\n5. Require hosted exact-head checks and supported integration before final closure. This task does not qualify or publish 0.7.8."
+    ]
+  },
+  "evaluated_sha": "cf3fa3f9c8a628c46a62bb10b347ac1684668394",
+  "diff_base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+  "blueprint_digest": "b1859a8987ab5370ba9bb6a9a47c5ec76b7d1cef936e10f53b3f4285459515d3",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271358-G0N9P4/quality/20260827-144308272-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ac5164e885f717cd4d383e11ab70fb296298a76075a823ee38763bef96b11a49",
+    "prompt_path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/777c538f21215f1399fa50862508b756510efedb76645600f61bf3f670794223.md",
+    "result_schema_path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271358-G0N9P4/README.md",
+      "sha256": "sha256:c32ce5115b72b2512c8e83c02fb745a9c50fc12f391f21cf82e1782802aa07b6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1.patch",
+      "sha256": "sha256:2501149452aa79bbcf0f5915f02d7db1170a7c5b1117d25c3504628d5d3d60f1",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/2f9b84087cbe4076bce202e94828ba937a9e4172d1620f4d48a2c73dcd5991c6.json",
+      "sha256": "sha256:2f9b84087cbe4076bce202e94828ba937a9e4172d1620f4d48a2c73dcd5991c6",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271358-G0N9P4/verification/20260827144238263-382161b49fad458b.json",
+      "sha256": "sha256:be3962f929cb6e9d59fb77a14f047cd35ea4d6cc921539bc0fb3912779f9e1f8",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271358-G0N9P4/quality/objects/sha256/14513056fb48f13c0a2081399288b24ce14495e22af1134cff7f041d75a4cf96.json",
+      "sha256": "sha256:14513056fb48f13c0a2081399288b24ce14495e22af1134cff7f041d75a4cf96",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

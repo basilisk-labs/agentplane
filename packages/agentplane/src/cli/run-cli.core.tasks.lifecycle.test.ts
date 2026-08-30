@@ -39,6 +39,7 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
@@ -595,7 +596,10 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   });
 
   it("task start-ready checks readiness and starts task in one command", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
+    const { stdout: seedSha } = await promisify(execFile)("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
     const config = defaultConfig();
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
@@ -651,12 +655,12 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     const extensions = task.frontmatter.extensions as Record<string, unknown> | undefined;
     expect(extensions?.workflow_route_baseline).toEqual({
       version: 1,
-      start_head_sha: null,
+      start_head_sha: seedSha.trim(),
     });
   });
 
   it("task start-ready prints matching incident advice for analogous tasks", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
@@ -736,7 +740,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   });
 
   it("task start-ready fails early when dependencies are not ready", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);

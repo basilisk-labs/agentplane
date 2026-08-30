@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Documentation rework: the frozen task README Findings still describes implementation 75c6a199, four files, 46 tests, and retirement of only unapplied reviews. It omits the proved applied-review defects, authoritative checkout recovery, retired-review routing, implementation 290c44a524385cc95846a25baaee7af8b7e5d437, 103 focused tests and fresh verification 20260828181914331-2b5187ee7edbae42.json. This fails the explicit requirement to preserve current cause and red/green proof in Findings. Evidence: .agentplane/tasks/202608280529-59VB06/README.md",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The Verify Steps eight-file count conflicts with the already applied, state-bound nine-root scope refinement recorded in this same task. Correct the description to include shared/workflow-step-factory.ts without changing the approved semantic scope, mandatory commands, pass criteria or historical approval records. The actual code is inside the framework-authorized scope; this is documentation reconciliation, not a request for new implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Code review: the frozen patch preserves the existing journal/lease CAS and old result bytes, resolves exchange.checkout for applied recovery, requires the exact reconstructed pre-review task and frozen inputs, and checks retirement before both direct and branch_pr closeout. Explicit-result return has the same applied-state guard. Tests cover before/after effect interruption, task/plan/HEAD/evidence/workspace/policy drift, immutable history, replacement and fresh review; legacy reviews without external work-order binding retain their prior path.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All nine frozen evidence hashes and the frozen WorkOrder digest match. Recorded CLI-owned verification is ok for implementation 290c44a524385cc95846a25baaee7af8b7e5d437; preserved declared-checks records ci:local:full exit 0 in 460507ms and git diff --check exit 0. This does not prove GitHub checks, integration, hosted closure or release qualification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "No source change is requested by this evaluation. Preserve completed WorkItem output manifest sha256:3928a1ef67e0f7f6d1ed46717abad1c648f724f5f8763b1985bba5bb7959c1f3 and the current implementation. Use the supported task-document recovery route; do not hand-edit task state or rewrite this review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Exact-head hosted checks, review responses, protected integration and hosted closure remain pending.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Documentation-only repair: update this task Findings with the applied-review cause, implementation SHA, 103-test proof, exact fresh full verification and separate hosted/release boundaries. Reconcile Verify Steps item 4 with the already applied nine-root scope (add workflow-step-factory.ts). Preserve all historical approvals, verdicts, completed WorkItem result/output and all mandatory checks. Do not change implementation code. Request fresh evaluation after the supported documentation update."
+}

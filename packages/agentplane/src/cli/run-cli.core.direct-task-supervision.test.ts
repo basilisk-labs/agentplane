@@ -1,20 +1,17 @@
+import { prepareContinuityPlan } from "./task-continuity.testkit.js";
+
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import { agentTransitionId } from "../commands/task/agent-action-packet.js";
-import {
-  captureStdIO,
-  defaultConfig,
-  mkGitRepoRootWithBranch,
-  writeConfig,
-} from "@agentplane/testkit/cli-core-pr-flow";
-import { installRunCliIntegrationHarness } from "@agentplane/testkit";
+import { captureStdIO, defaultConfig, writeConfig } from "@agentplane/testkit/cli-core-pr-flow";
+import { installRunCliIntegrationHarness, mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 
 describe("runCli direct task supervision", () => {
   it("stops before starting an EXECUTOR when the plan still requires approval", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     await writeConfig(root, config);
@@ -45,24 +42,16 @@ describe("runCli direct task supervision", () => {
       createIo.restore();
     }
 
-    expect(
-      await runCli([
-        "task",
-        "plan",
-        "set",
-        taskId,
-        "--text",
-        "1. Exercise the direct supervisor approval boundary.\n2. Confirm no provider starts before approval.",
-        "--updated-by",
-        "PLANNER",
-        "--root",
-        root,
-      ]),
-    ).toBe(0);
+    await prepareContinuityPlan(
+      root,
+      taskId,
+      "Stop before executor until explicit plan approval.",
+      false,
+    );
 
     const runIo = captureStdIO();
     try {
-      expect(await runCli(["task", "run", taskId, "--json", "--root", root])).toBe(0);
+      expect(await runCli(["task", "run", taskId, "--json", "--root", root]), runIo.stderr).toBe(0);
       const payload = JSON.parse(runIo.stdout) as {
         schema: string;
         status: string;

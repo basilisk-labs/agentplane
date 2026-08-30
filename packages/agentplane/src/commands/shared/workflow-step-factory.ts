@@ -186,7 +186,9 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
     state.task.verification?.state === "ok" &&
     String(state.task.status).toUpperCase() === "DOING"
   ) {
+    const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
     if (
+      !reviewIsStale &&
       qualityReviewRequiresImplementationRework(state.task) &&
       !qualityReworkHasNewVerification(state.task)
     ) {
@@ -212,7 +214,7 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
         selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
       });
     }
-    if (state.task.quality_review?.state !== "pass") {
+    if (reviewIsStale || state.task.quality_review?.state !== "pass") {
       return agentEpisodeStep({
         state,
         id: "agent.direct_quality_review",

@@ -1,0 +1,586 @@
+diff --git a/docs/adr/0017-clean-task-core-rebuild.md b/docs/adr/0017-clean-task-core-rebuild.md
+new file mode 100644
+index 000000000..43a870fed
+--- /dev/null
++++ b/docs/adr/0017-clean-task-core-rebuild.md
+@@ -0,0 +1,95 @@
++---
++title: "ADR 0017: Clean Task Core Rebuild"
++description: "Build a side-effect-free canonical Task kernel behind compatibility adapters, then migrate and cut over with replay evidence."
++---
++
++## Status
++
++Proposed on 2026-08-29.
++
++## Context
++
++Agentplane has a useful task-centric domain model, but canonical behavior is still split across the
++core model, legacy compatibility conversion, backend adapters, task commands, runner code, task
++documents, and provider lifecycle code. In particular,
++`packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts` still creates a
++synthetic aggregate when canonical state is absent. This permits legacy fields and canonical state
++to participate in the same runtime decision.
++
++The existing Clean Core roadmap decomposes this problem into many small tasks. That preserves
++individual requirements but makes the dependency chain sensitive to repairs in the legacy
++controller that the roadmap intends to retire.
++
++## Decision
++
++Build the replacement in four gated milestones:
++
++1. Specify the kernel, code map, invariants, migration oracle, and legacy-task traceability.
++2. Implement a new pure internal Task kernel without filesystem, Git, process, provider, clock, or
++   projection dependencies.
++3. Add explicit persistence, CLI, migration, projection, validation, and provider adapters. Compare
++   their results with an exact replay corpus and fail closed on unknown legacy input.
++4. Cut all production consumers over to the canonical kernel, qualify crash recovery and
++   self-hosting, and remove production legacy lifecycle implementations.
++
++The public CLI and task document format remain compatibility surfaces during the first three
++milestones. The 0.7.8 patch release remains a separate maintenance lane. Clean Core cutover does not
++rewrite or publish 0.7.8.
++
++## Kernel boundary
++
++The kernel accepts immutable state, a typed command, explicit time and identity inputs, and an
++authority envelope. It returns either typed domain events and new state or a typed rejection. It
++does not read or write storage and does not perform external effects.
++
++Adapters own persistence, Git, workspaces, process execution, provider calls, documents, legacy
++input, and user interaction. Legacy input may enter only through migration. Production routing may
++not synthesize canonical state from legacy fields after cutover.
++
++## Consequences
++
++### Positive
++
++1. Kernel behavior can be exhaustively tested and replayed without a repository or provider.
++2. Migration mismatches become observable before production cutover.
++3. Existing CLI behavior can remain stable while internal authority is replaced.
++4. Legacy roadmap requirements remain traceable without keeping dozens of competing ready tasks.
++
++### Negative
++
++1. Compatibility adapters temporarily add code and require dual-path qualification.
++2. Cutover cannot proceed until repository-wide replay and crash recovery gates pass.
++3. Unknown legacy layouts block migration instead of being repaired heuristically.
++
++## Rejected alternatives
++
++### Rewrite the complete product
++
++Rejected because the CLI, provider integrations, context system, release tooling, and testkit contain
++substantial working behavior unrelated to the canonical Task state problem. Reimplementing them
++would enlarge the regression surface without strengthening the kernel contract.
++
++### Continue only with the original task chain
++
++Rejected as the primary execution strategy because it repeatedly repairs the legacy control path
++before the replacement boundary is established. The tasks remain audit evidence and are mapped to
++the new milestones.
++
++### Replace the existing Task and WorkItem ontology
++
++Rejected. The replacement keeps Task, TaskPlanRevision, WorkItemGraph, WorkItem, execution
++authority, validation, and domain-event concepts. It consolidates their authority and ownership.
++
++## Rollback
++
++Before cutover, rollback removes the new adapters and kernel module while preserving the existing
++runtime. During cutover, rollback requires an exact migration receipt, the prior canonical bytes,
++the implementation identity, and proof that no unclassified provider effect occurred. After legacy
++production paths are deleted, rollback is a release rollback to the last qualified implementation,
++not an in-place conversion back to mutable legacy state.
++
++## Follow-up
++
++The implementation contract, code map, replay corpus, migration algorithm, milestone gates, and
++legacy task mapping are defined in
++[Clean Task Core rebuild specification](../reference/clean-task-core-rebuild-spec.mdx).
+diff --git a/docs/adr/README.md b/docs/adr/README.md
+index 37575dfe7..0250c9efa 100644
+--- a/docs/adr/README.md
++++ b/docs/adr/README.md
+@@ -18,21 +18,22 @@ Keep ADRs short. Prefer facts, decision, consequences, and follow-up over histor
+ 
+ ## Index
+ 
+-| ADR                                                      | Status   | Decision                                                                                                   |
+-| -------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+-| [0001](./0001-zod-config-parity.md)                      | Accepted | Treat config validation as Zod-sourced and use parity audit as a regression guard.                         |
+-| [0002](./0002-adr-process.md)                            | Accepted | Use lightweight Markdown ADRs for cross-cutting refactor and dependency decisions.                         |
+-| [0003](./0003-refactor-sequencing.md)                    | Accepted | Sequence remaining refactor work by drift risk first, then hotspot and tooling leverage.                   |
+-| [0004](./0004-keep-custom-cli-stack.md)                  | Accepted | Keep the custom command catalog and parser instead of adopting Commander, Citty, or Oclif.                 |
+-| [0005](./0005-defer-biome-migration.md)                  | Accepted | Defer Biome migration until rule parity and formatting churn risks are resolved.                           |
+-| [0006](./0006-no-effect-fp-ts-migration.md)              | Accepted | Keep pragmatic TypeScript and avoid an Effect/fp-ts migration during this refactor cycle.                  |
+-| [0007](./0007-freeze-yaml-parser-stack.md)               | Accepted | Keep `yaml` as the canonical YAML parser during the current refactor cycle.                                |
+-| [0008](./0008-keep-yauzl-for-zip-validation.md)          | Accepted | Keep `yauzl` for ZIP validation because alternatives do not meet the measured size/risk bar.               |
+-| [0009](./0009-recipes-index-signing-algorithm-policy.md) | Accepted | Keep Ed25519 as the only implemented recipes index signing algorithm behind an explicit verifier registry. |
+-| [0010](./0010-core-root-export-compatibility.md)         | Accepted | Keep `@agentplaneorg/core` as a compatibility aggregate while internal runtime code uses subpath imports.  |
+-| [0011](./0011-v0.3-surface-freeze.md)                    | Accepted | Freeze the v0.3 CLI, task lifecycle, config schema, and package surface until v0.4 migration planning.     |
+-| [0012](./0012-v0.4-surface-transition.md)                | Accepted | Retire the root v0.3 freeze artifact from the v0.4 line while preserving it on the `0.3` branch.           |
+-| [0013](./0013-zod-contract-ssot.md)                      | Accepted | Use Zod in `packages/core/src/**` as the single source of truth for durable repository contracts.          |
+-| [0014](./0014-task-execution-authority.md)               | Accepted | Treat repository mode as policy and the resolved task route as lifecycle authority.                        |
+-| [0015](./0015-task-workspace-isolation.md)               | Accepted | Isolate automated execution independently from whether a task uses a PR gate.                              |
+-| [0016](./0016-serialized-direct-integration.md)          | Accepted | Run task execution in parallel while serializing mutation of the base branch.                              |
++| ADR                                                      | Status   | Decision                                                                                                          |
++| -------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
++| [0001](./0001-zod-config-parity.md)                      | Accepted | Treat config validation as Zod-sourced and use parity audit as a regression guard.                                |
++| [0002](./0002-adr-process.md)                            | Accepted | Use lightweight Markdown ADRs for cross-cutting refactor and dependency decisions.                                |
++| [0003](./0003-refactor-sequencing.md)                    | Accepted | Sequence remaining refactor work by drift risk first, then hotspot and tooling leverage.                          |
++| [0004](./0004-keep-custom-cli-stack.md)                  | Accepted | Keep the custom command catalog and parser instead of adopting Commander, Citty, or Oclif.                        |
++| [0005](./0005-defer-biome-migration.md)                  | Accepted | Defer Biome migration until rule parity and formatting churn risks are resolved.                                  |
++| [0006](./0006-no-effect-fp-ts-migration.md)              | Accepted | Keep pragmatic TypeScript and avoid an Effect/fp-ts migration during this refactor cycle.                         |
++| [0007](./0007-freeze-yaml-parser-stack.md)               | Accepted | Keep `yaml` as the canonical YAML parser during the current refactor cycle.                                       |
++| [0008](./0008-keep-yauzl-for-zip-validation.md)          | Accepted | Keep `yauzl` for ZIP validation because alternatives do not meet the measured size/risk bar.                      |
++| [0009](./0009-recipes-index-signing-algorithm-policy.md) | Accepted | Keep Ed25519 as the only implemented recipes index signing algorithm behind an explicit verifier registry.        |
++| [0010](./0010-core-root-export-compatibility.md)         | Accepted | Keep `@agentplaneorg/core` as a compatibility aggregate while internal runtime code uses subpath imports.         |
++| [0011](./0011-v0.3-surface-freeze.md)                    | Accepted | Freeze the v0.3 CLI, task lifecycle, config schema, and package surface until v0.4 migration planning.            |
++| [0012](./0012-v0.4-surface-transition.md)                | Accepted | Retire the root v0.3 freeze artifact from the v0.4 line while preserving it on the `0.3` branch.                  |
++| [0013](./0013-zod-contract-ssot.md)                      | Accepted | Use Zod in `packages/core/src/**` as the single source of truth for durable repository contracts.                 |
++| [0014](./0014-task-execution-authority.md)               | Accepted | Treat repository mode as policy and the resolved task route as lifecycle authority.                               |
++| [0015](./0015-task-workspace-isolation.md)               | Accepted | Isolate automated execution independently from whether a task uses a PR gate.                                     |
++| [0016](./0016-serialized-direct-integration.md)          | Accepted | Run task execution in parallel while serializing mutation of the base branch.                                     |
++| [0017](./0017-clean-task-core-rebuild.md)                | Proposed | Build a pure canonical Task kernel behind compatibility adapters, then migrate and cut over with replay evidence. |
+diff --git a/docs/reference/clean-task-core-rebuild-spec.mdx b/docs/reference/clean-task-core-rebuild-spec.mdx
+new file mode 100644
+index 000000000..1bf3e4111
+--- /dev/null
++++ b/docs/reference/clean-task-core-rebuild-spec.mdx
+@@ -0,0 +1,434 @@
++---
++title: "Clean Task Core Rebuild Specification"
++description: "Implementation contract, code map, migration oracle, replay corpus, and cutover gates for the canonical Task kernel."
++---
++
++# Clean Task Core rebuild specification
++
++## Outcome
++
++Agentplane must have one canonical Task state machine that owns Task, plan, WorkItem, authority,
++validation, effect, and completion decisions. Repository documents, CLI status, provider records,
++and legacy task fields are projections or adapter inputs. They are not independent lifecycle truth.
++
++The rebuild succeeds when:
++
++1. a pure kernel deterministically evaluates every canonical transition;
++2. every mutation is bound to one task, plan revision, WorkItem, authority envelope, state
++   fingerprint, implementation identity, and idempotency key;
++3. legacy tasks migrate once with byte-exact backup, deterministic classification, readback, replay,
++   and rollback evidence;
++4. all production routing, verification, evaluation, completion, and effect scheduling use canonical
++   state only;
++5. self-hosting, crash recovery, repository migration, and release qualification pass without
++   manual task or journal edits.
++
++This specification does not replace the public CLI, context system, provider clients, release
++tooling, or documentation system. It replaces their lifecycle authority boundary.
++
++## Program graph
++
++| Milestone | Task                  | Depends on | Deliverable                                                                                                       |
++| --------- | --------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
++| M0        | `202608291005-K5TG4D` | none       | This ADR, specification, code map, replay corpus, migration contract, and traceability matrix                     |
++| M1        | `202608291006-0AJG13` | M0         | Isolated, side-effect-free canonical Task kernel and exhaustive kernel tests                                      |
++| M2        | `202608291006-2A6BJC` | M1         | Persistence, CLI, projection, migration, validation, evaluator, and provider adapters with replay equivalence     |
++| M3        | `202608291006-255K66` | M2         | Production cutover, corpus migration, legacy deletion, crash matrix, self-hosting, and release-readiness evidence |
++| Root      | `202608291005-33PHG4` | M3         | Program completion record; it owns no implementation checkout                                                     |
++
++Only M0 is ready initially. A later milestone becomes ready only after the previous milestone is
++integrated and its acceptance evidence is read back from the exact hosted head.
++
++The 0.7.8 release lane is independent. It may continue from its own exact source SHA, but neither its
++task artifacts nor its worktrees are copied into this program. A semantic dependency discovered
++during M0 or M1 must be added explicitly through AgentPlane rather than inferred from chronology.
++
++## Current code map
++
++The map names ownership at the start of M0. M1 may choose narrower files, but it must preserve these
++boundaries.
++
++| Concern                         | Current source                                                                                      | Current problem                                                                                                   | Target owner                                                            |
++| ------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
++| Domain types and state          | `packages/core/src/tasks/task-centric/model.ts`                                                     | Strong types exist, but domain and adapter-facing structures are exported together                                | New internal `task-kernel` domain module under the core package         |
++| Graph validation and scheduling | `packages/core/src/tasks/task-centric/graph.ts`                                                     | Mostly pure and reusable, but coupled to the current aggregate package                                            | Kernel graph policy; scheduler selection remains a pure policy function |
++| Lifecycle and completion        | `packages/core/src/tasks/task-centric/lifecycle.ts`                                                 | Pure transition tables coexist with runtime orchestration assumptions                                             | Kernel command reducer and invariant checks                             |
++| Authority and human decisions   | `packages/core/src/tasks/task-centric/policy.ts`, `packages/core/src/tasks/plan-execution-grant.ts` | Approval and execution grant concepts have multiple transport and compatibility entry points                      | Kernel authority values plus one adapter parser                         |
++| Legacy conversion               | `packages/core/src/tasks/task-centric/compatibility.ts`                                             | Production can construct synthetic canonical aggregates from legacy fields                                        | Migration-only package; forbidden from production routing               |
++| Orchestration ports             | `packages/core/src/tasks/task-centric/ports.ts`                                                     | Port shapes are useful, but orchestration and domain mutation are not fully separated                             | Application service outside the kernel                                  |
++| Autonomous loop                 | `packages/core/src/tasks/task-centric/orchestrator.ts`                                              | Coordinates actors, storage, validation, Git, and effects around the current aggregate                            | Adapter-layer supervisor consuming kernel commands and events           |
++| Canonical backend adapter       | `packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts`                     | Reads and writes canonical extensions but shares a legacy fallback                                                | M2 persistence adapter with no implicit conversion                      |
++| Runtime projection              | `packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts`                     | `aggregateFrom` calls `createLegacyTaskAggregate` when canonical state is absent                                  | Explicit `canonical`, `legacy_unmigrated`, or `malformed` read result   |
++| Route and task commands         | `packages/agentplane/src/commands/task/**`                                                          | 265 top-level files distribute lifecycle, approval, verification, PR, and recovery decisions                      | Thin command adapters calling one application service                   |
++| External-agent exchange         | `packages/agentplane/src/commands/task/external-agent-*`                                            | Correct fingerprint and receipt concepts are spread across planning, implementation, recovery, and result routing | One typed exchange adapter bound to kernel authority                    |
++| Runner work orders              | `packages/agentplane/src/runner/usecases/agent-work-order-build.ts` and task-run use cases          | Work order construction reads compatibility projections                                                           | Work orders projected from canonical kernel state only                  |
++| Task storage                    | `packages/agentplane/src/backends/task-backend/**` and task backend ports                           | Local/cloud records contain canonical state beside legacy document data                                           | Atomic canonical record plus deterministic projections                  |
++| Tests and fixtures              | `packages/core/src/tasks/task-centric/*.test.ts`, CLI tests, `packages/testkit/src/**`              | Valuable behavior exists but many fixtures begin from synthetic legacy aggregates                                 | Kernel vectors, adapter contract tests, and migration/replay fixtures   |
++| Replay harness                  | `scripts/bench/agent-efficiency-replay-*` and replay evidence                                       | Existing harness measures agent flows, not complete Task-state migration equivalence                              | Reuse exact-anchor safety; add Task lifecycle replay corpus             |
++
++### Target dependency rule
++
++The dependency direction is:
++
++```text
++CLI / runner / provider / migration commands
++                 |
++                 v
++       application supervisor
++                 |
++                 v
++       canonical Task kernel
++```
++
++The kernel may import only deterministic core utilities, schemas, and domain values. It must not
++import Node filesystem, child process, Git helpers, provider clients, task documents, CLI code,
++backend implementations, clocks, randomness, environment variables, or legacy conversion.
++
++Adapters may depend on the kernel. The kernel must never depend on adapters. Architecture checks
++must enforce this direction before M2 begins.
++
++## Canonical kernel contract
++
++### Inputs
++
++Every kernel evaluation receives explicit immutable inputs:
++
++```ts
++type KernelInput = Readonly<{
++  aggregate: TaskAggregate;
++  command: TaskCommand;
++  actor: ActorIdentity;
++  authority: ExecutionAuthority | null;
++  repositoryFingerprint: Sha256Digest | null;
++  occurredAt: string;
++  mutationId: string;
++}>;
++```
++
++`occurredAt` and `mutationId` are adapter-supplied values. The kernel must not call a clock or UUID
++generator. Replaying the same input must return the same output bytes.
++
++### Commands
++
++The closed command union covers at least:
++
++- capture Task intent;
++- propose, reject, and approve a plan revision;
++- materialize a WorkItemGraph;
++- claim, begin, accept result for, validate, rework, block, resume, complete, or cancel one WorkItem;
++- record final validation;
++- prepare, observe, reconcile, or supersede an external effect;
++- amend a plan without authority expansion;
++- request approval for a material authority delta;
++- evaluate and complete a Task;
++- record controller transfer and migration receipts.
++
++No command accepts free-text Task status as transition authority. Free text may be carried as a
++comment or summary after the transition is decided.
++
++### Outputs
++
++The kernel returns one of:
++
++```ts
++type KernelResult =
++  | {
++      kind: "accepted";
++      aggregate: TaskAggregate;
++      events: DomainEvent[];
++      receipts: MutationReceipt[];
++    }
++  | { kind: "rejected"; code: KernelRejectionCode; facts: string[]; requiredAction: string | null };
++```
++
++Rejections are data. Expected lifecycle conflicts, stale fingerprints, missing authority, incomplete
++dependencies, stale validation, and uncertain effects must not be represented by generic thrown
++errors.
++
++### Mandatory invariants
++
++1. **Single canonical state:** a mutable Task has exactly one canonical aggregate and revision.
++2. **Legal transitions:** every Task and WorkItem transition belongs to a closed transition table.
++3. **Plan binding:** active WorkItems belong to the current approved plan revision and digest.
++4. **One result target:** every normal semantic result identifies exactly one Task and one WorkItem.
++5. **State binding:** results, approvals, reviews, validation, and effects bind to the state
++   fingerprint they observed.
++6. **Authority subset:** child or replacement authority is equal to or narrower than its active
++   parent grant across repository, scope, effects, capabilities, resources, risk, reversibility,
++   validation, policy, and completion contract.
++7. **User provenance:** derived authority never claims `USER` provenance. Material expansion emits a
++   delta-only user decision request.
++8. **Idempotency:** a repeated mutation ID returns the existing receipt and produces no second event
++   or effect.
++9. **Output integrity:** a WorkItem cannot complete without every declared output manifest from that
++   WorkItem and the required validation result.
++10. **Validation identity:** deterministic evidence binds to implementation identity, check ID,
++    normalized command, toolchain digest, and relevant environment digest.
++11. **Effect safety:** a non-idempotent effect in an unknown state blocks replay until provider
++    readback or explicit reconciliation resolves it.
++12. **Completion:** Task completion requires an approved current plan, all required WorkItems and
++    outputs, current final validation, and no pending or uncertain effects.
++13. **Projection impotence:** documents, legacy status, verification text, PR metadata, and provider
++    summaries cannot authorize a transition.
++14. **Determinism:** equivalent normalized inputs produce byte-identical state, events, reason codes,
++    and receipts.
++
++## Adapter contracts
++
++### Persistence
++
++The repository port must provide either compare-and-swap or serialization, atomic state-plus-event
++write, atomic plan materialization, and idempotency receipts. A backend missing any required
++capability cannot execute autonomous mutations.
++
++Every write sequence is prepare, persist atomically, read back, compare digest, then expose a
++receipt. Partial projection failure may be repaired from canonical state and cannot roll back a
++committed canonical transition.
++
++### Documents and status
++
++One projector renders task documents, list output, brief output, status, verification summaries,
++reviews, comments, and commit summaries from canonical state. Projection repair changes no
++canonical revision or implementation identity. Task discovery resolves the same canonical task
++from base and task-owned worktrees.
++
++### Git and workspace
++
++Git and workspace adapters observe exact repository identity and return typed effect results. They
++do not choose lifecycle transitions. Commit identity excludes operational task metadata, review
++files, verification files, provider snapshots, and closeout data.
++
++### Validation and evaluator
++
++Validation adapters execute exact declared checks and return evidence. They do not mark WorkItems or
++Tasks complete. Evaluator results bind to a frozen implementation identity and selected WorkItem;
++semantic changes stale prior review while operational metadata changes do not.
++
++### Provider effects
++
++Push, PR creation/update, queueing, merge, hosted close, publish, and cleanup use the same effect
++protocol: `prepared`, `issued`, `observed_applied`, `observed_not_applied`, `effect_in_doubt`,
++`reconciled`, or `superseded`. Intent persists before the call. Retry performs provider readback
++first. Publication binds to an exact SHA and immutable artifact digests.
++
++### Legacy migration
++
++Legacy parsing is isolated from the kernel and production route. It returns one of:
++
++- a deterministic canonical migration plan;
++- a read-only archived terminal manifest;
++- a typed quarantine result with exact ambiguous fields;
++- a typed unsupported-schema result.
++
++It never returns a guessed aggregate.
++
++## Migration algorithm
++
++For each Task:
++
++1. Read the source bytes and record their digest, backend identity, repository identity, and schema.
++2. Classify the source as canonical, legacy active, legacy terminal, malformed canonical, ambiguous
++   legacy, or unknown schema.
++3. Preserve a byte-exact backup before any mutation.
++4. Build a deterministic plan without timestamps except receipt metadata.
++5. Map legacy `TODO`, `DOING`, and `BLOCKED` to `PLANNING` with no invented plan, WorkItem, output,
++   approval, review, or verification.
++6. Map legacy `DONE` to a read-only archived manifest; do not recreate mutable completion evidence.
++7. Split legacy `required_inputs` into typed context sources and upstream output IDs only when
++   classification is unambiguous. Quarantine ambiguity.
++8. Validate schema, graph, dependencies, authority, transition, and projection invariants.
++9. Atomically write canonical state and one migration receipt.
++10. Read the result back and compare the expected digest.
++11. Re-run migration and prove that it returns the existing receipt without byte changes.
++12. Prove receipt-scoped rollback restores the exact original bytes and does not revert unrelated
++    later Tasks.
++
++Dry-run reports every classification, proposed digest, ambiguity, and rollback capability. Apply
++stops on any ambiguity or unsupported layout. Bulk migration is canary-first and does not continue
++after the first unexplained mismatch.
++
++## Replay corpus manifest
++
++M2 must freeze inputs and expected normalized outputs for these families:
++
++| Family           | Required cases                                                                                                             | Required assertion                                                                |
++| ---------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
++| Canonical kernel | Every legal transition and representative illegal edge                                                                     | Exact aggregate, event, receipt, and reason-code equality                         |
++| Legacy lifecycle | `TODO`, `DOING`, `BLOCKED`, `DONE`, unknown status                                                                         | Deterministic migration or exact quarantine code; no invented evidence            |
++| Plans            | pending, approved, rejected, stale digest, non-material amendment, material expansion                                      | Approval and authority remain digest-bound; only material expansion asks the user |
++| WorkItems        | dependency chain, fan-out, conflicting resource claims, rework, stale result, duplicate result                             | Readiness and receipt equality; no duplicate result application                   |
++| Required inputs  | source paths, artifact IDs, ambiguous strings, missing upstream output                                                     | Deterministic classification or quarantine                                        |
++| Validation       | focused, full, hosted, stale identity, changed toolchain, missing executable                                               | Evidence cannot satisfy a stronger or different requirement                       |
++| Evaluator        | pass, rework, blocked, human-required, semantic drift, metadata-only drift                                                 | Review freshness follows implementation identity                                  |
++| Effects          | not issued, applied, not applied, timeout before/after application, uncertain, reconciled                                  | No duplicate external effect and exact recovery route                             |
++| Workspaces       | base checkout, task worktree, missing document in frozen worktree, divergent head                                          | Same canonical Task identity and fail-closed mutation path                        |
++| Backends         | local, serialized direct, cloud fake, interrupted atomic write                                                             | Equal canonical state and receipt semantics                                       |
++| Task classes     | direct, branch PR, context, release, batch                                                                                 | Shared kernel rules with adapter-specific effects only                            |
++| Crash points     | creation, plan, approval, claim, result, validation, commit, review, completion, PR, merge, hosted close, publish, cleanup | Restart reaches one safe route with no lost WorkItem or repeated effect           |
++
++Each fixture records source bytes, source digest, implementation identity where applicable, command
++sequence, expected events, expected aggregate digest, expected projection digest, expected effect
++state, and expected next-action reason code. Capture and replay use an exact Git anchor and a clean
++isolated checkout.
++
++## Dual-run and cutover
++
++Dual-run is comparison-only. The legacy path remains authoritative until the M2 gate passes. The
++new path receives the same normalized read input but cannot write or call providers. A mismatch
++records both digests, the first divergent event or field, source identity, and reproduction command.
++
++Cutover order:
++
++1. read-only status and route projections;
++2. plan and WorkItem lifecycle in isolated fixtures;
++3. local backend writes;
++4. cloud fake backend writes;
++5. verification and evaluator flows;
++6. Git and provider effects under readback protection;
++7. context and release task classes;
++8. repository corpus migration;
++9. self-hosting controller transfer;
++10. legacy production import removal.
++
++Every step has a feature-independent rollback receipt. Do not keep a permanent feature flag that
++allows mutable legacy authority after M3.
++
++## Milestone acceptance gates
++
++### M0: specification
++
++- The code map names domain, adapters, effects, projections, tests, and legacy entry points.
++- The kernel contract and mandatory invariants are complete.
++- Migration, replay, dual-run, rollback, and cutover are explicit.
++- Every old roadmap Task has one disposition in the traceability matrix.
++- Documentation IA and formatting checks pass.
++
++### M1: isolated kernel
++
++- The new module imports no filesystem, process, Git, provider, CLI, backend, document, or legacy
++  code.
++- All legal transition tables and invariant rejection codes have deterministic vector tests.
++- Replaying the same command returns the same bytes or the same existing receipt.
++- Authority subset comparison covers every declared dimension and preserves user provenance.
++- Graph readiness, result targeting, validation identity, effects, and completion are kernel rules.
++- `bun run test:fast`, `bun run typecheck`, and `bun run arch:check` pass.
++
++### M2: adapters and migration
++
++- Local and cloud fake backends satisfy the same atomicity and idempotency contract.
++- New Tasks are canonical at creation; unmigrated active Tasks cannot mutate implicitly.
++- Dry-run, apply, replay, quarantine, and byte-exact rollback pass for the full migration fixture set.
++- Dual-run produces zero unexplained mismatches across the replay corpus.
++- Documents and commands are projections from canonical state.
++- Validation, evaluator, Git, and provider adapters cannot decide lifecycle state.
++- Fast tests, typecheck, architecture checks, and lifecycle invariants pass.
++
++### M3: cutover and retirement
++
++- The repository Task corpus migrates with receipts and remains inspectable.
++- Production routing contains no synthetic aggregate, legacy status conversion, text-plan authority,
++  legacy verification completion, DONE-first finish, or duplicate approval/scope truth.
++- Crash injection passes at every listed boundary for direct, branch PR, context, release, local, and
++  cloud fake paths.
++- Twenty sequential self-hosting Tasks complete with zero manual task edits, journal edits, bypasses,
++  lost WorkItems, or duplicate external effects.
++- Three clean release drills agree on source SHA, package digests, tag, hosted release, registry, and
++  installed CLI behavior.
++- Full local CI and required hosted exact-head checks pass.
++
++## Legacy roadmap traceability
++
++`Absorb` means close the old task as a duplicate only after this specification lands. `Retain`
++means keep it as an explicit independent task and add a dependency where stated. Nothing is silently
++discarded.
++
++| Legacy task                                     | Disposition | Replacement ownership                                                                            |
++| ----------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
++| `202608270848-N28TBB` AP-AUTH-PRIMITIVES-001    | Absorb      | M1 authority values, `task_ref`/parent provenance, and subset comparator                         |
++| `202608270848-0RAFH9` AP-APPROVAL-TRANSPORT-001 | Absorb      | M2 single host-decision adapter with host, conversation, message, digest, and state provenance   |
++| `202608270848-V32542` AP-GRANT-CONTINUITY-001   | Absorb      | M1 authority invariants plus M2 recovery adapter                                                 |
++| `202608251038-42AC0D` AP-AUTH-001               | Absorb      | M2 end-to-end authority adapter qualification                                                    |
++| `202608251053-QAZ236` AP-DEPS-001               | Absorb      | M2 canonical dependency/readiness projection                                                     |
++| `202608270848-37XB2K` AP-SCOPE-CLOSURE-001      | Absorb      | M2 adapter scope closure before kernel execution                                                 |
++| `202608251706-V287W1` AP-RUNTIME-001            | Retain      | Independent runtime/toolchain prerequisite for M3 self-hosting; it does not belong in the kernel |
++| `202608251735-ZJ7YZE` AP-RUNTIME-AUTH-001       | Absorb      | M2 candidate qualification and atomic controller-transfer adapter                                |
++| `202608241434-TA84WK` AP-CORE-001               | Absorb      | M2 controller identity and transfer binding                                                      |
++| `202608241434-129F8R` AP-CORE-002               | Absorb      | M2 migration schema and typed required-input classification                                      |
++| `202608241435-D001ET` AP-CORE-003               | Absorb      | M2 migration commands and receipts                                                               |
++| `202608241435-W3DG6V` AP-CORE-004               | Absorb      | M2 canonical creation adapter                                                                    |
++| `202608241435-NDR0BX` AP-CORE-005               | Absorb      | M2 fail-closed unmigrated mutation gate                                                          |
++| `202608241435-RJXGHQ` AP-CORE-006               | Absorb      | M3 synthetic aggregate removal and import guard                                                  |
++| `202608241435-40YZCE` AP-CORE-007               | Absorb      | M2 deterministic document/status projector                                                       |
++| `202608241435-YSW0E0` AP-CORE-008               | Absorb      | M3 canonical route cutover                                                                       |
++| `202608241435-HTV4K2` AP-CORE-009               | Absorb      | M1 plan/amendment rules and M2 projection cleanup                                                |
++| `202608241435-73DA89` AP-CORE-010               | Absorb      | M1 approval/authority kernel and M2 parser consolidation                                         |
++| `202608241436-8PJKJP` AP-CORE-011               | Absorb      | M1 implementation identity value and comparison rules                                            |
++| `202608241436-A87Y59` AP-CORE-012               | Absorb      | M1 one-result invariant and M2 exchange receipt adapter                                          |
++| `202608241436-99B067` AP-CORE-013               | Absorb      | M1 validation rules and M2 validation adapter                                                    |
++| `202608241436-2G9DA8` AP-CORE-014               | Absorb      | M2 evaluator adapter and identity freshness                                                      |
++| `202608241436-TX6TRF` AP-CORE-015               | Absorb      | M1 completion evaluation and M2 finish adapter                                                   |
++| `202608241436-DHPR5E` AP-CORE-016               | Absorb      | M1 receipt identity and M2 toolchain/environment evidence adapter                                |
++| `202608241436-H60MCY` AP-CORE-017               | Absorb      | M1 effect state rules and M2 provider adapters                                                   |
++| `202608241436-63W678` AP-CORE-018               | Absorb      | M3 legacy lifecycle deletion                                                                     |
++| `202608241436-W6A113` AP-CORE-019               | Absorb      | M2 canary migration and M3 full corpus application                                               |
++| `202608241437-XY3950` AP-CORE-020               | Absorb      | M3 crash and replay matrix                                                                       |
++| `202608241437-V8BA7Q` AP-CORE-021               | Absorb      | M3 Clean Core release drill; this does not publish 0.7.8                                         |
++| `202608241437-5YZ0N8` AP-CORE-022               | Absorb      | M3 self-hosting and Clean Core exit gate                                                         |
++| `202608241434-SFPD91` AP-CTX-001                | Retain      | Independent context audit; no dependency on M1                                                   |
++| `202608241434-QQNDGT` AP-CTX-002                | Retain      | Context-domain cleanup; execute independently where safe                                         |
++| `202608241434-KCC9K4` AP-CTX-003                | Retain      | Context validator work; no lifecycle ownership                                                   |
++| `202608241434-WVYA5T` AP-CTX-004                | Retain      | Context workspace migration; separate from Task migration                                        |
++| `202608241434-EH8E74` AP-CTX-005                | Retain      | Post-M3 context qualification gate                                                               |
++| `202608241437-H5418M` AP-KA-RESET-001           | Retain      | Starts only after M3 and AP-CTX-005                                                              |
++| `202608241437-SH3CDX` old roadmap root          | Absorb      | Replacement program root `202608291005-33PHG4`                                                   |
++
++Release bug fixes, open PR repair tasks, and the stopped task `202608290844-7JCQPF` are not roadmap
++duplicates. Preserve them in their existing state until separately resumed, integrated, or closed.
++
++### Recovery projection rule
++
++When a legacy task-level implementation already produced outputs for an approved WorkItem graph,
++recovery must not infer Task completion from those files or from task-level verification. It must
++bind each existing output to the matching required WorkItem, validate that WorkItem, persist its
++output manifest and receipt, and advance the dependency graph in order. Task-level closure becomes
++eligible only after every required WorkItem reaches `COMPLETED`; an unbound or optional WorkItem
++result cannot substitute for that projection.
++
++The scheduler contract treats `required_inputs` as upstream output-manifest IDs. Repository source,
++legacy task records, policy, and other readable material belong in the WorkItem context manifest;
++they must not be encoded as `required_inputs`, because no producer can satisfy those narrative
++labels. A root WorkItem therefore has an empty `required_inputs` list, while dependent WorkItems
++name only outputs declared by their predecessors.
++
++## Graph rewrite procedure
++
++After M0 is integrated:
++
++1. read the current state of every mapped task;
++2. add `202608251706-V287W1` as an explicit M3 prerequisite if its runtime acceptance is still open;
++3. keep AP-CTX-001 through AP-CTX-004 independent;
++4. make AP-CTX-005 depend on M3 and its context cleanup chain;
++5. keep AP-KA-RESET-001 dependent on both M3 and AP-CTX-005;
++6. close each `Absorb` task with `ap task close-duplicate`, pointing to the owning replacement task;
++7. close the old root as a duplicate of `202608291005-33PHG4`;
++8. run task lint, dependency-cycle validation, and fresh `ap task active` readback;
++9. do not edit task README, task state, journal, branch, or worktree files manually.
++
++If any old task contains a requirement absent from this specification, stop the graph rewrite and
++amend M0 or the owning milestone before closing it.
++
++## Stop and rollback rules
++
++Stop and request a plan refinement when:
++
++- the new kernel needs a side-effect dependency;
++- a legacy input cannot be classified deterministically;
++- dual-run has an unexplained state, event, receipt, route, or projection mismatch;
++- a child authority would exceed its parent;
++- a provider effect cannot be read back;
++- implementation changes the public CLI or task format beyond the declared compatibility boundary;
++- a retained context or release task is mistakenly treated as a duplicate;
++- hosted evidence is not bound to the exact reviewed head.
++
++Do not continue by adding another lifecycle, scheduler, Program entity, hidden fallback, implicit
++migration, manual state edit, or approval inferred from task prose.

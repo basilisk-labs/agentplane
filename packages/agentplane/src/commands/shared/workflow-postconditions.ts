@@ -5,6 +5,7 @@ type WorkflowPostconditionId =
   | "integration_queue_worker_cycle_completed"
   | "integration_queue_contains_task"
   | "pr_artifacts_current"
+  | "provider_branch_updated"
   | "provider_state_observed"
   | "remote_pr_head_aligned"
   | "remote_pr_linked"
@@ -69,6 +70,11 @@ export const POSTCONDITION = {
     id: "provider_state_observed",
     subject: "provider",
     expected: "provider state has a fresh observation",
+  },
+  providerBranchUpdated: {
+    id: "provider_branch_updated",
+    subject: "provider",
+    expected: "provider PR head contains the exact expected head and base SHA",
   },
   preMergeClosure: {
     id: "pre_merge_closure_recorded",

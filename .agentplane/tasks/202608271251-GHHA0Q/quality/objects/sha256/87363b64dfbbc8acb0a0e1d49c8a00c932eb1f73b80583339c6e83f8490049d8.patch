@@ -1,0 +1,527 @@
+diff --git a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+index 794906163..3a0d7bcd2 100644
+--- a/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
++++ b/packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap
+@@ -101,7 +101,7 @@ Options:
+   --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+   --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+   --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
+-  --route <repository|auto|direct|branch_pr>  Task execution route. repository preserves legacy behavior; auto may escalate a direct repository to branch_pr when isolation risk requires it. (choices=repository|auto|direct|branch_pr, default=repository)
++  --route <auto|direct|branch_pr>  Task execution route. auto selects direct unless repository policy or isolation risk requires branch_pr. (choices=auto|direct|branch_pr, default=auto)
+   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+   --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+diff --git a/packages/agentplane/src/cli/prompts.test.ts b/packages/agentplane/src/cli/prompts.test.ts
+index de96b80d5..84ec329cd 100644
+--- a/packages/agentplane/src/cli/prompts.test.ts
++++ b/packages/agentplane/src/cli/prompts.test.ts
+@@ -71,11 +71,8 @@ function restoreTty(): void {
+ describe("cli/prompts", () => {
+   beforeEach(() => {
+     setTty(false);
+-    if (originalPromptMode === undefined) {
+-      delete process.env.AGENTPLANE_PROMPTS;
+-    } else {
+-      process.env.AGENTPLANE_PROMPTS = originalPromptMode;
+-    }
++    // Each test selects its prompt mode independently of the invoking agent.
++    delete process.env.AGENTPLANE_PROMPTS;
+     mocks.state.nextAnswer = "";
+     mocks.questionMock.mockReset().mockImplementation(() => mocks.state.nextAnswer);
+     mocks.closeMock.mockReset();
+diff --git a/packages/agentplane/src/cli/run-cli.core.help-snap.test.ts b/packages/agentplane/src/cli/run-cli.core.help-snap.test.ts
+index c68bbad0c..ca60f1fe7 100644
+--- a/packages/agentplane/src/cli/run-cli.core.help-snap.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.help-snap.test.ts
+@@ -31,6 +31,9 @@ describe("runCli help snapshots (cli2)", () => {
+     try {
+       const code = await runCli(["help", "task", "new", "--compact"]);
+       expect(code).toBe(0);
++      expect(io.stdout).toContain("--route <auto|direct|branch_pr>");
++      expect(io.stdout).toContain("default=auto");
++      expect(io.stdout).not.toContain("default=repository");
+       expect(io.stdout).toMatchSnapshot();
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+index 95e37fbd1..e1e660f8b 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+@@ -97,6 +97,124 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
+   }
+ }
+ 
++async function approveStructuredPlan(root: string, taskId: string): Promise<void> {
++  const packet = await readAgentPacket(root, taskId);
++  expect(packet.authority.role).toBe("PLANNER");
++  if (!packet.exchange) throw new Error("expected a planning exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const criterion = {
++    id: "worktree-contract",
++    description: "Preserve the authoritative worktree and exact external-episode contract.",
++    required: true,
++    check_ids: ["task-check"],
++  };
++  const validation = {
++    schema_version: 1,
++    criteria: [criterion],
++    checks: [
++      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
++    ],
++    evidence_fingerprint: workOrder.planning_context!.repository_snapshot.digest,
++  };
++  const resultPath = path.join(packet.exchange.directory, "result.json");
++  await writeFile(
++    resultPath,
++    JSON.stringify({
++      schema_version: 1,
++      kind: "agent_action_result",
++      task_id: taskId,
++      transition_id: packet.transition_id,
++      state_fingerprint: packet.state_fingerprint,
++      role: "PLANNER",
++      result: {
++        schema_version: 2,
++        kind: "agent_semantic_result",
++        work_order_id: workOrder.work_order_id,
++        status: "completed",
++        summary: "Exercise the worktree contract through one approved structured WorkItem.",
++        findings: [],
++        uncertainty: [],
++        task_intent: {
++          task_kind: "code",
++          mutation_scope: "code",
++          risk_flags: [],
++          tags: ["code"],
++          execution: {
++            schema_version: 2,
++            preferred_mode: "branch_pr",
++            scope_roots: ["."],
++            repository_effects: ["repository_write", "source_code"],
++            external_effects: [],
++            requirements_uncertainty: "bounded",
++            implementation_uncertainty: "bounded",
++            reversibility: "reversible",
++            rationale: ["The fixture authorizes only local worktree payload changes."],
++          },
++        },
++        task_plan_proposal: {
++          schema_version: 1,
++          task_id: taskId,
++          planning_baseline: workOrder.planning_context!.repository_snapshot,
++          work_items: {
++            schema_version: 1,
++            work_items: [
++              {
++                id: "exercise-worktree",
++                objective: "Exercise the authoritative external-agent worktree.",
++                depends_on: [],
++                required_inputs: [],
++                expected_outputs: ["worktree-result"],
++                scope_roots: ["."],
++                acceptance_criteria: [criterion],
++                validation,
++                context: {
++                  required_sources: [],
++                  optional_sources: [],
++                  symbol_hints: [],
++                  max_bytes: 65_536,
++                },
++                risk: "low",
++                capabilities: ["task.verify"],
++                resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
++                optional: false,
++                priority: 1,
++              },
++            ],
++          },
++          assumptions: [],
++          unresolved_questions: [],
++          top_level_validation: validation,
++        },
++      },
++    }),
++  );
++  const io = captureStdIO();
++  try {
++    expect(
++      await runCli([
++        "task",
++        "advance",
++        taskId,
++        "--result",
++        resultPath,
++        "--agent-json",
++        "--root",
++        root,
++      ]),
++      io.stderr,
++    ).toBe(0);
++    const approval = JSON.parse(io.stdout) as { action: { kind: string } };
++    expect(approval.action.kind).toBe("approval_required");
++  } finally {
++    io.restore();
++  }
++  expect(
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
++  ).toBe(0);
++}
++
+ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+   it("advances once from the base checkout into one worktree-bound semantic episode", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+@@ -105,19 +223,6 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+     const taskId = await createTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Enter the authoritative task worktree through the shared supervisor.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+     await cp(
+       path.join(process.cwd(), "packages", "agentplane", "assets", "policy"),
+       path.join(root, ".agentplane", "policy"),
+@@ -141,6 +246,11 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+       cwd: root,
+     });
+ 
++    await approveStructuredPlan(root, taskId);
++    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: approve structured branch plan"], {
++      cwd: root,
++    });
+     const initialReadme = await readFile(
+       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+       "utf8",
+@@ -173,6 +283,8 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+     const jsonJournal = JSON.parse(await readFile(journalPath, "utf8")) as {
+       operations: {
+         status: string;
++        operation_key: string;
++        work_order_ref: string | null;
+         precondition_fingerprint_digest: string;
+         postcondition_fingerprint_digest: string | null;
+       }[];
+@@ -180,10 +292,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+     const worktreeStatus = await execFileAsync("git", ["status", "--porcelain=v1"], {
+       cwd: taskWorktree,
+     });
+-    expect(jsonPacket.transition_id, worktreeStatus.stdout).toBe(
+-      agentTransitionId("agent.branch_implementation", jsonPacket.state_fingerprint),
+-    );
+-    expect(jsonPacket).toMatchObject({
++    expect(jsonPacket, worktreeStatus.stdout).toMatchObject({
+       action: { kind: "agent_episode" },
+       authority: { role: "EXECUTOR", mutation: "scoped_write" },
+       stop: { reason: "semantic_boundary" },
+@@ -214,6 +323,15 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+     const persistedExchange = JSON.parse(
+       await readFile(path.join(jsonPacket.exchange.directory, "exchange.json"), "utf8"),
+     ) as ExternalAgentExchange;
++    expect(persistedExchange).toMatchObject({
++      task_id: taskId,
++      transition_id: jsonPacket.transition_id,
++      state_fingerprint: jsonPacket.state_fingerprint,
++      work_order_id: workOrder.work_order_id,
++      role: "EXECUTOR",
++      purpose: "implementation",
++      status: "issued",
++    });
+     expect(persistedExchange.checkout).toBe(taskWorktree);
+     const taskInput = workOrder.required_inputs.find((input) => input.kind === "task_document");
+     expect(taskInput?.path).toBe(`.agentplane/tasks/${taskId}/README.md`);
+@@ -221,11 +339,22 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+       taskId,
+     );
+     expect(jsonReadme).toContain('status: "DOING"');
+-    expect(jsonJournal.operations).toEqual([
+-      expect.objectContaining({ status: "completed" }),
+-      expect.objectContaining({ status: "completed" }),
+-      expect.objectContaining({ status: "intent" }),
++    expect(jsonJournal.operations.filter(({ status }) => status === "intent")).toEqual([
++      expect.objectContaining({
++        work_order_ref: path.join(
++          jsonPacket.exchange.directory,
++          jsonPacket.exchange.work_order_ref,
++        ),
++        precondition_fingerprint_digest: jsonPacket.state_fingerprint,
++      }),
+     ]);
++    expect(jsonJournal.operations.at(-1)?.status).toBe("intent");
++    expect(jsonJournal.operations.slice(0, -1).every(({ status }) => status === "completed")).toBe(
++      true,
++    );
++    expect(new Set(jsonJournal.operations.map(({ operation_key }) => operation_key)).size).toBe(
++      jsonJournal.operations.length,
++    );
+ 
+     await execFileAsync("git", ["restore", `.agentplane/tasks/${taskId}/README.md`], {
+       cwd: taskWorktree,
+@@ -255,9 +384,18 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+     const beforeRenderOnly = await readFile(readmePath, "utf8");
+     const journalBeforeRenderOnly = await readFile(journalPath, "utf8");
+     const stablePacket = await readAgentPacket(root, taskId);
+-    expect(stablePacket.transition_id).toBe(
+-      agentTransitionId("agent.branch_implementation", stablePacket.state_fingerprint),
+-    );
++    if (!stablePacket.exchange) throw new Error("expected a stable semantic exchange");
++    const stableExchange = JSON.parse(
++      await readFile(path.join(stablePacket.exchange.directory, "exchange.json"), "utf8"),
++    ) as ExternalAgentExchange;
++    expect(stableExchange).toMatchObject({
++      task_id: taskId,
++      transition_id: stablePacket.transition_id,
++      state_fingerprint: stablePacket.state_fingerprint,
++      role: "EXECUTOR",
++      purpose: "implementation",
++      checkout: taskWorktree,
++    });
+     expect(stablePacket.transition_id).not.toBe(jsonPacket.transition_id);
+     expect(stablePacket.action).toEqual(jsonPacket.action);
+     expect(humanOutput).toContain(stablePacket.state_fingerprint);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+index 2c2faac0d..3cbd9436c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { readFile, writeFile } from "node:fs/promises";
++import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+@@ -8,6 +8,7 @@ import {
+   completeSupervisorExecutionEpisode,
+   createSupervisorExecutionEpisodeJournal,
+   startSupervisorExecutionEpisode,
++  type AgentWorkOrderV2,
+ } from "@agentplaneorg/core/schemas";
+ 
+ import {
+@@ -89,6 +90,8 @@ async function writeHarnessGitignore(root: string): Promise<void> {
+       "packages/agentplane/package.json",
+       "packages/core/dist",
+       "packages/core/package.json",
++      "packages/recipes/dist",
++      "packages/recipes/package.json",
+       "website/node_modules",
+       "",
+     ].join("\n"),
+@@ -160,6 +163,124 @@ async function returnAgentResult(root: string, taskId: string, resultPath: strin
+   }
+ }
+ 
++async function approveStructuredPlan(root: string, taskId: string): Promise<void> {
++  const packet = await readAgentPacket(root, taskId);
++  expect(packet.authority.role).toBe("PLANNER");
++  if (!packet.exchange) throw new Error("expected a planning exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const criterion = {
++    id: "worktree-contract",
++    description: "Preserve the authoritative worktree and exact external-episode contract.",
++    required: true,
++    check_ids: ["task-check"],
++  };
++  const validation = {
++    schema_version: 1,
++    criteria: [criterion],
++    checks: [
++      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
++    ],
++    evidence_fingerprint: workOrder.planning_context!.repository_snapshot.digest,
++  };
++  const resultPath = path.join(packet.exchange.directory, "result.json");
++  await writeFile(
++    resultPath,
++    JSON.stringify({
++      schema_version: 1,
++      kind: "agent_action_result",
++      task_id: taskId,
++      transition_id: packet.transition_id,
++      state_fingerprint: packet.state_fingerprint,
++      role: "PLANNER",
++      result: {
++        schema_version: 2,
++        kind: "agent_semantic_result",
++        work_order_id: workOrder.work_order_id,
++        status: "completed",
++        summary: "Exercise the worktree contract through one approved structured WorkItem.",
++        findings: [],
++        uncertainty: [],
++        task_intent: {
++          task_kind: "code",
++          mutation_scope: "code",
++          risk_flags: [],
++          tags: ["code"],
++          execution: {
++            schema_version: 2,
++            preferred_mode: "branch_pr",
++            scope_roots: ["."],
++            repository_effects: ["repository_write", "source_code"],
++            external_effects: [],
++            requirements_uncertainty: "bounded",
++            implementation_uncertainty: "bounded",
++            reversibility: "reversible",
++            rationale: ["The fixture authorizes only local worktree payload changes."],
++          },
++        },
++        task_plan_proposal: {
++          schema_version: 1,
++          task_id: taskId,
++          planning_baseline: workOrder.planning_context!.repository_snapshot,
++          work_items: {
++            schema_version: 1,
++            work_items: [
++              {
++                id: "exercise-worktree",
++                objective: "Exercise the authoritative external-agent worktree.",
++                depends_on: [],
++                required_inputs: [],
++                expected_outputs: ["worktree-result"],
++                scope_roots: ["."],
++                acceptance_criteria: [criterion],
++                validation,
++                context: {
++                  required_sources: [],
++                  optional_sources: [],
++                  symbol_hints: [],
++                  max_bytes: 65_536,
++                },
++                risk: "low",
++                capabilities: ["task.verify"],
++                resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
++                optional: false,
++                priority: 1,
++              },
++            ],
++          },
++          assumptions: [],
++          unresolved_questions: [],
++          top_level_validation: validation,
++        },
++      },
++    }),
++  );
++  const io = captureStdIO();
++  try {
++    expect(
++      await runCli([
++        "task",
++        "advance",
++        taskId,
++        "--result",
++        resultPath,
++        "--agent-json",
++        "--root",
++        root,
++      ]),
++      io.stderr,
++    ).toBe(0);
++    const approval = JSON.parse(io.stdout) as { action: { kind: string } };
++    expect(approval.action.kind).toBe("approval_required");
++  } finally {
++    io.restore();
++  }
++  expect(
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
++  ).toBe(0);
++}
++
+ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
+   it("recovers a completed stale journal and replaces prior implementation metadata", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+@@ -168,22 +289,25 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () =>
+     await writeConfig(root, config);
+     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+     const taskId = await createTask(root);
+-    await runCliSilent([
+-      "task",
+-      "plan",
+-      "set",
+-      taskId,
+-      "--text",
+-      "Keep and commit the intended task-worktree change.",
+-      "--updated-by",
+-      "ORCHESTRATOR",
+-      "--root",
+-      root,
+-    ]);
+-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+     await writeHarnessGitignore(root);
++    await mkdir(path.join(root, "scripts"), { recursive: true });
++    await writeFile(
++      path.join(root, "scripts", "check-resolution.mjs"),
++      'import { readFileSync } from "node:fs";\nimport { strict as assert } from "node:assert";\nassert.equal(readFileSync("intended-resolution.txt", "utf8"), "keep\\n");\n',
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, "package.json"),
++      JSON.stringify({ scripts: { "ci:local:full": "node scripts/check-resolution.mjs" } }),
++      "utf8",
++    );
+     await execFileAsync("git", ["add", "."], { cwd: root });
+     await execFileAsync("git", ["commit", "-m", "test: seed worktree resolution"], { cwd: root });
++    await approveStructuredPlan(root, taskId);
++    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: approve structured worktree plan"], {
++      cwd: root,
++    });
+ 
+     const slug = "external-resolution";
+     const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-${slug}`);
+@@ -300,14 +424,21 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () =>
+     await createSupervisorEpisodeStore(journalPath).write(priorReady);
+ 
+     const packet = await readAgentPacket(taskWorktree, taskId);
+-    expect(packet.transition_id).toBe(
+-      agentTransitionId("agent.task_worktree_resolution", packet.state_fingerprint),
+-    );
++    expect(packet.authority.role).toBe("EXECUTOR");
+     const resultPath = await writeCompletedResult(packet);
+     if (!packet.exchange) throw new Error("expected task-worktree resolution exchange");
+     const exchange = JSON.parse(
+       await readFile(path.join(packet.exchange.directory, "exchange.json"), "utf8"),
+     ) as ExternalAgentExchange;
++    expect(exchange).toMatchObject({
++      task_id: taskId,
++      transition_id: packet.transition_id,
++      state_fingerprint: packet.state_fingerprint,
++      role: "EXECUTOR",
++      purpose: "task_worktree_resolution",
++      checkout: await realpath(taskWorktree),
++      status: "issued",
++    });
+     expect(exchange.baseline.changed_paths).toContain(` M .agentplane/tasks/${taskId}/README.md`);
+     const accepted = await returnAgentResult(taskWorktree, taskId, resultPath);
+     expect(accepted.code, accepted.stderr).toBe(0);
+diff --git a/packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts b/packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts
+index 807870974..b7bb9655e 100644
+--- a/packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts
++++ b/packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts
+@@ -54,11 +54,8 @@ function restoreTty(): void {
+ describe("init prompts loader", () => {
+   beforeEach(() => {
+     setTty(false);
+-    if (originalPromptMode === undefined) {
+-      delete process.env.AGENTPLANE_PROMPTS;
+-    } else {
+-      process.env.AGENTPLANE_PROMPTS = originalPromptMode;
+-    }
++    // Each test selects its prompt mode independently of the invoking agent.
++    delete process.env.AGENTPLANE_PROMPTS;
+     mocks.cancelMock.mockReset();
+     mocks.isCancelMock.mockClear();
+     mocks.selectMock.mockReset();

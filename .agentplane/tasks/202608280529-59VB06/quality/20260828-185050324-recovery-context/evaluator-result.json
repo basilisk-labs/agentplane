@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The current task document reconciles both documentation findings: it identifies implementation 290c44a524385cc95846a25baaee7af8b7e5d437, applied-review and checkout causes, red/green recovery evidence, preserved completed WorkItem output, and pending hosted boundaries. Verify Steps names the already applied ninth root without weakening commands or criteria. Evidence: .agentplane/tasks/202608280529-59VB06/README.md",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The patch requires the authoritative exchange checkout, frozen WorkOrder and evidence identities, exact pre-review document reconstruction, expected revision change and permitted application commit before recovering an applied evaluator result. Explicit result return has the same guard. Retirement preserves immutable results and uses the existing lease and journal CAS; no alternate state owner is added. Evidence: .agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The route changes prevent a retired review from authorizing closeout in direct and branch_pr flows. Real-Git tests assert rejection after task, plan, HEAD, evidence, workspace and policy drift; before/after application interruptions; base-checkout continuation; competing lease ownership; exchange-first retirement recovery; repeated issuance; fresh evaluation; and rejection of old replay. Existing legacy reviews without external WorkOrder binding retain their path. The patch does not relax CI or authorization guards. Evidence: .agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All nine frozen evidence hashes and the WorkOrder hash match. The fresh operator-recorded verification covers the updated Verify Steps and exact source implementation after a new full run, with all selected check IDs represented. It records 4495 core tests passed, one pre-existing skip, 14 critical CLI groups, docs/site/workflows, platform and coverage checks. Source remains unchanged from 290c44a524385cc95846a25baaee7af8b7e5d437. Evidence: .agentplane/tasks/202608280529-59VB06/verification/20260828185032879-7a1266da64904bc0.json",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Exact published-head hosted checks and responses to the two PR #5866 review threads remain required before protected integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: DVS5NN recovery and final release:prepublish are not proved by this task.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280529-59VB06/quality/objects/sha256/8e54ddb6d171cda8ac2e9c2276a32c2567dee171dd67e7e76bce8968de76829a.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

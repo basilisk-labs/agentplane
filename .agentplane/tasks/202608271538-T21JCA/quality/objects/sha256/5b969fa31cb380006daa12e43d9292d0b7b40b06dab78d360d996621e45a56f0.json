@@ -1,0 +1,239 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/commands/pr/head-publication.test.ts",
+        "packages/agentplane/src/commands/pr/head-publication.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-local.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.ts",
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        ".agentplane/tasks/202608271544-1TDVPJ/README.md",
+        ".agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt",
+        ".agentplane/tasks/202608271544-1TDVPJ/pr/github-body.md",
+        ".agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt",
+        ".agentplane/tasks/202608271544-1TDVPJ/pr/meta.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/pr/review.md",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-opinion.md",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md",
+        ".agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json",
+        ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json",
+        "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+        "packages/agentplane/src/commands/pr/head-publication.test.ts",
+        "packages/agentplane/src/commands/pr/head-publication.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-local.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch-local.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.test.ts",
+        "packages/agentplane/src/commands/pr/provider-update-branch.ts",
+        "packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts",
+        "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts",
+        "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+      "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/blueprint/resolved-snapshot.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/pr/diffstat.txt",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/pr/github-title.txt",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/pr/meta.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-result.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-work-order.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/quality-report.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/supervision/declared-checks.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/supervision/implementation-evidence.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827160642690-24295292837d8d7e.json",
+      "unknown_path:.agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:d1e82d8a19d2642c5c36fd5d3d873794aa290a7c576433add570f1d6b47752e4"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-27T18:52:25.478Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608271538-T21JCA/verification/20260827185225478-6366f2fb7f9e38cb.json",
+      "sha256": "sha256:3657e320c7d8591eb132804350fc44b85f9400decc845780c96995a03e6504a7"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 13536bcf0bac442a88b588129d7c3652ff28a573..714ec7d931205d05fc7158b883806e5ea4388200",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 13536bcf0bac442a88b588129d7c3652ff28a573..714ec7d931205d05fc7158b883806e5ea4388200",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608271538-T21JCA/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608271538-T21JCA/pr/github-body.md",
+          "M\t.agentplane/tasks/202608271538-T21JCA/pr/meta.json",
+          "M\t.agentplane/tasks/202608271538-T21JCA/pr/review.md",
+          "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "13536bcf0bac442a88b588129d7c3652ff28a573",
+    "implementation_commit": "714ec7d931205d05fc7158b883806e5ea4388200",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608271538-T21JCA",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608271538-T21JCA/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

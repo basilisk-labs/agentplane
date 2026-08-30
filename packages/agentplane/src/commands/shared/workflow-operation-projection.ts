@@ -66,6 +66,10 @@ function operationArgv(operation: WorkflowOperation): string[] {
     case "provider.pr.refresh": {
       return ["agentplane", "pr", "flow", "status", operation.params.taskId];
     }
+    case "provider.pr.update_branch": {
+      // The managed runner revalidates the typed operation and its exact authority.
+      return ["agentplane", "task", "run", operation.params.taskId, "--remote", "--json"];
+    }
     case "flow.repair.foreign_task_readme": {
       return ["agentplane", "flow", "repair", operation.params.taskId, "--safe-apply"];
     }

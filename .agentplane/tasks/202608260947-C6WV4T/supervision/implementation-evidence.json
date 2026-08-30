@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check ba80417c7685c6266a2166a9b5de11f74a0fcd4c..402e3a4cb939b02a471fba5b28091fdac5560bd0",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ba80417c7685c6266a2166a9b5de11f74a0fcd4c..402e3a4cb939b02a471fba5b28091fdac5560bd0",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608260947-C6WV4T/README.md",
+        "M\t.agentplane/tasks/202608260947-C6WV4T/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608260947-C6WV4T/pr/github-body.md",
+        "M\t.agentplane/tasks/202608260947-C6WV4T/pr/meta.json",
+        "M\t.agentplane/tasks/202608260947-C6WV4T/pr/review.md",
+        "M\tscripts/qualification/release-qualification.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "ba80417c7685c6266a2166a9b5de11f74a0fcd4c",
+  "implementation_commit": "402e3a4cb939b02a471fba5b28091fdac5560bd0",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202608260947-C6WV4T/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608260947-C6WV4T/README.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608260947-C6WV4T/README.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608260947-C6WV4T"
+}

@@ -5,6 +5,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import * as executionContext from "../../runtime/task-execution-context/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+import * as observedChanges from "./verify-record-observed-changes.js";
+import * as verifyRecord from "./verify-record.js";
+import * as reviewTarget from "../shared/quality-review-target.js";
+import * as processRunner from "@agentplaneorg/core/process";
+import { defaultConfig } from "../../cli/core-imports.js";
 
 const mocks = { runProcess: vi.fn() };
 const ORIGINAL_AGENT_MODE = process.env.AGENTPLANE_AGENT_MODE;
@@ -15,6 +22,7 @@ import {
   isTaskLevelVerificationReworkState,
   parseDirectTaskCheck,
   renderDirectTaskVerificationDetails,
+  recordDirectTaskVerification,
   resolveEvidenceOnlyReworkCommit,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
@@ -124,6 +132,64 @@ describe("direct task verification", () => {
     expect(persisted.checks[0]!.failure_kind).toBe("infrastructure");
   });
 
+  it("maps checks from the frozen verification diff before persisting their evidence", async () => {
+    const repo = await root();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    const task = {
+      id: TASK_ID,
+      tags: ["code"],
+      verify: ["bun run ci:local:full"],
+      task_kind: "code",
+      mutation_scope: "code",
+      extensions: {},
+    } as TaskData;
+    task.execution_contract = resolveTaskExecutionContract({
+      config,
+      task,
+      requestedMode: "branch_pr",
+    });
+    expect(task.execution_contract.verification.contract?.selected_checks).not.toContain(
+      "docs_contract",
+    );
+    const context = vi
+      .spyOn(executionContext, "resolveTaskExecutionContext")
+      .mockResolvedValue({} as never);
+    const target = vi
+      .spyOn(reviewTarget, "resolveQualityReviewTargetSha")
+      .mockResolvedValue("frozen-head");
+    const observed = vi
+      .spyOn(observedChanges, "resolveObservedVerificationChangedPaths")
+      .mockResolvedValue(["docs/contract.md"]);
+    const persist = vi.spyOn(verifyRecord, "cmdVerifyParsed").mockResolvedValue(0);
+    const process = vi
+      .spyOn(processRunner, "runProcess")
+      .mockResolvedValue({ exitCode: 0, stdout: "checks passed", stderr: "" } as never);
+    try {
+      const result = await recordDirectTaskVerification({
+        command: command(repo),
+        checkout: repo,
+        task,
+        work_order: { task: { id: TASK_ID } } as never,
+        workflow: "branch_pr",
+      });
+      expect(result.status).toBe("passed");
+      expect(result.checks[0]?.check_ids).toContain("docs_contract");
+      expect(persist.mock.calls[0]?.[0].details).toContain("Check: docs_contract");
+      expect(observed).toHaveBeenCalledWith(
+        expect.objectContaining({ evaluatedSha: "frozen-head" }),
+      );
+      expect(task.execution_contract.verification.contract?.selected_checks).not.toContain(
+        "docs_contract",
+      );
+    } finally {
+      context.mockRestore();
+      target.mockRestore();
+      observed.mockRestore();
+      persist.mockRestore();
+      process.mockRestore();
+    }
+  });
   it("reuses only the exact unchanged implementation identity at a rework boundary", () => {
     const eligible = {
       purpose: "implementation" as const,
@@ -155,6 +221,9 @@ describe("direct task verification", () => {
     };
 
     expect(isTaskLevelVerificationReworkState(eligible)).toBe(true);
+    expect(isTaskLevelVerificationReworkState({ ...eligible, task_verification_state: "ok" })).toBe(
+      true,
+    );
     expect(isTaskLevelVerificationReworkState({ ...eligible, has_plan_refinement: true })).toBe(
       false,
     );

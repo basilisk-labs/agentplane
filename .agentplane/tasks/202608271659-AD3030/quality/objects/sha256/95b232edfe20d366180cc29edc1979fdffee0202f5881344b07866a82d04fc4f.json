@@ -1,0 +1,167 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --pool=forks --maxWorkers=1"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:91d1a32e9b582c2326db1b5c727debe52914c45e362e615f3da2cd0a946307b1"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-27T23:30:43.685Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608271659-AD3030/verification/20260827233043685-d1e770e639a91501.json",
+      "sha256": "sha256:1d3a7350c35a666fbb026a504ee14c3798d2bab019c459cdca07c3159a07bfd1"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check fbdb8c7315395733e8751c8bbb3b489b8baf9d52..cf8a8316396397bb7688b34fdcbf93c6ab86a249",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB fbdb8c7315395733e8751c8bbb3b489b8baf9d52..cf8a8316396397bb7688b34fdcbf93c6ab86a249",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608271659-AD3030/README.md"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "fbdb8c7315395733e8751c8bbb3b489b8baf9d52",
+    "implementation_commit": "cf8a8316396397bb7688b34fdcbf93c6ab86a249",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608271659-AD3030/README.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608271659-AD3030/README.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608271659-AD3030/README.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608271659-AD3030",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608271659-AD3030/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

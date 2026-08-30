@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608271251-GHHA0Q/replace-obsolete-cli-test-expectations-with-arch",
+  "created_at": "2026-08-27T12:55:50.935Z",
+  "diffstat_sha256": "sha256:ee22b5af3a6d8af94214c655af82d141b266e7471bceccf022f261ee62741210",
+  "last_verified_at": "2026-08-27T13:25:32.555Z",
+  "last_verified_diffstat_sha256": "sha256:ee22b5af3a6d8af94214c655af82d141b266e7471bceccf022f261ee62741210",
+  "pr_number": 5852,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5852",
+  "pre_merge_closure": {
+    "basis_commit": "c69bb47c7db646f55fd18f9e8ef35b52ff9e5501",
+    "branch": "task/202608271251-GHHA0Q/replace-obsolete-cli-test-expectations-with-arch",
+    "pr_number": 5852,
+    "recorded_at": "2026-08-27T13:27:17.307Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608271251-GHHA0Q",
+  "updated_at": "2026-08-27T13:25:46.511Z",
+  "verify": {
+    "status": "pass"
+  }
+}

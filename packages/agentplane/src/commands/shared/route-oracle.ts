@@ -17,6 +17,7 @@ export type RouteBlockerCode =
   | "pr_head_unpublished"
   | "pr_meta_stale"
   | "provider_pr_unavailable"
+  | "provider_pr_update_branch_required"
   | "legacy_protected_conflict_adoption_required"
   | "provider_merge_conflict"
   | "provider_conflict_context_invalid"

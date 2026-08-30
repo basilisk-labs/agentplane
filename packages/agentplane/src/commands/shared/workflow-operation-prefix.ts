@@ -12,6 +12,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
   "pr.open": ["agentplane", "pr", "open"],
   "pr.sync_or_verify": ["agentplane", "pr", "update"],
   "provider.pr.refresh": ["agentplane", "pr", "flow", "status"],
+  "provider.pr.update_branch": ["agentplane", "task", "run"],
   "flow.repair.foreign_task_readme": ["agentplane", "flow", "repair"],
   "route.remote.refresh": ["agentplane", "task", "next-action"],
   "runner.follow": ["agentplane", "task"],

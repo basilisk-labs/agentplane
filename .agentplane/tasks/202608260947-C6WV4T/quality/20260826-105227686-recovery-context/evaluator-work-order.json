@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608260947-C6WV4T-414137dde6646fe758f5dd11",
+  "prepared_at": "2026-08-26T10:52:27.686Z",
+  "task": {
+    "id": "202608260947-C6WV4T",
+    "revision": 29,
+    "objective": "Restore packaged mixed-scope lifecycle qualification on the exact release candidate\n\nRelease blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node --test scripts/qualification/release-qualification.test.mjs",
+      "node scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
+      "- In scope: Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: required hosted verify-real-e2e fails reproducibly on clean exact heads c59dad6936fea2b664973d12cfe6ec96d2bc89f5 and 69a4f33f94fbcd46d83d4eb5f40b6654e041dd68 with missing_evaluator_episode: expected EVALUATOR, received EXECUTOR. Violated invariant: packaged-mixed-scope-lifecycle must supply every deterministic verification capability required by its selected code.direct blueprint before expecting evaluator handoff. Root cause: the fixture verification record reports needs_rework because full_regression is required while fixture package.json does not define ci:local:full; all declared commands themselves pass, so AgentPlane correctly returns implementation rework. Temporary recovery: preserve one isolated fixture and read its public verification record; no state edits. Permanent fix: minimally update the qualification fixture to provide a bounded full-regression command consistent with its declared Node test, retain the public lifecycle assertion, and add/adjust regression coverage so a verification rework cannot be misclassified as missing evaluator. Do not weaken hosted gates or production lifecycle invariants. Verify the direct packaged scenario, qualification contract tests, and full local CI. Integrate normally, then refresh 202608252330-9RCWZQ from current main and rerun exact-head hosted qualification.\n- Out of scope: unrelated refactors not required for \"Restore packaged mixed-scope lifecycle qualification on the exact release candidate\".",
+      "Prepared a command-only recovery revision of the approved one-WorkItem plan. It preserves the implementation scope and evidence while using the repository-canonical node:test runner for the qualification contract.",
+      "PLANNER fallback scaffold for \"Restore packaged mixed-scope lifecycle qualification on the exact release candidate\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Restore packaged mixed-scope lifecycle qualification on the exact release candidate\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "402e3a4cb939b02a471fba5b28091fdac5560bd0",
+  "diff_base_sha": "8ea1cefbbc96a8da5595fce36325ec0c1194a360",
+  "blueprint_digest": "eeca0f8e62cbecd222eec0659bf8f7b087806f1348178c9fe0d673e4a47b8695",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608260947-C6WV4T/quality/20260826-105227686-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:6c03e9899e33a6357a38368780ee4caeb522fb7ef7519540e464d63c2e19cc2e",
+    "prompt_path": ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/36e8a2a2c1b50ad817232abbdf1c90c83549c46da46de70003fc3d19c5b09703.md",
+    "result_schema_path": ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608260947-C6WV4T/README.md",
+      "sha256": "sha256:dc7627aeb19041aaebb3423e2a0854d11077eddb362e79b9e8508ec736172f31",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/ed5ff1bc96ab14843609d69b953efe9aa1d3a4216026cfbf5f6e2c2c67562c10.patch",
+      "sha256": "sha256:ed5ff1bc96ab14843609d69b953efe9aa1d3a4216026cfbf5f6e2c2c67562c10",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/28aeeca59baccc008fa96c5a1bba3e1c91e889eb8923ebefbcb1b317c408ece3.json",
+      "sha256": "sha256:28aeeca59baccc008fa96c5a1bba3e1c91e889eb8923ebefbcb1b317c408ece3",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608260947-C6WV4T/verification/20260826104850237-742d0ef8d9576f58.json",
+      "sha256": "sha256:b0412107057e6feeb77e3e6c230201f504f37439ddf3d82c939d18f12cc5295c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608260947-C6WV4T/quality/objects/sha256/a39e66da8555d830d71298b5c64fbb5d3f50103573bc66640d89a196ba0621f8.json",
+      "sha256": "sha256:a39e66da8555d830d71298b5c64fbb5d3f50103573bc66640d89a196ba0621f8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

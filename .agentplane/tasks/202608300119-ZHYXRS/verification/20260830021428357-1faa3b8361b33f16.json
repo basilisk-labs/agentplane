@@ -1,0 +1,101 @@
+{
+  "details": null,
+  "digest": "sha256:1faa3b8361b33f163a6cc21766d0dbff4c6d4d0b40b0f91729c96bf63057bc26",
+  "implementation_sha": "403edee0581fa08fb661c60487dcde7bd2f5bd88",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:fbe7bc1301633e8f0dde630966543732166caae0590b07ef4a9f4bcbed947a80",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+      "digest": "sha256:a73235b415e2fab045960a4062960dfc28bc21b8f7489e27c6179080abd3df26",
+      "primary_task_id": "202608300119-ZHYXRS",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608300119-ZHYXRS"
+      ]
+    },
+    "implementation": {
+      "base_sha": "71519a0e675d7d460d27e7c5aea87d1f2363b9e2",
+      "digest": "sha256:2016414e35694f75cf58c8aaa5f626ae1bf18cdfcaf9ce5091fa81e87dc27e99",
+      "strategy": "branch_diff",
+      "target_sha": "403edee0581fa08fb661c60487dcde7bd2f5bd88"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:9b32c27a551fe07f89ded9baf48dc67ab77e452421d44ad81e4726f76c2b1037",
+    "verify_steps_digest": "sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54"
+  },
+  "kind": "task_verification_record",
+  "note": "Hosted review on PR #5879 requires recomputing the canonical persisted plan digest before preserving existing WorkItem runtime. Reopen under the approved bootstrap scope; add a stale-digest production-approval regression and require fresh verification and evaluator review.",
+  "recorded_at": "2026-08-30T02:14:28.357Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project core`. Confirm that same-plan reapproval preserves WorkItem state, manifests, validation, and attempts; mismatched plans remain rejected.\n2. Run focused implementation recovery tests. Confirm exact recorded evidence can be reused only for the matching WorkItem and unchanged authority, and stale or ambiguous evidence fails closed.\n3. Run `bun run ci:local:full`. Require all configured checks to pass.\n4. Require exact-head hosted checks, merge, and Task Hosted Close before calling this task delivered.",
+  "scope_digest": "sha256:8d97ad7afb16d72981973139859cb991b9aee06b2fd9b467d8e2c81d4e9e6b54",
+  "task_id": "202608300119-ZHYXRS",
+  "verification_command": "agentplane task verify rework 202608300119-ZHYXRS --rework --by USER",
+  "verifier": "USER"
+}

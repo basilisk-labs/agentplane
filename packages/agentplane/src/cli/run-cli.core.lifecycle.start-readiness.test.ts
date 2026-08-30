@@ -39,6 +39,7 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
@@ -57,7 +58,7 @@ installRunCliIntegrationHarness();
 
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("start enforces dependency readiness unless forced", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     let taskA = "";
     let taskB = "";
     {
@@ -154,7 +155,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   });
 
   it("start --force always requires explicit approval", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const cfg = defaultConfig();
     cfg.execution.profile = "conservative";
     await writeConfig(root, cfg);

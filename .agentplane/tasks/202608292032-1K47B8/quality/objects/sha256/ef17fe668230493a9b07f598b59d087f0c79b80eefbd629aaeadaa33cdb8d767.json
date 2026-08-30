@@ -1,0 +1,204 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run arch:check",
+    "bunx vitest --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/model.test.ts"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "depcruise.config.cjs",
+        "packages/agentplane/src/commands/shared/pr-meta",
+        "packages/core/src/tasks/index.ts",
+        "packages/core/src/tasks/task-centric",
+        "packages/core/src/tasks/task-kernel"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "depcruise.config.cjs",
+        "packages/agentplane",
+        "packages/core"
+      ],
+      "changed_files": [
+        "depcruise.config.cjs",
+        "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts",
+        "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts",
+        "packages/core/src/tasks/index.ts",
+        "packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md",
+        "packages/core/src/tasks/task-kernel/index.ts",
+        "packages/core/src/tasks/task-kernel/invariants.test.ts",
+        "packages/core/src/tasks/task-kernel/invariants.ts",
+        "packages/core/src/tasks/task-kernel/kernel.test.ts",
+        "packages/core/src/tasks/task-kernel/kernel.ts",
+        "packages/core/src/tasks/task-kernel/model.test.ts",
+        "packages/core/src/tasks/task-kernel/model.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/commands/shared/pr-meta",
+      "central_component:packages/core/src/tasks/index.ts",
+      "central_component:packages/core/src/tasks/task-centric",
+      "central_component:packages/core/src/tasks/task-kernel",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts",
+      "central_path:packages/core/src/tasks/index.ts",
+      "central_path:packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md",
+      "central_path:packages/core/src/tasks/task-kernel/index.ts",
+      "central_path:packages/core/src/tasks/task-kernel/invariants.test.ts",
+      "central_path:packages/core/src/tasks/task-kernel/invariants.ts",
+      "central_path:packages/core/src/tasks/task-kernel/kernel.test.ts",
+      "central_path:packages/core/src/tasks/task-kernel/kernel.ts",
+      "central_path:packages/core/src/tasks/task-kernel/model.test.ts",
+      "central_path:packages/core/src/tasks/task-kernel/model.ts",
+      "effect_public_api"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:44e48b72dc9e096d3baa20d7ed533ad88cd9372c4a0e0b3ae51a867269e7b704"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-30T01:49:45.273Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608292032-1K47B8/verification/20260830014945273-2738197afdbf32cb.json",
+      "sha256": "sha256:a4b9a9db9baa2748def3e6f8cd4f4d52a679a005830052186eb7dd2ea8270a5d"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check c35740905de616953e011a8f124029a6a6f81c9a..e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB c35740905de616953e011a8f124029a6a6f81c9a..e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608292032-1K47B8/README.md",
+          "M\t.agentplane/tasks/202608292032-1K47B8/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608292032-1K47B8/pr/github-body.md",
+          "M\t.agentplane/tasks/202608292032-1K47B8/pr/meta.json",
+          "M\t.agentplane/tasks/202608292032-1K47B8/pr/review.md",
+          "M\tpackages/core/src/tasks/task-kernel/M1-QUALIFICATION.md",
+          "M\tpackages/core/src/tasks/task-kernel/invariants.test.ts",
+          "M\tpackages/core/src/tasks/task-kernel/invariants.ts",
+          "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
+          "M\tpackages/core/src/tasks/task-kernel/kernel.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "c35740905de616953e011a8f124029a6a6f81c9a",
+    "implementation_commit": "e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608292032-1K47B8/README.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202608292032-1K47B8/README.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202608292032-1K47B8/README.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608292032-1K47B8",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

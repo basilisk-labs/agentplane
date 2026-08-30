@@ -1,0 +1,15 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.blueprint.test.ts b/packages/agentplane/src/cli/run-cli.core.blueprint.test.ts
+index 121b29b3a..c2aa15c38 100644
+--- a/packages/agentplane/src/cli/run-cli.core.blueprint.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.blueprint.test.ts
+@@ -14,7 +14,9 @@ const execFileAsync = promisify(execFile);
+ 
+ async function mkProject(): Promise<string> {
+   const root = await mkTempDir();
+-  await mkdir(path.join(root, ".git"));
++  await execFileAsync("git", ["init", "--quiet"], { cwd: root });
++  const { stdout: gitDir } = await execFileAsync("git", ["rev-parse", "--git-dir"], { cwd: root });
++  expect(gitDir.trim()).toBe(".git");
+   await mkdir(path.join(root, ".agentplane"), { recursive: true });
+   await writeFile(
+     path.join(root, ".agentplane", "config.json"),

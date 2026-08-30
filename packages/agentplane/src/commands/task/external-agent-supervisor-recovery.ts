@@ -10,6 +10,7 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
+import { retireStaleEvaluatorExchange } from "./external-agent-evaluator-recovery.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   createSupervisorEpisodeStore,
@@ -380,6 +381,13 @@ export async function recoverPendingExternalAgentResult(opts: {
   const planningRecoveryRequired = requiresPlanningRecoveryReplacement({
     decision: opts.current_decision,
     exchange,
+  });
+  await retireStaleEvaluatorExchange({
+    command: opts.command,
+    decision: opts.current_decision,
+    exchange,
+    paths,
+    journal_path: journalPath,
   });
   const implementationRecoveryRequired = requiresImplementationRecoveryReplacement({
     decision: opts.current_decision,

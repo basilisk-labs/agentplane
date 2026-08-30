@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608291005-K5TG4D-adfbde62c040a89d75bcfbe6",
+  "task_id": "202608291005-K5TG4D",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add docs/adr/README.md to the bounded documentation scope and index ADR 0017. Replace the task Verify Steps through the standard AgentPlane task-document command with concrete checks for code-map coverage, kernel boundary, migration and replay contract, full legacy-task disposition, docs IA, formatting, and residual findings. Re-run the declared checks and obtain a fresh evaluator review.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "ADR 0017 and the rebuild specification cover the target kernel, code ownership, invariants, adapters, migration, replay, dual-run, rollback, milestone gates, and the legacy roadmap traceability matrix.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/991fe4f8cfd40b027fed1e34442956c77ba8324246953e0dfae571500cb2b31d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The implementation is limited to documentation and the supervisor recorded docs IA and formatting as passing at evaluated SHA c648b8727f1a1c648876ca060d25a92ed24f7dc1.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/991fe4f8cfd40b027fed1e34442956c77ba8324246953e0dfae571500cb2b31d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "docs/adr/README.md indexes ADR 0001 through ADR 0016 but does not index the newly added ADR 0017.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/991fe4f8cfd40b027fed1e34442956c77ba8324246953e0dfae571500cb2b31d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "The persisted Verify Steps section remains the generic PLANNER fallback even though acceptance-2 requires task-specific acceptance checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/991fe4f8cfd40b027fed1e34442956c77ba8324246953e0dfae571500cb2b31d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: Publishing without the index entry leaves the architecture decision undiscoverable from the canonical ADR list.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/991fe4f8cfd40b027fed1e34442956c77ba8324246953e0dfae571500cb2b31d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "summary": "Residual risk: Keeping generic Verify Steps weakens the persisted acceptance contract for later review and recovery.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/991fe4f8cfd40b027fed1e34442956c77ba8324246953e0dfae571500cb2b31d.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-103229021-recovery-context/evaluator-result.json"
+}

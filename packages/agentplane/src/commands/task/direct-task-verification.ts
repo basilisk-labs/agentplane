@@ -17,6 +17,7 @@ import type { CommandContext, loadTaskFromContext } from "../shared/task-backend
 
 import { CliError } from "../../shared/errors.js";
 import { cmdVerifyParsed } from "./verify-record.js";
+import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
@@ -118,7 +119,6 @@ export function isTaskLevelVerificationReworkState(opts: {
     !opts.work_item_id &&
     !opts.has_plan_refinement &&
     opts.has_current_plan &&
-    opts.task_verification_state === "needs_rework" &&
     opts.all_required_work_items_completed
   );
 }
@@ -130,6 +130,7 @@ export async function recordDirectTaskVerification(opts: {
   work_order: AgentWorkOrderV2;
   workflow: "direct" | "branch_pr";
 }): Promise<DirectTaskVerificationResult> {
+  const verificationTask = await resolveImplementationVerificationTask(opts);
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_order.task.work_item_id,
@@ -139,7 +140,7 @@ export async function recordDirectTaskVerification(opts: {
     : [];
   const checks = await runDirectTaskVerification({
     command: opts.command,
-    task: opts.task,
+    task: verificationTask,
     task_id: opts.task.id,
     cwd: opts.checkout,
     additional_commands: additionalCommands,
@@ -157,7 +158,7 @@ export async function recordDirectTaskVerification(opts: {
         ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
         : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
     details: renderDirectTaskVerificationDetails({
-      task: opts.task,
+      task: verificationTask,
       taskId: opts.task.id,
       workflow: opts.workflow,
       result: checks,

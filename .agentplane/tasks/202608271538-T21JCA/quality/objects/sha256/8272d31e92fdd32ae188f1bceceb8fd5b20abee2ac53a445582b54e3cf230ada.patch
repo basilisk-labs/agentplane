@@ -1,0 +1,405 @@
+diff --git a/packages/agentplane/src/commands/shared/provider-update-branch-route.ts b/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
+index 86894b4b6..83b2f0311 100644
+--- a/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
++++ b/packages/agentplane/src/commands/shared/provider-update-branch-route.ts
+@@ -27,12 +27,13 @@ export function providerUpdateBranchParams(
+     !prFlow.pr.base ||
+     prFlow.providerObservation?.state !== "found" ||
+     prFlow.publication?.state !== "aligned" ||
+-    !prFlow.hostedChecks.checked ||
+-    prFlow.hostedChecks.failing <= 0
++    !prFlow.hostedChecks.checked
+   ) {
+     return null;
+   }
+   const observed = prFlow.providerObservation.pr;
++  // Strict protection can require an updated branch even when its current head checks pass.
++  // The coherent provider "behind" observation, not a failed check, establishes this route.
+   const localHead = prFlow.branch.headSha;
+   const baseSha = observed.baseSha ?? "";
+   const mergeability = observed.mergeability;
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+index 867980121..24d9712d0 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts
+@@ -441,17 +441,111 @@ describe("DONE route quality-review target", () => {
+     );
+   });
+ 
+-  it("routes an exact aligned GitHub behind state to provider update before semantic rework", async () => {
+-    const blockers = await blockersFor(reviewedSha, undefined, failingHostedPrFlow("behind"));
++  it.each(["failing", "passing"] as const)(
++    "routes an exact aligned GitHub behind state with %s checks to provider update",
++    async (checkState) => {
++      const flow = failingHostedPrFlow("behind");
++      if (checkState === "passing") {
++        flow.hostedChecks = {
++          checked: true,
++          total: 1,
++          pending: 0,
++          failing: 0,
++          passing: 1,
++          missingRequired: [],
++          rows: [{ name: "PR verification", state: "SUCCESS" }],
++        };
++      }
++      const blockers = await blockersFor(reviewedSha, undefined, flow);
++
++      expect(blockers).toEqual(
++        expect.arrayContaining([
++          expect.objectContaining({ code: "provider_pr_update_branch_required" }),
++        ]),
++      );
++      expect(blockers).not.toEqual(
++        expect.arrayContaining([
++          expect.objectContaining({ code: "implementation_rework_required" }),
++        ]),
++      );
++    },
++  );
+ 
+-    expect(blockers).toEqual(
++  it.each([
++    [
++      "clean provider state",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found") {
++          flow.providerObservation.pr.mergeability = {
++            state: "not_conflicting",
++            mergeable: true,
++            providerState: "clean",
++          };
++        }
++      },
++    ],
++    [
++      "unchecked hosted checks",
++      (flow: PrFlowStatusReport) => {
++        flow.hostedChecks = { checked: false, reason: "not observed" };
++      },
++    ],
++    [
++      "unpublished head",
++      (flow: PrFlowStatusReport) => {
++        flow.publication = {
++          state: "unpublished",
++          reason: "upstream_head_mismatch",
++          localHeadSha: headSha,
++          upstreamRef: "origin/task/T-1/metadata-gate",
++          upstreamHeadSha: "c".repeat(40),
++          hostedHeadSha: "c".repeat(40),
++        };
++      },
++    ],
++    [
++      "stale observed head",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found")
++          flow.providerObservation.pr.headSha = "c".repeat(40);
++      },
++    ],
++    [
++      "missing base identity",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found") flow.providerObservation.pr.baseSha = null;
++      },
++    ],
++    [
++      "conflicting provider state",
++      (flow: PrFlowStatusReport) => {
++        if (flow.providerObservation?.state === "found") {
++          flow.providerObservation.pr.mergeability = {
++            state: "conflicting",
++            mergeable: false,
++            providerState: "dirty",
++          };
++        }
++      },
++    ],
++  ] as const)("does not infer green-behind recovery from %s", async (_label, mutate) => {
++    const flow = failingHostedPrFlow("behind");
++    flow.hostedChecks = {
++      checked: true,
++      total: 1,
++      pending: 0,
++      failing: 0,
++      passing: 1,
++      missingRequired: [],
++      rows: [{ name: "PR verification", state: "SUCCESS" }],
++    };
++    mutate(flow);
++    const blockers = await blockersFor(reviewedSha, undefined, flow);
++    expect(blockers).not.toEqual(
+       expect.arrayContaining([
+         expect.objectContaining({ code: "provider_pr_update_branch_required" }),
+       ]),
+     );
+-    expect(blockers).not.toEqual(
+-      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+-    );
+   });
+ 
+   it.each([
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+index 66ddb0e68..9b35c18b3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+@@ -628,117 +628,145 @@ describe("WorkflowStep conflict rework projections", () => {
+     });
+   });
+ 
+-  it("routes an exact aligned GitHub behind state to a digest-bound provider update before rework", () => {
+-    const baseSha = "2222222222222222222222222222222222222222";
+-    const behindPrFlow = {
+-      task: { id: task.id, status: "DONE", verification: "ok" },
+-      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+-      pr: {
+-        provider: "github",
+-        state: "OPEN",
+-        source: "lookup",
+-        prNumber: 4626,
+-        prUrl: "https://github.example/acme/agentplane/pull/4626",
+-        base: "main",
+-        headSha: resume.head_sha,
+-        mergeCommit: null,
+-      },
+-      providerObservation: {
+-        state: "found",
++  it.each([
++    { label: "failing checks", failing: 1, handoff: false },
++    { label: "passing checks", failing: 0, handoff: false },
++    { label: "passing checks after integration handoff", failing: 0, handoff: true },
++  ])(
++    "routes an exact aligned GitHub behind state with $label to a digest-bound provider update",
++    ({ failing, handoff }) => {
++      const baseSha = "2222222222222222222222222222222222222222";
++      const behindPrFlow = {
++        task: { id: task.id, status: "DONE", verification: "ok" },
++        branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+         pr: {
+           provider: "github",
+-          identity: {
+-            provider: "github",
+-            hostname: "github.example",
+-            remote: "origin",
+-            sourceProject: "acme/agentplane",
+-            targetProject: "acme/agentplane",
+-            sourceUrl: "git@github.example:acme/agentplane.git",
+-            targetUrl: "https://github.example/acme/agentplane.git",
+-          },
++          state: "OPEN",
++          source: "lookup",
+           prNumber: 4626,
+           prUrl: "https://github.example/acme/agentplane/pull/4626",
+-          status: "OPEN",
+-          mergedAt: null,
+-          mergeCommit: null,
+           base: "main",
+-          baseSha,
+-          headRef: taskBranch,
+           headSha: resume.head_sha,
+-          mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++          mergeCommit: null,
+         },
+-      },
+-      publication: {
+-        state: "aligned",
+-        branch: taskBranch,
+-        localHeadSha: resume.head_sha,
+-        upstreamRef: `origin/${taskBranch}`,
+-        upstreamHeadSha: resume.head_sha,
+-        hostedHeadSha: resume.head_sha,
+-      },
+-      closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
+-      hostedChecks: {
+-        checked: true,
+-        total: 1,
+-        pending: 0,
+-        failing: 1,
+-        passing: 0,
+-        missingRequired: [],
+-        rows: [{ name: "verify-contract", state: "FAILURE" }],
+-      },
+-      reviewThreads: { checked: true, unresolved: 0 },
+-      queue: { present: false },
+-      handoff: { present: false },
+-      nextAction: "hosted checks are failing because the PR branch is behind main",
+-    } satisfies PrFlowStatusReport;
+-    const state = routeState({
+-      task: { ...task, status: "DONE", verification: { state: "ok" } },
+-      resume: { ...resume, task_status: "DONE" },
+-      prFlow: behindPrFlow,
+-      conflictRework: null,
+-      blockers: [
+-        {
+-          code: "provider_pr_update_branch_required",
+-          summary: "provider branch is behind the exact hosted base",
++        providerObservation: {
++          state: "found",
++          pr: {
++            provider: "github",
++            identity: {
++              provider: "github",
++              hostname: "github.example",
++              remote: "origin",
++              sourceProject: "acme/agentplane",
++              targetProject: "acme/agentplane",
++              sourceUrl: "git@github.example:acme/agentplane.git",
++              targetUrl: "https://github.example/acme/agentplane.git",
++            },
++            prNumber: 4626,
++            prUrl: "https://github.example/acme/agentplane/pull/4626",
++            status: "OPEN",
++            mergedAt: null,
++            mergeCommit: null,
++            base: "main",
++            baseSha,
++            headRef: taskBranch,
++            headSha: resume.head_sha,
++            mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
++          },
+         },
+-      ],
+-    });
+-    const step = reduceRouteState(state);
+-    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
++        publication: {
++          state: "aligned",
++          branch: taskBranch,
++          localHeadSha: resume.head_sha,
++          upstreamRef: `origin/${taskBranch}`,
++          upstreamHeadSha: resume.head_sha,
++          hostedHeadSha: resume.head_sha,
++        },
++        closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
++        hostedChecks: {
++          checked: true,
++          total: 1,
++          pending: 0,
++          failing,
++          passing: 1 - failing,
++          missingRequired: [],
++          rows: [{ name: "PR verification", state: failing > 0 ? "FAILURE" : "SUCCESS" }],
++        },
++        reviewThreads: { checked: true, unresolved: 0 },
++        queue: handoff
++          ? {
++              present: true,
++              status: "handoff",
++              branch: taskBranch,
++              headSha: resume.head_sha,
++              base: "main",
++              prNumber: 4626,
++            }
++          : { present: false },
++        handoff: { present: false },
++        nextAction: "the PR branch is behind main",
++      } satisfies PrFlowStatusReport;
++      const state = routeState({
++        task: { ...task, status: "DONE", verification: { state: "ok" } },
++        resume: { ...resume, task_status: "DONE" },
++        prFlow: behindPrFlow,
++        conflictRework: null,
++        blockers: [
++          {
++            code: "provider_pr_update_branch_required",
++            summary: "provider branch is behind the exact hosted base",
++          },
++        ],
++      });
++      const step = reduceRouteState(state);
++      const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
+ 
+-    expect(step).toMatchObject({
+-      kind: "approval",
+-      id: "approval.provider.pr.update_branch",
+-      request: {
+-        type: "side_effect",
+-        operationId: "provider.pr.update_branch",
+-        operation: {
+-          id: "provider.pr.update_branch",
+-          params: {
+-            taskId: task.id,
+-            prNumber: 4626,
+-            branch: taskBranch,
+-            baseBranch: "main",
+-            expectedHeadSha: resume.head_sha,
+-            expectedBaseSha: baseSha,
++      expect(step).toMatchObject({
++        kind: "approval",
++        id: "approval.provider.pr.update_branch",
++        request: {
++          type: "side_effect",
++          operationId: "provider.pr.update_branch",
++          operation: {
++            id: "provider.pr.update_branch",
++            params: {
++              taskId: task.id,
++              prNumber: 4626,
++              branch: taskBranch,
++              baseBranch: "main",
++              expectedHeadSha: resume.head_sha,
++              expectedBaseSha: baseSha,
++            },
+           },
+         },
+-      },
+-    });
+-    expect(step.id).not.toBe("agent.implementation_rework");
+-    expect(oracle).toMatchObject({
+-      phase: "side_effect_authority_required",
+-      authoritativeCheckout: "task_worktree",
+-    });
+-    expect(oracle.nextCommand).toContain("--operation provider.pr.update_branch");
+-    expect(oracle.nextCommand).toContain("--operation-digest sha256:");
+-    expect(oracle.nextCommand).toContain("--state-scope-digest sha256:");
+-    expect(packet).toMatchObject({
+-      actionKind: "provider_action",
+-      safeToMutate: false,
+-      exactArgv: null,
+-    });
+-  });
++      });
++      expect(step.id).not.toBe("agent.implementation_rework");
++      expect(oracle).toMatchObject({
++        phase: "side_effect_authority_required",
++        authoritativeCheckout: "task_worktree",
++      });
++      expect(oracle.nextCommand).toContain("--operation provider.pr.update_branch");
++      expect(oracle.nextCommand).toContain("--operation-digest sha256:");
++      expect(oracle.nextCommand).toContain("--state-scope-digest sha256:");
++      expect(packet).toMatchObject({
++        actionKind: "provider_action",
++        safeToMutate: false,
++        exactArgv: null,
++      });
++      const activeRunnerState = routeState({
++        ...state,
++        resume: {
++          ...state.resume,
++          runner: { ...state.resume.runner, next_action: "wait" },
++        },
++      });
++      expect(reduceRouteState(activeRunnerState)).toMatchObject({
++        kind: "wait",
++        id: "wait.runner",
++        compatibility: { code: "wait_runner", command: null },
++      });
++    },
++  );
+ 
+   it("publishes a newer unpublished head before acting on stale failed hosted checks", () => {
+     const providerHeadSha = "2222222222222222222222222222222222222222";
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
+index 58cfecc54..e30f918d6 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-provider-update-branch.ts
+@@ -14,7 +14,7 @@ export function providerUpdateBranchStep(state: WorkflowRouteState): WorkflowSte
+     params,
+     code: "update_provider_pr_branch",
+     summary:
+-      "update the exact behind provider PR head from its observed base before classifying hosted failures as semantic rework",
++      "update the exact behind provider PR head from its observed base before integration or hosted-failure rework",
+     selectedBlocker: routeBlockerFor(state, "provider_pr_update_branch_required"),
+   });
+ }

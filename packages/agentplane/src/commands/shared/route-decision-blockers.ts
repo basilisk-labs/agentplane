@@ -15,13 +15,15 @@ import { getHumanInputState } from "../task/human-input.js";
 import { taskDependencyReadinessBlocker } from "../task/shared/dependencies.js";
 import { parsePrMeta, type PrMeta } from "./pr-meta.js";
 import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
-import { hasAcceptedQualityReviewProvenance } from "../task/quality-review-gate.js";
 import { assessPreMergeClosureFreshness } from "../task/hosted-close-premerge.js";
 import {
   summarizeTaskWorktreeChanges,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
-import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
+import {
+  qualityReviewHasRetiredExchange,
+  qualityReviewIsFreshForHead,
+} from "./quality-review-retirement.js";
 import {
   hasAcceptedVerificationForCurrentImplementation,
   qualityReviewRequiresImplementationRework,
@@ -33,6 +35,7 @@ import {
   filterTaskWorktreeBlockingPaths,
   isTaskArtifactPath,
 } from "./route-decision-worktree-cleanliness.js";
+import { providerUpdateBranchParams } from "./provider-update-branch-route.js";
 
 export { addVerificationRequiredBlocker } from "./route-decision-verification-blocker.js";
 export { routeGatePriority } from "./route-gate-priority.js";
@@ -120,6 +123,10 @@ function addHostedCheckFailureReworkBlocker(
   blockers: RouteBlocker[],
   prFlow: PrFlowStatusReport | null,
 ): void {
+  if (providerUpdateBranchParams(prFlow)) {
+    addBlocker(blockers, "provider_pr_update_branch_required", "update PR branch before rework");
+    return;
+  }
   if (prFlow?.pr.state !== "OPEN") return;
   const localHeadSha = prFlow.branch.headSha;
   const providerHeadSha = prFlow.pr.headSha;
@@ -160,37 +167,6 @@ async function isPrMetaOnlyTaskLocalAdvance(opts: {
     fromRef: metaHeadSha,
     toRef: branchHeadSha,
   }).catch(() => false);
-}
-
-async function qualityReviewIsFreshForHead(opts: {
-  ctx: CommandContext;
-  task: TaskData;
-  headSha: string | null;
-  batchOwnership: RouteBatchOwnership;
-  expectedState: "pass" | "rework" | "blocked";
-  workflowMode: "direct" | "branch_pr";
-}): Promise<boolean> {
-  const review = opts.task.quality_review;
-  if (review?.state !== opts.expectedState || !hasAcceptedQualityReviewProvenance(review)) {
-    return false;
-  }
-  if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) return false;
-  if (review.findings.length === 0) return false;
-  if (!opts.headSha) return true;
-  if (!review.evaluated_sha) return false;
-  if (review.evaluated_sha === opts.headSha) return true;
-  const taskIds =
-    opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
-  const expectedSha = await resolveQualityReviewTargetSha({
-    gitRoot: opts.ctx.resolvedProject.gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskId: opts.task.id,
-    taskIds,
-    headSha: opts.headSha,
-    previousEvaluatedSha: review.evaluated_sha,
-    workflowMode: opts.workflowMode,
-  }).catch(() => null);
-  return expectedSha === review.evaluated_sha;
 }
 
 async function readTaskPrMeta(opts: {
@@ -292,6 +268,17 @@ export async function deriveBlockers(opts: {
     return blockers;
   }
   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
+  if (
+    opts.workflowMode === "direct" &&
+    normalizedTaskStatus === "DOING" &&
+    (await qualityReviewHasRetiredExchange(opts))
+  ) {
+    addBlocker(
+      blockers,
+      "quality_review_stale",
+      "The historical EVALUATOR exchange was retired; require a fresh review.",
+    );
+  }
   if (normalizedTaskStatus === "TODO") {
     const summary = await taskDependencyReadinessBlocker(opts.task, opts.ctx.taskBackend);
     if (summary) addBlocker(blockers, "dependency_not_ready", summary);

@@ -25,6 +25,7 @@ import {
   applyApprovedTaskScopeExtension,
   createTaskScopeExtensionRequestState,
   normalizeTaskScopeRoot,
+  requiresImplementationReworkReopen,
   scopeExtensionReceiptForState,
   TASK_SCOPE_EXTENSION_REQUEST_KEY,
 } from "../shared/task-scope-extension-request.js";
@@ -153,7 +154,7 @@ describe("task scope extend command parsing", () => {
 
 const NOW = "2026-08-18T01:00:00.000Z";
 
-function taskCentricAggregate(taskId: string, parallel = false) {
+function taskCentricAggregate(taskId: string, parallel = false, optionalLater = false) {
   const validation: ValidationPlan = {
     schema_version: 1,
     criteria: [
@@ -175,7 +176,12 @@ function taskCentricAggregate(taskId: string, parallel = false) {
     ],
     evidence_fingerprint: taskCentricDigest("scope-extension-test"),
   };
-  const item = (id: string, dependsOn: string[], scopeRoot: string): WorkItem => ({
+  const item = (
+    id: string,
+    dependsOn: string[],
+    scopeRoot: string,
+    optional = false,
+  ): WorkItem => ({
     id,
     objective: `Implement ${id}`,
     depends_on: dependsOn,
@@ -193,7 +199,7 @@ function taskCentricAggregate(taskId: string, parallel = false) {
     risk: "low",
     capabilities: ["task.verify"],
     resource_claims: [{ kind: "path", resource: scopeRoot, mode: "write" }],
-    optional: false,
+    optional,
     priority: id === "active" ? 2 : 1,
   });
   const proposal: TaskPlanProposal = {
@@ -212,7 +218,7 @@ function taskCentricAggregate(taskId: string, parallel = false) {
       schema_version: 1,
       work_items: [
         item("active", [], "docs/releases"),
-        item("later", parallel ? [] : ["active"], "src/later.ts"),
+        item("later", parallel ? [] : ["active"], "src/later.ts", optionalLater),
       ],
     },
     assumptions: [],
@@ -307,6 +313,148 @@ function fixture(
 }
 
 describe("blocked task execution scope extension", () => {
+  it.each([
+    ["implementation_rework", "DONE", null, false, true],
+    ["implementation_rework", "DOING", null, false, false],
+    ["implementation", "DONE", "required-work", true, true],
+    ["implementation", "DONE", null, false, false],
+    ["implementation", "DOING", "required-work", true, false],
+    ["implementation", "DONE", "optional-work", false, false],
+  ])(
+    "reopen authority: purpose=%s status=%s item=%s required=%s",
+    (purpose, taskStatus, workItemId, workItemIsRequired, expected) => {
+      expect(
+        requiresImplementationReworkReopen({
+          purpose,
+          task_status: taskStatus,
+          work_item_id: workItemId,
+          work_item_is_required: workItemIsRequired,
+        }),
+      ).toBe(expected);
+    },
+  );
+
+  it("extends task-level rework without revising a completed task-centric plan", () => {
+    const { command, pending, task } = fixture();
+    const aggregate = taskCentricAggregate(task.id);
+    const completed = {
+      ...aggregate,
+      work_items: Object.fromEntries(
+        Object.entries(aggregate.work_items).map(([id, item]) => [
+          id,
+          { ...item, state: "COMPLETED" as const },
+        ]),
+      ),
+    };
+    task.extensions = {
+      ...withTaskCentricAggregate(task.extensions, completed),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const updated = applyApprovedTaskScopeExtension({
+      task,
+      executionContract,
+      pending,
+      scopeRoots: ["website"],
+      repositoryEffects: ["release_metadata"],
+      by: "USER",
+      now: NOW,
+    });
+    const next = taskCentricAggregateFromExtensions(updated.extensions);
+
+    expect(next).toEqual(completed);
+    expect(updated.execution_contract).toEqual(executionContract);
+    expect(updated.status).toBe("DOING");
+    expect(updated.extensions?.[TASK_SCOPE_EXTENSION_REQUEST_KEY]).toMatchObject({
+      status: "applied",
+      applied_by: "USER",
+    });
+  });
+
+  it("extends task-level rework without revising a plan that has only optional work remaining", () => {
+    const { command, pending, task } = fixture();
+    const aggregate = taskCentricAggregate(task.id, true, true);
+    const requiredComplete = {
+      ...aggregate,
+      work_items: {
+        ...aggregate.work_items,
+        active: { ...aggregate.work_items.active!, state: "COMPLETED" as const },
+      },
+    };
+    task.extensions = {
+      ...withTaskCentricAggregate(task.extensions, requiredComplete),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    const updated = applyApprovedTaskScopeExtension({
+      task,
+      executionContract,
+      pending,
+      scopeRoots: ["website"],
+      repositoryEffects: ["release_metadata"],
+      by: "USER",
+      now: NOW,
+    });
+
+    expect(taskCentricAggregateFromExtensions(updated.extensions)).toEqual(requiredComplete);
+    expect(updated.status).toBe("DOING");
+  });
+
+  it("fails closed when unfinished required WorkItems are not schedulable", () => {
+    const { command, pending, task } = fixture();
+    const aggregate = taskCentricAggregate(task.id);
+    const effectInDoubt = {
+      ...aggregate,
+      work_items: {
+        ...aggregate.work_items,
+        active: {
+          ...aggregate.work_items.active!,
+          state: "EFFECT_IN_DOUBT" as const,
+        },
+      },
+    };
+    task.extensions = {
+      ...withTaskCentricAggregate(task.extensions, effectInDoubt),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    };
+    const executionContract = extendBlockedTaskExecutionContract({
+      command,
+      task,
+      scope_roots: ["website"],
+      repository_effects: ["release_metadata"],
+      request_digest: pending.request_digest,
+      by: "USER",
+    });
+
+    expect(() =>
+      applyApprovedTaskScopeExtension({
+        task,
+        executionContract,
+        pending,
+        scopeRoots: ["website"],
+        repositoryEffects: ["release_metadata"],
+        by: "USER",
+        now: NOW,
+      }),
+    ).toThrow("unless every required WorkItem is completed");
+  });
+
   it("fails closed when more than one task-centric WorkItem is schedulable", () => {
     const { command, pending, task } = fixture();
     task.extensions = {

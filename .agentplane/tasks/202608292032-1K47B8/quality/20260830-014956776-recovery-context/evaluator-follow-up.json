@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608292032-1K47B8-6ea9c293fb4f58db4a75ac0e",
+  "task_id": "202608292032-1K47B8",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Keep the current authority fixes and qualification evidence. In the kernel scope, add failing regressions for the three reproduced cases, enforce task-active/current-approved-plan gating for WorkItem execution, validate and require declared input manifests, and unify task completion eligibility with the reducer. Preserve idempotent replay and effect reconciliation. Refresh receipt source hashes and rerun focused checks and full CI. No manual task-state repair.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The transition_work_item branch does not gate on aggregate task state. A CANCELLED task with a READY WorkItem accepts claim and can resume execution.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Claim readiness checks depends_on but ignores required_inputs. A READY WorkItem requiring a missing output is accepted for claim. validateWorkItemDefinitions also fails to reject undeclared inputs.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "complete_task accepts a COMPLETED WorkItem with output but no WorkItem validation, while isTaskCompletionEligible rejects the same state. The two completion paths disagree.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "All nine frozen evidence hashes match; current source hashes and historical receipt separation are correct. The authority corrections pass review.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: These gaps would permit invalid execution after adapter cutover.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/evaluator-result.json"
+}

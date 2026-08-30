@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { prepareContinuityPlan } from "./task-continuity.testkit.js";
+
 import { describe } from "vitest";
 
 import {
@@ -15,13 +17,13 @@ import {
   expect,
   extractTaskSuffix,
   it,
-  mkGitRepoRootWithBranch,
   promisify,
   runCli,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
 import { WORKFLOW_STATE_FINGERPRINT_POLICY } from "../commands/shared/workflow-step-fingerprint.js";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 async function writeRoutePolicies(root: string): Promise<void> {
   const files = [
@@ -96,7 +98,7 @@ async function readNextActionJson(root: string, taskId: string): Promise<NextAct
 
 describe("task next-action JSON", () => {
   it("stores branch_pr authority without changing the task branch before the authorized PR operation", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -109,19 +111,11 @@ describe("task next-action JSON", () => {
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Commit authority records before continuing the protected PR route.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
+    await prepareContinuityPlan(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Exercise the exact next-action authority and JSON contract.",
+    );
     const branch = `task/${taskId}/authority-auto-commit`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
     await runCliSilent([
@@ -219,7 +213,7 @@ describe("task next-action JSON", () => {
   });
 
   it("prints snake_case fields while preserving camelCase aliases", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
@@ -227,19 +221,11 @@ describe("task next-action JSON", () => {
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise next-action JSON contract.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
+    await prepareContinuityPlan(
       root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+      taskId,
+      "Exercise the exact next-action authority and JSON contract.",
+    );
 
     const io = captureStdIO();
     try {
@@ -332,7 +318,7 @@ describe("task next-action JSON", () => {
   });
 
   it("routes open user questions to task answer before plan approval", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

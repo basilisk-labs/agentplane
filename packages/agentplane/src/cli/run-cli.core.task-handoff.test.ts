@@ -1,6 +1,8 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { prepareContinuityPlan } from "./task-continuity.testkit.js";
+
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
@@ -14,7 +16,7 @@ import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
-  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   mkGitRepoRootWithBranch,
   runCliSilent,
   writeConfig,
@@ -27,32 +29,11 @@ async function planAndStartTask(opts: {
   taskId: string;
   body: string;
 }): Promise<void> {
-  expect(
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      opts.taskId,
-      "--text",
-      "Exercise the task handoff and stale-runner recovery contract.",
-      "--updated-by",
-      "PLANNER",
-      "--root",
-      opts.root,
-    ]),
-  ).toBe(0);
-  expect(
-    await runCliSilent([
-      "task",
-      "plan",
-      "approve",
-      opts.taskId,
-      "--by",
-      "ORCHESTRATOR",
-      "--root",
-      opts.root,
-    ]),
-  ).toBe(0);
+  await prepareContinuityPlan(
+    opts.root,
+    opts.taskId,
+    "Exercise task handoff and stale-runner recovery.",
+  );
   expect(
     await runCliSilent([
       "task",
@@ -70,7 +51,7 @@ async function planAndStartTask(opts: {
 
 describe("runCli task handoff and recovery", () => {
   it("task reclaim records a deterministic handoff for a task awaiting a local agent", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());
 
     let taskId = "";
@@ -137,7 +118,7 @@ describe("runCli task handoff and recovery", () => {
   });
 
   it("task reclaim cancels a stale running runner before recording handoff", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());
 
     let taskId = "";
@@ -273,7 +254,7 @@ describe("runCli task handoff and recovery", () => {
   }, 15_000);
 
   it("task reclaim leaves an unclaimed stale running state non-terminal without a handoff", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());
 
     let taskId = "";

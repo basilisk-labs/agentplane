@@ -1,0 +1,1 @@
+✅ GHHA0Q task: Replace obsolete CLI test expectations with architecture-aligned contracts [202608271251-GHHA0Q]

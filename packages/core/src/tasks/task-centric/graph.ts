@@ -198,6 +198,17 @@ function pendingApproval(): PlanApproval {
   });
 }
 
+function planContentDigest(
+  plan: Pick<TaskPlanRevision, "schema_version" | "task_id" | "revision" | "proposal">,
+): Sha256Digest {
+  return taskCentricDigest({
+    schema_version: plan.schema_version,
+    task_id: plan.task_id,
+    revision: plan.revision,
+    proposal: plan.proposal,
+  });
+}
+
 export function createTaskPlanRevision(opts: {
   proposal: TaskPlanProposal;
   revision: number;
@@ -206,7 +217,7 @@ export function createTaskPlanRevision(opts: {
   if (!Number.isInteger(opts.revision) || opts.revision < 1) {
     throw new Error("Task plan revision must be a positive integer.");
   }
-  const digest = taskCentricDigest({
+  const digest = planContentDigest({
     schema_version: 1,
     task_id: opts.proposal.task_id,
     revision: opts.revision,
@@ -265,6 +276,24 @@ export function materializeApprovedWorkItems(opts: {
   }
   if (opts.task.current_plan && opts.task.current_plan.digest !== opts.plan.digest) {
     throw new Error("Cannot materialize a plan over a different current revision.");
+  }
+  const existingIds = Object.keys(opts.task.work_items);
+  if (existingIds.length > 0) {
+    const current = opts.task.current_plan;
+    const planned = opts.plan.proposal.work_items.work_items;
+    if (
+      current?.revision !== opts.plan.revision ||
+      current.approval.state !== "approved" ||
+      current.approval.approved_digest !== opts.plan.digest ||
+      planContentDigest(opts.plan) !== opts.plan.digest ||
+      taskCentricDigest(current.proposal) !== taskCentricDigest(opts.plan.proposal) ||
+      existingIds.length !== planned.length ||
+      planned.some((item) => opts.task.work_items[item.id]?.id !== item.id)
+    ) {
+      throw new Error("Existing work item runtime does not match the approved current plan.");
+    }
+    // Reapproval is not a new execution. Preserve claims, outputs and validation atomically.
+    return opts.task;
   }
   const workItems: Record<string, WorkItemRuntime> = {};
   for (const item of opts.plan.proposal.work_items.work_items) {

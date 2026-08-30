@@ -1,0 +1,229 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts --pool=threads --maxWorkers=2"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:6581261f2d8f41c591ad99c1906bcf29e1dd10b7550217d99d4bfae7fe9d96b7"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-27T16:14:59.128Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608271441-DVEMAE/verification/20260827161459128-ce04c76286eb1a98.json",
+      "sha256": "sha256:32cd824755c70f12e76fb9763e96b9f10b2db0ab258422bf0c13081dfee68337"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 5fce04a8be14816be4cae236d2941dff7045e214..0da9c92cbda53ff55e24c84ff81fa401165f1f29",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 5fce04a8be14816be4cae236d2941dff7045e214..0da9c92cbda53ff55e24c84ff81fa401165f1f29",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202608271441-DVEMAE/README.md",
+          "A\t.agentplane/tasks/202608271441-DVEMAE/blueprint/resolved-snapshot.json",
+          "A\t.agentplane/tasks/202608271441-DVEMAE/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202608271441-DVEMAE/pr/github-body.md",
+          "A\t.agentplane/tasks/202608271441-DVEMAE/pr/github-title.txt",
+          "A\t.agentplane/tasks/202608271441-DVEMAE/pr/meta.json",
+          "A\t.agentplane/tasks/202608271441-DVEMAE/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": [
+          " M .agentplane/tasks/202608271441-DVEMAE/README.md",
+          " M .agentplane/tasks/202608271441-DVEMAE/pr/github-body.md",
+          " M .agentplane/tasks/202608271441-DVEMAE/pr/meta.json",
+          " M .agentplane/tasks/202608271441-DVEMAE/pr/review.md",
+          "?? .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json",
+          "?? .agentplane/tasks/202608271441-DVEMAE/supervision/implementation-evidence.json",
+          "?? .agentplane/tasks/202608271441-DVEMAE/verification/20260827151321725-77366aa3f29ad2fc.json"
+        ]
+      }
+    ],
+    "execution_base_commit": "5fce04a8be14816be4cae236d2941dff7045e214",
+    "implementation_commit": "0da9c92cbda53ff55e24c84ff81fa401165f1f29",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202608271441-DVEMAE/README.md",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/github-body.md",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/meta.json",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/review.md",
+        "?? .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202608271441-DVEMAE/supervision/implementation-evidence.json",
+        "?? .agentplane/tasks/202608271441-DVEMAE/verification/20260827151321725-77366aa3f29ad2fc.json"
+      ],
+      "classification": [
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608271441-DVEMAE/README.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608271441-DVEMAE/pr/github-body.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608271441-DVEMAE/pr/meta.json"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": " M .agentplane/tasks/202608271441-DVEMAE/pr/review.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202608271441-DVEMAE/supervision/implementation-evidence.json"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202608271441-DVEMAE/verification/20260827151321725-77366aa3f29ad2fc.json"
+        }
+      ],
+      "final": [
+        " M .agentplane/tasks/202608271441-DVEMAE/README.md",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/github-body.md",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/meta.json",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/review.md",
+        "?? .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202608271441-DVEMAE/supervision/implementation-evidence.json",
+        "?? .agentplane/tasks/202608271441-DVEMAE/verification/20260827151321725-77366aa3f29ad2fc.json"
+      ],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": [
+        " M .agentplane/tasks/202608271441-DVEMAE/README.md",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/github-body.md",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/meta.json",
+        " M .agentplane/tasks/202608271441-DVEMAE/pr/review.md",
+        "?? .agentplane/tasks/202608271441-DVEMAE/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202608271441-DVEMAE/supervision/implementation-evidence.json",
+        "?? .agentplane/tasks/202608271441-DVEMAE/verification/20260827151321725-77366aa3f29ad2fc.json"
+      ]
+    },
+    "schema_version": 1,
+    "task_id": "202608271441-DVEMAE",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608271441-DVEMAE/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

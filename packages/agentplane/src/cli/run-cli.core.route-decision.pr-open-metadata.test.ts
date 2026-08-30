@@ -4,14 +4,14 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
-import { recordQualityReviewPass } from "@agentplane/testkit";
+import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+import { mkGitRepoRootWithCommit, recordQualityReviewPass } from "@agentplane/testkit";
 
 import {
   captureStdIO,
   defaultConfig,
   expect,
   it,
-  mkGitRepoRootWithBranch,
   runCli,
   runCliSilent,
   writeConfig,
@@ -48,26 +48,14 @@ async function createBranchPrTask(root: string): Promise<string> {
 
 describe("runCli route decision open PR metadata", () => {
   it("starts a TODO task in its existing worktree before routing to pr open", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Publish the already-created task branch.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Publish the already-created task branch.");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed task artifacts"], { cwd: root });
     const branch = `task/${taskId}/bootstrap-existing`;
@@ -285,26 +273,14 @@ describe("runCli route decision open PR metadata", () => {
   });
 
   it("routes local open PR metadata to pre-merge closure without remote lookup", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      taskId,
-      "--text",
-      "Exercise local open PR routing.",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await approveRouteTaskPlan(root, taskId, "Exercise local open PR routing.");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed task workflow"], { cwd: root });
 
@@ -326,17 +302,11 @@ describe("runCli route decision open PR metadata", () => {
       root,
     ]);
 
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "CODER",
-      "--note",
-      "Implementation verified for local open PR routing.",
-      "--root",
+    await recordRouteVerification(
       root,
-    ]);
+      taskId,
+      "Implementation verified for local open PR routing.",
+    );
     await recordQualityReviewPass(root, taskId);
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");

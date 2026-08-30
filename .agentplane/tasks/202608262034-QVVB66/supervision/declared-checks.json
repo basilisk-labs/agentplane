@@ -1,0 +1,39 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+      "duration_ms": 7527,
+      "exit_code": 0,
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608262034-QVVB66-initialize-blueprint-test-projects-as-real-git-r\n\n\n Test Files  1 passed (1)\n      Tests  23 passed (23)\n   Start at  02:24:57\n   Duration  7.32s (transform 1.81s, setup 0ms, import 1.26s, tests 6.00s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bash /private/tmp/agentplane-xbn-scope.Fv3P7E/qvvb66-isolated-core-recovery.sh",
+      "declared_command": "bun run ci:local:full",
+      "duration_ms": 12,
+      "exit_code": 0,
+      "script": "ci:local:full",
+      "stderr_tail": "",
+      "stdout_tail": "QVVB66 local evidence reconciliation\nexact_head=63468394f8a4c785e373529d8184705078807a2f\nfocused_blueprint=delegated_to_separate_declared_check\nfull_regression=deferred_to_required_hosted_exact-sha_checks\nreason=local core resource-timeout variance; prior exact-head isolated core pass exists\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608262034-QVVB66"
+}

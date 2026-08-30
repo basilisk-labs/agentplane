@@ -26,6 +26,7 @@ import {
   mkdir,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   mkdtemp,
   os,
@@ -63,7 +64,7 @@ describe(
   { timeout: PR_FLOW_LONG_TIMEOUT_MS },
   () => {
     it("pr open reports linked GitHub PR identity when pr metadata already has one", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -136,7 +137,7 @@ describe(
     });
 
     it("pr open reports an existing GitHub PR by branch and tracks open identity", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -227,7 +228,7 @@ describe(
     });
 
     it("pr open keeps review/body stable when a second run creates the remote PR", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -330,7 +331,7 @@ describe(
     });
 
     it("pr open leaves only PR metadata dirty when a rerun links a newly created remote PR", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -460,7 +461,7 @@ describe(
     });
 
     it("pr open refreshes review/body when a second run observes an existing remote PR", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const root = await mkGitRepoRootWithCommit();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);

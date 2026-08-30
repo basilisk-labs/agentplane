@@ -207,8 +207,8 @@ async function prepareEvaluatorReviewLocked(
   });
   const verificationTargetSha =
     qualificationPacket?.packet.implementation_sha ??
-    recordedTaskImplementationCommitSha(opts.task) ??
-    evaluatedSha;
+    evaluatedSha ??
+    recordedTaskImplementationCommitSha(opts.task);
   const verificationTargetContext = {
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,

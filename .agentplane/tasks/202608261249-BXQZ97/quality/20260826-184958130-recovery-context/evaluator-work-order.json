@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608261249-BXQZ97-7e84df0725d9fa4bb34c9230",
+  "prepared_at": "2026-08-26T18:49:58.130Z",
+  "task": {
+    "id": "202608261249-BXQZ97",
+    "revision": 66,
+    "objective": "Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\n\nRelease blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ.",
+    "acceptance_criteria": [
+      "bunx vitest run packages/agentplane/src/commands/pr",
+      "bunx vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+      "bunx vitest run packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+      "bun run ci:local:full",
+      "- In scope: Release blocker for 0.7.8 and task 202608252330-9RCWZQ. Symptom: PR #4889 is OPEN, MERGEABLE, and BEHIND; required verify-real-e2e fails on exact head e19eb173c25eb7c6800643bcb87173c857a042fb because that head excludes the already integrated C6WV4T qualification correction on exact main 79bc13ff33358c49e216901f59c8fbc0a17987d2. All other hosted jobs pass. The failure reproduced on multiple clean published heads. Violated invariant: when required hosted checks fail solely on a provider PR head that is behind its protected base, AgentPlane must offer a digest-bound, effectively-once provider update-branch recovery transition before semantic source rework or integration. Root cause: current route classification maps failed hosted checks directly to implementation_rework_required and exposes no normal AgentPlane operation for GitHub's update-branch effect. Temporary recovery: preserve 9RCWZQ and use an approved bootstrap runtime only for control-plane retirement; do not manually merge, rebase, push, or edit state. Permanent fix: add the smallest provider-neutral route/effect contract with GitHub update-branch execution, exact expected-head/base readback, effect-in-doubt reconciliation, authority digests, and fail-closed behavior for conflicts, head drift, ambiguity, or unsupported providers. Regression tests must prove route selection, pre-effect failure safety, effect reconciliation, and that semantic rework remains selected for genuine source failures. Integrate normally, then use the fresh runtime to refresh PR #4889 and resume 9RCWZQ.\n- Out of scope: unrelated refactors not required for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\".",
+      "Preserve the completed provider effect commit, implement the remaining digest-bound route and supervisor operation, and validate only the provider, route, projection, supervisor, and full-regression behavior relevant to BXQZ97.",
+      "PLANNER fallback scaffold for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Add a digest-bound provider update-branch recovery transition for stale hosted PR heads\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "155dd3da49a3cbd48dbcae15809f654f65ff7b73",
+  "diff_base_sha": "79bc13ff33358c49e216901f59c8fbc0a17987d2",
+  "blueprint_digest": "ff7586fbc82e084bd27bfaf9fa7273f75761e0e24737200fbd540c6f4dacd374",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608261249-BXQZ97/quality/20260826-184958130-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c911dbd145ad038b6925a70410fd3db3adbd5e3443e74daccf42f527c15b7e44",
+    "prompt_path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/ca152961094cc816531a9f9428b59e35044108767b0c5ab2b8697f9d41bd5d6e.md",
+    "result_schema_path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608261249-BXQZ97/README.md",
+      "sha256": "sha256:74170d1c999688f573efead19d8772465edd03a8316f1db157b95e99bc158b3b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/1f02efb4b8bab934d1772f143fb49a62c41af32c0dcc88e6d84d63067eb2476a.patch",
+      "sha256": "sha256:1f02efb4b8bab934d1772f143fb49a62c41af32c0dcc88e6d84d63067eb2476a",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/49864fc10ebd312c36e5388075629eb27dd999c9531f6456b52708a9955fb1ce.json",
+      "sha256": "sha256:49864fc10ebd312c36e5388075629eb27dd999c9531f6456b52708a9955fb1ce",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608261249-BXQZ97/verification/20260826182631556-e4632490ec0e3dab.json",
+      "sha256": "sha256:eb7d590af003a3abb6cf898a4c13d6d101a0724225523625cad5980731dd86e7",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608261249-BXQZ97/quality/objects/sha256/e6c20dad3911e302671884f019d9d82e25ccbc8f44d64823eeebfa77db14c513.json",
+      "sha256": "sha256:e6c20dad3911e302671884f019d9d82e25ccbc8f44d64823eeebfa77db14c513",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

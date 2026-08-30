@@ -4,13 +4,13 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
 import {
   captureStdIO,
   defaultConfig,
   expect,
   it,
-  mkGitRepoRootWithBranch,
   runCli,
   runCliSilent,
   writeConfig,
@@ -69,7 +69,7 @@ async function withFakeGh<T>(
 
 describe("runCli route decision remote confidence", () => {
   it("distinguishes confirmed missing close-tail state from unavailable provider evidence", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

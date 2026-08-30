@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com",
+  "created_at": "2026-08-28T00:15:41.154Z",
+  "diffstat_sha256": "sha256:9327f7b2852a4fea92b2fc77fd7b0658c3c8c26799834ce3fc1c23185604f18e",
+  "last_verified_at": "2026-08-28T05:13:08.628Z",
+  "last_verified_diffstat_sha256": "sha256:9327f7b2852a4fea92b2fc77fd7b0658c3c8c26799834ce3fc1c23185604f18e",
+  "pr_number": 5865,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5865",
+  "pre_merge_closure": {
+    "basis_commit": "d4dd32914a1afc5690b0d877632369ec720f4722",
+    "branch": "task/202608280009-QMVHM2/recover-interrupted-verification-to-workitem-com",
+    "pr_number": 5865,
+    "recorded_at": "2026-08-28T05:15:15.512Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608280009-QMVHM2",
+  "updated_at": "2026-08-28T01:13:18.715Z",
+  "verify": {
+    "status": "pass"
+  }
+}

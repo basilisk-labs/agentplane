@@ -1,0 +1,258 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+index 9c696ef0e..f8611b9d2 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+@@ -219,21 +219,41 @@ describe("task advance effect recovery", () => {
+     ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
+   });
+ 
+-  it("reopens a closed task only for state-bound implementation rework", () => {
++  it("reopens a closed task only for state-bound implementation results", () => {
+     expect(
+       requiresImplementationReworkReopen({
+         purpose: "implementation_rework",
+         task_status: "DONE",
++        work_item_id: null,
+       }),
+     ).toBe(true);
+     expect(
+       requiresImplementationReworkReopen({
+         purpose: "implementation_rework",
+         task_status: "DOING",
++        work_item_id: null,
+       }),
+     ).toBe(false);
+     expect(
+-      requiresImplementationReworkReopen({ purpose: "implementation", task_status: "DONE" }),
++      requiresImplementationReworkReopen({
++        purpose: "implementation",
++        task_status: "DONE",
++        work_item_id: "required-work",
++      }),
++    ).toBe(true);
++    expect(
++      requiresImplementationReworkReopen({
++        purpose: "implementation",
++        task_status: "DONE",
++        work_item_id: null,
++      }),
++    ).toBe(false);
++    expect(
++      requiresImplementationReworkReopen({
++        purpose: "implementation",
++        task_status: "DOING",
++        work_item_id: "required-work",
++      }),
+     ).toBe(false);
+   });
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+index 4a6bda6a2..a99768e44 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+@@ -318,6 +318,41 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+         cwd: checkout,
+       });
+       const implementation = implementationOutput.stdout.trim();
++      if (boundary === "before WorkItem projection") {
++        if (!interrupted) throw new Error("missing interrupted WorkItem task");
++        await ctx.taskBackend.writeTask({ ...interrupted, status: "DONE" });
++        const prematurelyClosed = await ctx.taskBackend.getTask(taskId);
++        expect(prematurelyClosed?.status).toBe("DONE");
++        expect(
++          taskCentricAggregateFromExtensions(prematurelyClosed?.extensions)?.work_items[
++            "exercise-worktree"
++          ]?.state,
++        ).toBe("READY");
++        await execFileAsync("git", ["add", ".agentplane"], { cwd: checkout });
++        await execFileAsync("git", ["commit", "-m", "test: seed premature DONE recovery"], {
++          cwd: checkout,
++        });
++        const resumedIo = captureStdIO();
++        try {
++          expect(
++            await runCli([...packet.exchange.resume_argv.slice(1), "--root", checkout]),
++            resumedIo.stderr,
++          ).toBe(0);
++          expect((JSON.parse(resumedIo.stdout) as AgentPacket).action.kind).toBe(
++            "framework_transition",
++          );
++        } finally {
++          resumedIo.restore();
++        }
++        const recovered = await ctx.taskBackend.getTask(taskId);
++        expect(recovered?.status).toBe("DOING");
++        expect(recovered?.verification?.state).toBe("ok");
++        expect(
++          taskCentricAggregateFromExtensions(recovered?.extensions)?.work_items["exercise-worktree"]
++            ?.state,
++        ).toBe("COMPLETED");
++        return;
++      }
+       expect(
+         await runCliSilent([
+           "verify",
+diff --git a/packages/agentplane/src/commands/shared/task-scope-extension-request.ts b/packages/agentplane/src/commands/shared/task-scope-extension-request.ts
+index 0db07c351..9483468c8 100644
+--- a/packages/agentplane/src/commands/shared/task-scope-extension-request.ts
++++ b/packages/agentplane/src/commands/shared/task-scope-extension-request.ts
+@@ -205,11 +205,17 @@ function extendTaskCentricWorkItemScope(opts: {
+     runtime: aggregate.work_items,
+     active_leases: [],
+   });
++  if (selected.length === 0) {
++    const allRequiredCompleted = currentPlan.proposal.work_items.work_items
++      .filter((item) => !item.optional)
++      .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
++    if (allRequiredCompleted) return aggregate;
++  }
+   if (selected.length !== 1) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message:
+-        "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry.",
++        "Task-centric scope extension requires exactly one schedulable WorkItem for the approved retry unless every required WorkItem is completed.",
+     });
+   }
+   const selectedId = selected[0]!.id;
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index eb58e4c38..0c4e9f079 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -67,8 +67,11 @@ function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string)
+ export function requiresImplementationReworkReopen(opts: {
+   purpose: ExternalAgentExchange["purpose"];
+   task_status: string;
++  work_item_id: string | null;
+ }): boolean {
+-  return opts.purpose === "implementation_rework" && opts.task_status === "DONE";
++  if (opts.task_status !== "DONE") return false;
++  if (opts.purpose === "implementation_rework") return true;
++  return opts.purpose === "implementation" && Boolean(opts.work_item_id);
+ }
+ 
+ function recordedEvidenceOnlyReworkCommit(opts: {
+@@ -478,6 +481,11 @@ export async function applyExternalImplementationResult(opts: {
+   if (implementation.status !== "ready") {
+     throw new CliError({ code: "E_VALIDATION", message: implementation.reason });
+   }
++  const reopenDone = requiresImplementationReworkReopen({
++    purpose: opts.exchange.purpose,
++    task_status: opts.decision.task.status,
++    work_item_id: opts.work_order.task.work_item_id ?? null,
++  });
+   if (opts.decision.task.commit !== implementation.evidence.implementation_commit) {
+     await cmdTaskSetStatus({
+       ctx: opts.command,
+@@ -489,14 +497,8 @@ export async function applyExternalImplementationResult(opts: {
+         `Implementation committed: ${implementation.evidence.implementation_commit.slice(0, 12)}. ` +
+         "CLI accepted one state-bound external-agent semantic result.",
+       commit: implementation.evidence.implementation_commit,
+-      force: requiresImplementationReworkReopen({
+-        purpose: opts.exchange.purpose,
+-        task_status: opts.decision.task.status,
+-      }),
+-      yes: requiresImplementationReworkReopen({
+-        purpose: opts.exchange.purpose,
+-        task_status: opts.decision.task.status,
+-      }),
++      force: reopenDone,
++      yes: reopenDone,
+       commitFromComment: false,
+       commitAllow: [],
+       commitAutoAllow: false,
+diff --git a/packages/agentplane/src/commands/task/scope-extend.test.ts b/packages/agentplane/src/commands/task/scope-extend.test.ts
+index 2d226fddc..c55c770db 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.test.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.test.ts
+@@ -307,6 +307,90 @@ function fixture(
+ }
+ 
+ describe("blocked task execution scope extension", () => {
++  it("extends task-level rework without revising a completed task-centric plan", () => {
++    const { command, pending, task } = fixture();
++    const aggregate = taskCentricAggregate(task.id);
++    const completed = {
++      ...aggregate,
++      work_items: Object.fromEntries(
++        Object.entries(aggregate.work_items).map(([id, item]) => [
++          id,
++          { ...item, state: "COMPLETED" as const },
++        ]),
++      ),
++    };
++    task.extensions = {
++      ...withTaskCentricAggregate(task.extensions, completed),
++      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
++    };
++    const executionContract = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: ["website"],
++      repository_effects: ["release_metadata"],
++      request_digest: pending.request_digest,
++      by: "USER",
++    });
++
++    const updated = applyApprovedTaskScopeExtension({
++      task,
++      executionContract,
++      pending,
++      scopeRoots: ["website"],
++      repositoryEffects: ["release_metadata"],
++      by: "USER",
++      now: NOW,
++    });
++    const next = taskCentricAggregateFromExtensions(updated.extensions);
++
++    expect(next).toEqual(completed);
++    expect(updated.execution_contract).toEqual(executionContract);
++    expect(updated.status).toBe("DOING");
++    expect(updated.extensions?.[TASK_SCOPE_EXTENSION_REQUEST_KEY]).toMatchObject({
++      status: "applied",
++      applied_by: "USER",
++    });
++  });
++
++  it("fails closed when unfinished required WorkItems are not schedulable", () => {
++    const { command, pending, task } = fixture();
++    const aggregate = taskCentricAggregate(task.id);
++    const effectInDoubt = {
++      ...aggregate,
++      work_items: {
++        ...aggregate.work_items,
++        active: {
++          ...aggregate.work_items.active!,
++          state: "EFFECT_IN_DOUBT" as const,
++        },
++      },
++    };
++    task.extensions = {
++      ...withTaskCentricAggregate(task.extensions, effectInDoubt),
++      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
++    };
++    const executionContract = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: ["website"],
++      repository_effects: ["release_metadata"],
++      request_digest: pending.request_digest,
++      by: "USER",
++    });
++
++    expect(() =>
++      applyApprovedTaskScopeExtension({
++        task,
++        executionContract,
++        pending,
++        scopeRoots: ["website"],
++        repositoryEffects: ["release_metadata"],
++        by: "USER",
++        now: NOW,
++      }),
++    ).toThrow("unless every required WorkItem is completed");
++  });
++
+   it("fails closed when more than one task-centric WorkItem is schedulable", () => {
+     const { command, pending, task } = fixture();
+     task.extensions = {

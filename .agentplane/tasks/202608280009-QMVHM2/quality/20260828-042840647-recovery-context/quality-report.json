@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608280009-QMVHM2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-28T04:30:28.296Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "d600fac6c23a05c6d14ebfb3c49c93fd5d36cc72",
+  "blueprint_digest": "9f8313c431ef0435b9f5ea2458ec11f9f5ea1e66ec55c98afcb78fffe3c2d7e2",
+  "findings": [
+    "All nine frozen evidence hashes match. The new verification record verification/20260828042822482-e20218a743e953fb.json reports successful mandatory checks and binds source 6d952d932d8635833a8320a44279df306a6a06b2, base e43acc5f72ba1f884966a16325d6dbc94fcb1f04, and updated Verify Steps digest a64bd7dbb74746d4ee85273b13f408d4c3085637a7306eaa738070743e9de038. The evaluator target d600fac6c23a05c6d14ebfb3c49c93fd5d36cc72 includes the documentation correction; git diff confirms no package source drift from the implementation.",
+    "Verify Steps now specifies both interruption boundaries, fresh continuation, exactly-once replay, next task-level rework, changed or missing proof rejection, observed-contract mapping, and no false DONE. Findings records the proved causes, original implementation, historical versus current proof, and remaining DVS5NN/CFKR4P and hosted/release work. The prior documentation-only rework is resolved without expanding source scope or weakening required checks.",
+    "Recovery checks the current approved plan and WorkItem state, exact implementation evidence and Git ancestry/path scope, preserved README contract, and the original validated exchange result digest. No-renames path proof rejects moving product source into managed artifacts. Existing historical exchanges remain immutable. Fresh checks run before canonical result projection. Task-level rework does not invent an already-completed WorkItem. Required-incomplete finish rejects before legacy DONE persistence, including force.",
+    "The unchanged 7-file focused command was rerun during this evaluation: 63 tests passed in 43.08 seconds. Reviewed tests cover both interruption boundaries, repeat execution, the next rework transition, stale or missing evidence and divergent result rejection, frozen-base changes, source relocation, and whole-task equality after rejected finish. The actual source diff is unchanged from the prior reviewed patch.",
+    "Current tracked state is clean. The remaining untracked files are the four newly prepared evaluator evidence artifacts owned by AgentPlane. No product, policy, CI, release, or other task scope was changed during evaluation.",
+    "Residual risk: The post-review provider and closure gates must still execute through their current authority. No local test result substitutes for hosted integration or final 0.7.8 release qualification."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608280009-QMVHM2/quality/objects/sha256/5379a6852a6d160cd1b996793dd260bf11f32c00c170218fea9dc0fff3a613e4.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

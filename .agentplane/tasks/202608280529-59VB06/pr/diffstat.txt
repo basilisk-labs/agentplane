@@ -1,0 +1,9 @@
+ ...li.core.task-advance.evaluator-recovery.test.ts | 600 +++++++++++++++++++++
+ .../commands/shared/quality-review-retirement.ts   |  84 +++
+ .../src/commands/shared/route-decision-blockers.ts |  48 +-
+ .../src/commands/shared/workflow-step-factory.ts   |   4 +-
+ .../task/external-agent-evaluator-recovery.test.ts |  61 +++
+ .../task/external-agent-evaluator-recovery.ts      | 225 ++++++++
+ .../task/external-agent-supervisor-recovery.ts     |   8 +
+ .../src/commands/task/external-agent-supervisor.ts |  17 +
+ 8 files changed, 1013 insertions(+), 34 deletions(-)

@@ -1,0 +1,171 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=threads --maxWorkers=2"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+        "packages/agentplane/src/cli/prompts.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+        "packages/agentplane/src/cli/prompts.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+      "central_component:packages/agentplane/src/cli/prompts.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts",
+      "central_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+      "central_path:packages/agentplane/src/cli/prompts.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts",
+      "unknown_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:ce34330683b91bfc7c8d9b1a1617ed68d274b6c06da4730ce04424884cd98f18"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-27T13:25:32.555Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608271251-GHHA0Q/verification/20260827132532555-956f74b4ae404852.json",
+      "sha256": "sha256:b77082aab92072b56a8983b18fea490811fff80752eb9074c04b59edabeb9df8"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 343bb9783163c59316afc6d637177dd5923c7147..54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 343bb9783163c59316afc6d637177dd5923c7147..54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/github-body.md",
+          "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/meta.json",
+          "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/review.md",
+          "M\tpackages/agentplane/src/cli/prompts.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "343bb9783163c59316afc6d637177dd5923c7147",
+    "implementation_commit": "54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608271251-GHHA0Q",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608271251-GHHA0Q/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

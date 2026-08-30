@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 343bb9783163c59316afc6d637177dd5923c7147..54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 343bb9783163c59316afc6d637177dd5923c7147..54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/github-body.md",
+        "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/meta.json",
+        "M\t.agentplane/tasks/202608271251-GHHA0Q/pr/review.md",
+        "M\tpackages/agentplane/src/cli/prompts.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "343bb9783163c59316afc6d637177dd5923c7147",
+  "implementation_commit": "54ed013b9e52173795ee80b5acdb7b47913b8b4b",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608271251-GHHA0Q"
+}

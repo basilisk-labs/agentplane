@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608291005-K5TG4D-656e9e4ff1386ca64b8b80ba",
+  "prepared_at": "2026-08-29T10:40:22.155Z",
+  "task": {
+    "id": "202608291005-K5TG4D",
+    "revision": 13,
+    "objective": "Specify the clean Task kernel and migration oracle\n\nProduce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.",
+    "acceptance_criteria": [
+      "bun run docs:ia:check",
+      "bun run format:check",
+      "- In scope: Produce the implementation specification, code ownership map, invariant catalog, compatibility boundary, replay corpus manifest, migration and rollback contract, and acceptance gates for the clean Task core rebuild. The specification must map every legacy AP-AUTH, AP-CORE, AP-RUNTIME, AP-DEPS, and AP-SCOPE item into the replacement milestones without losing traceability.\n- Out of scope: unrelated refactors not required for \"Specify the clean Task kernel and migration oracle\".",
+      "Prepare a decision ADR and implementation specification for a staged clean Task kernel rebuild. Start with a source-backed code map, define a pure canonical kernel, specify compatibility and replay migration, and finish with a complete legacy-task traceability matrix and executable gates.",
+      "1. Inspect docs/adr/0017-clean-task-core-rebuild.md and docs/reference/clean-task-core-rebuild-spec.mdx. Expected: they define the staged program, source-backed code map, pure kernel boundary, mandatory invariants, adapter contracts, deterministic migration and rollback, replay corpus, dual-run cutover, and milestone gates.\n2. Inspect the legacy roadmap traceability table. Expected: every AP-AUTH, AP-APPROVAL, AP-GRANT, AP-DEPS, AP-SCOPE, AP-RUNTIME, AP-CORE, AP-CTX, AP-KA, and old root task has exactly one Absorb or Retain disposition with replacement ownership.\n3. Inspect docs/adr/README.md. Expected: ADR 0017 is present in the canonical index and links to the decision record.\n4. Run bun run docs:ia:check. Expected: documentation IA, sidebar coverage, and current path references pass.\n5. Run bun run format:check. Expected: all matched files use Prettier formatting.\n6. Run git diff --check. Expected: no whitespace errors.\n7. Compare the delivered documents against Scope and record any residual implementation choices or graph exceptions in Findings. Expected: open edges are explicit and no legacy requirement is silently dropped."
+    ]
+  },
+  "evaluated_sha": "a11f7bc5dd26ca540854e7e550e5930e3b69c734",
+  "diff_base_sha": "3bcce289091f5e6cbcb1dea87c2964c4f559259d",
+  "blueprint_digest": "efb79283a7132ec7f7eb621bee98b430d16fb8b40d605d39c2312d838d63f25c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608291005-K5TG4D/quality/20260829-104022155-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d3e35345f0718e2353a4e1b247665aaf3d128d001197d636f5ea70047c17dbee",
+    "prompt_path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/1766f852085b004801c6b30bc74a4001f961ab6633e748f9d98d616dc6014fd4.md",
+    "result_schema_path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/README.md",
+      "sha256": "sha256:ac079159ba659694e3333f0af80b504a1c541a6042fc01770dd8cbf0d16d9a1f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/0ced6f2c554a98af94d8e04123277a903da54392ebd92f3890c3a1c95ad75119.patch",
+      "sha256": "sha256:0ced6f2c554a98af94d8e04123277a903da54392ebd92f3890c3a1c95ad75119",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/c97155edadb265cb8b9e27094be1f5b53e338048ada37daee80cc3249047ec4f.json",
+      "sha256": "sha256:c97155edadb265cb8b9e27094be1f5b53e338048ada37daee80cc3249047ec4f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/verification/20260829104004712-22365c9597c0e6ce.json",
+      "sha256": "sha256:33632a2f1993d93f3ca8152039aafa221d955957ff385bf36beefb1121a33f01",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608291005-K5TG4D/quality/objects/sha256/03778a2ec59a89f86c77156b5c41749d8a0acbbdbda469294abad9d305f10155.json",
+      "sha256": "sha256:03778a2ec59a89f86c77156b5c41749d8a0acbbdbda469294abad9d305f10155",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:67cf60d5b18640db0c0141b9a6fea266f6cf89aecc8e7bda542e43ab7b4ef0ea",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

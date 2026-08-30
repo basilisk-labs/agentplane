@@ -120,6 +120,26 @@ describe("Workflow operation projection registry", () => {
         params: { taskId },
         argv: ["agentplane", "pr", "flow", "status", taskId],
       },
+      "provider.pr.update_branch": {
+        params: {
+          taskId,
+          identity: {
+            provider: "github",
+            hostname: "github.com",
+            remote: "origin",
+            sourceProject: "owner/repo",
+            targetProject: "owner/repo",
+            sourceUrl: "git@github.com:owner/repo.git",
+            targetUrl: "https://github.com/owner/repo.git",
+          },
+          prNumber: 42,
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: taskHead,
+          expectedBaseSha: "2222222222222222222222222222222222222222",
+        },
+        argv: ["agentplane", "task", "run", taskId, "--remote", "--json"],
+      },
       "route.remote.refresh": {
         params: { taskId },
         argv: ["agentplane", "task", "next-action", taskId, "--remote", "--explain"],

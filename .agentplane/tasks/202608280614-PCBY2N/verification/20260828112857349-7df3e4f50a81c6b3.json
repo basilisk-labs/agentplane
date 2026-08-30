@@ -1,0 +1,116 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608280614-PCBY2N Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:7df3e4f50a81c6b3f4695597c1f3d503cbd96b295543d87aa3d5dd593a702e15",
+  "implementation_sha": "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c",
+  "input": {
+    "context": {
+      "digest": "sha256:45eb23ef20a43f6fc625b415551b2ccfff5623952b40648a24cc9432769f384f",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:6edb64d27b895f1f7ade88e47f1b284a95dfead57d5dd212b40ff5870c881b11",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:d6b5b97cdbc25f1fda228f464f6b611f5ef9248e9ba70c8279ac28ba407d7d86",
+      "digest": "sha256:37aefbb1711dc5b1589728cef98dc061d8e216d01eeab8ff352e473ea36372ae",
+      "references": [
+        {
+          "digest": "sha256:cfd8e1ec252b4cb82b8b70ddeebad1a93f7b4f0bfbe2739c66ecaf59b23c65fc",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:cfd8e1ec252b4cb82b8b70ddeebad1a93f7b4f0bfbe2739c66ecaf59b23c65fc",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608280614-PCBY2N/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "e3550efba441765882f2507cfaf659e9a76d2f0b",
+      "digest": "sha256:3608bcf6244a86a57f2fd101f7a5229e2d466362b6384037dba4f818cd38f2d6",
+      "primary_task_id": "202608280614-PCBY2N",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608280614-PCBY2N"
+      ]
+    },
+    "implementation": {
+      "base_sha": "e3550efba441765882f2507cfaf659e9a76d2f0b",
+      "digest": "sha256:79f4b037a4951439c915db9a2fc7f6522ba67e80c83c02e773266996213aeed0",
+      "strategy": "branch_diff",
+      "target_sha": "d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:a878b21b3942dc45a1bc9714f7e69c3bbd3a12c48513d379ac98f2943c82caa8",
+    "verify_steps_digest": "sha256:6800e08237fa51d0fbf5c26e109e05253639c40bda1bfed6da974e6a944633d9"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-08-28T11:28:57.349Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Reproduce the task-level evidence-only rework failure with real Git after required WorkItem completion, evaluator documentation rework and an operator Findings update.\n2. Verify approved unchanged-source recovery uses validated historical implementation proof and preserves current task-level claims. Verify interrupted WorkItem recovery preserves its original claims. Rerun mandatory checks and obtain fresh evaluation.\n3. Reject changed plan, scope, authority, source HEAD, verification contract, incomplete WorkItems and missing or tampered proof. Cover interruption, replay and absence of false completion.\n4. Run focused recovery and real-Git tests, bun run ci:local:full, and git diff --check. Enforce the existing runtime and test size limits.\n5. Review the four approved source paths against the plan. Evidence and remaining limitations are recorded in typed semantic output and supervisor verification artifacts. Require exact-head hosted checks, protected integration and confirmed closure before calling this delivered.",
+  "scope_digest": "sha256:6800e08237fa51d0fbf5c26e109e05253639c40bda1bfed6da974e6a944633d9",
+  "task_id": "202608280614-PCBY2N",
+  "verification_command": "agentplane verify 202608280614-PCBY2N --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -1,0 +1,2896 @@
+diff --git a/depcruise.config.cjs b/depcruise.config.cjs
+index be2897d59..1883a15f5 100644
+--- a/depcruise.config.cjs
++++ b/depcruise.config.cjs
+@@ -53,6 +53,19 @@ module.exports = {
+         path: "^(packages/core/src/(git|process|fs|runner)/|packages/agentplane/src/)",
+       },
+     },
++    {
++      name: "canonical-task-kernel-is-pure-domain",
++      severity: "error",
++      comment:
++        "The canonical Task kernel may use deterministic value helpers but not adapters, legacy projections, filesystem, process, Git, provider, backend, CLI, document, clock, randomness, or environment implementations.",
++      from: {
++        path: "^packages/core/src/tasks/task-kernel/",
++        pathNot: "\\.test\\.ts$",
++      },
++      to: {
++        path: "^(packages/core/src/(git|process|fs)/|packages/core/src/tasks/task-centric/|packages/agentplane/src/|node:(fs|fs/promises|process|child_process|os|timers)(/|$))",
++      },
++    },
+     {
+       name: "task-centric-backend-adapter-does-not-import-command-handlers",
+       severity: "error",
+diff --git a/packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts b/packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts
+new file mode 100644
+index 000000000..d46fe9e8b
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts
+@@ -0,0 +1,60 @@
++import { mkdtemp, rm, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++
++import { describe, expect, it, vi } from "vitest";
++
++import { runShellCommand, verificationChildEnv } from "./verify-log.js";
++
++describe("verification child environment", () => {
++  it("removes repository dotenv values and AgentPlane runtime handoff state", () => {
++    const source: NodeJS.ProcessEnv = {
++      SAFE_PARENT_VALUE: "preserved",
++      AGENTPLANE_CLOUD_ENDPOINT: "https://cloud.example",
++      AGENTPLANE_CLOUD_PROJECT_ID: "project-1",
++      GITHUB_TOKEN: "dotenv-token",
++      AGENTPLANE_DOTENV_LOADED_KEYS:
++        "AGENTPLANE_CLOUD_ENDPOINT, AGENTPLANE_CLOUD_PROJECT_ID,GITHUB_TOKEN",
++      AGENTPLANE_AGENT_MODE: "1",
++      AGENTPLANE_RUNTIME_ACTIVE_BIN: "/repo/packages/agentplane/bin/agentplane.js",
++    };
++
++    expect(verificationChildEnv(source)).toEqual({ SAFE_PARENT_VALUE: "preserved" });
++    expect(source).toHaveProperty("AGENTPLANE_CLOUD_ENDPOINT");
++    expect(source).toHaveProperty("AGENTPLANE_DOTENV_LOADED_KEYS");
++  });
++
++  it("preserves explicit parent configuration that was not loaded from dotenv", () => {
++    const source: NodeJS.ProcessEnv = {
++      AGENTPLANE_CLOUD_ENDPOINT: "https://explicit-parent.example",
++      GITHUB_TOKEN: "explicit-parent-token",
++    };
++
++    expect(verificationChildEnv(source)).toEqual(source);
++  });
++
++  it("isolates dotenv values in the declared verification subprocess", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-verify-env-"));
++    vi.stubEnv("AGENTPLANE_VERIFY_TEST_DOTENV", "repository-only");
++    vi.stubEnv("AGENTPLANE_VERIFY_TEST_PARENT", "explicit-parent");
++    vi.stubEnv("AGENTPLANE_RUNTIME_HANDOFF_FROM", "verification-parent");
++    vi.stubEnv(
++      "AGENTPLANE_DOTENV_LOADED_KEYS",
++      `${process.env.AGENTPLANE_DOTENV_LOADED_KEYS ?? ""},AGENTPLANE_VERIFY_TEST_DOTENV`,
++    );
++    try {
++      await writeFile(
++        path.join(root, "probe.cjs"),
++        "process.stdout.write(JSON.stringify({dotenv:process.env.AGENTPLANE_VERIFY_TEST_DOTENV,parent:process.env.AGENTPLANE_VERIFY_TEST_PARENT,dotenvMarker:process.env.AGENTPLANE_DOTENV_LOADED_KEYS,handoff:process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM}));",
++      );
++      const result = await runShellCommand("node probe.cjs", root);
++      expect(result.code).toBe(0);
++      expect(JSON.parse(result.output)).toEqual({ parent: "explicit-parent" });
++      expect(process.env.AGENTPLANE_VERIFY_TEST_DOTENV).toBe("repository-only");
++      expect(process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM).toBe("verification-parent");
++    } finally {
++      vi.unstubAllEnvs();
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+index 652e87c3b..09914a635 100644
+--- a/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
++++ b/packages/agentplane/src/commands/shared/pr-meta/verify-log.ts
+@@ -3,6 +3,7 @@ import path from "node:path";
+ import type { Readable } from "node:stream";
+ 
+ import { startProcess } from "@agentplaneorg/core/process";
++import { isDotEnvLoadedKey } from "../../../shared/env.js";
+ import { resolveDeclaredTaskCheck } from "../declared-check.js";
+ 
+ export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
+@@ -22,6 +23,9 @@ const VERIFY_RUNTIME_ENV_KEYS = [
+ export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+   const env = { ...source };
+   for (const key of VERIFY_RUNTIME_ENV_KEYS) delete env[key];
++  for (const key of Object.keys(env)) {
++    if (key === "AGENTPLANE_DOTENV_LOADED_KEYS" || isDotEnvLoadedKey(key, source)) delete env[key];
++  }
+   return env;
+ }
+ 
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index 1c220b122..37d0402c8 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -60,6 +60,8 @@ export {
+ 
+ export { generateTaskId, TASK_ID_ALPHABET, timestampIdPrefix } from "./task-id.js";
+ 
++export * as taskKernel from "./task-kernel/index.js";
++
+ export {
+   EXECUTION_GRANT_EXTENSION_KEY,
+   computeExecutionScopeDigest,
+diff --git a/packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md b/packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md
+new file mode 100644
+index 000000000..d116077a4
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/M1-QUALIFICATION.md
+@@ -0,0 +1,76 @@
++# M1 kernel qualification receipt
++
++- Task: `202608292032-1K47B8`.
++- Current WorkItem: `qualify-current-m1-contract`.
++- Output: `m1-current-qualification-receipt`.
++- Current plan digest: `sha256:c5237eeab87dd5383649ba7fea824a6d05807e4cad894affc5898ff43037c27a`.
++
++## Current qualification
++
++The current source preserves the isolated kernel and the verification-child
++subprocess fix. Qualification found and corrected authority defects in the kernel:
++
++1. Scope comparison rejected neither traversal segments nor ambiguous separators.
++2. Expiry subset comparison used text order instead of timestamp instants.
++3. The reducer accepted expired authority and invalid supplied timestamps.
++4. Delegated authority could substitute the original user-decision evidence.
++5. WorkItem commands were accepted for cancelled or non-active Tasks and without
++   a current approved plan. Runtime definitions now match the current plan.
++6. Claim readiness ignored required input manifests. Materialization, graph input
++   validation, implicit input-cycle detection, readiness refresh, and claim checks
++   now require valid upstream outputs.
++7. The completion reducer disagreed with the eligibility predicate when WorkItem
++   validation was missing or stale. Both paths now use the same eligibility rule.
++
++New regression tests reproduced these defects before the fixes. After correction,
++the focused kernel and subprocess suite passes 54 tests across four files.
++The kernel still uses only deterministic inputs; it does not read wall-clock time,
++the filesystem, environment, Git, providers, or compatibility projections.
++
++Current source SHA-256 identities:
++
++| Path                                                                 | SHA-256                                                            |
++| -------------------------------------------------------------------- | ------------------------------------------------------------------ |
++| `packages/core/src/tasks/task-kernel/model.ts`                       | `5fba68db83e0623be556146ddcc0b8dfed1ddd4d6bd74ccaa1338614542472fe` |
++| `packages/core/src/tasks/task-kernel/kernel.ts`                      | `73a345d0f34cc980594b01adf843f05900f240e3669690d9b461fb2241c1a019` |
++| `packages/core/src/tasks/task-kernel/invariants.ts`                  | `aa07195830ad05fc7ea957fd5993a1b3daf13723eac146ee1fc42ef96f852555` |
++| `packages/core/src/tasks/task-kernel/index.ts`                       | `3f69df84a74372f3a28d16a5816414e6abd69980368d0fe74b0d038de0429c10` |
++| `packages/agentplane/src/commands/shared/pr-meta/verify-log.ts`      | `84025fe05b1220f35fa2282246a83b3948a0baf08ea57475bcab3735a187b47a` |
++| `packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts` | `074a3321f71e777650700938c9e7e140355d2c78204c022164094826e0955757` |
++
++The supervisor assigns the exact implementation commit when it accepts this
++qualification WorkItem or its subsequent evaluator rework. The current commit identity and fresh check results are recorded in the
++task's `supervision/implementation-evidence.json` and `supervision/declared-checks.json`.
++The source hashes above identify the code qualified by this receipt without a
++self-referential commit hash. Full supervisor verification and evaluator acceptance
++remain mandatory before delivery; focused results alone do not establish completion.
++
++## Historical evidence
++
++Historical implementation `e381232abf9f5dd613ec048c592a0b4e9ccecdb2` passed the
++previous local checks at immutable evidence commit
++`4f71923961a191e78f4119fabb6746b79f301c76`.
++The kernel source tree at that implementation was
++`1752301a80c2988aa9e4d4d9245fb824df8748ae`.
++These identities describe the earlier source, before the authority corrections above.
++They do not qualify the new code.
++
++Read the following artifacts from that exact historical commit:
++
++| Artifact                                                                         | SHA-256                                                            |
++| -------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
++| `.agentplane/tasks/202608292032-1K47B8/supervision/declared-checks.json`         | `84868a3dbaff87f16cda2e8f09840e22c19ffe2e5f8e0cede0191b783beff679` |
++| `.agentplane/tasks/202608292032-1K47B8/supervision/implementation-evidence.json` | `2cacba31f5ed4447548e727509bfee092d51852cb032f621ddd1c113af80f4c5` |
++
++Those historical checks passed architecture validation, model tests, verification
++subprocess tests, and full local CI. The earlier environment WorkItem was completed
++at that time, but repeated plan approval subsequently reset its runtime record.
++This receipt does not describe that historical completion as current task state.
++The current qualification WorkItem obtains fresh supervisor evidence under its own
++approved plan instead of restoring old runtime fields by hand.
++
++## Delivery boundary
++
++AgentPlane must persist fresh checks, obtain evaluator acceptance, publish and
++verify the exact PR head, merge, and observe Task Hosted Close before M2 starts.
++This receipt neither asserts hosted delivery nor authorizes release publication.
+diff --git a/packages/core/src/tasks/task-kernel/index.ts b/packages/core/src/tasks/task-kernel/index.ts
+new file mode 100644
+index 000000000..9414c96cb
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/index.ts
+@@ -0,0 +1,23 @@
++export { EFFECT_STATES, KERNEL_REJECTION_CODES, TASK_STATES, WORK_ITEM_STATES } from "./model.js";
++export {
++  authorityBindsCurrentState,
++  compareExecutionAuthority,
++  PROJECTION_SOURCES,
++  projectionCannotAuthorize,
++  validateWorkItemDefinitions,
++} from "./invariants.js";
++export type {
++  AuthoritySubsetResult,
++  AuthoritySubsetViolation,
++  ProjectionSource,
++} from "./invariants.js";
++export {
++  EFFECT_OBSERVE_TRANSITION_TABLE,
++  isTaskCompletionEligible,
++  kernelDigest,
++  reduceTaskCommand,
++  TASK_ACTION_TRANSITION_TABLE,
++  TASK_TRANSITION_TABLE,
++  WORK_ITEM_TRANSITION_TABLE,
++} from "./kernel.js";
++export type * from "./model.js";
+diff --git a/packages/core/src/tasks/task-kernel/invariants.test.ts b/packages/core/src/tasks/task-kernel/invariants.test.ts
+new file mode 100644
+index 000000000..3fd5fbf40
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/invariants.test.ts
+@@ -0,0 +1,412 @@
++import { readFileSync } from "node:fs";
++
++import { describe, expect, it } from "vitest";
++
++import {
++  authorityBindsCurrentState,
++  compareExecutionAuthority,
++  projectionCannotAuthorize,
++  validateWorkItemDefinitions,
++} from "./invariants.js";
++import { kernelDigest, reduceTaskCommand } from "./kernel.js";
++import type { ExecutionAuthority, ExternalEffect, PlanRecord, TaskAggregate } from "./model.js";
++
++const fingerprint = kernelDigest("state");
++const policyDigest = kernelDigest("policy");
++
++function parentAuthority(overrides: Partial<ExecutionAuthority> = {}): ExecutionAuthority {
++  return {
++    digest: kernelDigest("parent-authority"),
++    task_id: "task-1",
++    plan_revision: 2,
++    plan_digest: kernelDigest("plan-2"),
++    work_item_id: null,
++    repository_identity: kernelDigest("repository"),
++    repository_fingerprint: fingerprint,
++    scope_roots: ["packages/core"],
++    repository_effects: ["source_code", "tests"],
++    external_effects: ["provider_read", "provider_write"],
++    capabilities: ["repository_write", "provider_read"],
++    resources: ["workspace", "provider"],
++    validation_requirements: ["focused", "full"],
++    policy_digests: [policyDigest],
++    completion_requirements: ["verified", "integrated"],
++    risk: {
++      requirements: "material",
++      implementation: "material",
++      reversibility: "irreversible",
++    },
++    provenance: {
++      kind: "USER",
++      actor_id: "user-1",
++      evidence_digest: kernelDigest("user-decision"),
++      parent_authority_digest: null,
++    },
++    expires_at: "2026-09-01T00:00:00.000Z",
++    ...overrides,
++  };
++}
++
++function childAuthority(
++  parent: ExecutionAuthority,
++  overrides: Partial<ExecutionAuthority> = {},
++): ExecutionAuthority {
++  return {
++    ...parent,
++    digest: kernelDigest("child-authority"),
++    work_item_id: "kernel",
++    scope_roots: ["packages/core/src/tasks/task-kernel"],
++    repository_effects: ["source_code"],
++    external_effects: ["provider_read"],
++    capabilities: ["repository_write"],
++    resources: ["workspace"],
++    validation_requirements: ["focused"],
++    completion_requirements: ["verified"],
++    risk: {
++      requirements: "bounded",
++      implementation: "bounded",
++      reversibility: "reversible",
++    },
++    provenance: {
++      kind: "DELEGATED",
++      actor_id: "agent-1",
++      evidence_digest: parent.provenance.evidence_digest,
++      parent_authority_digest: parent.digest,
++    },
++    expires_at: "2026-08-31T00:00:00.000Z",
++    ...overrides,
++  };
++}
++
++function approvedPlan(): PlanRecord {
++  return {
++    revision: 2,
++    digest: kernelDigest("plan-2"),
++    state: "APPROVED",
++    approval_actor_id: "user-1",
++    approval_evidence_digest: kernelDigest("user-decision"),
++    work_items: [
++      {
++        id: "kernel",
++        depends_on: [],
++        required_inputs: [],
++        expected_outputs: ["kernel-source"],
++        optional: false,
++      },
++    ],
++  };
++}
++
++function aggregate(effects: readonly ExternalEffect[] = []): TaskAggregate {
++  return {
++    schema_version: 1,
++    id: "task-1",
++    revision: 3,
++    state: effects.some((effect) => effect.state === "IN_DOUBT") ? "EFFECT_IN_DOUBT" : "ACTIVE",
++    intent_digest: kernelDigest("intent"),
++    current_plan: approvedPlan(),
++    plan_history: [],
++    work_items: {},
++    final_validation: null,
++    effects,
++    mutation_receipts: {},
++    controller_transfer: null,
++    migration_receipts: [],
++  };
++}
++
++describe("canonical task kernel invariants", () => {
++  it("accepts only equal or narrower derived authority", () => {
++    const parent = parentAuthority();
++    expect(compareExecutionAuthority(parent, childAuthority(parent))).toEqual({ ok: true });
++
++    const cases: readonly [string, ExecutionAuthority][] = [
++      ["task", childAuthority(parent, { task_id: "other" })],
++      ["plan", childAuthority(parent, { plan_revision: 3 })],
++      ["repository", childAuthority(parent, { repository_identity: kernelDigest("other") })],
++      [
++        "state_fingerprint",
++        childAuthority(parent, { repository_fingerprint: kernelDigest("old") }),
++      ],
++      ["scope", childAuthority(parent, { scope_roots: ["packages/agentplane"] })],
++      ["repository_effects", childAuthority(parent, { repository_effects: ["publish"] })],
++      ["external_effects", childAuthority(parent, { external_effects: ["deploy"] })],
++      ["capabilities", childAuthority(parent, { capabilities: ["publish"] })],
++      ["resources", childAuthority(parent, { resources: ["registry"] })],
++      ["validation", childAuthority(parent, { validation_requirements: ["hosted"] })],
++      ["policy", childAuthority(parent, { policy_digests: [kernelDigest("other-policy")] })],
++      ["completion", childAuthority(parent, { completion_requirements: ["published"] })],
++      ["expiry", childAuthority(parent, { expires_at: "2026-09-02T00:00:00.000Z" })],
++      [
++        "provenance",
++        childAuthority(parent, {
++          provenance: {
++            kind: "USER",
++            actor_id: "agent-1",
++            evidence_digest: kernelDigest("invented-user-decision"),
++            parent_authority_digest: parent.digest,
++          },
++        }),
++      ],
++    ];
++    for (const [violation, child] of cases) {
++      const comparison = compareExecutionAuthority(parent, child);
++      expect(comparison.ok).toBe(false);
++      if (!comparison.ok) expect(comparison.violations).toContain(violation);
++    }
++
++    const boundedParent = parentAuthority({
++      risk: {
++        requirements: "bounded",
++        implementation: "bounded",
++        reversibility: "reversible",
++      },
++    });
++    const widenedRisk = compareExecutionAuthority(
++      boundedParent,
++      childAuthority(boundedParent, {
++        risk: {
++          requirements: "material",
++          implementation: "material",
++          reversibility: "irreversible",
++        },
++      }),
++    );
++    expect(widenedRisk.ok).toBe(false);
++    if (!widenedRisk.ok) {
++      expect(widenedRisk.violations).toContain("risk");
++      expect(widenedRisk.violations).toContain("reversibility");
++    }
++  });
++
++  it("binds runtime authority to the exact task, plan, state, and WorkItem", () => {
++    const authority = parentAuthority();
++    expect(
++      authorityBindsCurrentState(authority, {
++        task_id: "task-1",
++        plan_revision: 2,
++        plan_digest: kernelDigest("plan-2"),
++        repository_fingerprint: fingerprint,
++        work_item_id: "kernel",
++      }),
++    ).toBe(true);
++    expect(
++      authorityBindsCurrentState(authority, {
++        task_id: "task-1",
++        plan_revision: 3,
++        plan_digest: kernelDigest("plan-3"),
++        repository_fingerprint: fingerprint,
++        work_item_id: "kernel",
++      }),
++    ).toBe(false);
++  });
++
++  it.each([
++    "packages/core/../agentplane",
++    "packages/core/src/../../outside",
++    "packages\\core\\..\\agentplane",
++    "packages/core/./src",
++    "packages/core//src",
++    "packages/core/invalid\0path",
++  ])("rejects ambiguous or escaping authority path %s", (scope) => {
++    const parent = parentAuthority();
++    expect(
++      compareExecutionAuthority(parent, childAuthority(parent, { scope_roots: [scope] })),
++    ).toMatchObject({ ok: false, violations: expect.arrayContaining(["scope"]) as unknown });
++    const malformedParent = parentAuthority({ scope_roots: [scope] });
++    expect(
++      compareExecutionAuthority(
++        malformedParent,
++        childAuthority(malformedParent, { scope_roots: [scope] }),
++      ).ok,
++    ).toBe(false);
++  });
++
++  it.each([
++    [".", "packages/core/src", true],
++    [".", "/packages/core/src", false],
++    [".", "C:/packages/core/src", false],
++    ["/", "/packages/core/src", true],
++    ["/", "packages/core/src", false],
++    ["packages/core/", "packages\\core\\src", true],
++    ["packages/core", "packages/core-other", false],
++    ["", "packages/core", false],
++  ] as const)("compares canonical scope %s against %s", (root, scope, allowed) => {
++    const parent = parentAuthority({ scope_roots: [root] });
++    expect(
++      compareExecutionAuthority(parent, childAuthority(parent, { scope_roots: [scope] })).ok,
++    ).toBe(allowed);
++  });
++
++  it("compares expiry instants across offsets and rejects invalid dates", () => {
++    const parent = parentAuthority({ expires_at: "2026-09-01T00:00:00.000Z" });
++    expect(
++      compareExecutionAuthority(
++        parent,
++        childAuthority(parent, { expires_at: "2026-09-01T02:00:00.000+03:00" }),
++      ).ok,
++    ).toBe(true);
++    expect(
++      compareExecutionAuthority(
++        parent,
++        childAuthority(parent, { expires_at: "2026-08-31T23:30:00.000-02:00" }),
++      ),
++    ).toMatchObject({ ok: false, violations: expect.arrayContaining(["expiry"]) as unknown });
++    const unbounded = parentAuthority({ expires_at: null });
++    expect(
++      compareExecutionAuthority(unbounded, childAuthority(unbounded, { expires_at: "not-a-date" }))
++        .ok,
++    ).toBe(false);
++  });
++
++  it("retains the parent user-decision evidence in delegated authority", () => {
++    const parent = parentAuthority();
++    const child = childAuthority(parent);
++    expect(
++      compareExecutionAuthority(parent, {
++        ...child,
++        provenance: {
++          ...child.provenance,
++          evidence_digest: kernelDigest("unrelated-user-decision"),
++        },
++      }),
++    ).toMatchObject({ ok: false, violations: expect.arrayContaining(["provenance"]) as unknown });
++  });
++
++  it("rejects duplicate, missing, and cyclic WorkItem graph definitions", () => {
++    expect(
++      validateWorkItemDefinitions([
++        {
++          id: "a",
++          depends_on: ["b"],
++          required_inputs: [],
++          expected_outputs: ["same", "same"],
++          optional: false,
++        },
++        {
++          id: "b",
++          depends_on: ["a", "missing"],
++          required_inputs: [],
++          expected_outputs: ["b-output"],
++          optional: false,
++        },
++        {
++          id: "a",
++          depends_on: [],
++          required_inputs: [],
++          expected_outputs: ["a-output"],
++          optional: false,
++        },
++        {
++          id: "c",
++          depends_on: ["d"],
++          required_inputs: [],
++          expected_outputs: ["c-output"],
++          optional: false,
++        },
++        {
++          id: "d",
++          depends_on: ["c"],
++          required_inputs: [],
++          expected_outputs: ["d-output"],
++          optional: false,
++        },
++      ]),
++    ).toEqual(
++      expect.arrayContaining([
++        "duplicate:a",
++        "duplicate_output:a",
++        "missing_dependency:b:missing",
++        "dependency_cycle",
++      ]),
++    );
++  });
++
++  it("validates required input producers and detects input-only cycles", () => {
++    const a = {
++      id: "a",
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: ["out-a"],
++      optional: false,
++    };
++    const b = { ...a, id: "b", required_inputs: ["out-a"], expected_outputs: ["out-b"] };
++    expect(validateWorkItemDefinitions([a, b])).toEqual([]);
++    expect(validateWorkItemDefinitions([a, { ...b, required_inputs: ["unknown"] }])).toContain(
++      "invalid_input:b:unknown",
++    );
++    expect(validateWorkItemDefinitions([a, { ...b, required_inputs: ["out-b"] }])).toContain(
++      "self_input:b:out-b",
++    );
++    expect(validateWorkItemDefinitions([a, b, { ...a, id: "duplicate-producer" }])).toContain(
++      "invalid_input:b:out-a",
++    );
++    expect(validateWorkItemDefinitions([{ ...a, required_inputs: ["out-b"] }, b])).toContain(
++      "dependency_cycle",
++    );
++  });
++
++  it("blocks unrelated mutations while a non-idempotent effect is uncertain", () => {
++    const uncertain: ExternalEffect = {
++      id: "provider-effect",
++      kind: "provider_write",
++      idempotency_key: "provider-key",
++      state: "IN_DOUBT",
++      request_digest: kernelDigest("request"),
++      provider_receipt_digest: null,
++      observed_state_digest: null,
++    };
++    const state = aggregate([uncertain]);
++    const authority = parentAuthority();
++    expect(
++      reduceTaskCommand({
++        aggregate: state,
++        command: {
++          kind: "complete_task",
++          task_id: state.id,
++          expected_task_revision: state.revision,
++          expected_state_fingerprint: fingerprint,
++        },
++        actor: { id: "agent-1", kind: "AGENT", transport: "managed", capabilities: [] },
++        authority,
++        repository_fingerprint: fingerprint,
++        occurred_at: "2026-08-30T00:00:00.000Z",
++        mutation_id: "mutation-1",
++      }),
++    ).toMatchObject({
++      kind: "rejected",
++      code: "EFFECT_RECONCILIATION_REQUIRED",
++      required_action: "reconcile_effect",
++    });
++  });
++
++  it("makes every compatibility projection explicitly non-authoritative", () => {
++    for (const source of [
++      "document",
++      "legacy_status",
++      "verification_text",
++      "pr_metadata",
++      "provider_summary",
++    ] as const) {
++      expect(projectionCannotAuthorize(source)).toEqual({
++        kind: "rejected",
++        code: "PROJECTION_CANNOT_AUTHORIZE",
++        facts: [source],
++        required_action: "supply_execution_authority",
++      });
++    }
++  });
++
++  it("keeps production kernel modules outside capability and compatibility boundaries", () => {
++    const sources = ["model.ts", "invariants.ts", "kernel.ts", "index.ts"]
++      .map((name) => readFileSync(new URL(name, import.meta.url), "utf8"))
++      .join("\n");
++    for (const forbidden of [
++      /from ["']node:(?:fs|process|child_process|os|timers)/u,
++      /from ["'][^"']*(?:task-centric|compatibility|adapter|backend|provider|cli|task-doc)/u,
++      /\b(?:randomUUID|Math\.random|Date\.now|process\.env)\b/u,
++    ]) {
++      expect(sources).not.toMatch(forbidden);
++    }
++  });
++});
+diff --git a/packages/core/src/tasks/task-kernel/invariants.ts b/packages/core/src/tasks/task-kernel/invariants.ts
+new file mode 100644
+index 000000000..892653ac6
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/invariants.ts
+@@ -0,0 +1,243 @@
++import type {
++  ExecutionAuthority,
++  KernelResult,
++  Sha256Digest,
++  WorkItemDefinition,
++} from "./model.js";
++
++export type AuthoritySubsetViolation =
++  | "task"
++  | "plan"
++  | "repository"
++  | "state_fingerprint"
++  | "work_item"
++  | "scope"
++  | "repository_effects"
++  | "external_effects"
++  | "capabilities"
++  | "resources"
++  | "risk"
++  | "reversibility"
++  | "validation"
++  | "policy"
++  | "completion"
++  | "expiry"
++  | "provenance";
++
++export type AuthoritySubsetResult =
++  | Readonly<{ ok: true }>
++  | Readonly<{ ok: false; violations: readonly AuthoritySubsetViolation[] }>;
++
++export const PROJECTION_SOURCES = [
++  "document",
++  "legacy_status",
++  "verification_text",
++  "pr_metadata",
++  "provider_summary",
++] as const;
++
++export type ProjectionSource = (typeof PROJECTION_SOURCES)[number];
++
++const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/u;
++
++function setIsSubset(child: readonly string[], parent: readonly string[]): boolean {
++  const allowed = new Set(parent);
++  return child.every((value) => allowed.has(value));
++}
++
++function canonicalAuthorityPath(value: string): string | null {
++  const normalized = value.replaceAll("\\", "/");
++  if (!normalized || normalized.includes("\0") || normalized.includes("//")) return null;
++  if (normalized === "." || normalized === "/") return normalized;
++  const trimmed = normalized.replace(/\/$/u, "");
++  if (trimmed.split("/").some((part) => part === "." || part === "..")) return null;
++  return trimmed;
++}
++
++function pathIsWithin(path: string, root: string): boolean {
++  const normalizedPath = canonicalAuthorityPath(path);
++  const normalizedRoot = canonicalAuthorityPath(root);
++  if (normalizedPath === null || normalizedRoot === null) return false;
++  if (normalizedRoot === ".") return !/^(?:\/|[a-z]:)/iu.test(normalizedPath);
++  if (normalizedRoot === "/") return normalizedPath.startsWith("/");
++  return normalizedPath === normalizedRoot || normalizedPath.startsWith(`${normalizedRoot}/`);
++}
++
++function scopeIsSubset(child: readonly string[], parent: readonly string[]): boolean {
++  return child.every((path) => parent.some((root) => pathIsWithin(path, root)));
++}
++
++function workItemIsSubset(child: string | null, parent: string | null): boolean {
++  return parent === null || child === parent;
++}
++
++function expiryIsSubset(child: string | null, parent: string | null): boolean {
++  const childTime = child === null ? Infinity : Date.parse(child);
++  const parentTime = parent === null ? Infinity : Date.parse(parent);
++  return !Number.isNaN(childTime) && !Number.isNaN(parentTime) && childTime <= parentTime;
++}
++
++function addViolation(
++  violations: AuthoritySubsetViolation[],
++  condition: boolean,
++  violation: AuthoritySubsetViolation,
++): void {
++  if (!condition) violations.push(violation);
++}
++
++export function compareExecutionAuthority(
++  parent: ExecutionAuthority,
++  child: ExecutionAuthority,
++): AuthoritySubsetResult {
++  const violations: AuthoritySubsetViolation[] = [];
++  addViolation(violations, child.task_id === parent.task_id, "task");
++  addViolation(
++    violations,
++    child.plan_revision === parent.plan_revision && child.plan_digest === parent.plan_digest,
++    "plan",
++  );
++  addViolation(violations, child.repository_identity === parent.repository_identity, "repository");
++  addViolation(
++    violations,
++    child.repository_fingerprint === parent.repository_fingerprint,
++    "state_fingerprint",
++  );
++  addViolation(violations, workItemIsSubset(child.work_item_id, parent.work_item_id), "work_item");
++  addViolation(violations, scopeIsSubset(child.scope_roots, parent.scope_roots), "scope");
++  addViolation(
++    violations,
++    setIsSubset(child.repository_effects, parent.repository_effects),
++    "repository_effects",
++  );
++  addViolation(
++    violations,
++    setIsSubset(child.external_effects, parent.external_effects),
++    "external_effects",
++  );
++  addViolation(violations, setIsSubset(child.capabilities, parent.capabilities), "capabilities");
++  addViolation(violations, setIsSubset(child.resources, parent.resources), "resources");
++  addViolation(
++    violations,
++    child.risk.requirements === "bounded" || parent.risk.requirements === "material",
++    "risk",
++  );
++  addViolation(
++    violations,
++    child.risk.implementation === "bounded" || parent.risk.implementation === "material",
++    "risk",
++  );
++  const reversibilityRank = {
++    reversible: 0,
++    recovery_required: 1,
++    irreversible: 2,
++  } as const;
++  addViolation(
++    violations,
++    reversibilityRank[child.risk.reversibility] <= reversibilityRank[parent.risk.reversibility],
++    "reversibility",
++  );
++  addViolation(
++    violations,
++    setIsSubset(child.validation_requirements, parent.validation_requirements),
++    "validation",
++  );
++  addViolation(violations, setIsSubset(child.policy_digests, parent.policy_digests), "policy");
++  addViolation(
++    violations,
++    setIsSubset(child.completion_requirements, parent.completion_requirements),
++    "completion",
++  );
++  addViolation(violations, expiryIsSubset(child.expires_at, parent.expires_at), "expiry");
++  addViolation(
++    violations,
++    child.provenance.kind !== "USER" &&
++      child.provenance.parent_authority_digest === parent.digest &&
++      child.provenance.evidence_digest === parent.provenance.evidence_digest,
++    "provenance",
++  );
++  const unique = [...new Set(violations)];
++  return unique.length === 0 ? { ok: true } : { ok: false, violations: unique };
++}
++
++export function authorityBindsCurrentState(
++  authority: ExecutionAuthority,
++  expected: Readonly<{
++    task_id: string;
++    plan_revision: number | null;
++    plan_digest: Sha256Digest | null;
++    repository_fingerprint: Sha256Digest;
++    work_item_id: string | null;
++  }>,
++): boolean {
++  return (
++    DIGEST_PATTERN.test(authority.digest) &&
++    authority.task_id === expected.task_id &&
++    (expected.plan_revision === null || authority.plan_revision === expected.plan_revision) &&
++    (expected.plan_digest === null || authority.plan_digest === expected.plan_digest) &&
++    authority.repository_fingerprint === expected.repository_fingerprint &&
++    (expected.work_item_id === null ||
++      authority.work_item_id === null ||
++      authority.work_item_id === expected.work_item_id)
++  );
++}
++
++export function validateWorkItemDefinitions(
++  definitions: readonly WorkItemDefinition[],
++): readonly string[] {
++  const issues: string[] = [];
++  const ids = new Set<string>();
++  const producers = new Map<string, string[]>();
++  for (const definition of definitions) {
++    if (!definition.id || ids.has(definition.id)) issues.push(`duplicate:${definition.id}`);
++    ids.add(definition.id);
++    if (new Set(definition.expected_outputs).size !== definition.expected_outputs.length) {
++      issues.push(`duplicate_output:${definition.id}`);
++    }
++    for (const output of definition.expected_outputs) {
++      producers.set(output, [...(producers.get(output) ?? []), definition.id]);
++    }
++  }
++  for (const definition of definitions) {
++    for (const dependency of definition.depends_on) {
++      if (!ids.has(dependency)) issues.push(`missing_dependency:${definition.id}:${dependency}`);
++      if (dependency === definition.id) issues.push(`cycle:${definition.id}`);
++    }
++    for (const input of definition.required_inputs) {
++      const sources = producers.get(input) ?? [];
++      if (sources.length !== 1) issues.push(`invalid_input:${definition.id}:${input}`);
++      if (sources.includes(definition.id)) issues.push(`self_input:${definition.id}:${input}`);
++    }
++  }
++  const byId = new Map(definitions.map((definition) => [definition.id, definition]));
++  const visiting = new Set<string>();
++  const visited = new Set<string>();
++  const visit = (id: string): boolean => {
++    if (visiting.has(id)) return true;
++    if (visited.has(id)) return false;
++    visiting.add(id);
++    const definition = byId.get(id);
++    const dependencies = [
++      ...(definition?.depends_on ?? []),
++      ...(definition?.required_inputs.flatMap((input) => producers.get(input) ?? []) ?? []),
++    ];
++    for (const dependency of dependencies) {
++      if (byId.has(dependency) && visit(dependency)) return true;
++    }
++    visiting.delete(id);
++    visited.add(id);
++    return false;
++  };
++  if (definitions.some((definition) => visit(definition.id))) issues.push("dependency_cycle");
++  return [...new Set(issues)];
++}
++
++export function projectionCannotAuthorize(
++  source: ProjectionSource,
++): Extract<KernelResult, { kind: "rejected" }> {
++  return {
++    kind: "rejected",
++    code: "PROJECTION_CANNOT_AUTHORIZE",
++    facts: [source],
++    required_action: "supply_execution_authority",
++  };
++}
+diff --git a/packages/core/src/tasks/task-kernel/kernel.test.ts b/packages/core/src/tasks/task-kernel/kernel.test.ts
+new file mode 100644
+index 000000000..f24daab1b
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/kernel.test.ts
+@@ -0,0 +1,598 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  EFFECT_OBSERVE_TRANSITION_TABLE,
++  isTaskCompletionEligible,
++  kernelDigest,
++  reduceTaskCommand,
++  TASK_ACTION_TRANSITION_TABLE,
++  TASK_TRANSITION_TABLE,
++  WORK_ITEM_TRANSITION_TABLE,
++} from "./kernel.js";
++import type {
++  ExecutionAuthority,
++  KernelInput,
++  OutputManifest,
++  PlanRecord,
++  Sha256Digest,
++  TaskAggregate,
++  TaskCommand,
++  TaskState,
++  ValidationRecord,
++  WorkItemRuntime,
++  WorkItemState,
++} from "./model.js";
++
++const fingerprint = kernelDigest("repository-state");
++const resultDigest = kernelDigest("implementation-result");
++
++const plan: PlanRecord = {
++  revision: 1,
++  digest: kernelDigest("plan-1"),
++  state: "APPROVED",
++  approval_actor_id: "user-1",
++  approval_evidence_digest: kernelDigest("approval"),
++  work_items: [
++    {
++      id: "kernel",
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: ["kernel-source"],
++      optional: false,
++    },
++  ],
++};
++
++const authority: ExecutionAuthority = {
++  digest: kernelDigest("authority"),
++  task_id: "task-1",
++  plan_revision: plan.revision,
++  plan_digest: plan.digest,
++  work_item_id: null,
++  repository_identity: kernelDigest("repository"),
++  repository_fingerprint: fingerprint,
++  scope_roots: ["packages/core/src/tasks/task-kernel"],
++  repository_effects: ["source_code", "tests"],
++  external_effects: [],
++  capabilities: ["repository_write"],
++  resources: [],
++  validation_requirements: ["focused-tests"],
++  policy_digests: [],
++  completion_requirements: ["validation"],
++  risk: {
++    requirements: "bounded",
++    implementation: "bounded",
++    reversibility: "reversible",
++  },
++  provenance: {
++    kind: "USER",
++    actor_id: "user-1",
++    evidence_digest: kernelDigest("approval"),
++    parent_authority_digest: null,
++  },
++  expires_at: null,
++};
++
++function runtime(state: WorkItemRuntime["state"]): WorkItemRuntime {
++  return {
++    definition: plan.work_items[0]!,
++    state,
++    revision: 1,
++    attempt: 1,
++    claim_id: "claim-1",
++    result_digest: null,
++    output_manifests: [],
++    validation: null,
++  };
++}
++
++function aggregate(overrides: Partial<TaskAggregate> = {}): TaskAggregate {
++  return {
++    schema_version: 1,
++    id: "task-1",
++    revision: 7,
++    state: "ACTIVE",
++    intent_digest: kernelDigest("intent"),
++    current_plan: plan,
++    plan_history: [],
++    work_items: { kernel: runtime("READY") },
++    final_validation: null,
++    effects: [],
++    mutation_receipts: {},
++    controller_transfer: null,
++    migration_receipts: [],
++    ...overrides,
++  };
++}
++
++function input(state: TaskAggregate, command: TaskCommand, mutationId = "mutation-1"): KernelInput {
++  return {
++    aggregate: state,
++    command,
++    actor: {
++      id: "agent-1",
++      kind: "AGENT",
++      transport: "managed",
++      capabilities: ["repository_write"],
++    },
++    authority,
++    repository_fingerprint: fingerprint,
++    occurred_at: "2026-08-29T20:00:00.000Z",
++    mutation_id: mutationId,
++  };
++}
++
++function transitionCommand(
++  state: TaskAggregate,
++  action: Extract<TaskCommand, { kind: "transition_work_item" }>["action"],
++): Extract<TaskCommand, { kind: "transition_work_item" }> {
++  return {
++    kind: "transition_work_item",
++    task_id: state.id,
++    expected_task_revision: state.revision,
++    expected_state_fingerprint: fingerprint,
++    work_item_id: "kernel",
++    action,
++    claim_id: action === "claim" ? "claim-2" : null,
++  };
++}
++
++function manifest(): OutputManifest {
++  return {
++    id: "kernel-source",
++    kind: "source",
++    digest: kernelDigest("source"),
++    task_id: "task-1",
++    plan_revision: plan.revision,
++    work_item_id: "kernel",
++    attempt: 1,
++    repository_fingerprint: fingerprint,
++  };
++}
++
++function validation(implementationIdentity: Sha256Digest): ValidationRecord {
++  return {
++    status: "PASSED",
++    identity: {
++      implementation_identity: implementationIdentity,
++      check_id: "focused-tests",
++      command_digest: kernelDigest("test-command"),
++      toolchain_digest: kernelDigest("toolchain"),
++      environment_digest: kernelDigest("environment"),
++    },
++    evidence_digests: [kernelDigest("test-evidence")],
++    observed_at: "2026-08-29T20:01:00.000Z",
++  };
++}
++
++describe("canonical task kernel reducer", () => {
++  it.each(["2026-08-29T19:00:00.000Z", "2026-08-29T20:00:00.000Z", "not-a-date"])(
++    "rejects expired or malformed authority expiry %s",
++    (expires_at) => {
++      const state = aggregate();
++      const invocation = input(state, transitionCommand(state, "claim"));
++      expect(
++        reduceTaskCommand({ ...invocation, authority: { ...authority, expires_at } }),
++      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
++      expect(state.work_items.kernel?.state).toBe("READY");
++    },
++  );
++
++  it("uses supplied time with offsets to enforce authority expiry", () => {
++    const state = aggregate();
++    const invocation = input(state, transitionCommand(state, "claim"));
++    expect(
++      reduceTaskCommand({
++        ...invocation,
++        authority: { ...authority, expires_at: "2026-08-29T23:01:00.000+03:00" },
++      }).kind,
++    ).toBe("accepted");
++    expect(reduceTaskCommand({ ...invocation, occurred_at: "not-a-date" })).toMatchObject({
++      kind: "rejected",
++      code: "AUTHORITY_SCOPE_EXCEEDED",
++    });
++  });
++
++  it("publishes closed task and WorkItem transition policies", () => {
++    expect(Object.keys(TASK_TRANSITION_TABLE)).toHaveLength(10);
++    expect(TASK_TRANSITION_TABLE.COMPLETED).toEqual([]);
++    expect(WORK_ITEM_TRANSITION_TABLE.claim).toEqual([
++      ["READY", "CLAIMED"],
++      ["REWORK_READY", "CLAIMED"],
++    ]);
++  });
++
++  it("maps every declared Task edge to an executable kernel operation", () => {
++    const covered = new Set<string>();
++    for (const transitions of Object.values(TASK_ACTION_TRANSITION_TABLE)) {
++      for (const [from, to] of transitions) covered.add(`${from}->${to}`);
++    }
++    for (const edge of [
++      "CAPTURED->PLANNING",
++      "PLANNING->AWAITING_PLAN_APPROVAL",
++      "AWAITING_PLAN_APPROVAL->PLANNING",
++      "AWAITING_PLAN_APPROVAL->ACTIVE",
++      "ACTIVE->FINAL_VALIDATION",
++      "ACTIVE->EFFECT_IN_DOUBT",
++      "FINAL_VALIDATION->COMPLETED",
++      "FINAL_VALIDATION->EFFECT_IN_DOUBT",
++      "EFFECT_IN_DOUBT->ACTIVE",
++    ]) {
++      covered.add(edge);
++    }
++    const declared = Object.entries(TASK_TRANSITION_TABLE).flatMap(([from, targets]) =>
++      targets.map((to) => `${from}->${to}`),
++    );
++    expect([...covered].toSorted()).toEqual(declared.toSorted());
++  });
++
++  it("executes every explicit Task action vector with exact event and receipt ordering", () => {
++    for (const [action, transitions] of Object.entries(TASK_ACTION_TRANSITION_TABLE)) {
++      for (const [index, [from, to]] of transitions.entries()) {
++        const state = aggregate({ state: from });
++        const command: Extract<TaskCommand, { kind: "transition_task" }> = {
++          kind: "transition_task",
++          task_id: state.id,
++          expected_task_revision: state.revision,
++          expected_state_fingerprint: fingerprint,
++          action: action as Extract<TaskCommand, { kind: "transition_task" }>["action"],
++        };
++        const result = reduceTaskCommand(input(state, command, `task-${action}-${index}`));
++        expect(result.kind).toBe("accepted");
++        if (result.kind !== "accepted") continue;
++        expect(result.aggregate.state).toBe(to);
++        expect(result.aggregate.revision).toBe(state.revision + 1);
++        expect(result.events.map((event) => event.kind)).toEqual(["task_transitioned"]);
++        expect(result.receipts).toHaveLength(1);
++        expect(result.receipts[0]).toMatchObject({
++          before_revision: state.revision,
++          after_revision: state.revision + 1,
++        });
++      }
++    }
++  });
++
++  it("executes every WorkItem action vector with exact event and receipt ordering", () => {
++    for (const [action, transitions] of Object.entries(WORK_ITEM_TRANSITION_TABLE)) {
++      for (const [index, [from, to]] of transitions.entries()) {
++        const baseRuntime = runtime(from);
++        const preparedRuntime: WorkItemRuntime =
++          action === "complete"
++            ? {
++                ...baseRuntime,
++                result_digest: resultDigest,
++                output_manifests: [manifest()],
++                validation: validation(resultDigest),
++              }
++            : baseRuntime;
++        const state = aggregate({ work_items: { kernel: preparedRuntime } });
++        const command = transitionCommand(
++          state,
++          action as Extract<TaskCommand, { kind: "transition_work_item" }>["action"],
++        );
++        const result = reduceTaskCommand(input(state, command, `work-item-${action}-${index}`));
++        expect(result.kind).toBe("accepted");
++        if (result.kind !== "accepted") continue;
++        expect(result.aggregate.work_items.kernel?.state).toBe(to);
++        expect(result.events.map((event) => event.kind)).toEqual(["work_item_transitioned"]);
++        expect(result.receipts).toHaveLength(1);
++      }
++    }
++  });
++
++  it("rejects every WorkItem edge outside the closed action table", () => {
++    const states: readonly WorkItemState[] = [
++      "PLANNED",
++      "READY",
++      "CLAIMED",
++      "EXECUTING",
++      "RESULT_RECEIVED",
++      "INSPECTING",
++      "VALIDATING",
++      "REWORK_READY",
++      "COMPLETED",
++      "BLOCKED",
++      "EFFECT_IN_DOUBT",
++      "CANCELLED",
++    ];
++    for (const [action, transitions] of Object.entries(WORK_ITEM_TRANSITION_TABLE)) {
++      const allowed = new Set(transitions.map(([from]) => from));
++      for (const from of states.filter((state) => !allowed.has(state))) {
++        const state = aggregate({ work_items: { kernel: runtime(from) } });
++        const command = transitionCommand(
++          state,
++          action as Extract<TaskCommand, { kind: "transition_work_item" }>["action"],
++        );
++        const result = reduceTaskCommand(input(state, command, `illegal-${action}-${from}`));
++        expect(result).toMatchObject({ kind: "rejected", code: "ILLEGAL_WORK_ITEM_TRANSITION" });
++        expect(state.work_items.kernel?.state).toBe(from);
++      }
++    }
++  });
++
++  it("rejects every Task action edge outside the closed action table", () => {
++    const states = Object.keys(TASK_TRANSITION_TABLE) as TaskState[];
++    for (const [action, transitions] of Object.entries(TASK_ACTION_TRANSITION_TABLE)) {
++      const allowed = new Set(transitions.map(([from]) => from));
++      for (const from of states.filter((state) => !allowed.has(state))) {
++        const state = aggregate({ state: from });
++        const command: Extract<TaskCommand, { kind: "transition_task" }> = {
++          kind: "transition_task",
++          task_id: state.id,
++          expected_task_revision: state.revision,
++          expected_state_fingerprint: fingerprint,
++          action: action as Extract<TaskCommand, { kind: "transition_task" }>["action"],
++        };
++        const result = reduceTaskCommand(input(state, command, `illegal-task-${action}-${from}`));
++        expect(result).toMatchObject({ kind: "rejected", code: "ILLEGAL_TASK_TRANSITION" });
++        expect(state.state).toBe(from);
++      }
++    }
++  });
++
++  it("publishes closed effect observation transitions", () => {
++    expect(EFFECT_OBSERVE_TRANSITION_TABLE).toEqual({
++      PREPARED: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
++      PENDING: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
++      APPLIED: ["APPLIED"],
++      NOT_APPLIED: ["NOT_APPLIED"],
++      IN_DOUBT: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
++      RECONCILED: [],
++      SUPERSEDED: [],
++    });
++  });
++
++  it("rejects stale commands before changing aggregate state", () => {
++    const state = aggregate();
++    const command = { ...transitionCommand(state, "claim"), expected_task_revision: 6 };
++
++    expect(reduceTaskCommand(input(state, command))).toMatchObject({
++      kind: "rejected",
++      code: "STALE_TASK_REVISION",
++    });
++    expect(state.work_items.kernel?.state).toBe("READY");
++  });
++
++  it.each<TaskState>(["CANCELLED", "COMPLETED", "PLANNING", "BLOCKED", "FINAL_VALIDATION"])(
++    "rejects WorkItem execution while the Task is %s",
++    (taskState) => {
++      const state = aggregate({ state: taskState });
++      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
++        kind: "rejected",
++        code: "ILLEGAL_TASK_TRANSITION",
++      });
++    },
++  );
++
++  it("requires the current approved plan before executing WorkItems", () => {
++    for (const current_plan of [null, { ...plan, state: "PROPOSED" as const }]) {
++      const state = aggregate({ current_plan });
++      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim"))).kind).toBe(
++        "rejected",
++      );
++    }
++  });
++
++  it("blocks missing input manifests and permits validated producer outputs", () => {
++    const consumer = {
++      ...runtime("READY"),
++      definition: { ...plan.work_items[0]!, required_inputs: ["upstream"] },
++    };
++    const current_plan = {
++      ...plan,
++      work_items: [
++        consumer.definition,
++        { ...plan.work_items[0]!, id: "producer", expected_outputs: ["upstream"] },
++      ],
++    };
++    const state = aggregate({ current_plan, work_items: { kernel: consumer } });
++    const empty = aggregate({ current_plan, work_items: {} });
++    expect(
++      reduceTaskCommand(
++        input(empty, {
++          kind: "materialize_work_items",
++          task_id: empty.id,
++          expected_task_revision: empty.revision,
++          expected_state_fingerprint: fingerprint,
++          plan_revision: plan.revision,
++          plan_digest: plan.digest,
++        }),
++      ),
++    ).toMatchObject({
++      kind: "accepted",
++      aggregate: {
++        work_items: {
++          kernel: { state: "PLANNED" },
++          producer: { state: "READY" },
++        },
++      },
++    });
++    expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
++      kind: "rejected",
++      code: "WORK_ITEM_DEPENDENCY_INCOMPLETE",
++    });
++    const producer = {
++      ...runtime("COMPLETED"),
++      definition: { ...plan.work_items[0]!, id: "producer", expected_outputs: ["upstream"] },
++      result_digest: resultDigest,
++      validation: validation(resultDigest),
++      output_manifests: [{ ...manifest(), id: "upstream", work_item_id: "producer" }],
++    };
++    const ready = aggregate({ current_plan, work_items: { kernel: consumer, producer } });
++    expect(reduceTaskCommand(input(ready, transitionCommand(ready, "claim"))).kind).toBe(
++      "accepted",
++    );
++    for (const source of [
++      { ...producer, state: "EXECUTING" as const },
++      { ...producer, output_manifests: [] },
++      { ...producer, validation: null },
++    ]) {
++      const invalid = aggregate({
++        current_plan,
++        work_items: { kernel: consumer, producer: source },
++      });
++      expect(reduceTaskCommand(input(invalid, transitionCommand(invalid, "claim"))).kind).toBe(
++        "rejected",
++      );
++    }
++    const waiting = aggregate({
++      current_plan,
++      work_items: {
++        kernel: { ...consumer, state: "PLANNED" },
++        producer: { ...producer, state: "VALIDATING" },
++      },
++    });
++    const completion = { ...transitionCommand(waiting, "complete"), work_item_id: "producer" };
++    expect(reduceTaskCommand(input(waiting, completion))).toMatchObject({
++      kind: "accepted",
++      aggregate: { work_items: { kernel: { state: "READY" } } },
++    });
++    const mismatched = aggregate({ work_items: { kernel: consumer } });
++    expect(
++      reduceTaskCommand(input(mismatched, transitionCommand(mismatched, "claim"))),
++    ).toMatchObject({ kind: "rejected", code: "PLAN_DIGEST_MISMATCH" });
++  });
++
++  it("returns the original receipt for an exact mutation replay", () => {
++    const state = aggregate();
++    const command = transitionCommand(state, "claim");
++    const first = reduceTaskCommand(input(state, command));
++    expect(first.kind).toBe("accepted");
++    if (first.kind !== "accepted") return;
++
++    const replay = reduceTaskCommand(input(first.aggregate, command));
++    expect(replay).toMatchObject({ kind: "accepted", events: [] });
++    if (replay.kind === "accepted") {
++      expect(replay.aggregate).toBe(first.aggregate);
++      expect(replay.receipts).toEqual(first.receipts);
++    }
++  });
++
++  it("rejects reuse of a mutation identity with a changed command", () => {
++    const state = aggregate();
++    const command = transitionCommand(state, "claim");
++    const first = reduceTaskCommand(input(state, command));
++    expect(first.kind).toBe("accepted");
++    if (first.kind !== "accepted") return;
++
++    const changed = { ...command, claim_id: "different-claim" };
++    expect(reduceTaskCommand(input(first.aggregate, changed))).toMatchObject({
++      kind: "rejected",
++      code: "MUTATION_ID_CONFLICT",
++    });
++  });
++
++  it("binds accepted results and validation to the active WorkItem attempt", () => {
++    const state = aggregate({ work_items: { kernel: runtime("EXECUTING") } });
++    const missingOutput: Extract<TaskCommand, { kind: "accept_work_item_result" }> = {
++      kind: "accept_work_item_result",
++      task_id: state.id,
++      expected_task_revision: state.revision,
++      expected_state_fingerprint: fingerprint,
++      plan_revision: plan.revision,
++      plan_digest: plan.digest,
++      work_item_id: "kernel",
++      result_digest: resultDigest,
++      output_manifests: [],
++    };
++    expect(reduceTaskCommand(input(state, missingOutput))).toMatchObject({
++      kind: "rejected",
++      code: "WORK_ITEM_OUTPUT_MISSING",
++    });
++
++    const accepted = reduceTaskCommand(
++      input(state, { ...missingOutput, output_manifests: [manifest()] }),
++    );
++    expect(accepted).toMatchObject({
++      kind: "accepted",
++      aggregate: { work_items: { kernel: { state: "RESULT_RECEIVED" } } },
++    });
++    if (accepted.kind !== "accepted") return;
++
++    const inspecting = aggregate({
++      revision: accepted.aggregate.revision,
++      work_items: {
++        kernel: { ...accepted.aggregate.work_items.kernel!, state: "INSPECTING" },
++      },
++    });
++    const recordValidation: Extract<TaskCommand, { kind: "record_work_item_validation" }> = {
++      kind: "record_work_item_validation",
++      task_id: state.id,
++      expected_task_revision: inspecting.revision,
++      expected_state_fingerprint: fingerprint,
++      work_item_id: "kernel",
++      validation: validation(resultDigest),
++    };
++    expect(reduceTaskCommand(input(inspecting, recordValidation, "mutation-2"))).toMatchObject({
++      kind: "accepted",
++      aggregate: { work_items: { kernel: { state: "VALIDATING" } } },
++    });
++    expect(
++      reduceTaskCommand(
++        input(
++          inspecting,
++          { ...recordValidation, validation: { ...validation(resultDigest), status: "FAILED" } },
++          "mutation-3",
++        ),
++      ),
++    ).toMatchObject({
++      kind: "accepted",
++      aggregate: {
++        work_items: { kernel: { state: "VALIDATING", validation: { status: "FAILED" } } },
++      },
++    });
++  });
++
++  it("requires completed validated outputs and final validation for task completion", () => {
++    const validRuntime: WorkItemRuntime = {
++      ...runtime("COMPLETED"),
++      result_digest: resultDigest,
++      output_manifests: [manifest()],
++      validation: validation(resultDigest),
++    };
++    const finalValidation = validation(fingerprint);
++    const eligible = aggregate({
++      state: "FINAL_VALIDATION",
++      work_items: { kernel: validRuntime },
++      final_validation: finalValidation,
++    });
++    expect(isTaskCompletionEligible(eligible, fingerprint)).toBe(true);
++    expect(
++      isTaskCompletionEligible(
++        { ...eligible, work_items: { kernel: { ...validRuntime, output_manifests: [] } } },
++        fingerprint,
++      ),
++    ).toBe(false);
++
++    const complete: Extract<TaskCommand, { kind: "complete_task" }> = {
++      kind: "complete_task",
++      task_id: eligible.id,
++      expected_task_revision: eligible.revision,
++      expected_state_fingerprint: fingerprint,
++    };
++    for (const missing of [
++      null,
++      { ...validation(resultDigest), status: "FAILED" as const },
++      validation(kernelDigest("stale")),
++    ]) {
++      const invalid = {
++        ...eligible,
++        work_items: { kernel: { ...validRuntime, validation: missing } },
++      };
++      expect(isTaskCompletionEligible(invalid, fingerprint)).toBe(false);
++      expect(reduceTaskCommand(input(invalid, complete))).toMatchObject({
++        kind: "rejected",
++        code: "TASK_COMPLETION_INELIGIBLE",
++      });
++    }
++    expect(reduceTaskCommand(input(eligible, complete))).toMatchObject({
++      kind: "accepted",
++      aggregate: { state: "COMPLETED" },
++    });
++  });
++
++  it("uses canonical JSON and real SHA-256 for stable identities", () => {
++    expect(kernelDigest({ b: 2, a: 1 })).toBe(kernelDigest({ a: 1, b: 2 }));
++    expect(kernelDigest({ a: 1 })).toMatch(/^sha256:[0-9a-f]{64}$/);
++  });
++});
+diff --git a/packages/core/src/tasks/task-kernel/kernel.ts b/packages/core/src/tasks/task-kernel/kernel.ts
+new file mode 100644
+index 000000000..fbd530936
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/kernel.ts
+@@ -0,0 +1,896 @@
++import { createHash } from "node:crypto";
++
++import { authorityBindsCurrentState, validateWorkItemDefinitions } from "./invariants.js";
++import type {
++  DomainEvent,
++  EffectState,
++  ExternalEffect,
++  KernelInput,
++  KernelRejectionCode,
++  KernelResult,
++  MutationReceipt,
++  OutputManifest,
++  PlanRecord,
++  Sha256Digest,
++  TaskAggregate,
++  TaskCommand,
++  TaskState,
++  ValidationRecord,
++  WorkItemRuntime,
++  WorkItemState,
++} from "./model.js";
++
++const TASK_TRANSITIONS: Readonly<Record<TaskState, readonly TaskState[]>> = {
++  CAPTURED: ["PLANNING", "CANCELLED"],
++  PLANNING: ["AWAITING_PLAN_APPROVAL", "CANCELLED"],
++  AWAITING_PLAN_APPROVAL: ["PLANNING", "ACTIVE", "CANCELLED"],
++  ACTIVE: ["FINAL_VALIDATION", "HUMAN_REQUIRED", "BLOCKED", "EFFECT_IN_DOUBT", "CANCELLED"],
++  FINAL_VALIDATION: [
++    "ACTIVE",
++    "COMPLETED",
++    "HUMAN_REQUIRED",
++    "BLOCKED",
++    "EFFECT_IN_DOUBT",
++    "CANCELLED",
++  ],
++  COMPLETED: [],
++  HUMAN_REQUIRED: ["ACTIVE", "BLOCKED", "CANCELLED"],
++  BLOCKED: ["ACTIVE", "HUMAN_REQUIRED", "CANCELLED"],
++  EFFECT_IN_DOUBT: ["ACTIVE"],
++  CANCELLED: [],
++};
++
++const TASK_ACTION_TRANSITIONS: Readonly<
++  Record<
++    Extract<TaskCommand, { kind: "transition_task" }>["action"],
++    readonly (readonly [TaskState, TaskState])[]
++  >
++> = {
++  request_human: [
++    ["ACTIVE", "HUMAN_REQUIRED"],
++    ["FINAL_VALIDATION", "HUMAN_REQUIRED"],
++    ["BLOCKED", "HUMAN_REQUIRED"],
++  ],
++  block: [
++    ["ACTIVE", "BLOCKED"],
++    ["FINAL_VALIDATION", "BLOCKED"],
++    ["HUMAN_REQUIRED", "BLOCKED"],
++  ],
++  resume: [
++    ["FINAL_VALIDATION", "ACTIVE"],
++    ["HUMAN_REQUIRED", "ACTIVE"],
++    ["BLOCKED", "ACTIVE"],
++  ],
++  cancel: [
++    ["CAPTURED", "CANCELLED"],
++    ["PLANNING", "CANCELLED"],
++    ["AWAITING_PLAN_APPROVAL", "CANCELLED"],
++    ["ACTIVE", "CANCELLED"],
++    ["FINAL_VALIDATION", "CANCELLED"],
++    ["HUMAN_REQUIRED", "CANCELLED"],
++    ["BLOCKED", "CANCELLED"],
++  ],
++};
++
++const WORK_ITEM_ACTION_TRANSITIONS: Readonly<
++  Record<
++    Extract<TaskCommand, { kind: "transition_work_item" }>["action"],
++    readonly (readonly [WorkItemState, WorkItemState])[]
++  >
++> = {
++  claim: [
++    ["READY", "CLAIMED"],
++    ["REWORK_READY", "CLAIMED"],
++  ],
++  begin: [["CLAIMED", "EXECUTING"]],
++  inspect: [["RESULT_RECEIVED", "INSPECTING"]],
++  validate: [["INSPECTING", "VALIDATING"]],
++  rework: [["VALIDATING", "REWORK_READY"]],
++  block: [
++    ["READY", "BLOCKED"],
++    ["CLAIMED", "BLOCKED"],
++    ["EXECUTING", "BLOCKED"],
++    ["RESULT_RECEIVED", "BLOCKED"],
++    ["INSPECTING", "BLOCKED"],
++    ["VALIDATING", "BLOCKED"],
++    ["REWORK_READY", "BLOCKED"],
++    ["EFFECT_IN_DOUBT", "BLOCKED"],
++  ],
++  resume: [["BLOCKED", "READY"]],
++  complete: [["VALIDATING", "COMPLETED"]],
++  cancel: [
++    ["PLANNED", "CANCELLED"],
++    ["READY", "CANCELLED"],
++    ["CLAIMED", "CANCELLED"],
++    ["EXECUTING", "CANCELLED"],
++    ["RESULT_RECEIVED", "CANCELLED"],
++    ["INSPECTING", "CANCELLED"],
++    ["VALIDATING", "CANCELLED"],
++    ["REWORK_READY", "CANCELLED"],
++    ["BLOCKED", "CANCELLED"],
++    ["EFFECT_IN_DOUBT", "CANCELLED"],
++  ],
++};
++
++const EFFECT_OBSERVE_TRANSITIONS: Readonly<
++  Record<EffectState, readonly ("APPLIED" | "NOT_APPLIED" | "IN_DOUBT")[]>
++> = {
++  PREPARED: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
++  PENDING: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
++  APPLIED: ["APPLIED"],
++  NOT_APPLIED: ["NOT_APPLIED"],
++  IN_DOUBT: ["APPLIED", "NOT_APPLIED", "IN_DOUBT"],
++  RECONCILED: [],
++  SUPERSEDED: [],
++};
++
++const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
++  capture_intent: "intent_captured",
++  transition_task: "task_transitioned",
++  propose_plan: "plan_proposed",
++  reject_plan: "plan_rejected",
++  approve_plan: "plan_approved",
++  materialize_work_items: "work_items_materialized",
++  transition_work_item: "work_item_transitioned",
++  accept_work_item_result: "work_item_result_accepted",
++  record_work_item_validation: "work_item_validation_recorded",
++  record_final_validation: "final_validation_recorded",
++  prepare_effect: "effect_prepared",
++  observe_effect: "effect_observed",
++  reconcile_effect: "effect_reconciled",
++  supersede_effect: "effect_superseded",
++  amend_plan: "plan_amended",
++  request_authority_delta: "authority_delta_requested",
++  complete_task: "task_completed",
++  record_controller_transfer: "controller_transferred",
++  record_migration: "migration_recorded",
++};
++
++function canonicalValue(value: unknown): unknown {
++  if (Array.isArray(value)) return value.map((item) => canonicalValue(item));
++  if (value && typeof value === "object") {
++    return Object.fromEntries(
++      Object.entries(value)
++        .filter(([, item]) => item !== undefined)
++        .toSorted(([left], [right]) => left.localeCompare(right))
++        .map(([key, item]) => [key, canonicalValue(item)]),
++    );
++  }
++  return value;
++}
++
++export function kernelDigest(value: unknown): Sha256Digest {
++  const input = JSON.stringify(canonicalValue(value));
++  return `sha256:${createHash("sha256").update(input, "utf8").digest("hex")}`;
++}
++
++function rejected(
++  code: KernelRejectionCode,
++  facts: readonly string[],
++  requiredAction: string | null = "request_fresh_packet",
++): KernelResult {
++  return { kind: "rejected", code, facts, required_action: requiredAction };
++}
++
++function taskTransitionAllowed(from: TaskState, to: TaskState): boolean {
++  return TASK_TRANSITIONS[from].includes(to);
++}
++
++function planMatches(
++  plan: PlanRecord | null,
++  revision: number,
++  digest: Sha256Digest,
++): plan is PlanRecord {
++  return plan !== null && plan.revision === revision && plan.digest === digest;
++}
++
++function requiredAuthority(input: KernelInput, workItemId: string | null): KernelResult | null {
++  const authority = input.authority;
++  if (!authority) return rejected("AUTHORITY_MISSING", [input.command.kind], "request_authority");
++  if (authority.task_id !== input.aggregate.id) {
++    return rejected("AUTHORITY_TASK_MISMATCH", [authority.task_id, input.aggregate.id]);
++  }
++  const occurredAt = Date.parse(input.occurred_at);
++  const expiresAt = authority.expires_at === null ? Infinity : Date.parse(authority.expires_at);
++  if (!Number.isFinite(occurredAt) || Number.isNaN(expiresAt) || occurredAt >= expiresAt) {
++    return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_expired_or_invalid_time"]);
++  }
++  const currentPlan = input.aggregate.current_plan;
++  if (
++    input.repository_fingerprint === null ||
++    !authorityBindsCurrentState(authority, {
++      task_id: input.aggregate.id,
++      plan_revision: currentPlan?.revision ?? null,
++      plan_digest: currentPlan?.digest ?? null,
++      repository_fingerprint: input.repository_fingerprint,
++      work_item_id: workItemId,
++    })
++  ) {
++    return rejected("AUTHORITY_SCOPE_EXCEEDED", [authority.digest]);
++  }
++  return null;
++}
++
++function authorityWorkItem(command: TaskCommand): string | null {
++  switch (command.kind) {
++    case "transition_work_item":
++    case "accept_work_item_result":
++    case "record_work_item_validation": {
++      return command.work_item_id;
++    }
++    default: {
++      return null;
++    }
++  }
++}
++
++function hasEveryExpectedOutput(
++  runtime: WorkItemRuntime,
++  manifests: readonly OutputManifest[],
++): boolean {
++  const byId = new Map(manifests.map((manifest) => [manifest.id, manifest]));
++  return runtime.definition.expected_outputs.every((id) => {
++    const manifest = byId.get(id);
++    return (
++      manifest !== undefined &&
++      manifest.task_id.length > 0 &&
++      manifest.work_item_id === runtime.definition.id &&
++      manifest.attempt === runtime.attempt
++    );
++  });
++}
++
++function isSha256Digest(value: string): value is Sha256Digest {
++  return /^sha256:[0-9a-f]{64}$/u.test(value);
++}
++
++function outputManifestIsValid(manifest: OutputManifest): boolean {
++  return (
++    manifest.id.length > 0 &&
++    manifest.kind.length > 0 &&
++    isSha256Digest(manifest.digest) &&
++    isSha256Digest(manifest.repository_fingerprint)
++  );
++}
++
++function validationMatchesResult(
++  validation: ValidationRecord | null,
++  resultDigest: Sha256Digest | null,
++): boolean {
++  return (
++    validation?.status === "PASSED" &&
++    resultDigest !== null &&
++    validation.identity.implementation_identity === resultDigest
++  );
++}
++
++function validationIdentityMatchesResult(
++  validation: ValidationRecord,
++  resultDigest: Sha256Digest | null,
++): boolean {
++  const identity = validation.identity;
++  return (
++    resultDigest !== null &&
++    isSha256Digest(resultDigest) &&
++    identity.implementation_identity === resultDigest &&
++    identity.check_id.trim().length > 0 &&
++    isSha256Digest(identity.command_digest) &&
++    isSha256Digest(identity.toolchain_digest) &&
++    isSha256Digest(identity.environment_digest) &&
++    validation.evidence_digests.every((digest) => isSha256Digest(digest))
++  );
++}
++
++function refreshReadyItems(
++  workItems: Readonly<Record<string, WorkItemRuntime>>,
++): Readonly<Record<string, WorkItemRuntime>> {
++  const next: Record<string, WorkItemRuntime> = { ...workItems };
++  for (const [id, runtime] of Object.entries(next)) {
++    if (
++      runtime.state === "PLANNED" &&
++      runtime.definition.depends_on.every(
++        (dependency) => next[dependency]?.state === "COMPLETED",
++      ) &&
++      requiredInputsPresent(runtime, next)
++    ) {
++      next[id] = { ...runtime, state: "READY", revision: runtime.revision + 1 };
++    }
++  }
++  return next;
++}
++
++function requiredInputsPresent(
++  runtime: WorkItemRuntime,
++  workItems: Readonly<Record<string, WorkItemRuntime>>,
++): boolean {
++  return runtime.definition.required_inputs.every((id) =>
++    Object.values(workItems).some(
++      (producer) =>
++        producer.definition.id !== runtime.definition.id &&
++        producer.state === "COMPLETED" &&
++        producer.definition.expected_outputs.includes(id) &&
++        validationMatchesResult(producer.validation, producer.result_digest) &&
++        hasEveryExpectedOutput(producer, producer.output_manifests) &&
++        producer.output_manifests.some(
++          (output) => output.id === id && outputManifestIsValid(output),
++        ),
++    ),
++  );
++}
++
++function effectTransition(effect: ExternalEffect, state: EffectState): ExternalEffect {
++  return { ...effect, state };
++}
++
++function accept(input: KernelInput, next: TaskAggregate): KernelResult {
++  const commandDigest = kernelDigest(input.command);
++  const event: DomainEvent = {
++    id: `${input.mutation_id}:${EVENT_KIND[input.command.kind]}`,
++    kind: EVENT_KIND[input.command.kind],
++    task_id: next.id,
++    task_revision: next.revision,
++    mutation_id: input.mutation_id,
++    occurred_at: input.occurred_at,
++    command_digest: commandDigest,
++    payload_digest: kernelDigest({ kind: input.command.kind, aggregate_revision: next.revision }),
++  };
++  const receipt: MutationReceipt = {
++    mutation_id: input.mutation_id,
++    command_digest: commandDigest,
++    before_revision: input.aggregate.revision,
++    after_revision: next.revision,
++    aggregate_digest: kernelDigest(next),
++    event_digests: [kernelDigest(event)],
++    effect_ids:
++      input.command.kind === "prepare_effect"
++        ? [input.command.effect.id]
++        : input.command.kind === "observe_effect" ||
++            input.command.kind === "reconcile_effect" ||
++            input.command.kind === "supersede_effect"
++          ? [input.command.effect_id]
++          : [],
++  };
++  const aggregate: TaskAggregate = {
++    ...next,
++    mutation_receipts: { ...next.mutation_receipts, [input.mutation_id]: receipt },
++  };
++  return { kind: "accepted", aggregate, events: [event], receipts: [receipt] };
++}
++
++function preconditions(input: KernelInput): KernelResult | null {
++  const commandDigest = kernelDigest(input.command);
++  const existing = input.aggregate.mutation_receipts[input.mutation_id];
++  if (existing) {
++    if (existing.command_digest !== commandDigest) {
++      return rejected("MUTATION_ID_CONFLICT", [input.mutation_id], "use_new_mutation_id");
++    }
++    return { kind: "accepted", aggregate: input.aggregate, events: [], receipts: [existing] };
++  }
++  if (input.command.task_id !== input.aggregate.id) {
++    return rejected("TASK_ID_MISMATCH", [input.command.task_id, input.aggregate.id]);
++  }
++  if (input.command.expected_task_revision !== input.aggregate.revision) {
++    return rejected("STALE_TASK_REVISION", [
++      String(input.command.expected_task_revision),
++      String(input.aggregate.revision),
++    ]);
++  }
++  if (
++    input.repository_fingerprint === null ||
++    input.command.expected_state_fingerprint !== input.repository_fingerprint
++  ) {
++    return rejected("STALE_STATE_FINGERPRINT", [
++      input.command.expected_state_fingerprint,
++      input.repository_fingerprint ?? "null",
++    ]);
++  }
++  const uncertain = input.aggregate.effects.find((effect) => effect.state === "IN_DOUBT");
++  if (
++    uncertain &&
++    input.command.kind !== "observe_effect" &&
++    input.command.kind !== "reconcile_effect" &&
++    input.command.kind !== "supersede_effect"
++  ) {
++    return rejected("EFFECT_RECONCILIATION_REQUIRED", [uncertain.id], "reconcile_effect");
++  }
++  const workItemId = authorityWorkItem(input.command);
++  if (workItemId !== null) {
++    if (input.aggregate.state !== "ACTIVE") {
++      return rejected("ILLEGAL_TASK_TRANSITION", [input.aggregate.state, input.command.kind]);
++    }
++    if (!input.aggregate.current_plan) return rejected("CURRENT_PLAN_MISSING", []);
++    if (input.aggregate.current_plan.state !== "APPROVED") {
++      return rejected("CURRENT_PLAN_NOT_APPROVED", [input.aggregate.current_plan.state]);
++    }
++    const runtime = input.aggregate.work_items[workItemId];
++    const definition = input.aggregate.current_plan.work_items.find(
++      (item) => item.id === workItemId,
++    );
++    if (runtime && (!definition || kernelDigest(runtime.definition) !== kernelDigest(definition))) {
++      return rejected("PLAN_DIGEST_MISMATCH", [workItemId, "runtime_definition_mismatch"]);
++    }
++  }
++  return requiredAuthority(input, workItemId);
++}
++
++export function reduceTaskCommand(input: KernelInput): KernelResult {
++  const blocked = preconditions(input);
++  if (blocked) return blocked;
++
++  const aggregate = input.aggregate;
++  const command = input.command;
++  let next: TaskAggregate;
++
++  switch (command.kind) {
++    case "capture_intent": {
++      if (!taskTransitionAllowed(aggregate.state, "PLANNING")) {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "PLANNING"]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: "PLANNING",
++        intent_digest: command.intent_digest,
++      };
++      break;
++    }
++    case "transition_task": {
++      const transition = TASK_ACTION_TRANSITIONS[command.action].find(
++        ([from]) => from === aggregate.state,
++      );
++      if (!transition) {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.action]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: transition[1],
++        final_validation: command.action === "resume" ? null : aggregate.final_validation,
++      };
++      break;
++    }
++    case "propose_plan": {
++      if (!taskTransitionAllowed(aggregate.state, "AWAITING_PLAN_APPROVAL")) {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "AWAITING_PLAN_APPROVAL"]);
++      }
++      if (command.plan.state !== "PROPOSED") {
++        return rejected("ILLEGAL_TASK_TRANSITION", ["plan", command.plan.state]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: "AWAITING_PLAN_APPROVAL",
++        current_plan: command.plan,
++        plan_history: aggregate.current_plan
++          ? [...aggregate.plan_history, aggregate.current_plan]
++          : aggregate.plan_history,
++        work_items: {},
++        final_validation: null,
++      };
++      break;
++    }
++    case "reject_plan": {
++      if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
++        return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
++      }
++      if (aggregate.current_plan.state !== "PROPOSED") {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.current_plan.state, "REJECTED"]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: "PLANNING",
++        current_plan: { ...aggregate.current_plan, state: "REJECTED" },
++      };
++      break;
++    }
++    case "approve_plan": {
++      if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
++        return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
++      }
++      if (
++        aggregate.current_plan.state !== "PROPOSED" ||
++        !taskTransitionAllowed(aggregate.state, "ACTIVE")
++      ) {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "ACTIVE"]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: "ACTIVE",
++        current_plan: {
++          ...aggregate.current_plan,
++          state: "APPROVED",
++          approval_actor_id: input.actor.id,
++          approval_evidence_digest: command.approval_evidence_digest,
++        },
++      };
++      break;
++    }
++    case "materialize_work_items": {
++      if (aggregate.state !== "ACTIVE") {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
++      }
++      if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
++        return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
++      }
++      if (aggregate.current_plan.state !== "APPROVED") {
++        return rejected("CURRENT_PLAN_NOT_APPROVED", [aggregate.current_plan.state]);
++      }
++      if (Object.keys(aggregate.work_items).length > 0) {
++        return rejected("ILLEGAL_TASK_TRANSITION", ["work_items_already_materialized"]);
++      }
++      const graphIssues = validateWorkItemDefinitions(aggregate.current_plan.work_items);
++      if (graphIssues.length > 0) {
++        return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", graphIssues);
++      }
++      const workItems = Object.fromEntries(
++        aggregate.current_plan.work_items.map((definition) => [
++          definition.id,
++          {
++            definition,
++            state:
++              definition.depends_on.length === 0 && definition.required_inputs.length === 0
++                ? "READY"
++                : "PLANNED",
++            revision: 1,
++            attempt: 0,
++            claim_id: null,
++            result_digest: null,
++            output_manifests: [],
++            validation: null,
++          } satisfies WorkItemRuntime,
++        ]),
++      );
++      next = { ...aggregate, revision: aggregate.revision + 1, work_items: workItems };
++      break;
++    }
++    case "transition_work_item": {
++      const runtime = aggregate.work_items[command.work_item_id];
++      if (!runtime) return rejected("WORK_ITEM_MISSING", [command.work_item_id]);
++      const transition = WORK_ITEM_ACTION_TRANSITIONS[command.action].find(
++        ([from]) => from === runtime.state,
++      );
++      if (!transition) {
++        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", [runtime.state, command.action]);
++      }
++      if (
++        command.action === "claim" &&
++        !runtime.definition.depends_on.every(
++          (dependency) => aggregate.work_items[dependency]?.state === "COMPLETED",
++        )
++      ) {
++        return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", runtime.definition.depends_on);
++      }
++      if (command.action === "claim" && !command.claim_id) {
++        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", ["claim_id_missing"]);
++      }
++      if (command.action === "claim" && !requiredInputsPresent(runtime, aggregate.work_items)) {
++        return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", runtime.definition.required_inputs);
++      }
++      if (command.action === "complete") {
++        if (!hasEveryExpectedOutput(runtime, runtime.output_manifests)) {
++          return rejected("WORK_ITEM_OUTPUT_MISSING", runtime.definition.expected_outputs);
++        }
++        if (!validationMatchesResult(runtime.validation, runtime.result_digest)) {
++          return rejected("WORK_ITEM_VALIDATION_MISSING", [command.work_item_id]);
++        }
++      }
++      const [, state] = transition;
++      const updated: WorkItemRuntime = {
++        ...runtime,
++        state,
++        revision: runtime.revision + 1,
++        attempt: command.action === "claim" ? runtime.attempt + 1 : runtime.attempt,
++        claim_id: command.action === "claim" ? command.claim_id : runtime.claim_id,
++      };
++      const workItems = { ...aggregate.work_items, [command.work_item_id]: updated };
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        work_items: command.action === "complete" ? refreshReadyItems(workItems) : workItems,
++      };
++      break;
++    }
++    case "accept_work_item_result": {
++      if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
++        return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
++      }
++      const runtime = aggregate.work_items[command.work_item_id];
++      if (!runtime) return rejected("WORK_ITEM_MISSING", [command.work_item_id]);
++      if (runtime.state !== "EXECUTING") {
++        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", [runtime.state, "RESULT_RECEIVED"]);
++      }
++      if (
++        !isSha256Digest(command.result_digest) ||
++        new Set(command.output_manifests.map((manifest) => manifest.id)).size !==
++          command.output_manifests.length ||
++        command.output_manifests.some(
++          (manifest) =>
++            !outputManifestIsValid(manifest) ||
++            manifest.task_id !== aggregate.id ||
++            manifest.plan_revision !== command.plan_revision ||
++            manifest.work_item_id !== command.work_item_id ||
++            manifest.attempt !== runtime.attempt ||
++            manifest.repository_fingerprint !== input.repository_fingerprint,
++        )
++      ) {
++        return rejected("WORK_ITEM_RESULT_TARGET_MISMATCH", [command.work_item_id]);
++      }
++      if (!hasEveryExpectedOutput(runtime, command.output_manifests)) {
++        return rejected("WORK_ITEM_OUTPUT_MISSING", runtime.definition.expected_outputs);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        work_items: {
++          ...aggregate.work_items,
++          [command.work_item_id]: {
++            ...runtime,
++            state: "RESULT_RECEIVED",
++            revision: runtime.revision + 1,
++            result_digest: command.result_digest,
++            output_manifests: [...command.output_manifests],
++            validation: null,
++          },
++        },
++      };
++      break;
++    }
++    case "record_work_item_validation": {
++      const runtime = aggregate.work_items[command.work_item_id];
++      if (!runtime) return rejected("WORK_ITEM_MISSING", [command.work_item_id]);
++      if (!validationIdentityMatchesResult(command.validation, runtime.result_digest)) {
++        return rejected("VALIDATION_IDENTITY_MISMATCH", [command.work_item_id]);
++      }
++      if (runtime.state !== "INSPECTING" && runtime.state !== "VALIDATING") {
++        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", [runtime.state, "VALIDATING"]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        work_items: {
++          ...aggregate.work_items,
++          [command.work_item_id]: {
++            ...runtime,
++            state: "VALIDATING",
++            revision: runtime.revision + 1,
++            validation: command.validation,
++          },
++        },
++      };
++      break;
++    }
++    case "record_final_validation": {
++      if (command.validation.identity.implementation_identity !== input.repository_fingerprint) {
++        return rejected("VALIDATION_IDENTITY_MISMATCH", ["final_validation"]);
++      }
++      if (command.validation.status !== "PASSED") {
++        return rejected("FINAL_VALIDATION_MISSING", [command.validation.status]);
++      }
++      if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
++        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "FINAL_VALIDATION"]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: "FINAL_VALIDATION",
++        final_validation: command.validation,
++      };
++      break;
++    }
++    case "prepare_effect": {
++      if (
++        aggregate.effects.some(
++          (effect) =>
++            effect.id === command.effect.id ||
++            effect.idempotency_key === command.effect.idempotency_key,
++        )
++      ) {
++        return rejected("MUTATION_ID_CONFLICT", [command.effect.id]);
++      }
++      if (
++        command.effect.state !== "PREPARED" ||
++        !command.effect.id.trim() ||
++        !command.effect.idempotency_key.trim() ||
++        !isSha256Digest(command.effect.request_digest)
++      ) {
++        return rejected("ILLEGAL_TASK_TRANSITION", ["effect", command.effect.state]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        effects: [...aggregate.effects, command.effect],
++      };
++      break;
++    }
++    case "observe_effect": {
++      const index = aggregate.effects.findIndex((effect) => effect.id === command.effect_id);
++      if (index === -1) return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
++      if (
++        !EFFECT_OBSERVE_TRANSITIONS[aggregate.effects[index]!.state].includes(
++          command.observed_state,
++        )
++      ) {
++        return rejected("EFFECT_RECONCILIATION_REQUIRED", [
++          command.effect_id,
++          aggregate.effects[index]!.state,
++          command.observed_state,
++        ]);
++      }
++      const effects = [...aggregate.effects];
++      effects[index] = {
++        ...effects[index]!,
++        state: command.observed_state,
++        observed_state_digest: command.observation_digest,
++      };
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: command.observed_state === "IN_DOUBT" ? "EFFECT_IN_DOUBT" : aggregate.state,
++        effects,
++      };
++      break;
++    }
++    case "reconcile_effect": {
++      const index = aggregate.effects.findIndex((effect) => effect.id === command.effect_id);
++      if (index === -1) return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
++      if (aggregate.effects[index]!.state !== "IN_DOUBT") {
++        return rejected("EFFECT_RECONCILIATION_REQUIRED", [aggregate.effects[index]!.state]);
++      }
++      const effects = [...aggregate.effects];
++      effects[index] = {
++        ...effects[index]!,
++        state: "RECONCILED",
++        provider_receipt_digest: command.provider_receipt_digest,
++        observed_state_digest: kernelDigest(command.resolution),
++      };
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        state: aggregate.state === "EFFECT_IN_DOUBT" ? "ACTIVE" : aggregate.state,
++        effects,
++      };
++      break;
++    }
++    case "supersede_effect": {
++      const index = aggregate.effects.findIndex((effect) => effect.id === command.effect_id);
++      const replacement = aggregate.effects.find(
++        (effect) => effect.id === command.replacement_effect_id,
++      );
++      if (
++        index === -1 ||
++        aggregate.effects[index]!.state !== "IN_DOUBT" ||
++        replacement?.state !== "PREPARED" ||
++        replacement?.id === command.effect_id
++      ) {
++        return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
++      }
++      const effects = [...aggregate.effects];
++      effects[index] = effectTransition(effects[index]!, "SUPERSEDED");
++      next = { ...aggregate, revision: aggregate.revision + 1, effects };
++      break;
++    }
++    case "amend_plan": {
++      if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
++        return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
++      }
++      if (command.authority_delta_digest) {
++        return rejected(
++          "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++          [command.authority_delta_digest],
++          "request_authority_delta",
++        );
++      }
++      next = { ...aggregate, revision: aggregate.revision + 1, final_validation: null };
++      break;
++    }
++    case "request_authority_delta": {
++      if (input.authority?.digest !== command.parent_authority_digest) {
++        return rejected("AUTHORITY_SCOPE_EXCEEDED", [command.parent_authority_digest]);
++      }
++      next = { ...aggregate, revision: aggregate.revision + 1 };
++      break;
++    }
++    case "complete_task": {
++      if (!aggregate.current_plan) return rejected("CURRENT_PLAN_MISSING", []);
++      if (aggregate.current_plan.state !== "APPROVED") {
++        return rejected("CURRENT_PLAN_NOT_APPROVED", [aggregate.current_plan.state]);
++      }
++      const required = aggregate.current_plan.work_items.filter(
++        (definition) => !definition.optional,
++      );
++      const incomplete = required.filter(
++        (definition) => aggregate.work_items[definition.id]?.state !== "COMPLETED",
++      );
++      const invalidOutputs = required.filter((definition) => {
++        const runtime = aggregate.work_items[definition.id];
++        return !runtime || !hasEveryExpectedOutput(runtime, runtime.output_manifests);
++      });
++      const unresolvedEffects = aggregate.effects.filter((effect) =>
++        ["PREPARED", "PENDING", "IN_DOUBT"].includes(effect.state),
++      );
++      if (
++        input.repository_fingerprint === null ||
++        !isTaskCompletionEligible(aggregate, input.repository_fingerprint)
++      ) {
++        return rejected("TASK_COMPLETION_INELIGIBLE", [
++          ...incomplete.map((item) => `incomplete:${item.id}`),
++          ...invalidOutputs.map((item) => `outputs:${item.id}`),
++          ...unresolvedEffects.map((effect) => `effect:${effect.id}:${effect.state}`),
++        ]);
++      }
++      next = { ...aggregate, revision: aggregate.revision + 1, state: "COMPLETED" };
++      break;
++    }
++    case "record_controller_transfer": {
++      if (
++        !command.receipt.from_controller ||
++        !command.receipt.to_controller ||
++        command.receipt.from_controller === command.receipt.to_controller ||
++        command.receipt.authority_digest !== input.authority?.digest
++      ) {
++        return rejected("CONTROLLER_TRANSFER_INVALID", [command.receipt.from_controller]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        controller_transfer: command.receipt,
++      };
++      break;
++    }
++    case "record_migration": {
++      if (
++        !command.receipt.migration_version ||
++        command.receipt.canonical_digest === command.receipt.source_digest ||
++        aggregate.migration_receipts.some(
++          (receipt) => receipt.migration_version === command.receipt.migration_version,
++        )
++      ) {
++        return rejected("MIGRATION_RECEIPT_INVALID", [command.receipt.migration_version]);
++      }
++      next = {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        migration_receipts: [...aggregate.migration_receipts, command.receipt],
++      };
++      break;
++    }
++  }
++
++  return accept(input, next);
++}
++
++export function isTaskCompletionEligible(
++  aggregate: TaskAggregate,
++  repositoryFingerprint: Sha256Digest,
++): boolean {
++  if (
++    aggregate.state !== "FINAL_VALIDATION" ||
++    aggregate.current_plan?.state !== "APPROVED" ||
++    aggregate.final_validation?.status !== "PASSED" ||
++    aggregate.final_validation.identity.implementation_identity !== repositoryFingerprint
++  ) {
++    return false;
++  }
++  return (
++    aggregate.current_plan.work_items
++      .filter((definition) => !definition.optional)
++      .every((definition) => {
++        const runtime = aggregate.work_items[definition.id];
++        return (
++          runtime?.state === "COMPLETED" &&
++          hasEveryExpectedOutput(runtime, runtime.output_manifests) &&
++          validationMatchesResult(runtime.validation, runtime.result_digest)
++        );
++      }) &&
++    aggregate.effects.every((effect) =>
++      ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
++    )
++  );
++}
++
++export const TASK_TRANSITION_TABLE = TASK_TRANSITIONS;
++export const TASK_ACTION_TRANSITION_TABLE = TASK_ACTION_TRANSITIONS;
++export const WORK_ITEM_TRANSITION_TABLE = WORK_ITEM_ACTION_TRANSITIONS;
++export const EFFECT_OBSERVE_TRANSITION_TABLE = EFFECT_OBSERVE_TRANSITIONS;
+diff --git a/packages/core/src/tasks/task-kernel/model.test.ts b/packages/core/src/tasks/task-kernel/model.test.ts
+new file mode 100644
+index 000000000..4d7794956
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/model.test.ts
+@@ -0,0 +1,108 @@
++import { describe, expect, expectTypeOf, it } from "vitest";
++
++import * as taskExports from "../index.js";
++import {
++  EFFECT_STATES,
++  KERNEL_REJECTION_CODES,
++  TASK_STATES,
++  WORK_ITEM_STATES,
++  type KernelInput,
++  type KernelResult,
++  type TaskCommand,
++} from "./index.js";
++
++const digest = (value: string) => `sha256:${value.padEnd(64, "0")}` as const;
++
++describe("canonical Task kernel domain contract", () => {
++  it("exposes the kernel through its own compatibility-safe namespace", () => {
++    expect(taskExports.taskKernel.TASK_STATES).toBe(TASK_STATES);
++    expect(taskExports.taskKernel.KERNEL_REJECTION_CODES).toBe(KERNEL_REJECTION_CODES);
++  });
++
++  it("publishes closed lifecycle and rejection vocabularies", () => {
++    expect(TASK_STATES).toEqual([
++      "CAPTURED",
++      "PLANNING",
++      "AWAITING_PLAN_APPROVAL",
++      "ACTIVE",
++      "FINAL_VALIDATION",
++      "COMPLETED",
++      "HUMAN_REQUIRED",
++      "BLOCKED",
++      "EFFECT_IN_DOUBT",
++      "CANCELLED",
++    ]);
++    expect(WORK_ITEM_STATES).toContain("RESULT_RECEIVED");
++    expect(EFFECT_STATES).toEqual([
++      "PREPARED",
++      "PENDING",
++      "APPLIED",
++      "NOT_APPLIED",
++      "IN_DOUBT",
++      "RECONCILED",
++      "SUPERSEDED",
++    ]);
++    expect(new Set(KERNEL_REJECTION_CODES).size).toBe(KERNEL_REJECTION_CODES.length);
++    expect(KERNEL_REJECTION_CODES).toContain("PROJECTION_CANNOT_AUTHORIZE");
++    expect(KERNEL_REJECTION_CODES).toContain("MUTATION_ID_CONFLICT");
++  });
++
++  it("requires adapter-supplied identity, time, actor, authority, and repository state", () => {
++    const command = {
++      kind: "complete_task",
++      task_id: "task-1",
++      expected_task_revision: 3,
++      expected_state_fingerprint: digest("state"),
++    } satisfies TaskCommand;
++    const input = {
++      aggregate: {
++        schema_version: 1,
++        id: "task-1",
++        revision: 3,
++        state: "FINAL_VALIDATION",
++        intent_digest: digest("intent"),
++        current_plan: null,
++        plan_history: [],
++        work_items: {},
++        final_validation: null,
++        effects: [],
++        mutation_receipts: {},
++        controller_transfer: null,
++        migration_receipts: [],
++      },
++      command,
++      actor: {
++        id: "agent-1",
++        kind: "AGENT",
++        transport: "managed",
++        capabilities: ["task.lifecycle"],
++      },
++      authority: null,
++      repository_fingerprint: digest("repository"),
++      occurred_at: "2026-08-29T19:00:00.000Z",
++      mutation_id: "mutation-1",
++    } satisfies KernelInput;
++
++    expect(input.command.kind).toBe("complete_task");
++    expect(input.occurred_at).toBe("2026-08-29T19:00:00.000Z");
++    expect(input.mutation_id).toBe("mutation-1");
++    expectTypeOf(input).toMatchTypeOf<KernelInput>();
++  });
++
++  it("represents expected lifecycle conflicts as typed results", () => {
++    const rejected = {
++      kind: "rejected",
++      code: "STALE_STATE_FINGERPRINT",
++      facts: ["expected state-a", "observed state-b"],
++      required_action: "request_fresh_packet",
++    } satisfies KernelResult;
++
++    expect(rejected).toEqual({
++      kind: "rejected",
++      code: "STALE_STATE_FINGERPRINT",
++      facts: ["expected state-a", "observed state-b"],
++      required_action: "request_fresh_packet",
++    });
++    expectTypeOf(rejected).toMatchTypeOf<KernelResult>();
++  });
++});
+diff --git a/packages/core/src/tasks/task-kernel/model.ts b/packages/core/src/tasks/task-kernel/model.ts
+new file mode 100644
+index 000000000..3f09433f0
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/model.ts
+@@ -0,0 +1,367 @@
++export type Sha256Digest = `sha256:${string}`;
++
++export const TASK_STATES = [
++  "CAPTURED",
++  "PLANNING",
++  "AWAITING_PLAN_APPROVAL",
++  "ACTIVE",
++  "FINAL_VALIDATION",
++  "COMPLETED",
++  "HUMAN_REQUIRED",
++  "BLOCKED",
++  "EFFECT_IN_DOUBT",
++  "CANCELLED",
++] as const;
++
++export type TaskState = (typeof TASK_STATES)[number];
++
++export const WORK_ITEM_STATES = [
++  "PLANNED",
++  "READY",
++  "CLAIMED",
++  "EXECUTING",
++  "RESULT_RECEIVED",
++  "INSPECTING",
++  "VALIDATING",
++  "REWORK_READY",
++  "COMPLETED",
++  "BLOCKED",
++  "EFFECT_IN_DOUBT",
++  "CANCELLED",
++] as const;
++
++export type WorkItemState = (typeof WORK_ITEM_STATES)[number];
++
++export const EFFECT_STATES = [
++  "PREPARED",
++  "PENDING",
++  "APPLIED",
++  "NOT_APPLIED",
++  "IN_DOUBT",
++  "RECONCILED",
++  "SUPERSEDED",
++] as const;
++
++export type EffectState = (typeof EFFECT_STATES)[number];
++
++export const KERNEL_REJECTION_CODES = [
++  "TASK_ID_MISMATCH",
++  "STALE_TASK_REVISION",
++  "STALE_STATE_FINGERPRINT",
++  "ILLEGAL_TASK_TRANSITION",
++  "ILLEGAL_WORK_ITEM_TRANSITION",
++  "CURRENT_PLAN_MISSING",
++  "CURRENT_PLAN_NOT_APPROVED",
++  "PLAN_DIGEST_MISMATCH",
++  "PLAN_REVISION_MISMATCH",
++  "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++  "WORK_ITEM_MISSING",
++  "WORK_ITEM_DEPENDENCY_INCOMPLETE",
++  "WORK_ITEM_RESULT_TARGET_MISMATCH",
++  "WORK_ITEM_OUTPUT_MISSING",
++  "WORK_ITEM_VALIDATION_MISSING",
++  "VALIDATION_IDENTITY_MISMATCH",
++  "AUTHORITY_MISSING",
++  "AUTHORITY_TASK_MISMATCH",
++  "AUTHORITY_SCOPE_EXCEEDED",
++  "AUTHORITY_PROVENANCE_ESCALATION",
++  "MUTATION_ID_CONFLICT",
++  "EFFECT_RECONCILIATION_REQUIRED",
++  "FINAL_VALIDATION_MISSING",
++  "TASK_COMPLETION_INELIGIBLE",
++  "PROJECTION_CANNOT_AUTHORIZE",
++  "CONTROLLER_TRANSFER_INVALID",
++  "MIGRATION_RECEIPT_INVALID",
++] as const;
++
++export type KernelRejectionCode = (typeof KERNEL_REJECTION_CODES)[number];
++
++export type ActorIdentity = Readonly<{
++  id: string;
++  kind: "USER" | "AGENT" | "SYSTEM";
++  transport: "host" | "managed" | "pull" | "manual";
++  capabilities: readonly string[];
++}>;
++
++export type AuthorityProvenance = Readonly<{
++  kind: "USER" | "DELEGATED" | "SYSTEM";
++  actor_id: string;
++  evidence_digest: Sha256Digest;
++  parent_authority_digest: Sha256Digest | null;
++}>;
++
++export type AuthorityRisk = Readonly<{
++  requirements: "bounded" | "material";
++  implementation: "bounded" | "material";
++  reversibility: "reversible" | "recovery_required" | "irreversible";
++}>;
++
++export type ExecutionAuthority = Readonly<{
++  digest: Sha256Digest;
++  task_id: string;
++  plan_revision: number;
++  plan_digest: Sha256Digest;
++  work_item_id: string | null;
++  repository_identity: Sha256Digest;
++  repository_fingerprint: Sha256Digest;
++  scope_roots: readonly string[];
++  repository_effects: readonly string[];
++  external_effects: readonly string[];
++  capabilities: readonly string[];
++  resources: readonly string[];
++  validation_requirements: readonly string[];
++  policy_digests: readonly Sha256Digest[];
++  completion_requirements: readonly string[];
++  risk: AuthorityRisk;
++  provenance: AuthorityProvenance;
++  expires_at: string | null;
++}>;
++
++export type OutputManifest = Readonly<{
++  id: string;
++  kind: string;
++  digest: Sha256Digest;
++  task_id: string;
++  plan_revision: number;
++  work_item_id: string;
++  attempt: number;
++  repository_fingerprint: Sha256Digest;
++}>;
++
++export type ValidationIdentity = Readonly<{
++  implementation_identity: Sha256Digest;
++  check_id: string;
++  command_digest: Sha256Digest;
++  toolchain_digest: Sha256Digest;
++  environment_digest: Sha256Digest;
++}>;
++
++export type ValidationRecord = Readonly<{
++  status: "PASSED" | "FAILED" | "BLOCKED" | "STALE";
++  identity: ValidationIdentity;
++  evidence_digests: readonly Sha256Digest[];
++  observed_at: string;
++}>;
++
++export type WorkItemDefinition = Readonly<{
++  id: string;
++  depends_on: readonly string[];
++  required_inputs: readonly string[];
++  expected_outputs: readonly string[];
++  optional: boolean;
++}>;
++
++export type WorkItemRuntime = Readonly<{
++  definition: WorkItemDefinition;
++  state: WorkItemState;
++  revision: number;
++  attempt: number;
++  claim_id: string | null;
++  result_digest: Sha256Digest | null;
++  output_manifests: readonly OutputManifest[];
++  validation: ValidationRecord | null;
++}>;
++
++export type PlanRecord = Readonly<{
++  revision: number;
++  digest: Sha256Digest;
++  state: "PROPOSED" | "APPROVED" | "REJECTED" | "SUPERSEDED";
++  approval_actor_id: string | null;
++  approval_evidence_digest: Sha256Digest | null;
++  work_items: readonly WorkItemDefinition[];
++}>;
++
++export type ExternalEffect = Readonly<{
++  id: string;
++  kind: string;
++  idempotency_key: string;
++  state: EffectState;
++  request_digest: Sha256Digest;
++  provider_receipt_digest: Sha256Digest | null;
++  observed_state_digest: Sha256Digest | null;
++}>;
++
++export type MutationReceipt = Readonly<{
++  mutation_id: string;
++  command_digest: Sha256Digest;
++  before_revision: number;
++  after_revision: number;
++  aggregate_digest: Sha256Digest;
++  event_digests: readonly Sha256Digest[];
++  effect_ids: readonly string[];
++}>;
++
++export type ControllerTransferReceipt = Readonly<{
++  from_controller: string;
++  to_controller: string;
++  state_digest: Sha256Digest;
++  authority_digest: Sha256Digest;
++}>;
++
++export type MigrationReceipt = Readonly<{
++  migration_version: string;
++  source_digest: Sha256Digest;
++  canonical_digest: Sha256Digest;
++  projection_digest: Sha256Digest;
++  backup_digest: Sha256Digest;
++}>;
++
++export type TaskAggregate = Readonly<{
++  schema_version: 1;
++  id: string;
++  revision: number;
++  state: TaskState;
++  intent_digest: Sha256Digest;
++  current_plan: PlanRecord | null;
++  plan_history: readonly PlanRecord[];
++  work_items: Readonly<Record<string, WorkItemRuntime>>;
++  final_validation: ValidationRecord | null;
++  effects: readonly ExternalEffect[];
++  mutation_receipts: Readonly<Record<string, MutationReceipt>>;
++  controller_transfer: ControllerTransferReceipt | null;
++  migration_receipts: readonly MigrationReceipt[];
++}>;
++
++type CommandEnvelope<K extends string, P extends object = object> = Readonly<
++  {
++    kind: K;
++    task_id: string;
++    expected_task_revision: number;
++    expected_state_fingerprint: Sha256Digest;
++  } & P
++>;
++
++export type TaskCommand =
++  | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
++  | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
++  | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
++  | CommandEnvelope<"reject_plan", { plan_revision: number; plan_digest: Sha256Digest }>
++  | CommandEnvelope<
++      "approve_plan",
++      {
++        plan_revision: number;
++        plan_digest: Sha256Digest;
++        approval_evidence_digest: Sha256Digest;
++      }
++    >
++  | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
++  | CommandEnvelope<
++      "transition_work_item",
++      {
++        work_item_id: string;
++        action:
++          | "claim"
++          | "begin"
++          | "inspect"
++          | "validate"
++          | "rework"
++          | "block"
++          | "resume"
++          | "complete"
++          | "cancel";
++        claim_id: string | null;
++      }
++    >
++  | CommandEnvelope<
++      "accept_work_item_result",
++      {
++        plan_revision: number;
++        plan_digest: Sha256Digest;
++        work_item_id: string;
++        result_digest: Sha256Digest;
++        output_manifests: readonly OutputManifest[];
++      }
++    >
++  | CommandEnvelope<
++      "record_work_item_validation",
++      { work_item_id: string; validation: ValidationRecord }
++    >
++  | CommandEnvelope<"record_final_validation", { validation: ValidationRecord }>
++  | CommandEnvelope<"prepare_effect", { effect: ExternalEffect }>
++  | CommandEnvelope<
++      "observe_effect",
++      {
++        effect_id: string;
++        observed_state: "APPLIED" | "NOT_APPLIED" | "IN_DOUBT";
++        observation_digest: Sha256Digest;
++      }
++    >
++  | CommandEnvelope<
++      "reconcile_effect",
++      {
++        effect_id: string;
++        resolution: "APPLIED" | "NOT_APPLIED";
++        provider_receipt_digest: Sha256Digest;
++      }
++    >
++  | CommandEnvelope<"supersede_effect", { effect_id: string; replacement_effect_id: string }>
++  | CommandEnvelope<
++      "amend_plan",
++      {
++        plan_revision: number;
++        plan_digest: Sha256Digest;
++        amendment_digest: Sha256Digest;
++        authority_delta_digest: Sha256Digest | null;
++      }
++    >
++  | CommandEnvelope<
++      "request_authority_delta",
++      { parent_authority_digest: Sha256Digest; delta_digest: Sha256Digest }
++    >
++  | CommandEnvelope<"complete_task">
++  | CommandEnvelope<"record_controller_transfer", { receipt: ControllerTransferReceipt }>
++  | CommandEnvelope<"record_migration", { receipt: MigrationReceipt }>;
++
++export type DomainEvent = Readonly<{
++  id: string;
++  kind:
++    | "intent_captured"
++    | "task_transitioned"
++    | "plan_proposed"
++    | "plan_rejected"
++    | "plan_approved"
++    | "work_items_materialized"
++    | "work_item_transitioned"
++    | "work_item_result_accepted"
++    | "work_item_validation_recorded"
++    | "final_validation_recorded"
++    | "effect_prepared"
++    | "effect_observed"
++    | "effect_reconciled"
++    | "effect_superseded"
++    | "plan_amended"
++    | "authority_delta_requested"
++    | "task_completed"
++    | "controller_transferred"
++    | "migration_recorded";
++  task_id: string;
++  task_revision: number;
++  mutation_id: string;
++  occurred_at: string;
++  command_digest: Sha256Digest;
++  payload_digest: Sha256Digest;
++}>;
++
++export type KernelInput = Readonly<{
++  aggregate: TaskAggregate;
++  command: TaskCommand;
++  actor: ActorIdentity;
++  authority: ExecutionAuthority | null;
++  repository_fingerprint: Sha256Digest | null;
++  occurred_at: string;
++  mutation_id: string;
++}>;
++
++export type KernelResult =
++  | Readonly<{
++      kind: "accepted";
++      aggregate: TaskAggregate;
++      events: readonly DomainEvent[];
++      receipts: readonly MutationReceipt[];
++    }>
++  | Readonly<{
++      kind: "rejected";
++      code: KernelRejectionCode;
++      facts: readonly string[];
++      required_action: string | null;
++    }>;

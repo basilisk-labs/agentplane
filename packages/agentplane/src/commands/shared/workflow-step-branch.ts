@@ -1,3 +1,5 @@
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
@@ -10,6 +12,7 @@ import {
 import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
 import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import { integrationQueueStep } from "./workflow-step-integration-queue.js";
+import { providerUpdateBranchStep } from "./workflow-step-provider-update-branch.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -29,6 +32,10 @@ import {
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
+
+function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
+  return state.blockers.some((blocker) => blocker.code === code);
+}
 
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
@@ -176,21 +183,16 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
       worktreeResolutionStep(state, worktreeBlocker)
     );
   }
-  const conflictStep = conflictReworkRouteStep(state);
-  if (conflictStep) return conflictStep;
-  if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
+  const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
+  if (recoveryStep) return recoveryStep;
+  if (hasRouteBlocker(state, "implementation_rework_required"))
     return implementationReworkStep(state);
-  }
-  if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
-    return verificationStep(state);
-  }
+  if (hasRouteBlocker(state, "verification_required")) return verificationStep(state);
   const batchVerificationStep = primaryBatchVerificationStep(state);
   if (batchVerificationStep) return batchVerificationStep;
   const closeStep = hostedCloseStep(state);
   if (closeStep) return closeStep;
-  if (state.blockers.some((blocker) => blocker.code === "branch_head_missing")) {
-    return branchHeadRepairStep(state);
-  }
+  if (hasRouteBlocker(state, "branch_head_missing")) return branchHeadRepairStep(state);
   if (
     state.prFlow?.providerObservation?.state === "unavailable" ||
     (state.prFlow?.pr.state === "OPEN" &&
@@ -214,7 +216,7 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   ) {
     return qualityReviewStep(state);
   }
-  if (state.blockers.some((blocker) => blocker.code === "pre_merge_closure_stale")) {
+  if (hasRouteBlocker(state, "pre_merge_closure_stale")) {
     const commit = preMergeCommit(state);
     if (!commit) return branchHeadRepairStep(state);
     const body = "Verified: refreshed pre-merge closure packet is ready for the task PR.";
@@ -268,7 +270,7 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "pr_head_unpublished", "hosted_pr_head_mismatch"),
     });
   }
-  if (state.blockers.some((blocker) => blocker.code === "provider_pr_unavailable")) {
+  if (hasRouteBlocker(state, "provider_pr_unavailable")) {
     return cliOperationStep({
       state,
       operationId: "provider.pr.refresh",
@@ -364,7 +366,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     if (state.taskWorktree?.state === "unavailable") {
       return worktreeResolutionStep(state, worktreeBlocker ?? unavailableWorktreeBlocker(state));
     }
-    if (state.blockers.some((blocker) => blocker.code === "branch_head_missing")) {
+    if (hasRouteBlocker(state, "branch_head_missing")) {
       return branchHeadRepairStep(state);
     }
     if (
@@ -405,7 +407,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: null,
     });
   }
-  if (state.blockers.some((blocker) => blocker.code === "missing_included_batch_metadata")) {
+  if (hasRouteBlocker(state, "missing_included_batch_metadata")) {
     return terminalStep({
       state,
       id: "terminal.included_batch_metadata_repair",
@@ -430,12 +432,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       worktreeResolutionStep(state, worktreeBlocker)
     );
   }
-  const conflictStep = conflictReworkRouteStep(state);
-  if (conflictStep) return conflictStep;
-  if (
-    state.taskWorktree?.state === "not_present" &&
-    state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
-  ) {
+  const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
+  if (recoveryStep) return recoveryStep;
+  if (state.taskWorktree?.state === "not_present" && hasRouteBlocker(state, "pr_meta_stale")) {
     const slug = workSlug(state.task);
     return cliOperationStep({
       state,
@@ -446,7 +445,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout", "missing_pr_branch"),
     });
   }
-  if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
+  if (hasRouteBlocker(state, "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
   const batchVerificationStep = primaryBatchVerificationStep(state);
@@ -455,7 +454,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     state.taskWorktree !== undefined &&
     state.taskWorktree.state !== "not_present" &&
     state.taskWorktree.state !== "unavailable" &&
-    state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
+    hasRouteBlocker(state, "pr_meta_stale")
   ) {
     return cliOperationStep({
       state,
@@ -466,7 +465,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "pr_meta_stale"),
     });
   }
-  if (state.blockers.some((blocker) => blocker.code === "missing_pr_branch")) {
+  if (hasRouteBlocker(state, "missing_pr_branch")) {
     const slug = workSlug(state.task);
     return cliOperationStep({
       state,
@@ -479,7 +478,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const closeStep = hostedCloseStep(state);
   if (closeStep) return closeStep;
-  if (state.blockers.some((blocker) => blocker.code === "branch_head_missing")) {
+  if (hasRouteBlocker(state, "branch_head_missing")) {
     return branchHeadRepairStep(state);
   }
   if (
@@ -497,12 +496,13 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
     });
   }
-  if (
-    state.task.verification?.state !== "ok" &&
-    !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
-  ) {
-    return branchImplementationStep(state);
-  }
+  const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
+  const requiredWorkItemIncomplete = taskCentric?.current_plan?.proposal.work_items.work_items.some(
+    (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
+  );
+  const implementationMissing =
+    state.task.verification?.state !== "ok" && !state.task.commit?.hash?.trim();
+  if (requiredWorkItemIncomplete || implementationMissing) return branchImplementationStep(state);
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({
       state,
@@ -517,7 +517,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
   }
-  if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
+  if (hasRouteBlocker(state, "verification_required")) {
     return verificationStep(state);
   }
   if (needsQualityEvidenceRefresh(state)) {
@@ -531,7 +531,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   ) {
     return qualityReviewStep(state);
   }
-  if (state.blockers.some((blocker) => blocker.code === "pre_merge_closure_missing")) {
+  if (hasRouteBlocker(state, "pre_merge_closure_missing")) {
     const commit = preMergeCommit(state);
     if (!commit) return branchHeadRepairStep(state);
     const body = "Verified: pre-merge closure packet is ready for the task PR.";
@@ -571,7 +571,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "pr_head_unpublished", "hosted_pr_head_mismatch"),
     });
   }
-  if (state.blockers.some((blocker) => blocker.code === "provider_pr_unavailable")) {
+  if (hasRouteBlocker(state, "provider_pr_unavailable")) {
     return cliOperationStep({
       state,
       operationId: "provider.pr.refresh",

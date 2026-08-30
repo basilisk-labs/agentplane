@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { findCommandEntry } from "../../cli/run-cli/command-catalog.js";
+import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -627,6 +629,174 @@ describe("WorkflowStep conflict rework projections", () => {
       exactArgv: null,
     });
   });
+
+  it.each([
+    { label: "failing checks", failing: 1, handoff: false },
+    { label: "passing checks", failing: 0, handoff: false },
+    { label: "passing checks after integration handoff", failing: 0, handoff: true },
+    { label: "interrupted before fetch", failing: 0, handoff: false, recovery: "before_fetch" },
+    { label: "interrupted after fetch", failing: 0, handoff: false, recovery: "after_fetch" },
+  ])(
+    "routes an exact aligned GitHub behind state with $label to a digest-bound provider update",
+    ({ failing, handoff, recovery }) => {
+      const baseSha = "2222222222222222222222222222222222222222";
+      const behindPrFlow: PrFlowStatusReport = {
+        task: { id: task.id, status: "DONE", verification: "ok" },
+        branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+        pr: {
+          provider: "github",
+          state: "OPEN",
+          source: "lookup",
+          prNumber: 4626,
+          prUrl: "https://github.example/acme/agentplane/pull/4626",
+          base: "main",
+          headSha: resume.head_sha,
+          mergeCommit: null,
+        },
+        providerObservation: {
+          state: "found",
+          pr: {
+            provider: "github",
+            identity: {
+              provider: "github",
+              hostname: "github.example",
+              remote: "origin",
+              sourceProject: "acme/agentplane",
+              targetProject: "acme/agentplane",
+              sourceUrl: "git@github.example:acme/agentplane.git",
+              targetUrl: "https://github.example/acme/agentplane.git",
+            },
+            prNumber: 4626,
+            prUrl: "https://github.example/acme/agentplane/pull/4626",
+            status: "OPEN",
+            mergedAt: null,
+            mergeCommit: null,
+            base: "main",
+            baseSha,
+            headRef: taskBranch,
+            headSha: resume.head_sha,
+            mergeability: { state: "not_conflicting", mergeable: true, providerState: "behind" },
+          },
+        },
+        publication: {
+          state: "aligned",
+          branch: taskBranch,
+          localHeadSha: resume.head_sha,
+          upstreamRef: `origin/${taskBranch}`,
+          upstreamHeadSha: resume.head_sha,
+          hostedHeadSha: resume.head_sha,
+        },
+        closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
+        hostedChecks: {
+          checked: true,
+          total: 1,
+          pending: 0,
+          failing,
+          passing: 1 - failing,
+          missingRequired: [],
+          rows: [{ name: "PR verification", state: failing > 0 ? "FAILURE" : "SUCCESS" }],
+        },
+        reviewThreads: { checked: true, unresolved: 0 },
+        queue: handoff
+          ? {
+              present: true,
+              status: "handoff",
+              branch: taskBranch,
+              headSha: resume.head_sha,
+              base: "main",
+              prNumber: 4626,
+            }
+          : { present: false },
+        handoff: { present: false },
+        nextAction: "the PR branch is behind main",
+      } satisfies PrFlowStatusReport;
+      const recoveredHead = "3".repeat(40);
+      if (recovery) {
+        behindPrFlow.pr.headSha = recoveredHead;
+        if (behindPrFlow.providerObservation?.state === "found") {
+          behindPrFlow.providerObservation.pr.headSha = recoveredHead;
+          behindPrFlow.providerObservation.pr.mergeability = {
+            state: "unknown",
+            mergeable: null,
+            providerState: "unknown",
+          };
+        }
+        behindPrFlow.publication = {
+          ...behindPrFlow.publication!,
+          state: "hosted_mismatch",
+          localHeadSha: resume.head_sha,
+          upstreamHeadSha: recovery === "after_fetch" ? recoveredHead : resume.head_sha,
+          hostedHeadSha: recoveredHead,
+        };
+        behindPrFlow.hostedChecks = { checked: false, reason: "updated head not checked yet" };
+      }
+      const state = routeState({
+        task: { ...task, status: "DONE", verification: { state: "ok" } },
+        resume: { ...resume, task_status: "DONE" },
+        prFlow: behindPrFlow,
+        conflictRework: null,
+        blockers: [
+          {
+            code: "provider_pr_update_branch_required",
+            summary: "provider branch is behind the exact hosted base",
+          },
+        ],
+      });
+      const step = reduceRouteState(state);
+      const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
+
+      expect(step).toMatchObject({
+        kind: "approval",
+        id: "approval.provider.pr.update_branch",
+        request: {
+          type: "side_effect",
+          operationId: "provider.pr.update_branch",
+          operation: {
+            id: "provider.pr.update_branch",
+            params: {
+              taskId: task.id,
+              prNumber: 4626,
+              branch: taskBranch,
+              baseBranch: "main",
+              expectedHeadSha: resume.head_sha,
+              expectedBaseSha: baseSha,
+              ...(recovery ? { reconcileHeadSha: recoveredHead } : {}),
+            },
+          },
+        },
+      });
+      if (step.kind !== "approval" || step.request.type !== "side_effect")
+        throw new Error("Expected authority boundary");
+      const argv = projectWorkflowOperationArgv(step.request.operation);
+      expect(argv).toEqual(["agentplane", "task", "run", task.id, "--remote", "--json"]);
+      expect(findCommandEntry(argv.slice(1, 3))?.spec.id).toEqual(["task", "run"]);
+      expect(step.id).not.toBe("agent.implementation_rework");
+      expect(oracle).toMatchObject({
+        phase: "side_effect_authority_required",
+        authoritativeCheckout: "task_worktree",
+      });
+      expect(oracle.nextCommand).toContain("--operation provider.pr.update_branch");
+      expect(oracle.nextCommand).toContain("--operation-digest sha256:");
+      expect(oracle.nextCommand).toContain("--state-scope-digest sha256:");
+      expect(packet).toMatchObject({
+        actionKind: "provider_action",
+        safeToMutate: false,
+        exactArgv: null,
+      });
+      const activeRunnerState = routeState({
+        ...state,
+        resume: {
+          ...state.resume,
+          runner: { ...state.resume.runner, next_action: "wait" },
+        },
+      });
+      expect(reduceRouteState(activeRunnerState)).toMatchObject({
+        kind: "wait",
+        id: "wait.runner",
+        compatibility: { code: "wait_runner", command: null },
+      });
+    },
+  );
 
   it("publishes a newer unpublished head before acting on stale failed hosted checks", () => {
     const providerHeadSha = "2222222222222222222222222222222222222222";

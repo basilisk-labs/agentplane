@@ -1,0 +1,129 @@
+diff --git a/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs b/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+index d561161c7..bc2a69ada 100644
+--- a/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
++++ b/scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs
+@@ -16,6 +16,8 @@ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+ const PACKAGES = ["core", "recipes", "agentplane"];
+ 
++export const PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND = "node --test test/greeting.test.mjs";
++
+ export const PACKAGED_MIXED_SCOPE_REQUIRED_PATHS = [
+   ".gitignore",
+   "docs/guide.md",
+@@ -341,8 +343,19 @@ function mixedScopeTaskPlanProposal(taskId, planningBaseline) {
+   };
+ }
+ 
+-function packetExchange(packet, expectedRole) {
++export function packetExchange(packet, expectedRole, observedTask = null) {
+   if (packet.action?.kind !== "agent_episode" || packet.authority?.role !== expectedRole) {
++    if (
++      expectedRole === "EVALUATOR" &&
++      packet.action?.kind === "agent_episode" &&
++      packet.authority?.role === "EXECUTOR" &&
++      observedTask?.verification?.state === "needs_rework"
++    ) {
++      fail(
++        "verification_rework",
++        "deterministic verification returned needs_rework before the evaluator episode",
++      );
++    }
+     fail(
+       `missing_${expectedRole.toLowerCase()}_episode`,
+       `expected ${expectedRole} agent episode, received ${packet.action?.kind ?? "unknown"}/${packet.authority?.role ?? "unknown"}`,
+@@ -558,7 +571,16 @@ function buildFixture(run, repo, accessLog) {
+   writeTracked(
+     accessLog,
+     path.join(repo, "package.json"),
+-    `${JSON.stringify({ name: "agentplane-mixed-scope-fixture", private: true, type: "module" }, null, 2)}\n`,
++    `${JSON.stringify(
++      {
++        name: "agentplane-mixed-scope-fixture",
++        private: true,
++        type: "module",
++        scripts: { "ci:local:full": PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND },
++      },
++      null,
++      2,
++    )}\n`,
+     "fixture_seed",
+   );
+   writeTracked(
+@@ -822,7 +844,11 @@ function runFixture({ run, cli, packages, tempRoot }) {
+     executorExchange.resume_argv,
+     "executor result acceptance",
+   );
+-  packetExchange(evaluator, "EVALUATOR");
++  const postVerificationTask =
++    evaluator.action?.kind === "agent_episode" && evaluator.authority?.role === "EVALUATOR"
++      ? null
++      : runInstalledJson(run, cli, repo, ["task", "show", taskId], "post-verification task show");
++  packetExchange(evaluator, "EVALUATOR", postVerificationTask);
+ 
+   const changedPaths = git(run, repo, ["diff", "--name-only", executionBase, "HEAD", "--"])
+     .split("\n")
+diff --git a/scripts/qualification/release-qualification.test.mjs b/scripts/qualification/release-qualification.test.mjs
+index 96bd6c028..090595097 100644
+--- a/scripts/qualification/release-qualification.test.mjs
++++ b/scripts/qualification/release-qualification.test.mjs
+@@ -53,7 +53,9 @@ import {
+ } from "../bench/internal/agent-efficiency-codex-runtime.mjs";
+ import {
+   assertPackagedMixedScopeEvidence,
++  PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND,
+   PackagedMixedScopeContractError,
++  packetExchange,
+ } from "./check-packaged-mixed-scope-lifecycle.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+@@ -219,6 +221,49 @@ describe("v0.7.1 release qualification contract", () => {
+     );
+   });
+ 
++  it("provides the fixture full-regression capability and classifies verification rework", () => {
++    assert.equal(
++      PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND,
++      "node --test test/greeting.test.mjs",
++    );
++    const evaluatorExchange = {
++      result_path: "/tmp/agentplane-evaluator-result.json",
++      work_order_ref: "work-order.json",
++    };
++    assert.equal(
++      packetExchange(
++        {
++          action: { kind: "agent_episode" },
++          authority: { role: "EVALUATOR" },
++          exchange: evaluatorExchange,
++        },
++        "EVALUATOR",
++      ),
++      evaluatorExchange,
++    );
++    assert.throws(
++      () =>
++        packetExchange(
++          { action: { kind: "agent_episode" }, authority: { role: "EXECUTOR" } },
++          "EVALUATOR",
++          { verification: { state: "needs_rework" } },
++        ),
++      (error) =>
++        error instanceof PackagedMixedScopeContractError && error.code === "verification_rework",
++    );
++    assert.throws(
++      () =>
++        packetExchange(
++          { action: { kind: "agent_episode" }, authority: { role: "EXECUTOR" } },
++          "EVALUATOR",
++          { verification: { state: "pending" } },
++        ),
++      (error) =>
++        error instanceof PackagedMixedScopeContractError &&
++        error.code === "missing_evaluator_episode",
++    );
++  });
++
+   it("fails the installed mixed-scope contract for every omitted lifecycle proof", () => {
+     const fixtureRepo = path.join(tmpdir(), "agentplane-mixed-scope-contract-fixture");
+     const valid = {

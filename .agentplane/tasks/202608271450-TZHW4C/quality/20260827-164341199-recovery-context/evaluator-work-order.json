@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271450-TZHW4C-00f888601fbadbf025cc1cd8",
+  "prepared_at": "2026-08-27T16:43:41.199Z",
+  "task": {
+    "id": "202608271450-TZHW4C",
+    "revision": 13,
+    "objective": "Modernize structured planner-intent fixtures\n\nModernize the three planner-intent fixture files after eight freshly reproduced failures. Produce a real structured TaskPlanProposal from the issued PLANNER work order with exact repository_snapshot, bounded WorkItem scope and declared checks. Do not attach planning proposals to EXECUTOR or EVALUATOR results. Preserve missing-intent negative coverage, explicit user approval, forbidden external effects, network approval, direct versus branch_pr routing, exact execution identity and work preservation. Seed Git before planning where execution requires it. Keep isolated fixture CI and fake-provider transport valid without changing production CI. Replace only obsolete internal lifecycle counts with semantic invariants if necessary, preserving the one-user-approval outcome. No product, global testkit helper, policy, release or task graph changes. Scope is disjoint from G0N9P4, 9EWJA1 and DVEMAE; use already integrated GHHA0Q. Require focused tests and full CI.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2",
+      "- In scope: Modernize the three planner-intent fixture files after eight freshly reproduced failures. Produce a real structured TaskPlanProposal from the issued PLANNER work order with exact repository_snapshot, bounded WorkItem scope and declared checks. Do not attach planning proposals to EXECUTOR or EVALUATOR results. Preserve missing-intent negative coverage, explicit user approval, forbidden external effects, network approval, direct versus branch_pr routing, exact execution identity and work preservation. Seed Git before planning where execution requires it. Keep isolated fixture CI and fake-provider transport valid without changing production CI. Replace only obsolete internal lifecycle counts with semantic invariants if necessary, preserving the one-user-approval outcome. No product, global testkit helper, policy, release or task graph changes. Scope is disjoint from G0N9P4, 9EWJA1 and DVEMAE; use already integrated GHHA0Q. Require focused tests and full CI.\n- Out of scope: unrelated refactors not required for \"Modernize structured planner-intent fixtures\".",
+      "Modernize only the planner-intent test helper and its two consumers. Build a typed bounded TaskPlanProposal from each actual PLANNER work order with exact planning baseline and declared checks. Keep incomplete-intent negative coverage and never emit proposals for executor or evaluator results. Seed real Git bases before planning. Preserve one explicit user approval, forbidden-effect and network boundaries, route selection, work preservation and independent base tests. Repair isolated fake CI/provider fixture prerequisites if exposed. Run focused tests, lint, formatting and full CI.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts packages/agentplane/src/cli/run-cli.core.task-create-base-intent.test.ts --pool=threads --maxWorkers=2. Expected: both suites pass without skipped tests; explicit approval, network and forbidden effects, missing intent, route selection and exact bases remain asserted.\n2. Run ESLint, Prettier and git diff --check on the three files. Expected: no errors and unchanged hotspot baseline.\n3. Run bun run ci:local:full. Expected: mandatory full CI passes.\n4. Review the diff. Expected: only three approved fixture files change; no product behavior, global helper semantics, CI gates, policy or release graph changes.\n5. Require hosted exact-head checks and supported integration before closure."
+    ]
+  },
+  "evaluated_sha": "5d196df119a9335cc606237716455b7487db4e1c",
+  "diff_base_sha": "5fce04a8be14816be4cae236d2941dff7045e214",
+  "blueprint_digest": "1de4bc98bc6285e27bc35a92b921be938f564fe533f886bc1bfa75e7b0dc033c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271450-TZHW4C/quality/20260827-164341199-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:1a7741443c328a28dceb8f454b71a4c876b0a08917faddad3eb6611af0b0d209",
+    "prompt_path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/d7febebeb12f1a3d979e56533b3ec80fabd2809b0f26382417f868bf173049e8.md",
+    "result_schema_path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271450-TZHW4C/README.md",
+      "sha256": "sha256:67ca8ae334448c8adb6df3e50403b0367e9f647774d52c0a7f1317bbcf4fc493",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc.patch",
+      "sha256": "sha256:68302d9b5aaca3ffd777ed8c0b0c11a4f0141aa08562b9d28cc3bc9a3075ecfc",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/db8f8a8efe42f5970786efbd4c479276e3b511d8fad72bc91924436db46ac611.json",
+      "sha256": "sha256:db8f8a8efe42f5970786efbd4c479276e3b511d8fad72bc91924436db46ac611",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271450-TZHW4C/verification/20260827164324368-fc4e3922be01c66f.json",
+      "sha256": "sha256:174c03a491364282168e3fe6257640b8f2aaa97ae7737cdb986ca1aa5dd0adc6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271450-TZHW4C/quality/objects/sha256/4f8d1195a803cd3c4754483629f1325c54ba2b91328ee958c9811dbc031ab8fd.json",
+      "sha256": "sha256:4f8d1195a803cd3c4754483629f1325c54ba2b91328ee958c9811dbc031ab8fd",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -5,12 +5,14 @@ import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
+import type { ProviderUpdateBranchOperationParams } from "./provider-update-branch-route.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
+import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
@@ -50,6 +52,7 @@ type WorkflowOperationType =
   | "integration_run_next"
   | "pr_sync"
   | "provider_refresh"
+  | "provider_update_branch"
   | "runner_follow"
   | "task_record_result"
   | "task_scope_extend"
@@ -70,6 +73,7 @@ export type WorkflowOperationId =
   | "pr.open"
   | "pr.sync_or_verify"
   | "provider.pr.refresh"
+  | "provider.pr.update_branch"
   | "flow.repair.foreign_task_readme"
   | "route.remote.refresh"
   | "runner.follow"
@@ -103,6 +107,7 @@ export type WorkflowOperationParams = {
   "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
   "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
   "provider.pr.refresh": { taskId: string };
+  "provider.pr.update_branch": ProviderUpdateBranchOperationParams;
   "flow.repair.foreign_task_readme": { taskId: string };
   "route.remote.refresh": { taskId: string };
   "runner.follow":
@@ -323,6 +328,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     verificationCandidate: "agentplane pr flow status <task-id>",
     needsVerificationRecord: false,
   },
+  "provider.pr.update_branch": PROVIDER_UPDATE_BRANCH_OPERATION_SPEC,
   "route.remote.refresh": {
     type: "provider_refresh",
     phase: "remote_route_refresh_needed",

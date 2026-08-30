@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Reviewed the full frozen diff 167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df for implementation d7a70b6aba1d8b5d10d46da89edd4a9b9e47d83c against e3550efba441765882f2507cfaf659e9a76d2f0b. All nine frozen evidence hashes match and source is unchanged at metadata HEAD 4bb3fe594827aee0703ba95df6a42ddf05981ce7.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The new path is limited to an explicit null-WorkItem implementation_rework with a rework verification/review state, an exact approved plan, all required WorkItems completed, recorded in-scope source effect, unchanged source ancestry and validated historical semantic result. Completion runtime data is excluded from contract comparison only in that path; plan, intent, grant, declaration and Verify Steps stay compared.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The caller preserves current task-level claims and continues to preserve original claims for interrupted WorkItem recovery. Historical implementation evidence is not rewritten with the replacement baseline. Git checks are reobserved and the normal declared verification and fresh evaluator routes remain required.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Real-Git tests cover original structured completion, typed evaluator rework, supported Findings update, fresh replacement, ordinary no-code return, interruption before verification, interruption after verification, stale/late-result rejection, idempotent replay and unchanged output/proof bytes. Negative cases reject invalid plan/approval, narrowed scope, changed Verify Steps, malformed effect evidence, tampered result digest, source HEAD drift and incomplete WorkItems. Existing interrupted WorkItem tests remain passing.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Recorded verification 20260828112857349-7df3e4f50a81c6b3.json is ok for the exact implementation and approved Verify Steps. ci:local:full exited 0 in 462107ms, all five build/test groups passed, docs/workflows passed, platform-critical passed 98 tests, and significant coverage passed 101 tests and its 17-target guard. git diff --check exited 0. Focused recovery regression: 32 tests passed across four files.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Findings and task-specific Verify Steps were populated before implementation and correctly delegate final observed evidence to semantic and supervisor artifacts. No documentation-only acceptance gap remains. No policy, required check, task graph, release metadata or unrelated task state changed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Exact-head hosted checks, protected integration and terminal hosted closure remain unconfirmed. The operational 59VB06/DVS5NN retries and release qualification must use fresh routes after this change is integrated.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608280614-PCBY2N/quality/objects/sha256/167112d23a3809a69ce11c590bb2894d6d3e3faf1345fba7aff144166661a3df.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

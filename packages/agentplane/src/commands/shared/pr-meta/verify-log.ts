@@ -8,6 +8,7 @@ import {
   isRuntimeInfrastructureError,
   localRuntimeEvidence,
 } from "../../../shared/runtime-env.js";
+import { isDotEnvLoadedKey } from "../../../shared/env.js";
 import { resolveDeclaredTaskCheck } from "../declared-check.js";
 
 export { resolveCommandInvocation as resolveShellInvocation } from "../declared-check.js";
@@ -25,9 +26,12 @@ const VERIFY_RUNTIME_ENV_KEYS = [
 ] as const;
 
 export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
-  const env = withPreferredRuntimePath(source);
+  const env = { ...source };
   for (const key of VERIFY_RUNTIME_ENV_KEYS) delete env[key];
-  return env;
+  for (const key of Object.keys(env)) {
+    if (key === "AGENTPLANE_DOTENV_LOADED_KEYS" || isDotEnvLoadedKey(key, source)) delete env[key];
+  }
+  return withPreferredRuntimePath(env);
 }
 
 export function extractLastVerifiedSha(logText: string): string | null {

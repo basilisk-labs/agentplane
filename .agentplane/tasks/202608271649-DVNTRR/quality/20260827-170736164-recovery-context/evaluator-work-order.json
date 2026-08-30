@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271649-DVNTRR-1bec87bd4f67be4518c4e8ad",
+  "prepared_at": "2026-08-27T17:07:36.164Z",
+  "task": {
+    "id": "202608271649-DVNTRR",
+    "revision": 10,
+    "objective": "Modernize task continuity and approval fixtures\n\nRepair eight freshly reproduced fixture failures across task handoff, direct supervisor approval, next-action JSON and route escalation. Scope only run-cli.core.task-handoff.test.ts, run-cli.core.direct-task-supervision.test.ts, run-cli.core.task-next-action-json.test.ts, run-cli.core.task-routing.test.ts and a new local task-continuity.testkit.ts under packages/agentplane/src/cli. Use real committed Git baselines and typed TaskPlanProposal from the actual PLANNER work order. Preserve task kind, mutation, risk and requested route in fixture proposals. Keep explicit approval ungranted in the supervisor stop test. Retain stale claimed-run cancellation, unclaimed-run refusal, branch snapshot precedence, exact authority/head preservation, JSON aliases and state fingerprints, user-question precedence, and publish-risk branch escalation. No production, global testkit, CI, policy, timeout or roadmap changes. Do not modify the old0.6 P5BWP0 task or its artifacts. This is a new0.7.8 qualification repair on current main, disjoint from all active source edits. Require all9 existing scenarios, focused lint/format, full CI, EVALUATOR and hosted exact-head proof.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1",
+      "- In scope: Repair eight freshly reproduced fixture failures across task handoff, direct supervisor approval, next-action JSON and route escalation. Scope only run-cli.core.task-handoff.test.ts, run-cli.core.direct-task-supervision.test.ts, run-cli.core.task-next-action-json.test.ts, run-cli.core.task-routing.test.ts and a new local task-continuity.testkit.ts under packages/agentplane/src/cli. Use real committed Git baselines and typed TaskPlanProposal from the actual PLANNER work order. Preserve task kind, mutation, risk and requested route in fixture proposals. Keep explicit approval ungranted in the supervisor stop test. Retain stale claimed-run cancellation, unclaimed-run refusal, branch snapshot precedence, exact authority/head preservation, JSON aliases and state fingerprints, user-question precedence, and publish-risk branch escalation. No production, global testkit, CI, policy, timeout or roadmap changes. Do not modify the old0.6 P5BWP0 task or its artifacts. This is a new0.7.8 qualification repair on current main, disjoint from all active source edits. Require all9 existing scenarios, focused lint/format, full CI, EVALUATOR and hosted exact-head proof.\n- Out of scope: unrelated refactors not required for \"Modernize task continuity and approval fixtures\".",
+      "Repair the four continuity and approval suites with real Git baselines and actual structured PLANNER proposals. Keep approval ungranted in the direct-supervision stop case. Preserve exact authority and head identity, stale-run claim ownership, user-question precedence, JSON aliases, fingerprints and publish-risk escalation. Use only a local helper and the four approved suites. Do not change product, global fixtures, CI, timeouts, policy or other task state.",
+      "1. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts packages/agentplane/src/cli/run-cli.core.task-routing.test.ts --pool=forks --maxWorkers=1. Expected: all9existing scenarios pass without skips or timeout changes.\n2. Run scoped ESLint, Prettier and git diff --check. Expected: no errors and unchanged oversized-test baseline.\n3. Run bun run ci:local:full. Expected: mandatory local checks pass.\n4. Review only the five approved paths. Preserve approval stop, stale claim ownership, unclaimed refusal, exact authority/head state, JSON aliases/fingerprints, user-question precedence and release-risk route. No product, global helper, CI, policy, timeout or task graph change.\n5. Require independent EVALUATOR review and fresh hosted exact-head checks before supported integration."
+    ]
+  },
+  "evaluated_sha": "56e4367136dd17997ced56fe2de81990e06cdb2a",
+  "diff_base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "blueprint_digest": "cbc829fe5ba7d0105060276d39d531060b7773c5c3c3cf3691a2b45820b15f58",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271649-DVNTRR/quality/20260827-170736164-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2b61c479d333d1613e4accff3b9069ab28418a6bb22bfc5be32542ad1f9b8e99",
+    "prompt_path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/fb58551d02547676b978b5aedde40828c7008703d368d527a61c52535306d00f.md",
+    "result_schema_path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271649-DVNTRR/README.md",
+      "sha256": "sha256:cd447a0476b99b737095ce9c9cadbdc46ded04eb3d8ebc4eb17f7213453edfba",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac.patch",
+      "sha256": "sha256:9e458f50f4a70613d2c4d7d41c1006bf431af26fd040c3649cf38af0ae39c0ac",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/a0a854b5539401e1ce7b8c5d69c90e66e4e7164cedf7d87371aed16ed16c54e5.json",
+      "sha256": "sha256:a0a854b5539401e1ce7b8c5d69c90e66e4e7164cedf7d87371aed16ed16c54e5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271649-DVNTRR/verification/20260827170718338-d32fb33a649bef9e.json",
+      "sha256": "sha256:86f2d50aea7daecf996e9a1598bb674134707eeb619d0e4abbfaa983aa1d4b66",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271649-DVNTRR/quality/objects/sha256/26b29129cee78cb00a376b7d25f1c78233418cc92f456e963b0122292f6b29fe.json",
+      "sha256": "sha256:26b29129cee78cb00a376b7d25f1c78233418cc92f456e963b0122292f6b29fe",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

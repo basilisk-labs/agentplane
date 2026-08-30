@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608271544-1TDVPJ-9b9e6ec9856558d7b1559bb7",
+  "prepared_at": "2026-08-27T16:23:57.810Z",
+  "task": {
+    "id": "202608271544-1TDVPJ",
+    "revision": 19,
+    "objective": "Repair exact-result recovery using real Git bases and structured planner results. The approved material replan also addresses the demonstrated production defect in external-agent-planning-authority.ts: persisted JSON object property order must not change semantic equality. Reuse canonical JSON comparison and add focused unit regressions. Preserve array order, changed-value rejection, exact operation keys, replacement authority, original received-result identity, single consumption, replay rejection, retirement and approval guards. Scope is the existing recovery CLI test and local helper plus the planning-authority implementation and its unit tests. No lifecycle, provider, CI, policy, timeout or roadmap changes.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "In scope: packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts, packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts, packages/agentplane/src/commands/task/external-agent-planning-authority.ts, packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts. The material replan replaces the earlier fixture-only restriction with the proven property-order-independent planning JSON comparison repair. Preserve all exact-result recovery, changed-value, ordered-array, approval and single-consumption invariants. Out of scope: provider operations, lifecycle routing, CI selection, timeouts, policy, dependencies and roadmap changes.",
+      "Material replan: finish the exact-result recovery fixture repair and correct property-order-sensitive comparison of persisted structured planning values. Reuse the existing canonical JSON representation so object key order is ignored, while array order, actual values, missing fields, exact result identity and approval guards remain significant. This narrowly expands the earlier fixture-only scope to the proven production comparison defect.",
+      "1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --pool=threads --maxWorkers=1`. Expected: all tests pass without skips or weakened guards.\n2. Run `node node_modules/vitest/vitest.mjs run packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --pool=forks --maxWorkers=1`. Expected: all tests pass without skips or weakened guards.\n3. Run `bun run ci:local:full`. Expected: all tests pass without skips or weakened guards.\n4. Review the four-file diff. Expected: only fixture prerequisite corrections, property-order-independent JSON comparison and regression tests; no unrelated production, policy, CI or authority changes."
+    ]
+  },
+  "evaluated_sha": "04686a004a2b9969d03059d853a294afdc6a22c7",
+  "diff_base_sha": "2c9a2f59146c302c517524136e66abb902f92ba6",
+  "blueprint_digest": "8cbff0e94b30e0bd23b9bf575f6cf6cf653277543f74e663e847264604414e96",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608271544-1TDVPJ/quality/20260827-162357810-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:bd57d2ec1f452737160b103a52ede30f45d823692c2e061f05bf8f489b50a481",
+    "prompt_path": ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/b138e23a64b8077d010b45401e70824413f65d708334c29a5b663586700828e7.md",
+    "result_schema_path": ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608271544-1TDVPJ/README.md",
+      "sha256": "sha256:e507cf6797810d13391093bf9ef2f3828fbe19d16156364a64a05cec2178cb3b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae.patch",
+      "sha256": "sha256:4a6b7f61fc2cd73a0ac64c0afa6b1e91ee9137ee153073440092170e287545ae",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf.json",
+      "sha256": "sha256:54db07e252c5020879f6e899f2b62e2cbfdd0f825307f6b3f8a998e2cee24ddf",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608271544-1TDVPJ/verification/20260827162335964-8d33c746263199fc.json",
+      "sha256": "sha256:2a652c9f90f33ad7f73cf78213ea0ce50a8ab66784abb6b483cfd45d359a2efa",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608271544-1TDVPJ/quality/objects/sha256/09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39.json",
+      "sha256": "sha256:09e7b31f3ac865c48223b58cfb33a8e0b13406f6b1d10fbd0397887ce64fcd39",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
