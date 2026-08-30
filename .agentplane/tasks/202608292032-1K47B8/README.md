@@ -4,7 +4,7 @@ title: "Implement the isolated canonical Task kernel"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on:
@@ -29,6 +29,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-30T01:52:45.616Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "e8c7ccc839c43ef8944e0ed9799e5bda0e43cbbf"
+  blueprint_digest: "dc2c028ecfd2cbd4e83e9c695b7c3697411141ca514ea82ca00e20848226929b"
+  evidence_refs:
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/ec06c6e7b7c18b069d7feb65ee296ee81d6dd16038b64f87e395a5e48cec1b36.md"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/20260830-014956776-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608292032-1K47B8/README.md"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/ef17fe668230493a9b07f598b59d087f0c79b80eefbd629aaeadaa33cdb8d767.json"
+    - ".agentplane/tasks/202608292032-1K47B8/verification/20260830014945273-2738197afdbf32cb.json"
+    - ".agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/cdccd39e524d1c90764685a8edd6ed62359da3abd8661ae465fa779bd9f3d0f9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The transition_work_item branch does not gate on aggregate task state. A CANCELLED task with a READY WorkItem accepts claim and can resume execution."
+    - "Claim readiness checks depends_on but ignores required_inputs. A READY WorkItem requiring a missing output is accepted for claim. validateWorkItemDefinitions also fails to reject undeclared inputs."
+    - "complete_task accepts a COMPLETED WorkItem with output but no WorkItem validation, while isTaskCompletionEligible rejects the same state. The two completion paths disagree."
+    - "All nine frozen evidence hashes match; current source hashes and historical receipt separation are correct. The authority corrections pass review."
+    - "Residual risk: These gaps would permit invalid execution after adapter cutover."
 execution_route:
   frozen: true
   reason_codes:

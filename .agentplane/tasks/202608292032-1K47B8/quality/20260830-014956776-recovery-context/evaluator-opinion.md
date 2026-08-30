@@ -1,0 +1,26 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 5 typed finding(s).
+
+## Findings
+- The transition_work_item branch does not gate on aggregate task state. A CANCELLED task with a READY WorkItem accepts claim and can resume execution.
+- Claim readiness checks depends_on but ignores required_inputs. A READY WorkItem requiring a missing output is accepted for claim. validateWorkItemDefinitions also fails to reject undeclared inputs.
+- complete_task accepts a COMPLETED WorkItem with output but no WorkItem validation, while isTaskCompletionEligible rejects the same state. The two completion paths disagree.
+- All nine frozen evidence hashes match; current source hashes and historical receipt separation are correct. The authority corrections pass review.
+- Residual risk: These gaps would permit invalid execution after adapter cutover.
+
+## Evidence
+- .agentplane/tasks/202608292032-1K47B8/quality/objects/sha256/d79cfc55ccb00071fa070c6bbd3fdb6f55514df2d3d0381e943934ecaa5a55fc.patch
+
+## Missing Tests
+- Reject WorkItem mutations after task cancellation or completion.
+- Reject claims with missing declared input outputs and malformed input declarations.
+- Require complete_task and isTaskCompletionEligible to agree when item validation is missing, failed or stale.
+
+## Hidden Assumptions
+- Green existing transition vectors were treated as complete coverage, but aggregate state and required input constraints were not covered.
+
+## Residual Risks
+- Keep the current authority fixes and qualification evidence. In the kernel scope, add failing regressions for the three reproduced cases, enforce task-active/current-approved-plan gating for WorkItem execution, validate and require declared input manifests, and unify task completion eligibility with the reducer. Preserve idempotent replay and effect reconciliation. Refresh receipt source hashes and rerun focused checks and full CI. No manual task-state repair.
