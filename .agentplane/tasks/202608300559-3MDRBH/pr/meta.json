@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua",
+  "created_at": "2026-08-30T06:04:22.120Z",
+  "diffstat_sha256": "sha256:ee74a58e36f3c8c0ee06e3284489afb7ae49db7cbfd58c3231f910ce619c87f5",
+  "last_verified_at": "2026-08-30T07:37:07.987Z",
+  "last_verified_diffstat_sha256": "sha256:ee74a58e36f3c8c0ee06e3284489afb7ae49db7cbfd58c3231f910ce619c87f5",
+  "pr_number": 5881,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5881",
+  "pre_merge_closure": {
+    "basis_commit": "7225102b0880bd2c6a387cc4d7d4c4c59c9cc02c",
+    "branch": "task/202608300559-3MDRBH/preserve-semantic-conflict-resolutions-in-evalua",
+    "pr_number": 5881,
+    "recorded_at": "2026-08-30T07:43:53.523Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608300559-3MDRBH",
+  "updated_at": "2026-08-30T06:43:40.429Z",
+  "verify": {
+    "status": "pass"
+  }
+}
