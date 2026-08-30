@@ -11,6 +11,7 @@ import {
 } from "./kernel.js";
 import type {
   ExecutionAuthority,
+  ExternalEffect,
   KernelInput,
   OutputManifest,
   PlanRecord,
@@ -72,6 +73,18 @@ const authority: ExecutionAuthority = {
   },
   expires_at: null,
 };
+
+function effect(id: string, state: ExternalEffect["state"]): ExternalEffect {
+  return {
+    id,
+    kind: "pr.merge",
+    state,
+    idempotency_key: id,
+    request_digest: kernelDigest(id),
+    provider_receipt_digest: null,
+    observed_state_digest: null,
+  };
+}
 
 function runtime(state: WorkItemRuntime["state"]): WorkItemRuntime {
   return {
@@ -466,7 +479,143 @@ describe("canonical task kernel reducer", () => {
       expect(replay.aggregate).toBe(first.aggregate);
       expect(replay.receipts).toEqual(first.receipts);
     }
+    for (const terminal of ["COMPLETED", "CANCELLED"] as const) {
+      const terminalState = { ...first.aggregate, state: terminal };
+      expect(reduceTaskCommand(input(terminalState, command))).toMatchObject({
+        kind: "accepted",
+        aggregate: terminalState,
+        events: [],
+        receipts: first.receipts,
+      });
+    }
   });
+
+  it("requires active execution and matching authority to prepare effects", () => {
+    const state = aggregate();
+    const command: TaskCommand = {
+      kind: "prepare_effect",
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+      effect: effect("merge", "PREPARED"),
+    };
+    for (const external_effects of [[], ["publish"]]) {
+      expect(
+        reduceTaskCommand({
+          ...input(state, command),
+          authority: { ...authority, external_effects },
+        }),
+      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+    }
+    const granted = { ...authority, external_effects: ["pr.merge"] };
+    for (const active of ["ACTIVE", "FINAL_VALIDATION"] as const) {
+      expect(
+        reduceTaskCommand({ ...input({ ...state, state: active }, command), authority: granted })
+          .kind,
+      ).toBe("accepted");
+    }
+    for (const inactive of [
+      "CAPTURED",
+      "PLANNING",
+      "AWAITING_PLAN_APPROVAL",
+      "HUMAN_REQUIRED",
+      "BLOCKED",
+      "COMPLETED",
+      "CANCELLED",
+    ] as const) {
+      expect(
+        reduceTaskCommand({ ...input({ ...state, state: inactive }, command), authority: granted }),
+      ).toMatchObject({ kind: "rejected", code: "ILLEGAL_TASK_TRANSITION" });
+    }
+  });
+
+  it.each(["COMPLETED", "CANCELLED"] as const)(
+    "rejects new mutations on terminal %s tasks",
+    (state) => {
+      const task = aggregate({ state, effects: [effect("merge", "PREPARED")] });
+      const command: TaskCommand = {
+        kind: "observe_effect",
+        task_id: task.id,
+        expected_task_revision: task.revision,
+        expected_state_fingerprint: fingerprint,
+        effect_id: "merge",
+        observed_state: "IN_DOUBT",
+        observation_digest: kernelDigest("timeout"),
+      };
+      expect(reduceTaskCommand(input(task, command))).toMatchObject({
+        kind: "rejected",
+        code: "ILLEGAL_TASK_TRANSITION",
+      });
+    },
+  );
+
+  it.each(["APPLIED", "NOT_APPLIED"] as const)(
+    "resumes after observing an uncertain effect as %s",
+    (observed_state) => {
+      for (const more of [false, true]) {
+        const task = aggregate({
+          state: "EFFECT_IN_DOUBT",
+          effects: [effect("merge", "IN_DOUBT"), ...(more ? [effect("other", "IN_DOUBT")] : [])],
+        });
+        const command: TaskCommand = {
+          kind: "observe_effect",
+          task_id: task.id,
+          expected_task_revision: task.revision,
+          expected_state_fingerprint: fingerprint,
+          effect_id: "merge",
+          observed_state,
+          observation_digest: kernelDigest("observed"),
+        };
+        const result = reduceTaskCommand(input(task, command));
+        expect(result).toMatchObject({
+          kind: "accepted",
+          aggregate: { state: more ? "EFFECT_IN_DOUBT" : "ACTIVE" },
+        });
+        if (result.kind === "accepted" && !more) {
+          expect(
+            reduceTaskCommand(
+              input(result.aggregate, transitionCommand(result.aggregate, "claim"), "next"),
+            ),
+          ).toMatchObject({ kind: "accepted" });
+        }
+      }
+    },
+  );
+
+  it.each(["reconcile_effect", "supersede_effect"] as const)(
+    "keeps Task recovery consistent after %s",
+    (kind) => {
+      for (const more of [false, true]) {
+        const task = aggregate({
+          state: "EFFECT_IN_DOUBT",
+          effects: [
+            effect("merge", "IN_DOUBT"),
+            effect("replacement", "PREPARED"),
+            ...(more ? [effect("other", "IN_DOUBT")] : []),
+          ],
+        });
+        const envelope = {
+          task_id: task.id,
+          expected_task_revision: task.revision,
+          expected_state_fingerprint: fingerprint,
+          effect_id: "merge",
+        };
+        const command: TaskCommand =
+          kind === "reconcile_effect"
+            ? {
+                ...envelope,
+                kind,
+                resolution: "APPLIED",
+                provider_receipt_digest: kernelDigest("receipt"),
+              }
+            : { ...envelope, kind, replacement_effect_id: "replacement" };
+        expect(reduceTaskCommand(input(task, command))).toMatchObject({
+          kind: "accepted",
+          aggregate: { state: more ? "EFFECT_IN_DOUBT" : "ACTIVE" },
+        });
+      }
+    },
+  );
 
   it("rejects reuse of a mutation identity with a changed command", () => {
     const state = aggregate();

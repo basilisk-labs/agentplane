@@ -322,6 +322,11 @@ function effectTransition(effect: ExternalEffect, state: EffectState): ExternalE
   return { ...effect, state };
 }
 
+function taskStateAfterEffect(state: TaskState, effects: readonly ExternalEffect[]): TaskState {
+  if (effects.some((effect) => effect.state === "IN_DOUBT")) return "EFFECT_IN_DOUBT";
+  return state === "EFFECT_IN_DOUBT" ? "ACTIVE" : state;
+}
+
 function accept(input: KernelInput, next: TaskAggregate): KernelResult {
   const commandDigest = kernelDigest(input.command);
   const event: DomainEvent = {
@@ -365,6 +370,9 @@ function preconditions(input: KernelInput): KernelResult | null {
       return rejected("MUTATION_ID_CONFLICT", [input.mutation_id], "use_new_mutation_id");
     }
     return { kind: "accepted", aggregate: input.aggregate, events: [], receipts: [existing] };
+  }
+  if (input.aggregate.state === "COMPLETED" || input.aggregate.state === "CANCELLED") {
+    return rejected("ILLEGAL_TASK_TRANSITION", [input.aggregate.state, input.command.kind]);
   }
   if (input.command.task_id !== input.aggregate.id) {
     return rejected("TASK_ID_MISMATCH", [input.command.task_id, input.aggregate.id]);
@@ -680,6 +688,12 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "prepare_effect": {
+      if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
+        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
+      }
+      if (!input.authority?.external_effects.includes(command.effect.kind)) {
+        return rejected("AUTHORITY_SCOPE_EXCEEDED", [command.effect.kind]);
+      }
       if (
         aggregate.effects.some(
           (effect) =>
@@ -727,7 +741,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,
-        state: command.observed_state === "IN_DOUBT" ? "EFFECT_IN_DOUBT" : aggregate.state,
+        state: taskStateAfterEffect(aggregate.state, effects),
         effects,
       };
       break;
@@ -748,7 +762,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,
-        state: aggregate.state === "EFFECT_IN_DOUBT" ? "ACTIVE" : aggregate.state,
+        state: taskStateAfterEffect(aggregate.state, effects),
         effects,
       };
       break;
@@ -768,7 +782,12 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       }
       const effects = [...aggregate.effects];
       effects[index] = effectTransition(effects[index]!, "SUPERSEDED");
-      next = { ...aggregate, revision: aggregate.revision + 1, effects };
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: taskStateAfterEffect(aggregate.state, effects),
+        effects,
+      };
       break;
     }
     case "amend_plan": {
