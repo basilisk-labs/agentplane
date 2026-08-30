@@ -4,7 +4,7 @@ title: "Preserve semantic conflict resolutions in evaluator target selection"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "Standing user approval: finish the clean-core refactor and all necessary in-scope bootstrap fixes without repeated confirmation. Approve plan sha256:77597494a805283885bca86072e69ea8e5a7dd0bf39da19904c3660a37253bf9."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-08-30T06:43:24.827Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -82,11 +82,48 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/quality-review-target.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/shared/quality-review-merge.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -120,21 +157,31 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:8d8743c3c71fc72e8f3547b296daeec1b295a2a4f18cc734c067548b609e19b1"
+      digest: "sha256:e4e1f692b33b4fcad549ac6d49026344b8fce8e84d9465fb22add88b7fdcab56"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/quality-review-merge.ts"
         - "central_component:packages/agentplane/src/commands/shared/quality-review-target.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/quality-review-target.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-merge.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/shared/quality-review-merge.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -167,8 +214,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ccc578931ad7b4527ab1d9734f899f6b354bd5e4"
-  message: "🔧 3MDRBH verification: retain semantic merge review targets"
+  hash: "3174c719467932a7d3408465af4960a643bce595"
+  message: "🚧 3MDRBH task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -176,6 +223,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed through the routed dirty-worktree recovery after the supervisor commit was blocked by stale build. All 29 focused regression tests, typecheck, lint and diff checks passed. Continue fresh verification from this exact implementation; do not reuse old review evidence."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3174c7194679. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -192,9 +242,23 @@ events:
     to: "DOING"
     note: "Implementation committed through the routed dirty-worktree recovery after the supervisor commit was blocked by stale build. All 29 focused regression tests, typecheck, lint and diff checks passed. Continue fresh verification from this exact implementation; do not reuse old review evidence."
     commit: "ccc578931ad7b4527ab1d9734f899f6b354bd5e4"
+  -
+    type: "status"
+    at: "2026-08-30T06:35:48.568Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3174c7194679. CLI accepted one state-bound external-agent semantic result."
+    commit: "3174c719467932a7d3408465af4960a643bce595"
+  -
+    type: "verify"
+    at: "2026-08-30T06:43:24.827Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-30T06:21:49.017Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-30T06:43:27.108Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix the reproduced review-target defect that skips every base-sync merge when an older evaluated SHA exists. Distinguish a clean automatic base synchronization from a semantic conflict resolution, keep semantic merge changes inside the exact reviewed implementation identity, and add a regression using real Git merge parents. This bootstrap blocks fresh qualification of AP-RUNTIME-001 PR #5880 after resolution commit 26b69b0fe. Preserve evidence and task state; never hand-edit quality receipts or weaken freshness checks."
 sections:
   Summary: |-
@@ -214,6 +278,96 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-08-30T06:43:24.827Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d5a4f7d337f82861d80a37345238a05a117669c13aa7872d2464ed149fc26aee, input_digest=sha256:de1f4519ceae092a1b88fae50080c7b09859310e9714e1011fc7ba41d6eb74de
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300559-3MDRBH-preserve-semantic-conflict-resolutions-in-evalua/.agentplane/tasks/202608300559-3MDRBH/blueprint/resolved-snapshot.json
+    - old_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+    - current_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608300559-3MDRBH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -450,25 +604,96 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 2
+    revision: 9
     schema_version: 1
-    updated_at: "2026-08-30T06:04:07.990Z"
+    updated_at: "2026-08-30T06:43:28.328Z"
     work_items:
       merge-review-target:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "merge-review-target"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:624a345a9bdbba35bbbc09439281531d2c63b35707e170df57e9a905dedd02d4"
+            id: "merge-review-target-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202608300559-3MDRBH"
+              work_item_id: "merge-review-target"
+            provenance:
+              - "sha256:08c38e6524005e8cc3b22060fce62f374d18ad866f4a128ed8fcd8252026544c"
+              - ".agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4b46270e0b3fddb6d70b20ca38b1195b985d9948be5c00e716d26120b1abca23"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json"
+              check_id: "types"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-08-30T06:43:28.324Z"
+              repository_snapshot_digest: "sha256:4b46270e0b3fddb6d70b20ca38b1195b985d9948be5c00e716d26120b1abca23"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json"
+              check_id: "diff"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-08-30T06:43:28.324Z"
+              repository_snapshot_digest: "sha256:4b46270e0b3fddb6d70b20ca38b1195b985d9948be5c00e716d26120b1abca23"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    leases: []
+    mutation_receipts:
+      external-result:work-order-202608300559-3MDRBH-executor-89198f25a09604ba3e86cc77:
+        aggregate_digest: "sha256:1adb1ce418def77f55bec86f62e3def12c40e954cdba37ef47cb66e079ad503b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-30T06:43:28.328Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_18c2bc6fdacafce7504faf2f"
+          mutation_id: "external-result:work-order-202608300559-3MDRBH-executor-89198f25a09604ba3e86cc77"
+          plan_digest: "sha256:77597494a805283885bca86072e69ea8e5a7dd0bf39da19904c3660a37253bf9"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608300559-3MDRBH"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: "merge-review-target"
+        mutation_id: "external-result:work-order-202608300559-3MDRBH-executor-89198f25a09604ba3e86cc77"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202608300559-3MDRBH"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  implementation_commit:
+    hash: "3174c719467932a7d3408465af4960a643bce595"
   task_execution_context:
     base_ref: "main"
     base_sha: "cbc5d79d1510293de3b4c30b61679cdef85d0fdb"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "cbc5d79d1510293de3b4c30b61679cdef85d0fdb"
     version: 1
@@ -501,6 +726,96 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-08-30T06:43:24.827Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d5a4f7d337f82861d80a37345238a05a117669c13aa7872d2464ed149fc26aee, input_digest=sha256:de1f4519ceae092a1b88fae50080c7b09859310e9714e1011fc7ba41d6eb74de
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608300559-3MDRBH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608300559-3MDRBH Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608300559-3MDRBH-preserve-semantic-conflict-resolutions-in-evalua/.agentplane/tasks/202608300559-3MDRBH/blueprint/resolved-snapshot.json
+- old_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+- current_digest: 9b46316d5d2bba742d315526c64d0fdeb39d1117bf3503fad16f295dd33cc83d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608300559-3MDRBH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
