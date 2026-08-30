@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:8d1e77f49e1467724ad8931376daa4e9a05d0afa90ce69f243e8f4a673ab395c",
   "pr_number": 5879,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5879",
+  "pre_merge_closure": {
+    "basis_commit": "d24316765b3d9073e4aa876ec90620624b18977c",
+    "branch": "task/202608300119-ZHYXRS/preserve-workitem-results-during-plan-reapproval",
+    "pr_number": 5879,
+    "recorded_at": "2026-08-30T01:43:10.773Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
