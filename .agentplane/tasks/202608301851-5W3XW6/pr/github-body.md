@@ -16,7 +16,7 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,14 +29,14 @@ M3 Task 202608291006-255K66 has an approved plan captured at 36741ce5160d452ca96
 ```text
  docs/developer/harness-dev.mdx                     |  29 +++
  docs/user/cli-reference.generated.mdx              |   3 +
- ...i.core.task-advance.worktree-resolution.test.ts | 267 ++++++++++++++++++++-
+ ...i.core.task-advance.worktree-resolution.test.ts | 264 ++++++++++++++++++++-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/branch/work-resume-candidate.ts   | 102 ++++++++
- .../commands/branch/work-resume-planning-base.ts   | 248 +++++++++++++++++++
+ .../commands/branch/work-resume-planning-base.ts   | 249 +++++++++++++++++++
  .../src/commands/branch/work-resume.command.ts     |  51 +++-
  .../baselines/v0.7-compatibility-candidate.json    |  54 ++++-
  .../check-compatibility-contract-baseline.mjs      |  28 +++
- 9 files changed, 774 insertions(+), 15 deletions(-)
+ 9 files changed, 772 insertions(+), 15 deletions(-)
 ```
 
 </details>

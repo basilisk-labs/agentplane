@@ -29,7 +29,8 @@ function refuse(reason: string): never {
 }
 
 async function git(root: string, args: string[]): Promise<string> {
-  return (await execFileAsync("git", args, { cwd: root, env: gitEnv() })).stdout.trim();
+  const result = await execFileAsync("git", args, { cwd: root, env: gitEnv() });
+  return result.stdout.trim();
 }
 
 /** Explicit recovery only. Normal workspace preparation retains its frozen base. */
@@ -60,7 +61,7 @@ export async function recoverWorkPlanningBase(opts: {
   if (parseTaskIdFromBranch(ctx.config.branch.task_prefix, branch) !== task.id)
     refuse("branch ownership mismatch");
   const base = taskExecutionBaseFromExtensions(task.extensions);
-  if (!base || base.source !== "creation_checkout")
+  if (base?.source !== "creation_checkout")
     refuse("explicit or unknown base provenance cannot be changed");
   if (
     task.status !== "TODO" ||
@@ -72,10 +73,10 @@ export async function recoverWorkPlanningBase(opts: {
   if (!Number.isInteger(task.revision) || (task.revision ?? 0) < 1)
     refuse("Task revision is unavailable");
   const aggregate = taskCentricAggregateFromExtensions(task.extensions);
-  const plan = aggregate?.current_plan;
+  if (!aggregate) refuse("an approved structured plan is required");
+  const plan = aggregate.current_plan;
   if (
-    !plan ||
-    plan.approval.state !== "approved" ||
+    plan?.approval.state !== "approved" ||
     plan.approval.approved_digest !== plan.digest ||
     createTaskPlanRevision({
       proposal: plan.proposal,
@@ -100,7 +101,7 @@ export async function recoverWorkPlanningBase(opts: {
   )
     refuse("WorkItem execution or validation already exists");
   const runtime = runtimeFrom(task);
-  if (runtime.leases.length || runtime.pending_effects.length)
+  if (runtime.leases.length > 0 || runtime.pending_effects.length > 0)
     refuse("execution leases or effects already exist");
   const baseline = plan.proposal.planning_baseline.git;
   if (baseline.kind !== "commit") refuse("the approved planning snapshot has no commit identity");
@@ -176,7 +177,7 @@ export async function recoverWorkPlanningBase(opts: {
       .split("\n")
       .filter(Boolean)
       .filter((line) => !allowed.has(line));
-    if (unexpected.length)
+    if (unexpected.length > 0)
       refuse(`tracked or unrelated untracked changes exist: ${unexpected.slice(0, 8).join(", ")}`);
     // Git must not replace the transported Task document during the fast-forward.
     if ((await git(root, ["ls-tree", "--name-only", target, "--", path.dirname(readme)])) !== "")
