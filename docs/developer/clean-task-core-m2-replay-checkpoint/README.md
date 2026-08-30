@@ -52,6 +52,47 @@ passed on Node 24 after adding this corpus. Corrupt source bytes fail before sto
 a changed expected event reports the first divergent field with bounded diagnostics.
 This subset does not replace the complete twelve-family manifest required below.
 
+## Qualification hardening in progress
+
+The supervisor accepted the frozen replay checkpoint at `2c752885453a6fbeebbb407db859a34454ff63a2`.
+However, its new verification record referenced the preceding run's check artifact. The artifact
+writer compared only commands and exit codes before preserving an earlier successful log. That
+comparison cannot establish equal source or execution identity. The writer now saves the actual
+observations from each run; its existing byte-identical write suppression remains. A regression
+reproduced stale evidence reuse before the fix. The complete gate must run again with this fix.
+
+The qualification summary also rejected none of the skipped, pending or todo assertions when the
+remaining counts matched. Three regressions now require incomplete execution to fail qualification.
+
+A new canonical `begin_effect` command records `PENDING` before a provider call. A thin dispatch
+adapter calls the provider only after fresh confirmed admission. A replay or uncertain admission
+requires readback. Independent readback after a failed write proves durability, not exclusive
+ownership of that write. An identical concurrent CAS regression produced two provider calls before
+this distinction was fixed; it now permits one. This is a counted fake-provider test, not a hosted
+provider or release drill. The capture harness includes 31 scenarios across local, serialized direct
+and cloud-fake storage. The controlled identical-start interleaving uses the cloud fake; the other
+scenarios exercise all three backends. Captures include commands, events, receipts, projections,
+effect states, next actions and provider call counts.
+
+Task finalization now rejects unresolved optional WorkItem claims. Four regressions reproduced
+premature final validation before this guard. Unclaimed optional work still does not block completion.
+Additional pure-kernel vectors cover plan rejection and stale approval, dependencies and fan-out,
+missing producer output, rework, duplicate and stale results, optional work and independent ready work.
+The supplemental harness contains 19 deterministic kernel cases. Four real Git workspace cases
+cover base checkout, selected worktree, missing frozen document and divergent HEAD. Nine evidence
+cases cover metadata-only review stability, semantic review invalidation and actual missing executable
+failure across all three backends. The process probe uses the existing allowlisted `node` command
+with an empty fixture PATH; it does not weaken the process allowlist.
+
+The interruption matrix now compares all 252 resumed observations against the previously frozen
+branch and release journey prefixes. A shared observation owner records the actual storage read,
+canonical/legacy comparison, events, receipts, aggregate and projection digests, effects and route.
+The isolated driver always captures observations and validates an explicit twelve-family manifest.
+Missing cases, duplicate identities, changed source bytes, wrong anchors, incomplete test execution
+and expectations that differ from the frozen crash origin fail qualification before export.
+Normal tests do not regenerate the saved corpus. New capture fixtures still require committed-source
+capture and mandatory frozen replay in `m2-corpus-freeze`; this checkpoint does not complete that gate.
+
 ## Remaining mandatory acceptance
 
 The initial checkpoint's full `test:fast` run failed 12 tests across seven suites after

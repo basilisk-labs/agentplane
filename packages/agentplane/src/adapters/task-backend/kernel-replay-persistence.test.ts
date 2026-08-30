@@ -1,13 +1,30 @@
 import { execFileSync } from "node:child_process";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, afterEach, describe, expect, it, vi } from "vitest";
 import { KernelBackendAdapter } from "./kernel-backend-adapter.js";
+import { captureKernelQualification } from "./kernel-qualification.testkit.js";
+import { captureKernelWorkspaceReplay } from "./kernel-workspace-replay.testkit.js";
+import {
+  captureKernelEvidenceScenarios,
+  kernelEvidenceReplayCases,
+  observeKernelEvidenceScenario,
+} from "./kernel-evidence-replay.testkit.js";
+import {
+  captureKernelEffectReplay,
+  kernelEffectReplayCases,
+  observeKernelEffectReplay,
+} from "./kernel-effect-replay.testkit.js";
 import { makeKernelRecord } from "./kernel-record.js";
-import { compareKernelReadPaths } from "./kernel-replay.js";
+import {
+  compareKernelReadPaths,
+  compareReplayObservations,
+  replayBytesDigest,
+} from "./kernel-replay.js";
 import { bindKernelWorkItemEvidence, readKernelReview } from "./kernel-observations.js";
 import {
   captureKernelPersistenceFixture,
+  observeKernelPersistenceState,
   replayKernelPersistenceFixture,
   type KernelPersistenceFixture,
 } from "./kernel-replay-capture.testkit.js";
@@ -23,6 +40,13 @@ import {
   replayTaskClasses,
 } from "./kernel-replay-journey.test-fixtures.js";
 
+const crashCaptures: {
+  identity: KernelPersistenceFixture["identity"];
+  family: "crash-points";
+  source_bytes: string;
+  expected: KernelPersistenceFixture["expected"][number];
+  expected_origin: { fixture_id: string; implementation_anchor: string; observation_index: number };
+}[] = [];
 const roots: string[] = [];
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -31,21 +55,57 @@ afterEach(async () => {
 const storage = (kind: ReplayBackendKind) => kernelReplayStorage(kind, roots);
 
 // The isolated driver alone supplies this destination. Normal tests never update frozen inputs.
-if (process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT) {
-  it("captures persistence observations at the isolated exact anchor", async () => {
-    const anchor = process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR;
-    if (!anchor || !/^[a-f0-9]{40}$/u.test(anchor)) throw new Error("Missing capture anchor");
+const captureOutput = process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT;
+if (captureOutput) {
+  const anchor = process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR;
+  if (!anchor || !/^[a-f0-9]{40}$/u.test(anchor)) throw new Error("Missing capture anchor");
+  let fixtures: KernelPersistenceFixture[] | null = null;
+  let effects: Awaited<ReturnType<typeof captureKernelEffectReplay>> | null = null;
+  let workspaces: Awaited<ReturnType<typeof captureKernelWorkspaceReplay>> | null = null;
+  let evidence: Awaited<ReturnType<typeof captureKernelEvidenceScenarios>> | null = null;
+  beforeAll(() => {
     expect(execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim()).toBe(anchor);
     expect(
       execFileSync("git", ["status", "--porcelain", "--untracked-files=no"], { encoding: "utf8" }),
     ).toBe("");
-    const fixtures = [];
+  });
+  it("captures persistence observations at the isolated exact anchor", async () => {
+    const captured = [];
     for (const backend of replayBackendKinds)
       for (const taskClass of replayTaskClasses)
-        fixtures.push(await captureKernelPersistenceFixture(backend, taskClass, anchor));
+        captured.push(await captureKernelPersistenceFixture(backend, taskClass, anchor));
+    fixtures = captured;
+  });
+  it("captures provider effect observations at the isolated exact anchor", async () => {
+    effects = await captureKernelEffectReplay(anchor);
+  });
+  it("captures workspace observations at the isolated exact anchor", async () => {
+    workspaces = await captureKernelWorkspaceReplay(anchor);
+  });
+  it("captures evidence observations at the isolated exact anchor", async () => {
+    evidence = await captureKernelEvidenceScenarios(anchor);
+  });
+  afterAll(async () => {
+    if (!fixtures || !effects || !workspaces || !evidence)
+      throw new Error("Incomplete qualification capture");
+    if (crashCaptures.length !== kernelReplayCrashPoints().length * replayBackendKinds.length * 3)
+      throw new Error("Incomplete crash matrix capture");
     await writeFile(
-      process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT!,
-      JSON.stringify({ schema_version: 1, source_anchor: anchor, fixtures }, null, 2) + "\n",
+      captureOutput,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          source_anchor: anchor,
+          fixtures,
+          supplemental_kernel: captureKernelQualification(anchor),
+          effect_replay: effects,
+          workspace_replay: workspaces,
+          evidence_replay: evidence,
+          crash_matrix: crashCaptures,
+        },
+        null,
+        2,
+      ) + "\n",
       { flag: "wx" },
     );
   });
@@ -54,6 +114,72 @@ if (process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT) {
 const frozen = JSON.parse(
   await readFile(new URL("kernel-replay-persistence.corpus.json", import.meta.url), "utf8"),
 ) as { schema_version: 1; source_anchor: string; fixtures: KernelPersistenceFixture[] };
+
+describe("qualified evidence identities", () => {
+  for (const fixture of kernelEvidenceReplayCases()) {
+    it(fixture.id, async () => {
+      const observed = await observeKernelEvidenceScenario(fixture.source_bytes);
+      if (fixture.scenario === "missing-executable") {
+        expect(observed).toMatchObject({
+          process: { code: "ENOENT" },
+          validation: { kind: "validation", validation: { status: "BLOCKED" } },
+          completion: { kind: "rejected" },
+        });
+      } else if (fixture.scenario === "metadata-review") {
+        expect(observed.review).toMatchObject({ kind: "review", verdict: "PASS" });
+        expect(observed.binding_after).toEqual(observed.binding_before);
+        expect(observed.after.aggregate_digest).toBe(observed.before.aggregate_digest);
+      } else {
+        expect(observed.review).toMatchObject({
+          kind: "rejected",
+          code: "observation_binding_mismatch",
+        });
+        expect(observed.binding_after).not.toEqual(observed.binding_before);
+      }
+    });
+  }
+});
+
+describe("qualified provider effect scenarios", () => {
+  for (const fixture of kernelEffectReplayCases()) {
+    it(fixture.id, async () => {
+      const observed = await observeKernelEffectReplay(fixture.source_bytes);
+      const noDispatch = [
+        "not-issued",
+        "admission-after-write",
+        "admission-unknown-readback",
+      ].includes(fixture.scenario);
+      expect(observed.provider_calls).toBe(noDispatch ? 0 : 1);
+      const final = observed.observations.at(-1)!;
+      const expectedState =
+        fixture.scenario === "not-issued"
+          ? "PREPARED"
+          : fixture.scenario === "uncertain"
+            ? "IN_DOUBT"
+            : fixture.scenario === "reconciled"
+              ? "RECONCILED"
+              : [
+                    "not-applied",
+                    "timeout-before",
+                    "admission-after-write",
+                    "admission-unknown-readback",
+                  ].includes(fixture.scenario)
+                ? "NOT_APPLIED"
+                : "APPLIED";
+      expect(final.effect_states[0]!.state).toBe(expectedState);
+      expect(final.next_action.reason_code).toBe(
+        fixture.scenario === "not-issued"
+          ? "kernel_effect_dispatch_required"
+          : fixture.scenario === "uncertain"
+            ? "kernel_effect_observation_required"
+            : "kernel_final_validation_required",
+      );
+      expect(final.events.filter((event) => event.kind === "effect_started")).toHaveLength(
+        fixture.scenario === "not-issued" ? 0 : 1,
+      );
+    });
+  }
+});
 
 describe("frozen persistence replay", () => {
   it("retains the captured five-class, three-backend observation matrix", () => {
@@ -559,6 +685,47 @@ describe("canonical replay through persistence and restart", () => {
             crashIndex + 1,
           );
           expect(resumedWrite).toHaveBeenCalledTimes(mode === "before-write" ? 1 : 0);
+          const origin = frozen.fixtures.find(
+            (fixture) =>
+              fixture.backend === backendKind && fixture.source_bytes === JSON.stringify(journey),
+          );
+          if (!origin) throw new Error("Missing independently frozen crash reference");
+          const expected = origin.expected[crashIndex]!;
+          const { read, observation: actual } = await observeKernelPersistenceState(
+            store.restart(),
+            journey.task.id,
+            replayRepositoryIdentity,
+            crashStep.input.repository_fingerprint,
+            crashStep.label,
+            origin.identity,
+          );
+          expect(read.record.digest).toBe(resumed.record.digest);
+          const comparison = compareReplayObservations(origin.identity, expected, actual);
+          expect(comparison.matched, JSON.stringify(comparison)).toBe(true);
+          if (captureOutput) {
+            const sourceBytes = JSON.stringify({
+              backend: backendKind,
+              mode,
+              crash_index: crashIndex,
+              journey,
+            });
+            crashCaptures.push({
+              identity: {
+                fixture_id: `${backendKind}-${mode}-${crashStep.label}`,
+                source_digest: replayBytesDigest(sourceBytes),
+                implementation_anchor: process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR!,
+                reproduction_command: `node scripts/bench/qualify-kernel-replay.mjs ${process.env.AGENTPLANE_KERNEL_CAPTURE_ANCHOR!}`,
+              },
+              family: "crash-points",
+              source_bytes: sourceBytes,
+              expected,
+              expected_origin: {
+                fixture_id: origin.identity.fixture_id,
+                implementation_anchor: origin.identity.implementation_anchor,
+                observation_index: crashIndex,
+              },
+            });
+          }
           expect(
             await restarted.nextAction(journey.task.id, crashStep.input.repository_fingerprint),
           ).toMatchObject({ reason_code: crashStep.expected_next_reason, grants_authority: false });

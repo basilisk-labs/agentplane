@@ -286,6 +286,7 @@ export type TaskCommand =
     >
   | CommandEnvelope<"record_final_validation", { validation: ValidationRecord }>
   | CommandEnvelope<"prepare_effect", { effect: ExternalEffect }>
+  | CommandEnvelope<"begin_effect", { effect_id: string }>
   | CommandEnvelope<
       "observe_effect",
       {
@@ -335,6 +336,7 @@ export type DomainEvent = Readonly<{
     | "work_item_validation_recorded"
     | "final_validation_recorded"
     | "effect_prepared"
+    | "effect_started"
     | "effect_observed"
     | "effect_reconciled"
     | "effect_superseded"

@@ -132,6 +132,7 @@ const event = z.strictObject({
     "work_item_validation_recorded",
     "final_validation_recorded",
     "effect_prepared",
+    "effect_started",
     "effect_observed",
     "effect_reconciled",
     "effect_superseded",

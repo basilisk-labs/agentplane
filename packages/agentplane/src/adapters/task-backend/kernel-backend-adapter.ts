@@ -179,7 +179,9 @@ export class KernelBackendAdapter {
       try {
         const observed = await this.read(task.id);
         if (observed.kind === "canonical" && observed.record.digest === record.digest) {
-          return { kind: "committed", record: observed.record, receipts, replayed: false };
+          // Readback proves durability, not which concurrent caller performed the write.
+          // Never grant fresh dispatch ownership from an uncertain write response.
+          return { kind: "committed", record: observed.record, receipts, replayed: true };
         }
         if (observed.kind === "canonical" && observed.task.revision !== expectedRevision) {
           return this.unavailable("concurrent_write", observed.record.digest);

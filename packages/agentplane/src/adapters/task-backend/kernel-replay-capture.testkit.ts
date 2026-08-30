@@ -1,11 +1,13 @@
 import { rm } from "node:fs/promises";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import type { TaskBackend } from "../../backends/task-backend.js";
 import { KernelBackendAdapter } from "./kernel-backend-adapter.js";
 import { projectKernelTask } from "./kernel-projector.js";
 import {
   compareKernelReadPaths,
   compareReplayObservations,
   replayBytesDigest,
+  type ReplayIdentity,
 } from "./kernel-replay.js";
 import {
   kernelReplayJourney,
@@ -13,6 +15,41 @@ import {
   type ReplayTaskClass,
 } from "./kernel-replay-journey.test-fixtures.js";
 import { kernelReplayStorage, type ReplayBackendKind } from "./kernel-replay-storage.testkit.js";
+
+/** One read-only observation owner for persistence, effect, evidence and crash captures. */
+export async function observeKernelPersistenceState(
+  backend: TaskBackend,
+  taskId: string,
+  repositoryIdentity: k.Sha256Digest,
+  fingerprint: k.Sha256Digest,
+  label: string,
+  identity: Omit<ReplayIdentity, "source_digest">,
+) {
+  const adapter = new KernelBackendAdapter(backend, repositoryIdentity);
+  const read = await adapter.read(taskId);
+  if (read.kind !== "canonical") throw new Error(`${label}: canonical record missing`);
+  const comparison = await compareKernelReadPaths(backend, adapter, taskId, fingerprint, identity);
+  if (!comparison.comparison.matched)
+    throw new Error(`${label}: ${JSON.stringify(comparison.comparison)}`);
+  return {
+    read,
+    observation: {
+      label,
+      events: read.record.events,
+      receipts: read.record.aggregate.mutation_receipts,
+      aggregate_digest: k.kernelDigest(read.record.aggregate),
+      projection_digest: k.kernelDigest(projectKernelTask(read.record.aggregate)),
+      effect_states: read.record.aggregate.effects.map(({ id, state }) => ({ id, state })),
+      next_action: comparison.next_action,
+      read_comparison: {
+        scope: comparison.comparison_scope,
+        expected_digest: comparison.comparison.expected_digest,
+        actual_digest: comparison.comparison.actual_digest,
+        first_divergent_field: comparison.comparison.first_divergent_field,
+      },
+    },
+  };
+}
 
 /** Capture from real storage clients. The caller must supply an independently checked Git anchor. */
 export async function captureKernelPersistenceFixture(
@@ -41,45 +78,20 @@ export async function captureKernelPersistenceFixture(
           : await adapter.execute(step.input);
       if (result.kind !== "committed")
         throw new Error(`${identity.fixture_id}/${step.label}: ${JSON.stringify(result)}`);
-      const read = await new KernelBackendAdapter(store.restart(), replayRepositoryIdentity).read(
-        journey.task.id,
-      );
-      if (read.kind !== "canonical" || read.record.digest !== result.record.digest)
-        throw new Error(`${identity.fixture_id}/${step.label}: restart changed the record`);
-      const comparison = await compareKernelReadPaths(
+      const { read, observation } = await observeKernelPersistenceState(
         store.restart(),
-        adapter,
         journey.task.id,
+        replayRepositoryIdentity,
         step.input.repository_fingerprint,
+        step.label,
         identity,
       );
       if (
-        !comparison.comparison.matched ||
-        comparison.next_action.reason_code !== step.expected_next_reason
+        read.record.digest !== result.record.digest ||
+        observation.next_action.reason_code !== step.expected_next_reason
       )
-        throw new Error(
-          `${identity.fixture_id}/${step.label}: ${JSON.stringify({
-            comparison: comparison.comparison,
-            next_action: comparison.next_action,
-            expected_next_reason: step.expected_next_reason,
-          })}`,
-        );
-      observations.push({
-        label: step.label,
-        events: read.record.events,
-        receipts: read.record.aggregate.mutation_receipts,
-        aggregate_digest: k.kernelDigest(read.record.aggregate),
-        projection_digest: k.kernelDigest(projectKernelTask(read.record.aggregate)),
-        effect_states: read.record.aggregate.effects.map(({ id, state }) => ({ id, state })),
-        next_action: comparison.next_action,
-        // Document timestamps are operational. Compare the actual normalized read values only.
-        read_comparison: {
-          scope: comparison.comparison_scope,
-          expected_digest: comparison.comparison.expected_digest,
-          actual_digest: comparison.comparison.actual_digest,
-          first_divergent_field: comparison.comparison.first_divergent_field,
-        },
-      });
+        throw new Error(`${identity.fixture_id}/${step.label}: restart or route mismatch`);
+      observations.push(observation);
     }
     return {
       identity,

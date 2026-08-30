@@ -84,6 +84,7 @@ export function summarizeReplayReport(report, runnerFailure = null) {
     report?.success === true &&
     total > 0 &&
     consistentCounts &&
+    report.numPassedTests === total &&
     !failedSuite &&
     (report.numFailedTests ?? 0) === 0 &&
     (report.numFailedTestSuites ?? 0) === 0;
@@ -92,6 +93,8 @@ export function summarizeReplayReport(report, runnerFailure = null) {
     if (runnerFailure) firstFailure = "runner_failure";
     else if (report === null) firstFailure = "missing_report";
     else if (total === 0) firstFailure = "no_tests";
+    else if (consistentCounts && report.numPassedTests < total)
+      firstFailure = "incomplete_execution";
     else firstFailure = "inconsistent_report";
   }
   return {

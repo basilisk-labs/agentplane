@@ -214,7 +214,10 @@ describe("canonical kernel persistence boundary", () => {
       await original(...args);
       throw new Error("lost response");
     });
-    expect(await adapter.create(task(), input())).toMatchObject({ kind: "committed" });
+    expect(await adapter.create(task(), input())).toMatchObject({
+      kind: "committed",
+      replayed: true,
+    });
     expect(await adapter.read(taskId)).toMatchObject({ kind: "canonical" });
   });
 

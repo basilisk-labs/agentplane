@@ -4,6 +4,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { taskKernel } from "@agentplaneorg/core/tasks";
+import type { KernelPersistenceFixture } from "./kernel-replay-capture.testkit.js";
 import {
   compareReplayObservations,
   observeKernelEvidenceReplay,
@@ -30,6 +31,11 @@ const isolation = (await import(
     failure_details: string[];
   };
 };
+const qualificationManifest = (await import(
+  pathToFileURL(
+    path.join(process.cwd(), "scripts/bench/internal/kernel-qualification-manifest.mjs"),
+  ).href
+)) as { qualifyKernelCorpus(input: unknown): unknown };
 const dependencyCapture = (await import(
   pathToFileURL(
     path.join(process.cwd(), "scripts/bench/internal/agent-efficiency-dependency-manifest.mjs"),
@@ -86,7 +92,116 @@ async function isolationFixture() {
   return { source, checkout, external, runner, temporary };
 }
 
+async function readCorpus(name: string): Promise<unknown> {
+  return JSON.parse(await readFile(new URL(name, import.meta.url), "utf8")) as unknown;
+}
+
 describe("exact-anchor replay isolation", () => {
+  it("requires all twelve manifest families and exact frozen crash origins", async () => {
+    // These are manifest-validation inputs. Only the isolated driver produces qualification proof.
+    const anchor = "0".repeat(40);
+    const persistence = (await readCorpus("kernel-replay-persistence.corpus.json")) as {
+      fixtures: KernelPersistenceFixture[];
+    };
+    const envelope = (fixture: { id: string; source_bytes: string }) => ({
+      identity: {
+        fixture_id: fixture.id,
+        implementation_anchor: anchor,
+        source_digest: replayBytesDigest(fixture.source_bytes),
+        reproduction_command: "manifest unit fixture",
+      },
+      source_bytes: fixture.source_bytes,
+      expected: {},
+    });
+    const effectCases = await import("./kernel-effect-replay.testkit.js");
+    const workspaceCases = await import("./kernel-workspace-replay.testkit.js");
+    const evidenceCases = await import("./kernel-evidence-replay.testkit.js");
+    const journeys = await import("./kernel-replay-journey.test-fixtures.js");
+    const crashes = ["local", "serialized-direct", "cloud-fake"].flatMap((backend) =>
+      ["before-write", "after-write", "unknown-readback"].flatMap((mode) =>
+        journeys.kernelReplayCrashPoints().map(({ journey, step, index }) => {
+          const origin = persistence.fixtures.find(
+            (fixture) =>
+              fixture.backend === backend && fixture.source_bytes === JSON.stringify(journey),
+          )!;
+          return {
+            ...envelope({
+              id: `${backend}-${mode}-${step.label}`,
+              source_bytes: JSON.stringify({ backend, mode, index, journey }),
+            }),
+            expected: origin.expected[index]!,
+            expected_origin: {
+              fixture_id: origin.identity.fixture_id,
+              implementation_anchor: origin.identity.implementation_anchor,
+              observation_index: index,
+            },
+          };
+        }),
+      ),
+    );
+    const workspaces = await workspaceCases.kernelWorkspaceReplayCases();
+    const captured = {
+      source_anchor: anchor,
+      fixtures: persistence.fixtures.map((fixture) => ({
+        ...fixture,
+        identity: { ...fixture.identity, implementation_anchor: anchor },
+      })),
+      supplemental_kernel: qualification
+        .kernelQualificationCases()
+        .map((fixture) => envelope(fixture)),
+      effect_replay: effectCases.kernelEffectReplayCases().map((fixture) => envelope(fixture)),
+      workspace_replay: workspaces.map((fixture) => envelope(fixture)),
+      evidence_replay: evidenceCases
+        .kernelEvidenceReplayCases()
+        .map((fixture) => envelope(fixture)),
+      crash_matrix: crashes,
+    };
+    const input = {
+      anchor,
+      kernel: corpus,
+      migration: await readCorpus("kernel-replay-migration.corpus.json"),
+      evidence: evidenceCorpus,
+      persistence,
+      captured,
+    };
+    const result = qualificationManifest.qualifyKernelCorpus(input) as { families: unknown[] };
+    expect(result.families).toHaveLength(12);
+    const missing = captured.effect_replay.pop()!;
+    expect(() => qualificationManifest.qualifyKernelCorpus(input)).toThrow(
+      "Missing required qualification case",
+    );
+    captured.effect_replay.push(missing);
+    captured.crash_matrix[0]!.expected = {
+      ...captured.crash_matrix[0]!.expected,
+      label: "changed",
+    };
+    expect(() => qualificationManifest.qualifyKernelCorpus(input)).toThrow(
+      "Crash expectation differs from frozen origin",
+    );
+  });
+
+  it("refuses a wrong anchor, an empty family and changed fixture bytes", () => {
+    const anchor = "a".repeat(40);
+    expect(() =>
+      qualificationManifest.qualifyKernelCorpus({
+        anchor,
+        captured: { source_anchor: "b".repeat(40) },
+      }),
+    ).toThrow("anchor mismatch");
+    expect(() =>
+      qualificationManifest.qualifyKernelCorpus({ anchor, captured: { source_anchor: anchor } }),
+    ).toThrow("Missing qualification collection: kernel");
+    expect(() =>
+      qualificationManifest.qualifyKernelCorpus({
+        anchor,
+        captured: { source_anchor: anchor },
+        kernel: {
+          fixtures: [{ id: "changed", source_bytes: "{}", source_digest: "wrong", expected: {} }],
+        },
+      }),
+    ).toThrow("source digest mismatch");
+  });
+
   it("links package-local external dependencies and redirects workspace links to the anchor", async () => {
     const f = await isolationFixture();
     await mkdir(path.join(f.source, "node_modules/@agentplane"));
@@ -168,6 +283,20 @@ describe("exact-anchor replay isolation", () => {
     });
   });
 
+  it.each(["pending", "skipped", "todo"])(
+    "rejects a report with an unexecuted %s case",
+    (status) => {
+      expect(
+        isolation.summarizeReplayReport({
+          success: true,
+          numTotalTests: 2,
+          numPassedTests: 1,
+          testResults: [{ status: "passed", assertionResults: [{ status: "passed" }, { status }] }],
+        }),
+      ).toMatchObject({ success: false, first_failure: "incomplete_execution" });
+    },
+  );
+
   it("preserves runner and suite diagnostics and accepts only a nonempty successful report", () => {
     const passing = {
       success: true,
@@ -188,6 +317,30 @@ describe("exact-anchor replay isolation", () => {
       }).failure_details,
     ).toEqual(["missing dependency"]);
   });
+});
+
+const qualification = await import("./kernel-qualification.testkit.js");
+describe("supplemental kernel qualification", () => {
+  for (const fixture of qualification.kernelQualificationCases()) {
+    it(fixture.id, () => {
+      const observed = qualification.observeKernelQualification(fixture.source_bytes);
+      expect(observed.outcome, JSON.stringify(observed.rejection)).toBe(fixture.outcome);
+      expect(observed.next_action.reason_code).toBe(fixture.next_reason);
+      expect(observed.next_action.grants_authority).toBe(false);
+      if (fixture.id === "work-item-fan-out") {
+        expect(observed.projection.work_items).toEqual([
+          { id: "kernel", state: "READY", attempt: 1, outputs: [] },
+          { id: "other", state: "READY", attempt: 1, outputs: [] },
+          { id: "producer", state: "COMPLETED", attempt: 1, outputs: ["upstream"] },
+        ]);
+      }
+      if (fixture.id === "work-item-new-attempt") {
+        expect(observed.projection.work_items).toEqual([
+          { id: "kernel", state: "CLAIMED", attempt: 2, outputs: [] },
+        ]);
+      }
+    });
+  }
 });
 
 const corpus = JSON.parse(

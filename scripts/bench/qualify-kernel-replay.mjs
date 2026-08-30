@@ -15,6 +15,8 @@ import {
   assertReplayDependencyManifestUnchanged,
 } from "./internal/agent-efficiency-dependency-manifest.mjs";
 
+import { qualifyKernelCorpus } from "./internal/kernel-qualification-manifest.mjs";
+
 const sourceRoot = realpathSync(process.cwd());
 const anchor = process.argv[2];
 const captureOutput =
@@ -107,8 +109,8 @@ export default {
       stdio: "pipe",
       env: {
         ...process.env,
-        AGENTPLANE_KERNEL_CAPTURE_OUTPUT: captureOutput ? capturedFile : "",
-        AGENTPLANE_KERNEL_CAPTURE_ANCHOR: captureOutput ? anchor : "",
+        AGENTPLANE_KERNEL_CAPTURE_OUTPUT: capturedFile,
+        AGENTPLANE_KERNEL_CAPTURE_ANCHOR: anchor,
       },
     });
   } catch (error) {
@@ -138,14 +140,34 @@ export default {
     encoding: "utf8",
   });
   if (dirty !== "") throw new Error("Replay changed exact-anchor tracked files.");
-  // Export only after all tests, dependency checks and source-containment checks pass.
-  if (captureOutput && outcome.success) {
-    const captured = readFileSync(capturedFile);
-    const value = JSON.parse(captured.toString("utf8"));
-    if (value.source_anchor !== anchor || value.fixtures.length !== 15)
-      throw new Error("Incomplete or incorrectly anchored persistence capture");
-    writeFileSync(captureOutput, captured, { flag: "wx" });
+  let qualification = null;
+  let capturedBytes = null;
+  if (outcome.success) {
+    try {
+      capturedBytes = readFileSync(capturedFile);
+      const corpus = (name) =>
+        JSON.parse(
+          readFileSync(
+            path.join(checkout, "packages/agentplane/src/adapters/task-backend", name),
+            "utf8",
+          ),
+        );
+      qualification = qualifyKernelCorpus({
+        anchor,
+        captured: JSON.parse(capturedBytes.toString("utf8")),
+        kernel: corpus("kernel-replay.corpus.json"),
+        migration: corpus("kernel-replay-migration.corpus.json"),
+        evidence: corpus("kernel-replay-evidence.corpus.json"),
+        persistence: corpus("kernel-replay-persistence.corpus.json"),
+      });
+    } catch (error) {
+      outcome.success = false;
+      outcome.first_failure = "qualification_manifest";
+      outcome.failure_details = [error.message];
+    }
   }
+  // Export only after tests, complete family coverage and all isolation checks pass.
+  if (captureOutput && outcome.success) writeFileSync(captureOutput, capturedBytes, { flag: "wx" });
   const corpusPaths = [
     "kernel-replay.corpus.json",
     "kernel-replay-migration.corpus.json",
@@ -175,6 +197,8 @@ export default {
           ),
         })),
         report_digest: reportBytes ? sha256(reportBytes) : null,
+        capture_digest: capturedBytes ? sha256(capturedBytes) : null,
+        qualification,
         ...outcome,
         reproduction_command: `node ${relativeDriver} ${anchor}`,
         limitations: [

@@ -10,6 +10,10 @@ import {
 } from "../../backends/task-backend/local-task-byte-store.js";
 import { KernelMigration } from "./kernel-migration.js";
 import { compareReplayObservations } from "./kernel-replay.js";
+import {
+  kernelWorkspaceReplayCases,
+  observeKernelWorkspaceReplay,
+} from "./kernel-workspace-replay.testkit.js";
 
 type MigrationFixture = {
   id: string;
@@ -112,4 +116,37 @@ describe("frozen migration corpus", () => {
       Buffer.from(successor.source_base64, "base64"),
     );
   });
+});
+
+const workspaceCases = await kernelWorkspaceReplayCases();
+describe("qualified workspace identities", () => {
+  for (const fixture of workspaceCases) {
+    it(fixture.id, async () => {
+      const observed = await observeKernelWorkspaceReplay(fixture.source_bytes);
+      const source = JSON.parse(fixture.source_bytes) as { source_base64: string };
+      const digest = taskBytesDigest(Buffer.from(source.source_base64, "base64"));
+      expect(observed.base_digest).toBe(digest);
+      if (fixture.layout === "missing-frozen-document") {
+        expect(observed).toMatchObject({
+          applied: { kind: "refused", reason: "missing" },
+          read_kind: "missing",
+          backups: 0,
+          writes: 0,
+        });
+      } else {
+        expect(observed).toMatchObject({
+          applied: { kind: "applied" },
+          repeat: "already_applied",
+          repeat_unchanged: true,
+          rollback: { kind: "rolled_back" },
+          restored_digest: digest,
+        });
+        expect(observed.route).toMatchObject(
+          fixture.layout === "divergent-head"
+            ? { kind: "rejected", code: "STALE_STATE_FINGERPRINT" }
+            : { kind: "accepted" },
+        );
+      }
+    });
+  }
 });

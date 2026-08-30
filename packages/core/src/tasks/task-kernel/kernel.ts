@@ -141,6 +141,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   record_work_item_validation: "work_item_validation_recorded",
   record_final_validation: "final_validation_recorded",
   prepare_effect: "effect_prepared",
+  begin_effect: "effect_started",
   observe_effect: "effect_observed",
   reconcile_effect: "effect_reconciled",
   supersede_effect: "effect_superseded",
@@ -367,7 +368,8 @@ function accept(input: KernelInput, next: TaskAggregate): KernelResult {
     effect_ids:
       input.command.kind === "prepare_effect"
         ? [input.command.effect.id]
-        : input.command.kind === "observe_effect" ||
+        : input.command.kind === "begin_effect" ||
+            input.command.kind === "observe_effect" ||
             input.command.kind === "reconcile_effect" ||
             input.command.kind === "supersede_effect"
           ? [input.command.effect_id]
@@ -410,7 +412,9 @@ function preconditions(input: KernelInput): KernelResult | null {
       input.repository_fingerprint ?? "null",
     ]);
   }
-  const uncertain = input.aggregate.effects.find((effect) => effect.state === "IN_DOUBT");
+  const uncertain = input.aggregate.effects.find(
+    (effect) => effect.state === "IN_DOUBT" || effect.state === "PENDING",
+  );
   if (
     uncertain &&
     input.command.kind !== "observe_effect" &&
@@ -875,6 +879,29 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       };
       break;
     }
+    case "begin_effect": {
+      if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
+        return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
+      }
+      const target = aggregate.effects.find((effect) => effect.id === command.effect_id);
+      if (target?.state !== "PREPARED") {
+        return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
+      }
+      if (
+        !input.authority?.external_effects.includes(target.kind) ||
+        !requirementsAllowed(input, target.execution_requirements)
+      ) {
+        return rejected("AUTHORITY_SCOPE_EXCEEDED", [target.kind]);
+      }
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        effects: aggregate.effects.map((effect) =>
+          effect.id === target.id ? { ...effect, state: "PENDING" } : effect,
+        ),
+      };
+      break;
+    }
     case "observe_effect": {
       const index = aggregate.effects.findIndex((effect) => effect.id === command.effect_id);
       if (index === -1) return rejected("EFFECT_RECONCILIATION_REQUIRED", [command.effect_id]);
@@ -1048,6 +1075,9 @@ export function isTaskCompletionEligible(
 
 function requiredWorkComplete(aggregate: TaskAggregate): boolean {
   return (
+    Object.values(aggregate.work_items).every(
+      (item) => item.claim_id === null || item.state === "COMPLETED" || item.state === "CANCELLED",
+    ) &&
     aggregate.current_plan?.state === "APPROVED" &&
     aggregate.current_plan.work_items
       .filter((definition) => !definition.optional)
