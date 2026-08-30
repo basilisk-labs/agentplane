@@ -37,6 +37,7 @@ describe("verification child environment", () => {
     const root = await mkdtemp(path.join(tmpdir(), "agentplane-verify-env-"));
     vi.stubEnv("AGENTPLANE_VERIFY_TEST_DOTENV", "repository-only");
     vi.stubEnv("AGENTPLANE_VERIFY_TEST_PARENT", "explicit-parent");
+    vi.stubEnv("AGENTPLANE_RUNTIME_HANDOFF_FROM", "verification-parent");
     vi.stubEnv(
       "AGENTPLANE_DOTENV_LOADED_KEYS",
       `${process.env.AGENTPLANE_DOTENV_LOADED_KEYS ?? ""},AGENTPLANE_VERIFY_TEST_DOTENV`,
@@ -44,12 +45,13 @@ describe("verification child environment", () => {
     try {
       await writeFile(
         path.join(root, "probe.cjs"),
-        "process.stdout.write(JSON.stringify({dotenv:process.env.AGENTPLANE_VERIFY_TEST_DOTENV,parent:process.env.AGENTPLANE_VERIFY_TEST_PARENT}));",
+        "process.stdout.write(JSON.stringify({dotenv:process.env.AGENTPLANE_VERIFY_TEST_DOTENV,parent:process.env.AGENTPLANE_VERIFY_TEST_PARENT,dotenvMarker:process.env.AGENTPLANE_DOTENV_LOADED_KEYS,handoff:process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM}));",
       );
       const result = await runShellCommand("node probe.cjs", root);
       expect(result.code).toBe(0);
       expect(JSON.parse(result.output)).toEqual({ parent: "explicit-parent" });
       expect(process.env.AGENTPLANE_VERIFY_TEST_DOTENV).toBe("repository-only");
+      expect(process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM).toBe("verification-parent");
     } finally {
       vi.unstubAllEnvs();
       await rm(root, { recursive: true, force: true });
