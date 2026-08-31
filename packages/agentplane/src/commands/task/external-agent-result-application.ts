@@ -1,3 +1,7 @@
+import {
+  applyExternalPlanRefinement,
+  isExternalPlanRefinementApplied,
+} from "./external-agent-plan-refinement.js";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
@@ -45,6 +49,7 @@ export async function applyAcceptedExternalAgentResult(opts: {
   if (
     usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
   ) {
+    if (await applyExternalPlanRefinement(opts)) return;
     await applyExternalImplementationResult(opts);
     return;
   }
@@ -84,6 +89,12 @@ export async function isExternalAgentResultAlreadyApplied(opts: {
   decision: TaskRouteDecision;
   envelope: ExternalAgentResultEnvelope;
 }): Promise<boolean> {
+  if (
+    usesExternalImplementationAuthority(opts.exchange.purpose, "workspace-write") &&
+    opts.envelope.result.plan_refinement
+  ) {
+    return isExternalPlanRefinementApplied(opts);
+  }
   if (opts.exchange.purpose === "planning") {
     return await isExternalPlanningResultApplied({
       command: opts.command,
