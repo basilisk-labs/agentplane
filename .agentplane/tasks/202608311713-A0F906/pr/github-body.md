@@ -15,13 +15,8 @@ Bootstrap repair required by clean Task core refactoring task 202608291006-255K6
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement
-admission to the issued task revision.
-```
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -32,11 +27,15 @@ admission to the issued task revision.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance.evidence-rework.test.ts | 144 ++++++++++++++++++++-
- .../task/external-agent-plan-refinement.ts         | 105 +++++++++++++++
+ .../task-backend/task-centric-backend-adapter.ts   |   9 +-
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 208 ++++++++++++++++++++-
+ .../src/commands/task/external-agent-exchange.ts   |   1 +
+ .../task/external-agent-plan-refinement.ts         | 145 ++++++++++++++
  .../task/external-agent-result-application.ts      |  11 ++
- .../task/external-agent-supervisor-recovery.ts     |  30 +++--
- 4 files changed, 279 insertions(+), 11 deletions(-)
+ .../task/external-agent-supervisor-recovery.ts     |  30 ++-
+ .../src/commands/task/external-agent-supervisor.ts |   9 +-
+ .../task/external-agent-task-artifact-baseline.ts  |  51 +++++
+ 8 files changed, 451 insertions(+), 13 deletions(-)
 ```
 
 </details>

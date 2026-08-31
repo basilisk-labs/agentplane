@@ -44,6 +44,7 @@ export type ExternalAgentExchange = {
   baseline: {
     head: string | null;
     changed_paths: string[];
+    task_artifacts?: Record<string, string>;
   };
   result_digest: string | null;
   result: ExternalAgentResultEnvelope | null;
