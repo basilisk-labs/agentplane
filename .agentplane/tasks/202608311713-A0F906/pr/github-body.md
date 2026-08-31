@@ -22,7 +22,7 @@ Bootstrap repair required by clean Task core refactoring task 202608291006-255K6
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-31T17:15:30.659Z
+- Updated: 2026-08-31T19:01:26.236Z
 - Branch: task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
