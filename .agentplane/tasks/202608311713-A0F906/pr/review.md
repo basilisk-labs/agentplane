@@ -6,7 +6,7 @@ Created: 2026-08-31T17:15:30.659Z
 
 - Task: `202608311713-A0F906`
 - Title: Repair pure plan-refinement result recovery for M3 continuation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for`
 - Canonical task record: `.agentplane/tasks/202608311713-A0F906/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-31T17:15:30.659Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-31T17:15:30.659Z
+- Updated: 2026-08-31T19:01:26.236Z
 - Branch: task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
