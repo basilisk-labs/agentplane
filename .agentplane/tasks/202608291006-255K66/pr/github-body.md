@@ -15,8 +15,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,11 +28,14 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ```text
  docs/developer/harness-dev.mdx                     |  99 +++++
+ .../adapters/authority/user-approval-receipt.ts    | 226 ++++++++++
+ .../task-backend/kernel-authority-schema.ts        |  54 +++
  .../task-backend/kernel-backend-adapter.test.ts    |   8 +-
- .../task-backend/kernel-backend-adapter.ts         |  78 +++-
+ .../task-backend/kernel-backend-adapter.ts         |  86 +++-
  .../src/adapters/task-backend/kernel-documents.ts  |  64 +++
  .../adapters/task-backend/kernel-next-action.ts    |  10 +-
- .../src/adapters/task-backend/kernel-record.ts     |  14 +-
+ .../task-backend/kernel-record-invariants.ts       |   2 +-
+ .../src/adapters/task-backend/kernel-record.ts     |  22 +-
  .../run-cli.core.task-status-token-usage.test.ts   |  73 ++++
  .../agentplane/src/commands/task/active.command.ts | 110 +++--
  .../src/commands/task/active.command.unit.test.ts  |  51 +++
@@ -45,13 +48,20 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/commands/task/show-kernel.test.ts          | 121 ++++++
  packages/agentplane/src/commands/task/show.ts      |  15 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +
+ .../src/commands/task/user-approval-receipt.ts     | 237 +----------
+ packages/agentplane/src/ports/kernel-authority.ts  |  50 +++
+ .../src/runner/usecases/kernel-authority.test.ts   | 421 ++++++++++++++++++
+ .../src/runner/usecases/kernel-authority.ts        | 346 +++++++++++++++
  .../runner/usecases/kernel-task-lifecycle.test.ts  | 471 +++++++++++++++++++++
- .../src/runner/usecases/kernel-task-lifecycle.ts   | 259 +++++++++++
+ .../src/runner/usecases/kernel-task-lifecycle.ts   | 261 ++++++++++++
+ .../src/tasks/task-kernel/authority-lineage.ts     | 140 ++++++
+ packages/core/src/tasks/task-kernel/digest.ts      |  20 +
+ packages/core/src/tasks/task-kernel/index.ts       |   6 +
  .../core/src/tasks/task-kernel/invariants.test.ts  |  52 +++
  packages/core/src/tasks/task-kernel/invariants.ts  |   6 +
- packages/core/src/tasks/task-kernel/kernel.ts      |  18 +
- packages/core/src/tasks/task-kernel/model.ts       |   3 +
- 24 files changed, 1543 insertions(+), 53 deletions(-)
+ packages/core/src/tasks/task-kernel/kernel.ts      |  84 +++-
+ packages/core/src/tasks/task-kernel/model.ts       |  26 ++
+ 34 files changed, 2905 insertions(+), 300 deletions(-)
 ```
 
 </details>

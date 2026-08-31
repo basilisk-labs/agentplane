@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire",
   "created_at": "2026-08-30T21:48:11.941Z",
-  "diffstat_sha256": "sha256:da595fbe0e4e7ad46970b02844bbfe0ea0b0c4ae20a51a581cbc46f7f649db53",
+  "diffstat_sha256": "sha256:fa626c7c396f12a6c2d99e9e1f2057f8cc672dc41e774445218d529bf5d0be7f",
   "last_verified_at": "2026-08-31T08:01:55.603Z",
   "last_verified_diffstat_sha256": "sha256:da595fbe0e4e7ad46970b02844bbfe0ea0b0c4ae20a51a581cbc46f7f649db53",
   "provider": {

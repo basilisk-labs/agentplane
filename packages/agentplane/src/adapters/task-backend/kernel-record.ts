@@ -1,3 +1,4 @@
+import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
 import {
   kernelDocumentIssues,
@@ -77,6 +78,7 @@ const kernelAggregateSchema = z.strictObject({
   revision,
   state: z.enum(taskKernel.TASK_STATES),
   intent_digest: digest,
+  authority_lineage: z.array(kernelAuthorityRecordSchema).optional(),
   current_plan: plan.nullable(),
   plan_history: z.array(plan),
   work_items: z.record(
@@ -144,6 +146,7 @@ const event = z.strictObject({
     "effect_superseded",
     "plan_amended",
     "authority_delta_requested",
+    "authority_continued",
     "task_completed",
     "controller_transferred",
     "migration_recorded",
@@ -236,7 +239,10 @@ export function readKernelRecord(
   if (
     taskKernel.kernelDigest(contents) !== storedDigest ||
     contents.aggregate.id !== task.id ||
-    contents.repository_identity !== repositoryIdentity
+    contents.repository_identity !== repositoryIdentity ||
+    contents.aggregate.authority_lineage?.some(
+      (entry) => entry.authority.repository_identity !== repositoryIdentity,
+    )
   ) {
     return {
       kind: "malformed",

@@ -5,7 +5,7 @@ export function kernelRecordIssues(
   aggregate: taskKernel.TaskAggregate,
   events: readonly taskKernel.DomainEvent[],
 ): string[] {
-  const issues: string[] = [];
+  const issues: string[] = taskKernel.canonicalAuthorityIssues(aggregate);
   const plan = aggregate.current_plan;
   if (
     [

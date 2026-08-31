@@ -82,6 +82,8 @@ export class KernelTaskLifecycle {
     input: KernelCommandInput,
     contracts: readonly KernelWorkContract[] = [],
   ): Promise<KernelAdapterResult> {
+    if (input.command.kind === "approve_plan" && input.command.authority_mode !== undefined)
+      return unavailable("authority_resolver_required");
     if (input.command.kind === "transition_work_item" && input.command.action === "begin")
       return unavailable("begin_boundary_required");
     return this.applyInput(input, contracts);

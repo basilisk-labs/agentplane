@@ -118,6 +118,25 @@ export type ExecutionAuthority = Readonly<{
   expires_at: string | null;
 }>;
 
+export type CanonicalApprovalMode =
+  | "manual_operator"
+  | "signed_user_receipt"
+  | "host_user_decision";
+
+export type AuthorityObservation = Readonly<{
+  kind: "plan_amendment" | "repository_implementation";
+  evidence_digest: Sha256Digest;
+  previous_fingerprint: Sha256Digest;
+  changed_paths: readonly string[];
+}>;
+
+/** Ordered authority lineage inside the same atomic aggregate as lifecycle state. */
+export type CanonicalAuthorityRecord = Readonly<{
+  authority: ExecutionAuthority;
+  approval_mode: CanonicalApprovalMode | null;
+  observation: AuthorityObservation | null;
+}>;
+
 export type OutputManifest = Readonly<{
   id: string;
   kind: string;
@@ -230,6 +249,7 @@ export type TaskAggregate = Readonly<{
   mutation_receipts: Readonly<Record<string, MutationReceipt>>;
   controller_transfer: ControllerTransferReceipt | null;
   migration_receipts: readonly MigrationReceipt[];
+  authority_lineage?: readonly CanonicalAuthorityRecord[];
 }>;
 
 type CommandEnvelope<K extends string, P extends object = object> = Readonly<
@@ -252,8 +272,10 @@ export type TaskCommand =
         plan_revision: number;
         plan_digest: Sha256Digest;
         approval_evidence_digest: Sha256Digest;
+        authority_mode?: CanonicalApprovalMode;
       }
     >
+  | CommandEnvelope<"continue_authority", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
       "transition_work_item",
@@ -345,6 +367,7 @@ export type DomainEvent = Readonly<{
     | "effect_superseded"
     | "plan_amended"
     | "authority_delta_requested"
+    | "authority_continued"
     | "task_completed"
     | "controller_transferred"
     | "migration_recorded";

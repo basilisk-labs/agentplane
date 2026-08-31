@@ -1,3 +1,4 @@
+import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { taskKernel } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
@@ -134,7 +135,7 @@ export class KernelBackendAdapter {
     };
     const result = taskKernel.reduceTaskCommand({ ...input, aggregate });
     if (result.kind === "rejected") return result;
-    const documentFailure = this.validateDocuments(result.aggregate, documents);
+    const documentFailure = this.validateRecordContents(result.aggregate, documents);
     if (documentFailure) return documentFailure;
     return this.persist(
       task,
@@ -173,7 +174,7 @@ export class KernelBackendAdapter {
     // Adding documents to an existing record is a migration, not an execution side effect.
     if (documents && !current.record.documents)
       return this.unavailable("malformed", "document_migration_required");
-    const documentFailure = this.validateDocuments(result.aggregate, retained);
+    const documentFailure = this.validateRecordContents(result.aggregate, retained);
     if (documentFailure) return documentFailure;
     if (
       result.events.length === 0 &&
@@ -201,10 +202,17 @@ export class KernelBackendAdapter {
     );
   }
 
-  private validateDocuments(
+  private validateRecordContents(
     aggregate: taskKernel.TaskAggregate,
     documents?: KernelDocuments,
   ): KernelAdapterResult | null {
+    if (
+      aggregate.authority_lineage &&
+      !kernelAuthorityRecordSchema.array().safeParse(aggregate.authority_lineage).success
+    )
+      return this.unavailable("malformed", "invalid_authority_schema");
+    const authorityIssues = taskKernel.canonicalAuthorityIssues(aggregate);
+    if (authorityIssues.length > 0) return this.unavailable("malformed", ...authorityIssues);
     if (documents && !kernelDocumentsSchema.safeParse(documents).success)
       return this.unavailable("malformed", "invalid_documents_schema");
     const issues = kernelDocumentIssues(aggregate, documents);

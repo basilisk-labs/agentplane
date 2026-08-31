@@ -1,7 +1,10 @@
-import { createHash } from "node:crypto";
+import { authorityDigest, continuationAdmissionIssues } from "./authority-lineage.js";
+import { kernelDigest } from "./digest.js";
+export { kernelDigest } from "./digest.js";
 
 import {
   authorityBindsCurrentState,
+  compareExecutionAuthority,
   executionRequirementsAreSubset,
   validateWorkItemDefinitions,
 } from "./invariants.js";
@@ -135,6 +138,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   propose_plan: "plan_proposed",
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
+  continue_authority: "authority_continued",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
   accept_work_item_result: "work_item_result_accepted",
@@ -151,24 +155,6 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   record_controller_transfer: "controller_transferred",
   record_migration: "migration_recorded",
 };
-
-function canonicalValue(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map((item) => canonicalValue(item));
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value)
-        .filter(([, item]) => item !== undefined)
-        .toSorted(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
-        .map(([key, item]) => [key, canonicalValue(item)]),
-    );
-  }
-  return value;
-}
-
-export function kernelDigest(value: unknown): Sha256Digest {
-  const input = JSON.stringify(canonicalValue(value));
-  return `sha256:${createHash("sha256").update(input, "utf8").digest("hex")}`;
-}
 
 function rejected(
   code: KernelRejectionCode,
@@ -200,6 +186,16 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
   const expiresAt = authority.expires_at === null ? Infinity : Date.parse(authority.expires_at);
   if (!Number.isFinite(occurredAt) || Number.isNaN(expiresAt) || occurredAt >= expiresAt) {
     return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_expired_or_invalid_time"]);
+  }
+  const persisted = input.aggregate.authority_lineage?.at(-1)?.authority;
+  if (persisted && input.command.kind !== "approve_plan") {
+    if (authority.digest !== authorityDigest(authority))
+      return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_digest"]);
+    if (
+      kernelDigest(authority) !== kernelDigest(persisted) &&
+      !compareExecutionAuthority(persisted, authority).ok
+    )
+      return rejected("AUTHORITY_SCOPE_EXCEEDED", ["canonical_authority_lineage"]);
   }
   const currentPlan = input.aggregate.current_plan;
   if (
@@ -422,6 +418,10 @@ function preconditions(input: KernelInput): KernelResult | null {
     input.command.kind !== "supersede_effect"
   ) {
     return rejected("EFFECT_RECONCILIATION_REQUIRED", [uncertain.id], "reconcile_effect");
+  }
+  if (input.command.kind === "continue_authority") {
+    const issues = continuationAdmissionIssues(input, input.command.record);
+    return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
   const workItemId = authorityWorkItem(input.command);
   if (workItemId !== null) {
@@ -667,8 +667,28 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       ) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "ACTIVE"]);
       }
+      if (aggregate.authority_lineage && !command.authority_mode)
+        return rejected("AUTHORITY_SCOPE_EXCEEDED", ["canonical_approval_mode_required"]);
+      if (command.authority_mode) {
+        const authority = input.authority;
+        if (!authority) return rejected("AUTHORITY_MISSING", ["canonical_approval_authority"]);
+        if (authority.digest !== authorityDigest(authority) || authority.work_item_id !== null)
+          return rejected("AUTHORITY_SCOPE_EXCEEDED", ["canonical_approval_authority"]);
+      }
       next = {
         ...aggregate,
+        ...(command.authority_mode && input.authority
+          ? {
+              authority_lineage: [
+                ...(aggregate.authority_lineage ?? []),
+                {
+                  authority: input.authority,
+                  approval_mode: command.authority_mode,
+                  observation: null,
+                },
+              ],
+            }
+          : {}),
         revision: aggregate.revision + 1,
         state: "ACTIVE",
         current_plan: {
@@ -677,6 +697,14 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
           approval_actor_id: input.actor.id,
           approval_evidence_digest: command.approval_evidence_digest,
         },
+      };
+      break;
+    }
+    case "continue_authority": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
       };
       break;
     }
