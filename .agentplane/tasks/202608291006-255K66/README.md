@@ -1,10 +1,10 @@
 ---
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 48
 origin:
   system: "manual"
 depends_on:
@@ -454,6 +454,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/baselines/v0.7-compatibility-candidate.json; repository effects: public_api, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized compatibility candidate is updated, but its exact checker whitelist requires one additional scoped file. Recommended action: Request USER approval for this one-file scope extension. Preserve the archived implementation. After approval, restore validated owned files, update the exact checker inventories and descriptors without removing assertions, and rerun focused checks and ci:local:full. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=public_api,tests; request digest=sha256:6710e401e1ec2fe7911d5ab66c6579111b673dd54b2b2ce5d657a1bbf2f68512. Agentplane receipt: external-agent-blocker/tr_f61103be288912b14b2416eab678bda6/sha256:4c5a20eb1c9dacb990a7dddd1e4e7490a6e536df9389ed76700fdc961965c742/sha256:6710e401e1ec2fe7911d5ab66c6579111b673dd54b2b2ce5d657a1bbf2f68512."
 events:
   -
     type: "status"
@@ -588,8 +591,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical CLI and managed transport implementation is preserved and locally qualified. Required full CI is blocked by the unrecorded additive task new --canonical option in the reviewed compatibility candidate, which is outside this WorkOrder scope. Recommended action: Authorize the native scope extension for scripts/baselines/v0.7-compatibility-candidate.json. Issue a fresh EXECUTOR packet. Verify and restore the preserved 37-file implementation. Record the exact additive CLI option delta and M3 provenance in the mutable candidate. Update the already-authorized critical CLI assertions. Preserve the immutable compatibility anchor, package versions and release authority boundaries. Re-run full CI and return the typed result. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json; repository effects=public_api,tests; request digest=sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976. Agentplane receipt: external-agent-blocker/tr_9f515053b3ee5c6fbd284da1cf31b9b5/sha256:2da6a4669db46923b27f8f022e193f3fa811adfafbdb300b04479622ce657057/sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976."
+  -
+    type: "status"
+    at: "2026-08-31T15:26:17.505Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized compatibility candidate is updated, but its exact checker whitelist requires one additional scoped file. Recommended action: Request USER approval for this one-file scope extension. Preserve the archived implementation. After approval, restore validated owned files, update the exact checker inventories and descriptors without removing assertions, and rerun focused checks and ci:local:full. Requested scope: roots=scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=public_api,tests; request digest=sha256:6710e401e1ec2fe7911d5ab66c6579111b673dd54b2b2ce5d657a1bbf2f68512. Agentplane receipt: external-agent-blocker/tr_f61103be288912b14b2416eab678bda6/sha256:4c5a20eb1c9dacb990a7dddd1e4e7490a6e536df9389ed76700fdc961965c742/sha256:6710e401e1ec2fe7911d5ab66c6579111b673dd54b2b2ce5d657a1bbf2f68512."
 doc_version: 3
-doc_updated_at: "2026-08-31T14:22:09.217Z"
+doc_updated_at: "2026-08-31T15:26:17.505Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -1465,22 +1475,20 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-31T15:18:08.312Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:2da6a4669db46923b27f8f022e193f3fa811adfafbdb300b04479622ce657057"
+    blocker_state_fingerprint: "sha256:4c5a20eb1c9dacb990a7dddd1e4e7490a6e536df9389ed76700fdc961965c742"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Canonical transport introduces task new --canonical. The mandatory compatibility gate requires its exact additive CLI topology delta in the reviewed mutable candidate. A read-only reconstruction confirms no version or package manifest changes. This request does not authorize publication or changes to the immutable compatibility baseline."
+      rationale: "Record the reviewed M3 source task, task new --canonical descriptor and provenance, and current AgentWorkOrder schema provenance in the existing exact compatibility assertions. Preserve the immutable v0.6.24 anchor, package versions, all removal and unexpected-delta rejection checks, and the release publication boundary."
       repository_effects:
         - "public_api"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "scripts/baselines/v0.7-compatibility-candidate.json"
-    request_digest: "sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976"
+        - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    request_digest: "sha256:6710e401e1ec2fe7911d5ab66c6579111b673dd54b2b2ce5d657a1bbf2f68512"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_9f515053b3ee5c6fbd284da1cf31b9b5"
+    status: "pending"
+    transition_id: "tr_f61103be288912b14b2416eab678bda6"
   agentplane.task_centric:
     current_plan:
       approval:
