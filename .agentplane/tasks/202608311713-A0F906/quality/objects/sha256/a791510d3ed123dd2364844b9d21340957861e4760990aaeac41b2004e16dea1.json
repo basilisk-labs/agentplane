@@ -1,0 +1,171 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "external_write",
+        "network_read"
+      ],
+      "components": [
+        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/task"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "packages/agentplane/src/commands/task/external-agent-exchange.ts",
+        "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts",
+        "packages/agentplane/src/commands/task/external-agent-result-application.ts",
+        "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "packages/agentplane/src/commands/task/external-agent-supervisor.ts",
+        "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+      "external_effect_requires_real_e2e"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:ddb32ea6123995584b82cf46e95bdd45355254d7bdc39602576335b3701a8712"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-08-31T20:02:53.276Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json",
+      "sha256": "sha256:a525b57b9ebc58032d9c1d7e83963b1fb625a93a987d9bf185fb4806d11151ad"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check cda9cf5e929a677653cc9f7d441bf4376656acb9..8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB cda9cf5e929a677653cc9f7d441bf4376656acb9..8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202608311713-A0F906/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202608311713-A0F906/pr/github-body.md",
+          "M\t.agentplane/tasks/202608311713-A0F906/pr/meta.json",
+          "M\t.agentplane/tasks/202608311713-A0F906/pr/review.md",
+          "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-plan-refinement.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
+          "A\tpackages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "cda9cf5e929a677653cc9f7d441bf4376656acb9",
+    "implementation_commit": "8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202608311713-A0F906",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

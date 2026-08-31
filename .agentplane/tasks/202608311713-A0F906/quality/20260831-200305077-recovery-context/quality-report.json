@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202608311713-A0F906",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-31T20:04:49.402Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 7 typed finding(s).",
+  "evaluated_sha": "8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d",
+  "blueprint_digest": "fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb",
+  "findings": [
+    "The frozen actual diff routes refinement-only results through native plan amendments before implementation persistence and preserves the ordinary completed-no-diff rejection.",
+    "The issued task-artifact snapshot detects edit, add and delete drift, including content changes that preserve Git status. The snapshot participates in the immutable issue digest.",
+    "The issued WorkOrder revision is explicitly passed to recordPlanRefinement and retained through persistence CAS. Concurrency tests reject drift at the helper and adapter reads.",
+    "The frozen verification record covers the current implementation SHA. Replay and lost-response tests preserve completed WorkItems and do not create implementation history for planning-only changes.",
+    "Residual risk: Old exchanges without a content snapshot reject dirty task metadata and may require an explicitly routed replacement.",
+    "Residual risk: PR 5884 review threads and hosted integration are still pending.",
+    "Residual risk: Stable 0.7.8 publication is outside this bootstrap scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Native supervisor serialization and backend revision checks remain authoritative.",
+    "Receipt recovery permits the native README rewrite and checks its canonical aggregate digest and exact revision; other task artifacts remain snapshot-bound."
+  ],
+  "residual_risks": []
+}
