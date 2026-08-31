@@ -6,14 +6,14 @@ Created: 2026-08-31T17:15:30.659Z
 
 - Task: `202608311713-A0F906`
 - Title: Repair pure plan-refinement result recovery for M3 continuation
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for`
 - Canonical task record: `.agentplane/tasks/202608311713-A0F906/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,13 +31,14 @@ Created: 2026-08-31T17:15:30.659Z
 ```text
  .../task-backend/task-centric-backend-adapter.ts   |   9 +-
  ...n-cli.core.task-advance.evidence-rework.test.ts | 208 ++++++++++++++++++++-
+ .../commands/task/external-agent-exchange.test.ts  |  42 ++++-
  .../src/commands/task/external-agent-exchange.ts   |   1 +
  .../task/external-agent-plan-refinement.ts         | 145 ++++++++++++++
  .../task/external-agent-result-application.ts      |  11 ++
  .../task/external-agent-supervisor-recovery.ts     |  30 ++-
  .../src/commands/task/external-agent-supervisor.ts |   9 +-
- .../task/external-agent-task-artifact-baseline.ts  |  51 +++++
- 8 files changed, 451 insertions(+), 13 deletions(-)
+ .../task/external-agent-task-artifact-baseline.ts  |  56 ++++++
+ 9 files changed, 497 insertions(+), 14 deletions(-)
 ```
 
 </details>

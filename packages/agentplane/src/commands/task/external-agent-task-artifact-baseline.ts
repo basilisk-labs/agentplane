@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
-import { lstat, readdir, readFile, readlink } from "node:fs/promises";
+import { lstat, readdir, readlink } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
+import { readStableRegularFileNoFollow } from "../../shared/stable-file.js";
 
 /** Observe protected task artifacts without following links outside the task directory. */
 export async function captureExternalTaskArtifacts(
@@ -30,14 +31,18 @@ export async function captureExternalTaskArtifacts(
     for (const name of names.toSorted()) {
       const file = path.join(directory, name);
       const relative = path.relative(root, file).replaceAll("\\", "/");
-      const stat = await lstat(file);
+      const stat = await lstat(file, { bigint: true });
       if (stat.isDirectory()) {
-        entries[relative] = `directory:${stat.mode & 0o777}`;
+        entries[relative] = `directory:${stat.mode & 0o777n}`;
         await visit(file);
       } else if (stat.isFile() || stat.isSymbolicLink()) {
-        const bytes = stat.isSymbolicLink() ? await readlink(file) : await readFile(file);
+        const bytes = stat.isSymbolicLink()
+          ? await readlink(file)
+          : await readStableRegularFileNoFollow(file, "task artifact", {
+              expected_identity: { dev: stat.dev, ino: stat.ino },
+            });
         entries[relative] =
-          `${stat.isSymbolicLink() ? "link" : "file"}:${stat.mode & 0o777}:${createHash("sha256").update(bytes).digest("hex")}`;
+          `${stat.isSymbolicLink() ? "link" : "file"}:${stat.mode & 0o777n}:${createHash("sha256").update(bytes).digest("hex")}`;
       } else {
         throw new CliError({
           code: "E_VALIDATION",
