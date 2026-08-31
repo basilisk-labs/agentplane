@@ -517,6 +517,51 @@ describe("direct task verification", () => {
     );
   });
 
+  it("runs only exact WorkItem checks before final Task verification", async () => {
+    const cwd = await root();
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "8 invariants passed", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: {
+        verify: ["bun run ci:local:full"],
+        execution_contract: {
+          verification: { contract: { selected_checks: ["full_regression"] } },
+        },
+      } as TaskData,
+      task_id: TASK_ID,
+      cwd,
+      additional_commands: [
+        {
+          command: "bun run lifecycle:invariants",
+          timeout_ms: 600_000,
+          check_ids: ["m3-invariants"],
+        },
+      ],
+      additional_only: true,
+      run_process: mocks.runProcess,
+    });
+
+    expect(result).toMatchObject({
+      status: "passed",
+      checks: [
+        {
+          command: "bun run lifecycle:invariants",
+          check_ids: ["m3-invariants"],
+          exit_code: 0,
+        },
+      ],
+    });
+    expect(mocks.runProcess).toHaveBeenCalledOnce();
+    expect(mocks.runProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "lifecycle:invariants"],
+        timeoutMs: 600_000,
+      }),
+    );
+  });
+
   it("persists the actual observations from each rerun, including equivalent pass outcomes", async () => {
     const cwd = await root();
     mocks.runProcess

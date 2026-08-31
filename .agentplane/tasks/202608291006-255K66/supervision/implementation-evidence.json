@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check a29ab25a342b9bb7fb1505197b6c12cfeb3cc2d3..134bb1bbc03cb4bd21354c366c8f5ead6ad2ea68",
+      "command": "git diff --check 7ac36db054d7f33c5d2abacafa39419c99bb1cdf..aa93e1d10d69d8899af6e2e7bf3af5c25a0c87bb",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,54 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB a29ab25a342b9bb7fb1505197b6c12cfeb3cc2d3..134bb1bbc03cb4bd21354c366c8f5ead6ad2ea68",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7ac36db054d7f33c5d2abacafa39419c99bb1cdf..aa93e1d10d69d8899af6e2e7bf3af5c25a0c87bb",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202608291006-255K66/README.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-documents.ts",
-        "A\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-mutation.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-advance.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-create.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-plan.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-run.testkit.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-run.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-runtime-context.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
-        "M\tpackages/agentplane/src/commands/task/new.spec.ts",
-        "M\tpackages/agentplane/src/commands/task/new.ts",
-        "M\tpackages/agentplane/src/commands/task/plan-approve.command.ts",
-        "M\tpackages/agentplane/src/commands/task/plan-set.command.ts",
-        "M\tpackages/agentplane/src/commands/task/run.command.ts",
-        "M\tpackages/agentplane/src/commands/task/update.ts",
-        "M\tpackages/agentplane/src/runner/observation/git-snapshot.test.ts",
-        "M\tpackages/agentplane/src/runner/observation/git-snapshot/capture.ts",
-        "M\tpackages/agentplane/src/runner/observation/git-snapshot/common.ts",
-        "M\tpackages/agentplane/src/runner/observation/git-snapshot/model.ts",
-        "A\tpackages/agentplane/src/runner/observation/git-snapshot/path-fingerprint.ts",
-        "A\tpackages/agentplane/src/runner/observation/kernel-repository.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-bootstrap.ts",
-        "M\tpackages/core/schemas/agent-work-order-v2.schema.json",
-        "M\tpackages/core/src/runner/agent-semantic-result.test.ts",
-        "M\tpackages/core/src/runner/agent-semantic-result.ts",
-        "M\tpackages/core/src/runner/agent-work-order.test.ts",
-        "M\tpackages/core/src/runner/agent-work-order.ts",
-        "M\tpackages/core/src/tasks/index.ts",
-        "A\tpackages/core/src/tasks/kernel-semantic.ts",
-        "M\tpackages/spec/schemas/agent-work-order-v2.schema.json",
-        "M\tschemas/agent-semantic-result.schema.json",
-        "M\tschemas/agent-work-order-v2.schema.json",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        "M\tdocs/developer/harness-dev.mdx"
       ]
     },
     {
@@ -70,15 +32,36 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "a29ab25a342b9bb7fb1505197b6c12cfeb3cc2d3",
-  "implementation_commit": "134bb1bbc03cb4bd21354c366c8f5ead6ad2ea68",
+  "execution_base_commit": "7ac36db054d7f33c5d2abacafa39419c99bb1cdf",
+  "implementation_commit": "aa93e1d10d69d8899af6e2e7bf3af5c25a0c87bb",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202608291006-255K66/README.md",
+      " M .agentplane/tasks/202608291006-255K66/pr/github-body.md",
+      " M .agentplane/tasks/202608291006-255K66/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-255K66/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-255K66/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608291006-255K66/pr/review.md"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608291006-255K66/README.md",
+      " M .agentplane/tasks/202608291006-255K66/pr/github-body.md",
+      " M .agentplane/tasks/202608291006-255K66/pr/review.md"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
