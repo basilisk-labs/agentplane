@@ -45,6 +45,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
+ .../commands/task/direct-task-verification.test.ts |  45 ++
+ .../src/commands/task/direct-task-verification.ts  |  30 +-
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
@@ -99,7 +101,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- 72 files changed, 6521 insertions(+), 493 deletions(-)
+ 74 files changed, 6591 insertions(+), 498 deletions(-)
 ```
 
 </details>

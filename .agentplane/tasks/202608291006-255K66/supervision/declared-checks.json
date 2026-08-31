@@ -2,31 +2,26 @@
   "checks": [
     {
       "check_ids": [
-        "affected_unit_integration",
-        "critical_paths",
-        "docs_contract",
-        "full_regression",
-        "real_e2e",
-        "task_outcome"
+        "m3-invariants"
       ],
-      "command": "bun run ci:local:full",
-      "duration_ms": 1800287,
-      "exit_code": null,
+      "command": "bun run lifecycle:invariants",
+      "duration_ms": 126,
+      "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:75bc4c6914bf2a34a6d4fde0c91f2f4ce27f03edb847184ac3d1c2111c3dcbd9",
+        "environment_digest": "sha256:3a90ad0fbce48ef94d7f3fb66939c8752760c37efaa32af212871a683d77a788",
         "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:d09b95798f6048ceebf4a463c1f089bfaaab945208c828c3064bd0eba20df1df"
       },
-      "script": "ci:local:full",
-      "stderr_tail": "$ node scripts/checks/run-local-ci.mjs --mode full\n$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\nerror: script \"ci:local:full\" was terminated by signal SIGTERM (Polite quit request)\n",
-      "stdout_tail": "sSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"validateTasksExportSnapshot\", \"assertAgentWorkOrderReadyForInvocation\" and \"renderAcrSchemaJson\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"runProcessSync\" is imported from external module \"@agentplaneorg/core/process\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"DEFAULT_TASK_BRANCH_PREFIX\", \"clearPinnedBaseBranch\" and \"getPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"generateKeyPairSync\" and \"sign\" are imported from external module \"crypto\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"digestSupervisorEpisodeValue\", \"advanceSupervisorExecutionEpisodeState\", \"completeSupervisorExecutionEpisode\", \"migrateSupervisorExecutionEpisodeJournal\", \"prepareReplacementSupervisorExecutionEpisodeAfterFailure\", \"recoverSupervisorExecutionEpisodeJournal\", \"reopenCompletedSupervisorExecutionEpisodeAfterStaleState\", \"startSupervisorExecutionEpisode\", \"stopSupervisorExecutionEpisode\", \"renderAgentSemanticResultSchemaJson\", \"validateAgentSemanticResultForWorkOrder\", \"AGENT_WORK_ORDER_V2_ZOD_SCHEMA\", \"AGENT_SEMANTIC_RESULT_ZOD_SCHEMA\", \"assertAgentWorkOrderReadyForInvocation\", \"EXECUTION_RECEIPT_SCHEMA_VERSION\", \"validateExecutionReceipt\", \"buildAgentSemanticResultV2ValidFixtures\", \"createRunnerEffectOperation\", \"digestRunnerEffectValue\", \"createRunnerEffectClaim\", \"createRunnerEffectJournal\", \"createRunnerEffectOperationRef\", \"validateRunnerEffectClaim\", \"validateRunnerEffectJournal\", \"validateRunnerEffectOperation\", \"StateFingerprintPreconditionError\", \"assertStateFingerprintPrecondition\", \"createRunnerEffectResolution\", \"createRunnerEffectResolutionIntent\", \"createRunnerEffectResolutionLease\", \"createRunnerEffectResolutionRef\", \"validateRunnerEffectResolution\", \"validateRunnerEffectResolutionIntent\" and \"validateRunnerEffectResolutionLease\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"lstatSync\" is imported from external module \"fs\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build:bundle: ESM dist/command-catalog/core-fast.js 169.08 KB\nagentplane build:bundle: ESM dist/cli.js                       371.99 KB\nagentplane build:bundle: ESM dist/command-catalog/task-read.js 233.13 KB\nagentplane build:bundle: ESM dist/command-catalog.js           2.22 MB\nagentplane build:bundle: ESM dist/deferred-runtime.js          2.25 MB\nagentplane build:bundle: ESM dist/cli-bun.js                   3.53 MB\nagentplane build:bundle: ESM ⚡️ Build success in 25973ms\nagentplane build:bundle: generated dist/command-help.json (264 commands)\nagentplane build:bundle: Exited with code 0\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"build\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":39144}]}\n"
+      "script": "lifecycle:invariants",
+      "stderr_tail": "$ node scripts/checks/check-lifecycle-invariants.mjs\n",
+      "stdout_tail": "Lifecycle invariant check OK (8 invariants)\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run ci:local:full",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202608291006-255K66"
 }

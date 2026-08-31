@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 68
 origin:
   system: "manual"
 depends_on:
@@ -183,8 +183,11 @@ execution_contract:
       - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
       - "packages/agentplane/src/commands/task/brief.command.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/kernel-advance.ts"
       - "packages/agentplane/src/commands/task/kernel-create.ts"
       - "packages/agentplane/src/commands/task/kernel-exchange.ts"
@@ -408,7 +411,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:d984fa294f43fd6b3d0df90b076b003c50f0d7335df9fde38e3228f6d1303364"
+      digest: "sha256:62291b903de46c5360301ba17ba52c3c0aabb65940f7558d18a0bad93410ca3d"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -486,8 +489,11 @@ execution_contract:
           - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
           - "packages/agentplane/src/commands/task/brief.command.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
           - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/kernel-advance.ts"
           - "packages/agentplane/src/commands/task/kernel-create.ts"
           - "packages/agentplane/src/commands/task/kernel-exchange.ts"
@@ -653,6 +659,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: aa93e1d10d69. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c30b3503903a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 10f2efcbcc64. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -829,8 +841,30 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-31T22:13:55.146Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c30b3503903a. CLI accepted one state-bound external-agent semantic result."
+    commit: "c30b3503903ab702763a1b4883a1799d8347054f"
+  -
+    type: "verify"
+    at: "2026-08-31T22:44:05.109Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-08-31T23:07:10.413Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 10f2efcbcc64. CLI accepted one state-bound external-agent semantic result."
+    commit: "10f2efcbcc64b856aea2f0ffc979e45c99e941f0"
 doc_version: 3
-doc_updated_at: "2026-08-31T22:04:39.854Z"
+doc_updated_at: "2026-08-31T23:07:10.413Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -1893,6 +1927,41 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:b0d43269250ecf30e79fa540307d225e6e90ec3f17461b1e28e4826f6cbeed02
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-255K66-cut-over-to-the-canonical-task-kernel-and-retire/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+    - old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-31T22:44:05.109Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:589d2fc7463432d4cf07c6820a8ceaf6ab7762e5bacfaedcf568b9fa199096cc
 
     Details:
 
@@ -9696,9 +9765,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 61
+    revision: 68
     schema_version: 1
-    updated_at: "2026-08-31T22:05:08.431Z"
+    updated_at: "2026-08-31T23:07:11.311Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -9764,34 +9833,28 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-projections:
-        attempt: 1
+        attempt: 3
         claim_id: null
         id: "m3-projections"
-        last_failure:
-          cause_refs:
-            - "m3-projections-acceptance"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Requalified the existing m3-projections implementation at unchanged git head 7ac36db054d7f33c5d2abacafa39419c99bb1cdf. No implementation replay or source mutation was required."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:d7997eae4fd66b55f6a1eb46ac8524f331e952aebdfcc3082372bf794ff51e04"
+            digest: "sha256:da4e7b2a7454feede90b7f8b9f7d06fe79e0309fdeab96709cc850d6d88a89e8"
             id: "m3-projections-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 3
               plan_revision: 7
               task_id: "202608291006-255K66"
               work_item_id: "m3-projections"
             provenance:
-              - "sha256:10b6b12558f662402b349a9fef95fbe949fbada749fc006eb419160a7b3db631"
+              - "sha256:594f6bcb9166a1f48dd52d27f8acfc71528df009f555084cb6622a54ed139232"
               - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d0fbf5f94408352c33e7474df6deca6a0db4583bd5ded6ae5eb729515dff2865"
+            repository_snapshot_digest: "sha256:e0031db8b080a7e4d55c2db1ce2a1dc1e08c0244fc5fa14bf49a44a6bec3a9b9"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 4
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -9799,16 +9862,15 @@ extensions:
                 - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
               check_id: "m3-invariants"
               command_identity: "bun run lifecycle:invariants"
-              detail: "Declared validation command bun run lifecycle:invariants was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-08-31T22:05:07.474Z"
-              repository_snapshot_digest: "sha256:d0fbf5f94408352c33e7474df6deca6a0db4583bd5ded6ae5eb729515dff2865"
-              status: "unsupported"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-08-31T23:07:11.268Z"
+              repository_snapshot_digest: "sha256:e0031db8b080a7e4d55c2db1ce2a1dc1e08c0244fc5fa14bf49a44a6bec3a9b9"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "blocked"
-          unsatisfied_criteria:
-            - "m3-projections-acceptance"
+          status: "passed"
+          unsatisfied_criteria: []
       m3-retirement:
         attempt: 0
         claim_id: null
@@ -9955,6 +10017,29 @@ extensions:
         previous_revision: 31
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-b07f33461ddf9f5c2d8e2843:
+        aggregate_digest: "sha256:d1a9ddfacbe67474192f6f2c3ee36b22fa3ee14110cfded199723e1783e425be"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-31T22:44:42.881Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_52bf2c4612130e8940c5bfd5"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-b07f33461ddf9f5c2d8e2843"
+          plan_digest: "sha256:2e7e3719fd04d1ca8a43ef5f8903910b36449dd5299d5338bcc1cb26ef89defa"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 64
+          to: "REWORK_READY"
+          work_item_id: "m3-projections"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-b07f33461ddf9f5c2d8e2843"
+        next_revision: 65
+        previous_revision: 64
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-bf2785583fed4c8df073f5e8:
         aggregate_digest: "sha256:a4f459c343eb04e1c237e1264cafee80dcdca52d5835eb160a4bb80233d4a5c8"
         event:
@@ -10024,6 +10109,29 @@ extensions:
         previous_revision: 60
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-f7580132433f3dc53c7c277a:
+        aggregate_digest: "sha256:04cd00c1adae142dc0082a6b5e5f246ecb9d55059151b7e9c56ea403d73b69dc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-31T23:07:11.311Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_401413a1843cf50d84f4171b"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-f7580132433f3dc53c7c277a"
+          plan_digest: "sha256:2e7e3719fd04d1ca8a43ef5f8903910b36449dd5299d5338bcc1cb26ef89defa"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 67
+          to: "COMPLETED"
+          work_item_id: "m3-projections"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-f7580132433f3dc53c7c277a"
+        next_revision: 68
+        previous_revision: 67
+        schema_version: 1
+        task_id: "202608291006-255K66"
       plan-refinement:work-order-202608291006-255K66-executor-a0cda798d0a0cf653b984ea2:
         aggregate_digest: "sha256:fc6c3f5530e5da9344a4a03f935d2e55459aecf91e0f3c292d3e796bd57e9a5d"
         event:
@@ -10078,6 +10186,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "10f2efcbcc64b856aea2f0ffc979e45c99e941f0"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -11170,6 +11280,41 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:b0d43269250ecf30e79fa540307d225e6e90ec3f17461b1e28e4826f6cbeed02
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608291006-255K66-cut-over-to-the-canonical-task-kernel-and-retire/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+- old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-31T22:44:05.109Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:589d2fc7463432d4cf07c6820a8ceaf6ab7762e5bacfaedcf568b9fa199096cc
 
 Details:
 
