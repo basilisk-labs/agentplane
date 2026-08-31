@@ -3,7 +3,8 @@
   "branch": "task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for",
   "created_at": "2026-08-31T17:15:30.659Z",
   "diffstat_sha256": "sha256:4be68a38514e9abadd1f6cfad7dce5d499f27510301c8b6cce29ddbf7d320db3",
-  "last_verified_at": null,
+  "last_verified_at": "2026-08-31T17:48:33.111Z",
+  "last_verified_diffstat_sha256": "sha256:4be68a38514e9abadd1f6cfad7dce5d499f27510301c8b6cce29ddbf7d320db3",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202608311713-A0F906",
   "updated_at": "2026-08-31T17:15:30.659Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
