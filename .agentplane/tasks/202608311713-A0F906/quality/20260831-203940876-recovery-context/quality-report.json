@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202608311713-A0F906",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-31T20:40:31.150Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 8 typed finding(s).",
+  "evaluated_sha": "7c0f1273c43e4f51e11673d2334d93ab5b09217b",
+  "blueprint_digest": "fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb",
+  "findings": [
+    "Pure refinement admission uses native amendments and preserves implementation history and completed WorkItems. Existing no-diff, replay, lost-response and stale-state tests retain those contracts.",
+    "Task artifact content and modes are bound to the issued exchange. Issued task revision is explicitly checked and retained through adapter persistence CAS, covering both earlier hosted review findings.",
+    "The CodeQL-reported lstat/readFile race is removed by reusing readStableRegularFileNoFollow with the initial bigint device/inode identity. It verifies the opened descriptor before reading bytes, uses bounded binary reads, and checks stability afterward.",
+    "New tests reject both same-byte regular-file replacement and symlink replacement between observation and stable reading. The positive binary hash check preserves byte-level snapshot behavior.",
+    "The final test formatting conforms to Prettier. The current native full-CI evidence is passed; the earlier failed formatting run is not used as successful evidence.",
+    "Residual risk: Do not merge until current-head hosted checks, including CodeQL, pass.",
+    "Residual risk: Old exchanges without a content snapshot require clean task metadata. The live M3 exchange must be recovered through the native controller after delivery.",
+    "Residual risk: Stable release publication is outside this bootstrap scope."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Existing native journal ownership and task-supervisor serialization remain the trust boundary.",
+    "Snapshot traversal is not an OS filesystem sandbox; this patch addresses the reported regular-file read race using the existing stable-file primitive."
+  ],
+  "residual_risks": []
+}

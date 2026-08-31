@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -29,33 +29,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-08-31T20:04:49.402Z"
+  updated_at: "2026-08-31T20:40:31.150Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d"
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
+  evaluated_sha: "7c0f1273c43e4f51e11673d2334d93ab5b09217b"
   blueprint_digest: "fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb"
   evidence_refs:
-    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/4efd26c62ac4cc8e33aa95a8e372383f84ce1ad0fbefdc2654243a19114cb420.md"
-    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608311713-A0F906/README.md"
-    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
-    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
-    - ".agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+    - ".agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
     - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The frozen actual diff routes refinement-only results through native plan amendments before implementation persistence and preserves the ordinary completed-no-diff rejection."
-    - "The issued task-artifact snapshot detects edit, add and delete drift, including content changes that preserve Git status. The snapshot participates in the immutable issue digest."
-    - "The issued WorkOrder revision is explicitly passed to recordPlanRefinement and retained through persistence CAS. Concurrency tests reject drift at the helper and adapter reads."
-    - "The frozen verification record covers the current implementation SHA. Replay and lost-response tests preserve completed WorkItems and do not create implementation history for planning-only changes."
-    - "Residual risk: Old exchanges without a content snapshot reject dirty task metadata and may require an explicitly routed replacement."
-    - "Residual risk: PR 5884 review threads and hosted integration are still pending."
-    - "Residual risk: Stable 0.7.8 publication is outside this bootstrap scope."
+    - "Pure refinement admission uses native amendments and preserves implementation history and completed WorkItems. Existing no-diff, replay, lost-response and stale-state tests retain those contracts."
+    - "Task artifact content and modes are bound to the issued exchange. Issued task revision is explicitly checked and retained through adapter persistence CAS, covering both earlier hosted review findings."
+    - "The CodeQL-reported lstat/readFile race is removed by reusing readStableRegularFileNoFollow with the initial bigint device/inode identity. It verifies the opened descriptor before reading bytes, uses bounded binary reads, and checks stability afterward."
+    - "New tests reject both same-byte regular-file replacement and symlink replacement between observation and stable reading. The positive binary hash check preserves byte-level snapshot behavior."
+    - "The final test formatting conforms to Prettier. The current native full-CI evidence is passed; the earlier failed formatting run is not used as successful evidence."
+    - "Residual risk: Do not merge until current-head hosted checks, including CodeQL, pass."
+    - "Residual risk: Old exchanges without a content snapshot require clean task metadata. The live M3 exchange must be recovered through the native controller after delivery."
+    - "Residual risk: Stable release publication is outside this bootstrap scope."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -396,7 +397,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-08-31T20:39:30.039Z"
+doc_updated_at: "2026-08-31T20:40:31.180Z"
 doc_updated_by: "SUPERVISOR"
 description: "Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair."
 sections:
