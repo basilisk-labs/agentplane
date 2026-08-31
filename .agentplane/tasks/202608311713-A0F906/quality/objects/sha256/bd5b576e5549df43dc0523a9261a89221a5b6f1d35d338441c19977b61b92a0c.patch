@@ -1,0 +1,605 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+index d30115a74..19aa65732 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+@@ -222,6 +222,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+ 
+   async recordPlanRefinement(opts: {
+     task_id: string;
++    expected_revision?: number;
+     refinement: PlanRefinement;
+     actor_id: string;
+     at: string;
+@@ -235,6 +236,12 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     const raw = await this.backend.getTask(opts.task_id);
+     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
+     const task = aggregateFrom(raw);
++    const expectedRevision = opts.expected_revision ?? raw.revision ?? task.revision;
++    if ((raw.revision ?? task.revision) !== expectedRevision) {
++      throw new Error(
++        `Plan refinement task revision changed: expected ${expectedRevision}, observed ${raw.revision ?? task.revision}.`,
++      );
++    }
+     const applied = applyPlanRefinement({
+       task,
+       refinement: opts.refinement,
+@@ -266,7 +273,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     });
+     const persisted = await this.persist({
+       task_id: task.id,
+-      expected_revision: raw.revision ?? task.revision,
++      expected_revision: expectedRevision,
+       mutation_id: opts.idempotency_key,
+       event,
+       next,
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index 692c56ef7..97c4db003 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { cp, readFile, writeFile } from "node:fs/promises";
++import { cp, readFile, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { describe, expect, it, vi } from "vitest";
+@@ -15,6 +15,7 @@ import {
+ import { loadCommandContext } from "../commands/shared/task-backend.js";
+ import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
+ import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
++import * as refinement from "../commands/task/external-agent-plan-refinement.js";
+ import * as verification from "../commands/task/direct-task-verification.js";
+ import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
+ import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
+@@ -84,7 +85,7 @@ async function commitFixture(root: string, message: string) {
+   await git("git", ["commit", "-m", message], { cwd: root });
+ }
+ 
+-async function completedFixture(initialized = true) {
++async function implementationFixture(initialized = true) {
+   const root = await mkGitRepoRootWithBranch("main");
+   const config = defaultConfig();
+   config.workflow_mode = "branch_pr";
+@@ -165,6 +166,12 @@ async function completedFixture(initialized = true) {
+   const implementation = await packet(root, taskId);
+   const implementationOrder = await order(implementation);
+   const checkout = implementationOrder.state_fingerprint.worktree;
++  return { root, taskId, creationBase, implementation, implementationOrder, checkout };
++}
++
++async function completedFixture(initialized = true) {
++  const { root, taskId, creationBase, implementation, implementationOrder, checkout } =
++    await implementationFixture(initialized);
+   const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
+   const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+   await writeFile(metaPath, JSON.stringify({ ...meta, status: "OPEN", pr_number: 123 }));
+@@ -452,3 +459,200 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+     ).toBeNull();
+   });
+ });
++
++const planRefinement = (material: boolean) => ({
++  description: "Split the remaining bounded implementation without replaying previous work.",
++  scope_roots_added: [],
++  outputs_added: material ? ["new-evidence"] : [],
++  acceptance_changed: false,
++  risk_changed: false,
++  external_effects_added: [],
++  dependencies_changed: false,
++  architecture_constraints_changed: false,
++  operations: ["split"],
++});
++
++describe("pure external plan refinement", { timeout: 180_000 }, () => {
++  it.each([false, true])(
++    "records refinement without implementation (material=%s)",
++    async (material) => {
++      const f = await implementationFixture();
++      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
++      const before = await ctx.taskBackend.getTask(f.taskId);
++      const head = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
++      await report(f.implementation, "Refine only; implementation remains pending.", {
++        plan_refinement: planRefinement(material),
++      });
++      const next = await resume(f.checkout, f.implementation);
++      const after = await ctx.taskBackend.getTask(f.taskId);
++      const nextHead = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
++      expect(nextHead.stdout.trim()).toBe(head.stdout.trim());
++      expect(recordedTaskImplementationCommitSha(after!)).toBe(
++        recordedTaskImplementationCommitSha(before!),
++      );
++      const aggregate = taskCentricAggregateFromExtensions(after!.extensions)!;
++      expect(aggregate.work_items).toEqual(
++        taskCentricAggregateFromExtensions(before!.extensions)!.work_items,
++      );
++      const nextOrder = await order(next);
++      expect(nextOrder.role).toBe(material ? "PLANNER" : "EXECUTOR");
++      await resume(f.checkout, f.implementation);
++      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(after);
++    },
++  );
++  it.each([false, true])(
++    "recovers a lost refinement response (source drift=%s)",
++    async (sourceDrift) => {
++      const f = await implementationFixture();
++      await report(f.implementation, "Refinement before lost response.", {
++        plan_refinement: planRefinement(true),
++      });
++      const original = refinement.applyExternalPlanRefinement;
++      const spy = vi
++        .spyOn(refinement, "applyExternalPlanRefinement")
++        .mockImplementationOnce(async (opts) => {
++          await original(opts);
++          throw new Error("lost refinement response");
++        });
++      const failed = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++      expect(failed.code).not.toBe(0);
++      expect(failed.stderr).toContain("lost refinement response");
++      spy.mockRestore();
++      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
++      const applied = await ctx.taskBackend.getTask(f.taskId);
++      if (sourceDrift) {
++        const driftPath = path.join(f.checkout, "unexpected-source.ts");
++        await writeFile(driftPath, "export const unexpected = true;\n");
++        const rejected = await invoke(f.checkout, ["task", "advance", f.taskId, "--agent-json"]);
++        expect(rejected.code).not.toBe(0);
++        expect(rejected.stderr).toContain("clean source baseline");
++        expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(applied);
++        await rm(driftPath);
++      }
++      const next = await packet(f.checkout, f.taskId);
++      const nextOrder = await order(next);
++      expect(nextOrder.role).toBe("PLANNER");
++      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(applied);
++    },
++  );
++  it("retains ordinary completed-no-diff rejection", async () => {
++    const f = await implementationFixture();
++    await report(f.implementation, "No implementation and no refinement.");
++    const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++    expect(result.code).not.toBe(0);
++    expect(result.stderr).toContain("no supervisor-observed workspace change");
++  });
++  it("rejects changed native metadata before refinement admission", async () => {
++    const f = await implementationFixture();
++    await report(f.implementation, "Refinement against stale metadata.", {
++      plan_refinement: planRefinement(true),
++    });
++    expect(
++      await runCliSilent([
++        "task",
++        "update",
++        f.taskId,
++        "--description",
++        "Changed task authority",
++        "--root",
++        f.checkout,
++      ]),
++    ).toBe(0);
++    const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++    expect(result.code).not.toBe(0);
++    expect(result.stderr).toMatch(/stale|Protected task artifacts changed/u);
++  });
++  it("preserves already completed WorkItems when task-level refinement reopens planning", async () => {
++    const f = await completedFixture();
++    const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
++    await report(
++      f.rework,
++      "Refine remaining task-level acceptance without repeating completed work.",
++      { plan_refinement: planRefinement(true) },
++    );
++    const next = await resume(f.checkout, f.rework);
++    const after = taskCentricAggregateFromExtensions(
++      (await f.ctx.taskBackend.getTask(f.taskId))!.extensions,
++    )!;
++    const nextOrder = await order(next);
++    expect(nextOrder.role).toBe("PLANNER");
++    expect(after.work_items).toEqual(before.work_items);
++    expect(after.work_items["exercise-recovery"]?.state).toBe("COMPLETED");
++  });
++  it("rejects agent-created Git history for a pure refinement", async () => {
++    const f = await implementationFixture();
++    await report(f.implementation, "Refinement after forbidden history change.", {
++      plan_refinement: planRefinement(true),
++    });
++    await git("git", ["commit", "--allow-empty", "-m", "fixture unexpected history"], {
++      cwd: f.checkout,
++    });
++    const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++    expect(result.code).not.toBe(0);
++    expect(result.stderr).toContain("unchanged observed execution baseline");
++  });
++  it.each(["edit", "add", "delete"])(
++    "rejects protected task artifact %s without admitting refinement",
++    async (mutation) => {
++      const f = await implementationFixture();
++      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
++      const before = await ctx.taskBackend.getTask(f.taskId);
++      await report(f.implementation, "Refinement with unauthorized metadata drift.", {
++        plan_refinement: planRefinement(true),
++      });
++      const meta = path.join(f.checkout, ".agentplane/tasks", f.taskId, "pr/meta.json");
++      if (mutation === "edit") await writeFile(meta, (await readFile(meta, "utf8")) + "\n");
++      else if (mutation === "add")
++        await writeFile(path.join(path.dirname(meta), "unexpected.json"), "{}\n");
++      else await rm(meta);
++      const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++      expect(result.code).not.toBe(0);
++      expect(result.stderr).toContain("Protected task artifacts changed");
++      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(before);
++    },
++  );
++  it.each([1, 2])("rejects concurrent authority drift at task read %s", async (readNumber) => {
++    const f = await implementationFixture();
++    await report(f.implementation, "Refinement racing a task update.", {
++      plan_refinement: planRefinement(true),
++    });
++    const original = refinement.applyExternalPlanRefinement;
++    const spy = vi
++      .spyOn(refinement, "applyExternalPlanRefinement")
++      .mockImplementationOnce(async (opts) => {
++        const backend = opts.command.taskBackend;
++        const get = backend.getTask.bind(backend);
++        let reads = 0;
++        const readSpy = vi.spyOn(backend, "getTask").mockImplementation(async (id) => {
++          let raw = await get(id);
++          reads += 1;
++          if (reads === readNumber && raw) {
++            await backend.writeTask(
++              { ...raw, description: "Concurrent operator authority update" },
++              { expectedRevision: raw.revision },
++            );
++            raw = await get(id);
++          }
++          return raw;
++        });
++        try {
++          return await original(opts);
++        } finally {
++          readSpy.mockRestore();
++        }
++      });
++    try {
++      const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++      expect(result.code).not.toBe(0);
++      // The adapter read must enforce the issued revision even after the earlier snapshot passed.
++      if (readNumber === 2) expect(result.stderr).toContain("revision");
++      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
++      const raw = await ctx.taskBackend.getTask(f.taskId);
++      const aggregate = taskCentricAggregateFromExtensions(raw!.extensions)!;
++      expect(aggregate.lifecycle).toBe("ACTIVE");
++      expect(aggregate.plan_amendments).toHaveLength(0);
++    } finally {
++      spy.mockRestore();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.ts b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+index 57e101456..1a03a6e10 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+@@ -44,6 +44,7 @@ export type ExternalAgentExchange = {
+   baseline: {
+     head: string | null;
+     changed_paths: string[];
++    task_artifacts?: Record<string, string>;
+   };
+   result_digest: string | null;
+   result: ExternalAgentResultEnvelope | null;
+diff --git a/packages/agentplane/src/commands/task/external-agent-plan-refinement.ts b/packages/agentplane/src/commands/task/external-agent-plan-refinement.ts
+new file mode 100644
+index 000000000..157570482
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-plan-refinement.ts
+@@ -0,0 +1,145 @@
++import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
++import {
++  createRepositorySnapshot,
++  taskCentricDigest,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
++import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
++import { CliError } from "../../shared/errors.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import type {
++  ExternalAgentExchange,
++  ExternalAgentResultEnvelope,
++} from "./external-agent-exchange.js";
++import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
++
++type RefinementContext = {
++  command: CommandContext;
++  exchange: ExternalAgentExchange;
++  envelope: ExternalAgentResultEnvelope;
++};
++
++function refinementKey(workOrderId: string) {
++  return `plan-refinement:${workOrderId}`;
++}
++
++export async function isExternalPlanRefinementApplied(opts: RefinementContext): Promise<boolean> {
++  if (!opts.envelope.result.plan_refinement) return false;
++  const raw = await opts.command.taskBackend.getTask(opts.exchange.task_id);
++  if (!raw) return false;
++  const receipt = runtimeFrom(raw).mutation_receipts[refinementKey(opts.exchange.work_order_id)];
++  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
++  return Boolean(
++    receipt &&
++    aggregate &&
++    raw.revision === receipt.next_revision &&
++    taskCentricDigest(aggregate) === receipt.aggregate_digest,
++  );
++}
++
++function fail(message: string): never {
++  throw new CliError({ code: "E_VALIDATION", message });
++}
++
++/** A pure plan refinement changes planning state, never implementation or WorkItem completion. */
++export async function applyExternalPlanRefinement(
++  opts: RefinementContext & { decision: TaskRouteDecision; work_order: AgentWorkOrderV2 },
++): Promise<boolean> {
++  const semantic = opts.envelope.result;
++  if (semantic.status !== "completed" || !semantic.plan_refinement) return false;
++  const [head, status, raw] = await Promise.all([
++    readDirectTaskHead(opts.exchange.checkout),
++    readDirectRepositoryStatus(opts.exchange.checkout),
++    opts.command.taskBackend.getTask(opts.exchange.task_id),
++  ]);
++  const prefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
++  const sourceChanges = (lines: readonly string[]) =>
++    lines.filter((line) => !line.slice(3).startsWith(prefix));
++  const receipt =
++    raw && runtimeFrom(raw).mutation_receipts[refinementKey(opts.exchange.work_order_id)];
++  // Mixed implementation/refinement results retain the existing implementation admission path.
++  if (!receipt && sourceChanges(status?.lines ?? []).length > 0) return false;
++  if (!raw || !head || head !== opts.exchange.baseline.head || !status)
++    fail("Plan refinement requires the unchanged observed execution baseline.");
++  if (
++    sourceChanges(opts.exchange.baseline.changed_paths).length > 0 ||
++    sourceChanges(status.lines).length > 0
++  )
++    fail(
++      "Pure plan refinement requires a clean source baseline; existing changes cannot be reclassified as planning.",
++    );
++  const artifactBaseline = opts.exchange.baseline.task_artifacts;
++  if (artifactBaseline) {
++    const artifacts = await captureExternalTaskArtifacts(
++      opts.exchange.checkout,
++      opts.exchange.task_id,
++    );
++    // The native backend rewrites only README.md when it records the amendment.
++    // The persisted aggregate digest below independently binds that native task mutation.
++    const comparable = (entries: Record<string, string>) =>
++      Object.entries(entries)
++        .filter(([name]) => !receipt || name !== "README.md")
++        .toSorted(([a], [b]) => a.localeCompare(b));
++    if (JSON.stringify(comparable(artifacts)) !== JSON.stringify(comparable(artifactBaseline)))
++      fail("Protected task artifacts changed after the external episode was issued.");
++  } else {
++    // Old exchanges have no content snapshot. Never bless a pre-existing dirty artifact.
++    const artifactLines = (lines: readonly string[]) =>
++      lines.filter(
++        (line) =>
++          line.slice(3).startsWith(prefix) && (!receipt || line.slice(3) !== `${prefix}README.md`),
++      );
++    if (
++      artifactLines(opts.exchange.baseline.changed_paths).length > 0 ||
++      artifactLines(status.lines).length > 0
++    )
++      fail("Pure refinement requires a fresh task artifact baseline for dirty task metadata.");
++  }
++  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
++  if (receipt) {
++    if (!aggregate || taskCentricDigest(aggregate) !== receipt.aggregate_digest)
++      fail("Recorded plan refinement aggregate changed after its native receipt.");
++    if (raw.revision !== receipt.next_revision)
++      fail("Recorded plan refinement is stale after additional task changes.");
++    return true;
++  }
++  if (opts.decision.workflowStep.preconditionFingerprint.digest !== opts.exchange.state_fingerprint)
++    fail("Plan refinement is stale against the issued task and repository fingerprint.");
++  if (raw.revision !== opts.work_order.task.revision)
++    fail("Plan refinement task revision differs from the issued WorkOrder.");
++  if (!aggregate?.current_plan) fail("Plan refinement requires an existing task-centric plan.");
++  const requested = opts.work_order.task.work_item_id;
++  if (requested && !aggregate.work_items[requested])
++    fail("Plan refinement targets an unknown WorkItem.");
++  if (
++    !requested &&
++    Object.values(aggregate.work_items).filter((item) => item.state === "CLAIMED").length > 1
++  )
++    fail("A null-ID plan refinement is ambiguous because multiple WorkItems are claimed.");
++  const repository = createRepositorySnapshot({
++    git: { kind: "commit", sha: head, ref: null },
++    dirty_paths: [],
++    policy_digest: opts.work_order.planning_context?.repository_snapshot.policy_digest ?? null,
++    config_digest: opts.work_order.planning_context?.repository_snapshot.config_digest ?? null,
++    context_digest:
++      (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ?? null,
++    task_history_cursor: `task-revision:${raw.revision ?? aggregate.revision}`,
++    captured_at: new Date().toISOString(),
++  });
++  const adapter = new TaskCentricBackendAdapter({
++    backend: opts.command.taskBackend,
++    observeRepository: () => Promise.resolve(repository),
++  });
++  await adapter.recordPlanRefinement({
++    task_id: raw.id,
++    expected_revision: opts.work_order.task.revision,
++    refinement: semantic.plan_refinement,
++    actor_id: `external:${opts.work_order.role}`,
++    at: repository.captured_at,
++    idempotency_key: refinementKey(opts.work_order.work_order_id),
++  });
++  return true;
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-result-application.ts b/packages/agentplane/src/commands/task/external-agent-result-application.ts
+index 240421132..1b7156904 100644
+--- a/packages/agentplane/src/commands/task/external-agent-result-application.ts
++++ b/packages/agentplane/src/commands/task/external-agent-result-application.ts
+@@ -1,3 +1,7 @@
++import {
++  applyExternalPlanRefinement,
++  isExternalPlanRefinementApplied,
++} from "./external-agent-plan-refinement.js";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ 
+ import { CliError } from "../../shared/errors.js";
+@@ -45,6 +49,7 @@ export async function applyAcceptedExternalAgentResult(opts: {
+   if (
+     usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
+   ) {
++    if (await applyExternalPlanRefinement(opts)) return;
+     await applyExternalImplementationResult(opts);
+     return;
+   }
+@@ -84,6 +89,12 @@ export async function isExternalAgentResultAlreadyApplied(opts: {
+   decision: TaskRouteDecision;
+   envelope: ExternalAgentResultEnvelope;
+ }): Promise<boolean> {
++  if (
++    usesExternalImplementationAuthority(opts.exchange.purpose, "workspace-write") &&
++    opts.envelope.result.plan_refinement
++  ) {
++    return isExternalPlanRefinementApplied(opts);
++  }
+   if (opts.exchange.purpose === "planning") {
+     return await isExternalPlanningResultApplied({
+       command: opts.command,
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+index e692f1f75..b646d5421 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+@@ -1,3 +1,4 @@
++import { isExternalPlanRefinementApplied } from "./external-agent-plan-refinement.js";
+ import { access } from "node:fs/promises";
+ import path from "node:path";
+ 
+@@ -378,10 +379,19 @@ export async function recoverPendingExternalAgentResult(opts: {
+   }
+ 
+   const workOrder = await readExternalAgentWorkOrder(paths.work_order);
+-  const planningRecoveryRequired = requiresPlanningRecoveryReplacement({
+-    decision: opts.current_decision,
+-    exchange,
+-  });
++  const refinementApplied =
++    exchange.result !== null &&
++    (await isExternalPlanRefinementApplied({
++      command: opts.command,
++      exchange,
++      envelope: exchange.result,
++    }));
++  const planningRecoveryRequired =
++    !refinementApplied &&
++    requiresPlanningRecoveryReplacement({
++      decision: opts.current_decision,
++      exchange,
++    });
+   await retireStaleEvaluatorExchange({
+     command: opts.command,
+     decision: opts.current_decision,
+@@ -389,11 +399,13 @@ export async function recoverPendingExternalAgentResult(opts: {
+     paths,
+     journal_path: journalPath,
+   });
+-  const implementationRecoveryRequired = requiresImplementationRecoveryReplacement({
+-    decision: opts.current_decision,
+-    exchange,
+-    work_order: workOrder,
+-  });
++  const implementationRecoveryRequired =
++    !refinementApplied &&
++    requiresImplementationRecoveryReplacement({
++      decision: opts.current_decision,
++      exchange,
++      work_order: workOrder,
++    });
+ 
+   if (
+     operation.status === "intent" &&
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 0f7383d1a..d1b8acaaf 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -1,3 +1,4 @@
++import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
+ import { createHash } from "node:crypto";
+ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+@@ -235,7 +236,13 @@ async function issueExternalAgentExchangeUnlocked(opts: {
+     result_schema_ref: paths.result_schema,
+     result_ref: paths.result,
+     evaluator_work_order_ref: evaluatorWorkOrderRef,
+-    baseline: { head, changed_paths: status?.lines ?? [] },
++    baseline: {
++      head,
++      changed_paths: status?.lines ?? [],
++      ...(workOrder.authority.sandbox === "workspace-write"
++        ? { task_artifacts: await captureExternalTaskArtifacts(checkout, workOrder.task.id) }
++        : {}),
++    },
+     result_digest: null,
+     result: null,
+     postcondition_fingerprint: null,
+diff --git a/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts b/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts
+new file mode 100644
+index 000000000..8282efd11
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts
+@@ -0,0 +1,51 @@
++import { createHash } from "node:crypto";
++import { lstat, readdir, readFile, readlink } from "node:fs/promises";
++import path from "node:path";
++
++import { CliError } from "../../shared/errors.js";
++
++/** Observe protected task artifacts without following links outside the task directory. */
++export async function captureExternalTaskArtifacts(
++  checkout: string,
++  taskId: string,
++): Promise<Record<string, string>> {
++  const root = path.join(checkout, ".agentplane", "tasks", taskId);
++  for (const parent of [path.join(checkout, ".agentplane"), path.dirname(root), root]) {
++    try {
++      const parentStat = await lstat(parent);
++      if (!parentStat.isDirectory()) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: "Task artifact root is not a directory.",
++        });
++      }
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code === "ENOENT") return {};
++      throw error;
++    }
++  }
++  const entries: Record<string, string> = {};
++  async function visit(directory: string): Promise<void> {
++    const names = await readdir(directory);
++    for (const name of names.toSorted()) {
++      const file = path.join(directory, name);
++      const relative = path.relative(root, file).replaceAll("\\", "/");
++      const stat = await lstat(file);
++      if (stat.isDirectory()) {
++        entries[relative] = `directory:${stat.mode & 0o777}`;
++        await visit(file);
++      } else if (stat.isFile() || stat.isSymbolicLink()) {
++        const bytes = stat.isSymbolicLink() ? await readlink(file) : await readFile(file);
++        entries[relative] =
++          `${stat.isSymbolicLink() ? "link" : "file"}:${stat.mode & 0o777}:${createHash("sha256").update(bytes).digest("hex")}`;
++      } else {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Unsupported task artifact: ${relative}`,
++        });
++      }
++    }
++  }
++  await visit(root);
++  return entries;
++}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen actual diff routes refinement-only results through native plan amendments before implementation persistence and preserves the ordinary completed-no-diff rejection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The issued task-artifact snapshot detects edit, add and delete drift, including content changes that preserve Git status. The snapshot participates in the immutable issue digest.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The issued WorkOrder revision is explicitly passed to recordPlanRefinement and retained through persistence CAS. Concurrency tests reject drift at the helper and adapter reads.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The frozen verification record covers the current implementation SHA. Replay and lost-response tests preserve completed WorkItems and do not create implementation history for planning-only changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Old exchanges without a content snapshot reject dirty task metadata and may require an explicitly routed replacement.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: PR 5884 review threads and hosted integration are still pending.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Stable 0.7.8 publication is outside this bootstrap scope.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Native supervisor serialization and backend revision checks remain authoritative.",
+    "Receipt recovery permits the native README rewrite and checks its canonical aggregate digest and exact revision; other task artifacts remain snapshot-bound."
+  ]
+}
