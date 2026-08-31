@@ -51,15 +51,15 @@ describe("external exchange task artifact snapshot", () => {
         new RegExp(`^file:[0-9]+:${createHash("sha256").update(bytes).digest("hex")}$`, "u"),
       );
       const original = stableFile.readStableRegularFileNoFollow;
-      spy = vi.spyOn(stableFile, "readStableRegularFileNoFollow").mockImplementationOnce(
-        async (target, label, opts) => {
+      spy = vi
+        .spyOn(stableFile, "readStableRegularFileNoFollow")
+        .mockImplementationOnce(async (target, label, opts) => {
           const moved = path.join(root, "original.dat");
           await rename(file, moved);
           if (kind === "symlink") await symlink(moved, file);
           else await writeFile(file, bytes);
           return original(target, label, opts);
-        },
-      );
+        });
       await expect(captureExternalTaskArtifacts(root, taskId)).rejects.toThrow(
         /changed|non-regular/u,
       );
