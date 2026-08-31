@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-08-31T20:12:25.756Z"
-  updated_by: "REVIEWER"
-  note: "Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture."
-  attempts: 1
+  updated_at: "2026-08-31T20:27:14.530Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 2
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -128,12 +128,14 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
   observed:
     authority_violations:
+      - "verification:recorded-check-1:fail"
       - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
       - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
       - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
@@ -148,7 +150,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-2"
         result: "pass"
@@ -202,7 +204,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ddb32ea6123995584b82cf46e95bdd45355254d7bdc39602576335b3701a8712"
+      digest: "sha256:7bdd9677530be8597bb278d734b9c2725375f5371619e9bec1ec8bc08ec4627b"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "external_effect_requires_real_e2e"
@@ -217,6 +219,7 @@ execution_contract:
         changed_files:
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
           - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
           - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
@@ -262,6 +265,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
 commit: null
 comments:
@@ -286,6 +290,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: daf55cd6558c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -357,9 +364,23 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture."
+  -
+    type: "status"
+    at: "2026-08-31T20:18:28.470Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: daf55cd6558c. CLI accepted one state-bound external-agent semantic result."
+    commit: "daf55cd6558cf41d31c26c354bd5908e2d92f97d"
+  -
+    type: "verify"
+    at: "2026-08-31T20:27:14.530Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-08-31T20:12:30.253Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-31T20:27:17.126Z"
+doc_updated_by: "SUPERVISOR"
 description: "Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair."
 sections:
   Summary: |-
@@ -552,6 +573,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-08-31T20:27:14.530Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:47b6a8b5759f61e105adcd9d2fb1ace84acfdd3b7564f34a57d5a64c832115f9
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608311713-A0F906 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608311713-A0F906-repair-pure-plan-refinement-result-recovery-for/.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json
+    - old_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+    - current_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608311713-A0F906
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608311713-A0F906
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1098,6 +1154,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-08-31T20:27:14.530Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:47b6a8b5759f61e105adcd9d2fb1ace84acfdd3b7564f34a57d5a64c832115f9
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608311713-A0F906 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608311713-A0F906-repair-pure-plan-refinement-result-recovery-for/.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json
+- old_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+- current_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608311713-A0F906
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608311713-A0F906
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

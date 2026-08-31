@@ -16,7 +16,7 @@ Bootstrap repair required by clean Task core refactoring task 202608291006-255K6
 ## Verification
 
 - State: needs_rework
-- Note: Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture.
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
