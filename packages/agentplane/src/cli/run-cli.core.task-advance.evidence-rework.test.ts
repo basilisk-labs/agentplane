@@ -560,7 +560,7 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
     ).toBe(0);
     const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
     expect(result.code).not.toBe(0);
-    expect(result.stderr).toContain("stale");
+    expect(result.stderr).toMatch(/stale|Protected task artifacts changed/u);
   });
   it("preserves already completed WorkItems when task-level refinement reopens planning", async () => {
     const f = await completedFixture();
@@ -590,5 +590,69 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
     const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
     expect(result.code).not.toBe(0);
     expect(result.stderr).toContain("unchanged observed execution baseline");
+  });
+  it.each(["edit", "add", "delete"])(
+    "rejects protected task artifact %s without admitting refinement",
+    async (mutation) => {
+      const f = await implementationFixture();
+      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
+      const before = await ctx.taskBackend.getTask(f.taskId);
+      await report(f.implementation, "Refinement with unauthorized metadata drift.", {
+        plan_refinement: planRefinement(true),
+      });
+      const meta = path.join(f.checkout, ".agentplane/tasks", f.taskId, "pr/meta.json");
+      if (mutation === "edit") await writeFile(meta, (await readFile(meta, "utf8")) + "\n");
+      else if (mutation === "add")
+        await writeFile(path.join(path.dirname(meta), "unexpected.json"), "{}\n");
+      else await rm(meta);
+      const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+      expect(result.code).not.toBe(0);
+      expect(result.stderr).toContain("Protected task artifacts changed");
+      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(before);
+    },
+  );
+  it.each([1, 2])("rejects concurrent authority drift at task read %s", async (readNumber) => {
+    const f = await implementationFixture();
+    await report(f.implementation, "Refinement racing a task update.", {
+      plan_refinement: planRefinement(true),
+    });
+    const original = refinement.applyExternalPlanRefinement;
+    const spy = vi
+      .spyOn(refinement, "applyExternalPlanRefinement")
+      .mockImplementationOnce(async (opts) => {
+        const backend = opts.command.taskBackend;
+        const get = backend.getTask.bind(backend);
+        let reads = 0;
+        const readSpy = vi.spyOn(backend, "getTask").mockImplementation(async (id) => {
+          let raw = await get(id);
+          reads += 1;
+          if (reads === readNumber && raw) {
+            await backend.writeTask(
+              { ...raw, description: "Concurrent operator authority update" },
+              { expectedRevision: raw.revision },
+            );
+            raw = await get(id);
+          }
+          return raw;
+        });
+        try {
+          return await original(opts);
+        } finally {
+          readSpy.mockRestore();
+        }
+      });
+    try {
+      const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+      expect(result.code).not.toBe(0);
+      // The adapter read must enforce the issued revision even after the earlier snapshot passed.
+      if (readNumber === 2) expect(result.stderr).toContain("revision");
+      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
+      const raw = await ctx.taskBackend.getTask(f.taskId);
+      const aggregate = taskCentricAggregateFromExtensions(raw!.extensions)!;
+      expect(aggregate.lifecycle).toBe("ACTIVE");
+      expect(aggregate.plan_amendments).toHaveLength(0);
+    } finally {
+      spy.mockRestore();
+    }
   });
 });

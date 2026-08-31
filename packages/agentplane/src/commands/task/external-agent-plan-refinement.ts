@@ -1,5 +1,7 @@
+import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
 import {
   createRepositorySnapshot,
+  taskCentricDigest,
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
@@ -29,7 +31,13 @@ export async function isExternalPlanRefinementApplied(opts: RefinementContext): 
   const raw = await opts.command.taskBackend.getTask(opts.exchange.task_id);
   if (!raw) return false;
   const receipt = runtimeFrom(raw).mutation_receipts[refinementKey(opts.exchange.work_order_id)];
-  return Boolean(receipt && raw.revision === receipt.next_revision);
+  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
+  return Boolean(
+    receipt &&
+    aggregate &&
+    raw.revision === receipt.next_revision &&
+    taskCentricDigest(aggregate) === receipt.aggregate_digest,
+  );
 }
 
 function fail(message: string): never {
@@ -63,14 +71,45 @@ export async function applyExternalPlanRefinement(
     fail(
       "Pure plan refinement requires a clean source baseline; existing changes cannot be reclassified as planning.",
     );
+  const artifactBaseline = opts.exchange.baseline.task_artifacts;
+  if (artifactBaseline) {
+    const artifacts = await captureExternalTaskArtifacts(
+      opts.exchange.checkout,
+      opts.exchange.task_id,
+    );
+    // The native backend rewrites only README.md when it records the amendment.
+    // The persisted aggregate digest below independently binds that native task mutation.
+    const comparable = (entries: Record<string, string>) =>
+      Object.entries(entries)
+        .filter(([name]) => !receipt || name !== "README.md")
+        .toSorted(([a], [b]) => a.localeCompare(b));
+    if (JSON.stringify(comparable(artifacts)) !== JSON.stringify(comparable(artifactBaseline)))
+      fail("Protected task artifacts changed after the external episode was issued.");
+  } else {
+    // Old exchanges have no content snapshot. Never bless a pre-existing dirty artifact.
+    const artifactLines = (lines: readonly string[]) =>
+      lines.filter(
+        (line) =>
+          line.slice(3).startsWith(prefix) && (!receipt || line.slice(3) !== `${prefix}README.md`),
+      );
+    if (
+      artifactLines(opts.exchange.baseline.changed_paths).length > 0 ||
+      artifactLines(status.lines).length > 0
+    )
+      fail("Pure refinement requires a fresh task artifact baseline for dirty task metadata.");
+  }
+  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
   if (receipt) {
+    if (!aggregate || taskCentricDigest(aggregate) !== receipt.aggregate_digest)
+      fail("Recorded plan refinement aggregate changed after its native receipt.");
     if (raw.revision !== receipt.next_revision)
       fail("Recorded plan refinement is stale after additional task changes.");
     return true;
   }
   if (opts.decision.workflowStep.preconditionFingerprint.digest !== opts.exchange.state_fingerprint)
     fail("Plan refinement is stale against the issued task and repository fingerprint.");
-  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
+  if (raw.revision !== opts.work_order.task.revision)
+    fail("Plan refinement task revision differs from the issued WorkOrder.");
   if (!aggregate?.current_plan) fail("Plan refinement requires an existing task-centric plan.");
   const requested = opts.work_order.task.work_item_id;
   if (requested && !aggregate.work_items[requested])
@@ -96,6 +135,7 @@ export async function applyExternalPlanRefinement(
   });
   await adapter.recordPlanRefinement({
     task_id: raw.id,
+    expected_revision: opts.work_order.task.revision,
     refinement: semantic.plan_refinement,
     actor_id: `external:${opts.work_order.role}`,
     at: repository.captured_at,
