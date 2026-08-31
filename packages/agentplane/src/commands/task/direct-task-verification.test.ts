@@ -560,6 +560,18 @@ describe("direct task verification", () => {
         timeoutMs: 600_000,
       }),
     );
+    expect(
+      renderDirectTaskVerificationDetails({
+        task: {
+          execution_contract: {
+            verification: { contract: { selected_checks: ["full_regression"] } },
+          },
+        } as TaskData,
+        taskId: TASK_ID,
+        workflow: "branch_pr",
+        result,
+      }),
+    ).toContain("Command: bun run lifecycle:invariants");
   });
 
   it("persists the actual observations from each rerun, including equivalent pass outcomes", async () => {

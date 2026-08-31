@@ -149,6 +149,11 @@ export async function recordDirectTaskVerification(opts: {
     additional_only: selectedWorkItem !== undefined,
     allow_empty: selectedWorkItem !== undefined,
   });
+  if (selectedWorkItem) {
+    // WorkItem validation is projected by recordTaskCentricExternalResult.
+    // Task-level verification remains pending until every required WorkItem is complete.
+    return checks;
+  }
   const exitCode = await cmdVerifyParsed({
     ctx: opts.command,
     cwd: opts.checkout,
@@ -192,7 +197,7 @@ export function renderDirectTaskVerificationDetails(opts: {
     opts.task.execution_contract?.verification.contract?.selected_checks ?? []
   ).filter((checkId) => checkId !== "hosted_integration");
   if (opts.result.status === "passed" && selectedChecks.length > 0) {
-    return selectedChecks
+    const contractDetails = selectedChecks
       .map((checkId) => {
         const matching = checks.filter((check) => check.check_ids.includes(checkId));
         if (matching.length === 0) return null;
@@ -210,6 +215,7 @@ export function renderDirectTaskVerificationDetails(opts: {
       })
       .filter((details): details is string => details !== null)
       .join("\n\n");
+    if (contractDetails) return contractDetails;
   }
   return checks
     .map((check, index) =>

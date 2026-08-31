@@ -448,7 +448,9 @@ export async function applyExternalImplementationResult(opts: {
     exchange: opts.exchange,
     execution_base: recoveredExecutionBase,
     commit: implementationCommit,
-    preserve_recorded_evidence: reusedRecordedImplementation && !opts.work_order.task.work_item_id,
+    // Evidence-only rework revalidates the recorded implementation; it does not
+    // reassign the historical branch diff to the currently selected WorkItem.
+    preserve_recorded_evidence: reusedRecordedImplementation,
   });
   const implementation = recoveredEvidence
     ? { status: "ready" as const, evidence: recoveredEvidence }
