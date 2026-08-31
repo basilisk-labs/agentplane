@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:4be68a38514e9abadd1f6cfad7dce5d499f27510301c8b6cce29ddbf7d320db3",
   "pr_number": 5884,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5884",
+  "pre_merge_closure": {
+    "basis_commit": "409307f1a6f655dab5a5e560806fe1476fcaa855",
+    "branch": "task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for",
+    "pr_number": 5884,
+    "recorded_at": "2026-08-31T19:05:17.850Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

@@ -1,10 +1,11 @@
 ---
 id: "202608311713-A0F906"
 title: "Repair pure plan-refinement result recovery for M3 continuation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
     - "Existing CLI fixtures exercise local and material refinement, received-result replay, lost response, dirty source after lost response, stale task authority, unauthorized HEAD changes and preservation of completed WorkItems. The prior seven evidence-rework cases remain in the same suite."
     - "All frozen evidence digests match. The recorded supervisor full-CI check exited 0 in 498262 ms for the implementation. The declared change set is confined to the authorized command and existing CLI test paths; no public schema or release behavior was changed."
     - "Residual risk: Keep hosted checks, merge/close proof and live M3 refinement recovery as explicit subsequent gates. Do not mark the full M3 refactoring or release complete from this review."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:6d33a7cc8fd63c95762c1963ffc5af3c718fd58942fe9a42cb6552d65ddc0bc5"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-08-31T19:05:17.711Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -230,8 +245,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
-  message: "🚧 A0F906 task: apply external agent result"
+  hash: "409307f1a6f655dab5a5e560806fe1476fcaa855"
+  message: "🚧 A0F906 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -239,6 +254,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9136a053dd00. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -261,9 +279,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-31T19:05:17.711Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "409307f1a6f655dab5a5e560806fe1476fcaa855"
 doc_version: 3
-doc_updated_at: "2026-08-31T17:48:35.173Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-31T19:05:17.721Z"
+doc_updated_by: "CODER"
 description: "Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair."
 sections:
   Summary: |-
@@ -538,7 +564,23 @@ extensions:
       schema_version: 1
       task_id: "202608311713-A0F906"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608311713-A0F906"
+            - "git:9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-08-31T17:48:33.111Z"
+          repository_snapshot_digest: "sha256:7ee2edb9f2ea5c440a3dd08bd59b6d3040d61903aa5fb736050bc79d5ceffe79"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608311713-A0F906"
     intent:
       acceptance_criteria:
@@ -554,12 +596,12 @@ extensions:
 
         Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair.
       task_id: "202608311713-A0F906"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-08-31T17:48:36.348Z"
+    updated_at: "2026-08-31T19:05:17.711Z"
     work_items:
       repair-refinement-recovery:
         attempt: 1
@@ -627,11 +669,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202608311713-A0F906"
+      legacy-finish:202608311713-A0F906:2026-08-31T17:48:33.111Z:9136a053dd00c0ac154eb675c41e2d0321e1ba9d:
+        aggregate_digest: "sha256:561d68d084d6263ed80e1105758828877e257388ec8454800bd8aec996ed173f"
+        event:
+          actor_id: "CODER"
+          at: "2026-08-31T19:05:17.711Z"
+          cause_refs:
+            - "task-verification:202608311713-A0F906"
+            - "git:9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_152fc342c83686d29b12338e"
+          mutation_id: "legacy-finish:202608311713-A0F906:2026-08-31T17:48:33.111Z:9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
+          plan_digest: "sha256:8da4fa74be0069a851f6ba40054ce15a299d8bb4d6f6c279cd2f582ed115b829"
+          plan_revision: 1
+          repository_fingerprint: "sha256:7ee2edb9f2ea5c440a3dd08bd59b6d3040d61903aa5fb736050bc79d5ceffe79"
+          schema_version: 1
+          task_id: "202608311713-A0F906"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608311713-A0F906:2026-08-31T17:48:33.111Z:9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202608311713-A0F906"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
+    message: "🚧 A0F906 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e16259bf9666e02c2099df5c5b21c43d8e90c1ca"
@@ -736,3 +804,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6d33a7cc8fd63c95762c1963ffc5af3c718fd58942fe9a42cb6552d65ddc0bc5`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-08-31T19:05:17.711Z`
