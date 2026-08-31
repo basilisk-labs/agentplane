@@ -6,14 +6,14 @@ Created: 2026-08-31T17:15:30.659Z
 
 - Task: `202608311713-A0F906`
 - Title: Repair pure plan-refinement result recovery for M3 continuation
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608311713-A0F906/repair-pure-plan-refinement-result-recovery-for`
 - Canonical task record: `.agentplane/tasks/202608311713-A0F906/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement admission to the issued task revision.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

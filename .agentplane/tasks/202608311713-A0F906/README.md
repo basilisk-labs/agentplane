@@ -2,10 +2,10 @@
 id: "202608311713-A0F906"
 title: "Repair pure plan-refinement result recovery for M3 continuation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "BLOCKED"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-31T17:48:33.111Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-31T19:31:10.903Z"
+  updated_by: "REVIEWER"
+  note: "Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement admission to the issued task revision."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -122,7 +122,8 @@ execution_contract:
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -151,6 +152,9 @@ execution_contract:
       -
         id: "recorded-check-5"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -244,9 +248,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "409307f1a6f655dab5a5e560806fe1476fcaa855"
-  message: "🚧 A0F906 task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -257,6 +260,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. PR 5884 revision-binding rework requires one additional existing adapter file. No implementation files were changed in this episode. Recommended action: Grant the single-file scope extension through the native operator command and request a fresh rework packet. Requested scope: roots=packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts; repository effects=source_code,tests; request digest=sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f. Agentplane receipt: external-agent-blocker/tr_114a12ca336b70893256415adbece55c/sha256:03f021c5d804d980e33130e7887eb02e0a2efb1e38f4b1b36d4e1e1b7f55bd7e/sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f."
 events:
   -
     type: "status"
@@ -287,9 +293,22 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "409307f1a6f655dab5a5e560806fe1476fcaa855"
+  -
+    type: "verify"
+    at: "2026-08-31T19:31:10.903Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement admission to the issued task revision."
+  -
+    type: "status"
+    at: "2026-08-31T19:33:33.692Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. PR 5884 revision-binding rework requires one additional existing adapter file. No implementation files were changed in this episode. Recommended action: Grant the single-file scope extension through the native operator command and request a fresh rework packet. Requested scope: roots=packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts; repository effects=source_code,tests; request digest=sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f. Agentplane receipt: external-agent-blocker/tr_114a12ca336b70893256415adbece55c/sha256:03f021c5d804d980e33130e7887eb02e0a2efb1e38f4b1b36d4e1e1b7f55bd7e/sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f."
 doc_version: 3
-doc_updated_at: "2026-08-31T19:05:17.721Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-08-31T19:33:33.718Z"
+doc_updated_by: "SUPERVISOR"
 description: "Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair."
 sections:
   Summary: |-
@@ -368,11 +387,44 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-31T19:31:10.903Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement admission to the issued task revision.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:2e5bd788f2001182f1a372633d67cec77e96facffaea463f866d8c1268525a81
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608311713-A0F906-repair-pure-plan-refinement-result-recovery-for/.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json
+    - old_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+    - current_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608311713-A0F906
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: PR 5884 discussions r3897532957 and r3897532962 identify task metadata excluded from the fingerprint and a revision race before recordPlanRefinement. Both were confirmed by source inspection.
+      Impact: A refinement-only result can leave unauthorized task artifacts dirty or apply against newer task authority than the issued WorkOrder.
+      Resolution: Preserve and verify the issued task-artifact baseline, enforce the issued task revision through amendment persistence, add negative regression coverage, and rerun native verification and review before resolving the GitHub threads.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -397,6 +449,21 @@ extensions:
     scope_digest: "sha256:9225b51d473b5a4aeed46665e188e2d5cc0e89c91516d94b73596dc9b3c4e92e"
     status: "active"
     task_id: "202608311713-A0F906"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:03f021c5d804d980e33130e7887eb02e0a2efb1e38f4b1b36d4e1e1b7f55bd7e"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Address the confirmed PR 5884 revision-race finding by adding an optional expected_revision precondition to the existing recordPlanRefinement method and enforcing it before mutation. Keep other callers compatible. Command-layer baseline fixes and regression tests remain inside the already approved roots."
+      repository_effects:
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+    request_digest: "sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_114a12ca336b70893256415adbece55c"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -697,9 +764,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
-    message: "🚧 A0F906 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e16259bf9666e02c2099df5c5b21c43d8e90c1ca"
@@ -796,6 +860,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-31T19:31:10.903Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement admission to the issued task revision.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:2e5bd788f2001182f1a372633d67cec77e96facffaea463f866d8c1268525a81
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608311713-A0F906-repair-pure-plan-refinement-result-recovery-for/.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json
+- old_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+- current_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608311713-A0F906
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -804,6 +898,10 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: PR 5884 discussions r3897532957 and r3897532962 identify task metadata excluded from the fingerprint and a revision race before recordPlanRefinement. Both were confirmed by source inspection.
+  Impact: A refinement-only result can leave unauthorized task artifacts dirty or apply against newer task authority than the issued WorkOrder.
+  Resolution: Preserve and verify the issued task-artifact baseline, enforce the issued task revision through amendment persistence, add negative regression coverage, and rerun native verification and review before resolving the GitHub threads.
 
 ## Token Usage
 

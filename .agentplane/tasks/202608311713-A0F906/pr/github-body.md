@@ -15,8 +15,13 @@ Bootstrap repair required by clean Task core refactoring task 202608291006-255K6
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement
+admission to the issued task revision.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
