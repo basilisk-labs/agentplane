@@ -1,10 +1,10 @@
 ---
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 42
 origin:
   system: "manual"
 depends_on:
@@ -484,6 +484,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 50dfade20373. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Transport implementation requires the existing shared WorkOrder and semantic-result schema boundary. Partial implementation is preserved and does not satisfy this WorkItem. Recommended action: Extend only the listed schema source, test and generated artifact paths. Reissue the same transport implementation WorkItem. Preserve all existing changes and approval boundaries. Requested scope: roots=packages/core/schemas/agent-work-order-v2.schema.json,packages/core/src/runner/agent-semantic-result.test.ts,packages/core/src/runner/agent-semantic-result.ts,packages/core/src/runner/agent-work-order.test.ts,packages/core/src/runner/agent-work-order.ts,packages/spec/schemas/agent-work-order-v2.schema.json,schemas/agent-semantic-result.schema.json,schemas/agent-work-order-v2.schema.json; repository effects=schema,source_code,tests; request digest=sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830. Agentplane receipt: external-agent-blocker/tr_fafb9003fb38969c14c05da994bb4786/sha256:96a19ca4979c3192f93252e565c1f2d0ec596d1d9d3fcebadb33b5b1f4c1c382/sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830."
 events:
   -
     type: "status"
@@ -604,8 +607,15 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-31T09:12:16.094Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Transport implementation requires the existing shared WorkOrder and semantic-result schema boundary. Partial implementation is preserved and does not satisfy this WorkItem. Recommended action: Extend only the listed schema source, test and generated artifact paths. Reissue the same transport implementation WorkItem. Preserve all existing changes and approval boundaries. Requested scope: roots=packages/core/schemas/agent-work-order-v2.schema.json,packages/core/src/runner/agent-semantic-result.test.ts,packages/core/src/runner/agent-semantic-result.ts,packages/core/src/runner/agent-work-order.test.ts,packages/core/src/runner/agent-work-order.ts,packages/spec/schemas/agent-work-order-v2.schema.json,schemas/agent-semantic-result.schema.json,schemas/agent-work-order-v2.schema.json; repository effects=schema,source_code,tests; request digest=sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830. Agentplane receipt: external-agent-blocker/tr_fafb9003fb38969c14c05da994bb4786/sha256:96a19ca4979c3192f93252e565c1f2d0ec596d1d9d3fcebadb33b5b1f4c1c382/sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830."
 doc_version: 3
-doc_updated_at: "2026-08-31T08:35:27.272Z"
+doc_updated_at: "2026-08-31T09:12:16.094Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -1481,22 +1491,28 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
-    applied_at: "2026-08-31T07:34:05.931Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:ea1f761fe8a34155ee2a0eb74797fbe4d35119f154348e40feba751562bc4aff"
+    blocker_state_fingerprint: "sha256:96a19ca4979c3192f93252e565c1f2d0ec596d1d9d3fcebadb33b5b1f4c1c382"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Permit only the already user-approved test relocation needed for required full CI while the native route requalifies m3-projections under the new plan. No production code, policy, CI configuration, budget or provider effect changes are requested."
+      rationale: "These files own the existing shared host and managed WorkOrder/result contract. The approved M3 transport objective requires canonical bindings and canonical plan/output payloads in that contract. Generated schema parity and focused source-schema tests must stay enforced. No new external effects or product scope are requested."
       repository_effects:
+        - "schema"
+        - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/core/src/tasks/task-kernel/invariants.test.ts"
-        - "packages/core/src/tasks/task-kernel/kernel.test.ts"
-    request_digest: "sha256:1ccea219956fc7611b0e680e909f9aee5f594d0c4b5cd01f0d7aaff9cb950dff"
+        - "packages/core/schemas/agent-work-order-v2.schema.json"
+        - "packages/core/src/runner/agent-semantic-result.test.ts"
+        - "packages/core/src/runner/agent-semantic-result.ts"
+        - "packages/core/src/runner/agent-work-order.test.ts"
+        - "packages/core/src/runner/agent-work-order.ts"
+        - "packages/spec/schemas/agent-work-order-v2.schema.json"
+        - "schemas/agent-semantic-result.schema.json"
+        - "schemas/agent-work-order-v2.schema.json"
+    request_digest: "sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_17b15e89ebfae080f1a6f4326a5e479b"
+    status: "pending"
+    transition_id: "tr_fafb9003fb38969c14c05da994bb4786"
   agentplane.task_centric:
     current_plan:
       approval:
