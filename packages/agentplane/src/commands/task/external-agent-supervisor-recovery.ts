@@ -1,3 +1,4 @@
+import { isExternalPlanRefinementApplied } from "./external-agent-plan-refinement.js";
 import { access } from "node:fs/promises";
 import path from "node:path";
 
@@ -378,10 +379,19 @@ export async function recoverPendingExternalAgentResult(opts: {
   }
 
   const workOrder = await readExternalAgentWorkOrder(paths.work_order);
-  const planningRecoveryRequired = requiresPlanningRecoveryReplacement({
-    decision: opts.current_decision,
-    exchange,
-  });
+  const refinementApplied =
+    exchange.result !== null &&
+    (await isExternalPlanRefinementApplied({
+      command: opts.command,
+      exchange,
+      envelope: exchange.result,
+    }));
+  const planningRecoveryRequired =
+    !refinementApplied &&
+    requiresPlanningRecoveryReplacement({
+      decision: opts.current_decision,
+      exchange,
+    });
   await retireStaleEvaluatorExchange({
     command: opts.command,
     decision: opts.current_decision,
@@ -389,11 +399,13 @@ export async function recoverPendingExternalAgentResult(opts: {
     paths,
     journal_path: journalPath,
   });
-  const implementationRecoveryRequired = requiresImplementationRecoveryReplacement({
-    decision: opts.current_decision,
-    exchange,
-    work_order: workOrder,
-  });
+  const implementationRecoveryRequired =
+    !refinementApplied &&
+    requiresImplementationRecoveryReplacement({
+      decision: opts.current_decision,
+      exchange,
+      work_order: workOrder,
+    });
 
   if (
     operation.status === "intent" &&
