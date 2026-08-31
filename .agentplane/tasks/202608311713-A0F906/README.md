@@ -4,7 +4,7 @@ title: "Repair pure plan-refinement result recovery for M3 continuation"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-08-31T19:04:44.045Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "9136a053dd00c0ac154eb675c41e2d0321e1ba9d"
+  blueprint_digest: "fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb"
+  evidence_refs:
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/68caae31a4ce865f035255558b6006ebe2356931af6d76460040e2572802eb36.md"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608311713-A0F906/README.md"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+    - ".agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+    - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The pure-refinement branch runs before implementation persistence and returns after the native plan amendment. It does not enter commit, verification persistence or WorkItem completion paths. Source-changing results still use the existing implementation admission path; ordinary completed-no-diff results remain rejected."
+    - "The enclosing supervisor preserves exact exchange identity, immutable received-result digest and serialized result application. Initial pure refinement requires the issued HEAD, clean source baseline and exact route fingerprint. A received refinement is recognized by its work-order-bound native mutation receipt; replay requires the resulting task revision and still rechecks source cleanliness before acknowledging the result."
+    - "Existing CLI fixtures exercise local and material refinement, received-result replay, lost response, dirty source after lost response, stale task authority, unauthorized HEAD changes and preservation of completed WorkItems. The prior seven evidence-rework cases remain in the same suite."
+    - "All frozen evidence digests match. The recorded supervisor full-CI check exited 0 in 498262 ms for the implementation. The declared change set is confined to the authorized command and existing CLI test paths; no public schema or release behavior was changed."
+    - "Residual risk: Keep hosted checks, merge/close proof and live M3 refinement recovery as explicit subsequent gates. Do not mark the full M3 refactoring or release complete from this review."
 execution_route:
   frozen: true
   reason_codes:
