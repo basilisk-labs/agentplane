@@ -12,8 +12,8 @@ Created: 2026-08-30T21:48:11.941Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,7 @@ Created: 2026-08-30T21:48:11.941Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  99 +++
+ docs/developer/harness-dev.mdx                     | 104 +++
  .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
  .../task-backend/kernel-authority-schema.ts        |  54 ++
  .../task-backend/kernel-backend-adapter.test.ts    |   8 +-
@@ -101,7 +101,7 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- 72 files changed, 6516 insertions(+), 493 deletions(-)
+ 72 files changed, 6521 insertions(+), 493 deletions(-)
 ```
 
 </details>
