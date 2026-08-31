@@ -1,4 +1,4 @@
-import { lstat, readlink, realpath } from "node:fs/promises";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { gitEnv } from "@agentplaneorg/core/git";
@@ -11,14 +11,13 @@ import {
   normalizeExcludedRoots,
   normalizeRepositoryRoot,
   observationError,
-  repositoryPath,
   sha256,
-  sha256File,
   sortFingerprints,
   stableJson,
   statusEntryPaths,
   uniqSorted,
 } from "./common.js";
+import { capturePathFingerprint } from "./path-fingerprint.js";
 import { parseIndexEntries, parsePorcelainStatus } from "./parse.js";
 import {
   GIT_OBSERVATION_PROVENANCE,
@@ -76,100 +75,6 @@ async function captureIndex(repositoryRoot: string): Promise<GitSnapshot["index_
     timeout: GIT_TIMEOUT_MS,
   });
   return parseIndexEntries(stdout);
-}
-
-async function capturePathFingerprint(
-  repositoryRoot: string,
-  gitPath: string,
-): Promise<GitPathFingerprint> {
-  const absolutePath = repositoryPath(repositoryRoot, gitPath);
-  let stats;
-  try {
-    stats = await lstat(absolutePath);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
-      return {
-        path: gitPath,
-        kind: "missing",
-        mode: null,
-        size_bytes: null,
-        sha256: null,
-        symlink_target: null,
-        error: null,
-      };
-    }
-    const observedError = observationError(`fingerprint:${gitPath}`, error);
-    return {
-      path: gitPath,
-      kind: "unavailable",
-      mode: null,
-      size_bytes: null,
-      sha256: null,
-      symlink_target: null,
-      error: observedError,
-    };
-  }
-
-  if (stats.isFile()) {
-    try {
-      return {
-        path: gitPath,
-        kind: "file",
-        mode: stats.mode,
-        size_bytes: stats.size,
-        sha256: await sha256File(absolutePath),
-        symlink_target: null,
-        error: null,
-      };
-    } catch (error) {
-      const observedError = observationError(`fingerprint:${gitPath}`, error);
-      return {
-        path: gitPath,
-        kind: "unavailable",
-        mode: stats.mode,
-        size_bytes: stats.size,
-        sha256: null,
-        symlink_target: null,
-        error: observedError,
-      };
-    }
-  }
-
-  if (stats.isSymbolicLink()) {
-    try {
-      const target = await readlink(absolutePath);
-      return {
-        path: gitPath,
-        kind: "symlink",
-        mode: stats.mode,
-        size_bytes: stats.size,
-        sha256: sha256(target),
-        symlink_target: target,
-        error: null,
-      };
-    } catch (error) {
-      const observedError = observationError(`fingerprint:${gitPath}`, error);
-      return {
-        path: gitPath,
-        kind: "unavailable",
-        mode: stats.mode,
-        size_bytes: stats.size,
-        sha256: null,
-        symlink_target: null,
-        error: observedError,
-      };
-    }
-  }
-
-  return {
-    path: gitPath,
-    kind: stats.isDirectory() ? "directory" : "other",
-    mode: stats.mode,
-    size_bytes: stats.isDirectory() ? null : stats.size,
-    sha256: null,
-    symlink_target: null,
-    error: null,
-  };
 }
 
 function snapshotDigest(input: {
@@ -314,11 +219,21 @@ export async function captureGitSnapshot(input: CaptureGitSnapshotInput): Promis
       .flatMap((entry) => statusEntryPaths(entry))
       .filter((entryPath) => !isExcluded(entryPath, excludedPaths)),
   );
-  const pathFingerprints = sortFingerprints(
-    await Promise.all(
-      dirtyPaths.map((entryPath) => capturePathFingerprint(repositoryRoot, entryPath)),
-    ),
-  );
+  const fingerprintPaths = input.fingerprint_tracked_paths
+    ? uniqSorted([...dirtyPaths, ...indexEntries.map((entry) => entry.path)])
+    : dirtyPaths;
+  // Bound open file descriptors when canonical identity includes every tracked path.
+  const observed: GitPathFingerprint[] = [];
+  for (let offset = 0; offset < fingerprintPaths.length; offset += 32) {
+    observed.push(
+      ...(await Promise.all(
+        fingerprintPaths
+          .slice(offset, offset + 32)
+          .map((entryPath) => capturePathFingerprint(repositoryRoot, entryPath)),
+      )),
+    );
+  }
+  const pathFingerprints = sortFingerprints(observed);
   const errors = pathFingerprints.flatMap((entry) => (entry.error ? [entry.error] : []));
   if (errors.length > 0) {
     return unavailableSnapshot({

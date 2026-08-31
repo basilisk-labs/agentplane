@@ -15,8 +15,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,41 +27,79 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     |  99 +++++
- .../adapters/authority/user-approval-receipt.ts    | 226 ++++++++++
- .../task-backend/kernel-authority-schema.ts        |  54 +++
+ docs/developer/harness-dev.mdx                     |  99 +++
+ .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
+ .../task-backend/kernel-authority-schema.ts        |  54 ++
  .../task-backend/kernel-backend-adapter.test.ts    |   8 +-
- .../task-backend/kernel-backend-adapter.ts         |  86 +++-
- .../src/adapters/task-backend/kernel-documents.ts  |  64 +++
+ .../task-backend/kernel-backend-adapter.ts         |  86 ++-
+ .../src/adapters/task-backend/kernel-documents.ts  |  55 ++
  .../adapters/task-backend/kernel-next-action.ts    |  10 +-
  .../task-backend/kernel-record-invariants.ts       |   2 +-
  .../src/adapters/task-backend/kernel-record.ts     |  22 +-
- .../run-cli.core.task-status-token-usage.test.ts   |  73 ++++
- .../agentplane/src/commands/task/active.command.ts | 110 +++--
- .../src/commands/task/active.command.unit.test.ts  |  51 +++
+ .../src/cli/run-cli.core.kernel-transport.test.ts  | 431 +++++++++++
+ .../cli/run-cli.core.task-next-action-json.test.ts | 116 ++-
+ .../run-cli.core.task-status-token-usage.test.ts   |  73 ++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
+ .../src/commands/shared/task-mutation.ts           |  18 +
+ .../agentplane/src/commands/task/active.command.ts | 110 ++-
+ .../src/commands/task/active.command.unit.test.ts  |  51 ++
+ .../src/commands/task/advance.command.ts           |  15 +
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
- .../agentplane/src/commands/task/kernel-read.ts    |  91 ++++
+ .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
+ .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
+ .../src/commands/task/kernel-exchange.ts           | 143 ++++
+ .../agentplane/src/commands/task/kernel-plan.ts    |  79 ++
+ .../agentplane/src/commands/task/kernel-read.ts    |  91 +++
+ .../src/commands/task/kernel-run.testkit.ts        |  26 +
+ .../agentplane/src/commands/task/kernel-run.ts     | 237 ++++++
+ .../src/commands/task/kernel-runtime-context.ts    | 233 ++++++
+ .../src/commands/task/kernel-work-order.ts         | 189 +++++
+ packages/agentplane/src/commands/task/new.spec.ts  |   6 +
+ packages/agentplane/src/commands/task/new.ts       |  10 +-
  .../src/commands/task/next-action.command.ts       |   5 +
+ .../src/commands/task/plan-approve.command.ts      |  31 +
+ .../src/commands/task/plan-set.command.ts          |  19 +-
  packages/agentplane/src/commands/task/ready.ts     |   6 +
- .../src/commands/task/show-kernel.test.ts          | 121 ++++++
+ .../agentplane/src/commands/task/run.command.ts    |  31 +
+ .../src/commands/task/show-kernel.test.ts          | 121 ++++
  packages/agentplane/src/commands/task/show.ts      |  15 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +
- .../src/commands/task/user-approval-receipt.ts     | 237 +----------
- packages/agentplane/src/ports/kernel-authority.ts  |  50 +++
- .../src/runner/usecases/kernel-authority.test.ts   | 421 ++++++++++++++++++
- .../src/runner/usecases/kernel-authority.ts        | 346 +++++++++++++++
- .../runner/usecases/kernel-task-lifecycle.test.ts  | 471 +++++++++++++++++++++
- .../src/runner/usecases/kernel-task-lifecycle.ts   | 261 ++++++++++++
- .../src/tasks/task-kernel/authority-lineage.ts     | 140 ++++++
+ packages/agentplane/src/commands/task/update.ts    |   2 +
+ .../src/commands/task/user-approval-receipt.ts     | 237 +-----
+ packages/agentplane/src/ports/kernel-authority.ts  |  50 ++
+ .../src/runner/observation/git-snapshot.test.ts    |  66 +-
+ .../src/runner/observation/git-snapshot/capture.ts | 119 +--
+ .../src/runner/observation/git-snapshot/common.ts  |   8 +-
+ .../src/runner/observation/git-snapshot/model.ts   |   2 +
+ .../observation/git-snapshot/path-fingerprint.ts   | 106 +++
+ .../src/runner/observation/kernel-repository.ts    | 106 +++
+ .../src/runner/usecases/kernel-authority.test.ts   | 421 +++++++++++
+ .../src/runner/usecases/kernel-authority.ts        | 346 +++++++++
+ .../runner/usecases/kernel-task-lifecycle.test.ts  | 471 ++++++++++++
+ .../src/runner/usecases/kernel-task-lifecycle.ts   | 311 ++++++++
+ .../src/runner/usecases/task-run-bootstrap.ts      |   1 +
+ .../core/schemas/agent-work-order-v2.schema.json   | 108 +++
+ .../core/src/runner/agent-semantic-result.test.ts  |  32 +
+ packages/core/src/runner/agent-semantic-result.ts  |  79 +-
+ packages/core/src/runner/agent-work-order.test.ts  |  49 ++
+ packages/core/src/runner/agent-work-order.ts       |  21 +
+ packages/core/src/tasks/index.ts                   |  10 +
+ packages/core/src/tasks/kernel-semantic.ts         |  64 ++
+ .../src/tasks/task-kernel/authority-lineage.ts     | 140 ++++
  packages/core/src/tasks/task-kernel/digest.ts      |  20 +
  packages/core/src/tasks/task-kernel/index.ts       |   6 +
- .../core/src/tasks/task-kernel/invariants.test.ts  |  52 +++
+ .../core/src/tasks/task-kernel/invariants.test.ts  |  52 ++
  packages/core/src/tasks/task-kernel/invariants.ts  |   6 +
- packages/core/src/tasks/task-kernel/kernel.ts      |  84 +++-
- packages/core/src/tasks/task-kernel/model.ts       |  26 ++
- 34 files changed, 2905 insertions(+), 300 deletions(-)
+ packages/core/src/tasks/task-kernel/kernel.ts      |  84 ++-
+ packages/core/src/tasks/task-kernel/model.ts       |  26 +
+ .../spec/schemas/agent-work-order-v2.schema.json   | 108 +++
+ schemas/agent-semantic-result.schema.json          | 804 +++++++++++++++++++++
+ schemas/agent-work-order-v2.schema.json            | 108 +++
+ .../baselines/v0.7-compatibility-candidate.json    |  27 +-
+ .../check-compatibility-contract-baseline.mjs      |  11 +-
+ 72 files changed, 6516 insertions(+), 493 deletions(-)
 ```
 
 </details>

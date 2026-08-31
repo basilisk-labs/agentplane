@@ -1,3 +1,6 @@
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import {
@@ -98,6 +101,34 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
 export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskPlanApproveParsed): Promise<number> => {
     const commandCtx = await getCtx("task plan approve");
+    const source = await commandCtx.taskBackend.getTask(p.taskId);
+    if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+      if (p.hostUserDecision)
+        throw new Error(
+          "Canonical host approval requires an authenticated native channel observation; use a signed receipt or the explicit operator route",
+        );
+      const runtime = await createKernelRuntime({
+        command: commandCtx,
+        task_id: p.taskId,
+        transport: "manual",
+        operation_id: `approve:${p.taskId}`,
+        approval: p.approvalReceipt
+          ? { kind: "signed_user_receipt", encoded: p.approvalReceipt }
+          : {
+              kind: "manual_operator",
+              actor_id: p.by ?? "",
+              invocation_id: `task-plan-approve:${p.taskId}`,
+            },
+      });
+      await runtime.checkpoint(await runtime.observe());
+      const result = requireKernelCommit(await runtime.authority.approve(p.taskId));
+      createCliEmitter().json({
+        task_id: p.taskId,
+        canonical_revision: result.record.aggregate.revision,
+        plan_digest: result.record.aggregate.current_plan?.digest,
+      });
+      return 0;
+    }
     let by = p.by;
     let note = p.note;
     let expectedTaskRevision: number | undefined;

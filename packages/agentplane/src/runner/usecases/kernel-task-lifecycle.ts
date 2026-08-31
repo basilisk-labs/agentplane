@@ -205,11 +205,23 @@ export class KernelTaskLifecycle {
     };
     const { digest: parentDigest, ...authorityContents } = delegated;
     void parentDigest;
-    const boundedAuthority = {
-      ...authorityContents,
-      digest: taskKernel.kernelDigest(authorityContents),
-    };
-    if (!taskKernel.compareExecutionAuthority(authority, boundedAuthority).ok) return null;
+    const boundedAuthority =
+      authority.work_item_id === workItemId &&
+      Object.entries(item.definition.execution_requirements).every(
+        ([key, values]) =>
+          taskKernel.kernelDigest(authority[key as keyof taskKernel.ExecutionRequirements]) ===
+          taskKernel.kernelDigest(values),
+      )
+        ? authority
+        : {
+            ...authorityContents,
+            digest: taskKernel.kernelDigest(authorityContents),
+          };
+    if (
+      boundedAuthority !== authority &&
+      !taskKernel.compareExecutionAuthority(authority, boundedAuthority).ok
+    )
+      return null;
     const contents = {
       schema_version: 1 as const,
       kind: "kernel_work_order" as const,
@@ -220,6 +232,44 @@ export class KernelTaskLifecycle {
       authority: boundedAuthority,
     };
     return { ...contents, id: taskKernel.kernelDigest(contents) };
+  }
+
+  resultFingerprintMatches(
+    record: KernelRecord,
+    binding: KernelWorkBinding,
+    fingerprint: taskKernel.Sha256Digest | null,
+  ): boolean {
+    if (binding.repository_fingerprint === fingerprint) return true;
+    const item = record.aggregate.work_items[binding.work_item_id];
+    if (!item || !fingerprint) return false;
+    const lineage = record.aggregate.authority_lineage ?? [];
+    const origin = lineage.findIndex(
+      (entry) =>
+        entry.authority.repository_fingerprint === binding.repository_fingerprint &&
+        entry.authority.plan_digest === binding.plan_digest,
+    );
+    if (origin === -1) return false;
+    let previous = binding.repository_fingerprint;
+    for (const entry of lineage.slice(origin + 1)) {
+      const observation = entry.observation;
+      if (
+        observation?.kind !== "repository_implementation" ||
+        observation.previous_fingerprint !== previous ||
+        entry.authority.plan_digest !== binding.plan_digest
+      )
+        return false;
+      if (
+        observation.changed_paths.some(
+          (changed) =>
+            !item.definition.execution_requirements.scope_roots.some(
+              (root) => root === "." || changed === root || changed.startsWith(`${root}/`),
+            ),
+        )
+      )
+        return false;
+      previous = entry.authority.repository_fingerprint;
+    }
+    return previous === fingerprint;
   }
 
   async receiveResult(
@@ -248,11 +298,11 @@ export class KernelTaskLifecycle {
       binding.contract_digest !== item.definition.contract_digest ||
       binding.attempt !== item.attempt ||
       binding.claim_id !== item.claim_id ||
-      binding.repository_fingerprint !== input.repository_fingerprint ||
+      !this.resultFingerprintMatches(read.record, binding, input.repository_fingerprint) ||
       command.output_manifests.some(
         (output) =>
           output.attempt !== binding.attempt ||
-          output.repository_fingerprint !== binding.repository_fingerprint,
+          output.repository_fingerprint !== input.repository_fingerprint,
       )
     )
       return unavailable("result_binding_mismatch");

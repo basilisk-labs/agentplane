@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("265commands/182args/863options");
+      expect(compatibility.stdout).toContain("265commands/182args/864options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -222,13 +222,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608211020-FGAPJC",
           "202608212244-6XZAYD",
           "202608291006-2A6BJC",
+          "202608291006-255K66",
         ],
         candidate: {
-          surface_sha256: "e6a4bdd25cb0318efb7364e7ff0c0b69ae739251af1218b81bc7fbf805048bf5",
+          surface_sha256: "bb5cbbbc171cc2726c803a8f6a630184a416dd5fd130ca8947604df92b7dae09",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-            cli_topology: "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba",
+            cli_topology: "f3cb8823b66b896b9f78a49e86fa769486a82effe4f93afeb391f77288021489",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
@@ -347,9 +348,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
           agent_work_order_schema: {
             path: "schemas/agent-work-order-v2.schema.json",
-            sha256: "4dac39ec8e0ff777d6dda4524912be1ae1f38de1c2bfbea7f75c5e71015e6f1d",
+            sha256: "4f57a53b795c054d112b9126a6a06a69ba4e417e6cf5de1dd5b048f14ae73619",
             comparison: "canonical_json_exact",
-            source_task: "202608212244-6XZAYD",
+            source_task: "202608291006-255K66",
           },
           core_agent_work_order_exports: {
             comparison: "required_named_reexports",

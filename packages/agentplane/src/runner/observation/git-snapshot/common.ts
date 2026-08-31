@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
+import { readStableRegularFileNoFollow } from "../../../shared/stable-file.js";
 import path from "node:path";
 
 import { gitEnv } from "@agentplaneorg/core/git";
@@ -42,11 +42,7 @@ export function sha256(value: string | Buffer): string {
 }
 
 export async function sha256File(filePath: string): Promise<string> {
-  const hash = createHash("sha256");
-  for await (const chunk of createReadStream(filePath)) {
-    hash.update(chunk as Buffer);
-  }
-  return `sha256:${hash.digest("hex")}`;
+  return sha256(await readStableRegularFileNoFollow(filePath, "repository content"));
 }
 
 function errorText(value: unknown): string | null {

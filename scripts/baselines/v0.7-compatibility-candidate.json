@@ -8,22 +8,22 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-      "cli_topology": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba",
+      "cli_topology": "f3cb8823b66b896b9f78a49e86fa769486a82effe4f93afeb391f77288021489",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "e6a4bdd25cb0318efb7364e7ff0c0b69ae739251af1218b81bc7fbf805048bf5"
+    "surface_sha256": "bb5cbbbc171cc2726c803a8f6a630184a416dd5fd130ca8947604df92b7dae09"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
     "agent_work_order_schema": {
       "comparison": "canonical_json_exact",
       "path": "schemas/agent-work-order-v2.schema.json",
-      "sha256": "4dac39ec8e0ff777d6dda4524912be1ae1f38de1c2bfbea7f75c5e71015e6f1d",
-      "source_task": "202608212244-6XZAYD"
+      "sha256": "4f57a53b795c054d112b9126a6a06a69ba4e417e6cf5de1dd5b048f14ae73619",
+      "source_task": "202608291006-255K66"
     },
     "core_agent_work_order_exports": {
       "comparison": "required_named_reexports",
@@ -1244,6 +1244,7 @@
             "name": "yes",
             "valueHint": null
           },
+          { "command": "task new", "kind": "boolean", "name": "canonical", "valueHint": null },
           {
             "choices": ["auto", "direct", "branch_pr"],
             "command": "task new",
@@ -2124,6 +2125,12 @@
             "kind": "option",
             "name": "yes",
             "source_task": "202608291006-2A6BJC"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
+            "name": "canonical",
+            "source_task": "202608291006-255K66"
           }
         ],
         "command_count": { "from": 243, "to": 265 },
@@ -2323,7 +2330,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 863 },
+        "option_count": { "from": 767, "to": 864 },
         "positional_count": { "from": 165, "to": 182 },
         "removed_command_descriptors": [],
         "removed_commands": [],
@@ -2364,10 +2371,11 @@
         "202608200903-J459C2",
         "202608211020-FGAPJC",
         "202608212244-6XZAYD",
-        "202608291006-2A6BJC"
+        "202608291006-2A6BJC",
+        "202608291006-255K66"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
-      "to_sha256": "0542e158fad8ed588f23aeea29587f49045d0d9ff8ed667d5f8947f91de91fba"
+      "to_sha256": "f3cb8823b66b896b9f78a49e86fa769486a82effe4f93afeb391f77288021489"
     },
     {
       "classification": "additive",
@@ -2575,7 +2583,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "84a8a3952f39a9ca74380db2ddb193fc8fb6493f479f634909a12424d5712071",
+    "surface_sha256": "3d429e73948e442ad64790e13bc67344126f15f3279c65b6e1eb3a5dc16bebc1",
     "to_sha256": "d449602b1ca11e75c32b0dbecf50ff0d2729c67ce6ff64a2e4bf1b5f12955ee4",
     "to_version": "0.7.8-beta.1"
   },
@@ -2631,6 +2639,7 @@
     "202608200903-J459C2",
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
-    "202608291006-2A6BJC"
+    "202608291006-2A6BJC",
+    "202608291006-255K66"
   ]
 }

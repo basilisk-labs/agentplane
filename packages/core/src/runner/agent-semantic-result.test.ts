@@ -15,6 +15,38 @@ import {
 } from "./agent-semantic-result.js";
 
 describe("agent semantic result contract", () => {
+  it("binds canonical results to one strict semantic phase", () => {
+    const digest = `sha256:${"a".repeat(64)}`;
+    const binding = {
+      phase: "implementation",
+      task_id: "task-example-001",
+      repository_identity: digest,
+      repository_fingerprint: digest,
+      plan_revision: 1,
+      plan_digest: digest,
+      work_item_id: "build",
+      attempt: 1,
+      claim_id: "claim",
+      contract_digest: digest,
+      authority_digest: digest,
+    };
+    const value = {
+      ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+      canonical_binding: binding,
+      canonical_outputs: [{ id: "source", kind: "source", digest }],
+    };
+    expect(validateAgentSemanticResult(value).canonical_binding).toEqual(binding);
+    for (const invalid of [
+      { ...value, canonical_binding: undefined },
+      { ...value, canonical_outputs: undefined },
+      { ...value, canonical_binding: { ...binding, attempt: 0 } },
+      { ...value, canonical_binding: { ...binding, phase: "planning" } },
+      { ...value, canonical_binding: { ...binding, authority_digest: "invented" } },
+      { ...value, canonical_outputs: [{ id: "__proto__", kind: "source", digest }] },
+    ])
+      expect(listAgentSemanticResultSchemaErrors(invalid)).not.toEqual([]);
+  });
+
   it("accepts the generated v2 fixture", async () => {
     const fixturePath = path.join(
       process.cwd(),

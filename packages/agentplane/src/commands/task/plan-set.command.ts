@@ -1,3 +1,8 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { setCanonicalPlan } from "./kernel-plan.js";
+import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -75,8 +80,20 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
 
 export function makeRunTaskPlanSetHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskPlanSetParsed): Promise<number> => {
+    const command = await getCtx("task plan set");
+    const source = await command.taskBackend.getTask(p.taskId);
+    if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+      const text = p.file ? await readFile(path.resolve(ctx.cwd, p.file), "utf8") : (p.text ?? "");
+      const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text));
+      createCliEmitter().json({
+        task_id: p.taskId,
+        canonical_revision: result.record.aggregate.revision,
+        plan_digest: result.record.aggregate.current_plan?.digest,
+      });
+      return 0;
+    }
     return await cmdTaskPlanSet({
-      ctx: await getCtx("task plan set"),
+      ctx: command,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,

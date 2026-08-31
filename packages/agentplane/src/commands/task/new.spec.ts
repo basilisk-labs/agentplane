@@ -11,6 +11,11 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     "Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.",
   options: [
     {
+      kind: "boolean",
+      name: "canonical",
+      description: "Create an atomic canonical Task during staged controller cutover.",
+    },
+    {
       kind: "string",
       name: "title",
       valueHint: "<text>",
@@ -164,6 +169,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     route: (raw.opts.route ?? "repository") as TaskNewParsed["route"],
     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
     verify: (raw.opts.verify ?? []) as string[],
+    canonical: raw.opts.canonical === true,
     showBlueprint: raw.opts["show-blueprint"] === true,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
   }),

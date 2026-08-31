@@ -1,20 +1,11 @@
-import { taskKernel } from "@agentplaneorg/core/tasks";
+import {
+  taskKernel,
+  kernelIntentSchema,
+  kernelWorkContractSchema,
+} from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
-const text = z
-  .string()
-  .min(1)
-  .refine((value) => value.trim().length > 0);
-export const kernelIntentSchema = z.strictObject({
-  objective: text,
-  context: text,
-});
-export const kernelWorkContractSchema = z.strictObject({
-  objective: text,
-  acceptance_criteria: z.array(text).min(1),
-  verification_commands: z.array(text),
-  role: z.enum(["PLANNER", "EXECUTOR", "EVALUATOR"]),
-});
+export { kernelIntentSchema, kernelWorkContractSchema } from "@agentplaneorg/core/tasks";
 
 /** Immutable content addressed inputs. Lifecycle authority lives only in the aggregate. */
 export const kernelDocumentsSchema = z.strictObject({

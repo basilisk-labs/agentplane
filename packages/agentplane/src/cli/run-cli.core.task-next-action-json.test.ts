@@ -1,21 +1,24 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
+
+import {
+  type AgentWorkOrderV2,
+  evaluateStateFingerprintPrecondition,
+  type StateFingerprint,
+} from "@agentplaneorg/core/schemas";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { loadCommandContext } from "../commands/shared/task-backend.js";
 
 import { prepareContinuityPlan } from "./task-continuity.testkit.js";
 
 import { describe } from "vitest";
 
 import {
-  evaluateStateFingerprintPrecondition,
-  type StateFingerprint,
-} from "@agentplaneorg/core/schemas";
-import {
   captureStdIO,
   configureGitUser,
   defaultConfig,
   execFile,
   expect,
-  extractTaskSuffix,
   it,
   promisify,
   runCli,
@@ -40,7 +43,7 @@ async function writeRoutePolicies(root: string): Promise<void> {
   }
 }
 
-async function createBranchPrTask(root: string): Promise<string> {
+async function createBranchPrTask(root: string, verify?: string): Promise<string> {
   const taskIo = captureStdIO();
   try {
     const code = await runCli([
@@ -57,6 +60,7 @@ async function createBranchPrTask(root: string): Promise<string> {
       "--tag",
       "code",
       "--allow-duplicate",
+      ...(verify ? ["--verify", verify] : []),
       "--root",
       root,
     ]);
@@ -106,11 +110,21 @@ describe("task next-action JSON", () => {
     await configureGitUser(root);
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify({
+        scripts: {
+          "ci:local:full": "bun run test:critical",
+          "test:critical":
+            "node -e \"require('node:assert/strict').equal(require('node:fs').readFileSync('authority-implementation.txt', 'utf8').trim(), 'semantic implementation')\"",
+        },
+      }),
+    );
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
-    const taskId = await createBranchPrTask(root);
+    const taskId = await createBranchPrTask(root, "bun run test:critical");
     await prepareContinuityPlan(
       root,
       taskId,
@@ -129,37 +143,65 @@ describe("task next-action JSON", () => {
       "--root",
       root,
     ]);
+    const packetIo = captureStdIO();
+    let packet: {
+      transition_id: string;
+      state_fingerprint: string;
+      authority: { role: string };
+      exchange: { directory: string; result_path: string; resume_argv: string[] };
+    };
+    try {
+      expect(
+        await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+        packetIo.stderr,
+      ).toBe(0);
+      packet = JSON.parse(packetIo.stdout) as typeof packet;
+    } finally {
+      packetIo.restore();
+    }
+    expect(packet.authority.role).toBe("EXECUTOR");
+    const workOrder = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
+    ) as AgentWorkOrderV2;
+    expect(workOrder.state_fingerprint.worktree).toBe(await realpath(root));
+    await writeFile(path.join(root, "authority-implementation.txt"), "semantic implementation\n");
     await writeFile(
-      path.join(root, "authority-implementation.txt"),
-      "semantic implementation\n",
-      "utf8",
+      packet.exchange.result_path,
+      JSON.stringify({
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: taskId,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: "EXECUTOR",
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary: "Write the fixture artifact and verify its exact contents.",
+          findings: [],
+          uncertainty: [],
+        },
+      }),
     );
-    await execFileAsync("git", ["add", "-A"], { cwd: root });
-    await execFileAsync(
-      "git",
-      [
-        "commit",
-        "-m",
-        `🧩 ${extractTaskSuffix(taskId)} task: establish branch packet for authority regression`,
-      ],
-      { cwd: root },
-    );
-    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
-    await runCliSilent([
-      "task",
-      "set-status",
-      taskId,
-      "DOING",
-      "--commit",
-      implementationHead.trim(),
-      "--root",
-      root,
-    ]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test: record implementation metadata"], {
-      cwd: root,
+    const returnIo = captureStdIO();
+    try {
+      expect(
+        await runCli([...packet.exchange.resume_argv.slice(1), "--root", root]),
+        returnIo.stderr,
+      ).toBe(0);
+    } finally {
+      returnIo.restore();
+    }
+    const context = await loadCommandContext({ cwd: root, rootOverride: root });
+    const completed = await context.taskBackend.getTask(taskId);
+    expect(
+      taskCentricAggregateFromExtensions(completed?.extensions)?.work_items["exercise-route"],
+    ).toMatchObject({
+      state: "COMPLETED",
+      validation_result: { status: "passed" },
+      output_manifests: [{ id: "route-result" }],
     });
     const { stdout: setupStatus } = await execFileAsync("git", ["status", "--porcelain"], {
       cwd: root,

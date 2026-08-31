@@ -1,3 +1,5 @@
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+
 import path from "node:path";
 
 import type { TaskData, TaskWriteOptions, TaskWriteResult } from "../../backends/task-backend.js";
@@ -17,6 +19,12 @@ import {
   type TaskStoreIntentResult,
 } from "./task-store.js";
 
+export function assertLegacyMutation(task: TaskData): void {
+  if (task.extensions && Object.hasOwn(task.extensions, TASK_KERNEL_EXTENSION))
+    throw new Error(
+      "Canonical Task mutations require the kernel lifecycle; legacy mutation is refused",
+    );
+}
 export type TaskMutationPlan = {
   intents?: TaskStoreIntentResult;
   nextTask?: TaskData;
@@ -82,6 +90,9 @@ export async function writeTaskMutation(opts: {
   writeOptions?: TaskWriteOptions;
 }): Promise<PersistedTaskMutationResult> {
   const backend = opts.ctx.taskBackend;
+  assertLegacyMutation(opts.task);
+  const stored = await backend.getTask(opts.task.id);
+  if (stored) assertLegacyMutation(stored);
   const writeResult: TaskWriteResult = backend.writeTaskWithResult
     ? await backend.writeTaskWithResult(opts.task, opts.writeOptions)
     : await (async () => {
@@ -166,6 +177,7 @@ export async function applyTaskMutation(opts: {
     const result = await store.update(
       opts.taskId,
       async (current) => {
+        assertLegacyMutation(current);
         assertTaskMutationPolicy({
           ctx: opts.ctx,
           taskId: opts.taskId,
@@ -189,6 +201,7 @@ export async function applyTaskMutation(opts: {
   }
 
   const current = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  assertLegacyMutation(current);
   let materializedCurrent = current;
   if (opts.ctx.taskBackend.getTaskDoc) {
     const currentDoc =
@@ -245,6 +258,11 @@ export async function applyTaskCollectionMutation<TResult>(opts: {
   const current = await opts.ctx.taskBackend.listTasks();
   const plan = await opts.build(current.map((task) => ({ ...task })));
   const tasksToWrite = [...(plan.tasksToWrite ?? [])];
+  for (const task of tasksToWrite) {
+    assertLegacyMutation(task);
+    const stored = current.find((entry) => entry.id === task.id);
+    if (stored) assertLegacyMutation(stored);
+  }
   if (tasksToWrite.length > 0) {
     await writeTasksOrFallback(opts.ctx.taskBackend, tasksToWrite);
   }
