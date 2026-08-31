@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5875040071b55e4b18289b599208c88dcba1444a..b6434d712561c91b64c87dcc7da732f5c8056c7f",
+      "command": "git diff --check c97c559df626837ad00199ae9f08ba8b232504a1..50dfade2037390ba34469107b156075014aafc06",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5875040071b55e4b18289b599208c88dcba1444a..b6434d712561c91b64c87dcc7da732f5c8056c7f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c97c559df626837ad00199ae9f08ba8b232504a1..50dfade2037390ba34469107b156075014aafc06",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,21 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
+        "A\tpackages/agentplane/src/adapters/authority/user-approval-receipt.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "M\tpackages/agentplane/src/commands/task/user-approval-receipt.ts",
+        "A\tpackages/agentplane/src/ports/kernel-authority.ts",
+        "A\tpackages/agentplane/src/runner/usecases/kernel-authority.test.ts",
+        "A\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.ts",
+        "A\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
+        "A\tpackages/core/src/tasks/task-kernel/digest.ts",
+        "M\tpackages/core/src/tasks/task-kernel/index.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
+        "M\tpackages/core/src/tasks/task-kernel/model.ts"
       ]
     },
     {
@@ -31,8 +45,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5875040071b55e4b18289b599208c88dcba1444a",
-  "implementation_commit": "b6434d712561c91b64c87dcc7da732f5c8056c7f",
+  "execution_base_commit": "c97c559df626837ad00199ae9f08ba8b232504a1",
+  "implementation_commit": "50dfade2037390ba34469107b156075014aafc06",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
