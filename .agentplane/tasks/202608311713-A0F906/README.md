@@ -2,10 +2,10 @@
 id: "202608311713-A0F906"
 title: "Repair pure plan-refinement result recovery for M3 continuation"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
     - "Residual risk: PR 5884 review threads and hosted integration are still pending."
     - "Residual risk: Stable 0.7.8 publication is outside this bootstrap scope."
 token_usage:
-  agent_runs: 3
+  agent_runs: 6
   input_tokens: null
-  journal_digest: "sha256:6d33a7cc8fd63c95762c1963ffc5af3c718fd58942fe9a42cb6552d65ddc0bc5"
+  journal_digest: "sha256:d64d95961e7d2791719d54375bde0556f7c24cb6e30b9bc8489aa3b2c579ac68"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-08-31T19:05:17.711Z"
+  updated_at: "2026-08-31T20:05:22.602Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -259,8 +259,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d"
-  message: "🚧 A0F906 task: apply external agent result"
+  hash: "75ad4f9c5115e49dfb84e43ab1bc958aa4146ee4"
+  message: "🚧 A0F906 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -280,6 +280,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8de5b37cb1f6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -337,9 +340,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-08-31T20:05:22.602Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "75ad4f9c5115e49dfb84e43ab1bc958aa4146ee4"
 doc_version: 3
-doc_updated_at: "2026-08-31T20:04:49.432Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-08-31T20:05:22.628Z"
+doc_updated_by: "CODER"
 description: "Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair."
 sections:
   Summary: |-
@@ -836,6 +847,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d"
+    message: "🚧 A0F906 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e16259bf9666e02c2099df5c5b21c43d8e90c1ca"
@@ -1038,12 +1050,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/6` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:6d33a7cc8fd63c95762c1963ffc5af3c718fd58942fe9a42cb6552d65ddc0bc5`
+- Journal digest: `sha256:d64d95961e7d2791719d54375bde0556f7c24cb6e30b9bc8489aa3b2c579ac68`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-08-31T19:05:17.711Z`
+- Updated at: `2026-08-31T20:05:22.602Z`
