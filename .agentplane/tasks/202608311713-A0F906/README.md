@@ -2,10 +2,10 @@
 id: "202608311713-A0F906"
 title: "Repair pure plan-refinement result recovery for M3 continuation"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -21,10 +21,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-08-31T19:31:10.903Z"
-  updated_by: "REVIEWER"
-  note: "Rework required by PR 5884 review: reject protected task-artifact drift and bind pure refinement admission to the issued task revision."
+  state: "pending"
+  updated_at: "2026-08-31T19:33:59.803Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 quality_review:
   state: "pass"
@@ -101,6 +101,7 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/task"
   declaration:
@@ -112,6 +113,7 @@ execution_contract:
     rationale:
       - "External writes are limited to native code delivery. No deployment, credentials changes or release publication is requested."
       - "The repair changes lifecycle result admission and requires isolated tests and native hosted review."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts; repository_effects=source_code,tests"
     repository_effects:
       - "source_code"
       - "tests"
@@ -119,11 +121,11 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -136,25 +138,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -172,6 +156,7 @@ execution_contract:
     contract:
       declared:
         components:
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
           - "packages/agentplane/src/cli"
           - "packages/agentplane/src/commands/task"
         evidence_requirements:
@@ -192,7 +177,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:38acf6f7ce8c236930612d6a7737356435b99d0c33f45dbb0630a6a294530f45"
+      digest: "sha256:3648dc2e457111be55d088c63a5208f104f53ec0adc60a189287433b0487e6a8"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "external_effect_requires_real_e2e"
@@ -248,7 +233,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -263,6 +247,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. PR 5884 revision-binding rework requires one additional existing adapter file. No implementation files were changed in this episode. Recommended action: Grant the single-file scope extension through the native operator command and request a fresh rework packet. Requested scope: roots=packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts; repository effects=source_code,tests; request digest=sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f. Agentplane receipt: external-agent-blocker/tr_114a12ca336b70893256415adbece55c/sha256:03f021c5d804d980e33130e7887eb02e0a2efb1e38f4b1b36d4e1e1b7f55bd7e/sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts; repository effects: source_code, tests."
 events:
   -
     type: "status"
@@ -426,30 +413,9 @@ sections:
       Impact: A refinement-only result can leave unauthorized task artifacts dirty or apply against newer task authority than the issued WorkOrder.
       Resolution: Preserve and verify the issued task-artifact baseline, enforce the issued task revision through amendment persistence, add negative regression coverage, and rerun native verification and review before resolving the GitHub threads.
 extensions:
-  agentplane.execution_grant:
-    actor: "USER"
-    approval_evidence_digest: null
-    approval_kind: "manual_operator"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:2bee65bfc3b0604ba82f49f73586220196bb36c23a1cccfd2206a0994481b365"
-    digest: "sha256:8abead94d322a8e1901b8aa7ad12eb5a0b5d4d139f5c9b6e3ccc81e48750de1a"
-    grant_id: "d3eaa22e-80c7-4fee-861b-60b4b999f90c"
-    issued_at: "2026-08-31T17:15:18.418Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:5b2e471d1f987f40bf58fe111c397c7a7b7d98b9071228c421f85dd93bb95234"
-    plan_revision: 2
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:9225b51d473b5a4aeed46665e188e2d5cc0e89c91516d94b73596dc9b3c4e92e"
-    status: "active"
-    task_id: "202608311713-A0F906"
   agentplane.scope_extension_request:
+    applied_at: "2026-08-31T19:33:59.803Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:03f021c5d804d980e33130e7887eb02e0a2efb1e38f4b1b36d4e1e1b7f55bd7e"
     kind: "task_scope_extension_request"
     request:
@@ -462,7 +428,7 @@ extensions:
         - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
     request_digest: "sha256:721c0797aa5038e1e250e6142356fc2d08f79069a1f28b7a80555f979f8cff5f"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_114a12ca336b70893256415adbece55c"
   agentplane.task_centric:
     current_plan:
