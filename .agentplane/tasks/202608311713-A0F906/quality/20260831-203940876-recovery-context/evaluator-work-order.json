@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608311713-A0F906-c70a579aa5913f78d159009d",
+  "prepared_at": "2026-08-31T20:39:40.876Z",
+  "task": {
+    "id": "202608311713-A0F906",
+    "revision": 27,
+    "objective": "Repair pure plan-refinement result recovery for M3 continuation\n\nBootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "- In scope: Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair.\n- Out of scope: unrelated refactors not required for \"Repair pure plan-refinement result recovery for M3 continuation\".",
+      "One bounded bootstrap repair WorkItem with exact recovery and non-regression acceptance. Full CI and native hosted delivery remain required.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "7c0f1273c43e4f51e11673d2334d93ab5b09217b",
+  "diff_base_sha": "e16259bf9666e02c2099df5c5b21c43d8e90c1ca",
+  "blueprint_digest": "fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4800dd27e97c932c6d22a5a014b34ebb619cb910b45e8d4b9c0fe9ac149bf936",
+    "prompt_path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md",
+    "result_schema_path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608311713-A0F906/README.md",
+      "sha256": "sha256:1d35228d06306d0aef9875be04eaa85f0c14676be2e641c9e22bb54b7ad5092c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch",
+      "sha256": "sha256:65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json",
+      "sha256": "sha256:dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json",
+      "sha256": "sha256:a26474561d0750466aa707bfbc655033c02e0eec4608994a675fbc273d739661",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json",
+      "sha256": "sha256:63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}
