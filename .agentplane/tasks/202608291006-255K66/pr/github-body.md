@@ -15,8 +15,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -47,11 +47,11 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../agentplane/src/commands/task/status.command.ts |   5 +
  .../runner/usecases/kernel-task-lifecycle.test.ts  | 461 +++++++++++++++++++++
  .../src/runner/usecases/kernel-task-lifecycle.ts   | 259 ++++++++++++
+ .../core/src/tasks/task-kernel/invariants.test.ts  |  52 +++
  packages/core/src/tasks/task-kernel/invariants.ts  |   6 +
- packages/core/src/tasks/task-kernel/kernel.test.ts |  50 +++
  packages/core/src/tasks/task-kernel/kernel.ts      |  18 +
  packages/core/src/tasks/task-kernel/model.ts       |   3 +
- 24 files changed, 1531 insertions(+), 53 deletions(-)
+ 24 files changed, 1533 insertions(+), 53 deletions(-)
 ```
 
 </details>
