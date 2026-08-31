@@ -1,10 +1,10 @@
 ---
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on:
@@ -28,7 +28,7 @@ plan_approval:
   note: "User explicitly replied Разрешаю to approval of plan sha256:c8e7a9ef42c56d7b5517853463ac80914ba12c3aa496246a43db928dc841f804. Register this as a manual operator decision, not a host or signed receipt. Preserve all M3 acceptance gates and stable-publication exclusion."
 verification:
   state: "pending"
-  updated_at: "2026-08-31T13:30:45.337Z"
+  updated_at: "2026-08-31T15:18:08.312Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
@@ -94,6 +94,7 @@ execution_contract:
       - "packages/testkit/src"
       - "schemas/agent-semantic-result.schema.json"
       - "schemas/agent-work-order-v2.schema.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/bench"
       - "scripts/checks"
       - "scripts/qualification"
@@ -109,6 +110,7 @@ execution_contract:
       - "External effects are limited to native integration, corpus migration and owned qualification resources. Individual semantic episodes must keep their emitted authority and cannot execute formal transitions."
       - "USER-approved blocked-result scope extension: roots=packages/core/schemas/agent-work-order-v2.schema.json,packages/core/src/runner/agent-semantic-result.test.ts,packages/core/src/runner/agent-semantic-result.ts,packages/core/src/runner/agent-work-order.test.ts,packages/core/src/runner/agent-work-order.ts,packages/spec/schemas/agent-work-order-v2.schema.json,schemas/agent-semantic-result.schema.json,schemas/agent-work-order-v2.schema.json; repository_effects=schema,source_code,tests"
       - "USER-approved blocked-result scope extension: roots=packages/core/src/tasks/task-kernel/invariants.test.ts,packages/core/src/tasks/task-kernel/kernel.test.ts; repository_effects=tests"
+      - "USER-approved blocked-result scope extension: roots=scripts/baselines/v0.7-compatibility-candidate.json; repository_effects=public_api,tests"
     repository_effects:
       - "documentation"
       - "public_api"
@@ -144,6 +146,7 @@ execution_contract:
       - "packages/testkit/src"
       - "schemas/agent-semantic-result.schema.json"
       - "schemas/agent-work-order-v2.schema.json"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/bench"
       - "scripts/checks"
       - "scripts/qualification"
@@ -244,6 +247,7 @@ execution_contract:
           - "packages/testkit/src"
           - "schemas/agent-semantic-result.schema.json"
           - "schemas/agent-work-order-v2.schema.json"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/bench"
           - "scripts/checks"
           - "scripts/qualification"
@@ -279,7 +283,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:a7c8f99aa808979d518fde0dc8ef9ec3569722f4b65018d25fe3030f3fa35b80"
+      digest: "sha256:3040c5bd34df685112d7c4bc851b99d4aebc3ea7ddb6dfcd1f210120b18602a3"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -447,6 +451,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The canonical CLI and managed transport implementation is preserved and locally qualified. Required full CI is blocked by the unrecorded additive task new --canonical option in the reviewed compatibility candidate, which is outside this WorkOrder scope. Recommended action: Authorize the native scope extension for scripts/baselines/v0.7-compatibility-candidate.json. Issue a fresh EXECUTOR packet. Verify and restore the preserved 37-file implementation. Record the exact additive CLI option delta and M3 provenance in the mutable candidate. Update the already-authorized critical CLI assertions. Preserve the immutable compatibility anchor, package versions and release authority boundaries. Re-run full CI and return the typed result. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json; repository effects=public_api,tests; request digest=sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976. Agentplane receipt: external-agent-blocker/tr_9f515053b3ee5c6fbd284da1cf31b9b5/sha256:2da6a4669db46923b27f8f022e193f3fa811adfafbdb300b04479622ce657057/sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/baselines/v0.7-compatibility-candidate.json; repository effects: public_api, tests."
 events:
   -
     type: "status"
@@ -1458,6 +1465,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.scope_extension_request:
+    applied_at: "2026-08-31T15:18:08.312Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:2da6a4669db46923b27f8f022e193f3fa811adfafbdb300b04479622ce657057"
     kind: "task_scope_extension_request"
     request:
@@ -1470,19 +1479,19 @@ extensions:
         - "scripts/baselines/v0.7-compatibility-candidate.json"
     request_digest: "sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_9f515053b3ee5c6fbd284da1cf31b9b5"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-31T13:30:45.337Z"
+        approved_at: "2026-08-31T15:18:08.312Z"
         approved_by: "USER"
-        approved_digest: "sha256:160138cbd3659ba5efe5ae021fc64c61c7099ff189361919afb1a9c5043deb28"
+        approved_digest: "sha256:fc40a9434cb7850edd8b4cc008a445bd74c8f1091d5c9b5e14095b2ec1700f22"
         policy_facts:
-          - "state_bound_scope_extension:sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830"
+          - "state_bound_scope_extension:sha256:51fb2d061d7c8cbf3abab00ad07c3136af08cab5f895028b0f58e17885ea5976"
         state: "approved"
-      created_at: "2026-08-31T13:30:45.337Z"
-      digest: "sha256:160138cbd3659ba5efe5ae021fc64c61c7099ff189361919afb1a9c5043deb28"
+      created_at: "2026-08-31T15:18:08.312Z"
+      digest: "sha256:fc40a9434cb7850edd8b4cc008a445bd74c8f1091d5c9b5e14095b2ec1700f22"
       proposal:
         assumptions:
           - "M2 merge 36741ce5160d452ca9660a388241cb4da32f842a and runtime predecessor satisfy their hosted prerequisite gates; new M3 evidence must be collected independently."
@@ -1931,6 +1940,10 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "schemas/agent-work-order-v2.schema.json"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/baselines/v0.7-compatibility-candidate.json"
               risk: "high"
               scope_roots:
                 - "packages/agentplane/src/adapters"
@@ -1949,6 +1962,7 @@ extensions:
                 - "packages/testkit/src"
                 - "schemas/agent-semantic-result.schema.json"
                 - "schemas/agent-work-order-v2.schema.json"
+                - "scripts/baselines/v0.7-compatibility-candidate.json"
               validation:
                 checks:
                   -
@@ -2600,10 +2614,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
                 schema_version: 1
-      revision: 4
+      revision: 5
       schema_version: 1
       task_id: "202608291006-255K66"
-    event_cursor: 2
+    event_cursor: 3
     final_validation: null
     id: "202608291006-255K66"
     intent:
@@ -5717,9 +5731,1139 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 41
+      -
+        approval:
+          approved_at: "2026-08-31T13:30:45.337Z"
+          approved_by: "USER"
+          approved_digest: "sha256:160138cbd3659ba5efe5ae021fc64c61c7099ff189361919afb1a9c5043deb28"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:66cfcdbaa532548a40d8c2c98bf5fe5664117026853e942e2867666da854a830"
+          state: "approved"
+        created_at: "2026-08-31T13:30:45.337Z"
+        digest: "sha256:160138cbd3659ba5efe5ae021fc64c61c7099ff189361919afb1a9c5043deb28"
+        proposal:
+          assumptions:
+            - "M2 merge 36741ce5160d452ca9660a388241cb4da32f842a and runtime predecessor satisfy their hosted prerequisite gates; new M3 evidence must be collected independently."
+            - "Existing policy and Task traceability remain authoritative. Native AgentPlane owns migration, controller transfer and formal lifecycle effects. User standing authorization does not allow forged approval receipts or disabled guards."
+            - "Qualification resources must be explicitly owned and isolated. Stable 0.7.8 publication and unrelated active Task or user-data mutation are outside M3. Stop at any missing provider namespace or unprovable ownership instead of inventing targets."
+            - "The foundation implementation is committed at 7d3e7ba7fdf2bc66bbd0e049a4752190721dafe1. Focused tests passed 357/357. Native runtime, core and CLI groups passed, but docs-schema failed the unchanged test-size budget. The failure must be repaired and full CI repeated in m3-lifecycle."
+            - "This plan redistributes the original lifecycle acceptance across three bounded WorkItems. It changes no repository scope, external-effect authority, stable-publication exclusion or final M3 gate. The completed m3-projections definition is byte-for-byte preserved and its saved result/validation must not be reset."
+            - "Twenty real sequential self-hosting Tasks and three real clean release drills remain mandatory. Model fixtures, local tests or a submitted provider request cannot substitute for hosted delivery evidence."
+          planning_baseline:
+            captured_at: "2026-08-30T23:22:31.535Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:1c428af83d509256b5e1e2f92879625d60089bd958f5265efacfc74c88043291"
+            dirty_paths:
+              - ".agentplane/tasks/202608291006-255K66/README.md"
+              - ".agentplane/tasks/202608291006-255K66/pr/github-body.md"
+              - ".agentplane/tasks/202608291006-255K66/pr/meta.json"
+              - ".agentplane/tasks/202608291006-255K66/pr/review.md"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608291006-255K66/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608291006-255K66/verification/20260830232226285-85c9df8e9b3e28cc.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "7d3e7ba7fdf2bc66bbd0e049a4752190721dafe1"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:22"
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "m3-full"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+              -
+                capability: "task.verify"
+                command: "bun run lifecycle:invariants"
+                id: "m3-invariants"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run qualification:mixed-scope-lifecycle"
+                id: "m3-packaged"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+            criteria:
+              -
+                check_ids:
+                  - "m3-full"
+                  - "m3-invariants"
+                  - "m3-packaged"
+                description: "All M3 acceptance gates in docs/reference/clean-task-core-rebuild-spec.mdx pass with exact-identity evidence. Twenty real sequential self-hosting Tasks and three clean release drills are mandatory. No production legacy lifecycle authority remains. Required hosted merge and close evidence remain supervisor-owned."
+                id: "m3-complete"
+                required: true
+            evidence_fingerprint: "sha256:ba37d936f0b8badea252aee9366ac19814bc2a8ff58691805d666605dd923592"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "Route canonical read surfaces through one kernel projection boundary. Inventory production legacy owners and freeze the cutover order and rollback gates in an M3 code map. Preserve legacy inspection until explicit migration. Canonical status, readiness, brief and next-action must not call aggregateFrom or synthesize legacy state; missing, malformed, archived and unmigrated cases have explicit typed handling."
+                    id: "m3-projections-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on: []
+                expected_outputs:
+                  - "m3-projections-evidence"
+                id: "m3-projections"
+                objective: "Route canonical read surfaces through one kernel projection boundary. Inventory production legacy owners and freeze the cutover order and rollback gates in an M3 code map. Preserve legacy inspection until explicit migration. Canonical status, readiness, brief and next-action must not call aggregateFrom or synthesize legacy state; missing, malformed, archived and unmigrated cases have explicit typed handling."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel/invariants.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel/kernel.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "docs/developer"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/core/src/tasks/task-kernel/invariants.test.ts"
+                  - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "Route canonical read surfaces through one kernel projection boundary. Inventory production legacy owners and freeze the cutover order and rollback gates in an M3 code map. Preserve legacy inspection until explicit migration. Canonical status, readiness, brief and next-action must not call aggregateFrom or synthesize legacy state; missing, malformed, archived and unmigrated cases have explicit typed handling."
+                      id: "m3-projections-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                      - "m3-full"
+                    description: "Retain and qualify the canonical lifecycle foundation committed in 7d3e7ba7fdf2bc66bbd0e049a4752190721dafe1. Immutable intent and semantic WorkItem contracts must persist atomically with the canonical aggregate and be digest-bound to the approved plan. The shared KernelTaskLifecycle application service must use KernelBackendAdapter and reduceTaskCommand for creation, planning, approval, readiness, claim, bounded WorkOrder and exact result receipt. Qualify local and cloud-fake CAS, concurrent begin, lost responses, mutation-id conflicts, stale attempt and claim rejection, immutable documents, no implicit migration, and result preservation under non-material refinement. Fix the observed native full-CI hotspot failure by moving the new semantic plan-binding test from the 1011-line kernel.test.ts into the existing invariants.test.ts suite, or by an equally scoped consolidation; retain all assertions and do not raise limits or baseline budgets. Full native CI must pass before this foundation is accepted. Do not claim public CLI or managed-runner cutover; those acceptance obligations remain in m3-lifecycle-authority and m3-lifecycle-transport."
+                    id: "m3-lifecycle-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelTaskLifecycle"
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "compareExecutionAuthority"
+                depends_on:
+                  - "m3-projections"
+                expected_outputs:
+                  - "m3-lifecycle-evidence"
+                id: "m3-lifecycle"
+                objective: "Retain and qualify the canonical lifecycle foundation committed in 7d3e7ba7fdf2bc66bbd0e049a4752190721dafe1. Immutable intent and semantic WorkItem contracts must persist atomically with the canonical aggregate and be digest-bound to the approved plan. The shared KernelTaskLifecycle application service must use KernelBackendAdapter and reduceTaskCommand for creation, planning, approval, readiness, claim, bounded WorkOrder and exact result receipt. Qualify local and cloud-fake CAS, concurrent begin, lost responses, mutation-id conflicts, stale attempt and claim rejection, immutable documents, no implicit migration, and result preservation under non-material refinement. Fix the observed native full-CI hotspot failure by moving the new semantic plan-binding test from the 1011-line kernel.test.ts into the existing invariants.test.ts suite, or by an equally scoped consolidation; retain all assertions and do not raise limits or baseline budgets. Full native CI must pass before this foundation is accepted. Do not claim public CLI or managed-runner cutover; those acceptance obligations remain in m3-lifecycle-authority and m3-lifecycle-transport."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "m3-full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                        - "m3-full"
+                      description: "Retain and qualify the canonical lifecycle foundation committed in 7d3e7ba7fdf2bc66bbd0e049a4752190721dafe1. Immutable intent and semantic WorkItem contracts must persist atomically with the canonical aggregate and be digest-bound to the approved plan. The shared KernelTaskLifecycle application service must use KernelBackendAdapter and reduceTaskCommand for creation, planning, approval, readiness, claim, bounded WorkOrder and exact result receipt. Qualify local and cloud-fake CAS, concurrent begin, lost responses, mutation-id conflicts, stale attempt and claim rejection, immutable documents, no implicit migration, and result preservation under non-material refinement. Fix the observed native full-CI hotspot failure by moving the new semantic plan-binding test from the 1011-line kernel.test.ts into the existing invariants.test.ts suite, or by an equally scoped consolidation; retain all assertions and do not raise limits or baseline budgets. Full native CI must pass before this foundation is accepted. Do not claim public CLI or managed-runner cutover; those acceptance obligations remain in m3-lifecycle-authority and m3-lifecycle-transport."
+                      id: "m3-lifecycle-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:ba37d936f0b8badea252aee9366ac19814bc2a8ff58691805d666605dd923592"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                      - "m3-full"
+                    description: "Implement one canonical authority parser and resolver for production lifecycle callers. Reuse the existing verified signed-user-receipt parser, host-user-decision parser and explicit manual operator approval contract. Bind approval to the exact canonical Task, proposed plan digest and fresh repository identity and fingerprint. Define one canonical persistence and lineage contract for approved and derived execution authority; do not restore a second writable legacy ExecutionGrant source. Derived authority must never claim USER provenance. Reuse M1 compareExecutionAuthority across scope, effects, capabilities, resources, risk, reversibility, validation, policy and completion requirements. Handle approved non-material continuation and native implementation/result observations with explicit provenance and scope checks; never silently retarget a fingerprint or waive the comparator. Reject untrusted issuers, bad signatures, stale plans, foreign repositories, expired grants, forged agent approval, missing authority and material expansion. Preserve configured trust modes and require native delta-only operator approval when expansion is material. Only verified native operator/controller observations may issue authority; arbitrary JSON and semantic result claims may not. Add exact binding and approval-mode regressions while preserving existing authority tests."
+                    id: "m3-lifecycle-authority-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelTaskLifecycle"
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "compareExecutionAuthority"
+                depends_on:
+                  - "m3-lifecycle"
+                expected_outputs:
+                  - "m3-lifecycle-authority-evidence"
+                id: "m3-lifecycle-authority"
+                objective: "Implement one canonical authority parser and resolver for production lifecycle callers. Reuse the existing verified signed-user-receipt parser, host-user-decision parser and explicit manual operator approval contract. Bind approval to the exact canonical Task, proposed plan digest and fresh repository identity and fingerprint. Define one canonical persistence and lineage contract for approved and derived execution authority; do not restore a second writable legacy ExecutionGrant source. Derived authority must never claim USER provenance. Reuse M1 compareExecutionAuthority across scope, effects, capabilities, resources, risk, reversibility, validation, policy and completion requirements. Handle approved non-material continuation and native implementation/result observations with explicit provenance and scope checks; never silently retarget a fingerprint or waive the comparator. Reject untrusted issuers, bad signatures, stale plans, foreign repositories, expired grants, forged agent approval, missing authority and material expansion. Preserve configured trust modes and require native delta-only operator approval when expansion is material. Only verified native operator/controller observations may issue authority; arbitrary JSON and semantic result claims may not. Add exact binding and approval-mode regressions while preserving existing authority tests."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "m3-full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                        - "m3-full"
+                      description: "Implement one canonical authority parser and resolver for production lifecycle callers. Reuse the existing verified signed-user-receipt parser, host-user-decision parser and explicit manual operator approval contract. Bind approval to the exact canonical Task, proposed plan digest and fresh repository identity and fingerprint. Define one canonical persistence and lineage contract for approved and derived execution authority; do not restore a second writable legacy ExecutionGrant source. Derived authority must never claim USER provenance. Reuse M1 compareExecutionAuthority across scope, effects, capabilities, resources, risk, reversibility, validation, policy and completion requirements. Handle approved non-material continuation and native implementation/result observations with explicit provenance and scope checks; never silently retarget a fingerprint or waive the comparator. Reject untrusted issuers, bad signatures, stale plans, foreign repositories, expired grants, forged agent approval, missing authority and material expansion. Preserve configured trust modes and require native delta-only operator approval when expansion is material. Only verified native operator/controller observations may issue authority; arbitrary JSON and semantic result claims may not. Add exact binding and approval-mode regressions while preserving existing authority tests."
+                      id: "m3-lifecycle-authority-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:ba37d936f0b8badea252aee9366ac19814bc2a8ff58691805d666605dd923592"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                      - "m3-full"
+                    description: "Connect canonical Task creation, planning, approval, WorkItem readiness, claims and result receipt from actual CLI and managed-runner entrypoints to the same KernelTaskLifecycle application service and canonical authority resolver. Native AgentPlane must own formal transitions and fresh command identity; frontends must not choose transitions using legacy status or synthesize a second writable aggregate. Preserve existing unmigrated inspection and require explicit migration before mutating legacy records. Carry exact Task, plan revision/digest, WorkItem, claim, attempt, contract, authority and repository fingerprint through host exchange and managed invocation. A replay or uncertain begin cannot dispatch twice. Creation is canonical in its first atomic write. Preserve completed WorkItem results under non-material refinements. Exercise real CLI paths, both host and managed transports, local storage and cloud fake paths. Repair the existing task-next-action-json fixture by establishing real WorkItem completion without weakening its expected approval.pr.open route. Retain every original m3-lifecycle requirement, including all application, authority, result and atomicity behavior. Do not claim effect, task-class, migration or final qualification delivery before their subsequent WorkItems pass."
+                    id: "m3-lifecycle-transport-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelTaskLifecycle"
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "compareExecutionAuthority"
+                depends_on:
+                  - "m3-lifecycle-authority"
+                expected_outputs:
+                  - "m3-lifecycle-transport-evidence"
+                id: "m3-lifecycle-transport"
+                objective: "Connect canonical Task creation, planning, approval, WorkItem readiness, claims and result receipt from actual CLI and managed-runner entrypoints to the same KernelTaskLifecycle application service and canonical authority resolver. Native AgentPlane must own formal transitions and fresh command identity; frontends must not choose transitions using legacy status or synthesize a second writable aggregate. Preserve existing unmigrated inspection and require explicit migration before mutating legacy records. Carry exact Task, plan revision/digest, WorkItem, claim, attempt, contract, authority and repository fingerprint through host exchange and managed invocation. A replay or uncertain begin cannot dispatch twice. Creation is canonical in its first atomic write. Preserve completed WorkItem results under non-material refinements. Exercise real CLI paths, both host and managed transports, local storage and cloud fake paths. Repair the existing task-next-action-json fixture by establishing real WorkItem completion without weakening its expected approval.pr.open route. Retain every original m3-lifecycle requirement, including all application, authority, result and atomicity behavior. Do not claim effect, task-class, migration or final qualification delivery before their subsequent WorkItems pass."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/schemas/agent-work-order-v2.schema.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner/agent-semantic-result.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner/agent-semantic-result.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner/agent-work-order.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/runner/agent-work-order.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/spec/schemas/agent-work-order-v2.schema.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "schemas/agent-semantic-result.schema.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "schemas/agent-work-order-v2.schema.json"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/core/schemas/agent-work-order-v2.schema.json"
+                  - "packages/core/src/runner/agent-semantic-result.test.ts"
+                  - "packages/core/src/runner/agent-semantic-result.ts"
+                  - "packages/core/src/runner/agent-work-order.test.ts"
+                  - "packages/core/src/runner/agent-work-order.ts"
+                  - "packages/core/src/tasks"
+                  - "packages/spec/schemas/agent-work-order-v2.schema.json"
+                  - "packages/testkit/src"
+                  - "schemas/agent-semantic-result.schema.json"
+                  - "schemas/agent-work-order-v2.schema.json"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "m3-full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                        - "m3-full"
+                      description: "Connect canonical Task creation, planning, approval, WorkItem readiness, claims and result receipt from actual CLI and managed-runner entrypoints to the same KernelTaskLifecycle application service and canonical authority resolver. Native AgentPlane must own formal transitions and fresh command identity; frontends must not choose transitions using legacy status or synthesize a second writable aggregate. Preserve existing unmigrated inspection and require explicit migration before mutating legacy records. Carry exact Task, plan revision/digest, WorkItem, claim, attempt, contract, authority and repository fingerprint through host exchange and managed invocation. A replay or uncertain begin cannot dispatch twice. Creation is canonical in its first atomic write. Preserve completed WorkItem results under non-material refinements. Exercise real CLI paths, both host and managed transports, local storage and cloud fake paths. Repair the existing task-next-action-json fixture by establishing real WorkItem completion without weakening its expected approval.pr.open route. Retain every original m3-lifecycle requirement, including all application, authority, result and atomicity behavior. Do not claim effect, task-class, migration or final qualification delivery before their subsequent WorkItems pass."
+                      id: "m3-lifecycle-transport-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:ba37d936f0b8badea252aee9366ac19814bc2a8ff58691805d666605dd923592"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "Move validation, evaluator, commit, PR, merge, hosted close and cleanup flow decisions to canonical commands and effect receipts. Providers only observe and dispatch admitted effects. Cover lost responses, CAS retries, effect reconciliation, clean base synchronization and the M2 DONE-evaluator artifact-freshness loop. A retry must neither duplicate an effect nor replay completed implementation."
+                    id: "m3-effects-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on:
+                  - "m3-lifecycle-transport"
+                expected_outputs:
+                  - "m3-effects-evidence"
+                id: "m3-effects"
+                objective: "Move validation, evaluator, commit, PR, merge, hosted close and cleanup flow decisions to canonical commands and effect receipts. Providers only observe and dispatch admitted effects. Cover lost responses, CAS retries, effect reconciliation, clean base synchronization and the M2 DONE-evaluator artifact-freshness loop. A retry must neither duplicate an effect nor replay completed implementation."
+                optional: false
+                priority: 2
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                  - "scripts/qualification"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "Move validation, evaluator, commit, PR, merge, hosted close and cleanup flow decisions to canonical commands and effect receipts. Providers only observe and dispatch admitted effects. Cover lost responses, CAS retries, effect reconciliation, clean base synchronization and the M2 DONE-evaluator artifact-freshness loop. A retry must neither duplicate an effect nor replay completed implementation."
+                      id: "m3-effects-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "Route direct, branch PR, context, release and batch consumers through the same canonical application service. Preserve context ownership and release firewall. Use declared adapters for differing side effects. Extend existing packaged mixed-scope qualification without changing acceptance or weakening legacy regression checks."
+                    id: "m3-task-classes-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on:
+                  - "m3-effects"
+                expected_outputs:
+                  - "m3-task-classes-evidence"
+                id: "m3-task-classes"
+                objective: "Route direct, branch PR, context, release and batch consumers through the same canonical application service. Preserve context ownership and release firewall. Use declared adapters for differing side effects. Extend existing packaged mixed-scope qualification without changing acceptance or weakening legacy regression checks."
+                optional: false
+                priority: 3
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                  - "scripts/qualification"
+                  - "packages/testkit/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "Route direct, branch PR, context, release and batch consumers through the same canonical application service. Preserve context ownership and release firewall. Use declared adapters for differing side effects. Extend existing packaged mixed-scope qualification without changing acceptance or weakening legacy regression checks."
+                      id: "m3-task-classes-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "Extend crash injection across creation, plan, approval, claim, result, validation, commit, review, completion, PR, merge, hosted close, publish and cleanup for every required task class and local/cloud fake path. Inventory the real repository corpus read-only, classify every record, then use native migration at approved operator boundaries with exact source digests, backups and receipts. Validate a canary and exact-byte rollback before remaining eligible records. Quarantine unknown records without inventing history or deleting state."
+                    id: "m3-crash-migration-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on:
+                  - "m3-task-classes"
+                expected_outputs:
+                  - "m3-crash-migration-evidence"
+                id: "m3-crash-migration"
+                objective: "Extend crash injection across creation, plan, approval, claim, result, validation, commit, review, completion, PR, merge, hosted close, publish and cleanup for every required task class and local/cloud fake path. Inventory the real repository corpus read-only, classify every record, then use native migration at approved operator boundaries with exact source digests, backups and receipts. Validate a canary and exact-byte rollback before remaining eligible records. Quarantine unknown records without inventing history or deleting state."
+                optional: false
+                priority: 4
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                  - "scripts/qualification"
+                  - "docs/developer"
+                  - "packages/testkit/src"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "Extend crash injection across creation, plan, approval, claim, result, validation, commit, review, completion, PR, merge, hosted close, publish and cleanup for every required task class and local/cloud fake path. Inventory the real repository corpus read-only, classify every record, then use native migration at approved operator boundaries with exact source digests, backups and receipts. Validate a canary and exact-byte rollback before remaining eligible records. Quarantine unknown records without inventing history or deleting state."
+                      id: "m3-crash-migration-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "Qualify and transfer the controller using existing M2 controller-transfer receipts. Complete twenty sequential real self-hosting Tasks through public AgentPlane commands in explicitly owned qualification resources. Require exact implementation identity, real execution/effect readback, zero manual Task or journal edits, zero bypasses, no lost WorkItems and no duplicate effects. Mock replays and ordinary unit tests do not count as these twenty Tasks. Do not edit the live control Task from a semantic episode."
+                    id: "m3-self-hosting-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on:
+                  - "m3-crash-migration"
+                expected_outputs:
+                  - "m3-self-hosting-evidence"
+                id: "m3-self-hosting"
+                objective: "Qualify and transfer the controller using existing M2 controller-transfer receipts. Complete twenty sequential real self-hosting Tasks through public AgentPlane commands in explicitly owned qualification resources. Require exact implementation identity, real execution/effect readback, zero manual Task or journal edits, zero bypasses, no lost WorkItems and no duplicate effects. Mock replays and ordinary unit tests do not count as these twenty Tasks. Do not edit the live control Task from a semantic episode."
+                optional: false
+                priority: 5
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/adapters"
+                  - "scripts/qualification"
+                  - "docs/developer"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "Qualify and transfer the controller using existing M2 controller-transfer receipts. Complete twenty sequential real self-hosting Tasks through public AgentPlane commands in explicitly owned qualification resources. Require exact implementation identity, real execution/effect readback, zero manual Task or journal edits, zero bypasses, no lost WorkItems and no duplicate effects. Mock replays and ordinary unit tests do not count as these twenty Tasks. Do not edit the live control Task from a semantic episode."
+                      id: "m3-self-hosting-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "After preceding gates pass, remove production imports and implementations of synthetic aggregate construction, legacy status conversion, text-plan authority, legacy verification completion, DONE-first finish and duplicate approval/scope state. Keep only explicitly documented read/format compatibility adapters with no lifecycle authority. Add an import guard and report production LOC separately from tests, generated captures and documentation."
+                    id: "m3-retirement-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on:
+                  - "m3-self-hosting"
+                expected_outputs:
+                  - "m3-retirement-evidence"
+                id: "m3-retirement"
+                objective: "After preceding gates pass, remove production imports and implementations of synthetic aggregate construction, legacy status conversion, text-plan authority, legacy verification completion, DONE-first finish and duplicate approval/scope state. Keep only explicitly documented read/format compatibility adapters with no lifecycle authority. Add an import guard and report production LOC separately from tests, generated captures and documentation."
+                optional: false
+                priority: 6
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "depcruise.config.cjs"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                  - "scripts/qualification"
+                  - "scripts/checks"
+                  - "scripts/bench"
+                  - "docs/developer"
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "package.json"
+                  - "depcruise.config.cjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "After preceding gates pass, remove production imports and implementations of synthetic aggregate construction, legacy status conversion, text-plan authority, legacy verification completion, DONE-first finish and duplicate approval/scope state. Keep only explicitly documented read/format compatibility adapters with no lifecycle authority. Add an import guard and report production LOC separately from tests, generated captures and documentation."
+                      id: "m3-retirement-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "m3-invariants"
+                    description: "Run three clean release drills on the same candidate with agreement between source SHA, package digests, tag, hosted release, registry and installed CLI behavior. Use only explicitly owned qualification namespaces and native effect authorization; do not publish stable 0.7.8 or alter its dist-tag as a side effect. Run full local CI and required hosted exact-head checks. Produce an M3 milestone receipt bound to Task, plan digest, implementation SHA, evidence digests, migration corpus, rollback proof and hosted checks. Missing external proof or any skipped required gate prevents completion."
+                    id: "m3-final-qualification-acceptance"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelBackendAdapter"
+                    - "reduceTaskCommand"
+                    - "readKernelNextAction"
+                depends_on:
+                  - "m3-retirement"
+                expected_outputs:
+                  - "m3-final-qualification-evidence"
+                id: "m3-final-qualification"
+                objective: "Run three clean release drills on the same candidate with agreement between source SHA, package digests, tag, hosted release, registry and installed CLI behavior. Use only explicitly owned qualification namespaces and native effect authorization; do not publish stable 0.7.8 or alter its dist-tag as a side effect. Run full local CI and required hosted exact-head checks. Produce an M3 milestone receipt bound to Task, plan digest, implementation SHA, evidence digests, migration corpus, rollback proof and hosted checks. Missing external proof or any skipped required gate prevents completion."
+                optional: false
+                priority: 7
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/ports"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/bench"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "depcruise.config.cjs"
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/tasks"
+                  - "packages/agentplane/src/adapters"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands"
+                  - "packages/agentplane/src/ports"
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/cli"
+                  - "packages/testkit/src"
+                  - "scripts/qualification"
+                  - "scripts/checks"
+                  - "scripts/bench"
+                  - "docs/developer"
+                  - "docs/reference/clean-task-core-rebuild-spec.mdx"
+                  - "package.json"
+                  - "depcruise.config.cjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "m3-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "m3-invariants"
+                      description: "Run three clean release drills on the same candidate with agreement between source SHA, package digests, tag, hosted release, registry and installed CLI behavior. Use only explicitly owned qualification namespaces and native effect authorization; do not publish stable 0.7.8 or alter its dist-tag as a side effect. Run full local CI and required hosted exact-head checks. Produce an M3 milestone receipt bound to Task, plan digest, implementation SHA, evidence digests, migration corpus, rollback proof and hosted checks. Missing external proof or any skipped required gate prevents completion."
+                      id: "m3-final-qualification-acceptance"
+                      required: true
+                  evidence_fingerprint: "sha256:4bdddfe9f4ac0516f19aecff20062b5550a3c54c2e7fc03981cc196c9a003b24"
+                  schema_version: 1
+        revision: 4
+        schema_version: 1
+        task_id: "202608291006-255K66"
+    revision: 42
     schema_version: 1
-    updated_at: "2026-08-31T13:30:45.337Z"
+    updated_at: "2026-08-31T15:18:08.312Z"
     work_items:
       m3-crash-migration:
         attempt: 0
