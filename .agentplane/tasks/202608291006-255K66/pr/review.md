@@ -12,8 +12,8 @@ Created: 2026-08-30T21:48:11.941Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -47,13 +47,13 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/commands/task/show-kernel.test.ts          | 121 ++++++
  packages/agentplane/src/commands/task/show.ts      |  15 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +
- .../runner/usecases/kernel-task-lifecycle.test.ts  | 461 +++++++++++++++++++++
- .../src/runner/usecases/kernel-task-lifecycle.ts   | 259 ++++++++++++
+ .../runner/usecases/kernel-task-lifecycle.test.ts  | 471 +++++++++++++++++++++
+ .../src/runner/usecases/kernel-task-lifecycle.ts   | 259 +++++++++++
  .../core/src/tasks/task-kernel/invariants.test.ts  |  52 +++
  packages/core/src/tasks/task-kernel/invariants.ts  |   6 +
  packages/core/src/tasks/task-kernel/kernel.ts      |  18 +
  packages/core/src/tasks/task-kernel/model.ts       |   3 +
- 24 files changed, 1533 insertions(+), 53 deletions(-)
+ 24 files changed, 1543 insertions(+), 53 deletions(-)
 ```
 
 </details>

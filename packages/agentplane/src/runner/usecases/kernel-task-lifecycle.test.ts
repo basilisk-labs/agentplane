@@ -225,9 +225,19 @@ describe("canonical lifecycle application service", () => {
           },
         ],
       });
-      expect(
-        await f.service.receiveResult(receipt, { ...order.binding, attempt: 99 }),
-      ).toMatchObject({ kind: "unavailable", facts: ["result_binding_mismatch"] });
+      const beforeReceipt = await f.read();
+      for (const invalid of [
+        { ...order.binding, attempt: 99 },
+        { ...order.binding, claim_id: "foreign-claim" },
+        { ...order.binding, contract_digest: k.kernelDigest("foreign-contract") },
+        { ...order.binding, repository_fingerprint: k.kernelDigest("stale-repository") },
+      ]) {
+        expect(await f.service.receiveResult(receipt, invalid)).toMatchObject({
+          kind: "unavailable",
+          facts: ["result_binding_mismatch"],
+        });
+        expect(await f.read()).toEqual(beforeReceipt);
+      }
       expect(await f.service.receiveResult(receipt, order.binding)).toMatchObject({
         kind: "committed",
         replayed: false,
