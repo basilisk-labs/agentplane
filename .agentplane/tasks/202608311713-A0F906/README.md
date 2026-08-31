@@ -2,10 +2,10 @@
 id: "202608311713-A0F906"
 title: "Repair pure plan-refinement result recovery for M3 continuation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-08-31T20:02:53.276Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-08-31T20:12:25.756Z"
+  updated_by: "REVIEWER"
+  note: "Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -127,7 +127,8 @@ execution_contract:
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -160,6 +161,9 @@ execution_contract:
       -
         id: "recorded-check-5"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -258,9 +262,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "75ad4f9c5115e49dfb84e43ab1bc958aa4146ee4"
-  message: "🚧 A0F906 task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -348,8 +351,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "75ad4f9c5115e49dfb84e43ab1bc958aa4146ee4"
+  -
+    type: "verify"
+    at: "2026-08-31T20:12:25.756Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture."
 doc_version: 3
-doc_updated_at: "2026-08-31T20:05:22.628Z"
+doc_updated_at: "2026-08-31T20:12:30.253Z"
 doc_updated_by: "CODER"
 description: "Bootstrap repair required by clean Task core refactoring task 202608291006-255K66. The native EXECUTOR packet explicitly permits result.plan_refinement, but a completed refinement-only result with no implementation changes is durably received and then rejected by applyExternalImplementationResult before TaskCentricBackendAdapter can record the refinement. task advance and task advance --replacement repeat the same no-workspace-change error. Implement a bounded native refinement-only path that preserves exact exchange identity, single-use result admission, baseline validation, plan-change classification, native task traceability and previous completed WorkItems. A refinement-only result must never claim completed implementation, trigger a fake commit, or complete the current WorkItem. Add regression coverage for initial receipt, lost response/replay, invalid or changed baseline, and retained ordinary completed-no-diff rejection. Do not edit any live task/exchange/journal records manually. After delivery, qualify recovery of the exact received M3 refinement and resume the canonical refactoring graph. No stable release publication is authorized by this repair."
 sections:
@@ -519,6 +528,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-08-31T20:12:25.756Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:5e43c0306a0e43965c2bf69ab3c6d935df8041bb5ceca81b308bb74aabff9d76
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608311713-A0F906-repair-pure-plan-refinement-result-recovery-for/.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json
+    - old_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+    - current_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608311713-A0F906
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -527,6 +566,10 @@ sections:
     - Observation: PR 5884 discussions r3897532957 and r3897532962 identify task metadata excluded from the fingerprint and a revision race before recordPlanRefinement. Both were confirmed by source inspection.
       Impact: A refinement-only result can leave unauthorized task artifacts dirty or apply against newer task authority than the issued WorkOrder.
       Resolution: Preserve and verify the issued task-artifact baseline, enforce the issued task revision through amendment persistence, add negative regression coverage, and rerun native verification and review before resolving the GitHub threads.
+
+    - Observation: GitHub CodeQL check 99627638356 reports a high-severity filesystem race at external-agent-task-artifact-baseline.ts line 38 on PR head 847aa5e90df7e06608f7b3ac8a859d06340f05d0. Source inspection confirms lstat followed by path-based readFile.
+      Impact: A file can be replaced between observation and content capture, so the snapshot can read a different object or follow a replacement link.
+      Resolution: Use descriptor-based bounded file reads with identity checks in the existing task command scope. Add a negative regression test. Preserve CodeQL and all existing checks, then repeat native verification and review.
 extensions:
   agentplane.scope_extension_request:
     applied_at: "2026-08-31T19:33:59.803Z"
@@ -845,9 +888,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "8de5b37cb1f6be51b09ab8b95e74c3a7fe26e08d"
-    message: "🚧 A0F906 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e16259bf9666e02c2099df5c5b21c43d8e90c1ca"
@@ -1034,6 +1074,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-08-31T20:12:25.756Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Rework required by CodeQL: close the check-to-read filesystem race in task artifact capture.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:5e43c0306a0e43965c2bf69ab3c6d935df8041bb5ceca81b308bb74aabff9d76
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608311713-A0F906-repair-pure-plan-refinement-result-recovery-for/.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json
+- old_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+- current_digest: fc82a6ce953cac24df9f5f87ad9672c1c3261d73cec1a84cb7d6d8bf385c1fbb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608311713-A0F906
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1046,6 +1116,10 @@ DecisionContextRef:
 - Observation: PR 5884 discussions r3897532957 and r3897532962 identify task metadata excluded from the fingerprint and a revision race before recordPlanRefinement. Both were confirmed by source inspection.
   Impact: A refinement-only result can leave unauthorized task artifacts dirty or apply against newer task authority than the issued WorkOrder.
   Resolution: Preserve and verify the issued task-artifact baseline, enforce the issued task revision through amendment persistence, add negative regression coverage, and rerun native verification and review before resolving the GitHub threads.
+
+- Observation: GitHub CodeQL check 99627638356 reports a high-severity filesystem race at external-agent-task-artifact-baseline.ts line 38 on PR head 847aa5e90df7e06608f7b3ac8a859d06340f05d0. Source inspection confirms lstat followed by path-based readFile.
+  Impact: A file can be replaced between observation and content capture, so the snapshot can read a different object or follow a replacement link.
+  Resolution: Use descriptor-based bounded file reads with identity checks in the existing task command scope. Add a negative regression test. Preserve CodeQL and all existing checks, then repeat native verification and review.
 
 ## Token Usage
 
