@@ -16,10 +16,11 @@
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
- .../commands/task/direct-task-verification.test.ts |  45 ++
- .../src/commands/task/direct-task-verification.ts  |  30 +-
+ .../commands/task/direct-task-verification.test.ts |  69 ++
+ .../src/commands/task/direct-task-verification.ts  |  38 +-
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
+ .../external-agent-implementation-authority.ts     |   4 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
  .../src/commands/task/kernel-exchange.ts           | 143 ++++
@@ -72,4 +73,4 @@
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- 74 files changed, 6591 insertions(+), 498 deletions(-)
+ 75 files changed, 6625 insertions(+), 500 deletions(-)

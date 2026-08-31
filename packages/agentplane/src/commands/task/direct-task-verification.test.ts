@@ -486,6 +486,18 @@ describe("direct task verification", () => {
         },
       ],
     });
+    expect(additionalCommands).toEqual([
+      {
+        command: "bun run test:critical",
+        timeout_ms: 5000,
+        check_ids: ["required-check"],
+      },
+      {
+        command: "bun run lifecycle:invariants",
+        timeout_ms: 3000,
+        check_ids: ["criterion-check"],
+      },
+    ]);
 
     const result = await runDirectTaskVerification({
       command: command(cwd),
