@@ -16,7 +16,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -103,8 +103,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- scripts/release/smoke-bun-compiled-cli.mjs         |   4 +
- 77 files changed, 6672 insertions(+), 501 deletions(-)
+ scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
+ 77 files changed, 6673 insertions(+), 501 deletions(-)
 ```
 
 </details>

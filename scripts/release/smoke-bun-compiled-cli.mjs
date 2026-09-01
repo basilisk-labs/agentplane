@@ -217,6 +217,7 @@ function smokeBunCompiledCli(args, repoRoot) {
     );
 
     if (process.platform === "darwin") {
+      // Bun's compile step can leave the temporary executable with an invalid linker signature.
       run("codesign", ["--force", "--sign", "-", executable], { cwd: repoRoot });
     }
 

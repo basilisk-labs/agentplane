@@ -13,7 +13,7 @@ Created: 2026-08-30T21:48:11.941Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -105,8 +105,8 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- scripts/release/smoke-bun-compiled-cli.mjs         |   4 +
- 77 files changed, 6672 insertions(+), 501 deletions(-)
+ scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
+ 77 files changed, 6673 insertions(+), 501 deletions(-)
 ```
 
 </details>

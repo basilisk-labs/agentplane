@@ -74,5 +74,5 @@
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- scripts/release/smoke-bun-compiled-cli.mjs         |   4 +
- 77 files changed, 6672 insertions(+), 501 deletions(-)
+ scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
+ 77 files changed, 6673 insertions(+), 501 deletions(-)
