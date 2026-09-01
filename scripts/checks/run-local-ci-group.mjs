@@ -5,6 +5,7 @@ const run = (command, args) => execFileSync(command, args, { env: process.env, s
 const bunScript = (name) => run("bun", ["run", name]);
 const timeout = "60000";
 const maxWorkers = process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4";
+const coreShardCount = 4;
 
 const groups = {
   "docs-schema": () => {
@@ -48,8 +49,9 @@ const groups = {
     // A single 600+ file Vitest invocation can stall its fork scheduler even though every
     // bounded subset is healthy. Sequential file shards preserve the exact test selection and
     // worker limits while keeping the enclosing core group below its unchanged timeout.
-    for (let shard = 1; shard <= 4; shard += 1) {
-      run("bunx", [...args, `--shard=${shard}/4`]);
+    for (let shard = 1; shard <= coreShardCount; shard += 1) {
+      process.stdout.write(`core vitest shard ${shard}/${coreShardCount}\n`);
+      run("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
     }
   },
   runtime: () =>
