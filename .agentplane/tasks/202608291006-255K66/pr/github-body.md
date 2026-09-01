@@ -16,7 +16,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
