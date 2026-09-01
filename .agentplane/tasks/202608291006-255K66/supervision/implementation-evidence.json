@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 10c6477cd779f140f685244934a29b3feeca633a..9207950b8fcc29bb59840daf835528326c564699",
+      "command": "git diff --check 564acce7059f176f06c640eb83449b21773acd95..10afd7c227f39ea036e250ea3dadae08b7f17373",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 10c6477cd779f140f685244934a29b3feeca633a..9207950b8fcc29bb59840daf835528326c564699",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 564acce7059f176f06c640eb83449b21773acd95..10afd7c227f39ea036e250ea3dadae08b7f17373",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,6 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/commands/guard/impl/allow.test.ts",
         "M\tscripts/release/smoke-bun-compiled-cli.mjs"
       ]
     },
@@ -32,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "10c6477cd779f140f685244934a29b3feeca633a",
-  "implementation_commit": "9207950b8fcc29bb59840daf835528326c564699",
+  "execution_base_commit": "564acce7059f176f06c640eb83449b21773acd95",
+  "implementation_commit": "10afd7c227f39ea036e250ea3dadae08b7f17373",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
