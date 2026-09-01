@@ -76,7 +76,7 @@ const groups = {
       isolatedCoreTest,
       "--exclude",
       isolatedProcessSupervisionTest,
-      "--pool=forks",
+      "--pool=threads",
       "--reporter=verbose",
       "--silent=passed-only",
       "--maxWorkers",
