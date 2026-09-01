@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 161
+revision: 169
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,7 @@ verify:
   - "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-01T11:36:59.841Z"
+  updated_at: "2026-09-01T12:03:12.436Z"
   updated_by: "USER"
   note: null
 verification:
@@ -341,6 +341,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 314b25900d39. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ee7697dc7570. CLI accepted one state-bound external-agent semantic result."
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
@@ -787,8 +793,29 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T11:38:11.985Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ee7697dc7570. CLI accepted one state-bound external-agent semantic result."
+    commit: "ee7697dc75707ac2da9f1523a01216e7f907181f"
+  -
+    type: "verify"
+    at: "2026-09-01T12:01:18.654Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-01T12:03:14.333Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-09-01T11:37:01.643Z"
+doc_updated_at: "2026-09-01T12:03:14.333Z"
 doc_updated_by: "CODER"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
@@ -799,7 +826,7 @@ sections:
   Scope: |-
     - In scope: Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66.
     - Out of scope: unrelated refactors not required for "Apply task-centric plan refinement before implementation commit qualification".
-  Plan: "Separate process-heavy runner/usecases into one two-worker thread wave after the broad eight-worker remainder, then retain the two final isolated fork files under the unchanged 15-minute core limit."
+  Plan: "Preserve the separated core topology and apply a 25-minute fail-closed boundary only to the core execution group, leaving every other group at the existing 15-minute default."
   Verify Steps: |-
     PLANNER fallback scaffold for "Apply task-centric plan refinement before implementation commit qualification". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -1738,6 +1765,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-01T12:01:18.654Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:d7c428d7f646299f58cd2bf731ae5ccc4597cc990f2402a4c7c24c1c65e119ec
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1756,12 +1823,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:05a67f3b3882321dc8551ae22f0a9b2f590fcbf3969a590de8038ce834ccd069"
-    digest: "sha256:35fac42d9ea4942c6ab83026a214ac3fad98aa45e995e2466d6e3da499a88d87"
-    grant_id: "ddff224d-7f71-49fd-b333-214acffebe1a"
-    issued_at: "2026-09-01T11:36:59.841Z"
+    digest: "sha256:1f56b667b6fc7883aa481e9baddfb70a729317733e3db17f9c7b1e4cefe2f471"
+    grant_id: "9873592e-e6d2-4c87-9ddd-6f1e73b7aeb0"
+    issued_at: "2026-09-01T12:03:12.436Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:36052a4e2583688f720ae28d7672e0505b687cc6709df1e7838d26182cfca2ca"
-    plan_revision: 159
+    plan_digest: "sha256:5c86d682fb7dac915c6cb89b9ccbfddb2bdbf4fae15c9c2d61558dcf16bef234"
+    plan_revision: 167
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:d12cd926fe8723833ee679ad79a1b21be16839180bf160dde5aa1a24ffda5e8c"
@@ -1786,27 +1853,27 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-01T11:36:59.841Z"
+        approved_at: "2026-09-01T12:03:12.436Z"
         approved_by: "USER"
-        approved_digest: "sha256:07d825c9d495e57281d1afe406079e097114a2d1eda00243b61fa873c59547d9"
+        approved_digest: "sha256:246075bf690c6174348c01a6a6c2fa5feb1aca6202e488b73e2462d1b7ecd634"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-01T11:36:49.196Z"
-      digest: "sha256:07d825c9d495e57281d1afe406079e097114a2d1eda00243b61fa873c59547d9"
+      created_at: "2026-09-01T12:03:02.636Z"
+      digest: "sha256:246075bf690c6174348c01a6a6c2fa5feb1aca6202e488b73e2462d1b7ecd634"
       proposal:
         assumptions:
           - "The committed fail-closed recovery remains the candidate under requalification."
           - "Full CI selects the pre-snapshot regression file and preserves the focused behavioral proof."
-          - "The broad remainder runs once with eight thread workers and excludes all runner/usecases files."
-          - "The runner/usecases wave runs once with two thread workers and excludes only active-claim-concurrency and state-fingerprint, which remain selected elsewhere."
-          - "Process supervision and state fingerprint run last as separate single-worker fork invocations with 60-second bounds."
-          - "The overall core group timeout remains 15 minutes and no test is omitted."
+          - "The approved broad remainder, runner/usecases wave and two isolated fork invocations remain unchanged."
+          - "The core execution group has a 25-minute default with an explicit AGENTPLANE_LOCAL_CORE_TIMEOUT_MS override."
+          - "Docs-schema, runtime and CLI retain AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS and its 15-minute default."
+          - "No test is omitted and every core invocation remains fail-closed."
         planning_baseline:
-          captured_at: "2026-09-01T11:36:18.053Z"
+          captured_at: "2026-09-01T12:02:25.877Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:01f5cb72921d9a60e0345a34ef1706d612a7bd03e4d9954df804b0a4ea1952ee"
+          digest: "sha256:237eb9c0686c1656dd22ecb0e0b3d2d1290052ad58771a47f824986096f5b935"
           dirty_paths:
             - ".agentplane/tasks/202608312334-MPXQBK/README.md"
             - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
@@ -1814,14 +1881,14 @@ extensions:
             - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
             - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
             - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901113213202-e31117cb17b20fad.json"
+            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901120118654-29ba903c501b5be1.json"
           git:
             kind: "commit"
             ref: null
-            sha: "314b25900d395ba276aa4428c8698a1c1f50900b"
+            sha: "ee7697dc75707ac2da9f1523a01216e7f907181f"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:158"
+          task_history_cursor: "task-revision:166"
         schema_version: 1
         task_id: "202608312334-MPXQBK"
         top_level_validation:
@@ -1837,10 +1904,10 @@ extensions:
             -
               check_ids:
                 - "full-ci"
-              description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+              description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Preserve the approved separated core topology and every selected test: a broad eight-worker thread remainder with 120000 pooled test and hook bounds excluding runner/usecases; one two-worker runner/usecases thread wave with 120000 bounds excluding active-claim-concurrency and state-fingerprint; then process-supervision and state-fingerprint as final separate single-worker fork invocations with 60000 bounds. Add a dedicated full-CI core execution-group timeout with a 25-minute default and explicit AGENTPLANE_LOCAL_CORE_TIMEOUT_MS override. Keep AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS and its 15-minute default unchanged for docs-schema, runtime and CLI. Preserve existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
               id: "legacy-recovery-and-core-convergence"
               required: true
-          evidence_fingerprint: "sha256:01f5cb72921d9a60e0345a34ef1706d612a7bd03e4d9954df804b0a4ea1952ee"
+          evidence_fingerprint: "sha256:237eb9c0686c1656dd22ecb0e0b3d2d1290052ad58771a47f824986096f5b935"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -1851,7 +1918,7 @@ extensions:
                 -
                   check_ids:
                     - "full-ci"
-                  description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+                  description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Preserve the approved separated core topology and every selected test: a broad eight-worker thread remainder with 120000 pooled test and hook bounds excluding runner/usecases; one two-worker runner/usecases thread wave with 120000 bounds excluding active-claim-concurrency and state-fingerprint; then process-supervision and state-fingerprint as final separate single-worker fork invocations with 60000 bounds. Add a dedicated full-CI core execution-group timeout with a 25-minute default and explicit AGENTPLANE_LOCAL_CORE_TIMEOUT_MS override. Keep AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS and its 15-minute default unchanged for docs-schema, runtime and CLI. Preserve existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
                   id: "legacy-recovery-and-core-convergence"
                   required: true
               capabilities:
@@ -1873,7 +1940,7 @@ extensions:
                 - "legacy-exchange-recovery-evidence"
                 - "core-sharding-evidence"
               id: "legacy-recovery-and-core-convergence"
-              objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+              objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Preserve the approved separated core topology and every selected test: a broad eight-worker thread remainder with 120000 pooled test and hook bounds excluding runner/usecases; one two-worker runner/usecases thread wave with 120000 bounds excluding active-claim-concurrency and state-fingerprint; then process-supervision and state-fingerprint as final separate single-worker fork invocations with 60000 bounds. Add a dedicated full-CI core execution-group timeout with a 25-minute default and explicit AGENTPLANE_LOCAL_CORE_TIMEOUT_MS override. Keep AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS and its 15-minute default unchanged for docs-schema, runtime and CLI. Preserve existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
               optional: false
               priority: 100
               required_inputs: []
@@ -1908,12 +1975,12 @@ extensions:
                   -
                     check_ids:
                       - "full-ci"
-                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Preserve the approved separated core topology and every selected test: a broad eight-worker thread remainder with 120000 pooled test and hook bounds excluding runner/usecases; one two-worker runner/usecases thread wave with 120000 bounds excluding active-claim-concurrency and state-fingerprint; then process-supervision and state-fingerprint as final separate single-worker fork invocations with 60000 bounds. Add a dedicated full-CI core execution-group timeout with a 25-minute default and explicit AGENTPLANE_LOCAL_CORE_TIMEOUT_MS override. Keep AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS and its 15-minute default unchanged for docs-schema, runtime and CLI. Preserve existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
                     id: "legacy-recovery-and-core-convergence"
                     required: true
-                evidence_fingerprint: "sha256:01f5cb72921d9a60e0345a34ef1706d612a7bd03e4d9954df804b0a4ea1952ee"
+                evidence_fingerprint: "sha256:237eb9c0686c1656dd22ecb0e0b3d2d1290052ad58771a47f824986096f5b935"
                 schema_version: 1
-      revision: 18
+      revision: 19
       schema_version: 1
       task_id: "202608312334-MPXQBK"
     event_cursor: 1
@@ -4338,9 +4405,141 @@ extensions:
         revision: 17
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 159
+      -
+        approval:
+          approved_at: "2026-09-01T11:36:59.841Z"
+          approved_by: "USER"
+          approved_digest: "sha256:07d825c9d495e57281d1afe406079e097114a2d1eda00243b61fa873c59547d9"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-01T11:36:49.196Z"
+        digest: "sha256:07d825c9d495e57281d1afe406079e097114a2d1eda00243b61fa873c59547d9"
+        proposal:
+          assumptions:
+            - "The committed fail-closed recovery remains the candidate under requalification."
+            - "Full CI selects the pre-snapshot regression file and preserves the focused behavioral proof."
+            - "The broad remainder runs once with eight thread workers and excludes all runner/usecases files."
+            - "The runner/usecases wave runs once with two thread workers and excludes only active-claim-concurrency and state-fingerprint, which remain selected elsewhere."
+            - "Process supervision and state fingerprint run last as separate single-worker fork invocations with 60-second bounds."
+            - "The overall core group timeout remains 15 minutes and no test is omitted."
+          planning_baseline:
+            captured_at: "2026-09-01T11:36:18.053Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:01f5cb72921d9a60e0345a34ef1706d612a7bd03e4d9954df804b0a4ea1952ee"
+            dirty_paths:
+              - ".agentplane/tasks/202608312334-MPXQBK/README.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/meta.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901113213202-e31117cb17b20fad.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "314b25900d395ba276aa4428c8698a1c1f50900b"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:158"
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "full-ci"
+                description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+                id: "legacy-recovery-and-core-convergence"
+                required: true
+            evidence_fingerprint: "sha256:01f5cb72921d9a60e0345a34ef1706d612a7bd03e4d9954df804b0a4ea1952ee"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "full-ci"
+                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+                    id: "legacy-recovery-and-core-convergence"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 100000
+                  optional_sources:
+                    - "scripts/checks/run-local-ci.mjs"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                    - "scripts/checks/run-local-ci-group.mjs"
+                  symbol_hints:
+                    - "applyExternalPlanRefinement"
+                    - "validateLegacyRefinementArtifacts"
+                    - "groups.core"
+                depends_on: []
+                expected_outputs:
+                  - "legacy-exchange-recovery-evidence"
+                  - "core-sharding-evidence"
+                id: "legacy-recovery-and-core-convergence"
+                objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "scripts/checks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "full-ci"
+                      description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI and make its core group converge below the unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run the broad core remainder once with --pool=threads, eight workers and --testTimeout/--hookTimeout 120000, additionally excluding packages/agentplane/src/runner/usecases/**. Then run packages/agentplane/src/runner/usecases once with --pool=threads, two workers and --testTimeout/--hookTimeout 120000, excluding packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts. Then run packages/agentplane/src/runner/process-supervision.test.ts and packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts as final separate single-worker --pool=forks invocations with 60000 test and hook bounds. Preserve the complete overall file selection, existing global exclusions, test-specific timeouts, bounded file-backed diagnostics and fail-closed behavior. Every invocation must run and any failure must fail the group. Do not raise the 15-minute core group limit or omit tests."
+                      id: "legacy-recovery-and-core-convergence"
+                      required: true
+                  evidence_fingerprint: "sha256:01f5cb72921d9a60e0345a34ef1706d612a7bd03e4d9954df804b0a4ea1952ee"
+                  schema_version: 1
+        revision: 18
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+    revision: 167
     schema_version: 1
-    updated_at: "2026-09-01T11:36:59.841Z"
+    updated_at: "2026-09-01T12:03:12.436Z"
     work_items:
       legacy-recovery-and-core-convergence:
         attempt: 0
@@ -4560,6 +4759,29 @@ extensions:
         mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-5bc32388656fcf3846c477ce"
         next_revision: 61
         previous_revision: 60
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+      external-result:work-order-202608312334-MPXQBK-executor-633e04b9019d875741ae1526:
+        aggregate_digest: "sha256:a562b88ff5e527bccbd12f8c00c4af3165a43375a1c972e7b01c4b64b8a9eb2b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T12:01:23.857Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_e9b6955b828fe091addb482d"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-633e04b9019d875741ae1526"
+          plan_digest: "sha256:07d825c9d495e57281d1afe406079e097114a2d1eda00243b61fa873c59547d9"
+          plan_revision: 18
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 164
+          to: "REWORK_READY"
+          work_item_id: "legacy-recovery-and-core-convergence"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-633e04b9019d875741ae1526"
+        next_revision: 165
+        previous_revision: 164
         schema_version: 1
         task_id: "202608312334-MPXQBK"
       external-result:work-order-202608312334-MPXQBK-executor-787a582a691b3d032a335ebb:
@@ -5089,6 +5311,32 @@ extensions:
         previous_revision: 125
         schema_version: 1
         task_id: "202608312334-MPXQBK"
+      plan-refinement:work-order-202608312334-MPXQBK-executor-8c5d2d193d1c602ae2ff9d37:
+        aggregate_digest: "sha256:5448a74878bfe9c4b37f281ed4477a7259dd86a092bea42d74932c31a3904496"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-01T12:02:23.844Z"
+          cause_refs:
+            - "acceptance_changed"
+            - "risk_changed"
+            - "architecture_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2db13eb5dae9112ec714e3c2"
+          mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-8c5d2d193d1c602ae2ff9d37"
+          plan_digest: "sha256:07d825c9d495e57281d1afe406079e097114a2d1eda00243b61fa873c59547d9"
+          plan_revision: 18
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 165
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-8c5d2d193d1c602ae2ff9d37"
+        next_revision: 166
+        previous_revision: 165
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
       plan-refinement:work-order-202608312334-MPXQBK-executor-9eaa1f510e28ea1ecc481432:
         aggregate_digest: "sha256:afe2b0809ac9b48c69d860f84839fcf9c23270066186ff81d01d7098997234e3"
         event:
@@ -5288,7 +5536,7 @@ Fix external-agent implementation result handling so a completed semantic result
 
 ## Plan
 
-Separate process-heavy runner/usecases into one two-worker thread wave after the broad eight-worker remainder, then retain the two final isolated fork files under the unchanged 15-minute core limit.
+Preserve the separated core topology and apply a 25-minute fail-closed boundary only to the core execution group, leaving every other group at the existing 15-minute default.
 
 ## Verify Steps
 
@@ -6199,6 +6447,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:037979ab8f40ead3ea903fdcbebb7610f5dbb556a07eaa436a770865e4031e45
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-01T12:01:18.654Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:d7c428d7f646299f58cd2bf731ae5ccc4597cc990f2402a4c7c24c1c65e119ec
 
 Details:
 
