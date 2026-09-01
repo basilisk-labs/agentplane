@@ -1,10 +1,10 @@
 ---
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 74
+revision: 76
 origin:
   system: "manual"
 depends_on:
@@ -676,9 +676,10 @@ comments:
     body: "External EXECUTOR returned failed: The approved m3-lifecycle WorkItem needs a bounded scope refinement because its required full-CI gate deterministically fails on a documentation file changed during prior requalification, while the current execution contract excludes that file."
   -
     author: "ORCHESTRATOR"
-    body: |-
-      Cross-machine goal handoff: resume this existing task; do not create a second Clean Core implementation task. Provider checkpoint must contain commit 71912f4add7df8db538392150ec634b2012770d1 plus this task artifact revision. Start with agentplane task resume-context 202608291006-255K66 --json, then use fresh agentplane task advance 202608291006-255K66 --agent-json packets only. Keep one WorkItem active at a time, minimize code, and reuse or delete existing mechanisms before adding abstractions. MPXQBK and the 0.7.8 release lane are not prerequisites. Before legacy retirement, require immutable evidence for candidate-runtime qualification, controller transfer, self-hosting canary, sustained self-hosting, observation, and rollback. Do not trust source main, the candidate branch, or an ambient CLI as controller without an explicit runtime authority receipt. Projection cleanup remains owned by Z7JBFH then WXP9JS.
-
+    body: "Cross-machine goal handoff: resume this existing task; do not create a second Clean Core implementation task. Provider checkpoint must contain commit 71912f4add7df8db538392150ec634b2012770d1 plus this task artifact revision. Start with agentplane task resume-context 202608291006-255K66 --json, then use fresh agentplane task advance 202608291006-255K66 --agent-json packets only. Keep one WorkItem active at a time, minimize code, and reuse or delete existing mechanisms before adding abstractions. MPXQBK and the 0.7.8 release lane are not prerequisites. Before legacy retirement, require immutable evidence for candidate-runtime qualification, controller transfer, self-hosting canary, sustained self-hosting, observation, and rollback. Do not trust source main, the candidate branch, or an ambient CLI as controller without an explicit runtime authority receipt. Projection cleanup remains owned by Z7JBFH then WXP9JS."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The retained lifecycle foundation already contains the required semantic plan-binding test consolidation, and the focused concurrent active-claim retirement suite passes. Full native CI cannot become green under the current packet because its deterministic Prettier failure is in a document excluded from the packet's writable roots. Recommended action: Extend this WorkItem's writable roots by docs/developer/harness-dev.mdx with documentation and repository_write effects, then issue a fresh EXECUTOR packet. Requested scope: roots=docs/developer/harness-dev.mdx; repository effects=documentation,repository_write; request digest=sha256:bb8c59922ef25014cde80cc1056f7560b63a97f82c50c915cf018b25446026d0. Agentplane receipt: external-agent-blocker/tr_9c6ef61b40f4aef93071607487463c66/sha256:444fe6b582cbbba83d780f118027a165f1c0c9e390d5f3f313135ee769e73bb7/sha256:bb8c59922ef25014cde80cc1056f7560b63a97f82c50c915cf018b25446026d0."
 events:
   -
     type: "status"
@@ -899,12 +900,17 @@ events:
     type: "comment"
     at: "2026-09-01T22:14:14.033Z"
     author: "ORCHESTRATOR"
-    body: |-
-      Cross-machine goal handoff: resume this existing task; do not create a second Clean Core implementation task. Provider checkpoint must contain commit 71912f4add7df8db538392150ec634b2012770d1 plus this task artifact revision. Start with agentplane task resume-context 202608291006-255K66 --json, then use fresh agentplane task advance 202608291006-255K66 --agent-json packets only. Keep one WorkItem active at a time, minimize code, and reuse or delete existing mechanisms before adding abstractions. MPXQBK and the 0.7.8 release lane are not prerequisites. Before legacy retirement, require immutable evidence for candidate-runtime qualification, controller transfer, self-hosting canary, sustained self-hosting, observation, and rollback. Do not trust source main, the candidate branch, or an ambient CLI as controller without an explicit runtime authority receipt. Projection cleanup remains owned by Z7JBFH then WXP9JS.
-
+    body: "Cross-machine goal handoff: resume this existing task; do not create a second Clean Core implementation task. Provider checkpoint must contain commit 71912f4add7df8db538392150ec634b2012770d1 plus this task artifact revision. Start with agentplane task resume-context 202608291006-255K66 --json, then use fresh agentplane task advance 202608291006-255K66 --agent-json packets only. Keep one WorkItem active at a time, minimize code, and reuse or delete existing mechanisms before adding abstractions. MPXQBK and the 0.7.8 release lane are not prerequisites. Before legacy retirement, require immutable evidence for candidate-runtime qualification, controller transfer, self-hosting canary, sustained self-hosting, observation, and rollback. Do not trust source main, the candidate branch, or an ambient CLI as controller without an explicit runtime authority receipt. Projection cleanup remains owned by Z7JBFH then WXP9JS."
+  -
+    type: "status"
+    at: "2026-09-01T22:49:51.507Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The retained lifecycle foundation already contains the required semantic plan-binding test consolidation, and the focused concurrent active-claim retirement suite passes. Full native CI cannot become green under the current packet because its deterministic Prettier failure is in a document excluded from the packet's writable roots. Recommended action: Extend this WorkItem's writable roots by docs/developer/harness-dev.mdx with documentation and repository_write effects, then issue a fresh EXECUTOR packet. Requested scope: roots=docs/developer/harness-dev.mdx; repository effects=documentation,repository_write; request digest=sha256:bb8c59922ef25014cde80cc1056f7560b63a97f82c50c915cf018b25446026d0. Agentplane receipt: external-agent-blocker/tr_9c6ef61b40f4aef93071607487463c66/sha256:444fe6b582cbbba83d780f118027a165f1c0c9e390d5f3f313135ee769e73bb7/sha256:bb8c59922ef25014cde80cc1056f7560b63a97f82c50c915cf018b25446026d0."
 doc_version: 3
-doc_updated_at: "2026-09-01T22:14:14.033Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-09-01T22:49:51.507Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -2059,22 +2065,20 @@ extensions:
     status: "active"
     task_id: "202608291006-255K66"
   agentplane.scope_extension_request:
-    applied_at: "2026-08-31T16:45:50.902Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:4c5a20eb1c9dacb990a7dddd1e4e7490a6e536df9389ed76700fdc961965c742"
+    blocker_state_fingerprint: "sha256:444fe6b582cbbba83d780f118027a165f1c0c9e390d5f3f313135ee769e73bb7"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Record the reviewed M3 source task, task new --canonical descriptor and provenance, and current AgentWorkOrder schema provenance in the existing exact compatibility assertions. Preserve the immutable v0.6.24 anchor, package versions, all removal and unexpected-delta rejection checks, and the release publication boundary."
+      rationale: "The required full native CI gate includes Prettier, and its deterministic failure can only be repaired by formatting the named document."
       repository_effects:
-        - "public_api"
-        - "tests"
+        - "documentation"
+        - "repository_write"
       schema_version: 1
       scope_roots:
-        - "scripts/checks/check-compatibility-contract-baseline.mjs"
-    request_digest: "sha256:6710e401e1ec2fe7911d5ab66c6579111b673dd54b2b2ce5d657a1bbf2f68512"
+        - "docs/developer/harness-dev.mdx"
+    request_digest: "sha256:bb8c59922ef25014cde80cc1056f7560b63a97f82c50c915cf018b25446026d0"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_f61103be288912b14b2416eab678bda6"
+    status: "pending"
+    transition_id: "tr_9c6ef61b40f4aef93071607487463c66"
   agentplane.task_centric:
     current_plan:
       approval:
