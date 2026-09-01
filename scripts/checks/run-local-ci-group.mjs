@@ -36,7 +36,7 @@ const runCapturedShard = (command, args) => {
 };
 const timeout = "60000";
 const pooledCoreTimeout = "120000";
-const corePoolWorkers = "6";
+const corePoolWorkers = "8";
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 const isolatedProcessSupervisionTest = "packages/agentplane/src/runner/process-supervision.test.ts";
