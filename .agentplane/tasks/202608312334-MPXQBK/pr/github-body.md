@@ -29,9 +29,9 @@ Fix external-agent implementation result handling so a completed semantic result
 ```text
  ...n-cli.core.task-advance.evidence-rework.test.ts | 106 +++++++++++++++++
  .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++++-
- scripts/checks/run-local-ci-group.mjs              |  81 ++++++++++++-
+ scripts/checks/run-local-ci-group.mjs              |  83 +++++++++++++-
  scripts/checks/run-local-ci.mjs                    |  11 +-
- 4 files changed, 312 insertions(+), 11 deletions(-)
+ 4 files changed, 314 insertions(+), 11 deletions(-)
 ```
 
 </details>

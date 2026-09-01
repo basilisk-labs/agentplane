@@ -35,7 +35,8 @@ const runCapturedShard = (command, args) => {
   process.stdout.write(`${summary}\n`);
 };
 const timeout = "60000";
-const corePoolWorkers = "8";
+const pooledCoreTimeout = "120000";
+const corePoolWorkers = "4";
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 const isolatedProcessSupervisionTest = "packages/agentplane/src/runner/process-supervision.test.ts";
@@ -81,13 +82,14 @@ const groups = {
       "--maxWorkers",
       corePoolWorkers,
       "--testTimeout",
-      timeout,
+      pooledCoreTimeout,
       "--hookTimeout",
-      timeout,
+      pooledCoreTimeout,
     ];
     // The fork scheduler can stall on the 600+ file selection, while restarting bounded
     // shards accumulates macOS execution-policy overhead. Keep the complete selection in one
-    // bounded thread pool, then run the process-sensitive files in isolated fork invocations.
+    // bounded thread pool with limited subprocess pressure, then run the process-sensitive files
+    // in isolated fork invocations with the stricter default timeout.
     process.stdout.write("core vitest pooled 1/1\n");
     runCapturedShard("bunx", args);
     process.stdout.write("core vitest process supervision isolated 1/1\n");
