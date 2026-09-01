@@ -3,6 +3,7 @@ import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
+import { digestSupervisorEpisodeValue } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import {
@@ -16,8 +17,13 @@ import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
 import * as refinement from "../commands/task/external-agent-plan-refinement.js";
+import {
+  externalAgentIssueDigest,
+  type ExternalAgentExchange,
+} from "../commands/task/external-agent-exchange.js";
 import * as verification from "../commands/task/direct-task-verification.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
+import { resolveSupervisorExecutionEpisodePath } from "../commands/shared/supervisor-execution-episode.js";
 import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
@@ -79,6 +85,34 @@ async function resume(root: string, p: Packet) {
   const result = await invoke(root, p.exchange.resume_argv.slice(1));
   expect(result.code, result.stderr).toBe(0);
   return JSON.parse(result.stdout) as Packet;
+}
+async function downgradeToLegacyExchange(root: string, p: Packet, refreshBaseline = false) {
+  const exchangePath = path.join(p.exchange.directory, "exchange.json");
+  const exchange = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+  delete exchange.baseline.task_artifacts;
+  if (refreshBaseline) {
+    const status = await git("git", ["status", "--short", "--untracked-files=all"], {
+      cwd: root,
+    });
+    exchange.baseline.changed_paths = status.stdout.trimEnd().split("\n").filter(Boolean);
+  }
+  const workOrder = await order(p);
+  const journalPath = await resolveSupervisorExecutionEpisodePath({
+    git_root: root,
+    task_id: exchange.task_id,
+  });
+  const journal = JSON.parse(await readFile(journalPath, "utf8")) as {
+    digest: string;
+    operations: { effect_ref: string | null }[];
+    [key: string]: unknown;
+  };
+  const operation = journal.operations.at(-1);
+  if (!operation) throw new Error("missing supervisor operation");
+  operation.effect_ref = `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: workOrder })}`;
+  const { digest: _digest, ...payload } = journal;
+  journal.digest = digestSupervisorEpisodeValue(payload);
+  await writeFile(exchangePath, `${JSON.stringify(exchange, null, 2)}\n`);
+  await writeFile(journalPath, `${JSON.stringify(journal, null, 2)}\n`);
 }
 async function commitFixture(root: string, message: string) {
   await git("git", ["add", ".agentplane", "package.json", ".gitignore"], { cwd: root });
@@ -473,6 +507,78 @@ const planRefinement = (material: boolean) => ({
 });
 
 describe("pure external plan refinement", { timeout: 180_000 }, () => {
+  it("recovers an exact pre-snapshot result_received refinement without replaying completed work", async () => {
+    const f = await completedFixture();
+    const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
+    await report(f.rework, "Recover the legacy pure refinement only.", {
+      plan_refinement: planRefinement(true),
+    });
+    await downgradeToLegacyExchange(f.checkout, f.rework);
+
+    const next = await resume(f.checkout, f.rework);
+    const nextOrder = await order(next);
+    expect(nextOrder.role).toBe("PLANNER");
+    const applied = await f.ctx.taskBackend.getTask(f.taskId);
+    expect(taskCentricAggregateFromExtensions(applied?.extensions)?.work_items).toEqual(
+      before.work_items,
+    );
+    await resume(f.checkout, f.rework);
+    expect(await f.ctx.taskBackend.getTask(f.taskId)).toEqual(applied);
+  });
+
+  it("rejects malformed supervisor evidence in a pre-snapshot refinement exchange", async () => {
+    const f = await completedFixture();
+    await report(f.rework, "Reject tampered legacy supervisor evidence.", {
+      plan_refinement: planRefinement(true),
+    });
+    await writeFile(
+      path.join(f.checkout, ".agentplane/tasks", f.taskId, "supervision/declared-checks.json"),
+      "{}\n",
+    );
+    const evidencePath = path.join(
+      f.checkout,
+      ".agentplane/tasks",
+      f.taskId,
+      "supervision/implementation-evidence.json",
+    );
+    await writeFile(evidencePath, `${await readFile(evidencePath, "utf8")}\n`);
+    await downgradeToLegacyExchange(f.checkout, f.rework, true);
+
+    const rejected = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("declared checks failed identity validation");
+  });
+
+  it("rejects foreign supervisor evidence identity in a pre-snapshot refinement exchange", async () => {
+    const f = await completedFixture();
+    await report(f.rework, "Reject foreign legacy supervisor evidence.", {
+      plan_refinement: planRefinement(true),
+    });
+    const declaredPath = path.join(
+      f.checkout,
+      ".agentplane/tasks",
+      f.taskId,
+      "supervision/declared-checks.json",
+    );
+    const evidencePath = path.join(
+      f.checkout,
+      ".agentplane/tasks",
+      f.taskId,
+      "supervision/implementation-evidence.json",
+    );
+    const declared = JSON.parse(await readFile(declaredPath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      declaredPath,
+      `${JSON.stringify({ ...declared, task_id: "foreign-task" }, null, 2)}\n`,
+    );
+    await writeFile(evidencePath, `${await readFile(evidencePath, "utf8")}\n`);
+    await downgradeToLegacyExchange(f.checkout, f.rework, true);
+
+    const rejected = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("declared checks failed identity validation");
+  });
+
   it.each([false, true])(
     "records refinement without implementation (material=%s)",
     async (material) => {

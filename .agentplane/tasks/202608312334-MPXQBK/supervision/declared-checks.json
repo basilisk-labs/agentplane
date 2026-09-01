@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts",
+      "duration_ms": 965,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3a90ad0fbce48ef94d7f3fb66939c8752760c37efaa32af212871a683d77a788",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:d09b95798f6048ceebf4a463c1f089bfaaab945208c828c3064bd0eba20df1df"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  21:31:47\n   Duration  586ms (transform 332ms, setup 0ms, import 499ms, tests 12ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 4355790,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3a90ad0fbce48ef94d7f3fb66939c8752760c37efaa32af212871a683d77a788",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:d09b95798f6048ceebf4a463c1f089bfaaab945208c828c3064bd0eba20df1df"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "$ node scripts/checks/run-local-ci.mjs --mode full\n$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n$ prettier . --check\n$ bun scripts/generate/sync-schemas.mjs check\n$ node scripts/generate/sync-agent-templates.mjs check\n$ node scripts/checks/check-policy-routing.mjs\n$ node scripts/release/check-release-parity.mjs\n$ node scripts/checks/check-cli-reference-fresh.mjs\n$ node scripts/checks/check-recipes-inventory-fresh.mjs\n$ node scripts/generate/generate-scripts-readme.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n$ node scripts/checks/check-vitest-projects.mjs\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "nment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 69337ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  69.14s (transform 1.86s, setup 0ms, import 1.30s, tests 67.77s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1767ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.60s (transform 1.06s, setup 0ms, import 1.27s, tests 273ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 7858ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  7.68s (transform 1.09s, setup 0ms, import 1.30s, tests 6.31s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":157381},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":19532},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":3900875},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":172832}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":4256155,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 232 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  22:42:55\n   Duration  74.62s (transform 7.46s, setup 0ms, import 8.44s, tests 231.29s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  22:44:10\n   Duration  12.72s (transform 3.70s, setup 0ms, import 4.13s, tests 20.39s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202608312334-MPXQBK"
+}

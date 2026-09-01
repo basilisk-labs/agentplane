@@ -1,0 +1,118 @@
+{
+  "details": "Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1\nScope: branch_pr task 202608312334-MPXQBK declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2\nScope: branch_pr task 202608312334-MPXQBK declared verification",
+  "digest": "sha256:24f904497144828d2903b55e5ccedb30522fd756784b1b4324950c9432a08253",
+  "implementation_sha": "9cb970ba05dec8a73e2ca16828cc331034a24ac5",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:06b28027278fb302ec5471aeb7119d90a55ee14d87ce36331735aa89f5ffe1b2",
+    "environment": {
+      "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "26",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:677af1f57e2b851a08ce2df220cc8b6f618565639ce8e1e83b441de4894a8e9a",
+      "digest": "sha256:72ae6ea1f62fbe29d2506281d873288da268f10abe919190fc5834dd9c4a42a6",
+      "references": [
+        {
+          "digest": "sha256:5f0d3d2c063b270e1a17196a48c25c3226880742927ff2acde0bc5956a2831cc",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:5f0d3d2c063b270e1a17196a48c25c3226880742927ff2acde0bc5956a2831cc",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "1d98bf9e30d8c5c4f419bcf304f8d6379529411d",
+      "digest": "sha256:7c2761667d3421139835e7cec8083dd44c83537d63fbfdbff61b5e430f829bb0",
+      "primary_task_id": "202608312334-MPXQBK",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "effect_external_write",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202608312334-MPXQBK"
+      ]
+    },
+    "implementation": {
+      "base_sha": "1d98bf9e30d8c5c4f419bcf304f8d6379529411d",
+      "digest": "sha256:31a79c734671e106e57e6f3f90b43e1527bb5aedb89abab3ba4c3333fe52115c",
+      "strategy": "branch_diff",
+      "target_sha": "9cb970ba05dec8a73e2ca16828cc331034a24ac5"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:a7c4c745c6dbcf414b2e6f282e6b8d9418ae1d6e3f406dd02c22c5926df6ba52",
+    "verify_steps_digest": "sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-01T08:46:17.686Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Apply task-centric plan refinement before implementation commit qualification\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Apply task-centric plan refinement before implementation commit qualification\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486",
+  "task_id": "202608312334-MPXQBK",
+  "verification_command": "agentplane verify 202608312334-MPXQBK --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -54,6 +54,11 @@ const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS,
   DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,
 );
+const DEFAULT_LOCAL_CORE_TIMEOUT_MS = 75 * 60 * 1000;
+const LOCAL_CORE_TIMEOUT_MS = parsePositiveIntegerEnv(
+  baseEnv.AGENTPLANE_LOCAL_CORE_TIMEOUT_MS,
+  DEFAULT_LOCAL_CORE_TIMEOUT_MS,
+);
 const LOCAL_FAST_VITEST_MAX_WORKERS =
   String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "6";
 const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
@@ -471,6 +476,7 @@ async function runFullFastPath() {
     ...testEnv,
     AGENTPLANE_LOCAL_CI_RUN_CLI_DOCS: runCliDocsCheck ? "1" : "0",
     AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS: String(LOCAL_VITEST_SUITE_TIMEOUT_MS),
+    AGENTPLANE_LOCAL_CORE_TIMEOUT_MS: String(LOCAL_CORE_TIMEOUT_MS),
     AGENTPLANE_FAST_VITEST_MAX_WORKERS: LOCAL_FAST_VITEST_MAX_WORKERS,
   };
   const groups = executionPlan.execution_groups.map((id) => ({
@@ -478,23 +484,24 @@ async function runFullFastPath() {
     command: process.execPath,
     args: ["scripts/checks/run-local-ci-group.mjs", id],
     env: groupEnv,
-    timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
+    timeoutMs: id === "core" ? LOCAL_CORE_TIMEOUT_MS : LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
   // Preserve every selected group and aggregate failure while isolating the
-  // lifecycle-heavy runtime and CLI waves from the concurrent core worker pool.
+  // core worker pool from lifecycle-heavy runtime and CLI waves. Run core first
+  // so runtime cleanup cannot retain resources needed by core integration tests.
   const runtimeWave = groups.filter(({ id }) => id === "runtime");
   const coreWave = groups.filter(({ id }) => id !== "runtime" && id !== "cli");
   const cliWave = groups.filter(({ id }) => id === "cli");
   const runtimeConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, runtimeWave.length);
   const coreConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, coreWave.length);
   const cliConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, cliWave.length);
-  const runtimeResult = await runVerificationGroups(runtimeWave, {
-    concurrency: runtimeConcurrency,
+  const coreResult = await runVerificationGroups(coreWave, {
+    concurrency: coreConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
-  const coreResult = await runVerificationGroups(coreWave, {
-    concurrency: coreConcurrency,
+  const runtimeResult = await runVerificationGroups(runtimeWave, {
+    concurrency: runtimeConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
