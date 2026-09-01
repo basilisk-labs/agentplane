@@ -37,6 +37,10 @@ const runCapturedShard = (command, args) => {
 const timeout = "60000";
 const pooledCoreTimeout = "120000";
 const corePoolWorkers = "8";
+const processHeavyUsecases = "packages/agentplane/src/runner/usecases";
+const processHeavyUsecasesPattern = `${processHeavyUsecases}/**/*.test.ts`;
+const runtimeActiveClaimTest =
+  "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts";
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 const isolatedProcessSupervisionTest = "packages/agentplane/src/runner/process-supervision.test.ts";
@@ -71,7 +75,9 @@ const groups = {
       "--exclude",
       "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
       "--exclude",
-      "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+      runtimeActiveClaimTest,
+      "--exclude",
+      processHeavyUsecasesPattern,
       "--exclude",
       isolatedCoreTest,
       "--exclude",
@@ -88,10 +94,28 @@ const groups = {
     ];
     // The fork scheduler can stall on the 600+ file selection, while restarting bounded
     // shards accumulates macOS execution-policy overhead. Keep the complete selection in one
-    // bounded thread pool with limited subprocess pressure, then run the process-sensitive files
-    // in isolated fork invocations with the stricter default timeout.
+    // broad thread pool, then separate the process-heavy usecases from the final isolated files.
     process.stdout.write("core vitest pooled 1/1\n");
     runCapturedShard("bunx", args);
+    process.stdout.write("core vitest process-heavy usecases 1/1\n");
+    runCapturedShard("bunx", [
+      "vitest",
+      "run",
+      processHeavyUsecases,
+      "--exclude",
+      runtimeActiveClaimTest,
+      "--exclude",
+      isolatedCoreTest,
+      "--pool=threads",
+      "--reporter=default",
+      "--silent=passed-only",
+      "--maxWorkers",
+      "2",
+      "--testTimeout",
+      pooledCoreTimeout,
+      "--hookTimeout",
+      pooledCoreTimeout,
+    ]);
     process.stdout.write("core vitest process supervision isolated 1/1\n");
     runCapturedShard("bunx", [
       "vitest",
@@ -128,7 +152,7 @@ const groups = {
       "vitest",
       "run",
       "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-      "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+      runtimeActiveClaimTest,
       "--pool=forks",
       "--maxWorkers",
       "1",
