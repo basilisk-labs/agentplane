@@ -1,10 +1,10 @@
 ---
 id: "202608312334-MPXQBK"
 title: "Apply task-centric plan refinement before implementation commit qualification"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,7 @@ execution_route:
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
+    - "observed_path_outside_scope:scripts/checks/run-local-ci-group.mjs"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
@@ -83,11 +84,14 @@ execution_contract:
   observed:
     authority_violations:
       - "verification:recorded-check-3:fail"
+      - "writable_scope:scripts/checks/run-local-ci-group.mjs"
     changed_components:
       - "packages/agentplane"
+      - "scripts"
     changed_paths:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+      - "scripts/checks/run-local-ci-group.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -106,6 +110,7 @@ execution_contract:
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
+    - "observed_path_outside_scope:scripts/checks/run-local-ci-group.mjs"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -140,9 +145,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1f048c123e94204a9abde5a7b457c725a1ddc251a7bce8f27f6bcbd564fdef92"
+      digest: "sha256:c2c85a46517113d36e4f3282cba0f79d5e118b1ac457cd252ef1452a63e448c6"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:scripts/checks/run-local-ci-group.mjs"
         - "external_effect_requires_real_e2e"
       execution_groups:
         - "docs-schema"
@@ -152,9 +158,11 @@ execution_contract:
       observed:
         changed_components:
           - "packages/agentplane"
+          - "scripts"
         changed_files:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+          - "scripts/checks/run-local-ci-group.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -195,7 +203,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:recorded-check-3"
-commit: null
+commit:
+  hash: "0e089c15a89b269780fdb8a75d75d6409920c933"
+  message: "🚧 MPXQBK task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -215,6 +225,12 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0e089c15a89b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation and core-group proof are committed, but the top-level execution contract must monotonically authorize the approved WorkItem CI runner path before reconciliation can continue. Recommended action: Approve the exact monotonic scope extension for scripts/checks with repository effect ci, then issue a fresh replacement episode. Requested scope: roots=scripts/checks; repository effects=ci; request digest=sha256:f97111404e67e76bae08e463ef0205f7fd07b84b8c6fe4a6b0da5b99a1097f8d. Agentplane receipt: external-agent-blocker/tr_5d1913c4b80c6a8f439526ccc9b86b25/sha256:7673370a1402e8727c000b23123cd7bfe294b89ef112e965f59f608c0feed797/sha256:f97111404e67e76bae08e463ef0205f7fd07b84b8c6fe4a6b0da5b99a1097f8d."
 events:
   -
     type: "status"
@@ -272,9 +288,24 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T01:05:41.389Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0e089c15a89b. CLI accepted one state-bound external-agent semantic result."
+    commit: "0e089c15a89b269780fdb8a75d75d6409920c933"
+  -
+    type: "status"
+    at: "2026-09-01T01:07:08.499Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation and core-group proof are committed, but the top-level execution contract must monotonically authorize the approved WorkItem CI runner path before reconciliation can continue. Recommended action: Approve the exact monotonic scope extension for scripts/checks with repository effect ci, then issue a fresh replacement episode. Requested scope: roots=scripts/checks; repository effects=ci; request digest=sha256:f97111404e67e76bae08e463ef0205f7fd07b84b8c6fe4a6b0da5b99a1097f8d. Agentplane receipt: external-agent-blocker/tr_5d1913c4b80c6a8f439526ccc9b86b25/sha256:7673370a1402e8727c000b23123cd7bfe294b89ef112e965f59f608c0feed797/sha256:f97111404e67e76bae08e463ef0205f7fd07b84b8c6fe4a6b0da5b99a1097f8d."
 doc_version: 3
-doc_updated_at: "2026-09-01T00:57:17.035Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-01T01:07:08.499Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
   Summary: |-
@@ -407,6 +438,20 @@ extensions:
     scope_digest: "sha256:9225b51d473b5a4aeed46665e188e2d5cc0e89c91516d94b73596dc9b3c4e92e"
     status: "active"
     task_id: "202608312334-MPXQBK"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:7673370a1402e8727c000b23123cd7bfe294b89ef112e965f59f608c0feed797"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Authorize the approved core-sharding repair already committed and qualified by the production core group."
+      repository_effects:
+        - "ci"
+      schema_version: 1
+      scope_roots:
+        - "scripts/checks"
+    request_digest: "sha256:f97111404e67e76bae08e463ef0205f7fd07b84b8c6fe4a6b0da5b99a1097f8d"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_5d1913c4b80c6a8f439526ccc9b86b25"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1180,6 +1225,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "0e089c15a89b269780fdb8a75d75d6409920c933"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
