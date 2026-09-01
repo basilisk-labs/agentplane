@@ -4,7 +4,13 @@ const group = process.argv[2];
 const run = (command, args) => execFileSync(command, args, { env: process.env, stdio: "inherit" });
 const bunScript = (name) => run("bun", ["run", name]);
 const timeout = "60000";
-const maxWorkers = process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4";
+const requestedMaxWorkers = Number.parseInt(
+  process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4",
+  10,
+);
+const maxWorkers = String(
+  Number.isFinite(requestedMaxWorkers) ? Math.min(Math.max(requestedMaxWorkers, 1), 4) : 4,
+);
 const coreShardCount = 4;
 
 const groups = {

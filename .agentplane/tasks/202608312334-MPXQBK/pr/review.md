@@ -13,7 +13,7 @@ Created: 2026-08-31T23:43:04.724Z
 ## Verification
 
 - State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,8 +31,8 @@ Created: 2026-08-31T23:43:04.724Z
 ```text
  ...n-cli.core.task-advance.evidence-rework.test.ts | 106 +++++++++++++++++
  .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++++-
- scripts/checks/run-local-ci-group.mjs              |  12 +-
- 3 files changed, 238 insertions(+), 5 deletions(-)
+ scripts/checks/run-local-ci-group.mjs              |  20 +++-
+ 3 files changed, 245 insertions(+), 6 deletions(-)
 ```
 
 </details>
