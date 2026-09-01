@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 100
+revision: 103
 origin:
   system: "manual"
 depends_on:
@@ -644,6 +644,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Resume to apply the recorded bounded m3-lifecycle resource-claim refinement."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c0cb0ea9dac3. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -932,9 +935,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resume to apply the recorded bounded m3-lifecycle resource-claim refinement."
+  -
+    type: "status"
+    at: "2026-09-01T23:51:52.659Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c0cb0ea9dac3. CLI accepted one state-bound external-agent semantic result."
+    commit: "c0cb0ea9dac3ba0bfaaa065511a701bf23f038fb"
 doc_version: 3
-doc_updated_at: "2026-09-01T23:50:55.069Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-09-01T23:51:52.659Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -14766,9 +14777,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 95
+    revision: 103
     schema_version: 1
-    updated_at: "2026-09-01T23:51:00.905Z"
+    updated_at: "2026-09-01T23:51:53.798Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -14834,14 +14845,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-projections:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-projections"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:07669c2f2d5e9fd52b92124e723f013ea7c6b2fc063124f6821b3e2fcafedeeb"
+            id: "m3-projections-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-projections"
+            provenance:
+              - "sha256:5d84cd8adb6e4a954166488262f045c79d48b9e2317df41ed151eb827c81368b"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c95d0456a77b475a48392d11cacc3dff8be776544326f5c0c607cc1a25f586eb"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-01T23:51:53.717Z"
+              repository_snapshot_digest: "sha256:c95d0456a77b475a48392d11cacc3dff8be776544326f5c0c607cc1a25f586eb"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-retirement:
         attempt: 0
         claim_id: null
@@ -14917,6 +14958,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-3fa29c4eda693286825c99e0"
         next_revision: 86
         previous_revision: 85
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-49319a23087663f788759c14:
+        aggregate_digest: "sha256:bf2e2800e76ee79ee3876a827dbd485cc1419b6f4acaf1d6e82bcb910c9aa63e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T23:51:53.798Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_4d2c4294511cfd0dbab2743d"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-49319a23087663f788759c14"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 102
+          to: "COMPLETED"
+          work_item_id: "m3-projections"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-49319a23087663f788759c14"
+        next_revision: 103
+        previous_revision: 102
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-58df34845f4a7b8651a609b1:
@@ -15251,7 +15315,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "10afd7c227f39ea036e250ea3dadae08b7f17373"
+    hash: "c0cb0ea9dac3ba0bfaaa065511a701bf23f038fb"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
