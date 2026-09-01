@@ -35,13 +35,7 @@ const runCapturedShard = (command, args) => {
   process.stdout.write(`${summary}\n`);
 };
 const timeout = "60000";
-const requestedMaxWorkers = Number.parseInt(
-  process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4",
-  10,
-);
-const maxWorkers = String(
-  Number.isFinite(requestedMaxWorkers) ? Math.min(Math.max(requestedMaxWorkers, 1), 2) : 2,
-);
+const maxWorkers = "1";
 const coreShardCount = 16;
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
