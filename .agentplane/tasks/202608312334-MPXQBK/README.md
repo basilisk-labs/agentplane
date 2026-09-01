@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 217
+revision: 225
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,7 @@ verify:
   - "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-01T16:23:33.505Z"
+  updated_at: "2026-09-01T17:27:49.958Z"
   updated_by: "USER"
   note: null
 verification:
@@ -386,6 +386,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 513cb2faeb2a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 218a300f7774. CLI accepted one state-bound external-agent semantic result."
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
@@ -979,8 +985,29 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T16:28:44.933Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 218a300f7774. CLI accepted one state-bound external-agent semantic result."
+    commit: "218a300f7774cfffde73d9006d6d8a5f47c088ba"
+  -
+    type: "verify"
+    at: "2026-09-01T17:25:47.528Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-01T17:28:02.171Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-09-01T16:23:43.898Z"
+doc_updated_at: "2026-09-01T17:28:02.171Z"
 doc_updated_by: "CODER"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
@@ -991,7 +1018,7 @@ sections:
   Scope: |-
     - In scope: Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66.
     - Out of scope: unrelated refactors not required for "Apply task-centric plan refinement before implementation commit qualification".
-  Plan: "Preserve the stable two-worker topology and increase only the aggregate core boundary to 55 minutes for the measured sum of sequential waves."
+  Plan: "Serialize only the contention-sensitive shard with 180-second bounds and provide a 75-minute aggregate core budget; preserve every other proven parameter."
   Verify Steps: |-
     PLANNER fallback scaffold for "Apply task-centric plan refinement before implementation commit qualification". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -2210,6 +2237,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-01T17:25:47.528Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:79d534fe659eca36a26bd432335350f54256e09505f9e09b5e0bbbac0984ce7a
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -2228,12 +2295,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:05a67f3b3882321dc8551ae22f0a9b2f590fcbf3969a590de8038ce834ccd069"
-    digest: "sha256:0a15bec8f869c99fd14db9388019b4f51837b702ef3d400d627f0613d0c628ef"
-    grant_id: "41c82bf2-543e-4152-8f34-483c767287d2"
-    issued_at: "2026-09-01T16:23:33.505Z"
+    digest: "sha256:bdb8cc9fdda147460ec75e649f3cc1d1db23e330a4f459f5f222d292c270bf1c"
+    grant_id: "fd904f27-6566-4081-8324-ac58693b84f5"
+    issued_at: "2026-09-01T17:27:49.958Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:eefba688d2a422e060288a89176902306aa6f7c74227518bd121907387186057"
-    plan_revision: 215
+    plan_digest: "sha256:668230933b3129764d54506c79542a64aa8709c16260d8a2056980da3d89c8df"
+    plan_revision: 223
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:d12cd926fe8723833ee679ad79a1b21be16839180bf160dde5aa1a24ffda5e8c"
@@ -2258,29 +2325,30 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-01T16:23:33.505Z"
+        approved_at: "2026-09-01T17:27:49.958Z"
         approved_by: "USER"
-        approved_digest: "sha256:91f47c0b5e3d1949f98a35926c735f71152effcea482a5b973b2abc47e04c513"
+        approved_digest: "sha256:ecaa5d0740266ac033eb02a716b0b25bbaf675a88bd3123e6511831d05713c9b"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-01T16:23:21.298Z"
-      digest: "sha256:91f47c0b5e3d1949f98a35926c735f71152effcea482a5b973b2abc47e04c513"
+      created_at: "2026-09-01T17:27:38.119Z"
+      digest: "sha256:ecaa5d0740266ac033eb02a716b0b25bbaf675a88bd3123e6511831d05713c9b"
       proposal:
         assumptions:
           - "The committed fail-closed recovery remains the candidate under requalification."
-          - "The broad remainder uses two thread workers with all approved exclusions."
-          - "The exact five-file contention-sensitive wave and runner/usecases wave remain at two workers."
-          - "The final isolated core and runtime invocations remain at one fork worker with 120000 test and hook bounds."
-          - "The core group uses a 55-minute aggregate boundary and every other group retains the 15-minute default."
+          - "The broad remainder uses two thread workers with all approved exclusions and 120000 bounds."
+          - "The exact five-file contention-sensitive wave uses one thread worker and 180000 test and hook bounds."
+          - "The runner/usecases wave remains at two workers with 120000 bounds."
+          - "The final isolated core and runtime invocations remain at one fork worker with 120000 bounds."
+          - "The core group uses a 75-minute aggregate boundary and every other group retains the 15-minute default."
           - "The critical CLI file retains its explicit 120000 test timeout and every assertion."
           - "No test is omitted and every invocation remains fail-closed."
           - "Supervisor verification starts only after no previous verification process remains and macOS execution-policy services show stable low load."
         planning_baseline:
-          captured_at: "2026-09-01T16:19:56.647Z"
+          captured_at: "2026-09-01T17:26:53.767Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:f7c7e046dfc659e68eadfa9f205e34ab339295c8b98a9487613e27f0ca921817"
+          digest: "sha256:32dd379a085658bac409b22ee397246e1d42e9cce08b67dabf94a1ac2263eb22"
           dirty_paths:
             - ".agentplane/tasks/202608312334-MPXQBK/README.md"
             - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
@@ -2288,14 +2356,14 @@ extensions:
             - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
             - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
             - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901161847968-7767a59f6f9a10f1.json"
+            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901172547528-82a40cb7595856b7.json"
           git:
             kind: "commit"
             ref: null
-            sha: "513cb2faeb2a2709eda533fc7480fa76b397430f"
+            sha: "218a300f7774cfffde73d9006d6d8a5f47c088ba"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:214"
+          task_history_cursor: "task-revision:222"
         schema_version: 1
         task_id: "202608312334-MPXQBK"
         top_level_validation:
@@ -2311,10 +2379,10 @@ extensions:
             -
               check_ids:
                 - "full-ci"
-              description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+              description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 75-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files with one thread worker and 180000 test and hook bounds. Run runner/usecases with two thread workers and 120000 bounds. Run final isolated core and runtime files with one fork worker and 120000 bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
               id: "legacy-recovery-and-core-convergence"
               required: true
-          evidence_fingerprint: "sha256:f7c7e046dfc659e68eadfa9f205e34ab339295c8b98a9487613e27f0ca921817"
+          evidence_fingerprint: "sha256:32dd379a085658bac409b22ee397246e1d42e9cce08b67dabf94a1ac2263eb22"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -2325,7 +2393,7 @@ extensions:
                 -
                   check_ids:
                     - "full-ci"
-                  description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+                  description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 75-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files with one thread worker and 180000 test and hook bounds. Run runner/usecases with two thread workers and 120000 bounds. Run final isolated core and runtime files with one fork worker and 120000 bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
                   id: "legacy-recovery-and-core-convergence"
                   required: true
               capabilities:
@@ -2347,7 +2415,7 @@ extensions:
                 - "legacy-exchange-recovery-evidence"
                 - "core-sharding-evidence"
               id: "legacy-recovery-and-core-convergence"
-              objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+              objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 75-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files with one thread worker and 180000 test and hook bounds. Run runner/usecases with two thread workers and 120000 bounds. Run final isolated core and runtime files with one fork worker and 120000 bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
               optional: false
               priority: 100
               required_inputs: []
@@ -2382,12 +2450,12 @@ extensions:
                   -
                     check_ids:
                       - "full-ci"
-                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 75-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files with one thread worker and 180000 test and hook bounds. Run runner/usecases with two thread workers and 120000 bounds. Run final isolated core and runtime files with one fork worker and 120000 bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
                     id: "legacy-recovery-and-core-convergence"
                     required: true
-                evidence_fingerprint: "sha256:f7c7e046dfc659e68eadfa9f205e34ab339295c8b98a9487613e27f0ca921817"
+                evidence_fingerprint: "sha256:32dd379a085658bac409b22ee397246e1d42e9cce08b67dabf94a1ac2263eb22"
                 schema_version: 1
-      revision: 25
+      revision: 26
       schema_version: 1
       task_id: "202608312334-MPXQBK"
     event_cursor: 1
@@ -5741,9 +5809,143 @@ extensions:
         revision: 24
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 215
+      -
+        approval:
+          approved_at: "2026-09-01T16:23:33.505Z"
+          approved_by: "USER"
+          approved_digest: "sha256:91f47c0b5e3d1949f98a35926c735f71152effcea482a5b973b2abc47e04c513"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-01T16:23:21.298Z"
+        digest: "sha256:91f47c0b5e3d1949f98a35926c735f71152effcea482a5b973b2abc47e04c513"
+        proposal:
+          assumptions:
+            - "The committed fail-closed recovery remains the candidate under requalification."
+            - "The broad remainder uses two thread workers with all approved exclusions."
+            - "The exact five-file contention-sensitive wave and runner/usecases wave remain at two workers."
+            - "The final isolated core and runtime invocations remain at one fork worker with 120000 test and hook bounds."
+            - "The core group uses a 55-minute aggregate boundary and every other group retains the 15-minute default."
+            - "The critical CLI file retains its explicit 120000 test timeout and every assertion."
+            - "No test is omitted and every invocation remains fail-closed."
+            - "Supervisor verification starts only after no previous verification process remains and macOS execution-policy services show stable low load."
+          planning_baseline:
+            captured_at: "2026-09-01T16:19:56.647Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:f7c7e046dfc659e68eadfa9f205e34ab339295c8b98a9487613e27f0ca921817"
+            dirty_paths:
+              - ".agentplane/tasks/202608312334-MPXQBK/README.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/meta.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901161847968-7767a59f6f9a10f1.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "513cb2faeb2a2709eda533fc7480fa76b397430f"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:214"
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "full-ci"
+                description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+                id: "legacy-recovery-and-core-convergence"
+                required: true
+            evidence_fingerprint: "sha256:f7c7e046dfc659e68eadfa9f205e34ab339295c8b98a9487613e27f0ca921817"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "full-ci"
+                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+                    id: "legacy-recovery-and-core-convergence"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 100000
+                  optional_sources:
+                    - "scripts/checks/run-local-ci.mjs"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                    - "scripts/checks/run-local-ci-group.mjs"
+                  symbol_hints:
+                    - "applyExternalPlanRefinement"
+                    - "validateLegacyRefinementArtifacts"
+                    - "groups.core"
+                depends_on: []
+                expected_outputs:
+                  - "legacy-exchange-recovery-evidence"
+                  - "core-sharding-evidence"
+                id: "legacy-recovery-and-core-convergence"
+                objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "scripts/checks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "full-ci"
+                      description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery through required native full CI after a bounded host cooldown. Use a 55-minute aggregate core boundary and preserve 15-minute non-core boundaries. Run the broad remainder with two thread workers and 120000 pooled bounds using every approved exclusion. Run the exact five contention-sensitive files and runner/usecases waves with two thread workers and 120000 bounds. Run the final isolated core files and runtime files with one fork worker and 120000 test and hook bounds. Preserve the explicit 120000 critical agent-efficiency timeout, every selected test, cold CLI baseline, bounded file-backed diagnostics and fail-closed execution. Every invocation must run and any failure must fail the group."
+                      id: "legacy-recovery-and-core-convergence"
+                      required: true
+                  evidence_fingerprint: "sha256:f7c7e046dfc659e68eadfa9f205e34ab339295c8b98a9487613e27f0ca921817"
+                  schema_version: 1
+        revision: 25
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+    revision: 223
     schema_version: 1
-    updated_at: "2026-09-01T16:23:33.505Z"
+    updated_at: "2026-09-01T17:27:49.958Z"
     work_items:
       legacy-recovery-and-core-convergence:
         attempt: 0
@@ -6285,6 +6487,29 @@ extensions:
         mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-b78add55fe1d6bf47088c913"
         next_revision: 97
         previous_revision: 96
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+      external-result:work-order-202608312334-MPXQBK-executor-b9715fb691892629c62ceb0d:
+        aggregate_digest: "sha256:41ca551719b8ded81f4b15681d9b67415a697e436eba6b65f4474856937d010e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T17:25:53.823Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_8d47eb6625c8922d1e9246a5"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-b9715fb691892629c62ceb0d"
+          plan_digest: "sha256:91f47c0b5e3d1949f98a35926c735f71152effcea482a5b973b2abc47e04c513"
+          plan_revision: 25
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 220
+          to: "REWORK_READY"
+          work_item_id: "legacy-recovery-and-core-convergence"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-b9715fb691892629c62ceb0d"
+        next_revision: 221
+        previous_revision: 220
         schema_version: 1
         task_id: "202608312334-MPXQBK"
       external-result:work-order-202608312334-MPXQBK-executor-b9aecab99e00dceb70d3fd30:
@@ -6984,6 +7209,32 @@ extensions:
         previous_revision: 141
         schema_version: 1
         task_id: "202608312334-MPXQBK"
+      plan-refinement:work-order-202608312334-MPXQBK-executor-df17bd0d7e3925a91277d14c:
+        aggregate_digest: "sha256:a6c4b20c817b4cb60f1569550b3ef44035c4c997dbc80c55b4d23e6d5daca10a"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-01T17:26:50.399Z"
+          cause_refs:
+            - "acceptance_changed"
+            - "risk_changed"
+            - "architecture_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9234487ee7632a255bb97105"
+          mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-df17bd0d7e3925a91277d14c"
+          plan_digest: "sha256:91f47c0b5e3d1949f98a35926c735f71152effcea482a5b973b2abc47e04c513"
+          plan_revision: 25
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 221
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-df17bd0d7e3925a91277d14c"
+        next_revision: 222
+        previous_revision: 221
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
       plan-refinement:work-order-202608312334-MPXQBK-executor-f96724498ff3fb3d8ac532c3:
         aggregate_digest: "sha256:b4d5dc9239a382d72fe513eef5f802d3a2fba7af03d5980715733d5b2944f226"
         event:
@@ -7034,7 +7285,7 @@ Fix external-agent implementation result handling so a completed semantic result
 
 ## Plan
 
-Preserve the stable two-worker topology and increase only the aggregate core boundary to 55 minutes for the measured sum of sequential waves.
+Serialize only the contention-sensitive shard with 180-second bounds and provide a 75-minute aggregate core budget; preserve every other proven parameter.
 
 ## Verify Steps
 
@@ -8225,6 +8476,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:e771f3d33594466aba6aca0421d571d8e679f05125d1779948df37d36261b321
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-01T17:25:47.528Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:79d534fe659eca36a26bd432335350f54256e09505f9e09b5e0bbbac0984ce7a
 
 Details:
 
