@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 237
+revision: 238
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-01T19:46:42.812Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "03a84689d8841fc857d3ec7dcca54337996f03d0"
+  blueprint_digest: "9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2"
+  evidence_refs:
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/20260901-194524244-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/20260901-194524244-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/5a5f18fbad11b3303b7dd850d421f9cedf4c3d281ee27844aa30afd481b29635.md"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/20260901-194524244-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/20260901-194524244-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/20260901-194524244-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608312334-MPXQBK/README.md"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/81f4d8610d2a522e69d92277531719cad0976283313be61469f54a2191e995a1.patch"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/fa2f24aa2b23479627943b068dac19702018bdeb8a46e4fd1a5725bb2e027103.json"
+    - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901194423914-bc057db20bbce44d.json"
+    - ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/ed6035310b2c512dae43fe77dc3a0d4b74e15b617aa017a69a1b8faf944a8a01.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The legacy path accepts only the exact README and paired supervisor evidence projection, rejects status drift, malformed evidence, foreign task identity and invalid commit ancestry."
+    - "Focused regressions cover exact pre-snapshot result_received recovery without replaying completed work plus malformed and foreign evidence rejection."
+    - "The frozen diff remains within the approved task, CLI and CI-runner scope; no unrelated product behavior was introduced."
+    - "Supervisor evidence records the focused seven-test task check and the complete full-CI contour as passed at implementation SHA 03a84689d8841fc857d3ec7dcca54337996f03d0."
+    - "Residual risk: The compatibility recovery intentionally remains limited to pre-snapshot exchanges with unchanged, identity-bound supervisor artifacts; other legacy ambiguity remains fail-closed."
 execution_route:
   frozen: true
   reason_codes:

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The legacy path accepts only the exact README and paired supervisor evidence projection, rejects status drift, malformed evidence, foreign task identity and invalid commit ancestry.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/81f4d8610d2a522e69d92277531719cad0976283313be61469f54a2191e995a1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Focused regressions cover exact pre-snapshot result_received recovery without replaying completed work plus malformed and foreign evidence rejection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/81f4d8610d2a522e69d92277531719cad0976283313be61469f54a2191e995a1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The frozen diff remains within the approved task, CLI and CI-runner scope; no unrelated product behavior was introduced.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/81f4d8610d2a522e69d92277531719cad0976283313be61469f54a2191e995a1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor evidence records the focused seven-test task check and the complete full-CI contour as passed at implementation SHA 03a84689d8841fc857d3ec7dcca54337996f03d0.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/81f4d8610d2a522e69d92277531719cad0976283313be61469f54a2191e995a1.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The compatibility recovery intentionally remains limited to pre-snapshot exchanges with unchanged, identity-bound supervisor artifacts; other legacy ambiguity remains fail-closed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608312334-MPXQBK/quality/objects/sha256/81f4d8610d2a522e69d92277531719cad0976283313be61469f54a2191e995a1.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
