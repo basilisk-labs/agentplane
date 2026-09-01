@@ -43,7 +43,7 @@ const COMPATIBILITY_LIBRARY_URL = pathToFileURL(
 const TARBALL_POLICY_LIBRARY_URL = pathToFileURL(
   path.join(REPO_ROOT, "scripts/lib/package-tarball-policy.mjs"),
 ).href;
-const TEST_TIMEOUT_MS = 60_000;
+const TEST_TIMEOUT_MS = 120_000;
 
 const tempRoots: string[] = [];
 

@@ -30,10 +30,11 @@ Created: 2026-08-31T23:43:04.724Z
 
 ```text
  ...n-cli.core.task-advance.evidence-rework.test.ts | 106 ++++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
  .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++-
- scripts/checks/run-local-ci-group.mjs              | 135 ++++++++++++++++++++-
+ scripts/checks/run-local-ci-group.mjs              | 137 ++++++++++++++++++++-
  scripts/checks/run-local-ci.mjs                    |  19 ++-
- 4 files changed, 371 insertions(+), 14 deletions(-)
+ 5 files changed, 373 insertions(+), 16 deletions(-)
 ```
 
 </details>

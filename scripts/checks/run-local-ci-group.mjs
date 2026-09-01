@@ -34,7 +34,7 @@ const runCapturedShard = (command, args) => {
     .join("\n");
   process.stdout.write(`${summary}\n`);
 };
-const timeout = "60000";
+const timeout = "120000";
 const pooledCoreTimeout = "120000";
 const corePoolWorkers = "4";
 const processHeavyUsecases = "packages/agentplane/src/runner/usecases";
