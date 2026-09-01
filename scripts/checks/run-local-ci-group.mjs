@@ -42,7 +42,7 @@ const requestedMaxWorkers = Number.parseInt(
 const maxWorkers = String(
   Number.isFinite(requestedMaxWorkers) ? Math.min(Math.max(requestedMaxWorkers, 1), 2) : 2,
 );
-const coreShardCount = 4;
+const coreShardCount = 16;
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 
