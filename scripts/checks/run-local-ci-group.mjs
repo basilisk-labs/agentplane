@@ -35,7 +35,7 @@ const runCapturedShard = (command, args) => {
   process.stdout.write(`${summary}\n`);
 };
 const timeout = "60000";
-const maxWorkers = "1";
+const maxWorkers = "2";
 const coreShardCount = 16;
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
