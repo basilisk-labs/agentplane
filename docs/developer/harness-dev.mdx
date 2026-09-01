@@ -45,6 +45,11 @@ canonical aggregate. A repeated command returns its existing receipt. A changed 
 same mutation ID is rejected. Every write requires independent digest readback; a lost response
 is reconciled by reading, and an unavailable readback remains `write_in_doubt`.
 
+Local reads tolerate only a bounded transient identity change caused by the atomic README
+replacement that owns the canonical record. A persistent change, a symlink, or any other unsafe
+path remains fail-closed; retrying the observation does not synthesize a legacy aggregate or grant
+mutation authority.
+
 `task show` renders canonical records through `projectKernelTask`. Archived records remain read
 only. The old Task-centric adapter refuses records bearing the new extension, including malformed
 ones. Legacy records continue on their existing path until the M2 replay gate and M3 cutover.

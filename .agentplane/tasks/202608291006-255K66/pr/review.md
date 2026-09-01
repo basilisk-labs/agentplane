@@ -29,7 +29,7 @@ Created: 2026-08-30T21:48:11.941Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     | 104 +++
+ docs/developer/harness-dev.mdx                     | 109 +++
  .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
  .../task-backend/kernel-authority-schema.ts        |  54 ++
  .../task-backend/kernel-backend-adapter.test.ts    |  30 +-
@@ -104,7 +104,7 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- 75 files changed, 6660 insertions(+), 501 deletions(-)
+ 75 files changed, 6665 insertions(+), 501 deletions(-)
 ```
 
 </details>

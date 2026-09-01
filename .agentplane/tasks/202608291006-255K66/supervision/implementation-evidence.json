@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 338e7437b135c47a54f4ad83e4275416b9c64eb2..71912f4add7df8db538392150ec634b2012770d1",
+      "command": "git diff --check e392a4f18981b271de6d67bc86d0e96a056adfc1..c76590dcef51f16aad20321840e5c147ca79085a",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 338e7437b135c47a54f4ad83e4275416b9c64eb2..71912f4add7df8db538392150ec634b2012770d1",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e392a4f18981b271de6d67bc86d0e96a056adfc1..c76590dcef51f16aad20321840e5c147ca79085a",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,11 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts"
+        "M\tdocs/developer/harness-dev.mdx",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
       ]
     },
     {
@@ -31,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "338e7437b135c47a54f4ad83e4275416b9c64eb2",
-  "implementation_commit": "71912f4add7df8db538392150ec634b2012770d1",
+  "execution_base_commit": "e392a4f18981b271de6d67bc86d0e96a056adfc1",
+  "implementation_commit": "c76590dcef51f16aad20321840e5c147ca79085a",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
