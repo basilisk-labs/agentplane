@@ -1,10 +1,10 @@
 ---
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 86
+revision: 90
 origin:
   system: "manual"
 depends_on:
@@ -43,6 +43,7 @@ execution_route:
     - "effect_schema"
     - "effect_security_boundary"
     - "material_implementation_uncertainty"
+    - "observed_path_outside_scope:scripts/release/smoke-bun-compiled-cli.mjs"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -157,7 +158,8 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "scripts/qualification"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "writable_scope:scripts/release/smoke-bun-compiled-cli.mjs"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -180,6 +182,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
       - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/agentplane/src/commands/guard/impl/allow.test.ts"
       - "packages/agentplane/src/commands/shared/task-mutation.ts"
       - "packages/agentplane/src/commands/task/active.command.ts"
       - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
@@ -243,6 +246,7 @@ execution_contract:
       - "schemas/agent-work-order-v2.schema.json"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/release/smoke-bun-compiled-cli.mjs"
     external_effects: []
     repository_effects:
       - "documentation"
@@ -260,6 +264,7 @@ execution_contract:
     - "effect_schema"
     - "effect_security_boundary"
     - "material_implementation_uncertainty"
+    - "observed_path_outside_scope:scripts/release/smoke-bun-compiled-cli.mjs"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -336,7 +341,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:847841b540d25d7e60b9ec782e639b971a1f1b16343b7d2032c5a4ad43bdca3a"
+      digest: "sha256:b1b9204aea64d188b52e2ab4b2df799b1227231684b34623fe1d96dba955b1d3"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -373,6 +378,7 @@ execution_contract:
         - "central_path:schemas/agent-semantic-result.schema.json"
         - "central_path:schemas/agent-work-order-v2.schema.json"
         - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_path:scripts/release/smoke-bun-compiled-cli.mjs"
         - "effect_public_api"
         - "effect_release_metadata"
         - "effect_schema"
@@ -409,6 +415,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
           - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/agentplane/src/commands/guard/impl/allow.test.ts"
           - "packages/agentplane/src/commands/shared/task-mutation.ts"
           - "packages/agentplane/src/commands/task/active.command.ts"
           - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
@@ -472,6 +479,7 @@ execution_contract:
           - "schemas/agent-work-order-v2.schema.json"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/release/smoke-bun-compiled-cli.mjs"
         external_effects: []
         repository_effects:
           - "documentation"
@@ -521,7 +529,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9207950b8fcc29bb59840daf835528326c564699"
+  message: "🚧 255K66 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -616,6 +626,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d26d9bace65f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9207950b8fcc. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved m3-lifecycle WorkItem and this packet authorize the Bun smoke script, but the task-level execution contract omitted that exact root. Result admission therefore requires the matching state-bound scope extension before it can accept the already-qualified implementation. Recommended action: Extend task authority by scripts/release/smoke-bun-compiled-cli.mjs with repository_write and tests effects, then issue a fresh EXECUTOR packet. Requested scope: roots=scripts/release/smoke-bun-compiled-cli.mjs; repository effects=repository_write,tests; request digest=sha256:e66450e22342237954118ad1febee57b158f542518a3f3874827572acb5ff468. Agentplane receipt: external-agent-blocker/tr_d6b2efd3198d4dd24308765e1c4e2866/sha256:bd641f14a4d454547fb48e03394ffb6770b1159a61c0f5916bb244fecc523d9e/sha256:e66450e22342237954118ad1febee57b158f542518a3f3874827572acb5ff468."
 events:
   -
     type: "status"
@@ -867,8 +883,23 @@ events:
     to: "DOING"
     note: "Implementation committed: d26d9bace65f. CLI accepted one state-bound external-agent semantic result."
     commit: "d26d9bace65f9b9eaa1289ba49dd88e329da4759"
+  -
+    type: "status"
+    at: "2026-09-01T23:40:43.793Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9207950b8fcc. CLI accepted one state-bound external-agent semantic result."
+    commit: "9207950b8fcc29bb59840daf835528326c564699"
+  -
+    type: "status"
+    at: "2026-09-01T23:43:04.301Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The approved m3-lifecycle WorkItem and this packet authorize the Bun smoke script, but the task-level execution contract omitted that exact root. Result admission therefore requires the matching state-bound scope extension before it can accept the already-qualified implementation. Recommended action: Extend task authority by scripts/release/smoke-bun-compiled-cli.mjs with repository_write and tests effects, then issue a fresh EXECUTOR packet. Requested scope: roots=scripts/release/smoke-bun-compiled-cli.mjs; repository effects=repository_write,tests; request digest=sha256:e66450e22342237954118ad1febee57b158f542518a3f3874827572acb5ff468. Agentplane receipt: external-agent-blocker/tr_d6b2efd3198d4dd24308765e1c4e2866/sha256:bd641f14a4d454547fb48e03394ffb6770b1159a61c0f5916bb244fecc523d9e/sha256:e66450e22342237954118ad1febee57b158f542518a3f3874827572acb5ff468."
 doc_version: 3
-doc_updated_at: "2026-09-01T23:14:32.351Z"
+doc_updated_at: "2026-09-01T23:43:04.301Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -2024,22 +2055,20 @@ extensions:
     status: "active"
     task_id: "202608291006-255K66"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-01T22:51:56.090Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:444fe6b582cbbba83d780f118027a165f1c0c9e390d5f3f313135ee769e73bb7"
+    blocker_state_fingerprint: "sha256:bd641f14a4d454547fb48e03394ffb6770b1159a61c0f5916bb244fecc523d9e"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The required full native CI gate includes Prettier, and its deterministic failure can only be repaired by formatting the named document."
+      rationale: "The approved m3-lifecycle full native CI repair requires ad-hoc signing of the generated temporary Bun executable on macOS; the WorkItem and packet already authorize this exact file."
       repository_effects:
-        - "documentation"
         - "repository_write"
+        - "tests"
       schema_version: 1
       scope_roots:
-        - "docs/developer/harness-dev.mdx"
-    request_digest: "sha256:bb8c59922ef25014cde80cc1056f7560b63a97f82c50c915cf018b25446026d0"
+        - "scripts/release/smoke-bun-compiled-cli.mjs"
+    request_digest: "sha256:e66450e22342237954118ad1febee57b158f542518a3f3874827572acb5ff468"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_9c6ef61b40f4aef93071607487463c66"
+    status: "pending"
+    transition_id: "tr_d6b2efd3198d4dd24308765e1c4e2866"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -12697,7 +12726,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d26d9bace65f9b9eaa1289ba49dd88e329da4759"
+    hash: "9207950b8fcc29bb59840daf835528326c564699"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
