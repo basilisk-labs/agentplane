@@ -22,7 +22,7 @@ Fix external-agent implementation result handling so a completed semantic result
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-31T23:43:04.724Z
+- Updated: 2026-09-01T19:45:19.216Z
 - Branch: task/202608312334-MPXQBK/apply-task-centric-plan-refinement-before-implem
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

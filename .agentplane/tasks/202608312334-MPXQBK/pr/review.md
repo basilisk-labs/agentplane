@@ -6,7 +6,7 @@ Created: 2026-08-31T23:43:04.724Z
 
 - Task: `202608312334-MPXQBK`
 - Title: Apply task-centric plan refinement before implementation commit qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608312334-MPXQBK/apply-task-centric-plan-refinement-before-implem`
 - Canonical task record: `.agentplane/tasks/202608312334-MPXQBK/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-08-31T23:43:04.724Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-31T23:43:04.724Z
+- Updated: 2026-09-01T19:45:19.216Z
 - Branch: task/202608312334-MPXQBK/apply-task-centric-plan-refinement-before-implem
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
