@@ -27,9 +27,9 @@ Fix external-agent implementation result handling so a completed semantic result
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance.evidence-rework.test.ts |  76 +++++++++++++
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 106 +++++++++++++++++
  .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++++-
- 2 files changed, 198 insertions(+), 3 deletions(-)
+ 2 files changed, 228 insertions(+), 3 deletions(-)
 ```
 
 </details>

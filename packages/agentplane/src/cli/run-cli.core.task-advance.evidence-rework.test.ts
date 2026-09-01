@@ -549,6 +549,36 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
     expect(rejected.stderr).toContain("declared checks failed identity validation");
   });
 
+  it("rejects foreign supervisor evidence identity in a pre-snapshot refinement exchange", async () => {
+    const f = await completedFixture();
+    await report(f.rework, "Reject foreign legacy supervisor evidence.", {
+      plan_refinement: planRefinement(true),
+    });
+    const declaredPath = path.join(
+      f.checkout,
+      ".agentplane/tasks",
+      f.taskId,
+      "supervision/declared-checks.json",
+    );
+    const evidencePath = path.join(
+      f.checkout,
+      ".agentplane/tasks",
+      f.taskId,
+      "supervision/implementation-evidence.json",
+    );
+    const declared = JSON.parse(await readFile(declaredPath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      declaredPath,
+      `${JSON.stringify({ ...declared, task_id: "foreign-task" }, null, 2)}\n`,
+    );
+    await writeFile(evidencePath, `${await readFile(evidencePath, "utf8")}\n`);
+    await downgradeToLegacyExchange(f.checkout, f.rework, true);
+
+    const rejected = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("declared checks failed identity validation");
+  });
+
   it.each([false, true])(
     "records refinement without implementation (material=%s)",
     async (material) => {

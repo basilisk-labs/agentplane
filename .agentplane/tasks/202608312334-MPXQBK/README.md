@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,7 @@ verify:
   - "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-08-31T23:56:12.561Z"
+  updated_at: "2026-09-01T00:26:45.640Z"
   updated_by: "USER"
   note: null
 verification:
@@ -81,12 +81,25 @@ execution_contract:
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -110,6 +123,7 @@ execution_contract:
           - "external_effect:external_write"
           - "external_effect:network_read"
           - "hosted_integration"
+          - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -123,29 +137,38 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:0159d6234066b4eff34c0a2d702792ff148a8df233a290ec632b5706194a3708"
+      digest: "sha256:1f048c123e94204a9abde5a7b457c725a1ddc251a7bce8f27f6bcbd564fdef92"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "external_effect_requires_real_e2e"
       execution_groups:
+        - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: true
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "full_regression"
         - "hosted_integration"
         - "real_e2e"
         - "task_outcome"
@@ -164,14 +187,22 @@ execution_contract:
       - "external_effect:external_write"
       - "external_effect:network_read"
       - "hosted_integration"
+      - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f71828f07c3f. CLI accepted one state-bound external-agent semantic result."
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
@@ -190,8 +221,29 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T00:08:11.468Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f71828f07c3f. CLI accepted one state-bound external-agent semantic result."
+    commit: "f71828f07c3f9f0334cbd11f0956b668dd7de31e"
+  -
+    type: "verify"
+    at: "2026-09-01T00:18:13.366Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+  -
+    type: "status"
+    at: "2026-09-01T00:26:47.271Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-08-31T23:56:13.965Z"
+doc_updated_at: "2026-09-01T00:26:47.271Z"
 doc_updated_by: "CODER"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
@@ -202,7 +254,7 @@ sections:
   Scope: |-
     - In scope: Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66.
     - Out of scope: unrelated refactors not required for "Apply task-centric plan refinement before implementation commit qualification".
-  Plan: "One bounded compatibility WorkItem recovers only exact pre-A0F906 refinement exchanges and retains fail-closed behavior elsewhere."
+  Plan: "Requalify the existing bootstrap commit with a bounded two-test focused gate and unchanged full CI."
   Verify Steps: |-
     PLANNER fallback scaffold for "Apply task-centric plan refinement before implementation commit qualification". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -211,6 +263,46 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-01T00:18:13.366Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:5ba70912da0d372769643804f2e93273bcda8064574c9028d8baa50047f80233
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+    Result: fail
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -228,13 +320,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:2bee65bfc3b0604ba82f49f73586220196bb36c23a1cccfd2206a0994481b365"
-    digest: "sha256:17f56023612a9bc785d03057ab0714ff254f134aac9b83bd8741501b63360087"
-    grant_id: "9776bffe-7a23-44ce-8b39-21b3cc11030e"
-    issued_at: "2026-08-31T23:56:12.561Z"
+    completion_contract_digest: "sha256:a44688931cc210e33e05951b4b8be599f9727073b798bb6999a90dbb27a9681c"
+    digest: "sha256:890f69b3b1aab5ac7f76438ceb85ff08098c34fd888685768e984d596f3a134c"
+    grant_id: "ae2f5e57-6437-4432-858f-07926f0dda97"
+    issued_at: "2026-09-01T00:26:45.640Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:f2dcca8ea027aab6d6360e6be90ec44c53cb63e474fdc7221b83275c361aac21"
-    plan_revision: 6
+    plan_digest: "sha256:b762b5866de39fa4d9886445ee311d593c8260779d357f3050e0faae175f2b57"
+    plan_revision: 14
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:9225b51d473b5a4aeed46665e188e2d5cc0e89c91516d94b73596dc9b3c4e92e"
@@ -243,46 +335,46 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-08-31T23:56:12.561Z"
+        approved_at: "2026-09-01T00:26:45.640Z"
         approved_by: "USER"
-        approved_digest: "sha256:da1b9d93d9217e30747da6cc11312b3e8fbedae4b16958626005099f34672989"
+        approved_digest: "sha256:342e060ee1d3bf3d08e381dd70297bad255bf5023e35a723c2c361c79c805d67"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-08-31T23:56:05.092Z"
-      digest: "sha256:da1b9d93d9217e30747da6cc11312b3e8fbedae4b16958626005099f34672989"
+      created_at: "2026-09-01T00:26:37.742Z"
+      digest: "sha256:342e060ee1d3bf3d08e381dd70297bad255bf5023e35a723c2c361c79c805d67"
       proposal:
         assumptions:
-          - "Recovery is limited to pre-A0F906 exchanges whose result is already immutably received."
-          - "No task journal, exchange or evidence artifact is edited manually."
-          - "New exchanges continue to require exact content snapshots."
+          - "The committed implementation remains the candidate under requalification."
+          - "The focused check covers the two new legacy cases; full CI remains the broad regression gate."
+          - "No timeout is increased."
         planning_baseline:
-          captured_at: "2026-08-31T23:55:46.394Z"
+          captured_at: "2026-09-01T00:26:14.463Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:06a27a20b659d237fd25f1938d2f70bfbad278ac15e20715dbd0fba7e71104d1"
+          digest: "sha256:2efafa27e641f7d22499d6f2d42367dfb52cb49edf85242cfad786d78f4ddc27"
           dirty_paths:
             - ".agentplane/tasks/202608312334-MPXQBK/README.md"
-            - ".agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608312334-MPXQBK/pr/diffstat.txt"
             - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
-            - ".agentplane/tasks/202608312334-MPXQBK/pr/github-title.txt"
             - ".agentplane/tasks/202608312334-MPXQBK/pr/meta.json"
             - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
+            - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+            - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
+            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901001813366-e78408ff0a542240.json"
           git:
             kind: "commit"
             ref: null
-            sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
+            sha: "f71828f07c3f9f0334cbd11f0956b668dd7de31e"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:5"
+          task_history_cursor: "task-revision:13"
         schema_version: 1
         task_id: "202608312334-MPXQBK"
         top_level_validation:
           checks:
             -
               capability: "task.verify"
-              command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+              command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot"
               id: "focused-legacy-refinement-recovery"
               kind: "deterministic"
               required: true
@@ -299,10 +391,10 @@ extensions:
               check_ids:
                 - "focused-legacy-refinement-recovery"
                 - "full-ci"
-              description: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+              description: "Implement and qualify the fail-closed pre-A0F906 pure-refinement recovery already committed on the task branch. Admit only exact result_received legacy exchanges with unchanged authoritative checkout, Git head, source baseline and bounded supervisor metadata. Validate Task, artifact, check and commit identities; preserve snapshot enforcement for new exchanges, ordinary no-diff rejection, completed WorkItems and replay idempotency."
               id: "legacy-refinement-recovery"
               required: true
-          evidence_fingerprint: "sha256:06a27a20b659d237fd25f1938d2f70bfbad278ac15e20715dbd0fba7e71104d1"
+          evidence_fingerprint: "sha256:2efafa27e641f7d22499d6f2d42367dfb52cb49edf85242cfad786d78f4ddc27"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -314,7 +406,7 @@ extensions:
                   check_ids:
                     - "focused-legacy-refinement-recovery"
                     - "full-ci"
-                  description: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+                  description: "Implement and qualify the fail-closed pre-A0F906 pure-refinement recovery already committed on the task branch. Admit only exact result_received legacy exchanges with unchanged authoritative checkout, Git head, source baseline and bounded supervisor metadata. Validate Task, artifact, check and commit identities; preserve snapshot enforcement for new exchanges, ordinary no-diff rejection, completed WorkItems and replay idempotency."
                   id: "legacy-refinement-recovery"
                   required: true
               capabilities:
@@ -322,20 +414,18 @@ extensions:
               context:
                 max_bytes: 90000
                 optional_sources:
-                  - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
                 required_sources:
                   - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
-                  - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
                   - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
                 symbol_hints:
                   - "applyExternalPlanRefinement"
-                  - "captureExternalTaskArtifacts"
-                  - "isExternalPlanRefinementApplied"
+                  - "validateLegacyRefinementArtifacts"
               depends_on: []
               expected_outputs:
                 - "legacy-exchange-recovery-evidence"
               id: "legacy-refinement-recovery"
-              objective: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+              objective: "Implement and qualify the fail-closed pre-A0F906 pure-refinement recovery already committed on the task branch. Admit only exact result_received legacy exchanges with unchanged authoritative checkout, Git head, source baseline and bounded supervisor metadata. Validate Task, artifact, check and commit identities; preserve snapshot enforcement for new exchanges, ordinary no-diff rejection, completed WorkItems and replay idempotency."
               optional: false
               priority: 100
               required_inputs: []
@@ -356,7 +446,7 @@ extensions:
                 checks:
                   -
                     capability: "task.verify"
-                    command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                    command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot"
                     id: "focused-legacy-refinement-recovery"
                     kind: "deterministic"
                     required: true
@@ -373,12 +463,12 @@ extensions:
                     check_ids:
                       - "focused-legacy-refinement-recovery"
                       - "full-ci"
-                    description: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+                    description: "Implement and qualify the fail-closed pre-A0F906 pure-refinement recovery already committed on the task branch. Admit only exact result_received legacy exchanges with unchanged authoritative checkout, Git head, source baseline and bounded supervisor metadata. Validate Task, artifact, check and commit identities; preserve snapshot enforcement for new exchanges, ordinary no-diff rejection, completed WorkItems and replay idempotency."
                     id: "legacy-refinement-recovery"
                     required: true
-                evidence_fingerprint: "sha256:06a27a20b659d237fd25f1938d2f70bfbad278ac15e20715dbd0fba7e71104d1"
+                evidence_fingerprint: "sha256:2efafa27e641f7d22499d6f2d42367dfb52cb49edf85242cfad786d78f4ddc27"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202608312334-MPXQBK"
     event_cursor: 0
@@ -584,9 +674,149 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 6
+      -
+        approval:
+          approved_at: "2026-08-31T23:56:12.561Z"
+          approved_by: "USER"
+          approved_digest: "sha256:da1b9d93d9217e30747da6cc11312b3e8fbedae4b16958626005099f34672989"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-08-31T23:56:05.092Z"
+        digest: "sha256:da1b9d93d9217e30747da6cc11312b3e8fbedae4b16958626005099f34672989"
+        proposal:
+          assumptions:
+            - "Recovery is limited to pre-A0F906 exchanges whose result is already immutably received."
+            - "No task journal, exchange or evidence artifact is edited manually."
+            - "New exchanges continue to require exact content snapshots."
+          planning_baseline:
+            captured_at: "2026-08-31T23:55:46.394Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:06a27a20b659d237fd25f1938d2f70bfbad278ac15e20715dbd0fba7e71104d1"
+            dirty_paths:
+              - ".agentplane/tasks/202608312334-MPXQBK/README.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/diffstat.txt"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/github-title.txt"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/meta.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:5"
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                id: "focused-legacy-refinement-recovery"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "focused-legacy-refinement-recovery"
+                  - "full-ci"
+                description: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+                id: "legacy-refinement-recovery"
+                required: true
+            evidence_fingerprint: "sha256:06a27a20b659d237fd25f1938d2f70bfbad278ac15e20715dbd0fba7e71104d1"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-legacy-refinement-recovery"
+                      - "full-ci"
+                    description: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+                    id: "legacy-refinement-recovery"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 90000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                  symbol_hints:
+                    - "applyExternalPlanRefinement"
+                    - "captureExternalTaskArtifacts"
+                    - "isExternalPlanRefinementApplied"
+                depends_on: []
+                expected_outputs:
+                  - "legacy-exchange-recovery-evidence"
+                id: "legacy-refinement-recovery"
+                objective: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                      id: "focused-legacy-refinement-recovery"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-legacy-refinement-recovery"
+                        - "full-ci"
+                      description: "Implement a fail-closed recovery path for pre-A0F906 pure plan-refinement exchanges that are already result_received, lack exchange.baseline.task_artifacts, and have unchanged supervisor-owned task metadata drift. Require the exact authoritative checkout, unchanged Git head and source baseline, matching task revision and state fingerprint, a bounded allowlist of README.md plus supervision/declared-checks.json and supervision/implementation-evidence.json, valid JSON schemas and exact task, commit, check and evidence relationships. Reject added, removed, malformed, foreign, mismatched or ambiguous artifacts. Preserve exact content-snapshot validation for new exchanges and preserve ordinary no-diff implementation rejection. Prove initial recovery, lost-response replay, tampering rejection and no WorkItem replay."
+                      id: "legacy-refinement-recovery"
+                      required: true
+                  evidence_fingerprint: "sha256:06a27a20b659d237fd25f1938d2f70bfbad278ac15e20715dbd0fba7e71104d1"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+    revision: 14
     schema_version: 1
-    updated_at: "2026-08-31T23:56:12.561Z"
+    updated_at: "2026-09-01T00:26:45.640Z"
     work_items:
       legacy-refinement-recovery:
         attempt: 0
@@ -601,6 +831,53 @@ extensions:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608312334-MPXQBK-executor-289901895a151815ce3e3f5a:
+        aggregate_digest: "sha256:97be0e5cfc3a9d3407f910bdbb206e696d0937dd9f35a70553987358be5f59bf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T00:18:28.510Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_95ee71581679a72527b690a1"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-289901895a151815ce3e3f5a"
+          plan_digest: "sha256:da1b9d93d9217e30747da6cc11312b3e8fbedae4b16958626005099f34672989"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 11
+          to: "REWORK_READY"
+          work_item_id: "legacy-refinement-recovery"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-289901895a151815ce3e3f5a"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+      plan-refinement:work-order-202608312334-MPXQBK-executor-43c901c96efe8a0854cbc753:
+        aggregate_digest: "sha256:c9e59559c33eba456a3e7508bb28913f9b2859c0f20baf7bb900b2140f93ad8a"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-01T00:26:12.573Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_76acbb61baff81adfcf922f1"
+          mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-43c901c96efe8a0854cbc753"
+          plan_digest: "sha256:da1b9d93d9217e30747da6cc11312b3e8fbedae4b16958626005099f34672989"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 12
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-43c901c96efe8a0854cbc753"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
       plan-refinement:work-order-202608312334-MPXQBK-executor-c9b29bbb510370404d2b727f:
         aggregate_digest: "sha256:3bd3f482992ea4817f67976612fcfdb02dd7ddfb67b498dd3676527c5d7c84a1"
         event:
@@ -636,7 +913,6 @@ extensions:
     base_sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "explicit"
   workflow_route_baseline:
     start_head_sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
     version: 1
@@ -655,7 +931,7 @@ Fix external-agent implementation result handling so a completed semantic result
 
 ## Plan
 
-One bounded compatibility WorkItem recovers only exact pre-A0F906 refinement exchanges and retains fail-closed behavior elsewhere.
+Requalify the existing bootstrap commit with a bounded two-test focused gate and unchanged full CI.
 
 ## Verify Steps
 
@@ -668,6 +944,46 @@ PLANNER fallback scaffold for "Apply task-centric plan refinement before impleme
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-01T00:18:13.366Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:5ba70912da0d372769643804f2e93273bcda8064574c9028d8baa50047f80233
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+Result: fail
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
