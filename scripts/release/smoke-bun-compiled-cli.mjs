@@ -216,6 +216,10 @@ function smokeBunCompiledCli(args, repoRoot) {
       { cwd: repoRoot, timeout: 120_000 },
     );
 
+    if (process.platform === "darwin") {
+      run("codesign", ["--force", "--sign", "-", executable], { cwd: repoRoot });
+    }
+
     const versionOutput = run(executable, ["--version"], { cwd: tempDir }).trim();
     if (versionOutput !== version) {
       throw new Error(`Expected compiled version ${version}, got ${versionOutput}`);

@@ -50,6 +50,9 @@ describe("guard/impl/allow", () => {
   it("suggestAllowPrefixes returns sorted unique prefixes", async () => {
     const { suggestAllowPrefixes } = await import("./allow.js");
     const out = suggestAllowPrefixes([
+      "",
+      "   ",
+      "/",
       "src/a.ts",
       "README.md",
       "src/b.ts",
