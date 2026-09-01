@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 68
+revision: 74
 origin:
   system: "manual"
 depends_on:
@@ -665,6 +665,20 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 10f2efcbcc64. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 71912f4add7d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The recorded m3-lifecycle validation is not successful. Full CI failed because docs/developer/harness-dev.mdx is not Prettier-clean and the core group exceeded its 15-minute timeout. The current WorkOrder does not authorize the documentation path required to repair the deterministic formatting failure."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The approved m3-lifecycle WorkItem needs a bounded scope refinement because its required full-CI gate deterministically fails on a documentation file changed during prior requalification, while the current execution contract excludes that file."
+  -
+    author: "ORCHESTRATOR"
+    body: |-
+      Cross-machine goal handoff: resume this existing task; do not create a second Clean Core implementation task. Provider checkpoint must contain commit 71912f4add7df8db538392150ec634b2012770d1 plus this task artifact revision. Start with agentplane task resume-context 202608291006-255K66 --json, then use fresh agentplane task advance 202608291006-255K66 --agent-json packets only. Keep one WorkItem active at a time, minimize code, and reuse or delete existing mechanisms before adding abstractions. MPXQBK and the 0.7.8 release lane are not prerequisites. Before legacy retirement, require immutable evidence for candidate-runtime qualification, controller transfer, self-hosting canary, sustained self-hosting, observation, and rollback. Do not trust source main, the candidate branch, or an ambient CLI as controller without an explicit runtime authority receipt. Projection cleanup remains owned by Z7JBFH then WXP9JS.
+
 events:
   -
     type: "status"
@@ -863,9 +877,34 @@ events:
     to: "DOING"
     note: "Implementation committed: 10f2efcbcc64. CLI accepted one state-bound external-agent semantic result."
     commit: "10f2efcbcc64b856aea2f0ffc979e45c99e941f0"
+  -
+    type: "status"
+    at: "2026-08-31T23:08:30.422Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 71912f4add7d. CLI accepted one state-bound external-agent semantic result."
+    commit: "71912f4add7df8db538392150ec634b2012770d1"
+  -
+    type: "comment"
+    at: "2026-08-31T23:31:18.169Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The recorded m3-lifecycle validation is not successful. Full CI failed because docs/developer/harness-dev.mdx is not Prettier-clean and the core group exceeded its 15-minute timeout. The current WorkOrder does not authorize the documentation path required to repair the deterministic formatting failure."
+  -
+    type: "comment"
+    at: "2026-08-31T23:31:46.906Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The approved m3-lifecycle WorkItem needs a bounded scope refinement because its required full-CI gate deterministically fails on a documentation file changed during prior requalification, while the current execution contract excludes that file."
+  -
+    type: "comment"
+    at: "2026-09-01T22:14:14.033Z"
+    author: "ORCHESTRATOR"
+    body: |-
+      Cross-machine goal handoff: resume this existing task; do not create a second Clean Core implementation task. Provider checkpoint must contain commit 71912f4add7df8db538392150ec634b2012770d1 plus this task artifact revision. Start with agentplane task resume-context 202608291006-255K66 --json, then use fresh agentplane task advance 202608291006-255K66 --agent-json packets only. Keep one WorkItem active at a time, minimize code, and reuse or delete existing mechanisms before adding abstractions. MPXQBK and the 0.7.8 release lane are not prerequisites. Before legacy retirement, require immutable evidence for candidate-runtime qualification, controller transfer, self-hosting canary, sustained self-hosting, observation, and rollback. Do not trust source main, the candidate branch, or an ambient CLI as controller without an explicit runtime authority receipt. Projection cleanup remains owned by Z7JBFH then WXP9JS.
+
 doc_version: 3
-doc_updated_at: "2026-08-31T23:07:10.413Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-01T22:14:14.033Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -9765,9 +9804,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 68
+    revision: 71
     schema_version: 1
-    updated_at: "2026-08-31T23:07:11.311Z"
+    updated_at: "2026-08-31T23:29:20.541Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -9806,14 +9845,61 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-lifecycle:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-lifecycle"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "m3-lifecycle-acceptance"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Requalified the retained canonical lifecycle foundation and repaired its native WorkItem verification boundary. WorkItem checks now run their exact blocking commands and check IDs without mutating task-level verification; full Task verification remains deferred until all required WorkItems complete."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:aa7212e91d87aa8a59d0bce782773d10b3ea5af3ee222bc01b06b1a85555a4dd"
+            id: "m3-lifecycle-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 7
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-lifecycle"
+            provenance:
+              - "sha256:c066185580e807d32ac5faf346d16c0370986b2dd2bf53e9b183ec3a70b287fb"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:fafb7bf27a96add2726867fc07d7c48f580ec70036a063bf6625a6cfb8aa4adf"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-08-31T23:29:20.464Z"
+              repository_snapshot_digest: "sha256:fafb7bf27a96add2726867fc07d7c48f580ec70036a063bf6625a6cfb8aa4adf"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-08-31T23:29:20.464Z"
+              repository_snapshot_digest: "sha256:fafb7bf27a96add2726867fc07d7c48f580ec70036a063bf6625a6cfb8aa4adf"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "m3-lifecycle-acceptance"
       m3-lifecycle-authority:
         attempt: 0
         claim_id: null
@@ -9923,6 +10009,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-300287213b594d39f872a713"
         next_revision: 53
         previous_revision: 52
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-58df34845f4a7b8651a609b1:
+        aggregate_digest: "sha256:e9e5cd95c7fa59b8a8867c4688c9f2ded307408211917a71a96bbd1a3fa93ff6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-08-31T23:29:20.541Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_795282362119053302821812"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-58df34845f4a7b8651a609b1"
+          plan_digest: "sha256:2e7e3719fd04d1ca8a43ef5f8903910b36449dd5299d5338bcc1cb26ef89defa"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 70
+          to: "REWORK_READY"
+          work_item_id: "m3-lifecycle"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-58df34845f4a7b8651a609b1"
+        next_revision: 71
+        previous_revision: 70
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-5b2095a81f8da9305ea824ff:
@@ -10187,7 +10296,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "10f2efcbcc64b856aea2f0ffc979e45c99e941f0"
+    hash: "71912f4add7df8db538392150ec634b2012770d1"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
