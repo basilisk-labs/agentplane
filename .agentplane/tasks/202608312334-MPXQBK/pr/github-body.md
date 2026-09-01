@@ -27,11 +27,11 @@ Fix external-agent implementation result handling so a completed semantic result
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...n-cli.core.task-advance.evidence-rework.test.ts | 106 +++++++++++++++++
- .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++++-
- scripts/checks/run-local-ci-group.mjs              | 111 +++++++++++++++++-
- scripts/checks/run-local-ci.mjs                    |  19 +++-
- 4 files changed, 347 insertions(+), 14 deletions(-)
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 106 ++++++++++++++++
+ .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++-
+ scripts/checks/run-local-ci-group.mjs              | 135 ++++++++++++++++++++-
+ scripts/checks/run-local-ci.mjs                    |  19 ++-
+ 4 files changed, 371 insertions(+), 14 deletions(-)
 ```
 
 </details>

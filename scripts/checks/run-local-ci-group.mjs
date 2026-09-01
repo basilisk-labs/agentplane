@@ -41,6 +41,13 @@ const processHeavyUsecases = "packages/agentplane/src/runner/usecases";
 const processHeavyUsecasesPattern = `${processHeavyUsecases}/**/*.test.ts`;
 const runtimeActiveClaimTest =
   "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts";
+const contentionSensitiveCoreTests = [
+  "packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+  "packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts",
+  "packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts",
+  "packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts",
+  "packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts",
+];
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 const isolatedProcessSupervisionTest = "packages/agentplane/src/runner/process-supervision.test.ts";
@@ -82,6 +89,7 @@ const groups = {
       isolatedCoreTest,
       "--exclude",
       isolatedProcessSupervisionTest,
+      ...contentionSensitiveCoreTests.flatMap((testFile) => ["--exclude", testFile]),
       "--pool=threads",
       "--reporter=default",
       "--silent=passed-only",
@@ -94,9 +102,25 @@ const groups = {
     ];
     // The fork scheduler can stall on the 600+ file selection, while restarting bounded
     // shards accumulates macOS execution-policy overhead. Keep the complete selection in one
-    // broad thread pool, then separate the process-heavy usecases from the final isolated files.
+    // broad thread pool, then bounded contention-sensitive and process-heavy waves before the
+    // final isolated files.
     process.stdout.write("core vitest pooled 1/1\n");
     runCapturedShard("bunx", args);
+    process.stdout.write("core vitest contention-sensitive 1/1\n");
+    runCapturedShard("bunx", [
+      "vitest",
+      "run",
+      ...contentionSensitiveCoreTests,
+      "--pool=threads",
+      "--reporter=default",
+      "--silent=passed-only",
+      "--maxWorkers",
+      "2",
+      "--testTimeout",
+      pooledCoreTimeout,
+      "--hookTimeout",
+      pooledCoreTimeout,
+    ]);
     process.stdout.write("core vitest process-heavy usecases 1/1\n");
     runCapturedShard("bunx", [
       "vitest",
