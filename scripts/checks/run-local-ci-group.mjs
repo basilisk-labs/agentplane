@@ -45,6 +45,7 @@ const maxWorkers = String(
 const coreShardCount = 16;
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
+const isolatedProcessSupervisionTest = "packages/agentplane/src/runner/process-supervision.test.ts";
 
 const groups = {
   "docs-schema": () => {
@@ -80,6 +81,20 @@ const groups = {
       "--hookTimeout",
       timeout,
     ]);
+    process.stdout.write("core vitest process supervision isolated 1/1\n");
+    runCapturedShard("bunx", [
+      "vitest",
+      "run",
+      isolatedProcessSupervisionTest,
+      "--pool=forks",
+      "--silent=passed-only",
+      "--maxWorkers",
+      "1",
+      "--testTimeout",
+      timeout,
+      "--hookTimeout",
+      timeout,
+    ]);
     const args = [
       "vitest",
       "run",
@@ -93,6 +108,8 @@ const groups = {
       "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
       "--exclude",
       isolatedCoreTest,
+      "--exclude",
+      isolatedProcessSupervisionTest,
       "--pool=forks",
       "--silent=passed-only",
       "--maxWorkers",
@@ -103,8 +120,9 @@ const groups = {
       timeout,
     ];
     // A single 600+ file Vitest invocation can stall its fork scheduler even though every
-    // bounded subset is healthy. Keep the cloud-replay integration file isolated from competing
-    // files, then shard every remaining file while preserving the complete overall selection.
+    // bounded subset is healthy. Keep the cloud-replay integration and process-hierarchy files
+    // isolated from competing files, then shard every remaining file while preserving the
+    // complete overall selection.
     for (let shard = 1; shard <= coreShardCount; shard += 1) {
       process.stdout.write(`core vitest shard ${shard}/${coreShardCount}\n`);
       runCapturedShard("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
