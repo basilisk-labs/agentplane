@@ -9,7 +9,7 @@ const requestedMaxWorkers = Number.parseInt(
   10,
 );
 const maxWorkers = String(
-  Number.isFinite(requestedMaxWorkers) ? Math.min(Math.max(requestedMaxWorkers, 1), 4) : 4,
+  Number.isFinite(requestedMaxWorkers) ? Math.min(Math.max(requestedMaxWorkers, 1), 2) : 2,
 );
 const coreShardCount = 4;
 
