@@ -36,7 +36,7 @@ const runCapturedShard = (command, args) => {
 };
 const timeout = "120000";
 const pooledCoreTimeout = "120000";
-const corePoolWorkers = "4";
+const corePoolWorkers = "2";
 const processHeavyUsecases = "packages/agentplane/src/runner/usecases";
 const processHeavyUsecasesPattern = `${processHeavyUsecases}/**/*.test.ts`;
 const runtimeActiveClaimTest =
