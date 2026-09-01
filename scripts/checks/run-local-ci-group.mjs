@@ -61,36 +61,6 @@ const groups = {
   },
   core: () => {
     bunScript("lint:core");
-    process.stdout.write("core vitest isolated 1/1\n");
-    runCapturedShard("bunx", [
-      "vitest",
-      "run",
-      isolatedCoreTest,
-      "--pool=forks",
-      "--reporter=verbose",
-      "--silent=passed-only",
-      "--maxWorkers",
-      "1",
-      "--testTimeout",
-      timeout,
-      "--hookTimeout",
-      timeout,
-    ]);
-    process.stdout.write("core vitest process supervision isolated 1/1\n");
-    runCapturedShard("bunx", [
-      "vitest",
-      "run",
-      isolatedProcessSupervisionTest,
-      "--pool=forks",
-      "--reporter=verbose",
-      "--silent=passed-only",
-      "--maxWorkers",
-      "1",
-      "--testTimeout",
-      timeout,
-      "--hookTimeout",
-      timeout,
-    ]);
     const args = [
       "vitest",
       "run",
@@ -117,13 +87,43 @@ const groups = {
       timeout,
     ];
     // A single 600+ file Vitest invocation can stall its fork scheduler even though every
-    // bounded subset is healthy. Keep the cloud-replay integration and process-hierarchy files
-    // isolated from competing files, then shard every remaining file while preserving the
-    // complete overall selection.
+    // bounded subset is healthy. Run the ordinary shards before the filesystem-intensive
+    // isolated tests so their temporary repository and executable churn cannot degrade the
+    // bounded shard wave. Preserve the complete overall selection and fail closed throughout.
     for (let shard = 1; shard <= coreShardCount; shard += 1) {
       process.stdout.write(`core vitest shard ${shard}/${coreShardCount}\n`);
       runCapturedShard("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
     }
+    process.stdout.write("core vitest process supervision isolated 1/1\n");
+    runCapturedShard("bunx", [
+      "vitest",
+      "run",
+      isolatedProcessSupervisionTest,
+      "--pool=forks",
+      "--reporter=verbose",
+      "--silent=passed-only",
+      "--maxWorkers",
+      "1",
+      "--testTimeout",
+      timeout,
+      "--hookTimeout",
+      timeout,
+    ]);
+    process.stdout.write("core vitest isolated 1/1\n");
+    runCapturedShard("bunx", [
+      "vitest",
+      "run",
+      isolatedCoreTest,
+      "--pool=forks",
+      "--reporter=verbose",
+      "--silent=passed-only",
+      "--maxWorkers",
+      "1",
+      "--testTimeout",
+      timeout,
+      "--hookTimeout",
+      timeout,
+    ]);
   },
   runtime: () =>
     run("bunx", [
