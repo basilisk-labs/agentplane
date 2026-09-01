@@ -35,8 +35,7 @@ const runCapturedShard = (command, args) => {
   process.stdout.write(`${summary}\n`);
 };
 const timeout = "60000";
-const maxWorkers = "2";
-const coreShardCount = 16;
+const corePoolWorkers = "8";
 const isolatedCoreTest =
   "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 const isolatedProcessSupervisionTest = "packages/agentplane/src/runner/process-supervision.test.ts";
@@ -77,23 +76,20 @@ const groups = {
       "--exclude",
       isolatedProcessSupervisionTest,
       "--pool=threads",
-      "--reporter=verbose",
+      "--reporter=default",
       "--silent=passed-only",
       "--maxWorkers",
-      maxWorkers,
+      corePoolWorkers,
       "--testTimeout",
       timeout,
       "--hookTimeout",
       timeout,
     ];
-    // A single 600+ file Vitest invocation can stall its fork scheduler even though every
-    // bounded subset is healthy. Run the ordinary shards before the filesystem-intensive
-    // isolated tests so their temporary repository and executable churn cannot degrade the
-    // bounded shard wave. Preserve the complete overall selection and fail closed throughout.
-    for (let shard = 1; shard <= coreShardCount; shard += 1) {
-      process.stdout.write(`core vitest shard ${shard}/${coreShardCount}\n`);
-      runCapturedShard("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
-    }
+    // The fork scheduler can stall on the 600+ file selection, while restarting bounded
+    // shards accumulates macOS execution-policy overhead. Keep the complete selection in one
+    // bounded thread pool, then run the process-sensitive files in isolated fork invocations.
+    process.stdout.write("core vitest pooled 1/1\n");
+    runCapturedShard("bunx", args);
     process.stdout.write("core vitest process supervision isolated 1/1\n");
     runCapturedShard("bunx", [
       "vitest",
