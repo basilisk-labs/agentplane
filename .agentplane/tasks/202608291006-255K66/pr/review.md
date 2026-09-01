@@ -29,7 +29,7 @@ Created: 2026-08-30T21:48:11.941Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     | 109 +++
+ docs/developer/harness-dev.mdx                     | 112 +++
  .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
  .../task-backend/kernel-authority-schema.ts        |  54 ++
  .../task-backend/kernel-backend-adapter.test.ts    |  30 +-
@@ -106,7 +106,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 77 files changed, 6673 insertions(+), 501 deletions(-)
+ 77 files changed, 6676 insertions(+), 501 deletions(-)
 ```
 
 </details>

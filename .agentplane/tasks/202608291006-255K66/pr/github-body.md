@@ -27,7 +27,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     | 109 +++
+ docs/developer/harness-dev.mdx                     | 112 +++
  .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
  .../task-backend/kernel-authority-schema.ts        |  54 ++
  .../task-backend/kernel-backend-adapter.test.ts    |  30 +-
@@ -104,7 +104,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 77 files changed, 6673 insertions(+), 501 deletions(-)
+ 77 files changed, 6676 insertions(+), 501 deletions(-)
 ```
 
 </details>

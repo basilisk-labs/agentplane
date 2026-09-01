@@ -64,6 +64,9 @@ response loss, missing readback, idempotency conflicts, malformed state and proj
 Migration backups, rollback receipts, the full replay corpus and production cutover have separate
 milestone gates; these adapter tests do not prove those gates.
 
+On macOS, the Bun compilation smoke ad-hoc signs only its generated temporary executable before
+launch so an invalid linker signature cannot mask lifecycle startup failures.
+
 ### Explicit Task migration
 
 `ap task kernel-migrate <task-id>` performs a read-only dry run against the canonical local Task
