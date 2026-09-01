@@ -135,7 +135,7 @@ const groups = {
       "--reporter=default",
       "--silent=passed-only",
       "--maxWorkers",
-      "2",
+      "1",
       "--testTimeout",
       pooledCoreTimeout,
       "--hookTimeout",
