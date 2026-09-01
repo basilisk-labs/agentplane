@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,7 @@ verify:
   - "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-01T02:14:17.904Z"
+  updated_at: "2026-09-01T04:24:58.464Z"
   updated_by: "USER"
   note: null
 verification:
@@ -95,6 +95,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
       - "scripts/checks/run-local-ci-group.mjs"
+      - "scripts/checks/run-local-ci.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -151,10 +152,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5b446a6deeb1e6519619a87d527d10bff2a952934f90494efc5c5fcfe21dce6b"
+      digest: "sha256:a7c4c745c6dbcf414b2e6f282e6b8d9418ae1d6e3f406dd02c22c5926df6ba52"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:scripts/checks/run-local-ci-group.mjs"
+        - "central_path:scripts/checks/run-local-ci.mjs"
         - "effect_ci"
         - "external_effect_requires_real_e2e"
       execution_groups:
@@ -170,6 +172,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
           - "scripts/checks/run-local-ci-group.mjs"
+          - "scripts/checks/run-local-ci.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -255,6 +258,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c488ed565468. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a97622bc00fd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -390,9 +399,30 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-01T03:51:07.278Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a97622bc00fd. CLI accepted one state-bound external-agent semantic result."
+    commit: "a97622bc00fde1904d80a3f7b7224ed54fa1b905"
+  -
+    type: "verify"
+    at: "2026-09-01T04:14:57.800Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-01T04:25:00.014Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-09-01T03:31:54.448Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-01T04:25:00.014Z"
+doc_updated_by: "CODER"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
   Summary: |-
@@ -402,7 +432,7 @@ sections:
   Scope: |-
     - In scope: Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66.
     - Out of scope: unrelated refactors not required for "Apply task-centric plan refinement before implementation commit qualification".
-  Plan: "Refined the single internal WorkItem to keep four deterministic sequential core shards and the full existing gate while reducing the effective Vitest worker cap from four to two."
+  Plan: "Refined the existing WorkItem to isolate one cloud-replay integration file before four shards while preserving the complete core selection and all limits."
   Verify Steps: |-
     PLANNER fallback scaffold for "Apply task-centric plan refinement before implementation commit qualification". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -676,6 +706,51 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-01T04:14:57.800Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:ab16775bd9214eea0a6e53107cdcac4b1dd6ea51be842f236f9902c9587e526e
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -694,12 +769,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:bf5abf0c3855cf330e60185deca5bb5d1c2a16719963773c41b991ec8baeee99"
-    digest: "sha256:0c3277c2b02f29ea9a4ce430d102e17fa562f3c2c9b6ff813de17c062da634e6"
-    grant_id: "861a0894-24e5-4545-8ba3-445ab4d0c8f4"
-    issued_at: "2026-09-01T02:14:17.904Z"
+    digest: "sha256:1f68f3a53ff2bb9038a6e816c4ef2909113f7e9931ad1162d4d8fce9becd74c0"
+    grant_id: "095915eb-8f41-44de-9b91-2b91e436b60b"
+    issued_at: "2026-09-01T04:24:58.464Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:7bdcb0b27a7bf7fba315055ee3fdf8b5bfd8f0cceaf59bf8360509a6ee741564"
-    plan_revision: 39
+    plan_digest: "sha256:78f0419552f8e55868880cd58485d7d359907498cc2415e069759081a115b41f"
+    plan_revision: 55
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:d12cd926fe8723833ee679ad79a1b21be16839180bf160dde5aa1a24ffda5e8c"
@@ -724,24 +799,24 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-01T02:14:17.904Z"
+        approved_at: "2026-09-01T04:24:58.464Z"
         approved_by: "USER"
-        approved_digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+        approved_digest: "sha256:f6b95e860e185400cde237ec4ac77e853cce0fc893b9fbfa8db52627a923ecae"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-01T02:14:09.783Z"
-      digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+      created_at: "2026-09-01T04:24:48.857Z"
+      digest: "sha256:f6b95e860e185400cde237ec4ac77e853cce0fc893b9fbfa8db52627a923ecae"
       proposal:
         assumptions:
           - "The two existing implementation commits remain the candidate under requalification."
           - "Vitest file sharding preserves the exact selected test set."
           - "No worker, test, hook or group timeout is raised."
         planning_baseline:
-          captured_at: "2026-09-01T02:13:37.574Z"
+          captured_at: "2026-09-01T04:24:26.301Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:9b6f6b8d31f9bb7e3fa853cc7a64c450b7e27d49f4e441cad7c2897306580b51"
+          digest: "sha256:86f25f30582ee10e3561c882cf1db8c226cd43df1d5ee4d24103e1e189745aef"
           dirty_paths:
             - ".agentplane/tasks/202608312334-MPXQBK/README.md"
             - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
@@ -749,14 +824,14 @@ extensions:
             - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
             - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
             - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901021120209-61a99fe15915dd96.json"
+            - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901041457800-c4515b86fff634eb.json"
           git:
             kind: "commit"
             ref: null
-            sha: "f313f5b641597f37b3a728a170a2986757f92709"
+            sha: "a97622bc00fde1904d80a3f7b7224ed54fa1b905"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:38"
+          task_history_cursor: "task-revision:54"
         schema_version: 1
         task_id: "202608312334-MPXQBK"
         top_level_validation:
@@ -780,7 +855,7 @@ extensions:
               check_ids:
                 - "focused-legacy-refinement-recovery"
                 - "full-ci"
-              description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+              description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts first in one isolated single-worker core invocation, then run every remaining core file across four deterministic sequential shards with two workers. Preserve the complete overall file selection, existing global excludes, 60-second test timeout, 60-second hook timeout, bounded failure diagnostics and fail-closed behavior. The isolated invocation and every shard must run; any failure must fail the group. Do not raise limits or omit tests."
               id: "legacy-recovery-and-core-convergence"
               required: true
           evidence_fingerprint: "sha256:87e1ae8f8d3a76ae15279e8a1abff124142201305c43c22bc41f78c5446b7915"
@@ -795,7 +870,7 @@ extensions:
                   check_ids:
                     - "focused-legacy-refinement-recovery"
                     - "full-ci"
-                  description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+                  description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts first in one isolated single-worker core invocation, then run every remaining core file across four deterministic sequential shards with two workers. Preserve the complete overall file selection, existing global excludes, 60-second test timeout, 60-second hook timeout, bounded failure diagnostics and fail-closed behavior. The isolated invocation and every shard must run; any failure must fail the group. Do not raise limits or omit tests."
                   id: "legacy-recovery-and-core-convergence"
                   required: true
               capabilities:
@@ -817,7 +892,7 @@ extensions:
                 - "legacy-exchange-recovery-evidence"
                 - "core-sharding-evidence"
               id: "legacy-recovery-and-core-convergence"
-              objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+              objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts first in one isolated single-worker core invocation, then run every remaining core file across four deterministic sequential shards with two workers. Preserve the complete overall file selection, existing global excludes, 60-second test timeout, 60-second hook timeout, bounded failure diagnostics and fail-closed behavior. The isolated invocation and every shard must run; any failure must fail the group. Do not raise limits or omit tests."
               optional: false
               priority: 100
               required_inputs: []
@@ -860,12 +935,12 @@ extensions:
                     check_ids:
                       - "focused-legacy-refinement-recovery"
                       - "full-ci"
-                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Run packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts first in one isolated single-worker core invocation, then run every remaining core file across four deterministic sequential shards with two workers. Preserve the complete overall file selection, existing global excludes, 60-second test timeout, 60-second hook timeout, bounded failure diagnostics and fail-closed behavior. The isolated invocation and every shard must run; any failure must fail the group. Do not raise limits or omit tests."
                     id: "legacy-recovery-and-core-convergence"
                     required: true
                 evidence_fingerprint: "sha256:87e1ae8f8d3a76ae15279e8a1abff124142201305c43c22bc41f78c5446b7915"
                 schema_version: 1
-      revision: 6
+      revision: 7
       schema_version: 1
       task_id: "202608312334-MPXQBK"
     event_cursor: 1
@@ -1641,81 +1716,165 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 49
+      -
+        approval:
+          approved_at: "2026-09-01T02:14:17.904Z"
+          approved_by: "USER"
+          approved_digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-01T02:14:09.783Z"
+        digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+        proposal:
+          assumptions:
+            - "The two existing implementation commits remain the candidate under requalification."
+            - "Vitest file sharding preserves the exact selected test set."
+            - "No worker, test, hook or group timeout is raised."
+          planning_baseline:
+            captured_at: "2026-09-01T02:13:37.574Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:9b6f6b8d31f9bb7e3fa853cc7a64c450b7e27d49f4e441cad7c2897306580b51"
+            dirty_paths:
+              - ".agentplane/tasks/202608312334-MPXQBK/README.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/github-body.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/meta.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/pr/review.md"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202608312334-MPXQBK/verification/20260901021120209-61a99fe15915dd96.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "f313f5b641597f37b3a728a170a2986757f92709"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:38"
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot"
+                id: "focused-legacy-refinement-recovery"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "focused-legacy-refinement-recovery"
+                  - "full-ci"
+                description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+                id: "legacy-recovery-and-core-convergence"
+                required: true
+            evidence_fingerprint: "sha256:87e1ae8f8d3a76ae15279e8a1abff124142201305c43c22bc41f78c5446b7915"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-legacy-refinement-recovery"
+                      - "full-ci"
+                    description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+                    id: "legacy-recovery-and-core-convergence"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 100000
+                  optional_sources:
+                    - "scripts/checks/run-local-ci.mjs"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                    - "scripts/checks/run-local-ci-group.mjs"
+                  symbol_hints:
+                    - "applyExternalPlanRefinement"
+                    - "validateLegacyRefinementArtifacts"
+                    - "groups.core"
+                depends_on: []
+                expected_outputs:
+                  - "legacy-exchange-recovery-evidence"
+                  - "core-sharding-evidence"
+                id: "legacy-recovery-and-core-convergence"
+                objective: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "scripts/checks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot"
+                      id: "focused-legacy-refinement-recovery"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-legacy-refinement-recovery"
+                        - "full-ci"
+                      description: "Qualify the committed fail-closed pre-A0F906 pure-refinement recovery and make the required native full-CI core group converge below its unchanged 15-minute limit. Preserve exact legacy Task, artifact, check and commit identity validation and new-exchange snapshot enforcement. Replace the pathological monolithic 616-file core Vitest invocation with four deterministic sequential shards using the identical file selection, excludes, two workers, 60-second test timeout and 60-second hook timeout. Every shard must run; any shard failure must fail the group. Do not raise limits or omit tests."
+                      id: "legacy-recovery-and-core-convergence"
+                      required: true
+                  evidence_fingerprint: "sha256:87e1ae8f8d3a76ae15279e8a1abff124142201305c43c22bc41f78c5446b7915"
+                  schema_version: 1
+        revision: 6
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+    revision: 55
     schema_version: 1
-    updated_at: "2026-09-01T03:31:55.924Z"
+    updated_at: "2026-09-01T04:24:58.464Z"
     work_items:
       legacy-recovery-and-core-convergence:
-        attempt: 2
+        attempt: 0
         claim_id: null
         id: "legacy-recovery-and-core-convergence"
-        last_failure:
-          cause_refs:
-            - "legacy-recovery-and-core-convergence"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Made each core Vitest shard pipe-safe by capturing inherited test and subprocess output in a temporary file. Successful shards emit only their four-line Vitest summary; failed shards emit a bounded 128 KiB diagnostic tail and rethrow the original failure. The four shards, full test selection, two-worker cap, and unchanged timeouts remain intact."
-          retryable: true
-        output_manifests:
-          -
-            digest: "sha256:d2d25fca71d6bea724c1add16d4ffc9e0dd99e1c8eb417fab5e2939880d7116e"
-            id: "legacy-exchange-recovery-evidence"
-            kind: "semantic_output"
-            producer:
-              attempt: 2
-              plan_revision: 6
-              task_id: "202608312334-MPXQBK"
-              work_item_id: "legacy-recovery-and-core-convergence"
-            provenance:
-              - "sha256:06a99818fdfbdd6c4511b7ee675f5f4b6e0bf0adfd19c1b3ffc9ff717acfdc7d"
-              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:ad0197db0f7ee484f77feb40ad1d0d764cbbf215dd4b05c908f1d574ac2f8ee1"
-            id: "core-sharding-evidence"
-            kind: "semantic_output"
-            producer:
-              attempt: 2
-              plan_revision: 6
-              task_id: "202608312334-MPXQBK"
-              work_item_id: "legacy-recovery-and-core-convergence"
-            provenance:
-              - "sha256:06a99818fdfbdd6c4511b7ee675f5f4b6e0bf0adfd19c1b3ffc9ff717acfdc7d"
-              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 3
-        state: "REWORK_READY"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
-              check_id: "focused-legacy-refinement-recovery"
-              command_identity: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 0
-              observed_at: "2026-09-01T03:31:55.916Z"
-              repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
-              check_id: "full-ci"
-              command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-09-01T03:31:55.916Z"
-              repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
-              status: "failed"
-          schema_version: 1
-          stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "legacy-recovery-and-core-convergence"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -1741,6 +1900,29 @@ extensions:
         mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-0c393d0ff920bf637d347246"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+      external-result:work-order-202608312334-MPXQBK-executor-108cc37adc3316566773b7d9:
+        aggregate_digest: "sha256:3ccc7b13848fb345096a8c91b45d22ae27ab38b78470dfe2d5b45a0d19e8928c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T04:15:01.768Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_bb4b201e7183e00671d6fb5e"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-108cc37adc3316566773b7d9"
+          plan_digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 52
+          to: "REWORK_READY"
+          work_item_id: "legacy-recovery-and-core-convergence"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-108cc37adc3316566773b7d9"
+        next_revision: 53
+        previous_revision: 52
         schema_version: 1
         task_id: "202608312334-MPXQBK"
       external-result:work-order-202608312334-MPXQBK-executor-289901895a151815ce3e3f5a:
@@ -1910,6 +2092,30 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202608312334-MPXQBK"
+      plan-refinement:work-order-202608312334-MPXQBK-executor-9eaa1f510e28ea1ecc481432:
+        aggregate_digest: "sha256:afe2b0809ac9b48c69d860f84839fcf9c23270066186ff81d01d7098997234e3"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-01T04:24:24.470Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2e957d058da3965f30d42758"
+          mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-9eaa1f510e28ea1ecc481432"
+          plan_digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 53
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202608312334-MPXQBK-executor-9eaa1f510e28ea1ecc481432"
+        next_revision: 54
+        previous_revision: 53
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
       plan-refinement:work-order-202608312334-MPXQBK-executor-a762bc90ec52e692a2d130db:
         aggregate_digest: "sha256:2e4a379aab5b14567766e1bbe514208af3298f007ad4275b14f0fdff27c6921f"
         event:
@@ -1987,7 +2193,7 @@ Fix external-agent implementation result handling so a completed semantic result
 
 ## Plan
 
-Refined the single internal WorkItem to keep four deterministic sequential core shards and the full existing gate while reducing the effective Vitest worker cap from four to two.
+Refined the existing WorkItem to isolate one cloud-replay integration file before four shards while preserving the complete core selection and all limits.
 
 ## Verify Steps
 
@@ -2228,6 +2434,51 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:b56c55995caddab49e6dbbfb83a8edfa2c85272febc43cd93249a096b4985025
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-01T04:14:57.800Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:ab16775bd9214eea0a6e53107cdcac4b1dd6ea51be842f236f9902c9587e526e
 
 Details:
 

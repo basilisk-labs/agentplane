@@ -43,6 +43,8 @@ const maxWorkers = String(
   Number.isFinite(requestedMaxWorkers) ? Math.min(Math.max(requestedMaxWorkers, 1), 2) : 2,
 );
 const coreShardCount = 4;
+const isolatedCoreTest =
+  "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts";
 
 const groups = {
   "docs-schema": () => {
@@ -64,6 +66,20 @@ const groups = {
   },
   core: () => {
     bunScript("lint:core");
+    process.stdout.write("core vitest isolated 1/1\n");
+    runCapturedShard("bunx", [
+      "vitest",
+      "run",
+      isolatedCoreTest,
+      "--pool=forks",
+      "--silent=passed-only",
+      "--maxWorkers",
+      "1",
+      "--testTimeout",
+      timeout,
+      "--hookTimeout",
+      timeout,
+    ]);
     const args = [
       "vitest",
       "run",
@@ -75,6 +91,8 @@ const groups = {
       "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
       "--exclude",
       "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+      "--exclude",
+      isolatedCoreTest,
       "--pool=forks",
       "--silent=passed-only",
       "--maxWorkers",
@@ -85,8 +103,8 @@ const groups = {
       timeout,
     ];
     // A single 600+ file Vitest invocation can stall its fork scheduler even though every
-    // bounded subset is healthy. Sequential file shards preserve the exact test selection and
-    // worker limits while keeping the enclosing core group below its unchanged timeout.
+    // bounded subset is healthy. Keep the cloud-replay integration file isolated from competing
+    // files, then shard every remaining file while preserving the complete overall selection.
     for (let shard = 1; shard <= coreShardCount; shard += 1) {
       process.stdout.write(`core vitest shard ${shard}/${coreShardCount}\n`);
       runCapturedShard("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
