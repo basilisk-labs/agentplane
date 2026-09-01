@@ -1,8 +1,39 @@
 import { execFileSync } from "node:child_process";
+import { closeSync, mkdtempSync, openSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
 const group = process.argv[2];
 const run = (command, args) => execFileSync(command, args, { env: process.env, stdio: "inherit" });
 const bunScript = (name) => run("bun", ["run", name]);
+const runCapturedShard = (command, args) => {
+  const outputDir = mkdtempSync(path.join(tmpdir(), "agentplane-core-vitest-"));
+  const outputPath = path.join(outputDir, "output.log");
+  const outputFd = openSync(outputPath, "w");
+  let failure = null;
+  try {
+    execFileSync(command, args, {
+      env: process.env,
+      stdio: ["ignore", outputFd, outputFd],
+    });
+  } catch (error) {
+    failure = error;
+  } finally {
+    closeSync(outputFd);
+  }
+  const output = readFileSync(outputPath, "utf8");
+  rmSync(outputDir, { recursive: true, force: true });
+  if (failure) {
+    process.stderr.write(output.slice(-128 * 1024));
+    throw failure;
+  }
+  const summary = output
+    .split(/\r?\n/u)
+    .filter((line) => /^\s*(Test Files|Tests|Start at|Duration)\s/u.test(line))
+    .slice(-4)
+    .join("\n");
+  process.stdout.write(`${summary}\n`);
+};
 const timeout = "60000";
 const requestedMaxWorkers = Number.parseInt(
   process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4",
@@ -45,6 +76,7 @@ const groups = {
       "--exclude",
       "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
       "--pool=forks",
+      "--silent=passed-only",
       "--maxWorkers",
       maxWorkers,
       "--testTimeout",
@@ -57,7 +89,7 @@ const groups = {
     // worker limits while keeping the enclosing core group below its unchanged timeout.
     for (let shard = 1; shard <= coreShardCount; shard += 1) {
       process.stdout.write(`core vitest shard ${shard}/${coreShardCount}\n`);
-      run("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
+      runCapturedShard("bunx", [...args, `--shard=${shard}/${coreShardCount}`]);
     }
   },
   runtime: () =>
