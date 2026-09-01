@@ -26,7 +26,7 @@ const groups = {
   },
   core: () => {
     bunScript("lint:core");
-    run("bunx", [
+    const args = [
       "vitest",
       "run",
       "--exclude",
@@ -44,7 +44,13 @@ const groups = {
       timeout,
       "--hookTimeout",
       timeout,
-    ]);
+    ];
+    // A single 600+ file Vitest invocation can stall its fork scheduler even though every
+    // bounded subset is healthy. Sequential file shards preserve the exact test selection and
+    // worker limits while keeping the enclosing core group below its unchanged timeout.
+    for (let shard = 1; shard <= 4; shard += 1) {
+      run("bunx", [...args, `--shard=${shard}/4`]);
+    }
   },
   runtime: () =>
     run("bunx", [

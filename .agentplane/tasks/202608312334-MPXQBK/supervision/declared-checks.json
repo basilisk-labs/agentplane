@@ -8,7 +8,7 @@
         "task_outcome"
       ],
       "command": "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts",
-      "duration_ms": 860,
+      "duration_ms": 927,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:3a90ad0fbce48ef94d7f3fb66939c8752760c37efaa32af212871a683d77a788",
@@ -19,7 +19,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  03:08:11\n   Duration  563ms (transform 317ms, setup 0ms, import 482ms, tests 10ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  03:28:37\n   Duration  582ms (transform 323ms, setup 0ms, import 499ms, tests 13ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [
@@ -28,9 +28,9 @@
         "real_e2e",
         "task_outcome"
       ],
-      "command": "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
-      "duration_ms": 600083,
-      "exit_code": 143,
+      "command": "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot",
+      "duration_ms": 242038,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:3a90ad0fbce48ef94d7f3fb66939c8752760c37efaa32af212871a683d77a788",
         "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
@@ -39,12 +39,34 @@
         "toolchain_digest": "sha256:d09b95798f6048ceebf4a463c1f089bfaaab945208c828c3064bd0eba20df1df"
       },
       "script": null,
-      "stderr_tail": "error: \"vitest\" exited with code 143\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n\n"
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem\n\n\n Test Files  1 passed (1)\n      Tests  3 passed | 20 skipped (23)\n   Start at  03:28:38\n   Duration  241.73s (transform 2.30s, setup 0ms, import 1.75s, tests 239.91s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 1293437,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:3a90ad0fbce48ef94d7f3fb66939c8752760c37efaa32af212871a683d77a788",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:d09b95798f6048ceebf4a463c1f089bfaaab945208c828c3064bd0eba20df1df"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "ntPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Project blueprint compatibility: compatible; trusted=0\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-01T00:37:20.768Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking project-local blueprints\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=0 info=2\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Project blueprint compatibility: compatible; trusted=0\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-01T00:37:56.934Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-01T00:37:56.943Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking project-local blueprints\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\nℹ️ doctor: checking source layering\n⚠️ doctor findings: errors=1 warnings=0 info=2\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- Dev source checks requested but packages/agentplane/src was not found in this workspace.\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":194088},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":18301},{\"id\":\"core\",\"exit_code\":124,\"timed_out\":true,\"duration_ms\":900025},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":171891}]}\nfile:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/scripts/checks/run-local-ci.mjs:522\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/scripts/checks/run-local-ci.mjs:522:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async file:///Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/scripts/checks/run-local-ci.mjs:597:7\n\nNode.js v24.11.1\nerror: script \"ci:local:full\" exited with code 1\n",
+      "stdout_tail": "les): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite critical-cli: chunk 4/14 passed in 17781ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  17.62s (transform 1.05s, setup 0ms, import 1.31s, tests 16.24s, environment 0ms))\nVitest suite critical-cli: chunk 5/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite critical-cli: chunk 5/14 passed in 1839ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  1.66s (transform 1.02s, setup 0ms, import 1.30s, tests 292ms, environment 0ms))\nVitest suite critical-cli: chunk 6/14 (1 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nVitest suite critical-cli: chunk 6/14 passed in 15159ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  14.96s (transform 1.92s, setup 0ms, import 1.29s, tests 13.61s, environment 0ms))\nVitest suite critical-cli: chunk 7/14 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 7/14 passed in 3036ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.88s (transform 967ms, setup 0ms, import 1.26s, tests 1.55s, environment 0ms))\nVitest suite critical-cli: chunk 8/14 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 8/14 passed in 3501ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  3.34s (transform 1.00s, setup 0ms, import 1.30s, tests 1.98s, environment 0ms))\nVitest suite critical-cli: chunk 9/14 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 9/14 passed in 4824ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  4.66s (transform 988ms, setup 0ms, import 1.29s, tests 3.31s, environment 0ms))\nVitest suite critical-cli: chunk 10/14 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 10/14 passed in 4506ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  4.34s (transform 969ms, setup 0ms, import 1.26s, tests 3.02s, environment 0ms))\nVitest suite critical-cli: chunk 11/14 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 11/14 passed in 3364ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  3.20s (transform 991ms, setup 0ms, import 1.29s, tests 1.84s, environment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 70582ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  70.40s (transform 1.82s, setup 0ms, import 1.27s, tests 69.06s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1757ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.59s (transform 1.05s, setup 0ms, import 1.26s, tests 270ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 7935ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  7.77s (transform 1.06s, setup 0ms, import 1.27s, tests 6.43s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":194088},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":18301},{\"id\":\"core\",\"exit_code\":124,\"timed_out\":true,\"duration_ms\":900025},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":171891}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1293227,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+  "reason": "Declared check failed: bun run ci:local:full",
   "schema_version": 1,
   "status": "failed",
   "task_id": "202608312334-MPXQBK"

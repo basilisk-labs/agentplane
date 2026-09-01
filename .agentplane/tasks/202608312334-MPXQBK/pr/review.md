@@ -31,7 +31,8 @@ Created: 2026-08-31T23:43:04.724Z
 ```text
  ...n-cli.core.task-advance.evidence-rework.test.ts | 106 +++++++++++++++++
  .../task/external-agent-plan-refinement.ts         | 125 ++++++++++++++++++++-
- 2 files changed, 228 insertions(+), 3 deletions(-)
+ scripts/checks/run-local-ci-group.mjs              |  10 +-
+ 3 files changed, 236 insertions(+), 5 deletions(-)
 ```
 
 </details>
