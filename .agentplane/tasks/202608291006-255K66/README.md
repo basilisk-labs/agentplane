@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 83
+revision: 86
 origin:
   system: "manual"
 depends_on:
@@ -28,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "pending"
-  updated_at: "2026-09-01T22:51:56.090Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -521,9 +521,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "c76590dcef51f16aad20321840e5c147ca79085a"
-  message: "🚧 255K66 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -615,6 +613,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d26d9bace65f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -858,9 +859,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T23:14:32.351Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d26d9bace65f. CLI accepted one state-bound external-agent semantic result."
+    commit: "d26d9bace65f9b9eaa1289ba49dd88e329da4759"
 doc_version: 3
-doc_updated_at: "2026-09-01T23:11:10.542Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-01T23:14:32.351Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -12196,9 +12205,9 @@ extensions:
         revision: 8
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 81
+    revision: 86
     schema_version: 1
-    updated_at: "2026-09-01T23:11:03.937Z"
+    updated_at: "2026-09-01T23:14:33.423Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -12264,14 +12273,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-projections:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-projections"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:aec9d1afaa8faa9123c21c5cf6aca2c32ef0ec44b65590fe015516d00da01e95"
+            id: "m3-projections-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 9
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-projections"
+            provenance:
+              - "sha256:82b86324cb0a615c7592c549c3da62dc447319a7552a374e17eeecbb015101da"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5718913c5b0e5103897088fe98a593c47f69ca990b433dc40d02abf483bcde3e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-01T23:14:33.364Z"
+              repository_snapshot_digest: "sha256:5718913c5b0e5103897088fe98a593c47f69ca990b433dc40d02abf483bcde3e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-retirement:
         attempt: 0
         claim_id: null
@@ -12324,6 +12363,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-300287213b594d39f872a713"
         next_revision: 53
         previous_revision: 52
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-3fa29c4eda693286825c99e0:
+        aggregate_digest: "sha256:1d66426a5c6d6522c36030b800103c33f8a6ff508012918834323c3a627f1556"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T23:14:33.423Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_68528873253d41bf76d84188"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-3fa29c4eda693286825c99e0"
+          plan_digest: "sha256:84f46ef2d063893a56d7632df4097767c4e809a924046dce02259f238f6a2ada"
+          plan_revision: 9
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 85
+          to: "COMPLETED"
+          work_item_id: "m3-projections"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-3fa29c4eda693286825c99e0"
+        next_revision: 86
+        previous_revision: 85
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-58df34845f4a7b8651a609b1:
@@ -12635,7 +12697,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "c76590dcef51f16aad20321840e5c147ca79085a"
+    hash: "d26d9bace65f9b9eaa1289ba49dd88e329da4759"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
