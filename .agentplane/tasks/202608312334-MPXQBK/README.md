@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 89
+revision: 93
 origin:
   system: "manual"
 depends_on: []
@@ -87,6 +87,7 @@ execution_contract:
       - "scripts/checks"
   observed:
     authority_violations:
+      - "verification:recorded-check-2:fail"
       - "verification:recorded-check-3:fail"
     changed_components:
       - "packages/agentplane"
@@ -107,7 +108,7 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-2"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-3"
         result: "fail"
@@ -213,6 +214,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-2"
       - "verification_recovery:recorded-check-3"
 commit: null
 comments:
@@ -288,6 +290,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7ba2c1e0aea0. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -528,9 +533,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T06:42:00.051Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7ba2c1e0aea0. CLI accepted one state-bound external-agent semantic result."
+    commit: "7ba2c1e0aea031b7259e7e25c2e792bb16d5e18d"
+  -
+    type: "verify"
+    at: "2026-09-01T07:02:42.762Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-01T06:41:06.242Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-01T07:02:45.251Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
   Summary: |-
@@ -1018,6 +1037,46 @@ sections:
     Command: bun run ci:local:full
     Result: fail
     Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-01T07:02:42.762Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:7bb2f6a1ae9fb6fc1485b30395eb579468c01e9d62b0f785f5ab8660ecbf1b50
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608312334-MPXQBK declared verification
 
     BlueprintSnapshotRef:
@@ -2718,23 +2777,98 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 87
+    revision: 93
     schema_version: 1
-    updated_at: "2026-09-01T06:41:04.518Z"
+    updated_at: "2026-09-01T07:02:47.493Z"
     work_items:
       legacy-recovery-and-core-convergence:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "legacy-recovery-and-core-convergence"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "legacy-recovery-and-core-convergence"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Restored two workers for the sixteen deterministic remainder shards; the approved task plan now relies on full CI instead of a redundant standalone pre-snapshot check."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:d73ef8ec25359988b4ae004f40731cabfb8773e0c1564b6c096bf4e0210959f9"
+            id: "legacy-exchange-recovery-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608312334-MPXQBK"
+              work_item_id: "legacy-recovery-and-core-convergence"
+            provenance:
+              - "sha256:5354c4477f512008963dd57e896c547a9170b0124188269a132fcf63add6965a"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:2318ba92f7488df2ef79bf1c3873ee96f0034d1df1d4111df3b3524efe62f0d1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:60e79d0414e06ac3708ed93efb61e2ee4c4c7f3f1d9e1c780ba0ca34a629a281"
+            id: "core-sharding-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608312334-MPXQBK"
+              work_item_id: "legacy-recovery-and-core-convergence"
+            provenance:
+              - "sha256:5354c4477f512008963dd57e896c547a9170b0124188269a132fcf63add6965a"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:2318ba92f7488df2ef79bf1c3873ee96f0034d1df1d4111df3b3524efe62f0d1"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-01T07:02:47.477Z"
+              repository_snapshot_digest: "sha256:2318ba92f7488df2ef79bf1c3873ee96f0034d1df1d4111df3b3524efe62f0d1"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "legacy-recovery-and-core-convergence"
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608312334-MPXQBK-executor-01b654a43cd5d265c64813b7:
+        aggregate_digest: "sha256:8429a23490c69785171979346d6079dad782039608d0f8b09a25e6b20976aa3f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T07:02:47.493Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_789eec12ea5055759b26f7a8"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-01b654a43cd5d265c64813b7"
+          plan_digest: "sha256:ee4995d193971528b812061f213d4fd2604d5eac436da453367e60718ac7358e"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 92
+          to: "REWORK_READY"
+          work_item_id: "legacy-recovery-and-core-convergence"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-01b654a43cd5d265c64813b7"
+        next_revision: 93
+        previous_revision: 92
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
       external-result:work-order-202608312334-MPXQBK-executor-0c393d0ff920bf637d347246:
         aggregate_digest: "sha256:26eeaabe5a577995ee03d86066b28d98cec19990346c56c1e063e2039d94292d"
         event:
@@ -3719,6 +3853,46 @@ Scope: branch_pr task 202608312334-MPXQBK declared verification
 Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-01T07:02:42.762Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:7bb2f6a1ae9fb6fc1485b30395eb579468c01e9d62b0f785f5ab8660ecbf1b50
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608312334-MPXQBK declared verification
 
 BlueprintSnapshotRef:
