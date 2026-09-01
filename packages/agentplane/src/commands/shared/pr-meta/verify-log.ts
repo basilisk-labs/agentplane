@@ -31,7 +31,7 @@ export function verificationChildEnv(source: NodeJS.ProcessEnv = process.env): N
   for (const key of Object.keys(env)) {
     if (key === "AGENTPLANE_DOTENV_LOADED_KEYS" || isDotEnvLoadedKey(key, source)) delete env[key];
   }
-  return withPreferredRuntimePath(env);
+  return withPreferredRuntimePath(env, { PATH: env.PATH });
 }
 
 export function extractLastVerifiedSha(logText: string): string | null {

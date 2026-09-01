@@ -41,6 +41,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../run-cli.core.task-status-token-usage.test.ts   |  73 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/commands/guard/impl/allow.test.ts          |   3 +
+ .../src/commands/shared/pr-meta/verify-log.test.ts |  13 +
+ .../src/commands/shared/pr-meta/verify-log.ts      |   2 +-
  .../src/commands/shared/task-mutation.ts           |  18 +
  .../agentplane/src/commands/task/active.command.ts | 110 ++-
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
@@ -104,7 +106,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 77 files changed, 6676 insertions(+), 501 deletions(-)
+ 79 files changed, 6690 insertions(+), 502 deletions(-)
 ```
 
 </details>

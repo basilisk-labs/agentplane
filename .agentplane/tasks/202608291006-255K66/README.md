@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 103
+revision: 107
 origin:
   system: "manual"
 depends_on:
@@ -647,6 +647,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c0cb0ea9dac3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ec2b61568210. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -943,8 +946,16 @@ events:
     to: "DOING"
     note: "Implementation committed: c0cb0ea9dac3. CLI accepted one state-bound external-agent semantic result."
     commit: "c0cb0ea9dac3ba0bfaaa065511a701bf23f038fb"
+  -
+    type: "status"
+    at: "2026-09-01T23:52:47.878Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ec2b61568210. CLI accepted one state-bound external-agent semantic result."
+    commit: "ec2b61568210b971d6167e7a8e74e29858032890"
 doc_version: 3
-doc_updated_at: "2026-09-01T23:51:52.659Z"
+doc_updated_at: "2026-09-01T23:57:18.198Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -2077,6 +2088,10 @@ sections:
     - Observation: Plan replacement reset the m3-lifecycle resource claims for ten paths already present in its retained implementation checkpoint.
       Impact: The supervisor cannot admit the completed rework receipt until the WorkItem definition again owns those exact historical paths.
       Resolution: Apply one bounded plan refinement restoring only the ten reported roots; preserve outputs, acceptance, risk, dependencies, architecture, external effects, and other WorkItems.
+
+    - Observation: The supervisor full gate selected stale Node 20.18.2 because verificationChildEnv promoted inherited NVM_BIN ahead of the already-selected parent PATH.
+      Impact: Repository checks that require the declared Node 24 runtime failed during Vitest ESM startup before testing implementation behavior.
+      Resolution: Keep the selected parent PATH first for verification children and retain inherited manager directories as fallback; cover the ordering in verify-log tests.
 extensions:
   agentplane.execution_grant:
     actor: "USER"
@@ -14777,9 +14792,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 103
+    revision: 106
     schema_version: 1
-    updated_at: "2026-09-01T23:51:53.798Z"
+    updated_at: "2026-09-01T23:53:14.704Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -14818,14 +14833,61 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-lifecycle:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-lifecycle"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "m3-lifecycle-acceptance"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Completed the restored m3-lifecycle WorkItem. The retained lifecycle/schema/compatibility checkpoint is now covered by its exact resource claims, the macOS Bun smoke signs only its generated temporary executable, and the qualification boundary is documented. Full native CI passes without lowered limits or compatibility layers."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:8c406280c0225cd9d44e66bb93d9c816bcf38b95d5e11b07f064c11fe5645457"
+            id: "m3-lifecycle-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-lifecycle"
+            provenance:
+              - "sha256:5559d93b84f18aa3cbdffdd370dcb0c5ecd6017d93ca1327ac30ce9179a20d6b"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:92821a957122416c012f83b070370fadcce5da8d65e6ee111533bf984c24e923"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-01T23:53:14.602Z"
+              repository_snapshot_digest: "sha256:92821a957122416c012f83b070370fadcce5da8d65e6ee111533bf984c24e923"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-01T23:53:14.602Z"
+              repository_snapshot_digest: "sha256:92821a957122416c012f83b070370fadcce5da8d65e6ee111533bf984c24e923"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "m3-lifecycle-acceptance"
       m3-lifecycle-authority:
         attempt: 0
         claim_id: null
@@ -14935,6 +14997,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-300287213b594d39f872a713"
         next_revision: 53
         previous_revision: 52
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-3c723149e2bb89659d983ba6:
+        aggregate_digest: "sha256:62cadfd0634ac235cbc4db6490cb4e22ce508c70988ad3211674b8736b23290f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T23:53:14.704Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_79b005cdc1b90cb2f0807894"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-3c723149e2bb89659d983ba6"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 105
+          to: "REWORK_READY"
+          work_item_id: "m3-lifecycle"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-3c723149e2bb89659d983ba6"
+        next_revision: 106
+        previous_revision: 105
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-3fa29c4eda693286825c99e0:
@@ -15315,7 +15400,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "c0cb0ea9dac3ba0bfaaa065511a701bf23f038fb"
+    hash: "ec2b61568210b971d6167e7a8e74e29858032890"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -16482,3 +16567,7 @@ DecisionContextRef:
 - Observation: Plan replacement reset the m3-lifecycle resource claims for ten paths already present in its retained implementation checkpoint.
   Impact: The supervisor cannot admit the completed rework receipt until the WorkItem definition again owns those exact historical paths.
   Resolution: Apply one bounded plan refinement restoring only the ten reported roots; preserve outputs, acceptance, risk, dependencies, architecture, external effects, and other WorkItems.
+
+- Observation: The supervisor full gate selected stale Node 20.18.2 because verificationChildEnv promoted inherited NVM_BIN ahead of the already-selected parent PATH.
+  Impact: Repository checks that require the declared Node 24 runtime failed during Vitest ESM startup before testing implementation behavior.
+  Resolution: Keep the selected parent PATH first for verification children and retain inherited manager directories as fallback; cover the ordering in verify-log tests.
