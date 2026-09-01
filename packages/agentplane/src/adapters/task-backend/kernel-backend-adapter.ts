@@ -49,7 +49,18 @@ export class KernelBackendAdapter {
   ) {}
 
   async read(taskId: string): Promise<KernelRead> {
-    return readKernelRecord(await this.backend.getTask(taskId), this.repositoryIdentity);
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        return readKernelRecord(await this.backend.getTask(taskId), this.repositoryIdentity);
+      } catch (error) {
+        const transientReplacement =
+          (error as NodeJS.ErrnoException | null)?.code === "ELOOP" &&
+          error instanceof Error &&
+          error.message.startsWith(`Refusing changed task README ${taskId} path:`);
+        if (!transientReplacement || attempt >= 3) throw error;
+        await new Promise<void>((resolve) => setTimeout(resolve, 10 * (attempt + 1)));
+      }
+    }
   }
 
   async nextAction(taskId: string, repositoryFingerprint: taskKernel.Sha256Digest) {

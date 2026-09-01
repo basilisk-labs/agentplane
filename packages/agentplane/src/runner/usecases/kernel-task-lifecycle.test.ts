@@ -324,7 +324,10 @@ describe("canonical lifecycle application service", () => {
         new KernelBackendAdapter(f.backend, replayRepositoryIdentity),
       );
       const returned = await Promise.all([f.service.begin(command), other.begin(command)]);
-      expect(returned.filter((entry) => entry.work_order !== null)).toHaveLength(1);
+      expect(
+        returned.filter((entry) => entry.work_order !== null),
+        JSON.stringify(returned),
+      ).toHaveLength(1);
       const read = await f.read();
       expect(
         read.record.events.filter((event) => event.mutation_id === command.mutation_id),

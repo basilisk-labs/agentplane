@@ -13,7 +13,7 @@ Created: 2026-08-30T21:48:11.941Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,8 +32,8 @@ Created: 2026-08-30T21:48:11.941Z
  docs/developer/harness-dev.mdx                     | 104 +++
  .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
  .../task-backend/kernel-authority-schema.ts        |  54 ++
- .../task-backend/kernel-backend-adapter.test.ts    |   8 +-
- .../task-backend/kernel-backend-adapter.ts         |  86 ++-
+ .../task-backend/kernel-backend-adapter.test.ts    |  30 +-
+ .../task-backend/kernel-backend-adapter.ts         |  99 ++-
  .../src/adapters/task-backend/kernel-documents.ts  |  55 ++
  .../adapters/task-backend/kernel-next-action.ts    |  10 +-
  .../task-backend/kernel-record-invariants.ts       |   2 +-
@@ -51,7 +51,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/commands/task/direct-task-verification.ts  |  38 +-
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
- .../external-agent-implementation-authority.ts     |   4 +-
+ .../external-agent-implementation-authority.ts     |   2 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
  .../src/commands/task/kernel-exchange.ts           | 143 ++++
@@ -82,7 +82,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/runner/observation/kernel-repository.ts    | 106 +++
  .../src/runner/usecases/kernel-authority.test.ts   | 421 +++++++++++
  .../src/runner/usecases/kernel-authority.ts        | 346 +++++++++
- .../runner/usecases/kernel-task-lifecycle.test.ts  | 471 ++++++++++++
+ .../runner/usecases/kernel-task-lifecycle.test.ts  | 474 ++++++++++++
  .../src/runner/usecases/kernel-task-lifecycle.ts   | 311 ++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |   1 +
  .../core/schemas/agent-work-order-v2.schema.json   | 108 +++
@@ -104,7 +104,7 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- 75 files changed, 6625 insertions(+), 500 deletions(-)
+ 75 files changed, 6660 insertions(+), 501 deletions(-)
 ```
 
 </details>
