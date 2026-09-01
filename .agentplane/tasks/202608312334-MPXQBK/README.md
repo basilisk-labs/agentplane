@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -252,6 +252,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7488e5fdbe4a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c488ed565468. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -373,8 +376,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-01T03:07:55.315Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c488ed565468. CLI accepted one state-bound external-agent semantic result."
+    commit: "c488ed565468862ea396fc386d5e3244224dc607"
+  -
+    type: "verify"
+    at: "2026-09-01T03:31:52.358Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-01T02:48:00.951Z"
+doc_updated_at: "2026-09-01T03:31:54.448Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
@@ -577,6 +594,51 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:5d706be4141345daa72cb86d62843358015b8207d7445d2a471bac8c412085d6
+
+    Details:
+
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-01T03:31:52.358Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:b56c55995caddab49e6dbbfb83a8edfa2c85272febc43cd93249a096b4985025
 
     Details:
 
@@ -1579,12 +1641,12 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 45
+    revision: 49
     schema_version: 1
-    updated_at: "2026-09-01T02:48:02.377Z"
+    updated_at: "2026-09-01T03:31:55.924Z"
     work_items:
       legacy-recovery-and-core-convergence:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "legacy-recovery-and-core-convergence"
         last_failure:
@@ -1592,40 +1654,40 @@ extensions:
             - "legacy-recovery-and-core-convergence"
           code: "validation_failed"
           kind: "validation"
-          message: "Reduced the effective core Vitest worker cap from four to two while preserving four deterministic sequential shards, the complete existing test selection and excludes, unchanged 60-second test and hook timeouts, and fail-fast behavior for every shard."
+          message: "Made each core Vitest shard pipe-safe by capturing inherited test and subprocess output in a temporary file. Successful shards emit only their four-line Vitest summary; failed shards emit a bounded 128 KiB diagnostic tail and rethrow the original failure. The four shards, full test selection, two-worker cap, and unchanged timeouts remain intact."
           retryable: true
         output_manifests:
           -
-            digest: "sha256:94bcea011cf0cc83a17859f83f697587165e953163906629f4602c7a3d411e9d"
+            digest: "sha256:d2d25fca71d6bea724c1add16d4ffc9e0dd99e1c8eb417fab5e2939880d7116e"
             id: "legacy-exchange-recovery-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 6
               task_id: "202608312334-MPXQBK"
               work_item_id: "legacy-recovery-and-core-convergence"
             provenance:
-              - "sha256:1decd04683823a75d486428c7db1cfe5eabdb765e90909f36516ce6e8283debe"
+              - "sha256:06a99818fdfbdd6c4511b7ee675f5f4b6e0bf0adfd19c1b3ffc9ff717acfdc7d"
               - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:2efd7cdf3a816344bfa0de57b33d5b772ca3c1537569270ce5a1ebb007de0db8"
+            repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:c7f97816590f0e89a0e4e500ed3a9d13680650853070eeeceaf1f254bc69b630"
+            digest: "sha256:ad0197db0f7ee484f77feb40ad1d0d764cbbf215dd4b05c908f1d574ac2f8ee1"
             id: "core-sharding-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 6
               task_id: "202608312334-MPXQBK"
               work_item_id: "legacy-recovery-and-core-convergence"
             provenance:
-              - "sha256:1decd04683823a75d486428c7db1cfe5eabdb765e90909f36516ce6e8283debe"
+              - "sha256:06a99818fdfbdd6c4511b7ee675f5f4b6e0bf0adfd19c1b3ffc9ff717acfdc7d"
               - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:2efd7cdf3a816344bfa0de57b33d5b772ca3c1537569270ce5a1ebb007de0db8"
+            repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
+        revision: 3
         state: "REWORK_READY"
         validation_result:
           evidence:
@@ -1636,8 +1698,8 @@ extensions:
               command_identity: "bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot"
               detail: "Declared check failed: bun run ci:local:full"
               exit_code: 0
-              observed_at: "2026-09-01T02:48:02.369Z"
-              repository_snapshot_digest: "sha256:2efd7cdf3a816344bfa0de57b33d5b772ca3c1537569270ce5a1ebb007de0db8"
+              observed_at: "2026-09-01T03:31:55.916Z"
+              repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
               status: "passed"
             -
               artifact_refs:
@@ -1646,8 +1708,8 @@ extensions:
               command_identity: "bun run ci:local:full"
               detail: "Declared check failed: bun run ci:local:full"
               exit_code: 1
-              observed_at: "2026-09-01T02:48:02.369Z"
-              repository_snapshot_digest: "sha256:2efd7cdf3a816344bfa0de57b33d5b772ca3c1537569270ce5a1ebb007de0db8"
+              observed_at: "2026-09-01T03:31:55.916Z"
+              repository_snapshot_digest: "sha256:61503d786230261e11b376ba072cd8564c46a9db05bf5ec5a15f4b83a480a26c"
               status: "failed"
           schema_version: 1
           stale_evidence: []
@@ -1771,6 +1833,29 @@ extensions:
         mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-aacc79281ff782efac70b8e0"
         next_revision: 33
         previous_revision: 32
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+      external-result:work-order-202608312334-MPXQBK-executor-ecc62dc3e56c925d076059db:
+        aggregate_digest: "sha256:0ff03bc8124e1211efb168e97f374dd131031259b56eb74af417031cbbf7942e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T03:31:55.924Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_a1fc659f64f73a952ce2da51"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-ecc62dc3e56c925d076059db"
+          plan_digest: "sha256:82e757cc3e74e66c38c9e239b65908c77f29d63d9ddd65821f9ecc91003550a0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 48
+          to: "REWORK_READY"
+          work_item_id: "legacy-recovery-and-core-convergence"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-ecc62dc3e56c925d076059db"
+        next_revision: 49
+        previous_revision: 48
         schema_version: 1
         task_id: "202608312334-MPXQBK"
       plan-refinement:work-order-202608312334-MPXQBK-executor-43c901c96efe8a0854cbc753:
@@ -2098,6 +2183,51 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:5d706be4141345daa72cb86d62843358015b8207d7445d2a471bac8c412085d6
+
+Details:
+
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun vitest run packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts -t pre-snapshot
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-01T03:31:52.358Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:b56c55995caddab49e6dbbfb83a8edfa2c85272febc43cd93249a096b4985025
 
 Details:
 

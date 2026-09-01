@@ -481,20 +481,21 @@ async function runFullFastPath() {
     timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
   }));
   // Preserve every selected group and aggregate failure while isolating the
-  // lifecycle-heavy runtime and CLI waves from the concurrent core worker pool.
+  // core worker pool from lifecycle-heavy runtime and CLI waves. Run core first
+  // so runtime cleanup cannot retain resources needed by core integration tests.
   const runtimeWave = groups.filter(({ id }) => id === "runtime");
   const coreWave = groups.filter(({ id }) => id !== "runtime" && id !== "cli");
   const cliWave = groups.filter(({ id }) => id === "cli");
   const runtimeConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, runtimeWave.length);
   const coreConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, coreWave.length);
   const cliConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, cliWave.length);
-  const runtimeResult = await runVerificationGroups(runtimeWave, {
-    concurrency: runtimeConcurrency,
+  const coreResult = await runVerificationGroups(coreWave, {
+    concurrency: coreConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
-  const coreResult = await runVerificationGroups(coreWave, {
-    concurrency: coreConcurrency,
+  const runtimeResult = await runVerificationGroups(runtimeWave, {
+    concurrency: runtimeConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
   });
