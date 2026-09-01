@@ -4,7 +4,7 @@ title: "Apply task-centric plan refinement before implementation commit qualific
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 233
+revision: 237
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-01T19:44:23.914Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 execution_route:
   frozen: true
@@ -86,9 +86,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "scripts/checks"
   observed:
-    authority_violations:
-      - "verification:recorded-check-2:fail"
-      - "verification:recorded-check-3:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
       - "scripts"
@@ -109,10 +107,28 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-2"
-        result: "fail"
+        result: "pass"
       -
         id: "recorded-check-3"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -217,9 +233,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-2"
-      - "verification_recovery:recorded-check-3"
-commit: null
+commit:
+  hash: "03a84689d8841fc857d3ec7dcca54337996f03d0"
+  message: "🚧 MPXQBK task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -401,6 +417,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 03a84689d884. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1033,9 +1052,23 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-01T18:31:46.543Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 03a84689d884. CLI accepted one state-bound external-agent semantic result."
+    commit: "03a84689d8841fc857d3ec7dcca54337996f03d0"
+  -
+    type: "verify"
+    at: "2026-09-01T19:44:23.914Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-01T18:30:19.818Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-01T19:44:26.231Z"
+doc_updated_by: "SUPERVISOR"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
   Summary: |-
@@ -2324,6 +2357,90 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
     Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+    - old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-01T19:44:23.914Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:d3a344d2532105dce4f1dd2efd827955c28b687b5dbac0cd295371d36e102301
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608312334-MPXQBK Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -6159,19 +6276,74 @@ extensions:
         revision: 26
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 231
+    revision: 237
     schema_version: 1
-    updated_at: "2026-09-01T18:30:03.752Z"
+    updated_at: "2026-09-01T19:44:27.746Z"
     work_items:
       legacy-recovery-and-core-convergence:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "legacy-recovery-and-core-convergence"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:8775d6527a860a05001e0d2e3edfade15d90c1e9d9585fb7179e3d6f3bb4a7d7"
+            id: "legacy-exchange-recovery-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 27
+              task_id: "202608312334-MPXQBK"
+              work_item_id: "legacy-recovery-and-core-convergence"
+            provenance:
+              - "sha256:c43e895ea3654fca4d8270b16eb23283928e84dd72e94615952539560c952ec1"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:2c6aab6a5c92c2c226880357e12697ec6fd48b93ee054a8dd002000ae9f73355"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:cc193aba2822416e043170dc66083fde81812c04b9876709b7c3c69c1a9cbdd7"
+            id: "core-sharding-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 27
+              task_id: "202608312334-MPXQBK"
+              work_item_id: "legacy-recovery-and-core-convergence"
+            provenance:
+              - "sha256:c43e895ea3654fca4d8270b16eb23283928e84dd72e94615952539560c952ec1"
+              - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:2c6aab6a5c92c2c226880357e12697ec6fd48b93ee054a8dd002000ae9f73355"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+              check_id: "focused-recovery"
+              command_identity: "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts"
+              detail: "Observed by bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-01T19:44:27.707Z"
+              repository_snapshot_digest: "sha256:2c6aab6a5c92c2c226880357e12697ec6fd48b93ee054a8dd002000ae9f73355"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-01T19:44:27.707Z"
+              repository_snapshot_digest: "sha256:2c6aab6a5c92c2c226880357e12697ec6fd48b93ee054a8dd002000ae9f73355"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -6450,6 +6622,29 @@ extensions:
         mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-3bd589ad6838aad013e7c62e"
         next_revision: 173
         previous_revision: 172
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
+      external-result:work-order-202608312334-MPXQBK-executor-5459df6ef5a8cd5dd1b5b6ed:
+        aggregate_digest: "sha256:c662be0d89dd7716196184a56fba8daf202f7c9f9a3ca652633fb233a82c52c1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-01T19:44:27.746Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_89faf83ea119017e1f5f8f54"
+          mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-5459df6ef5a8cd5dd1b5b6ed"
+          plan_digest: "sha256:660bd984f8611c497827afb86cb8213e5be12eb9c06bbc4a359931c551ee3ec3"
+          plan_revision: 27
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 236
+          to: "COMPLETED"
+          work_item_id: "legacy-recovery-and-core-convergence"
+        mutation_id: "external-result:work-order-202608312334-MPXQBK-executor-5459df6ef5a8cd5dd1b5b6ed"
+        next_revision: 237
+        previous_revision: 236
         schema_version: 1
         task_id: "202608312334-MPXQBK"
       external-result:work-order-202608312334-MPXQBK-executor-59d1fdbb9a755684701cf9be:
@@ -7527,6 +7722,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "03a84689d8841fc857d3ec7dcca54337996f03d0"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
@@ -8833,6 +9030,90 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
 Scope: branch_pr task 202608312334-MPXQBK declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202608312334-MPXQBK-apply-task-centric-plan-refinement-before-implem/.agentplane/tasks/202608312334-MPXQBK/blueprint/resolved-snapshot.json
+- old_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- current_digest: 9301a623538e27071d0109668b1efbfdf2a18b21e2d2bbd8264625ffcfabc6e2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608312334-MPXQBK
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-01T19:44:23.914Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80304b99ab62185c7ca3245d76f4ab955e72daa59d2d5c25c2f3ca52fa851486, input_digest=sha256:d3a344d2532105dce4f1dd2efd827955c28b687b5dbac0cd295371d36e102301
+
+Details:
+
+Check: affected_unit_integration
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608312334-MPXQBK/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608312334-MPXQBK Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
