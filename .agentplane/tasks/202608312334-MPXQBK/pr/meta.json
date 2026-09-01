@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9ed50a7ec4876090cb7129cb859a7724f2f22f4b1601270268aa5309fb8b9065",
   "pr_number": 5885,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5885",
+  "pre_merge_closure": {
+    "basis_commit": "82f9f31592ec6d89987e59b8ac2e967f3554a1d9",
+    "branch": "task/202608312334-MPXQBK/apply-task-centric-plan-refinement-before-implem",
+    "pr_number": 5885,
+    "recorded_at": "2026-09-01T19:47:12.421Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

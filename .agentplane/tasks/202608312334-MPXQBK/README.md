@@ -1,10 +1,11 @@
 ---
 id: "202608312334-MPXQBK"
 title: "Apply task-centric plan refinement before implementation commit qualification"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 238
+revision: 240
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,20 @@ quality_review:
     - "The frozen diff remains within the approved task, CLI and CI-runner scope; no unrelated product behavior was introduced."
     - "Supervisor evidence records the focused seven-test task check and the complete full-CI contour as passed at implementation SHA 03a84689d8841fc857d3ec7dcca54337996f03d0."
     - "Residual risk: The compatibility recovery intentionally remains limited to pre-snapshot exchanges with unchanged, identity-bound supervisor artifacts; other legacy ambiguity remains fail-closed."
+token_usage:
+  agent_runs: 86
+  input_tokens: null
+  journal_digest: "sha256:011ff0ce5eff65f0594fca4ab1b5237ca4dd71fc46355a4aeb9ebe4cf0a897c9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-01T19:47:12.100Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -264,8 +279,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "03a84689d8841fc857d3ec7dcca54337996f03d0"
-  message: "🚧 MPXQBK task: apply external agent result"
+  hash: "82f9f31592ec6d89987e59b8ac2e967f3554a1d9"
+  message: "🚧 MPXQBK task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -450,6 +465,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 03a84689d884. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1096,9 +1114,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-01T19:47:12.100Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "82f9f31592ec6d89987e59b8ac2e967f3554a1d9"
 doc_version: 3
-doc_updated_at: "2026-09-01T19:44:26.231Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-01T19:47:12.113Z"
+doc_updated_by: "CODER"
 description: "Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66."
 sections:
   Summary: |-
@@ -2687,7 +2713,34 @@ extensions:
       schema_version: 1
       task_id: "202608312334-MPXQBK"
     event_cursor: 1
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608312334-MPXQBK"
+            - "git:03a84689d8841fc857d3ec7dcca54337996f03d0"
+          check_id: "focused-recovery"
+          command_identity: "bun vitest run packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/commands/task/external-agent-implementation-authority.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-01T19:44:23.914Z"
+          repository_snapshot_digest: "sha256:2c4bfea2f4fcb67b179b15c9ce8f8d8878c536e092660e7a9ddfb67525ec829b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608312334-MPXQBK"
+            - "git:03a84689d8841fc857d3ec7dcca54337996f03d0"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-01T19:44:23.914Z"
+          repository_snapshot_digest: "sha256:2c4bfea2f4fcb67b179b15c9ce8f8d8878c536e092660e7a9ddfb67525ec829b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608312334-MPXQBK"
     intent:
       acceptance_criteria:
@@ -2703,7 +2756,7 @@ extensions:
 
         Fix external-agent implementation result handling so a completed semantic result containing plan_refinement is recorded through the canonical task-centric adapter before implementation commit recovery, scope qualification, verification, or WorkItem result recording. A material refinement must return replan_required without requiring workspace changes or reassigning historical implementation diffs to the current WorkItem. Preserve stale-state, baseline, identity, and task-centric binding checks. Add focused regressions for result_received recovery and scope-expanding refinement. This bootstrap unblocks 202608291006-255K66.
       task_id: "202608312334-MPXQBK"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -6306,9 +6359,9 @@ extensions:
         revision: 26
         schema_version: 1
         task_id: "202608312334-MPXQBK"
-    revision: 237
+    revision: 240
     schema_version: 1
-    updated_at: "2026-09-01T19:44:27.746Z"
+    updated_at: "2026-09-01T19:47:12.100Z"
     work_items:
       legacy-recovery-and-core-convergence:
         attempt: 1
@@ -7114,6 +7167,31 @@ extensions:
         previous_revision: 132
         schema_version: 1
         task_id: "202608312334-MPXQBK"
+      legacy-finish:202608312334-MPXQBK:2026-09-01T19:44:23.914Z:03a84689d8841fc857d3ec7dcca54337996f03d0:
+        aggregate_digest: "sha256:a1f13f0ddadeb59124b74d4b0fb2cab90b761aeea31aabeb4c9d6a2543860e8f"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-01T19:47:12.100Z"
+          cause_refs:
+            - "task-verification:202608312334-MPXQBK"
+            - "git:03a84689d8841fc857d3ec7dcca54337996f03d0"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d8ae8d6247d8836d9216ec0d"
+          mutation_id: "legacy-finish:202608312334-MPXQBK:2026-09-01T19:44:23.914Z:03a84689d8841fc857d3ec7dcca54337996f03d0"
+          plan_digest: "sha256:660bd984f8611c497827afb86cb8213e5be12eb9c06bbc4a359931c551ee3ec3"
+          plan_revision: 27
+          repository_fingerprint: "sha256:2c4bfea2f4fcb67b179b15c9ce8f8d8878c536e092660e7a9ddfb67525ec829b"
+          schema_version: 1
+          task_id: "202608312334-MPXQBK"
+          task_revision: 237
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608312334-MPXQBK:2026-09-01T19:44:23.914Z:03a84689d8841fc857d3ec7dcca54337996f03d0"
+        next_revision: 240
+        previous_revision: 239
+        schema_version: 1
+        task_id: "202608312334-MPXQBK"
       plan-refinement:work-order-202608312334-MPXQBK-executor-07222ebf19fdbea2aa9079e6:
         aggregate_digest: "sha256:e866c695e58af02f32dad846ee798fb68d092c57fc8642d861b788096121beb5"
         event:
@@ -7754,6 +7832,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "03a84689d8841fc857d3ec7dcca54337996f03d0"
+    message: "🚧 MPXQBK task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1d98bf9e30d8c5c4f419bcf304f8d6379529411d"
@@ -9172,3 +9251,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/86` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:011ff0ce5eff65f0594fca4ab1b5237ca4dd71fc46355a4aeb9ebe4cf0a897c9`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-01T19:47:12.100Z`
