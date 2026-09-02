@@ -5,7 +5,7 @@
         "m3-invariants"
       ],
       "command": "bun run lifecycle:invariants",
-      "duration_ms": 130,
+      "duration_ms": 112,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
@@ -23,8 +23,8 @@
         "m3-self-hosting"
       ],
       "command": "node scripts/qualification/check-m3-self-hosting.mjs",
-      "duration_ms": 109,
-      "exit_code": 1,
+      "duration_ms": 158174,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
         "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
@@ -33,13 +33,13 @@
         "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
       },
       "script": null,
-      "stderr_tail": "ReferenceError: git is not defined\n    at runM3SelfHostingQualification (file:///Users/densmirnov/Projects/agentplane/scripts/qualification/check-m3-self-hosting.mjs:71:25)\n    at file:///Users/densmirnov/Projects/agentplane/scripts/qualification/check-m3-self-hosting.mjs:131:22\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n",
-      "stdout_tail": ""
+      "stderr_tail": "",
+      "stdout_tail": "  \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 12,\n      \"task_id\": \"202609020938-5HGZNT\",\n      \"task_commit\": \"92ad6a8fff12d8fbeb13799305347337b8c5c853\",\n      \"final_head\": \"1e8a61ed9c32a3dd2ff93b66eec46aebcdc1d7c9\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 13,\n      \"task_id\": \"202609020938-CR8WDC\",\n      \"task_commit\": \"19083bba6ad48abc38c532fe99f14881f8ca9cd3\",\n      \"final_head\": \"e1031c64cadd232304c0d1e3c329c944913f0d46\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 14,\n      \"task_id\": \"202609020938-9JSM99\",\n      \"task_commit\": \"e35d2cf2cca14e5c556bcd46b50307c7e710a6e5\",\n      \"final_head\": \"79a14b0e42bc04dc31ed77228b2a5d963eb64cc8\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 15,\n      \"task_id\": \"202609020938-FK314B\",\n      \"task_commit\": \"c7fae60950aaaf7f20af72af2aa58fbf2f3fcb3c\",\n      \"final_head\": \"cbfa37416ab915a63ffbb085ee7c0287fc76c382\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 16,\n      \"task_id\": \"202609020938-6WRBVH\",\n      \"task_commit\": \"974e9d5b8ea71b05d369111e6f983c5f908003f1\",\n      \"final_head\": \"8128681064747ca0afcd04974ae65061e45f6d61\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 17,\n      \"task_id\": \"202609020938-0X1N71\",\n      \"task_commit\": \"63d8e83e99200bde1cdf7762456f45caec900792\",\n      \"final_head\": \"52dc0264e2fa987f561d840e7ba383e79867fdcf\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 18,\n      \"task_id\": \"202609020938-T3GD3M\",\n      \"task_commit\": \"493a37563b6639374f69dba7ab903da7c628f659\",\n      \"final_head\": \"b94890e22d1c30d5cac12f05cd69cd18868a8bbf\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 19,\n      \"task_id\": \"202609020938-1XAKCJ\",\n      \"task_commit\": \"2cc816dfdbaef59160dd32e0de7c768be255c61a\",\n      \"final_head\": \"a9effdd96e7101cdb142648a7abbe30d436cb212\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    },\n    {\n      \"sequence\": 20,\n      \"task_id\": \"202609020939-W6ZE8K\",\n      \"task_commit\": \"fa0d92717f4a9276561774e2aca60d6a5d908454\",\n      \"final_head\": \"915adb74d2b663a1a731ad3e534877ce76aed98e\",\n      \"status\": \"DONE\",\n      \"terminal\": true,\n      \"verification\": \"ok\",\n      \"evaluator\": \"pass\",\n      \"exact_replay\": true,\n      \"stale_exchange_rejected\": true,\n      \"final_git_status\": \"\"\n    }\n  ],\n  \"manual_task_edits\": 0,\n  \"manual_journal_edits\": 0,\n  \"bypasses\": 0,\n  \"lost_work_items\": 0,\n  \"duplicate_effects\": 0,\n  \"sequence_digest\": \"sha256:013daa87ed057333034614879230be7fbed7a95b0f5ef77cc21b25c48817ecf7\",\n  \"temp_cleanup\": true\n}\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: node scripts/qualification/check-m3-self-hosting.mjs",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202608291006-255K66"
 }

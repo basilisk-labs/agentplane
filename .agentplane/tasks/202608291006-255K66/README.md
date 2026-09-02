@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 177
+revision: 180
 origin:
   system: "manual"
 depends_on:
@@ -1379,6 +1379,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d4a3c1785549. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a2e8a7040bcf. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1870,8 +1873,16 @@ events:
     to: "DOING"
     note: "Implementation committed: d4a3c1785549. CLI accepted one state-bound external-agent semantic result."
     commit: "d4a3c17855493e32abd1b6f942d3dc27cde267c1"
+  -
+    type: "status"
+    at: "2026-09-02T09:36:31.455Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a2e8a7040bcf. CLI accepted one state-bound external-agent semantic result."
+    commit: "a2e8a7040bcf2a2abc2f43a0794db3794037f568"
 doc_version: 3
-doc_updated_at: "2026-09-02T09:32:14.233Z"
+doc_updated_at: "2026-09-02T09:36:31.636Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -17348,9 +17359,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 177
+    revision: 180
     schema_version: 1
-    updated_at: "2026-09-02T09:32:15.368Z"
+    updated_at: "2026-09-02T09:39:10.860Z"
     work_items:
       m3-crash-migration:
         attempt: 1
@@ -17674,49 +17685,43 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-self-hosting:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "m3-self-hosting"
-        last_failure:
-          cause_refs:
-            - "m3-self-hosting-acceptance"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Completed twenty sequential packaged self-hosting Tasks through public AgentPlane commands. All twenty reached DONE with verification ok, EVALUATOR pass, exact replay, stale-exchange rejection, clean fixture status, zero manual Task or journal edits, zero bypasses, zero lost WorkItems, and zero duplicate effects. Strengthened the qualification contract so future evidence must also bind the exact candidate source HEAD and all three package identities."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:af0d069ec3c9fd7d5dba68b43a5406fbc55a565ace77fcc6430dfcff3ac415e1"
+            digest: "sha256:5d976ba11cad6e7906f9b6f2f7b8616dd6593f509ae980cfe338937974ad9664"
             id: "exact-implementation-m3-self-hosting-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 12
               task_id: "202608291006-255K66"
               work_item_id: "m3-self-hosting"
             provenance:
-              - "sha256:b36c4dcc5e4becc95d4dd17884476739b8af824cd8ba3d936b7900664cd6f8b8"
+              - "sha256:685ac501560516d4e81db30d270f904fd4933eb980cd9811bd6699caa55684e7"
               - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:f4e1b67563737791a003feb52b0f500c55faa9091dbb16bb7053ed49b77b9f06"
+            repository_snapshot_digest: "sha256:4e964be81524b54e1681c7549b514126583fbb2deaa9fe07f8e8e0853caeb42d"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:01a56776a6492c74872283450855a4f06b6a6ca98ddf2a99e63e65ffcceadb11"
+            digest: "sha256:e84e7f39b826e301af2f7640817f58e45cb1f2ca06eee99d5a30df5b2514aefe"
             id: "m3-self-hosting-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 12
               task_id: "202608291006-255K66"
               work_item_id: "m3-self-hosting"
             provenance:
-              - "sha256:b36c4dcc5e4becc95d4dd17884476739b8af824cd8ba3d936b7900664cd6f8b8"
+              - "sha256:685ac501560516d4e81db30d270f904fd4933eb980cd9811bd6699caa55684e7"
               - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:f4e1b67563737791a003feb52b0f500c55faa9091dbb16bb7053ed49b77b9f06"
+            repository_snapshot_digest: "sha256:4e964be81524b54e1681c7549b514126583fbb2deaa9fe07f8e8e0853caeb42d"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 3
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -17724,26 +17729,25 @@ extensions:
                 - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
               check_id: "m3-invariants"
               command_identity: "bun run lifecycle:invariants"
-              detail: "Declared check failed: node scripts/qualification/check-m3-self-hosting.mjs"
+              detail: "Observed by bun run lifecycle:invariants."
               exit_code: 0
-              observed_at: "2026-09-02T09:32:15.293Z"
-              repository_snapshot_digest: "sha256:f4e1b67563737791a003feb52b0f500c55faa9091dbb16bb7053ed49b77b9f06"
+              observed_at: "2026-09-02T09:39:10.773Z"
+              repository_snapshot_digest: "sha256:4e964be81524b54e1681c7549b514126583fbb2deaa9fe07f8e8e0853caeb42d"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
               check_id: "m3-self-hosting"
               command_identity: "node scripts/qualification/check-m3-self-hosting.mjs"
-              detail: "Declared check failed: node scripts/qualification/check-m3-self-hosting.mjs"
-              exit_code: 1
-              observed_at: "2026-09-02T09:32:15.293Z"
-              repository_snapshot_digest: "sha256:f4e1b67563737791a003feb52b0f500c55faa9091dbb16bb7053ed49b77b9f06"
-              status: "failed"
+              detail: "Observed by node scripts/qualification/check-m3-self-hosting.mjs."
+              exit_code: 0
+              observed_at: "2026-09-02T09:39:10.773Z"
+              repository_snapshot_digest: "sha256:4e964be81524b54e1681c7549b514126583fbb2deaa9fe07f8e8e0853caeb42d"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "m3-self-hosting-acceptance"
+          status: "passed"
+          unsatisfied_criteria: []
       m3-task-classes:
         attempt: 1
         claim_id: null
@@ -17854,6 +17858,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-0f5e2912ad3f1f9035d0e922"
         next_revision: 125
         previous_revision: 124
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-1c82974690ac7fc1899fe8dc:
+        aggregate_digest: "sha256:e6285ac90c35bf49b7dd1a80be72b6581eb7f96a7ddcbf4ee7cbc85854993e79"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T09:39:10.860Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_fbfb703616cadf3ef5ab0241"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-1c82974690ac7fc1899fe8dc"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 179
+          to: "COMPLETED"
+          work_item_id: "m3-self-hosting"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-1c82974690ac7fc1899fe8dc"
+        next_revision: 180
+        previous_revision: 179
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-263024b5fd67fb6d8c87f000:
@@ -18721,7 +18748,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d4a3c17855493e32abd1b6f942d3dc27cde267c1"
+    hash: "a2e8a7040bcf2a2abc2f43a0794db3794037f568"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
