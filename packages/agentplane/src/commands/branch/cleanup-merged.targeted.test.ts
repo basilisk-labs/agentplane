@@ -22,6 +22,12 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
+import {
+  emptyIntegrationQueue,
+  readIntegrationQueue,
+  upsertQueuedEntry,
+  writeIntegrationQueue,
+} from "../pr/integrate/queue-state.js";
 
 installRunCliIntegrationHarness();
 const execFileAsync = promisify(execFile);
@@ -310,7 +316,7 @@ async function installFakeGh(opts: {
   return fakeBin;
 }
 
-async function configureFinalizationRemote(fixture: TargetedFixture): Promise<void> {
+async function configureFinalizationRemote(fixture: TargetedFixture): Promise<string> {
   const remoteRoot = path.join(await mkTempDir(), "origin.git");
   await execFileAsync("git", ["init", "--bare", remoteRoot], {
     cwd: fixture.root,
@@ -328,6 +334,7 @@ async function configureFinalizationRemote(fixture: TargetedFixture): Promise<vo
     cwd: fixture.root,
     env: cleanGitEnv(),
   });
+  return remoteRoot;
 }
 
 async function commitAuthorityOnlyTail(fixture: TargetedFixture): Promise<string> {
@@ -355,7 +362,7 @@ async function commitAuthorityOnlyTail(fixture: TargetedFixture): Promise<string
   return stdout.trim();
 }
 
-async function installFakeGithubOriginLookup(fakeBin: string): Promise<void> {
+async function installFakeGithubOriginLookup(fakeBin: string, pullRemote?: string): Promise<void> {
   const locator = process.platform === "win32" ? "where" : "which";
   const { stdout } = await execFileAsync(locator, ["git"], { env: cleanGitEnv() });
   const actualGit = stdout
@@ -374,6 +381,26 @@ async function installFakeGithubOriginLookup(fakeBin: string): Promise<void> {
         "  echo https://github.com/example/repo.git",
         "  exit /b 0",
         ")",
+        ...(pullRemote
+          ? [
+              'if "%~1"=="pull" if "%~2"=="--ff-only" if "%~3"=="origin" (',
+              `  "${actualGit}" pull --ff-only "${pullRemote}" "%~4"`,
+              "  exit /b %errorlevel%",
+              ")",
+              'if "%~1"=="fetch" if "%~2"=="--prune" if "%~3"=="origin" (',
+              `  "${actualGit}" fetch --prune "${pullRemote}" "+refs/heads/*:refs/remotes/origin/*"`,
+              "  exit /b %errorlevel%",
+              ")",
+              'if "%~1"=="ls-remote" if "%~2"=="--heads" if "%~3"=="origin" (',
+              `  "${actualGit}" ls-remote --heads "${pullRemote}" "%~4"`,
+              "  exit /b %errorlevel%",
+              ")",
+              'if "%~1"=="push" if "%~2"=="origin" if "%~3"=="--delete" (',
+              `  "${actualGit}" push "${pullRemote}" --delete "%~4"`,
+              "  exit /b %errorlevel%",
+              ")",
+            ]
+          : []),
         `"${actualGit}" %*`,
         "",
       ].join("\r\n"),
@@ -390,6 +417,22 @@ async function installFakeGithubOriginLookup(fakeBin: string): Promise<void> {
       "  printf '%s\\n' 'https://github.com/example/repo.git'",
       "  exit 0",
       "fi",
+      ...(pullRemote
+        ? [
+            'if [ "$1" = "pull" ] && [ "$2" = "--ff-only" ] && [ "$3" = "origin" ]; then',
+            `  exec ${JSON.stringify(actualGit)} pull --ff-only ${JSON.stringify(pullRemote)} "$4"`,
+            "fi",
+            'if [ "$1" = "fetch" ] && [ "$2" = "--prune" ] && [ "$3" = "origin" ]; then',
+            `  exec ${JSON.stringify(actualGit)} fetch --prune ${JSON.stringify(pullRemote)} '+refs/heads/*:refs/remotes/origin/*'`,
+            "fi",
+            'if [ "$1" = "ls-remote" ] && [ "$2" = "--heads" ] && [ "$3" = "origin" ]; then',
+            `  exec ${JSON.stringify(actualGit)} ls-remote --heads ${JSON.stringify(pullRemote)} "$4"`,
+            "fi",
+            'if [ "$1" = "push" ] && [ "$2" = "origin" ] && [ "$3" = "--delete" ]; then',
+            `  exec ${JSON.stringify(actualGit)} push ${JSON.stringify(pullRemote)} --delete "$4"`,
+            "fi",
+          ]
+        : []),
       `exec ${JSON.stringify(actualGit)} "$@"`,
       "",
     ].join("\n"),
@@ -636,6 +679,60 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await pathExists(fixture.siblingBaseWorktreePath!)).toBe(true);
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
     expect(await pathExists(fixture.unrelatedWorktreePath)).toBe(true);
+  });
+
+  it("synchronizes a stale base before cleanup and normalizes its completed queue entry", async () => {
+    const fixture = await createTargetedFixture();
+    const pullRemote = await configureFinalizationRemote(fixture);
+    await execFileAsync(
+      "git",
+      ["remote", "set-url", "origin", "https://github.com/example/repo.git"],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    await installFakeGithubOriginLookup(fakeBin, pullRemote);
+
+    const staleBaseResult = await execFileAsync("git", ["rev-parse", `${fixture.mergeCommit}^`], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const staleBase = staleBaseResult.stdout.trim();
+    await execFileAsync("git", ["reset", "--hard", staleBase], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    await writeIntegrationQueue(
+      fixture.root,
+      upsertQueuedEntry(emptyIntegrationQueue(), {
+        task_id: fixture.taskId,
+        branch: fixture.branch,
+        base: "main",
+        head_sha: fixture.branchHead,
+        base_sha: staleBase,
+        changed_paths: ["targeted-change.txt"],
+        pr_number: 123,
+        pr_url: "https://github.com/example/repo/pull/123",
+        priority: 0,
+      }),
+    );
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--finalize",
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code, result.stderr).toBe(0);
+    expect(result.stdout).toContain("proof=provider_merge");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
+    expect(await pathExists(fixture.worktreePath)).toBe(false);
+    const queue = await readIntegrationQueue(fixture.root);
+    expect(queue.entries[0]?.status).toBe("done");
   });
 
   it("keeps a directly registered /tmp worktree even for targeted finalization", async () => {
