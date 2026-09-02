@@ -203,6 +203,7 @@ describe("canonical native authority", () => {
         kind: "DELEGATED",
         parent_authority_digest: root.digest,
       });
+      expect(child.provenance.actor_id).not.toBe("USER");
       expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
       expect(child.plan_digest).toBe(f.plan.digest);
     },
