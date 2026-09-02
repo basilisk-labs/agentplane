@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 142
+revision: 143
 origin:
   system: "manual"
 depends_on:
@@ -34,34 +34,32 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-02T01:08:09.880Z"
+  updated_at: "2026-09-02T07:45:35.616Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "e3f7dc4076963713aa7721f5bf63c407f18aeb1d"
   blueprint_digest: "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211"
   evidence_refs:
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-010644629-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-010644629-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6bd7a849180aa88e5feeb7530aee4ce4bfabf1e21c9f077899f3a9b10e76c5d7.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-010644629-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-010644629-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-010644629-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/743625b979955131c70711cd97e40dfbac677d50662580ef4afde51200528f33.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291006-255K66/README.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/38f399fd9f3a71b8d2fe3916171cae20dcf2db822555d7cb9621537fd4441c43.patch"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/262595476644035391c1845c94516f238be522ceb3bd5cc16bcc2c4a73457cc8.json"
-    - ".agentplane/tasks/202608291006-255K66/verification/20260902010637540-95ed18c2ddfc30e8.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6e6b178b90391a5a592f1783e482fb3bd2ea9c883a68aacf81b8d75609092742.patch"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664.json"
+    - ".agentplane/tasks/202608291006-255K66/verification/20260902073908986-26b434d9dee6b5c9.json"
     - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The frozen verification record is bound to implementation SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be and records all five declared supervisor checks as passing, including full local CI, lifecycle invariants, mixed-scope qualification, policy routing, and doctor."
-    - "The production compatibility inventory still permits five exact import edges and reports 738 compatibility LOC. This satisfies the declared-adapter exception, but the adapters remain a residual maintenance boundary rather than evidence of total physical deletion."
-    - "No publication, registry mutation, or hosted exact-head evidence exists. The user explicitly excluded release work from this goal, and the evaluator packet grants no external side effects, so these effects are correctly left unclaimed and must not be inferred from local real-E2E classification."
-    - "The final two-file qualification adjustment is narrow: it preserves exact-commit PR routing while reducing the module to the hotspot ceiling and replaces a forbidden reduce with an equivalent loop. Focused tests and the full supervisor gate passed."
-    - "Residual risk: Five allowlisted compatibility import edges and 738 compatibility LOC remain and require the fail-closed inventory to prevent authority growth."
-    - "Residual risk: Hosted checks, registry behavior, and release publication remain unverified because release work is outside the user-approved goal."
+    - "The frozen evidence does not prove the mandatory M3 self-hosting and release-readiness qualification. The blueprint requires twenty real sequential self-hosting Tasks, three clean release drills, hosted exact-head checks, and a receipt bound to the implementation SHA, while the observed evidence marks the qualification packet not required and contains no runtime evidence."
+    - "The frozen diff contains numerous task artifacts and implementation changes outside the approved writable roots, and the task record classifies them as writable-scope violations without evidence of explicit re-approval or an accepted concurrent-work drift classification."
+    - "The implementation evidence embedded in the observed-checks packet is bound to the earlier SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be, not the evaluated SHA e3f7dc4076963713aa7721f5bf63c407f18aeb1d, so its clean-status and reviewed-path assertions do not establish the final evaluated state."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -1673,7 +1671,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-02T07:39:13.151Z"
+doc_updated_at: "2026-09-02T07:45:35.711Z"
 doc_updated_by: "CODER"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:

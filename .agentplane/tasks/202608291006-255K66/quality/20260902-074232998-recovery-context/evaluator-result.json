@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen evidence does not prove the mandatory M3 self-hosting and release-readiness qualification. The blueprint requires twenty real sequential self-hosting Tasks, three clean release drills, hosted exact-head checks, and a receipt bound to the implementation SHA, while the observed evidence marks the qualification packet not required and contains no runtime evidence.",
+      "broken_invariant": "Pass requires implementation and verification evidence covering the task's explicit self-hosting, crash-recovery, rollback, and release-readiness acceptance gates; missing external proof or a skipped mandatory gate prevents completion.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json",
+          "sha256": "sha256:5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71",
+          "section": "M3 acceptance and qualification requirements"
+        },
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664.json",
+          "sha256": "sha256:6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664",
+          "section": "qualification_packet and runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/README.md",
+          "sha256": "sha256:e6e00337391d53af9c312f265abbbfe2f8e2c309e7a063b5cb037ea10c83f5cf",
+          "section": "Summary and Scope"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "The frozen diff contains numerous task artifacts and implementation changes outside the approved writable roots, and the task record classifies them as writable-scope violations without evidence of explicit re-approval or an accepted concurrent-work drift classification.",
+      "broken_invariant": "Files outside approved scope constitute material drift and require explicit re-approval; final tracked state must contain no unintended or unreviewed changes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/README.md",
+          "sha256": "sha256:e6e00337391d53af9c312f265abbbfe2f8e2c309e7a063b5cb037ea10c83f5cf",
+          "section": "execution_contract.observed.authority_violations"
+        },
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6e6b178b90391a5a592f1783e482fb3bd2ea9c883a68aacf81b8d75609092742.patch",
+          "sha256": "sha256:6e6b178b90391a5a592f1783e482fb3bd2ea9c883a68aacf81b8d75609092742",
+          "section": "Actual diff"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "The implementation evidence embedded in the observed-checks packet is bound to the earlier SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be, not the evaluated SHA e3f7dc4076963713aa7721f5bf63c407f18aeb1d, so its clean-status and reviewed-path assertions do not establish the final evaluated state.",
+      "broken_invariant": "Final evidence, including repository status and reviewed mutation paths, must be bound to the evaluated implementation state.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664.json",
+          "sha256": "sha256:6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664",
+          "section": "direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/verification/20260902073908986-26b434d9dee6b5c9.json",
+          "sha256": "sha256:30877bb88ea9adc73dd3e87bb7038ab7e9514257f2514d69463083ef749a14a6",
+          "section": "implementation_sha"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record and validate the twenty required sequential real self-hosting Tasks against the exact evaluated SHA, including interruption recovery, no duplicate effects, and no lost WorkItems.",
+    "Run and record the three clean release drills with source/package/tag/hosted-release/registry/installed-CLI identity agreement and hosted exact-head checks.",
+    "Capture a final evaluated-SHA-bound repository-status and path-authority check that classifies every outside-scope path as approved dependency work, explicitly re-approved drift, or unintended drift."
+  ],
+  "hidden_assumptions": [
+    "Local CI, lifecycle invariants, and mixed-scope qualification are assumed to substitute for the blueprint's explicitly mandatory real self-hosting and hosted release evidence.",
+    "The qualification packet is assumed to be unnecessary even though the approved blueprint makes M3 qualification a completion gate.",
+    "Changes from other task histories are assumed to be admissible concurrent or dependency work despite the frozen task record classifying them as outside-scope authority violations.",
+    "Clean repository evidence from SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be is assumed to remain valid for evaluated SHA e3f7dc4076963713aa7721f5bf63c407f18aeb1d."
+  ],
+  "recovery_context": "Requalify the exact evaluated SHA against the approved M3 blueprint: supply the twenty real self-hosting runs, three clean release drills, hosted exact-head and rollback receipts, then produce evaluated-SHA-bound clean-status evidence and explicitly resolve every recorded outside-scope path through approved dependency provenance, re-approval, or removal."
+}
