@@ -35,7 +35,8 @@ Created: 2026-08-30T21:48:11.941Z
  .../task-backend/kernel-backend-adapter.test.ts    |  30 +-
  .../task-backend/kernel-backend-adapter.ts         |  99 ++-
  .../src/adapters/task-backend/kernel-documents.ts  |  55 ++
- .../adapters/task-backend/kernel-migration.test.ts |   5 +
+ .../adapters/task-backend/kernel-migration.test.ts |  40 +
+ .../src/adapters/task-backend/kernel-migration.ts  |  41 +-
  .../adapters/task-backend/kernel-next-action.ts    |  10 +-
  .../task-backend/kernel-record-invariants.ts       |   2 +-
  .../src/adapters/task-backend/kernel-record.ts     |  22 +-
@@ -127,7 +128,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
  .../qualification/release-qualification.test.mjs   |   6 +
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 98 files changed, 7322 insertions(+), 576 deletions(-)
+ 99 files changed, 7385 insertions(+), 589 deletions(-)
 ```
 
 </details>
