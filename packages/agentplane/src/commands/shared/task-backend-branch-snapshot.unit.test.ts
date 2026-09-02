@@ -93,6 +93,39 @@ describe("task branch snapshot inventory", () => {
     });
   });
 
+  it("shares one authoritative worktree inventory across concurrent command reads", async () => {
+    const listWorktrees = vi.spyOn(git, "listWorktrees").mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/main" },
+      {
+        path: "/repo/.agentplane/worktrees/alpha",
+        branch: "refs/heads/task/202607260001-ALPHA/local",
+      },
+    ]);
+    const ctx = makeContext();
+
+    const [first, replay] = await Promise.all([
+      resolveAuthoritativeTaskWorktree({
+        ctx,
+        taskId: "202607260001-ALPHA",
+        branch: "task/202607260001-ALPHA/local",
+        requireRegistration: true,
+      }),
+      resolveAuthoritativeTaskWorktree({
+        ctx,
+        taskId: "202607260001-ALPHA",
+        branch: "refs/heads/task/202607260001-ALPHA/local",
+        requireRegistration: true,
+      }),
+    ]);
+
+    expect(first).toEqual(replay);
+    expect(first).toEqual({
+      path: "/repo/.agentplane/worktrees/alpha",
+      branch: "task/202607260001-ALPHA/local",
+    });
+    expect(listWorktrees).toHaveBeenCalledTimes(1);
+  });
+
   it("rejects duplicate same-task worktree registrations", async () => {
     vi.spyOn(git, "listWorktrees").mockResolvedValue([
       {

@@ -35,7 +35,7 @@ Created: 2026-09-02T15:35:26.605Z
  .../src/commands/branch/cleanup-merged.ts          |  15 +-
  .../commands/shared/route-decision-workspace.ts    |   2 +-
  .../shared/task-backend-branch-snapshot.ts         | 123 ++++++++++-
- .../task-backend-branch-snapshot.unit.test.ts      |  78 ++++++-
+ .../task-backend-branch-snapshot.unit.test.ts      | 111 +++++++++-
  .../src/commands/shared/task-backend.test.ts       |  33 +--
  .../agentplane/src/commands/shared/task-backend.ts |  55 +++--
  .../src/commands/shared/task-mutation.test.ts      |  69 ++++++
@@ -50,7 +50,7 @@ Created: 2026-09-02T15:35:26.605Z
  .../src/commands/task/set-status.unit.test.ts      |  56 +++++
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
  .../commands/task/task-centric-external-result.ts  |  54 +++--
- 21 files changed, 1018 insertions(+), 207 deletions(-)
+ 21 files changed, 1051 insertions(+), 207 deletions(-)
 ```
 
 </details>

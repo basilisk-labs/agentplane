@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 7f670974f1e9fb9a867399994b25c04ee25c21aa..f200d94de2ad7e1049716f5b172cf467c8701f43",
+      "command": "git diff --check 6d1f913c5f80d28dba40eafd3ea0ede567893aab..939f62acc66741fe6b864ad83210eb209db658c3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7f670974f1e9fb9a867399994b25c04ee25c21aa..f200d94de2ad7e1049716f5b172cf467c8701f43",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6d1f913c5f80d28dba40eafd3ea0ede567893aab..939f62acc66741fe6b864ad83210eb209db658c3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,7 @@
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/review.md",
-        "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
-        "M\tpackages/agentplane/src/commands/branch/cleanup-merged.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
       ]
     },
     {
@@ -32,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "7f670974f1e9fb9a867399994b25c04ee25c21aa",
-  "implementation_commit": "f200d94de2ad7e1049716f5b172cf467c8701f43",
+  "execution_base_commit": "6d1f913c5f80d28dba40eafd3ea0ede567893aab",
+  "implementation_commit": "939f62acc66741fe6b864ad83210eb209db658c3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
