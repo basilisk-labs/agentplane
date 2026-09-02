@@ -51,7 +51,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/commands/shared/task-mutation.ts           |  18 +
  .../commands/shared/verification-details.test.ts   |  33 +
  .../src/commands/shared/verification-details.ts    |   7 +-
- .../src/commands/shared/workflow-step-branch.ts    |  14 +-
+ .../src/commands/shared/workflow-step-branch.ts    |  25 +-
  .../agentplane/src/commands/task/active.command.ts | 110 ++-
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
@@ -113,11 +113,11 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- .../checks/check-m3-legacy-authority-imports.mjs   |  70 ++
+ .../checks/check-m3-legacy-authority-imports.mjs   |  71 ++
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 88 files changed, 6988 insertions(+), 511 deletions(-)
+ 88 files changed, 6991 insertions(+), 520 deletions(-)
 ```
 
 </details>

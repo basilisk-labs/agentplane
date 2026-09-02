@@ -45,11 +45,12 @@ export function inspectM3LegacyAuthorityImports() {
     "adapters/task-backend/task-centric-backend-runtime.ts",
     "adapters/task-backend/task-centric-backend-adapter.ts",
   ];
-  const legacyProductionLoc = legacyFiles.reduce((total, relative) => {
+  let legacyProductionLoc = 0;
+  for (const relative of legacyFiles) {
     const file = path.join(sourceRoot, relative);
     assert.equal(statSync(file).isFile(), true);
-    return total + readFileSync(file, "utf8").split("\n").length;
-  }, 0);
+    legacyProductionLoc += readFileSync(file, "utf8").split("\n").length;
+  }
   return {
     production_files: production.length,
     production_loc: productionLoc,
