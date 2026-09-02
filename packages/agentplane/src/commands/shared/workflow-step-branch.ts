@@ -3,6 +3,7 @@ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
+  branchHeadRepairStep,
   blockedTaskStep,
   missingPrRemoteRefreshStep,
   preMergeCommit,
@@ -33,21 +34,6 @@ import {
 } from "./workflow-step-factory.js";
 function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
   return state.blockers.some((blocker) => blocker.code === code);
-}
-function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
-  return terminalStep({
-    state,
-    id: "terminal.branch_head_repair",
-    code: "repair_branch_head",
-    phase: "branch_head_missing",
-    checkout: "base_checkout",
-    role: "CODER",
-    outcome: "repair_required",
-    summary:
-      "the structured task branch exists but its local head is unavailable; recover or fetch that branch before PR, closure, or integration operations",
-    evidenceMissing: ["task_branch_head"],
-    selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
-  });
 }
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
   if (state.batchOwnership.role !== "primary") return null;

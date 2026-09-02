@@ -753,6 +753,11 @@ describe("runCli route decision commands", () => {
     }>(["task", "status", taskId, "--route", "--json", "--root", root]);
     expect(terminalRouteCode).toBe(0);
     expect(terminalRoute.nextAction).toMatchObject({ code: "done", command: null });
+    const [terminalReplayCode, terminalReplay] = await runJson<{
+      nextAction: { code: string; command: string | null };
+    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
+    expect(terminalReplayCode).toBe(0);
+    expect(terminalReplay.nextAction).toEqual(terminalRoute.nextAction);
 
     const taskBranches = await execFileAsync("git", ["branch", "--list", `task/${taskId}/*`], {
       cwd: root,

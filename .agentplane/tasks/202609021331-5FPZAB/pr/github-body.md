@@ -28,7 +28,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
 
 ```text
  .../task-backend/task-centric-backend-adapter.ts   | 234 +++++++++++++++------
- .../src/cli/run-cli.core.route-decision.test.ts    |  51 ++++-
+ .../src/cli/run-cli.core.route-decision.test.ts    |  56 ++++-
  .../branch/cleanup-merged.targeted.test.ts         | 108 +++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  15 +-
  .../commands/shared/route-decision-workspace.ts    |   2 +-
@@ -38,9 +38,11 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
  .../agentplane/src/commands/shared/task-backend.ts |  55 +++--
  .../src/commands/shared/task-mutation.test.ts      |  69 ++++++
  .../src/commands/shared/task-mutation.ts           |  60 +++++-
- .../src/commands/shared/workflow-step-branch.ts    |  12 +-
+ .../commands/shared/workflow-step-branch-state.ts  |  18 +-
+ .../src/commands/shared/workflow-step-branch.ts    |  28 +--
  .../shared/workflow-step-fingerprint.test.ts       |  50 ++++-
  .../commands/shared/workflow-step-fingerprint.ts   |  33 ++-
+ .../shared/workflow-step-hosted-close.test.ts      |   9 +-
  .../workflow-step-projections-routing.test.ts      |  24 +++
  .../commands/shared/workflow-step-quality.test.ts  |   6 +-
  .../external-agent-implementation-authority.ts     |   4 +-
@@ -55,7 +57,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
  .../commands/task/task-centric-external-result.ts  |  56 +++--
  .../task/verify-record.durability.unit.test.ts     |  38 +++-
- 28 files changed, 1215 insertions(+), 270 deletions(-)
+ 30 files changed, 1246 insertions(+), 287 deletions(-)
 ```
 
 </details>
