@@ -97,6 +97,6 @@
  .../checks/check-m3-legacy-authority-imports.mjs   |  78 ++
  scripts/qualification/check-m3-self-hosting.mjs    | 137 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
- .../qualification/release-qualification.test.mjs   |  43 ++
+ .../qualification/release-qualification.test.mjs   |  48 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 101 files changed, 7479 insertions(+), 599 deletions(-)
+ 101 files changed, 7484 insertions(+), 599 deletions(-)
