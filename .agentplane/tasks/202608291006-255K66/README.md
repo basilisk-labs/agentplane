@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 197
+revision: 198
 origin:
   system: "manual"
 depends_on:
@@ -36,34 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-02T10:49:41.855Z"
+  updated_at: "2026-09-02T12:10:13.028Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "245fdf56dcf46727628571fbb874ec0f62e97709"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "3e79d32c8ab91879d4bac3723b1bb8bff31ba617"
   blueprint_digest: "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211"
   evidence_refs:
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-104733089-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-104733089-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/fc8b5d2970b76ce71aa547351336b1a218104faf1c0b44685ab007859a2563a0.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-104733089-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-104733089-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-104733089-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/03fac2d5aaf2b44e1196d4f999a8b02f762865e91ba13e31f61d538764e38f6a.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291006-255K66/README.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/10d10b3c3deee3eee262a7808cf92e4c657f0de63850fc439f5a8e7a1fad3d82.patch"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/ac519d87d2030b7110cd6f63d631390fa3786e9addd1845eabba0b1c9ac44d3a.json"
-    - ".agentplane/tasks/202608291006-255K66/verification/20260902104723562-f2a9a3cdf592a0a1.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/aa2c851b2c2ebda2d6d6457f6cdd422d44c0bcb634decce41b25d7c6bc5b69c6.patch"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/ad278564bd188a83eb457870490081d393908746afeae7c1b8d8e1ee23814f2d.json"
+    - ".agentplane/tasks/202608291006-255K66/verification/20260902120832993-89c8c1f0fd216ee8.json"
     - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The implementation remains 245fdf56dcf46727628571fbb874ec0f62e97709, and the task-document evidence proves that later commits change only AgentPlane-managed artifacts for this Task, with no production or qualification code drift."
-    - "The fresh self-hosting result records 20/20 distinct sequential Tasks as DONE with verification ok, evaluator pass, exact replay, stale-exchange rejection, clean status, zero manual edits, zero bypasses, zero lost WorkItems, zero duplicate effects, and successful cleanup. Its sequence digest is sha256:f4adfa79746db836237d376b2e5181a7ab41ed43342984a4b72969ca662e9b99."
-    - "The task document records the canonical m3-milestone-receipt-with-release-work-deferred output digest sha256:721d9b280ca1f5f8fafdaa05e644ec08a00edae5c739269d1e80ee340d8c0011 and the remaining final-qualification output manifests."
-    - "The latest supervisor verification record is bound to implementation SHA 245fdf56dcf46727628571fbb874ec0f62e97709 and records full local CI, lifecycle invariants, packaged mixed-scope qualification, policy routing, and doctor as passing."
-    - "The legacy compatibility surface remains explicitly bounded at six allowlisted import edges and 745 production LOC; the fail-closed guard blocks unreviewed imports and LOC growth."
-    - "Hosted exact-head PR verification, publication, merge, and fresh-main readback are later AgentPlane-owned effects and are correctly not claimed by this read-only evaluator. Release drills and stable publication remain outside M3."
-    - "Residual risk: Hosted PR verification, merge, and main reachability must still be proven by subsequent provider routes before integration completes."
-    - "Residual risk: Six explicitly allowlisted compatibility imports and 745 production LOC remain as a constrained maintenance boundary."
+    - "The CodeQL finding is addressed by removing the separate statSync check and reading the fixed allowlisted files directly; the explanatory invariant discourages reintroducing the race."
+    - "The verify-static cycle is addressed by moving the pure resolveEvidenceOnlyReworkCommit helper into an independent module used by recovery and its tests."
+    - "The extracted recovery module is 578 lines, below the enforced 600-line hotspot ceiling; the previously failing docs-schema group now passes."
+    - "Supervisor verification is bound to implementation 3e79d32c8ab91879d4bac3723b1bb8bff31ba617 and records ci:local:full, lifecycle:invariants, qualification:mixed-scope-lifecycle, policy routing, and doctor as passing."
+    - "The compatibility boundary remains six allowlisted import edges and 745 legacy production LOC with zero unexpected imports."
+    - "Residual risk remains provider-owned: the repaired head still requires publication, hosted CodeQL/static confirmation, merge, and fresh-main readback."
+    - "Residual risk: Hosted checks, integration, and main reachability are not yet proven for implementation 3e79d32c8ab91879d4bac3723b1bb8bff31ba617."
 token_usage:
   agent_runs: 44
   input_tokens: 378921
@@ -1995,7 +1994,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-02T12:08:35.525Z"
+doc_updated_at: "2026-09-02T12:10:13.133Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
