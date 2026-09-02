@@ -2,10 +2,10 @@
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 198
+revision: 199
 origin:
   system: "manual"
 depends_on:
@@ -64,9 +64,9 @@ quality_review:
     - "Residual risk remains provider-owned: the repaired head still requires publication, hosted CodeQL/static confirmation, merge, and fresh-main readback."
     - "Residual risk: Hosted checks, integration, and main reachability are not yet proven for implementation 3e79d32c8ab91879d4bac3723b1bb8bff31ba617."
 token_usage:
-  agent_runs: 44
+  agent_runs: 48
   input_tokens: 378921
-  journal_digest: "sha256:69d86992a759d14c315da3105f19334b7a1c2ad2f0df8e0e4fc6d41bde94bbb4"
+  journal_digest: "sha256:5dbf75198562fb1adb8976c8be019b9b2dd314cb497d7464b4d194bcf8d51b36"
   observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "partial"
   total_tokens: 383800
   unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
-  updated_at: "2026-09-02T10:49:47.902Z"
+  updated_at: "2026-09-02T12:10:27.085Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1229,8 +1229,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3e79d32c8ab91879d4bac3723b1bb8bff31ba617"
-  message: "🚧 255K66 task: apply external agent result"
+  hash: "c7ac513330971e4de501486efd0ebaef3f61d834"
+  message: "🚧 255K66 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1433,6 +1433,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3e79d32c8ab9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1993,9 +1996,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-02T12:10:27.085Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c7ac513330971e4de501486efd0ebaef3f61d834"
 doc_version: 3
-doc_updated_at: "2026-09-02T12:10:13.133Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-02T12:10:27.116Z"
+doc_updated_by: "CODER"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -19724,6 +19735,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "3e79d32c8ab91879d4bac3723b1bb8bff31ba617"
+    message: "🚧 255K66 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -21863,12 +21875,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `partial`
-- Completeness: `1/44` agent runs
+- Completeness: `1/48` agent runs
 - Input tokens: `378921`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `383800`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:69d86992a759d14c315da3105f19334b7a1c2ad2f0df8e0e4fc6d41bde94bbb4`
+- Journal digest: `sha256:5dbf75198562fb1adb8976c8be019b9b2dd314cb497d7464b4d194bcf8d51b36`
 - Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
-- Updated at: `2026-09-02T10:49:47.902Z`
+- Updated at: `2026-09-02T12:10:27.085Z`

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:8b2561061d0bdd45e5a8d380577ac7f0c670e040b1254473fec0cc7a57d8917b",
   "pr_number": 5886,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5886",
+  "pre_merge_closure": {
+    "basis_commit": "c7ac513330971e4de501486efd0ebaef3f61d834",
+    "branch": "task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire",
+    "pr_number": 5886,
+    "recorded_at": "2026-09-02T12:10:27.252Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
