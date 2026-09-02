@@ -605,23 +605,26 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   current: TaskData;
   next: TaskData;
 }): TaskData {
-  const currentAggregate = taskCentricAggregateFromExtensions(opts.current.extensions);
-  if (!currentAggregate || JSON.stringify(opts.current) === JSON.stringify(opts.next)) {
+  if (JSON.stringify(opts.current) === JSON.stringify(opts.next)) {
     return opts.next;
   }
+  const storedAggregate = taskCentricAggregateFromExtensions(opts.current.extensions);
   const nextAggregate = taskCentricAggregateFromExtensions(opts.next.extensions);
   if (!nextAggregate) {
+    if (!storedAggregate) return opts.next;
     throw new Error("Task-centric compatibility mutation cannot remove the canonical aggregate.");
   }
+  const currentAggregate = storedAggregate ?? nextAggregate;
   const currentRevision = opts.current.revision ?? currentAggregate.revision;
   const nextRevision = currentRevision + 1;
-  if (taskCentricDigest(currentAggregate) !== taskCentricDigest(nextAggregate)) {
-    if (nextAggregate.revision !== nextRevision) {
-      throw new Error(
-        `Task-centric mutation revision mismatch: expected ${nextRevision}, observed ${nextAggregate.revision}.`,
-      );
-    }
+  const aggregateChanged = taskCentricDigest(currentAggregate) !== taskCentricDigest(nextAggregate);
+  if (aggregateChanged && nextAggregate.revision === nextRevision) {
     return { ...opts.next, revision: nextRevision };
+  }
+  if (nextAggregate.revision !== currentRevision) {
+    throw new Error(
+      `Task-centric mutation revision mismatch: expected ${nextRevision}, observed ${nextAggregate.revision}.`,
+    );
   }
 
   const at = opts.next.doc_updated_at ?? currentAggregate.updated_at;
@@ -633,14 +636,15 @@ export function projectTaskCentricCompatibilityMutation(opts: {
     events: opts.next.events,
     verification: opts.next.verification,
     commit: opts.next.commit,
+    aggregate: aggregateChanged ? taskCentricDigest(nextAggregate) : null,
     doc_version: opts.next.doc_version,
     doc_updated_at: opts.next.doc_updated_at,
     doc_updated_by: opts.next.doc_updated_by,
   })}`;
   const candidate: TaskAggregate = Object.freeze({
-    ...currentAggregate,
+    ...nextAggregate,
     revision: nextRevision,
-    event_cursor: currentAggregate.event_cursor + 1,
+    event_cursor: Math.max(nextAggregate.event_cursor, currentAggregate.event_cursor + 1),
     updated_at: at,
   });
   const event = syntheticEvent({
