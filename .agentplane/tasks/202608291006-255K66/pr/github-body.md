@@ -37,6 +37,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../task-backend/kernel-record-invariants.ts       |   2 +-
  .../src/adapters/task-backend/kernel-record.ts     |  22 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  | 431 +++++++++++
+ ...n-cli.core.task-advance-effect-recovery.test.ts |   9 +-
  .../cli/run-cli.core.task-next-action-json.test.ts | 119 ++-
  .../run-cli.core.task-status-token-usage.test.ts   |  73 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
@@ -108,7 +109,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 81 files changed, 6731 insertions(+), 505 deletions(-)
+ 82 files changed, 6739 insertions(+), 506 deletions(-)
 ```
 
 </details>

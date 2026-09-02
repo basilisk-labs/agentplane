@@ -210,10 +210,17 @@ describe("task advance effect recovery", () => {
     expect(
       blockingImplementationAuthorityViolations([
         "verification:verification-record:fail",
+        "verification",
+        "verification-record:fail",
         "repository_effect:ci",
         "external_effect:network_read",
       ]),
-    ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
+    ).toEqual([
+      "verification",
+      "verification-record:fail",
+      "repository_effect:ci",
+      "external_effect:network_read",
+    ]);
   });
 
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {
