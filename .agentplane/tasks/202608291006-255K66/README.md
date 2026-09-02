@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 125
+revision: 128
 origin:
   system: "manual"
 depends_on:
@@ -176,6 +176,7 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-documents.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
@@ -349,7 +350,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:a89ec1b7f2747857accd3dc14d5a5ba95abacefbb89679648a80da078c2fb141"
+      digest: "sha256:82bd441a00f8a4f89e3b040c3f36e0f5f4887a559932d49962cab55e587d6b3d"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -424,6 +425,7 @@ execution_contract:
           - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-documents.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
@@ -689,6 +691,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b6ad0005f22f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 20b3af7e3442. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1041,8 +1046,16 @@ events:
     to: "DOING"
     note: "Implementation committed: b6ad0005f22f. CLI accepted one state-bound external-agent semantic result."
     commit: "b6ad0005f22fdedc9c48fa3c605d8f286b24d46c"
+  -
+    type: "status"
+    at: "2026-09-02T00:36:26.007Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 20b3af7e3442. CLI accepted one state-bound external-agent semantic result."
+    commit: "20b3af7e344205b5705de1dc7b8af0d7efff5905"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:35:24.703Z"
+doc_updated_at: "2026-09-02T00:36:26.007Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14879,19 +14892,49 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 125
+    revision: 128
     schema_version: 1
-    updated_at: "2026-09-02T00:35:25.829Z"
+    updated_at: "2026-09-02T00:36:27.136Z"
     work_items:
       m3-crash-migration:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-crash-migration"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:3402202d255659f3755962e5757c116d4a8660b143ebcc64aa6d3623ded3830e"
+            id: "m3-crash-migration-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-crash-migration"
+            provenance:
+              - "sha256:72ff166076c39c24c67a4ae3429a04181df1b30373a44641dcc5d1ed7f148b2c"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8ad079fc7ee01111e2f3865e33d10182f336b646e0bb62fba109a1e5687b5907"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:36:27.054Z"
+              repository_snapshot_digest: "sha256:8ad079fc7ee01111e2f3865e33d10182f336b646e0bb62fba109a1e5687b5907"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-effects:
         attempt: 1
         claim_id: null
@@ -15571,6 +15614,29 @@ extensions:
         previous_revision: 64
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-b5c41d6f45098e5e2d453baa:
+        aggregate_digest: "sha256:9a6f4835197cf50552f0034f2280a1fd723b39e279529cab4640416ee61691fa"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:36:27.136Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_04be9626174db0812c92446c"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-b5c41d6f45098e5e2d453baa"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 127
+          to: "COMPLETED"
+          work_item_id: "m3-crash-migration"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-b5c41d6f45098e5e2d453baa"
+        next_revision: 128
+        previous_revision: 127
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-bf2785583fed4c8df073f5e8:
         aggregate_digest: "sha256:a4f459c343eb04e1c237e1264cafee80dcdca52d5835eb160a4bb80233d4a5c8"
         event:
@@ -15788,7 +15854,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b6ad0005f22fdedc9c48fa3c605d8f286b24d46c"
+    hash: "20b3af7e344205b5705de1dc7b8af0d7efff5905"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
