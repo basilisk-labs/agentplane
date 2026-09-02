@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 141
+revision: 142
 origin:
   system: "manual"
 depends_on:
@@ -29,7 +29,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-09-02T01:06:37.540Z"
+  updated_at: "2026-09-02T07:39:08.986Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -204,8 +204,93 @@ execution_contract:
       - "scripts/qualification"
       - "scripts/release/smoke-bun-compiled-cli.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/README.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/pr/github-body.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/pr/github-title.txt"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/pr/meta.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/pr/review.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/01b55826c06a0ceaab25425b86d9c8cd73549532e2ecc43ec87fab992c071097.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830191715634-7507cadb6576870f.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830193558462-a8ce65c93fb33180.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830205355533-5d4cdf9a599f48d8.json"
+      - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/README.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/pr/diffstat.txt"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/pr/github-body.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/pr/github-title.txt"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/pr/meta.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/pr/review.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/4efd26c62ac4cc8e33aa95a8e372383f84ce1ad0fbefdc2654243a19114cb420.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/68caae31a4ce865f035255558b6006ebe2356931af6d76460040e2572802eb36.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831193110903-64192167fd0b06c7.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831201225756-7cb703cc87ecd334.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831202714530-e8e1d4e1e2a0114a.json"
+      - "writable_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
+      - "writable_scope:docs/user/cli-reference.generated.mdx"
     changed_components:
+      - ".agentplane"
       - "docs"
       - "packages/agentplane"
       - "packages/core"
@@ -213,8 +298,92 @@ execution_contract:
       - "schemas"
       - "scripts"
     changed_paths:
+      - ".agentplane/tasks/202608301851-5W3XW6/README.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
+      - ".agentplane/tasks/202608301851-5W3XW6/pr/github-body.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/pr/github-title.txt"
+      - ".agentplane/tasks/202608301851-5W3XW6/pr/meta.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/pr/review.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/01b55826c06a0ceaab25425b86d9c8cd73549532e2ecc43ec87fab992c071097.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
+      - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830191715634-7507cadb6576870f.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830193558462-a8ce65c93fb33180.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830205355533-5d4cdf9a599f48d8.json"
+      - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
+      - ".agentplane/tasks/202608311713-A0F906/README.md"
+      - ".agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json"
+      - ".agentplane/tasks/202608311713-A0F906/pr/diffstat.txt"
+      - ".agentplane/tasks/202608311713-A0F906/pr/github-body.md"
+      - ".agentplane/tasks/202608311713-A0F906/pr/github-title.txt"
+      - ".agentplane/tasks/202608311713-A0F906/pr/meta.json"
+      - ".agentplane/tasks/202608311713-A0F906/pr/review.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/4efd26c62ac4cc8e33aa95a8e372383f84ce1ad0fbefdc2654243a19114cb420.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/68caae31a4ce865f035255558b6006ebe2356931af6d76460040e2572802eb36.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+      - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+      - ".agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json"
+      - ".agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+      - ".agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+      - ".agentplane/tasks/202608311713-A0F906/verification/20260831193110903-64192167fd0b06c7.json"
+      - ".agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+      - ".agentplane/tasks/202608311713-A0F906/verification/20260831201225756-7cb703cc87ecd334.json"
+      - ".agentplane/tasks/202608311713-A0F906/verification/20260831202714530-e8e1d4e1e2a0114a.json"
+      - ".agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
       - "docs/developer/clean-task-core-cutover.mdx"
       - "docs/developer/harness-dev.mdx"
+      - "docs/user/cli-reference.generated.mdx"
       - "packages/agentplane/src/adapters/authority/user-approval-receipt.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
@@ -224,12 +393,18 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
       - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/agentplane/src/commands/branch/work-resume-candidate.ts"
+      - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+      - "packages/agentplane/src/commands/branch/work-resume.command.ts"
       - "packages/agentplane/src/commands/guard/impl/allow.test.ts"
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
@@ -245,7 +420,14 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+      - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
       - "packages/agentplane/src/commands/task/kernel-advance.ts"
       - "packages/agentplane/src/commands/task/kernel-create.ts"
       - "packages/agentplane/src/commands/task/kernel-exchange.ts"
@@ -398,6 +580,90 @@ execution_contract:
     - "effect_schema"
     - "effect_security_boundary"
     - "material_implementation_uncertainty"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/01b55826c06a0ceaab25425b86d9c8cd73549532e2ecc43ec87fab992c071097.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830191715634-7507cadb6576870f.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830193558462-a8ce65c93fb33180.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830205355533-5d4cdf9a599f48d8.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/4efd26c62ac4cc8e33aa95a8e372383f84ce1ad0fbefdc2654243a19114cb420.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/68caae31a4ce865f035255558b6006ebe2356931af6d76460040e2572802eb36.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831193110903-64192167fd0b06c7.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831201225756-7cb703cc87ecd334.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831202714530-e8e1d4e1e2a0114a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
+    - "observed_path_outside_scope:docs/user/cli-reference.generated.mdx"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -475,7 +741,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:898599fcf3dcbcd4f4e14edd4b657689624e614b80ad4c366936febaddc8fdc5"
+      digest: "sha256:61d32893f2a43d60fa93d3c7b2659b184233697d9221e69717ce3ffb719b5e9f"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -493,6 +759,8 @@ execution_contract:
         - "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
@@ -529,6 +797,71 @@ execution_contract:
         - "external_effect_requires_real_e2e"
         - "material_implementation_uncertainty"
         - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/verification/20260830191715634-7507cadb6576870f.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/verification/20260830193558462-a8ce65c93fb33180.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/verification/20260830205355533-5d4cdf9a599f48d8.json"
+        - "unknown_path:.agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/verification/20260831193110903-64192167fd0b06c7.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/verification/20260831201225756-7cb703cc87ecd334.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/verification/20260831202714530-e8e1d4e1e2a0114a.json"
+        - "unknown_path:.agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
         - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
@@ -537,6 +870,7 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "docs"
           - "packages/agentplane"
           - "packages/core"
@@ -544,8 +878,92 @@ execution_contract:
           - "schemas"
           - "scripts"
         changed_files:
+          - ".agentplane/tasks/202608301851-5W3XW6/README.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
+          - ".agentplane/tasks/202608301851-5W3XW6/pr/github-body.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/pr/github-title.txt"
+          - ".agentplane/tasks/202608301851-5W3XW6/pr/meta.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/pr/review.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/01b55826c06a0ceaab25425b86d9c8cd73549532e2ecc43ec87fab992c071097.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
+          - ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830191715634-7507cadb6576870f.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830193558462-a8ce65c93fb33180.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830205355533-5d4cdf9a599f48d8.json"
+          - ".agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
+          - ".agentplane/tasks/202608311713-A0F906/README.md"
+          - ".agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202608311713-A0F906/pr/diffstat.txt"
+          - ".agentplane/tasks/202608311713-A0F906/pr/github-body.md"
+          - ".agentplane/tasks/202608311713-A0F906/pr/github-title.txt"
+          - ".agentplane/tasks/202608311713-A0F906/pr/meta.json"
+          - ".agentplane/tasks/202608311713-A0F906/pr/review.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/4efd26c62ac4cc8e33aa95a8e372383f84ce1ad0fbefdc2654243a19114cb420.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/68caae31a4ce865f035255558b6006ebe2356931af6d76460040e2572802eb36.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+          - ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+          - ".agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json"
+          - ".agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+          - ".agentplane/tasks/202608311713-A0F906/verification/20260831193110903-64192167fd0b06c7.json"
+          - ".agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+          - ".agentplane/tasks/202608311713-A0F906/verification/20260831201225756-7cb703cc87ecd334.json"
+          - ".agentplane/tasks/202608311713-A0F906/verification/20260831202714530-e8e1d4e1e2a0114a.json"
+          - ".agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
           - "docs/developer/clean-task-core-cutover.mdx"
           - "docs/developer/harness-dev.mdx"
+          - "docs/user/cli-reference.generated.mdx"
           - "packages/agentplane/src/adapters/authority/user-approval-receipt.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
@@ -555,12 +973,18 @@ execution_contract:
           - "packages/agentplane/src/adapters/task-backend/kernel-next-action.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
           - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
           - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/agentplane/src/commands/branch/work-resume-candidate.ts"
+          - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+          - "packages/agentplane/src/commands/branch/work-resume.command.ts"
           - "packages/agentplane/src/commands/guard/impl/allow.test.ts"
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
@@ -576,7 +1000,14 @@ execution_contract:
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
           - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+          - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
           - "packages/agentplane/src/commands/task/kernel-advance.ts"
           - "packages/agentplane/src/commands/task/kernel-create.ts"
           - "packages/agentplane/src/commands/task/kernel-exchange.ts"
@@ -1235,8 +1666,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "69fc56e9e042cc85c479ab9337f15cb120c150ac"
+  -
+    type: "verify"
+    at: "2026-09-02T07:39:08.986Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-02T01:08:15.380Z"
+doc_updated_at: "2026-09-02T07:39:13.151Z"
 doc_updated_by: "CODER"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -2541,6 +2978,192 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202608291006-255K66
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-02T07:39:08.986Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:294923595d68aee78ffd2151c2f1d43bd4de25dde06fa69fde166a0a4266f3a0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (5/5)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (1/5)
+
+    Check: docs_contract
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (2/5)
+
+    Check: docs_contract
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (3/5)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (4/5)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (1/5)
+
+    Check: real_e2e
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (2/5)
+
+    Check: real_e2e
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (3/5)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (4/5)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (5/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+    - old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -17779,6 +18402,192 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202608291006-255K66
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-02T07:39:08.986Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:294923595d68aee78ffd2151c2f1d43bd4de25dde06fa69fde166a0a4266f3a0
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608291006-255K66 Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608291006-255K66 Verification Contract check critical_paths (5/5)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (1/5)
+
+Check: docs_contract
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (2/5)
+
+Check: docs_contract
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (3/5)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (4/5)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608291006-255K66 Verification Contract check docs_contract (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (1/5)
+
+Check: real_e2e
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (2/5)
+
+Check: real_e2e
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (3/5)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (4/5)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608291006-255K66 Verification Contract check real_e2e (5/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+- old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
