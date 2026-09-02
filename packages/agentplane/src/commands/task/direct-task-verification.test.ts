@@ -25,7 +25,7 @@ import {
   recordDirectTaskVerification,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
-import { resolveEvidenceOnlyReworkCommit } from "./external-agent-implementation-recovery.js";
+import { resolveEvidenceOnlyReworkCommit } from "./evidence-only-rework-commit.js";
 
 const TASK_ID = "202607290000-RF10A1";
 const roots: string[] = [];
