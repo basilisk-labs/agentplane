@@ -211,39 +211,6 @@ describe("direct task verification", () => {
     expect(resolveEvidenceOnlyReworkCommit({ ...eligible, purpose: "evaluation" })).toBeNull();
   });
 
-  it("rebinds a verified implementation through managed evidence-only commits", () => {
-    const eligible = {
-      purpose: "implementation_rework" as const,
-      changed_paths: [],
-      recorded_commit: "implementation-sha",
-      head: "managed-evidence-head",
-      work_item_id: "work-item",
-      work_item_state: "REWORK_READY",
-      task_verification_state: "ok",
-      quality_review_state: "pass",
-      quality_review_evaluated_sha: "implementation-sha",
-      head_is_managed_descendant: true,
-      all_required_work_items_completed: false,
-    };
-
-    expect(resolveEvidenceOnlyReworkCommit(eligible)).toBe("implementation-sha");
-    expect(
-      resolveEvidenceOnlyReworkCommit({ ...eligible, task_verification_state: "needs_rework" }),
-    ).toBeNull();
-    expect(
-      resolveEvidenceOnlyReworkCommit({ ...eligible, quality_review_state: "rework" }),
-    ).toBeNull();
-    expect(
-      resolveEvidenceOnlyReworkCommit({
-        ...eligible,
-        quality_review_evaluated_sha: "different-sha",
-      }),
-    ).toBeNull();
-    expect(
-      resolveEvidenceOnlyReworkCommit({ ...eligible, head_is_managed_descendant: false }),
-    ).toBeNull();
-  });
-
   it("recognizes task-level evidence rework only after every required WorkItem completed", () => {
     const eligible = {
       work_item_id: null,

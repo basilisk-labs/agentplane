@@ -1,6 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
-import { gitIsAncestor, gitShowFile, gitProofEnv } from "@agentplaneorg/core/git";
+import { gitDiffNames, gitIsAncestor, gitShowFile, gitProofEnv } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
 import {
   parseTaskReadme,
@@ -28,6 +28,7 @@ import {
 } from "../shared/quality-review-target.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import { resolveEvidenceOnlyReworkCommit } from "./direct-task-verification.js";
 import { isQualificationTask } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import {
@@ -37,6 +38,68 @@ import {
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
 } from "./external-agent-exchange.js";
+
+export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
+  command: CommandContext;
+  exchange: ExternalAgentExchange;
+  work_order: AgentWorkOrderV2;
+  task: TaskData;
+  route_commit: string | null;
+  head: string | null;
+  changed_paths: readonly string[];
+}): Promise<string | null> {
+  const extensionCommit = opts.task.extensions?.implementation_commit as
+    | { hash?: unknown }
+    | undefined;
+  const eventCommit = (opts.task.events ?? [])
+    .toReversed()
+    .map((event) => (event as unknown as { commit?: unknown }).commit)
+    .find((commit): commit is string => typeof commit === "string" && commit.trim().length > 0);
+  const recordedCommit =
+    opts.route_commit ??
+    (typeof extensionCommit?.hash === "string" ? extensionCommit.hash.trim() : null) ??
+    eventCommit?.trim() ??
+    null;
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  if (!aggregate?.current_plan) return null;
+  const workItemId = opts.work_order.task.work_item_id ?? null;
+  const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+  let headIsManagedDescendant = false;
+  if (
+    recordedCommit &&
+    opts.head &&
+    recordedCommit !== opts.head &&
+    opts.task.verification?.state === "ok" &&
+    opts.task.quality_review?.state === "pass" &&
+    opts.task.quality_review.evaluated_sha === recordedCommit &&
+    (await gitIsAncestor(opts.exchange.checkout, recordedCommit, opts.head))
+  ) {
+    const prefix = `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/`;
+    const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
+    const changed = await gitDiffNames(opts.exchange.checkout, recordedCommit, opts.head);
+    headIsManagedDescendant = changed.every(
+      (name) =>
+        name.startsWith(prefix) &&
+        (name === `${prefix}README.md` ||
+          managed.some((directory) => name.startsWith(`${prefix}${directory}`))),
+    );
+  }
+  return resolveEvidenceOnlyReworkCommit({
+    purpose: opts.exchange.purpose,
+    changed_paths: opts.changed_paths,
+    recorded_commit: recordedCommit,
+    head: opts.head,
+    work_item_id: workItemId,
+    work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
+    task_verification_state: opts.task.verification?.state,
+    quality_review_state: opts.task.quality_review?.state,
+    quality_review_evaluated_sha: opts.task.quality_review?.evaluated_sha,
+    head_is_managed_descendant: headIsManagedDescendant,
+    all_required_work_items_completed: allRequiredWorkItemsCompleted,
+  });
+}
 
 export async function assertRecoverableImplementationCommit(opts: {
   cwd: string;

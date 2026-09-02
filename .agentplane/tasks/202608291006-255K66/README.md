@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 156
+revision: 159
 origin:
   system: "manual"
 depends_on:
@@ -1344,6 +1344,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 555f85537151. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: dea22f6231e2. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1779,8 +1782,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 555f85537151. CLI accepted one state-bound external-agent semantic result."
     commit: "555f85537151afe7ff3310284af237dfe0061818"
+  -
+    type: "status"
+    at: "2026-09-02T08:48:50.262Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: dea22f6231e2. CLI accepted one state-bound external-agent semantic result."
+    commit: "dea22f6231e2803524cf221146ad613d092855e1"
 doc_version: 3
-doc_updated_at: "2026-09-02T08:24:43.440Z"
+doc_updated_at: "2026-09-02T08:48:50.481Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -17257,9 +17268,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 156
+    revision: 159
     schema_version: 1
-    updated_at: "2026-09-02T08:32:07.809Z"
+    updated_at: "2026-09-02T08:55:58.963Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -17396,14 +17407,61 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       m3-lifecycle-transport:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-lifecycle-transport"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "m3-lifecycle-transport-acceptance"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Added a supported exact-evidence rebind for stale REWORK_READY WorkItems. A replacement result may reuse the recorded implementation commit without inventing a product delta only when verification is ok, independent quality is pass at that exact SHA, the commit is an ancestor of HEAD, and every intervening commit changes only AgentPlane-managed task evidence."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:0d3dd96ed263339d8c43fad6fffc4bb06a7c800a2ad0006623ceb7f589f36922"
+            id: "m3-lifecycle-transport-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 12
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-lifecycle-transport"
+            provenance:
+              - "sha256:fe021c511802b97020d5d647761dd65f15b087717d27c6ca5b32939768e28fac"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:885ebfe1ee65cbe648851b9f5191866d1dc141bd2a3edd7240e0ab70b3ce2a7f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-02T08:55:58.881Z"
+              repository_snapshot_digest: "sha256:885ebfe1ee65cbe648851b9f5191866d1dc141bd2a3edd7240e0ab70b3ce2a7f"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-02T08:55:58.881Z"
+              repository_snapshot_digest: "sha256:885ebfe1ee65cbe648851b9f5191866d1dc141bd2a3edd7240e0ab70b3ce2a7f"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "m3-lifecycle-transport-acceptance"
       m3-projections:
         attempt: 1
         claim_id: null
@@ -17817,6 +17875,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-7da8102b7dbb1a880d097fce"
         next_revision: 94
         previous_revision: 93
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-7eab8a1a82c8ebc0bd30c778:
+        aggregate_digest: "sha256:36722b605e4493e1a435eb614563057c7e7c7e17cc37bc0752fdd4a796a9bfb2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T08:55:58.963Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_45e30b61612ac9fff428f1f5"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-7eab8a1a82c8ebc0bd30c778"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 158
+          to: "REWORK_READY"
+          work_item_id: "m3-lifecycle-transport"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-7eab8a1a82c8ebc0bd30c778"
+        next_revision: 159
+        previous_revision: 158
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-9835c50238d9bafcfe100866:
@@ -18247,7 +18328,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "555f85537151afe7ff3310284af237dfe0061818"
+    hash: "dea22f6231e2803524cf221146ad613d092855e1"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"

@@ -1,6 +1,5 @@
 import path from "node:path";
 
-import { gitDiffNames, gitIsAncestor } from "@agentplaneorg/core/git";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
@@ -22,7 +21,6 @@ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-fi
 import {
   isTaskLevelVerificationReworkState,
   recordDirectTaskVerification,
-  resolveEvidenceOnlyReworkCommit,
 } from "./direct-task-verification.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
@@ -30,6 +28,7 @@ import { cmdTaskSetStatus } from "./set-status.js";
 import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
 import {
   resolveRecordedImplementationRecovery,
+  resolveVerifiedEvidenceOnlyReworkCommit,
   assertRecoverableImplementationCommit,
   refreshRecoveredImplementationEvidence,
 } from "./external-agent-implementation-recovery.js";
@@ -64,68 +63,6 @@ function pathAllowed(value: string, allowed: readonly string[]): boolean {
 function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
   const prefix = `.agentplane/tasks/${taskId}/`;
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
-}
-
-async function recordedEvidenceOnlyReworkCommit(opts: {
-  command: CommandContext;
-  exchange: ExternalAgentExchange;
-  work_order: AgentWorkOrderV2;
-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
-  route_commit: string | null;
-  head: string | null;
-  changed_paths: readonly string[];
-}): Promise<string | null> {
-  const extensionCommit = opts.task.extensions?.implementation_commit as
-    | { hash?: unknown }
-    | undefined;
-  const eventCommit = (opts.task.events ?? [])
-    .toReversed()
-    .map((event) => (event as unknown as { commit?: unknown }).commit)
-    .find((commit): commit is string => typeof commit === "string" && commit.trim().length > 0);
-  const recordedCommit =
-    opts.route_commit ??
-    (typeof extensionCommit?.hash === "string" ? extensionCommit.hash.trim() : null) ??
-    eventCommit?.trim() ??
-    null;
-  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  if (!aggregate?.current_plan) return null;
-  const workItemId = opts.work_order.task.work_item_id ?? null;
-  const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
-    .filter((item) => !item.optional)
-    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
-  let headIsManagedDescendant = false;
-  if (
-    recordedCommit &&
-    opts.head &&
-    recordedCommit !== opts.head &&
-    opts.task.verification?.state === "ok" &&
-    opts.task.quality_review?.state === "pass" &&
-    opts.task.quality_review.evaluated_sha === recordedCommit &&
-    (await gitIsAncestor(opts.exchange.checkout, recordedCommit, opts.head))
-  ) {
-    const prefix = `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/`;
-    const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
-    const changed = await gitDiffNames(opts.exchange.checkout, recordedCommit, opts.head);
-    headIsManagedDescendant = changed.every(
-      (name) =>
-        name.startsWith(prefix) &&
-        (name === `${prefix}README.md` ||
-          managed.some((directory) => name.startsWith(`${prefix}${directory}`))),
-    );
-  }
-  return resolveEvidenceOnlyReworkCommit({
-    purpose: opts.exchange.purpose,
-    changed_paths: opts.changed_paths,
-    recorded_commit: recordedCommit,
-    head: opts.head,
-    work_item_id: workItemId,
-    work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
-    task_verification_state: opts.task.verification?.state,
-    quality_review_state: opts.task.quality_review?.state,
-    quality_review_evaluated_sha: opts.task.quality_review?.evaluated_sha,
-    head_is_managed_descendant: headIsManagedDescendant,
-    all_required_work_items_completed: allRequiredWorkItemsCompleted,
-  });
 }
 
 function isTaskLevelVerificationRework(opts: {
@@ -409,7 +346,7 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    implementationCommit = await recordedEvidenceOnlyReworkCommit({
+    implementationCommit = await resolveVerifiedEvidenceOnlyReworkCommit({
       command: opts.command,
       exchange: opts.exchange,
       work_order: opts.work_order,

@@ -54,11 +54,13 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
- .../commands/task/direct-task-verification.test.ts | 102 +++
+ .../commands/task/direct-task-verification.test.ts |  69 ++
  .../src/commands/task/direct-task-verification.ts  |  51 +-
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
- .../external-agent-implementation-authority.ts     |  34 +-
+ .../external-agent-implementation-authority.ts     |  45 +-
+ .../external-agent-implementation-recovery.test.ts |  34 +
+ .../task/external-agent-implementation-recovery.ts |  65 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
@@ -119,7 +121,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 92 files changed, 7207 insertions(+), 534 deletions(-)
+ 94 files changed, 7246 insertions(+), 572 deletions(-)
 ```
 
 </details>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
+import { resolveEvidenceOnlyReworkCommit } from "./direct-task-verification.js";
 
 const COMMIT = "a".repeat(40);
 const BASE_CONTEXT = {
@@ -40,6 +41,39 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it("rebinds a verified implementation through managed evidence-only commits", () => {
+    const eligible = {
+      purpose: "implementation_rework" as const,
+      changed_paths: [],
+      recorded_commit: "implementation-sha",
+      head: "managed-evidence-head",
+      work_item_id: "work-item",
+      work_item_state: "REWORK_READY",
+      task_verification_state: "ok",
+      quality_review_state: "pass",
+      quality_review_evaluated_sha: "implementation-sha",
+      head_is_managed_descendant: true,
+      all_required_work_items_completed: false,
+    };
+
+    expect(resolveEvidenceOnlyReworkCommit(eligible)).toBe("implementation-sha");
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, task_verification_state: "needs_rework" }),
+    ).toBeNull();
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, quality_review_state: "rework" }),
+    ).toBeNull();
+    expect(
+      resolveEvidenceOnlyReworkCommit({
+        ...eligible,
+        quality_review_evaluated_sha: "different-sha",
+      }),
+    ).toBeNull();
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, head_is_managed_descendant: false }),
+    ).toBeNull();
+  });
+
   it("accepts only removal of creation-checkout provenance for the same valid identity", () => {
     const before = contextReadme({ ...BASE_CONTEXT, source: "creation_checkout" });
     const after = contextReadme(BASE_CONTEXT);
