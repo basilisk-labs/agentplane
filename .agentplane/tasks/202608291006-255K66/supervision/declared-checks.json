@@ -5,7 +5,7 @@
         "m3-invariants"
       ],
       "command": "bun run lifecycle:invariants",
-      "duration_ms": 119,
+      "duration_ms": 130,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
@@ -17,11 +17,29 @@
       "script": "lifecycle:invariants",
       "stderr_tail": "$ node scripts/checks/check-lifecycle-invariants.mjs\n",
       "stdout_tail": "Lifecycle invariant check OK (8 invariants)\n"
+    },
+    {
+      "check_ids": [
+        "m3-self-hosting"
+      ],
+      "command": "node scripts/qualification/check-m3-self-hosting.mjs",
+      "duration_ms": 109,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "ReferenceError: git is not defined\n    at runM3SelfHostingQualification (file:///Users/densmirnov/Projects/agentplane/scripts/qualification/check-m3-self-hosting.mjs:71:25)\n    at file:///Users/densmirnov/Projects/agentplane/scripts/qualification/check-m3-self-hosting.mjs:131:22\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n",
+      "stdout_tail": ""
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": null,
+  "reason": "Declared check failed: node scripts/qualification/check-m3-self-hosting.mjs",
   "schema_version": 1,
-  "status": "passed",
+  "status": "failed",
   "task_id": "202608291006-255K66"
 }

@@ -68,7 +68,7 @@ export function runM3SelfHostingQualification() {
   mkdirSync(packDirectory, { recursive: true });
   mkdirSync(cacheDirectory, { recursive: true });
   const tasks = [];
-  const candidateHead = git(run, repoRoot, ["rev-parse", "HEAD"]);
+  const candidateHead = run("git", ["rev-parse", "HEAD"], { cwd: repoRoot }).trim();
   let packages;
   try {
     const installed = installPackedWorkspace({
