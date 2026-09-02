@@ -289,6 +289,9 @@ describe("runCli route decision open PR metadata", () => {
     await writeFile(path.join(root, "impl.txt"), "implementation\n");
     await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
 
     await runCliSilent([
       "task",
@@ -301,6 +304,16 @@ describe("runCli route decision open PR metadata", () => {
       "--root",
       root,
     ]);
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      implementationHead.trim(),
+      "--root",
+      root,
+    ]);
 
     await recordRouteVerification(
       root,
@@ -308,6 +321,29 @@ describe("runCli route decision open PR metadata", () => {
       "Implementation verified for local open PR routing.",
     );
     await recordQualityReviewPass(root, taskId);
+
+    const missingPrIo = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "next-action", taskId, "--json", "--root", root]),
+        missingPrIo.stderr,
+      ).toBe(0);
+      const parsed = JSON.parse(missingPrIo.stdout) as {
+        workflow_step?: { id: string; operation?: { id: string } };
+        workflowStep?: { id: string; operation?: { id: string } };
+        next_action: { code: string; command: string };
+      };
+      const workflowStep = parsed.workflow_step ?? parsed.workflowStep;
+      expect(
+        [workflowStep?.id, workflowStep?.operation?.id].some(
+          (id) => id === "pr.open" || id === "approval.pr.open",
+        ),
+      ).toBe(true);
+      expect(parsed.next_action.command).not.toContain("branch_implementation");
+      expect(parsed.next_action.command).toMatch(/(?:task authority grant|pr open)/u);
+    } finally {
+      missingPrIo.restore();
+    }
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });

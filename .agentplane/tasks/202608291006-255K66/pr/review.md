@@ -39,6 +39,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../task-backend/kernel-record-invariants.ts       |   2 +-
  .../src/adapters/task-backend/kernel-record.ts     |  22 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  | 431 +++++++++++
+ ...li.core.route-decision.pr-open-metadata.test.ts |  36 +
  ...n-cli.core.task-advance-effect-recovery.test.ts |   9 +-
  .../cli/run-cli.core.task-next-action-json.test.ts | 119 ++-
  .../run-cli.core.task-status-token-usage.test.ts   |  73 ++
@@ -49,6 +50,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/commands/shared/task-mutation.ts           |  18 +
  .../commands/shared/verification-details.test.ts   |  33 +
  .../src/commands/shared/verification-details.ts    |   7 +-
+ .../src/commands/shared/workflow-step-branch.ts    |  14 +-
  .../agentplane/src/commands/task/active.command.ts | 110 ++-
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
@@ -111,7 +113,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 82 files changed, 6739 insertions(+), 506 deletions(-)
+ 84 files changed, 6786 insertions(+), 509 deletions(-)
 ```
 
 </details>

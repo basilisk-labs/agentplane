@@ -500,9 +500,15 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const requiredWorkItemIncomplete = taskCentric?.current_plan?.proposal.work_items.work_items.some(
     (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
   );
-  const implementationMissing =
-    state.task.verification?.state !== "ok" && !state.task.commit?.hash?.trim();
-  if (requiredWorkItemIncomplete || implementationMissing) return branchImplementationStep(state);
+  const implementationRecorded = Boolean(state.task.commit?.hash?.trim());
+  const implementationValidated =
+    implementationRecorded &&
+    state.task.verification?.state === "ok" &&
+    state.task.quality_review?.state === "pass" &&
+    state.task.quality_review.evaluated_sha === state.task.commit?.hash;
+  const implementationMissing = state.task.verification?.state !== "ok" && !implementationRecorded;
+  if ((!implementationRecorded && requiredWorkItemIncomplete) || implementationMissing)
+    return branchImplementationStep(state);
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({
       state,
@@ -517,6 +523,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
   }
+  if (requiredWorkItemIncomplete && !implementationValidated)
+    return branchImplementationStep(state);
   if (hasRouteBlocker(state, "verification_required")) {
     return verificationStep(state);
   }
