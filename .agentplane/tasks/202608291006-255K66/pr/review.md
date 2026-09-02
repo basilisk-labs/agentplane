@@ -6,7 +6,7 @@ Created: 2026-08-30T21:48:11.941Z
 
 - Task: `202608291006-255K66`
 - Title: Cut over to the canonical Task kernel and retire legacy core paths
-- Status: DOING
+- Status: DONE
 - Branch: `task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire`
 - Canonical task record: `.agentplane/tasks/202608291006-255K66/README.md`
 
