@@ -6,6 +6,7 @@ import {
   projectTaskLifecycleToLegacyStatus,
   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
   taskCentricAggregateFromExtensions,
+  taskCentricDigest,
   withTaskCentricAggregate,
   type DomainEvent,
   type ExecutionLease,
@@ -23,7 +24,7 @@ import {
   type ValidationEvidence,
 } from "@agentplaneorg/core/tasks";
 
-import type { TaskBackend } from "../../backends/task-backend.js";
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import {
   aggregateFrom,
   applyEvent,
@@ -410,65 +411,11 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   }): Promise<TransitionReceipt | null> {
     const raw = await this.backend.getTask(opts.task_id);
     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
-    const task = taskCentricAggregateFromExtensions(raw.extensions);
-    if (!task?.current_plan) return null;
-    const runtime = runtimeFrom(raw);
-    const already = runtime.mutation_receipts[opts.idempotency_key];
-    if (already) return already;
-    if (task.lifecycle === "COMPLETED") return null;
-    if (raw.verification?.state !== "ok") {
-      throw new Error("Task-centric completion requires a recorded successful task verification.");
-    }
-    const evidence: ValidationEvidence[] =
-      task.current_plan.proposal.top_level_validation.checks.map((check) => ({
-        check_id: check.id,
-        status: "passed",
-        observed_at: raw.verification?.updated_at ?? opts.repository.captured_at,
-        repository_snapshot_digest: opts.repository.digest,
-        command_identity: check.command ?? check.capability,
-        exit_code: 0,
-        artifact_refs: opts.evidence_refs,
-        detail: raw.verification?.note ?? "Passed by the recorded task verification.",
-      }));
-    const finalValidation = aggregateValidation(
-      task.current_plan.proposal.top_level_validation,
-      evidence,
-    );
-    const candidate: TaskAggregate = Object.freeze({
-      ...task,
-      lifecycle: "COMPLETED",
-      final_validation: finalValidation,
-      updated_at: opts.repository.captured_at,
-    });
-    const eligibility = evaluateTaskCompletion({
-      task: candidate,
-      repository_digest: opts.repository.digest,
-      pending_effects: runtime.pending_effects,
-    });
-    if (!eligibility.eligible) {
-      throw new Error(
-        `Task-centric completion is not eligible: ${eligibility.reason_codes.join(", ")}.`,
-      );
-    }
-    const event = syntheticEvent({
-      task,
-      mutation_id: opts.idempotency_key,
-      entity: "task",
-      from: task.lifecycle,
-      to: "COMPLETED",
-      at: opts.repository.captured_at,
-      actor_id: opts.actor_id,
-      cause_refs: opts.evidence_refs,
-      repository_fingerprint: opts.repository.digest,
-    });
-    return await this.persist({
-      task_id: task.id,
-      expected_revision: raw.revision ?? task.revision,
-      mutation_id: opts.idempotency_key,
-      event,
-      next: candidate,
-      runtime,
-    });
+    const projected = projectTaskCentricCompletion({ ...opts, current: raw, next: raw });
+    if (!projected) return null;
+    if (projected.task === raw) return projected.receipt;
+    await this.backend.writeTask(projected.task, { expectedRevision: raw.revision ?? 1 });
+    return projected.receipt;
   }
 
   async writeCheckpoint(checkpoint: TaskCheckpoint): Promise<void> {
@@ -564,6 +511,169 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       external_drift: [],
     });
   }
+}
+
+export function projectTaskCentricCompletion(opts: {
+  task_id: string;
+  current: TaskData;
+  next: TaskData;
+  repository: RepositorySnapshot;
+  actor_id: string;
+  evidence_refs: readonly string[];
+  idempotency_key: string;
+}): { task: TaskData; receipt: TransitionReceipt } | null {
+  const aggregate = taskCentricAggregateFromExtensions(opts.current.extensions);
+  if (!aggregate?.current_plan) return null;
+  const runtime = runtimeFrom(opts.current);
+  const already = runtime.mutation_receipts[opts.idempotency_key];
+  if (already) return { task: opts.current, receipt: already };
+  if (aggregate.lifecycle === "COMPLETED") return null;
+  if (opts.next.verification?.state !== "ok") {
+    throw new Error("Task-centric completion requires a recorded successful task verification.");
+  }
+  const evidence: ValidationEvidence[] =
+    aggregate.current_plan.proposal.top_level_validation.checks.map((check) => ({
+      check_id: check.id,
+      status: "passed",
+      observed_at: opts.next.verification?.updated_at ?? opts.repository.captured_at,
+      repository_snapshot_digest: opts.repository.digest,
+      command_identity: check.command ?? check.capability,
+      exit_code: 0,
+      artifact_refs: opts.evidence_refs,
+      detail: opts.next.verification?.note ?? "Passed by the recorded task verification.",
+    }));
+  const currentRevision = opts.current.revision ?? aggregate.revision;
+  const candidate: TaskAggregate = Object.freeze({
+    ...aggregate,
+    revision: currentRevision + 1,
+    lifecycle: "COMPLETED",
+    final_validation: aggregateValidation(
+      aggregate.current_plan.proposal.top_level_validation,
+      evidence,
+    ),
+    updated_at: opts.repository.captured_at,
+  });
+  const eligibility = evaluateTaskCompletion({
+    task: candidate,
+    repository_digest: opts.repository.digest,
+    pending_effects: runtime.pending_effects,
+  });
+  if (!eligibility.eligible) {
+    throw new Error(
+      `Task-centric completion is not eligible: ${eligibility.reason_codes.join(", ")}.`,
+    );
+  }
+  const event = syntheticEvent({
+    task: aggregate,
+    mutation_id: opts.idempotency_key,
+    entity: "task",
+    from: aggregate.lifecycle,
+    to: "COMPLETED",
+    at: opts.repository.captured_at,
+    actor_id: opts.actor_id,
+    cause_refs: opts.evidence_refs,
+    repository_fingerprint: opts.repository.digest,
+  });
+  const receipt = transitionReceipt({
+    task_id: aggregate.id,
+    previous_revision: currentRevision,
+    next: candidate,
+    mutation_id: opts.idempotency_key,
+    event,
+  });
+  return {
+    receipt,
+    task: {
+      ...opts.next,
+      revision: currentRevision + 1,
+      status: projectTaskLifecycleToLegacyStatus(candidate.lifecycle),
+      extensions: {
+        ...withTaskCentricAggregate(opts.next.extensions, candidate),
+        [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: Object.freeze({
+          ...runtime,
+          mutation_receipts: Object.freeze({
+            ...runtime.mutation_receipts,
+            [opts.idempotency_key]: receipt,
+          }),
+        }),
+      },
+    },
+  };
+}
+
+export function projectTaskCentricCompatibilityMutation(opts: {
+  current: TaskData;
+  next: TaskData;
+}): TaskData {
+  const currentAggregate = taskCentricAggregateFromExtensions(opts.current.extensions);
+  if (!currentAggregate || JSON.stringify(opts.current) === JSON.stringify(opts.next)) {
+    return opts.next;
+  }
+  const nextAggregate = taskCentricAggregateFromExtensions(opts.next.extensions);
+  if (!nextAggregate) {
+    throw new Error("Task-centric compatibility mutation cannot remove the canonical aggregate.");
+  }
+  const currentRevision = opts.current.revision ?? currentAggregate.revision;
+  const nextRevision = currentRevision + 1;
+  if (taskCentricDigest(currentAggregate) !== taskCentricDigest(nextAggregate)) {
+    if (nextAggregate.revision !== nextRevision) {
+      throw new Error(
+        `Task-centric mutation revision mismatch: expected ${nextRevision}, observed ${nextAggregate.revision}.`,
+      );
+    }
+    return { ...opts.next, revision: nextRevision };
+  }
+
+  const at = opts.next.doc_updated_at ?? currentAggregate.updated_at;
+  const mutationId = `compatibility:${taskCentricDigest({
+    task_id: opts.current.id,
+    previous_revision: currentRevision,
+    status: opts.next.status,
+    comments: opts.next.comments,
+    events: opts.next.events,
+    verification: opts.next.verification,
+    commit: opts.next.commit,
+    doc_version: opts.next.doc_version,
+    doc_updated_at: opts.next.doc_updated_at,
+    doc_updated_by: opts.next.doc_updated_by,
+  })}`;
+  const candidate: TaskAggregate = Object.freeze({
+    ...currentAggregate,
+    revision: nextRevision,
+    event_cursor: currentAggregate.event_cursor + 1,
+    updated_at: at,
+  });
+  const event = syntheticEvent({
+    task: currentAggregate,
+    mutation_id: mutationId,
+    entity: "task",
+    from: currentAggregate.lifecycle,
+    to: currentAggregate.lifecycle,
+    at,
+    cause_refs: ["compatibility_projection_mutation"],
+  });
+  const receipt = transitionReceipt({
+    task_id: currentAggregate.id,
+    previous_revision: currentRevision,
+    next: candidate,
+    mutation_id: mutationId,
+    event,
+  });
+  const runtime = runtimeFrom(opts.current);
+  return {
+    ...opts.next,
+    revision: nextRevision,
+    extensions: {
+      ...withTaskCentricAggregate(opts.next.extensions, candidate),
+      [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: Object.freeze({
+        ...runtime,
+        mutation_receipts: Object.freeze({
+          ...runtime.mutation_receipts,
+          [mutationId]: receipt,
+        }),
+      }),
+    },
+  };
 }
 
 export { TASK_CENTRIC_RUNTIME_EXTENSION_KEY } from "./task-centric-backend-runtime.js";

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
+import { createLegacyTaskAggregate, withTaskCentricAggregate } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({
@@ -271,5 +272,60 @@ describe("task set-status command (unit)", () => {
       .filter((line) => line.includes("missing deps: DEP-1"));
     expect(warnings).toHaveLength(1);
     stderrWrite.mockRestore();
+  });
+
+  it("rejects a status write that would diverge from the task-centric aggregate", async () => {
+    const ctx = mkCtx();
+    const aggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 4,
+      title: "Task",
+      description: "Task-centric projection guard",
+      status: "DOING",
+      acceptance_criteria: ["done"],
+      captured_at: "2026-03-13T00:00:00.000Z",
+      updated_at: "2026-03-13T00:00:00.000Z",
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      revision: 4,
+      status: "DOING",
+      extensions: withTaskCentricAggregate({}, aggregate),
+    });
+    const store = {
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await builder(currentTask);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskSetStatus } = await import("./set-status.js");
+    await expect(
+      cmdTaskSetStatus({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        status: "BLOCKED",
+        force: false,
+        yes: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_centric_projection_mismatch" },
+    });
+    expect(currentTask.status).toBe("DOING");
   });
 });

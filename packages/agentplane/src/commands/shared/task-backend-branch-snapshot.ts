@@ -228,6 +228,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
   taskId: string;
   readmePath: string;
   branch?: string | null;
+  requireWorktree?: boolean;
 }): Promise<TaskData | null> {
   if (!backendSupportsTaskBranchSnapshots(opts.ctx)) {
     return null;
@@ -244,7 +245,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
     ctx: opts.ctx,
     taskId: opts.taskId,
     branch,
-    requireRegistration: localBranch,
+    requireRegistration: localBranch && opts.requireWorktree !== false,
   });
   if (authoritativeWorktree) {
     const liveReadmePath = path.join(

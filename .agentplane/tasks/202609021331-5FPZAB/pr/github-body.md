@@ -27,12 +27,18 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../task-backend/task-centric-backend-adapter.ts   | 230 +++++++++++++++------
  .../commands/shared/route-decision-workspace.ts    |   2 +-
- .../shared/task-backend-branch-snapshot.ts         | 122 ++++++++++++++++++++-
- .../task-backend-branch-snapshot.unit.test.ts      |  78 ++++++++++++-
- .../src/commands/shared/task-backend.test.ts       |  33 +++---
- .../agentplane/src/commands/shared/task-backend.ts |  51 +++++----
- 5 files changed, 245 insertions(+), 41 deletions(-)
+ .../shared/task-backend-branch-snapshot.ts         | 123 ++++++++++-
+ .../task-backend-branch-snapshot.unit.test.ts      |  78 ++++++-
+ .../src/commands/shared/task-backend.test.ts       |  33 +--
+ .../agentplane/src/commands/shared/task-backend.ts |  53 +++--
+ .../src/commands/shared/task-mutation.test.ts      |  69 +++++++
+ .../src/commands/shared/task-mutation.ts           |  60 +++++-
+ .../agentplane/src/commands/task/finish-shared.ts  |  94 ++++-----
+ .../src/commands/task/hosted-close.command.ts      |   1 +
+ .../src/commands/task/set-status.unit.test.ts      |  56 +++++
+ 11 files changed, 644 insertions(+), 155 deletions(-)
 ```
 
 </details>

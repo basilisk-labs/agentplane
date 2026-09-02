@@ -275,6 +275,7 @@ export async function loadTaskFromContext(opts: {
   taskId: string;
   preferBranchSnapshot?: boolean;
   branchSnapshotBranch?: string | null;
+  requireBranchWorktree?: boolean;
 }): Promise<TaskData> {
   const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
   const readmePath = path.join(tasksDir, opts.taskId, "README.md");
@@ -284,6 +285,7 @@ export async function loadTaskFromContext(opts: {
       taskId: opts.taskId,
       readmePath,
       branch: opts.branchSnapshotBranch ?? null,
+      requireWorktree: opts.requireBranchWorktree,
     });
 
   if (opts.preferBranchSnapshot) {

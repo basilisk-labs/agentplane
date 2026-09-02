@@ -1,9 +1,15 @@
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+import {
+  projectTaskLifecycleToLegacyStatus,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 
 import path from "node:path";
 
 import type { TaskData, TaskWriteOptions, TaskWriteResult } from "../../backends/task-backend.js";
 import { PolicyEngine } from "../../policy/engine.js";
+import { CliError } from "../../shared/errors.js";
 import type { PolicyPhase, TaskPolicyState } from "../../policy/model.js";
 import type { PolicyActionId } from "../../policy/taxonomy.js";
 import { throwIfPolicyDecisionDenied } from "./policy-deny.js";
@@ -24,6 +30,33 @@ export function assertLegacyMutation(task: TaskData): void {
     throw new Error(
       "Canonical Task mutations require the kernel lifecycle; legacy mutation is refused",
     );
+}
+
+function assertTaskCentricProjection(opts: { current: TaskData; next: TaskData }): void {
+  const task = opts.next;
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  if (!aggregate) return;
+  const expectedStatus = projectTaskLifecycleToLegacyStatus(aggregate.lifecycle);
+  const changed = JSON.stringify(opts.current) !== JSON.stringify(task);
+  const expectedRevision = changed
+    ? (opts.current.revision ?? aggregate.revision - 1) + 1
+    : (opts.current.revision ?? aggregate.revision);
+  if (task.status === expectedStatus && aggregate.revision === expectedRevision) return;
+  throw new CliError({
+    code: "E_VALIDATION",
+    message:
+      `Legacy mutation would expose a partial task-centric projection for ${task.id}: ` +
+      `task status/revision=${task.status}/${String(expectedRevision)}, ` +
+      `canonical status/revision=${expectedStatus}/${String(aggregate.revision)}.`,
+    context: {
+      reason_code: "task_centric_projection_mismatch",
+      task_id: task.id,
+      task_status: task.status,
+      task_revision: expectedRevision,
+      canonical_status: expectedStatus,
+      canonical_revision: aggregate.revision,
+    },
+  });
 }
 export type TaskMutationPlan = {
   intents?: TaskStoreIntentResult;
@@ -187,9 +220,21 @@ export async function applyTaskMutation(opts: {
         });
         const plan = await opts.build({ ...current });
         if (!plan) return current;
-        if (plan.nextTask !== undefined) return plan.nextTask;
+        if (plan.nextTask !== undefined) {
+          const next = projectTaskCentricCompatibilityMutation({
+            current,
+            next: plan.nextTask,
+          });
+          assertTaskCentricProjection({ current, next });
+          return next;
+        }
         if (plan.intents !== undefined) {
-          return applyTaskStoreIntentsToTask(current, plan.intents);
+          const next = projectTaskCentricCompatibilityMutation({
+            current,
+            next: applyTaskStoreIntentsToTask(current, plan.intents),
+          });
+          assertTaskCentricProjection({ current, next });
+          return next;
         }
         return current;
       },
@@ -232,10 +277,15 @@ export async function applyTaskMutation(opts: {
   if (nextTask === undefined) {
     return { changed: false, task: current, mode: "backend" };
   }
+  const reconciledTask = projectTaskCentricCompatibilityMutation({
+    current: materializedCurrent,
+    next: nextTask,
+  });
+  assertTaskCentricProjection({ current: materializedCurrent, next: reconciledTask });
 
-  const changed = JSON.stringify(materializedCurrent) !== JSON.stringify(nextTask);
+  const changed = JSON.stringify(materializedCurrent) !== JSON.stringify(reconciledTask);
   if (!changed && plan.forceWrite !== true) {
-    return { changed: false, task: nextTask, mode: "backend" };
+    return { changed: false, task: reconciledTask, mode: "backend" };
   }
 
   const mergedWriteOptions: TaskWriteOptions = {};
@@ -243,7 +293,7 @@ export async function applyTaskMutation(opts: {
   if (plan.writeOptions) Object.assign(mergedWriteOptions, plan.writeOptions);
   const mutation = await writeTaskMutation({
     ctx: opts.ctx,
-    task: nextTask,
+    task: reconciledTask,
     writeOptions: mergedWriteOptions,
   });
   return { changed, task: mutation.task, mode: "backend" };
