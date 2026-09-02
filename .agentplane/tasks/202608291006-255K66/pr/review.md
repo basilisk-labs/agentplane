@@ -41,7 +41,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/adapters/task-backend/kernel-record.ts     |  22 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  | 431 +++++++++++
  ...li.core.route-decision.pr-open-metadata.test.ts |  36 +
- ...n-cli.core.task-advance-effect-recovery.test.ts |   9 +-
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  28 +-
  .../cli/run-cli.core.task-next-action-json.test.ts | 119 ++-
  .../run-cli.core.task-status-token-usage.test.ts   |  73 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
@@ -66,6 +66,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../external-agent-implementation-recovery.test.ts |  34 +
  .../task/external-agent-implementation-recovery.ts |  65 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
+ .../task/external-agent-supervisor-recovery.ts     |   4 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
  .../src/commands/task/kernel-exchange.ts           | 143 ++++
@@ -125,7 +126,7 @@ Created: 2026-08-30T21:48:11.941Z
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 96 files changed, 7276 insertions(+), 575 deletions(-)
+ 97 files changed, 7298 insertions(+), 576 deletions(-)
 ```
 
 </details>
