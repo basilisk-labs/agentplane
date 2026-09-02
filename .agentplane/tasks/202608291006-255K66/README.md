@@ -1,10 +1,11 @@
 ---
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 139
+revision: 141
 origin:
   system: "manual"
 depends_on:
@@ -61,6 +62,20 @@ quality_review:
     - "The final two-file qualification adjustment is narrow: it preserves exact-commit PR routing while reducing the module to the hotspot ceiling and replaces a forbidden reduce with an equivalent loop. Focused tests and the full supervisor gate passed."
     - "Residual risk: Five allowlisted compatibility import edges and 738 compatibility LOC remain and require the fail-closed inventory to prevent authority growth."
     - "Residual risk: Hosted checks, registry behavior, and release publication remain unverified because release work is outside the user-approved goal."
+token_usage:
+  agent_runs: 24
+  input_tokens: null
+  journal_digest: "sha256:f898f093872fc2f03577de9ea3411361ec0721e32d051a69d1b70bc73e8b3d13"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-02T01:08:15.375Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -669,8 +684,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
-  message: "🚧 255K66 task: apply external agent result"
+  hash: "69fc56e9e042cc85c479ab9337f15cb120c150ac"
+  message: "🚧 255K66 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -819,6 +834,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1692b5eab62e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1209,9 +1227,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-02T01:08:15.375Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "69fc56e9e042cc85c479ab9337f15cb120c150ac"
 doc_version: 3
-doc_updated_at: "2026-09-02T01:06:38.743Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-02T01:08:15.380Z"
+doc_updated_by: "CODER"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -3848,7 +3874,45 @@ extensions:
       schema_version: 1
       task_id: "202608291006-255K66"
     event_cursor: 6
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+          check_id: "m3-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-02T01:06:37.540Z"
+          repository_snapshot_digest: "sha256:2d9bc7e8e6843ef6ec5fead30c9775b864ba1d62161e36df88a52525b5a0e836"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+          check_id: "m3-invariants"
+          command_identity: "bun run lifecycle:invariants"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-02T01:06:37.540Z"
+          repository_snapshot_digest: "sha256:2d9bc7e8e6843ef6ec5fead30c9775b864ba1d62161e36df88a52525b5a0e836"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+          check_id: "m3-packaged"
+          command_identity: "bun run qualification:mixed-scope-lifecycle"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-02T01:06:37.540Z"
+          repository_snapshot_digest: "sha256:2d9bc7e8e6843ef6ec5fead30c9775b864ba1d62161e36df88a52525b5a0e836"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608291006-255K66"
     intent:
       acceptance_criteria:
@@ -3874,7 +3938,7 @@ extensions:
 
         After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence.
       task_id: "202608291006-255K66"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -15233,9 +15297,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 137
+    revision: 141
     schema_version: 1
-    updated_at: "2026-09-02T00:58:21.433Z"
+    updated_at: "2026-09-02T01:08:15.375Z"
     work_items:
       m3-crash-migration:
         attempt: 1
@@ -16275,6 +16339,31 @@ extensions:
         previous_revision: 109
         schema_version: 1
         task_id: "202608291006-255K66"
+      legacy-finish:202608291006-255K66:2026-09-02T01:06:37.540Z:1692b5eab62ec4ab274d5b9922fa7a441f9035be:
+        aggregate_digest: "sha256:68892d5734e0719edff1a160b1a7636c2cf7cd92258f86863dcd3bb69d3df970"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-02T01:08:15.375Z"
+          cause_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ddd49be1edf8ad5148d82318"
+          mutation_id: "legacy-finish:202608291006-255K66:2026-09-02T01:06:37.540Z:1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: "sha256:2d9bc7e8e6843ef6ec5fead30c9775b864ba1d62161e36df88a52525b5a0e836"
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 137
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608291006-255K66:2026-09-02T01:06:37.540Z:1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+        next_revision: 141
+        previous_revision: 140
+        schema_version: 1
+        task_id: "202608291006-255K66"
       plan-refinement:work-order-202608291006-255K66-executor-0cbf5f78caa9bc3f54bc94a2:
         aggregate_digest: "sha256:24722ca93d771d22276073eea17e91e85cf61d90cb4571f33a9e25d8c9c00b0c"
         event:
@@ -16355,6 +16444,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+    message: "🚧 255K66 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -17711,3 +17801,16 @@ DecisionContextRef:
 - Observation: The supervisor full gate selected stale Node 20.18.2 because verificationChildEnv promoted inherited NVM_BIN ahead of the already-selected parent PATH.
   Impact: Repository checks that require the declared Node 24 runtime failed during Vitest ESM startup before testing implementation behavior.
   Resolution: Keep the selected parent PATH first for verification children and retain inherited manager directories as fallback; cover the ordering in verify-log tests.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/24` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f898f093872fc2f03577de9ea3411361ec0721e32d051a69d1b70bc73e8b3d13`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-02T01:08:15.375Z`
