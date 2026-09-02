@@ -111,10 +111,11 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
+ .../checks/check-m3-legacy-authority-imports.mjs   |  70 ++
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 87 files changed, 6918 insertions(+), 511 deletions(-)
+ 88 files changed, 6988 insertions(+), 511 deletions(-)
 ```
 
 </details>
