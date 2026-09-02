@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import { gitDiffNames, gitIsAncestor } from "@agentplaneorg/core/git";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
@@ -65,14 +66,15 @@ function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string)
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
 }
 
-function recordedEvidenceOnlyReworkCommit(opts: {
+async function recordedEvidenceOnlyReworkCommit(opts: {
+  command: CommandContext;
   exchange: ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   route_commit: string | null;
   head: string | null;
   changed_paths: readonly string[];
-}): string | null {
+}): Promise<string | null> {
   const extensionCommit = opts.task.extensions?.implementation_commit as
     | { hash?: unknown }
     | undefined;
@@ -91,6 +93,26 @@ function recordedEvidenceOnlyReworkCommit(opts: {
   const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
     .filter((item) => !item.optional)
     .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+  let headIsManagedDescendant = false;
+  if (
+    recordedCommit &&
+    opts.head &&
+    recordedCommit !== opts.head &&
+    opts.task.verification?.state === "ok" &&
+    opts.task.quality_review?.state === "pass" &&
+    opts.task.quality_review.evaluated_sha === recordedCommit &&
+    (await gitIsAncestor(opts.exchange.checkout, recordedCommit, opts.head))
+  ) {
+    const prefix = `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/`;
+    const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
+    const changed = await gitDiffNames(opts.exchange.checkout, recordedCommit, opts.head);
+    headIsManagedDescendant = changed.every(
+      (name) =>
+        name.startsWith(prefix) &&
+        (name === `${prefix}README.md` ||
+          managed.some((directory) => name.startsWith(`${prefix}${directory}`))),
+    );
+  }
   return resolveEvidenceOnlyReworkCommit({
     purpose: opts.exchange.purpose,
     changed_paths: opts.changed_paths,
@@ -99,6 +121,9 @@ function recordedEvidenceOnlyReworkCommit(opts: {
     work_item_id: workItemId,
     work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
     task_verification_state: opts.task.verification?.state,
+    quality_review_state: opts.task.quality_review?.state,
+    quality_review_evaluated_sha: opts.task.quality_review?.evaluated_sha,
+    head_is_managed_descendant: headIsManagedDescendant,
     all_required_work_items_completed: allRequiredWorkItemsCompleted,
   });
 }
@@ -384,7 +409,8 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    implementationCommit = recordedEvidenceOnlyReworkCommit({
+    implementationCommit = await recordedEvidenceOnlyReworkCommit({
+      command: opts.command,
       exchange: opts.exchange,
       work_order: opts.work_order,
       task: taskAtReturn,

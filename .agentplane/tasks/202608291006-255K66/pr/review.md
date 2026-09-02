@@ -56,11 +56,11 @@ Created: 2026-08-30T21:48:11.941Z
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
- .../commands/task/direct-task-verification.test.ts |  69 ++
- .../src/commands/task/direct-task-verification.ts  |  38 +-
+ .../commands/task/direct-task-verification.test.ts | 102 +++
+ .../src/commands/task/direct-task-verification.ts  |  51 +-
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
- .../external-agent-implementation-authority.ts     |   2 +-
+ .../external-agent-implementation-authority.ts     |  34 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
@@ -121,7 +121,7 @@ Created: 2026-08-30T21:48:11.941Z
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 92 files changed, 7134 insertions(+), 529 deletions(-)
+ 92 files changed, 7207 insertions(+), 534 deletions(-)
 ```
 
 </details>
