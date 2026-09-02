@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
-import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
-import { resolveEvidenceOnlyReworkCommit } from "./direct-task-verification.js";
+import {
+  resolveEvidenceOnlyReworkCommit,
+  taskReadmesPreserveRecoveryContract,
+} from "./external-agent-implementation-recovery.js";
 
 const COMMIT = "a".repeat(40);
 const BASE_CONTEXT = {

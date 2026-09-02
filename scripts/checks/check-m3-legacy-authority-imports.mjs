@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -50,7 +50,6 @@ export function inspectM3LegacyAuthorityImports() {
   let legacyProductionLoc = 0;
   for (const relative of legacyFiles) {
     const file = path.join(sourceRoot, relative);
-    assert.equal(statSync(file).isFile(), true);
     legacyProductionLoc += readFileSync(file, "utf8").split("\n").length;
   }
   return {
