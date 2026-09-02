@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 6fa8c86accd768b102ec9ff392e34f24a9ea0e99..171c76d47189b2fd2f05ba4bb653fc47ecdeccf5",
+      "command": "git diff --check 8e2f58bb9340b10539ed5121d0d69cea3b65d0f4..143095a470a5f341d8d580bfdb839f3056feb5e1",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6fa8c86accd768b102ec9ff392e34f24a9ea0e99..171c76d47189b2fd2f05ba4bb653fc47ecdeccf5",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8e2f58bb9340b10539ed5121d0d69cea3b65d0f4..143095a470a5f341d8d580bfdb839f3056feb5e1",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "6fa8c86accd768b102ec9ff392e34f24a9ea0e99",
-  "implementation_commit": "171c76d47189b2fd2f05ba4bb653fc47ecdeccf5",
+  "execution_base_commit": "8e2f58bb9340b10539ed5121d0d69cea3b65d0f4",
+  "implementation_commit": "143095a470a5f341d8d580bfdb839f3056feb5e1",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
