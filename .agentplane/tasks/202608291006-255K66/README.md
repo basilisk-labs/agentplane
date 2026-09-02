@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 187
+revision: 188
 origin:
   system: "manual"
 depends_on:
@@ -33,6 +33,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-02T10:33:50.230Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 6 typed finding(s)."
+  evaluated_sha: "245fdf56dcf46727628571fbb874ec0f62e97709"
+  blueprint_digest: "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211"
+  evidence_refs:
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-103032868-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-103032868-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/63c2c882145508b2c949c924913c3aaecba5ebc9f577610ec7006ce93615e274.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-103032868-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-103032868-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-103032868-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-103032868-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-255K66/README.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/10d10b3c3deee3eee262a7808cf92e4c657f0de63850fc439f5a8e7a1fad3d82.patch"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/17344a073acc56bc308950e628dfdcf6df21dd2a7002ebc4fbcf90f3b43526a1.json"
+    - ".agentplane/tasks/202608291006-255K66/verification/20260902103024945-9e5852c941111af4.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The supervisor verification record is bound to implementation SHA 245fdf56dcf46727628571fbb874ec0f62e97709 and records all five declared checks as passing."
+    - "The approved current plan requires twenty sequential packaged self-hosting Tasks bound to the final implementation identity. Neither the observed-checks artifact nor the verification record contains that check or its evidence."
+    - "The approved current plan also requires an M3 milestone receipt bound to the Task, plan digest, final implementation SHA, and required evidence digests. No such receipt is present in the frozen evidence."
+    - "Hosted exact-head PR verification is correctly still unclaimed because it is a later supervisor/provider effect. Release drills and stable publication remain outside M3."
+    - "Residual risk: Without exact-head self-hosting evidence, retirement and the final qualification-only change are not covered by the sustained controller qualification."
+    - "Residual risk: Without the milestone receipt, the final evidence set is not cryptographically tied together for hosted delivery."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -1914,7 +1944,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-02T10:30:26.206Z"
+doc_updated_at: "2026-09-02T10:33:50.330Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
