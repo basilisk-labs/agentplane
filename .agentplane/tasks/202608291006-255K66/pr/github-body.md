@@ -88,7 +88,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/runner/observation/git-snapshot/model.ts   |   2 +
  .../observation/git-snapshot/path-fingerprint.ts   | 106 +++
  .../src/runner/observation/kernel-repository.ts    | 106 +++
- .../src/runner/usecases/kernel-authority.test.ts   | 422 +++++++++++
+ .../src/runner/usecases/kernel-authority.test.ts   | 428 +++++++++++
  .../src/runner/usecases/kernel-authority.ts        | 346 +++++++++
  .../runner/usecases/kernel-task-lifecycle.test.ts  | 474 ++++++++++++
  .../src/runner/usecases/kernel-task-lifecycle.ts   | 311 ++++++++
@@ -119,7 +119,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 92 files changed, 7128 insertions(+), 529 deletions(-)
+ 92 files changed, 7134 insertions(+), 529 deletions(-)
 ```
 
 </details>

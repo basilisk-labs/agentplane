@@ -302,8 +302,10 @@ describe("canonical native authority", () => {
     const { authority: current } = await f.resolver.resolve(f.taskId);
     expect(current.provenance).toMatchObject({
       kind: "SYSTEM",
+      evidence_digest: parent.provenance.evidence_digest,
       parent_authority_digest: parent.digest,
     });
+    expect(observation.evidence_digest).not.toBe(current.provenance.evidence_digest);
     expect(current.repository_fingerprint).toBe(f.values.repository_fingerprint);
     expect(k.compareExecutionAuthority(parent, current)).toMatchObject({
       ok: false,
@@ -413,8 +415,12 @@ describe("canonical native authority", () => {
     expect(next.authority.plan_digest).toBe(amended.digest);
     expect(next.authority.provenance).toMatchObject({
       kind: "SYSTEM",
+      evidence_digest: resolved.authority.provenance.evidence_digest,
       parent_authority_digest: resolved.authority.digest,
     });
+    expect(k.kernelDigest("native-amendment-checkpoint")).not.toBe(
+      next.authority.provenance.evidence_digest,
+    );
     const after = await f.adapter.read(f.taskId);
     if (after.kind !== "canonical") throw new Error(after.kind);
     expect(after.record.aggregate.work_items).toEqual(before.record.aggregate.work_items);
