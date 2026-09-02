@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8c3837a8048147570fc6f2b3b7295f63ca1e3984..245fdf56dcf46727628571fbb874ec0f62e97709",
+      "command": "git diff --check 5be5e1741048b21dca6409a5973425926b828226..3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8c3837a8048147570fc6f2b3b7295f63ca1e3984..245fdf56dcf46727628571fbb874ec0f62e97709",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5be5e1741048b21dca6409a5973425926b828226..3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tscripts/qualification/release-qualification.test.mjs"
+        "M\tscripts/checks/check-m3-legacy-authority-imports.mjs"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8c3837a8048147570fc6f2b3b7295f63ca1e3984",
-  "implementation_commit": "245fdf56dcf46727628571fbb874ec0f62e97709",
+  "execution_base_commit": "5be5e1741048b21dca6409a5973425926b828226",
+  "implementation_commit": "3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
