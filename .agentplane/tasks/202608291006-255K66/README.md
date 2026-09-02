@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 205
+revision: 206
 origin:
   system: "manual"
 depends_on:
@@ -36,33 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-02T12:10:13.028Z"
+  updated_at: "2026-09-02T13:02:54.311Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "3e79d32c8ab91879d4bac3723b1bb8bff31ba617"
+  evaluated_sha: "512c79a2a362c383f4820414906b5f448fd106cf"
   blueprint_digest: "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211"
   evidence_refs:
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/03fac2d5aaf2b44e1196d4f999a8b02f762865e91ba13e31f61d538764e38f6a.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-130056567-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-130056567-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/bb0baa9f963c8d60754bab3c01c74d43fd2f12d9a987fc821e38bf89c3f4b7d8.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-130056567-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-130056567-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/20260902-130056567-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202608291006-255K66/README.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/aa2c851b2c2ebda2d6d6457f6cdd422d44c0bcb634decce41b25d7c6bc5b69c6.patch"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/ad278564bd188a83eb457870490081d393908746afeae7c1b8d8e1ee23814f2d.json"
-    - ".agentplane/tasks/202608291006-255K66/verification/20260902120832993-89c8c1f0fd216ee8.json"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/987d815b79012b5e788bf87d0f54ce8a197b0300d5f88a9e9df03f821382e856.json"
+    - ".agentplane/tasks/202608291006-255K66/verification/20260902130037501-330469b14e7700b6.json"
     - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The CodeQL finding is addressed by removing the separate statSync check and reading the fixed allowlisted files directly; the explanatory invariant discourages reintroducing the race."
-    - "The verify-static cycle is addressed by moving the pure resolveEvidenceOnlyReworkCommit helper into an independent module used by recovery and its tests."
-    - "The extracted recovery module is 578 lines, below the enforced 600-line hotspot ceiling; the previously failing docs-schema group now passes."
-    - "Supervisor verification is bound to implementation 3e79d32c8ab91879d4bac3723b1bb8bff31ba617 and records ci:local:full, lifecycle:invariants, qualification:mixed-scope-lifecycle, policy routing, and doctor as passing."
-    - "The compatibility boundary remains six allowlisted import edges and 745 legacy production LOC with zero unexpected imports."
-    - "Residual risk remains provider-owned: the repaired head still requires publication, hosted CodeQL/static confirmation, merge, and fresh-main readback."
-    - "Residual risk: Hosted checks, integration, and main reachability are not yet proven for implementation 3e79d32c8ab91879d4bac3723b1bb8bff31ba617."
+    - "The Knip regression is resolved without widening budgets: AgentPlane CLI is 0/0 and reviewed core compatibility remains 21/21."
+    - "The recovery change is narrowly scoped: task-level verification rework selects the current supervisor-owned implementation evidence, while WorkItem recovery retains the explicit recorded-commit preference."
+    - "Existing fail-closed checks remain in force for Git ancestry, changed-path authority, README contract preservation, approved plan identity, and prior accepted exchange provenance."
+    - "A focused regression test covers stale quality SHA versus newer supervisor evidence SHA; the recovery-contract suite passes 33 tests."
+    - "Supervisor-owned verification records ci:local:full, lifecycle:invariants, mixed-scope lifecycle qualification, policy routing, and doctor as passing for implementation 512c79a2a362c383f4820414906b5f448fd106cf."
+    - "The earlier workspace-allocation failure was non-reproducible in two focused runs and the subsequent complete ci:local:full run passed."
+    - "Residual risk: The exact final head still requires hosted verification before integration."
 token_usage:
   agent_runs: 48
   input_tokens: 378921
@@ -2039,7 +2039,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-02T13:00:40.133Z"
+doc_updated_at: "2026-09-02T13:02:54.417Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
