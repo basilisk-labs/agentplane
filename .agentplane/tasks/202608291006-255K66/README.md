@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 134
+revision: 137
 origin:
   system: "manual"
 depends_on:
@@ -561,7 +561,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
+  message: "🚧 255K66 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -707,6 +709,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 072f8af45326. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1692b5eab62e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1083,8 +1088,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 072f8af45326. CLI accepted one state-bound external-agent semantic result."
     commit: "072f8af45326322e70c944837ea313e5d2cb3121"
+  -
+    type: "status"
+    at: "2026-09-02T00:58:20.284Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1692b5eab62e. CLI accepted one state-bound external-agent semantic result."
+    commit: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:43:24.241Z"
+doc_updated_at: "2026-09-02T00:58:20.284Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14921,9 +14934,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 134
+    revision: 137
     schema_version: 1
-    updated_at: "2026-09-02T00:43:25.355Z"
+    updated_at: "2026-09-02T00:58:21.433Z"
     work_items:
       m3-crash-migration:
         attempt: 1
@@ -15043,14 +15056,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       m3-final-qualification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-final-qualification"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:5affc5fe2b6d8db350ceff47de78cede0c0b39712d65263f8f3e969fd5ddbc9d"
+            id: "m3-final-qualification-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-final-qualification"
+            provenance:
+              - "sha256:85eaa804460891da37d377bd1fc0e64658bada467386e6fe746e5fc1b9b893eb"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:fe4b1f2116bd92f0cb831d408692e8b17138f1e873941bd810ebb5db48524bb6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:58:21.343Z"
+              repository_snapshot_digest: "sha256:fe4b1f2116bd92f0cb831d408692e8b17138f1e873941bd810ebb5db48524bb6"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-lifecycle:
         attempt: 2
         claim_id: null
@@ -15611,6 +15654,29 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-6ed5d24e43949781cb477abc:
+        aggregate_digest: "sha256:7ebafe2ddfc7b667af5f5fbcb1d8dfef02adb7f757e7c5509beec2e8861f4f84"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:58:21.433Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_b895ceaaf43ba0acdcec2f14"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-6ed5d24e43949781cb477abc"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 136
+          to: "COMPLETED"
+          work_item_id: "m3-final-qualification"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-6ed5d24e43949781cb477abc"
+        next_revision: 137
+        previous_revision: 136
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-7d2f4709e4045d7407f115fc:
         aggregate_digest: "sha256:18f96cf08b3e5595f865d69e83134c03f94d79c2aae2acb3de89a35e67bd7de4"
         event:
@@ -15989,7 +16055,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "072f8af45326322e70c944837ea313e5d2cb3121"
+    hash: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
