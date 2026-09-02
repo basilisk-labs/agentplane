@@ -204,9 +204,7 @@ export async function recordTaskCentricExternalResult(opts: {
   const selected = requestedId
     ? currentPlan.proposal.work_items.work_items.find((item) => item.id === requestedId)
     : claimedIds.length === 1
-      ? currentPlan.proposal.work_items.work_items.find(
-          (item) => item.id === claimedIds[0],
-        )
+      ? currentPlan.proposal.work_items.work_items.find((item) => item.id === claimedIds[0])
       : new WorkItemScheduler(1).select({
           graph: currentPlan.proposal.work_items,
           runtime: aggregate.work_items,

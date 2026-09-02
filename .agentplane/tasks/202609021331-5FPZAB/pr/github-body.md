@@ -42,13 +42,19 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
  .../shared/workflow-step-fingerprint.test.ts       |  50 ++++-
  .../commands/shared/workflow-step-fingerprint.ts   |  33 ++-
  .../commands/shared/workflow-step-quality.test.ts  |   6 +-
- .../external-agent-implementation-authority.ts     |   3 +-
+ .../external-agent-implementation-authority.ts     |   4 +-
  .../agentplane/src/commands/task/finish-shared.ts  | 104 +++++----
+ .../src/commands/task/finish-task-store.testkit.ts |  33 +++
+ .../commands/task/finish.close-tail.unit.test.ts   |  26 +--
+ .../src/commands/task/finish.state.unit.test.ts    |  27 ++-
+ .../commands/task/finish.validation.unit.test.ts   |  39 +---
  .../src/commands/task/hosted-close.command.ts      |   1 +
+ .../agentplane/src/commands/task/plan.unit.test.ts |  30 ++-
  .../src/commands/task/set-status.unit.test.ts      |  56 +++++
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
- .../commands/task/task-centric-external-result.ts  |  54 +++--
- 21 files changed, 1051 insertions(+), 207 deletions(-)
+ .../commands/task/task-centric-external-result.ts  |  56 +++--
+ .../task/verify-record.durability.unit.test.ts     |  38 +++-
+ 27 files changed, 1184 insertions(+), 270 deletions(-)
 ```
 
 </details>

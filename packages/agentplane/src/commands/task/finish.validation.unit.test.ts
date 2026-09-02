@@ -6,6 +6,7 @@ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
+import { createMutableTaskStore } from "./finish-task-store.testkit.js";
 
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
@@ -164,6 +165,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
+    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
   };
 
   const ctx: CommandContext = {
@@ -705,17 +707,7 @@ describe("task finish validation", () => {
       tags: ["meta"],
       commit: { hash: "impl-hash", message: "feat: implement T-1" },
     });
-    const store = {
-      get: vi.fn().mockResolvedValue(task),
-      patch: vi
-        .fn()
-        .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            applyStorePatch(task, await builder(task));
-            return { changed: true, task };
-          },
-        ),
-    };
+    const store = createMutableTaskStore(task, applyStorePatch);
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
@@ -777,6 +769,7 @@ describe("task finish validation", () => {
         listTasks: () => Promise.resolve([]),
         getTask: () => Promise.resolve(task),
         writeTask: () => Promise.resolve(),
+        writeTaskWithResult: (next) => Promise.resolve({ changed: true, task: next }),
       } as TaskBackend,
     });
     ctx.config.workflow_mode = "direct";
@@ -822,17 +815,7 @@ describe("task finish validation", () => {
       tags: ["meta"],
       commit: { hash: "impl-hash", message: "feat: implement T-1" },
     });
-    const store = {
-      get: vi.fn().mockResolvedValue(task),
-      patch: vi
-        .fn()
-        .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            applyStorePatch(task, await builder(task));
-            return { changed: true, task };
-          },
-        ),
-    };
+    const store = createMutableTaskStore(task, applyStorePatch);
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
@@ -950,17 +933,7 @@ describe("task finish validation", () => {
       tags: ["meta"],
       commit: { hash: "impl-hash", message: "feat: implement T-1" },
     });
-    const store = {
-      get: vi.fn().mockResolvedValue(task),
-      patch: vi
-        .fn()
-        .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            applyStorePatch(task, await builder(task));
-            return { changed: true, task };
-          },
-        ),
-    };
+    const store = createMutableTaskStore(task, applyStorePatch);
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 

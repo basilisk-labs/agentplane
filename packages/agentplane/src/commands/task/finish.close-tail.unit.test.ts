@@ -6,6 +6,7 @@ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
+import { createMutableTaskStore } from "./finish-task-store.testkit.js";
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
   cmdCommit: vi.fn(),
@@ -148,6 +149,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
+    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
   };
 
   const ctx: CommandContext = {
@@ -858,18 +860,8 @@ describe("task finish close-tail", () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
-    mocks.getTaskStore.mockReturnValue({
-      get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
-      patch: vi.fn(
-        async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => ({
-          changed: true,
-          task: applyStorePatch(
-            mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
-            await builder(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
-          ),
-        }),
-      ),
-    });
+    const task = mkTask({ id: "T-1", status: "DOING", tags: ["docs"] });
+    mocks.getTaskStore.mockReturnValue(createMutableTaskStore(task, applyStorePatch));
 
     const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
@@ -953,6 +945,16 @@ describe("task finish close-tail", () => {
           async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
             currentTask = applyStorePatch(currentTask, await builder(currentTask));
             return { changed: true, task: currentTask };
+          },
+        ),
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            const next = await updater({ ...currentTask });
+            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
+            currentTask = next;
+            return { changed, task: currentTask };
           },
         ),
     };

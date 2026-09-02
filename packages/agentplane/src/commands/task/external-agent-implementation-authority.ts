@@ -98,7 +98,8 @@ function assertExternalImplementationReturnState(opts: {
     current.task_revision !== expected.task_revision ||
     current.worktree !== expected.worktree ||
     current.components.task.digest !== expected.components.task.digest ||
-    current.components.backend_projection.digest !== expected.components.backend_projection.digest ||
+    current.components.backend_projection.digest !==
+      expected.components.backend_projection.digest ||
     current.components.provider.digest !== expected.components.provider.digest
   ) {
     throw new CliError({

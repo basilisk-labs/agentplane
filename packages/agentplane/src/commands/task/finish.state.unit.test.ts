@@ -184,6 +184,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
+    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
   };
 
   const ctx: CommandContext = {
@@ -452,6 +453,16 @@ describeCompatible("task finish state and errors", () => {
             return { changed: true, task: currentTask };
           },
         ),
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            const next = await updater({ ...currentTask });
+            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
+            currentTask = next;
+            return { changed, task: currentTask };
+          },
+        ),
     };
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
@@ -485,7 +496,8 @@ describeCompatible("task finish state and errors", () => {
 
     expect(rc).toBe(0);
     expect(store.get).not.toHaveBeenCalled();
-    expect(store.patch).toHaveBeenCalledTimes(2);
+    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.status).toBe("DONE");
     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
     expect(currentTask.comments).toEqual([
@@ -526,6 +538,16 @@ describeCompatible("task finish state and errors", () => {
             return { changed: true, task: currentTask };
           },
         ),
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            const next = await updater({ ...currentTask });
+            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
+            currentTask = next;
+            return { changed, task: currentTask };
+          },
+        ),
     };
     const ctx = mkCtx();
     ctx.config.agents = {
@@ -559,7 +581,8 @@ describeCompatible("task finish state and errors", () => {
 
     expect(rc).toBe(0);
     expect(store.get).not.toHaveBeenCalled();
-    expect(store.patch).toHaveBeenCalledTimes(2);
+    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.status).toBe("DONE");
   });
 
