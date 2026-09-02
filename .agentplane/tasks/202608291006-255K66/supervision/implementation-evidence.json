@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5abb2e1ea9845f51f9617534152848c82e26d3ac..76f05d8ae609e8d71b8fd6a9c7e35a2567784024",
+      "command": "git diff --check 3e4da4735b714d1435b1d6188ff784493a179ec6..0020cbe98ffc19db543461a6dfa6a1d2f3bda35c",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5abb2e1ea9845f51f9617534152848c82e26d3ac..76f05d8ae609e8d71b8fd6a9c7e35a2567784024",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e4da4735b714d1435b1d6188ff784493a179ec6..0020cbe98ffc19db543461a6dfa6a1d2f3bda35c",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,7 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/verification-details.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/verification-details.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
       ]
     },
     {
@@ -32,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5abb2e1ea9845f51f9617534152848c82e26d3ac",
-  "implementation_commit": "76f05d8ae609e8d71b8fd6a9c7e35a2567784024",
+  "execution_base_commit": "3e4da4735b714d1435b1d6188ff784493a179ec6",
+  "implementation_commit": "0020cbe98ffc19db543461a6dfa6a1d2f3bda35c",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
