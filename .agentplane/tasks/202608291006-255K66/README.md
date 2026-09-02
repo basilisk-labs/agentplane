@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 162
+revision: 165
 origin:
   system: "manual"
 depends_on:
@@ -467,6 +467,8 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/verification-details.test.ts"
       - "packages/agentplane/src/commands/shared/verification-details.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.ts"
       - "packages/agentplane/src/commands/task/active.command.ts"
       - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
@@ -802,7 +804,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:30031fbedcdd9a358c8e96f18d53cbc459165d3306cdfd3a3cf29dd065143b6d"
+      digest: "sha256:df946fab01e1358f10a60c7371238d7cd0a3c8b122264ec6fbe6370dc4fab734"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -831,6 +833,8 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/verification-details.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/verification-details.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.ts"
         - "central_path:packages/core/schemas/agent-work-order-v2.schema.json"
         - "central_path:packages/core/src/runner/agent-semantic-result.test.ts"
         - "central_path:packages/core/src/runner/agent-semantic-result.ts"
@@ -1056,6 +1060,8 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/verification-details.test.ts"
           - "packages/agentplane/src/commands/shared/verification-details.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.ts"
           - "packages/agentplane/src/commands/task/active.command.ts"
           - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
@@ -1354,6 +1360,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 6bd4b0ea4e66. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bf79e8efe2a8. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1805,8 +1814,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 6bd4b0ea4e66. CLI accepted one state-bound external-agent semantic result."
     commit: "6bd4b0ea4e66390e9b5f0dba3058610daeb9eaed"
+  -
+    type: "status"
+    at: "2026-09-02T09:16:47.760Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bf79e8efe2a8. CLI accepted one state-bound external-agent semantic result."
+    commit: "bf79e8efe2a8efbf1b8b668237a7753ddb52d834"
 doc_version: 3
-doc_updated_at: "2026-09-02T09:06:13.267Z"
+doc_updated_at: "2026-09-02T09:16:47.948Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -17283,9 +17300,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 162
+    revision: 165
     schema_version: 1
-    updated_at: "2026-09-02T09:13:34.193Z"
+    updated_at: "2026-09-02T09:16:49.020Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -17306,14 +17323,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-effects-validation:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-effects-validation"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:42c34e2b7740ff82a23938bcc22807cbc52006f578dfed6dceb2441f5780e1ad"
+            id: "m3-effects-validation-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 12
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-effects-validation"
+            provenance:
+              - "sha256:3d928791b85b58af8a6606548ef2a1cf095bddc477dec87cce3707841cc55c92"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:921210374dd38c825bcaf5c2ac1e0dbc3d0214a524fd3a327f834b62c9f1d943"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T09:16:48.936Z"
+              repository_snapshot_digest: "sha256:921210374dd38c825bcaf5c2ac1e0dbc3d0214a524fd3a327f834b62c9f1d943"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-final-qualification:
         attempt: 0
         claim_id: null
@@ -17862,6 +17909,29 @@ extensions:
         previous_revision: 136
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-784157203062fc66a11f72fb:
+        aggregate_digest: "sha256:84580f8163c51950b52d1f94a7ef87f4d8759fd5df7a308949d43676a64ff04d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T09:16:49.020Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_af2d705f5430179849b2d26d"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-784157203062fc66a11f72fb"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 164
+          to: "COMPLETED"
+          work_item_id: "m3-effects-validation"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-784157203062fc66a11f72fb"
+        next_revision: 165
+        previous_revision: 164
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-7d2f4709e4045d7407f115fc:
         aggregate_digest: "sha256:18f96cf08b3e5595f865d69e83134c03f94d79c2aae2acb3de89a35e67bd7de4"
         event:
@@ -18359,7 +18429,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "6bd4b0ea4e66390e9b5f0dba3058610daeb9eaed"
+    hash: "bf79e8efe2a8efbf1b8b668237a7753ddb52d834"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
