@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 131
+revision: 134
 origin:
   system: "manual"
 depends_on:
@@ -255,6 +255,7 @@ execution_contract:
       - "schemas/agent-work-order-v2.schema.json"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/check-m3-legacy-authority-imports.mjs"
       - "scripts/qualification/check-m3-self-hosting.mjs"
       - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       - "scripts/release/smoke-bun-compiled-cli.mjs"
@@ -352,7 +353,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:3d6680694d23e180876de787dd106ce5ca6110f00fc68e9d2b037c2da50172fd"
+      digest: "sha256:898599fcf3dcbcd4f4e14edd4b657689624e614b80ad4c366936febaddc8fdc5"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -397,6 +398,7 @@ execution_contract:
         - "central_path:schemas/agent-semantic-result.schema.json"
         - "central_path:schemas/agent-work-order-v2.schema.json"
         - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_path:scripts/checks/check-m3-legacy-authority-imports.mjs"
         - "central_path:scripts/release/smoke-bun-compiled-cli.mjs"
         - "effect_public_api"
         - "effect_release_metadata"
@@ -506,6 +508,7 @@ execution_contract:
           - "schemas/agent-work-order-v2.schema.json"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/checks/check-m3-legacy-authority-imports.mjs"
           - "scripts/qualification/check-m3-self-hosting.mjs"
           - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
           - "scripts/release/smoke-bun-compiled-cli.mjs"
@@ -701,6 +704,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 98fae647679d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 072f8af45326. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1069,8 +1075,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 98fae647679d. CLI accepted one state-bound external-agent semantic result."
     commit: "98fae647679d3d10c9330a23b26323003482f3fb"
+  -
+    type: "status"
+    at: "2026-09-02T00:43:24.241Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 072f8af45326. CLI accepted one state-bound external-agent semantic result."
+    commit: "072f8af45326322e70c944837ea313e5d2cb3121"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:41:33.395Z"
+doc_updated_at: "2026-09-02T00:43:24.241Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14907,9 +14921,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 131
+    revision: 134
     schema_version: 1
-    updated_at: "2026-09-02T00:41:34.509Z"
+    updated_at: "2026-09-02T00:43:25.355Z"
     work_items:
       m3-crash-migration:
         attempt: 1
@@ -15224,14 +15238,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       m3-retirement:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-retirement"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:1fff4ee14ffff7715079b0d6ad5edfc4b0abfa316dec287937d698ede5e339ae"
+            id: "m3-retirement-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-retirement"
+            provenance:
+              - "sha256:444ef26768ef8be3c3f40565a46a952dc446ffc56e974309c82ff3426173e898"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:90c4e114f0d26bc97438ce74fdcb991e6733f0b23dd65821eacd6450cd83d96e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:43:25.280Z"
+              repository_snapshot_digest: "sha256:90c4e114f0d26bc97438ce74fdcb991e6733f0b23dd65821eacd6450cd83d96e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-self-hosting:
         attempt: 1
         claim_id: null
@@ -15450,6 +15494,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-3fa29c4eda693286825c99e0"
         next_revision: 86
         previous_revision: 85
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-4080fd0e80c7708157210584:
+        aggregate_digest: "sha256:948694febb8023bc9e0c9aa106eace7fce845c62b3f9610bf9d94934bd0c741c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:43:25.355Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_8ad6dd0ba6f0092d50aad70d"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-4080fd0e80c7708157210584"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 133
+          to: "COMPLETED"
+          work_item_id: "m3-retirement"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-4080fd0e80c7708157210584"
+        next_revision: 134
+        previous_revision: 133
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-49319a23087663f788759c14:
@@ -15922,7 +15989,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "98fae647679d3d10c9330a23b26323003482f3fb"
+    hash: "072f8af45326322e70c944837ea313e5d2cb3121"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"

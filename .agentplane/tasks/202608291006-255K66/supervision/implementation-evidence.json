@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5c0bd26ad89b368d4032bf7b90c31bde1f31eef7..98fae647679d3d10c9330a23b26323003482f3fb",
+      "command": "git diff --check 83f70fe12993b62d38b8e58e0b05afe108acf9c1..072f8af45326322e70c944837ea313e5d2cb3121",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5c0bd26ad89b368d4032bf7b90c31bde1f31eef7..98fae647679d3d10c9330a23b26323003482f3fb",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 83f70fe12993b62d38b8e58e0b05afe108acf9c1..072f8af45326322e70c944837ea313e5d2cb3121",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,7 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "A\tscripts/qualification/check-m3-self-hosting.mjs",
-        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+        "A\tscripts/checks/check-m3-legacy-authority-imports.mjs"
       ]
     },
     {
@@ -32,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5c0bd26ad89b368d4032bf7b90c31bde1f31eef7",
-  "implementation_commit": "98fae647679d3d10c9330a23b26323003482f3fb",
+  "execution_base_commit": "83f70fe12993b62d38b8e58e0b05afe108acf9c1",
+  "implementation_commit": "072f8af45326322e70c944837ea313e5d2cb3121",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
