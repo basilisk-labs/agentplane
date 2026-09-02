@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 150
+revision: 153
 origin:
   system: "manual"
 depends_on:
@@ -479,6 +479,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
       - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
@@ -523,6 +524,9 @@ execution_contract:
       - "packages/core/src/runner/agent-work-order.ts"
       - "packages/core/src/tasks/index.ts"
       - "packages/core/src/tasks/kernel-semantic.ts"
+      - "packages/core/src/tasks/task-centric/graph.ts"
+      - "packages/core/src/tasks/task-centric/index.ts"
+      - "packages/core/src/tasks/task-centric/task-centric.test.ts"
       - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
       - "packages/core/src/tasks/task-kernel/digest.ts"
       - "packages/core/src/tasks/task-kernel/index.ts"
@@ -796,7 +800,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:61d32893f2a43d60fa93d3c7b2659b184233697d9221e69717ce3ffb719b5e9f"
+      digest: "sha256:2e577f1f0cd91ba0f46f12ddce275340aeb4f82c4760d394ef96efea413a558c"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -832,6 +836,9 @@ execution_contract:
         - "central_path:packages/core/src/runner/agent-work-order.ts"
         - "central_path:packages/core/src/tasks/index.ts"
         - "central_path:packages/core/src/tasks/kernel-semantic.ts"
+        - "central_path:packages/core/src/tasks/task-centric/graph.ts"
+        - "central_path:packages/core/src/tasks/task-centric/index.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
         - "central_path:packages/core/src/tasks/task-kernel/authority-lineage.ts"
         - "central_path:packages/core/src/tasks/task-kernel/digest.ts"
         - "central_path:packages/core/src/tasks/task-kernel/index.ts"
@@ -1059,6 +1066,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/external-agent-plan-refinement.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
           - "packages/agentplane/src/commands/task/external-agent-result-application.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
@@ -1103,6 +1111,9 @@ execution_contract:
           - "packages/core/src/runner/agent-work-order.ts"
           - "packages/core/src/tasks/index.ts"
           - "packages/core/src/tasks/kernel-semantic.ts"
+          - "packages/core/src/tasks/task-centric/graph.ts"
+          - "packages/core/src/tasks/task-centric/index.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
           - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
           - "packages/core/src/tasks/task-kernel/digest.ts"
           - "packages/core/src/tasks/task-kernel/index.ts"
@@ -1327,6 +1338,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 90552723a60b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6619fb2ae96a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1746,8 +1760,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 90552723a60b. CLI accepted one state-bound external-agent semantic result."
     commit: "90552723a60bd6e8f956f35ca625d6771f811cf2"
+  -
+    type: "status"
+    at: "2026-09-02T08:14:56.466Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6619fb2ae96a. CLI accepted one state-bound external-agent semantic result."
+    commit: "6619fb2ae96ac359e134f619038482f4b4f60878"
 doc_version: 3
-doc_updated_at: "2026-09-02T08:00:55.697Z"
+doc_updated_at: "2026-09-02T08:14:56.649Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -17224,9 +17246,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 150
+    revision: 153
     schema_version: 1
-    updated_at: "2026-09-02T08:00:56.769Z"
+    updated_at: "2026-09-02T08:22:37.689Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -17265,14 +17287,54 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-lifecycle:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-lifecycle"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:18a077950bd2156d878ae9ffb23a4ffd860e2f2a07af4d22ee2e2a4d4992849f"
+            id: "m3-lifecycle-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 12
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-lifecycle"
+            provenance:
+              - "sha256:d2c898e0b1e201ad47f82e6bc47dd92d33554647b388eee439cdb017c145831b"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c2af81fe22f45b91e54e058239e883850a6d09ea202b2184fe6b57970824b020"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T08:22:37.603Z"
+              repository_snapshot_digest: "sha256:c2af81fe22f45b91e54e058239e883850a6d09ea202b2184fe6b57970824b020"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-02T08:22:37.603Z"
+              repository_snapshot_digest: "sha256:c2af81fe22f45b91e54e058239e883850a6d09ea202b2184fe6b57970824b020"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-lifecycle-authority:
         attempt: 0
         claim_id: null
@@ -17683,6 +17745,29 @@ extensions:
         previous_revision: 93
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-9835c50238d9bafcfe100866:
+        aggregate_digest: "sha256:903d5ffe8eee45721dec19a4d88218ffd43a78c4b907a548eae832d1d2060a4c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T08:22:37.689Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_7a741b24bd87f55a588efd1a"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-9835c50238d9bafcfe100866"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 152
+          to: "COMPLETED"
+          work_item_id: "m3-lifecycle"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-9835c50238d9bafcfe100866"
+        next_revision: 153
+        previous_revision: 152
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-a4615afe7b772bbb51040f72:
         aggregate_digest: "sha256:18a9e68672ecedccdcce9213edc180dbad6c726aab7d59d8dd7cf71bef21e947"
         event:
@@ -18088,7 +18173,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "90552723a60bd6e8f956f35ca625d6771f811cf2"
+    hash: "6619fb2ae96ac359e134f619038482f4b4f60878"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
