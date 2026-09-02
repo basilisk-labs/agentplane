@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Pure refinement admission uses native amendments and preserves implementation history and completed WorkItems. Existing no-diff, replay, lost-response and stale-state tests retain those contracts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Task artifact content and modes are bound to the issued exchange. Issued task revision is explicitly checked and retained through adapter persistence CAS, covering both earlier hosted review findings.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The CodeQL-reported lstat/readFile race is removed by reusing readStableRegularFileNoFollow with the initial bigint device/inode identity. It verifies the opened descriptor before reading bytes, uses bounded binary reads, and checks stability afterward.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "New tests reject both same-byte regular-file replacement and symlink replacement between observation and stable reading. The positive binary hash check preserves byte-level snapshot behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The final test formatting conforms to Prettier. The current native full-CI evidence is passed; the earlier failed formatting run is not used as successful evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Do not merge until current-head hosted checks, including CodeQL, pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Old exchanges without a content snapshot require clean task metadata. The live M3 exchange must be recovered through the native controller after delivery.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: Stable release publication is outside this bootstrap scope.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Existing native journal ownership and task-supervisor serialization remain the trust boundary.",
+    "Snapshot traversal is not an OS filesystem sandbox; this patch addresses the reported regular-file read race using the existing stable-file primitive."
+  ]
+}

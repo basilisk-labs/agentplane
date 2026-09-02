@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202608301851-5W3XW6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-08-30T20:21:16.206Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "753ed95d1d782fe03e1aec40f72508750ee84c2a",
+  "blueprint_digest": "c4fe4f9395dc1a16d9d0e045fcc7079e8e2b42ab4cd182ea5e32873dbb3bd649",
+  "findings": [
+    "All frozen evaluator evidence digests match. Native persisted checks passed: full CI, fast tests, typecheck, policy routing and doctor.",
+    "The new test uses actual Task records and native route construction. It proves absent dependency and dependency_wait on the creation snapshot, preserved nonempty depends_on, and DONE dependency visibility with no dependency blocker after recovery in all three crash modes.",
+    "Implementation preserves the approved plan and WorkItems, rejects explicit pins and started or dirty work, uses native revision locking, preserves verified crash candidates in an audit archive, and leaves default work resume behavior unchanged.",
+    "The exact CLI candidate delta adds only the three reviewed recovery options and Task provenance. The immutable compatibility anchor is unchanged.",
+    "Residual risk: Explicit recovery remains limited to an unstarted creation-checkout base with a descendant approved planning commit. Unknown artifacts, active work and divergent histories intentionally remain blocked.",
+    "Residual risk: Hosted integration and actual M3 recovery are still pending."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

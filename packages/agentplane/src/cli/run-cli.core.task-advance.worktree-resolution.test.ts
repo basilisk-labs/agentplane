@@ -1,8 +1,11 @@
-import { execFile } from "node:child_process";
-import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { LocalBackend } from "../backends/task-backend.js";
+import { recoverWorkPlanningBase } from "../commands/branch/work-resume-planning-base.js";
+import { execFile, spawn } from "node:child_process";
+import { mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
@@ -46,14 +49,17 @@ type AgentPacket = {
   };
 };
 
-async function createTask(root: string): Promise<string> {
+async function createTask(
+  root: string,
+  title = "External task-worktree resolution",
+): Promise<string> {
   const io = captureStdIO();
   try {
     const code = await runCli([
       "task",
       "new",
       "--title",
-      "External task-worktree resolution",
+      title,
       "--description",
       "Exercise the state-bound worktree resolution protocol.",
       "--priority",
@@ -281,7 +287,330 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
   ).toBe(0);
 }
 
+async function readHead(root: string): Promise<string> {
+  const result = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  return result.stdout.trim();
+}
+
 describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
+  it.each([false, true, "process"] as const)(
+    "recovers an unstarted approved planning base (interrupted=%s)",
+    async (interrupted) => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      const workflowDir = interrupted === true ? "./.agent plane/задачи" : ".agentplane/tasks";
+      config.paths.workflow_dir = workflowDir;
+      await writeConfig(root, config);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await writeFile(
+        path.join(root, ".gitignore"),
+        ".agentplane/bin/\n.agentplane/cache.sqlite-*\nnode_modules\npackages/\nwebsite/\nagentplane-recipes\n",
+      );
+      await execFileAsync("git", ["add", ".agentplane", ".gitignore"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "test: initial workflow"], { cwd: root });
+      const taskId = await createTask(root);
+      const initial = await readHead(root);
+      const dependencyId = await createTask(
+        root,
+        "Completed prerequisite for planning-base recovery",
+      );
+      expect(
+        await runCliSilent([
+          "task",
+          "set-status",
+          dependencyId,
+          "DONE",
+          "--force",
+          "--yes",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      expect(
+        await runCliSilent([
+          "task",
+          "update",
+          taskId,
+          "--depends-on",
+          dependencyId,
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      await execFileAsync("git", ["add", `${workflowDir}/${dependencyId}`], { cwd: root });
+      await writeFile(path.join(root, "prerequisite.txt"), "completed prerequisite\n");
+      await execFileAsync("git", ["add", "prerequisite.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "test: prerequisite landed"], { cwd: root });
+      const target = await readHead(root);
+      await approveStructuredPlan(root, taskId);
+      expect(
+        await runCliSilent([
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "planning-base",
+          "--worktree",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+      const inspected = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+      expect(inspected).toMatchObject({
+        from_sha: initial,
+        observed_head: initial,
+        target_sha: target,
+        status: "ready",
+      });
+      const taskRoot = inspected.worktree;
+      const taskCtx = await loadCommandContext({ cwd: taskRoot, rootOverride: null });
+      const original = (await taskCtx.taskBackend.getTask(taskId))!;
+      expect(original.depends_on).toEqual([dependencyId]);
+      expect(await taskCtx.taskBackend.getTask(dependencyId)).toBeNull();
+      const beforeRoute = await buildTaskRouteDecision({
+        ctx: taskCtx,
+        cwd: taskRoot,
+        taskId,
+        includeRemote: false,
+      });
+      expect(beforeRoute.oracle.phase).toBe("dependency_wait");
+      expect(beforeRoute.blockers).toEqual(
+        expect.arrayContaining([expect.objectContaining({ code: "dependency_not_ready" })]),
+      );
+      await expect(
+        recoverWorkPlanningBase({
+          ctx,
+          taskId,
+          apply: true,
+          expectedToken: "sha256:" + "0".repeat(64),
+        }),
+      ).rejects.toThrow("stale or missing recovery token");
+      await writeFile(path.join(taskRoot, "unrelated.txt"), "preserve");
+      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
+        "untracked changes",
+      );
+      await rm(path.join(taskRoot, "unrelated.txt"));
+      const priorBase = original.extensions!.task_execution_context as Record<string, unknown>;
+      await taskCtx.taskBackend.writeTask({
+        ...original,
+        extensions: {
+          ...original.extensions,
+          task_execution_context: { ...priorBase, source: "explicit" },
+        },
+      });
+      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
+        "base provenance",
+      );
+      const pinned = (await taskCtx.taskBackend.getTask(taskId))!;
+      await taskCtx.taskBackend.writeTask({ ...pinned, extensions: original.extensions });
+      const restored = (await taskCtx.taskBackend.getTask(taskId))!;
+      await taskCtx.taskBackend.writeTask({ ...restored, status: "DOING" });
+      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
+        "already started",
+      );
+      await taskCtx.taskBackend.writeTask({
+        ...(await taskCtx.taskBackend.getTask(taskId))!,
+        status: "TODO",
+      });
+      await execFileAsync(
+        "git",
+        ["commit", "--allow-empty", "-m", "test: started branch history"],
+        { cwd: taskRoot },
+      );
+      await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
+        "commits after creation",
+      );
+      await execFileAsync("git", ["reset", "--hard", initial], { cwd: taskRoot });
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "work",
+            "resume",
+            taskId,
+            "--refresh-planning-base",
+            "--json",
+            "--root",
+            root,
+          ]),
+          io.stderr,
+        ).toBe(0);
+        const result = JSON.parse(io.stdout) as { target_sha: string };
+        expect(result.target_sha).toBe(target);
+      } finally {
+        io.restore();
+      }
+      const ready = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+      if (!interrupted) {
+        await writeFile(path.join(root, ".git", "info", "exclude"), "prerequisite.txt\n");
+        await writeFile(path.join(taskRoot, "prerequisite.txt"), "preserve ignored local bytes\n");
+        await expect(
+          recoverWorkPlanningBase({ ctx, taskId, apply: true, expectedToken: ready.token }),
+        ).rejects.toThrow();
+        expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
+          "preserve ignored local bytes\n",
+        );
+        expect(await readHead(taskRoot)).toBe(initial);
+        await rm(path.join(taskRoot, "prerequisite.txt"));
+      }
+      if (interrupted === true) {
+        if (!(taskCtx.taskBackend instanceof LocalBackend))
+          throw new Error("Expected local fixture backend");
+        const originalWrite = LocalBackend.prototype.writeTaskWithReceipt.bind(taskCtx.taskBackend);
+        const spy = vi
+          .spyOn(LocalBackend.prototype, "writeTaskWithReceipt")
+          .mockImplementationOnce((task, options, beforePublication) => {
+            return originalWrite(task, options, async () => {
+              await beforePublication();
+              throw new Error("injected interruption after Git before Task publication");
+            });
+          });
+        try {
+          await expect(
+            recoverWorkPlanningBase({ ctx, taskId, apply: true, expectedToken: ready.token }),
+          ).rejects.toThrow("injected interruption");
+        } finally {
+          spy.mockRestore();
+        }
+        expect(await readHead(taskRoot)).toBe(target);
+        expect(
+          (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
+        ).toEqual(priorBase);
+      }
+      let orphanBytes: string | null = null;
+      if (interrupted === "process") {
+        const marker = path.join(root, ".git", "recovery-kill-marker.json");
+        const hook = path.join(root, ".git", "hooks", "post-merge");
+        await writeFile(
+          hook,
+          '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.AGENTPLANE_RECOVERY_TEST_MARKER, JSON.stringify({hookPid:process.pid,gitPid:process.ppid})); setTimeout(() => {}, 10000);\n',
+          { mode: 0o755 },
+        );
+        const child = spawn(
+          process.execPath,
+          [
+            path.join(process.cwd(), "packages/agentplane/dist/cli.js"),
+            "work",
+            "resume",
+            taskId,
+            "--refresh-planning-base",
+            "--apply",
+            "--expect-token",
+            ready.token,
+            "--root",
+            root,
+          ],
+          {
+            cwd: root,
+            env: { ...process.env, AGENTPLANE_RECOVERY_TEST_MARKER: marker },
+            stdio: "ignore",
+          },
+        );
+        const exited = new Promise((resolve) => child.once("exit", resolve));
+        let hookPids: { hookPid: number; gitPid: number } | null = null;
+        try {
+          for (let poll = 0; poll < 200; poll++) {
+            const raw = await readFile(marker, "utf8").catch(() => null);
+            if (raw) {
+              hookPids = JSON.parse(raw) as { hookPid: number; gitPid: number };
+              break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+          expect(hookPids, "isolated CLI must reach the post-merge crash boundary").not.toBeNull();
+          child.kill("SIGKILL");
+          await exited;
+        } finally {
+          if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL");
+          if (hookPids)
+            for (const pid of [hookPids.hookPid, hookPids.gitPid]) {
+              try {
+                process.kill(pid, "SIGKILL");
+              } catch {
+                // The owned fixture subprocess may already have exited.
+              }
+            }
+          await rm(hook, { force: true });
+        }
+        const directory = path.join(taskRoot, workflowDir, taskId);
+        const entries = await readdir(directory);
+        const orphans = entries.filter((name) => name.startsWith("README.md.tmp-"));
+        expect(orphans).toHaveLength(1);
+        orphanBytes = await readFile(path.join(directory, orphans[0]!), "utf8");
+        // Eight valid interrupted candidates must leave room for the next atomic publication.
+        for (let candidate = 1; candidate < 8; candidate++) {
+          await writeFile(
+            path.join(directory, `README.md.tmp-${String(candidate).padStart(32, "0")}`),
+            orphanBytes,
+          );
+        }
+        const excess = path.join(directory, `README.md.tmp-${"9".repeat(32)}`);
+        await writeFile(excess, orphanBytes);
+        await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
+          "Task execution artifacts already exist",
+        );
+        await rm(excess);
+
+        expect(await readHead(taskRoot)).toBe(target);
+        expect(
+          (await taskCtx.taskBackend.getTask(taskId))!.extensions!.task_execution_context,
+        ).toEqual(priorBase);
+      }
+      const fresh = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+      const applied = await recoverWorkPlanningBase({
+        ctx,
+        taskId,
+        apply: true,
+        expectedToken: fresh.token,
+      });
+      expect(applied.status).toBe("applied");
+      if (orphanBytes !== null) {
+        const directory = path.join(taskRoot, workflowDir, taskId);
+        const remainingEntries = await readdir(directory);
+        expect(remainingEntries.filter((name) => name.startsWith("README.md.tmp-"))).toEqual([]);
+        const archiveRoot = path.join(root, ".git", "agentplane", "planning-base-recovery", taskId);
+        const archived = await readdir(archiveRoot);
+        expect(archived).toHaveLength(1);
+        expect(await readFile(path.join(archiveRoot, archived[0]!), "utf8")).toBe(orphanBytes);
+      }
+
+      const after = (await taskCtx.taskBackend.getTask(taskId))!;
+      expect(taskCentricAggregateFromExtensions(after.extensions)).toEqual(
+        taskCentricAggregateFromExtensions(original.extensions),
+      );
+      expect(after.depends_on).toEqual(original.depends_on);
+      const dependencyAfter = await taskCtx.taskBackend.getTask(dependencyId);
+      expect(dependencyAfter?.status).toBe("DONE");
+      const afterRoute = await buildTaskRouteDecision({
+        ctx: taskCtx,
+        cwd: taskRoot,
+        taskId,
+        includeRemote: false,
+      });
+      expect(afterRoute.oracle.phase).not.toBe("dependency_wait");
+      expect(afterRoute.blockers.some((blocker) => blocker.code === "dependency_not_ready")).toBe(
+        false,
+      );
+      expect(after.status).toBe("TODO");
+      expect(after.extensions!.task_execution_context).toMatchObject({
+        ...priorBase,
+        base_sha: target,
+      });
+      expect(await readFile(path.join(taskRoot, "prerequisite.txt"), "utf8")).toBe(
+        "completed prerequisite\n",
+      );
+      const readmePath = path.join(taskRoot, workflowDir, taskId, "README.md");
+      const completedBytes = await readFile(readmePath, "utf8");
+      const repeated = await recoverWorkPlanningBase({ ctx, taskId, apply: false });
+      expect(repeated.status).toBe("already_applied");
+      expect(await readFile(readmePath, "utf8")).toBe(completedBytes);
+    },
+  );
+
   it("recovers a completed stale journal and replaces prior implementation metadata", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

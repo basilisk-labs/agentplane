@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { cp, readFile, writeFile } from "node:fs/promises";
+import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -15,6 +15,7 @@ import {
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
+import * as refinement from "../commands/task/external-agent-plan-refinement.js";
 import * as verification from "../commands/task/direct-task-verification.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
 import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
@@ -84,7 +85,7 @@ async function commitFixture(root: string, message: string) {
   await git("git", ["commit", "-m", message], { cwd: root });
 }
 
-async function completedFixture(initialized = true) {
+async function implementationFixture(initialized = true) {
   const root = await mkGitRepoRootWithBranch("main");
   const config = defaultConfig();
   config.workflow_mode = "branch_pr";
@@ -165,6 +166,12 @@ async function completedFixture(initialized = true) {
   const implementation = await packet(root, taskId);
   const implementationOrder = await order(implementation);
   const checkout = implementationOrder.state_fingerprint.worktree;
+  return { root, taskId, creationBase, implementation, implementationOrder, checkout };
+}
+
+async function completedFixture(initialized = true) {
+  const { root, taskId, creationBase, implementation, implementationOrder, checkout } =
+    await implementationFixture(initialized);
   const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
   const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
   await writeFile(metaPath, JSON.stringify({ ...meta, status: "OPEN", pr_number: 123 }));
@@ -450,5 +457,202 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
     expect(
       await resolveRecordedImplementationRecovery({ ...options, head: head.stdout.trim() }),
     ).toBeNull();
+  });
+});
+
+const planRefinement = (material: boolean) => ({
+  description: "Split the remaining bounded implementation without replaying previous work.",
+  scope_roots_added: [],
+  outputs_added: material ? ["new-evidence"] : [],
+  acceptance_changed: false,
+  risk_changed: false,
+  external_effects_added: [],
+  dependencies_changed: false,
+  architecture_constraints_changed: false,
+  operations: ["split"],
+});
+
+describe("pure external plan refinement", { timeout: 180_000 }, () => {
+  it.each([false, true])(
+    "records refinement without implementation (material=%s)",
+    async (material) => {
+      const f = await implementationFixture();
+      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
+      const before = await ctx.taskBackend.getTask(f.taskId);
+      const head = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
+      await report(f.implementation, "Refine only; implementation remains pending.", {
+        plan_refinement: planRefinement(material),
+      });
+      const next = await resume(f.checkout, f.implementation);
+      const after = await ctx.taskBackend.getTask(f.taskId);
+      const nextHead = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
+      expect(nextHead.stdout.trim()).toBe(head.stdout.trim());
+      expect(recordedTaskImplementationCommitSha(after!)).toBe(
+        recordedTaskImplementationCommitSha(before!),
+      );
+      const aggregate = taskCentricAggregateFromExtensions(after!.extensions)!;
+      expect(aggregate.work_items).toEqual(
+        taskCentricAggregateFromExtensions(before!.extensions)!.work_items,
+      );
+      const nextOrder = await order(next);
+      expect(nextOrder.role).toBe(material ? "PLANNER" : "EXECUTOR");
+      await resume(f.checkout, f.implementation);
+      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(after);
+    },
+  );
+  it.each([false, true])(
+    "recovers a lost refinement response (source drift=%s)",
+    async (sourceDrift) => {
+      const f = await implementationFixture();
+      await report(f.implementation, "Refinement before lost response.", {
+        plan_refinement: planRefinement(true),
+      });
+      const original = refinement.applyExternalPlanRefinement;
+      const spy = vi
+        .spyOn(refinement, "applyExternalPlanRefinement")
+        .mockImplementationOnce(async (opts) => {
+          await original(opts);
+          throw new Error("lost refinement response");
+        });
+      const failed = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+      expect(failed.code).not.toBe(0);
+      expect(failed.stderr).toContain("lost refinement response");
+      spy.mockRestore();
+      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
+      const applied = await ctx.taskBackend.getTask(f.taskId);
+      if (sourceDrift) {
+        const driftPath = path.join(f.checkout, "unexpected-source.ts");
+        await writeFile(driftPath, "export const unexpected = true;\n");
+        const rejected = await invoke(f.checkout, ["task", "advance", f.taskId, "--agent-json"]);
+        expect(rejected.code).not.toBe(0);
+        expect(rejected.stderr).toContain("clean source baseline");
+        expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(applied);
+        await rm(driftPath);
+      }
+      const next = await packet(f.checkout, f.taskId);
+      const nextOrder = await order(next);
+      expect(nextOrder.role).toBe("PLANNER");
+      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(applied);
+    },
+  );
+  it("retains ordinary completed-no-diff rejection", async () => {
+    const f = await implementationFixture();
+    await report(f.implementation, "No implementation and no refinement.");
+    const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+    expect(result.code).not.toBe(0);
+    expect(result.stderr).toContain("no supervisor-observed workspace change");
+  });
+  it("rejects changed native metadata before refinement admission", async () => {
+    const f = await implementationFixture();
+    await report(f.implementation, "Refinement against stale metadata.", {
+      plan_refinement: planRefinement(true),
+    });
+    expect(
+      await runCliSilent([
+        "task",
+        "update",
+        f.taskId,
+        "--description",
+        "Changed task authority",
+        "--root",
+        f.checkout,
+      ]),
+    ).toBe(0);
+    const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+    expect(result.code).not.toBe(0);
+    expect(result.stderr).toMatch(/stale|Protected task artifacts changed/u);
+  });
+  it("preserves already completed WorkItems when task-level refinement reopens planning", async () => {
+    const f = await completedFixture();
+    const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
+    await report(
+      f.rework,
+      "Refine remaining task-level acceptance without repeating completed work.",
+      { plan_refinement: planRefinement(true) },
+    );
+    const next = await resume(f.checkout, f.rework);
+    const after = taskCentricAggregateFromExtensions(
+      (await f.ctx.taskBackend.getTask(f.taskId))!.extensions,
+    )!;
+    const nextOrder = await order(next);
+    expect(nextOrder.role).toBe("PLANNER");
+    expect(after.work_items).toEqual(before.work_items);
+    expect(after.work_items["exercise-recovery"]?.state).toBe("COMPLETED");
+  });
+  it("rejects agent-created Git history for a pure refinement", async () => {
+    const f = await implementationFixture();
+    await report(f.implementation, "Refinement after forbidden history change.", {
+      plan_refinement: planRefinement(true),
+    });
+    await git("git", ["commit", "--allow-empty", "-m", "fixture unexpected history"], {
+      cwd: f.checkout,
+    });
+    const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+    expect(result.code).not.toBe(0);
+    expect(result.stderr).toContain("unchanged observed execution baseline");
+  });
+  it.each(["edit", "add", "delete"])(
+    "rejects protected task artifact %s without admitting refinement",
+    async (mutation) => {
+      const f = await implementationFixture();
+      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
+      const before = await ctx.taskBackend.getTask(f.taskId);
+      await report(f.implementation, "Refinement with unauthorized metadata drift.", {
+        plan_refinement: planRefinement(true),
+      });
+      const meta = path.join(f.checkout, ".agentplane/tasks", f.taskId, "pr/meta.json");
+      if (mutation === "edit") await writeFile(meta, (await readFile(meta, "utf8")) + "\n");
+      else if (mutation === "add")
+        await writeFile(path.join(path.dirname(meta), "unexpected.json"), "{}\n");
+      else await rm(meta);
+      const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+      expect(result.code).not.toBe(0);
+      expect(result.stderr).toContain("Protected task artifacts changed");
+      expect(await ctx.taskBackend.getTask(f.taskId)).toEqual(before);
+    },
+  );
+  it.each([1, 2])("rejects concurrent authority drift at task read %s", async (readNumber) => {
+    const f = await implementationFixture();
+    await report(f.implementation, "Refinement racing a task update.", {
+      plan_refinement: planRefinement(true),
+    });
+    const original = refinement.applyExternalPlanRefinement;
+    const spy = vi
+      .spyOn(refinement, "applyExternalPlanRefinement")
+      .mockImplementationOnce(async (opts) => {
+        const backend = opts.command.taskBackend;
+        const get = backend.getTask.bind(backend);
+        let reads = 0;
+        const readSpy = vi.spyOn(backend, "getTask").mockImplementation(async (id) => {
+          let raw = await get(id);
+          reads += 1;
+          if (reads === readNumber && raw) {
+            await backend.writeTask(
+              { ...raw, description: "Concurrent operator authority update" },
+              { expectedRevision: raw.revision },
+            );
+            raw = await get(id);
+          }
+          return raw;
+        });
+        try {
+          return await original(opts);
+        } finally {
+          readSpy.mockRestore();
+        }
+      });
+    try {
+      const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+      expect(result.code).not.toBe(0);
+      // The adapter read must enforce the issued revision even after the earlier snapshot passed.
+      if (readNumber === 2) expect(result.stderr).toContain("revision");
+      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
+      const raw = await ctx.taskBackend.getTask(f.taskId);
+      const aggregate = taskCentricAggregateFromExtensions(raw!.extensions)!;
+      expect(aggregate.lifecycle).toBe("ACTIVE");
+      expect(aggregate.plan_amendments).toHaveLength(0);
+    } finally {
+      spy.mockRestore();
+    }
   });
 });

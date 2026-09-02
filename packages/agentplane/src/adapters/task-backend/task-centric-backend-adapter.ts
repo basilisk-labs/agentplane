@@ -222,6 +222,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
 
   async recordPlanRefinement(opts: {
     task_id: string;
+    expected_revision?: number;
     refinement: PlanRefinement;
     actor_id: string;
     at: string;
@@ -235,6 +236,12 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     const raw = await this.backend.getTask(opts.task_id);
     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
     const task = aggregateFrom(raw);
+    const expectedRevision = opts.expected_revision ?? raw.revision ?? task.revision;
+    if ((raw.revision ?? task.revision) !== expectedRevision) {
+      throw new Error(
+        `Plan refinement task revision changed: expected ${expectedRevision}, observed ${raw.revision ?? task.revision}.`,
+      );
+    }
     const applied = applyPlanRefinement({
       task,
       refinement: opts.refinement,
@@ -266,7 +273,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     });
     const persisted = await this.persist({
       task_id: task.id,
-      expected_revision: raw.revision ?? task.revision,
+      expected_revision: expectedRevision,
       mutation_id: opts.idempotency_key,
       event,
       next,

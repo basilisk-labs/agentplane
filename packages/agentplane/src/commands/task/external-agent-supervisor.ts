@@ -1,3 +1,4 @@
+import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -235,7 +236,13 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     result_schema_ref: paths.result_schema,
     result_ref: paths.result,
     evaluator_work_order_ref: evaluatorWorkOrderRef,
-    baseline: { head, changed_paths: status?.lines ?? [] },
+    baseline: {
+      head,
+      changed_paths: status?.lines ?? [],
+      ...(workOrder.authority.sandbox === "workspace-write"
+        ? { task_artifacts: await captureExternalTaskArtifacts(checkout, workOrder.task.id) }
+        : {}),
+    },
     result_digest: null,
     result: null,
     postcondition_fingerprint: null,
