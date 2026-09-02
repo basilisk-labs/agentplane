@@ -273,6 +273,11 @@ describe("v0.7.1 release qualification contract", () => {
       changed_paths: [".gitignore", "docs/guide.md", "src/greeting.mjs", "test/greeting.test.mjs"],
       verification: { phase: "TESTER", state: "ok" },
       evaluator: { phase: "EVALUATOR", state: "pass" },
+      task_class: {
+        selected_mode: "direct",
+        repository_effects: ["repository_write", "source_code", "tests", "documentation"],
+        external_effects: [],
+      },
       commit: {
         task_commit: "a".repeat(40),
         final_head: "a".repeat(40),
@@ -301,6 +306,7 @@ describe("v0.7.1 release qualification contract", () => {
       ["missing_metadata", (value) => value.changed_paths.shift()],
       ["missing_verification", (value) => (value.verification.state = "missing")],
       ["missing_evaluator", (value) => (value.evaluator.state = "missing")],
+      ["task_class_firewall_missing", (value) => value.task_class.external_effects.push("publish")],
       ["missing_commit", (value) => (value.commit.task_commit = "")],
       ["wrong_lifecycle_commit", (value) => (value.commit.final_head_contains_task_commit = false)],
       ["missing_finish", (value) => (value.finish.terminal = false)],

@@ -24,6 +24,7 @@ export const PACKAGED_MIXED_SCOPE_REQUIRED_PATHS = [
   "src/greeting.mjs",
   "test/greeting.test.mjs",
 ];
+const PACKAGED_MIXED_SCOPE_REQUIRED_EFFECTS = ["documentation", "source_code", "tests"];
 
 export class PackagedMixedScopeContractError extends Error {
   constructor(code, message) {
@@ -515,6 +516,18 @@ export function assertPackagedMixedScopeEvidence(evidence) {
   if (evidence.evaluator?.state !== "pass" || evidence.evaluator?.phase !== "EVALUATOR") {
     fail("missing_evaluator", "evidence-backed evaluator acceptance was not observed");
   }
+  if (
+    evidence.task_class?.selected_mode !== "direct" ||
+    evidence.task_class?.external_effects?.length !== 0 ||
+    PACKAGED_MIXED_SCOPE_REQUIRED_EFFECTS.some(
+      (effect) => !evidence.task_class?.repository_effects?.includes(effect),
+    )
+  ) {
+    fail(
+      "task_class_firewall_missing",
+      "canonical direct routing did not preserve mixed repository effects and the empty external-effect firewall",
+    );
+  }
   if (!/^[0-9a-f]{40}$/u.test(evidence.commit?.task_commit ?? "")) {
     fail("missing_commit", "task finish did not record a real Git commit");
   }
@@ -996,6 +1009,11 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
       phase: "EVALUATOR",
       state: finalTask.quality_review?.state ?? null,
       reviewed_changed_paths: changedPaths,
+    },
+    task_class: {
+      selected_mode: finalTask.execution_route?.selected_mode ?? null,
+      repository_effects: finalTask.execution_contract?.declaration?.repository_effects ?? [],
+      external_effects: finalTask.execution_contract?.declaration?.external_effects ?? [],
     },
     commit: {
       task_commit: taskCommit,
