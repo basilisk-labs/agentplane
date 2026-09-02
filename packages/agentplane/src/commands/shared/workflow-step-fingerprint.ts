@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -141,15 +142,24 @@ function providerComponent(state: WorkflowRouteStateInput): StateFingerprintComp
   if (flow.pr.source !== "lookup" && !flow.providerObservation) {
     return unavailableComponent("workflow_route_provider", "provider_metadata_only", evidence);
   }
-  /**
-   * State fingerprints retain a component digest, not its raw value. The
-   * provider component must therefore be stable across the authority record's
-   * own technical PR-head update. It binds PR identity and lifecycle state;
-   * route construction and the protected command still re-evaluate volatile
-   * hosted checks, review threads, and queue eligibility immediately before
-   * executing a side effect.
-   */
-  return presentComponent("workflow_route_provider", authorityScope);
+  const hostedChecks = flow.hostedChecks.checked
+    ? {
+        ...flow.hostedChecks,
+        missingRequired: [...flow.hostedChecks.missingRequired].toSorted(),
+        rows: [...flow.hostedChecks.rows].toSorted((left, right) =>
+          `${left.name ?? ""}\u0000${left.state ?? ""}`.localeCompare(
+            `${right.name ?? ""}\u0000${right.state ?? ""}`,
+          ),
+        ),
+      }
+    : flow.hostedChecks;
+  return presentComponent("workflow_route_provider", {
+    ...authorityScope,
+    observation: flow.providerObservation ?? null,
+    hostedChecks,
+    reviewThreads: flow.reviewThreads,
+    closeTail: flow.closeTail,
+  });
 }
 
 function checkoutPath(checkout: WorkflowCheckout, paths: WorkflowFingerprintPaths): string | null {
@@ -402,7 +412,10 @@ export async function captureWorkflowStepFingerprint(opts: {
   onGitSnapshot?: (snapshot: GitSnapshot | null) => void;
 }): Promise<StateFingerprint> {
   const fingerprintCheckout = workflowStepFingerprintCheckout(opts.step);
-  const authoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
+  const observedAuthoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
+  const authoritativePath = observedAuthoritativePath
+    ? await realpath(observedAuthoritativePath).catch(() => path.resolve(observedAuthoritativePath))
+    : null;
   const fallbackWorktree = `unavailable:${fingerprintCheckout}`;
   const repositoryRoot = authoritativePath;
   const blueprintPath = path.join(

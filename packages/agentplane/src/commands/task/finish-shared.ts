@@ -14,13 +14,9 @@ import { isRecord } from "../../shared/guards.js";
 import { emitTraceEvent } from "../../shared/trace-events.js";
 import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
 import { cmdCommit } from "../guard/impl/commit.js";
-import {
-  backendUsesLocalTaskStore,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
-import { getTaskStore, mutateTaskStore } from "../shared/task-store.js";
+import { mutateTaskStore, type getTaskStore } from "../shared/task-store.js";
 
 import {
   ensureAgentFilledRequiredDocSections,
@@ -257,7 +253,7 @@ export async function writeFinishedTasks(opts: {
   const taskCount = opts.loadedTasks.length;
 
   for (const loaded of opts.loadedTasks) {
-    const { taskId, task } = loaded;
+    const { taskId } = loaded;
     const at = nowIso();
     const tokenUsage = await resolveTaskTokenUsageOnFinish({
       git_root: opts.ctx.resolvedProject.gitRoot,

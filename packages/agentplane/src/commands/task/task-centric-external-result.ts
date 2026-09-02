@@ -113,8 +113,10 @@ export async function recordTaskCentricExternalResult(opts: {
       code: "E_VALIDATION",
       message: "Task disappeared before WorkItem result recording.",
     });
-  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
-  if (!aggregate?.current_plan) return { state: "legacy_task" };
+  const initialAggregate = taskCentricAggregateFromExtensions(raw.extensions);
+  if (!initialAggregate?.current_plan) return { state: "legacy_task" };
+  let aggregate = initialAggregate;
+  let currentPlan = initialAggregate.current_plan;
   if (!isGitObjectId(opts.head ?? "")) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -125,7 +127,18 @@ export async function recordTaskCentricExternalResult(opts: {
   const priorReceipt = runtimeFrom(raw).mutation_receipts[idempotencyKey];
   const priorWorkItemId = priorReceipt?.event.work_item_id ?? null;
   if (priorReceipt?.event.entity === "work_item" && priorWorkItemId) {
-    const remaining = aggregate.current_plan.proposal.work_items.work_items.filter(
+    if (
+      priorReceipt.event.plan_revision !== currentPlan.revision ||
+      priorReceipt.event.plan_digest !== currentPlan.digest ||
+      taskCentricDigest(aggregate) !== priorReceipt.aggregate_digest ||
+      aggregate.work_items[priorWorkItemId]?.state !== priorReceipt.event.to
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Recorded WorkItem result receipt is stale for the current task projection.",
+      });
+    }
+    const remaining = currentPlan.proposal.work_items.work_items.filter(
       (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
     ).length;
     return {
@@ -173,20 +186,29 @@ export async function recordTaskCentricExternalResult(opts: {
       return {
         state: "replan_required",
         work_item_id: requestedId,
-        remaining_required_work_items: aggregate.current_plan.proposal.work_items.work_items.filter(
+        remaining_required_work_items: currentPlan.proposal.work_items.work_items.filter(
           (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
         ).length,
       };
     }
+    const refinedAggregate = taskCentricAggregateFromExtensions(refinedRaw?.extensions);
+    if (!refinedAggregate?.current_plan) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Refined task plan disappeared before WorkItem result recording.",
+      });
+    }
+    aggregate = refinedAggregate;
+    currentPlan = refinedAggregate.current_plan;
   }
   const selected = requestedId
-    ? aggregate.current_plan.proposal.work_items.work_items.find((item) => item.id === requestedId)
+    ? currentPlan.proposal.work_items.work_items.find((item) => item.id === requestedId)
     : claimedIds.length === 1
-      ? aggregate.current_plan.proposal.work_items.work_items.find(
+      ? currentPlan.proposal.work_items.work_items.find(
           (item) => item.id === claimedIds[0],
         )
       : new WorkItemScheduler(1).select({
-          graph: aggregate.current_plan.proposal.work_items,
+          graph: currentPlan.proposal.work_items,
           runtime: aggregate.work_items,
           active_leases: [],
         })[0];
@@ -198,14 +220,10 @@ export async function recordTaskCentricExternalResult(opts: {
   }
   const runtime = aggregate.work_items[selected.id];
   if (runtime?.state === "COMPLETED") {
-    const remaining = aggregate.current_plan.proposal.work_items.work_items.filter(
-      (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
-    ).length;
-    return {
-      state: "work_item_completed",
-      work_item_id: selected.id,
-      remaining_required_work_items: remaining,
-    };
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `WorkItem ${selected.id} was completed by a different result receipt.`,
+    });
   }
   if (!runtime || !["PLANNED", "READY", "REWORK_READY", "CLAIMED"].includes(runtime.state)) {
     throw new CliError({
@@ -224,8 +242,8 @@ export async function recordTaskCentricExternalResult(opts: {
     schema_version: 1,
     kind: runtime.state === "REWORK_READY" ? "repair" : "execute",
     task_id: aggregate.id,
-    plan_revision: aggregate.current_plan.revision,
-    plan_digest: aggregate.current_plan.digest,
+    plan_revision: currentPlan.revision,
+    plan_digest: currentPlan.digest,
     work_item_id: selected.id,
     context_digest:
       (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ??
@@ -244,7 +262,7 @@ export async function recordTaskCentricExternalResult(opts: {
     digest: taskCentricDigest({ id, result }),
     producer: {
       task_id: aggregate.id,
-      plan_revision: aggregate.current_plan!.revision,
+      plan_revision: currentPlan.revision,
       work_item_id: selected.id,
       attempt: runtime.attempt + 1,
     },

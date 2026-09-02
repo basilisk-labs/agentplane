@@ -262,10 +262,12 @@ export async function resolveTaskOwnerCommandContext(opts: {
 
   const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
   if (await primaryCtx.taskBackend.getTask(opts.taskId)) return primaryCtx;
-  if (primaryCtx !== opts.ctx && (await opts.ctx.taskBackend.getTask(opts.taskId))) {
-    if (opts.ctx.config.workflow_mode !== "branch_pr") {
-      return opts.ctx;
-    }
+  if (
+    primaryCtx !== opts.ctx &&
+    opts.ctx.config.workflow_mode !== "branch_pr" &&
+    (await opts.ctx.taskBackend.getTask(opts.taskId))
+  ) {
+    return opts.ctx;
   }
   return primaryCtx;
 }

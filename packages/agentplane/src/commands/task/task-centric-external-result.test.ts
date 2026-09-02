@@ -333,6 +333,91 @@ describe("recordTaskCentricExternalResult", () => {
     expect(backend.current().revision).toBe(completedRevision);
   });
 
+  it("rejects an old result receipt after the canonical aggregate or plan changes", async () => {
+    const backend = memoryBackend();
+    const command = { taskBackend: backend } as unknown as CommandContext;
+    const verification = {
+      status: "passed" as const,
+      artifact_path: ".agentplane/checks.json",
+      checks: [],
+      reason: null,
+    };
+    const issued = workOrder("a", "work-stale-receipt");
+    const result = { ...semantic, work_order_id: "work-stale-receipt" };
+
+    await recordTaskCentricExternalResult({
+      command,
+      work_order: issued,
+      semantic: result,
+      verification,
+      head: HEAD,
+      dirty_paths: [],
+    });
+    const current = backend.current();
+    const aggregate = taskCentricAggregateFromExtensions(current.extensions)!;
+    backend.replace({
+      ...current,
+      revision: current.revision! + 1,
+      extensions: withTaskCentricAggregate(current.extensions, {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        current_plan: {
+          ...aggregate.current_plan!,
+          revision: aggregate.current_plan!.revision + 1,
+          digest: taskCentricDigest("amended-plan"),
+        },
+        updated_at: "2026-08-22T00:01:00.000Z",
+      }),
+    });
+
+    await expect(
+      recordTaskCentricExternalResult({
+        command,
+        work_order: issued,
+        semantic: result,
+        verification,
+        head: HEAD,
+        dirty_paths: [],
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      message: "Recorded WorkItem result receipt is stale for the current task projection.",
+    });
+  });
+
+  it("does not reuse a WorkItem completed by a different result receipt", async () => {
+    const backend = memoryBackend();
+    const command = { taskBackend: backend } as unknown as CommandContext;
+    const verification = {
+      status: "passed" as const,
+      artifact_path: ".agentplane/checks.json",
+      checks: [],
+      reason: null,
+    };
+    await recordTaskCentricExternalResult({
+      command,
+      work_order: workOrder("a", "work-original"),
+      semantic: { ...semantic, work_order_id: "work-original" },
+      verification,
+      head: HEAD,
+      dirty_paths: [],
+    });
+
+    await expect(
+      recordTaskCentricExternalResult({
+        command,
+        work_order: workOrder("a", "work-foreign"),
+        semantic: { ...semantic, work_order_id: "work-foreign" },
+        verification,
+        head: HEAD,
+        dirty_paths: [],
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      message: "WorkItem a was completed by a different result receipt.",
+    });
+  });
+
   it("advances internal WorkItems while keeping one top-level Task", async () => {
     const backend = memoryBackend();
     const command = { taskBackend: backend } as unknown as CommandContext;

@@ -34,13 +34,20 @@ Created: 2026-09-02T15:35:26.605Z
  .../shared/task-backend-branch-snapshot.ts         | 123 ++++++++++-
  .../task-backend-branch-snapshot.unit.test.ts      |  78 ++++++-
  .../src/commands/shared/task-backend.test.ts       |  33 +--
- .../agentplane/src/commands/shared/task-backend.ts |  53 +++--
+ .../agentplane/src/commands/shared/task-backend.ts |  55 +++--
  .../src/commands/shared/task-mutation.test.ts      |  69 ++++++
  .../src/commands/shared/task-mutation.ts           |  60 +++++-
- .../agentplane/src/commands/task/finish-shared.ts  |  94 ++++-----
+ .../src/commands/shared/workflow-step-branch.ts    |  12 +-
+ .../shared/workflow-step-fingerprint.test.ts       |  50 ++++-
+ .../commands/shared/workflow-step-fingerprint.ts   |  33 ++-
+ .../commands/shared/workflow-step-quality.test.ts  |   6 +-
+ .../external-agent-implementation-authority.ts     |   3 +-
+ .../agentplane/src/commands/task/finish-shared.ts  | 104 +++++----
  .../src/commands/task/hosted-close.command.ts      |   1 +
  .../src/commands/task/set-status.unit.test.ts      |  56 +++++
- 11 files changed, 648 insertions(+), 155 deletions(-)
+ .../task/task-centric-external-result.test.ts      |  85 ++++++++
+ .../commands/task/task-centric-external-result.ts  |  54 +++--
+ 18 files changed, 860 insertions(+), 198 deletions(-)
 ```
 
 </details>

@@ -112,7 +112,7 @@ function deterministicEvidenceGapReview(evaluatedSha = resume.head_sha) {
   } satisfies NonNullable<TaskData["quality_review"]>;
 }
 
-function taskCentricExtensions(workItemState: "READY" | "COMPLETED") {
+function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLETED") {
   const digest = `sha256:${"a".repeat(64)}`;
   return {
     "agentplane.task_centric": {
@@ -145,7 +145,7 @@ function taskCentricExtensions(workItemState: "READY" | "COMPLETED") {
           id: "required-route-fix",
           state: workItemState,
           revision: 1,
-          attempt: workItemState === "COMPLETED" ? 1 : 0,
+          attempt: workItemState === "READY" ? 0 : 1,
           claim_id: null,
           output_manifests: [],
           validation_result: null,
@@ -175,7 +175,7 @@ describe("quality evidence refresh route", () => {
     };
     const incomplete = reduceRouteState(
       routeState({
-        task: { ...verifiedTask, extensions: taskCentricExtensions("READY") },
+        task: { ...verifiedTask, extensions: taskCentricExtensions("REWORK_READY") },
         blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
       }),
     );

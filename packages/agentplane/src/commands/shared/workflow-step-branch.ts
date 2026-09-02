@@ -488,9 +488,17 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
-  const requiredWorkItemIncomplete = taskCentric?.current_plan?.proposal.work_items.work_items.some(
-    (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
+  // A freshly materialized graph is not evidence that compatibility-driven
+  // implementation has entered canonical WorkItem execution. Once a claim or
+  // attempt exists, the canonical graph becomes authoritative for routing.
+  const canonicalWorkItemExecutionStarted = Object.values(taskCentric?.work_items ?? {}).some(
+    (item) => item.attempt > 0 || item.claim_id !== null,
   );
+  const requiredWorkItemIncomplete =
+    canonicalWorkItemExecutionStarted &&
+    taskCentric?.current_plan?.proposal.work_items.work_items.some(
+      (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
+    );
   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
   const implementationValidated =
     Boolean(implementationCommit) &&
