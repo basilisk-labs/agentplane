@@ -50,6 +50,7 @@ export function inspectM3LegacyAuthorityImports() {
   let legacyProductionLoc = 0;
   for (const relative of legacyFiles) {
     const file = path.join(sourceRoot, relative);
+    // Read directly: a separate existence/type preflight would recreate a TOCTOU race.
     legacyProductionLoc += readFileSync(file, "utf8").split("\n").length;
   }
   return {

@@ -61,11 +61,12 @@ Created: 2026-08-30T21:48:11.941Z
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
  .../commands/task/direct-task-verification.test.ts |  71 +-
  .../src/commands/task/direct-task-verification.ts  |  62 +-
+ .../commands/task/evidence-only-rework-commit.ts   |  32 +
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
  .../external-agent-implementation-authority.ts     |  45 +-
- .../external-agent-implementation-recovery.test.ts |  38 +-
- .../task/external-agent-implementation-recovery.ts |  97 ++-
+ .../external-agent-implementation-recovery.test.ts |  34 +
+ .../task/external-agent-implementation-recovery.ts |  65 +-
  .../task/external-agent-plan-refinement.ts         |  19 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
  .../task/external-agent-supervisor-recovery.ts     |   4 +-
@@ -125,12 +126,12 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  23 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- .../checks/check-m3-legacy-authority-imports.mjs   |  77 ++
+ .../checks/check-m3-legacy-authority-imports.mjs   |  78 ++
  scripts/qualification/check-m3-self-hosting.mjs    | 137 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
  .../qualification/release-qualification.test.mjs   |  48 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 101 files changed, 7508 insertions(+), 623 deletions(-)
+ 102 files changed, 7506 insertions(+), 622 deletions(-)
 ```
 
 </details>
