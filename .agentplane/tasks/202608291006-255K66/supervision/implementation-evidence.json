@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check ec2b61568210b971d6167e7a8e74e29858032890..2f4980c1f34dcc449db27f0fb3e19f8d4505b704",
+      "command": "git diff --check 5ad7e7fdbd741c3f2da8ca1595ad6fe32b2473cd..67283891914318012ceda7d15eca342a539c3191",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB ec2b61568210b971d6167e7a8e74e29858032890..2f4980c1f34dcc449db27f0fb3e19f8d4505b704",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5ad7e7fdbd741c3f2da8ca1595ad6fe32b2473cd..67283891914318012ceda7d15eca342a539c3191",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202608291006-255K66/README.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/diffstat.txt",
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\t.agentplane/tasks/202608291006-255K66/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202608291006-255K66/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
+        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.test.ts"
       ]
     },
     {
@@ -35,48 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "ec2b61568210b971d6167e7a8e74e29858032890",
-  "implementation_commit": "2f4980c1f34dcc449db27f0fb3e19f8d4505b704",
+  "execution_base_commit": "5ad7e7fdbd741c3f2da8ca1595ad6fe32b2473cd",
+  "implementation_commit": "67283891914318012ceda7d15eca342a539c3191",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202608291006-255K66/README.md",
-      " M .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json",
-      " M .agentplane/tasks/202608291006-255K66/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts",
-      " M packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608291006-255K66/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202608291006-255K66/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202608291006-255K66/README.md",
-      " M .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json",
-      " M .agentplane/tasks/202608291006-255K66/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts",
-      " M packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

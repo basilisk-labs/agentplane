@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 110
+revision: 113
 origin:
   system: "manual"
 depends_on:
@@ -659,6 +659,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2f4980c1f34d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 672838919143. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -971,8 +974,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 2f4980c1f34d. CLI accepted one state-bound external-agent semantic result."
     commit: "2f4980c1f34dcc449db27f0fb3e19f8d4505b704"
+  -
+    type: "status"
+    at: "2026-09-02T00:06:47.679Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 672838919143. CLI accepted one state-bound external-agent semantic result."
+    commit: "67283891914318012ceda7d15eca342a539c3191"
 doc_version: 3
-doc_updated_at: "2026-09-01T23:58:03.464Z"
+doc_updated_at: "2026-09-02T00:06:47.679Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14809,9 +14820,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 110
+    revision: 113
     schema_version: 1
-    updated_at: "2026-09-02T00:05:31.295Z"
+    updated_at: "2026-09-02T00:14:21.357Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -14899,14 +14910,54 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       m3-lifecycle-authority:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-lifecycle-authority"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a5921e0c090454adfe76f70b193e41eb01054cf2131410a66daddcd306335bc3"
+            id: "m3-lifecycle-authority-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-lifecycle-authority"
+            provenance:
+              - "sha256:92cbd7939efbe04d9d9805be616d328aa00072159b05d322cc9b796a8a9e72a6"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:04522d18243b13a3553fbb3b7123bf024ebe4808d908d3a1ab4a9eb42e2e108e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:14:21.286Z"
+              repository_snapshot_digest: "sha256:04522d18243b13a3553fbb3b7123bf024ebe4808d908d3a1ab4a9eb42e2e108e"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-02T00:14:21.286Z"
+              repository_snapshot_digest: "sha256:04522d18243b13a3553fbb3b7123bf024ebe4808d908d3a1ab4a9eb42e2e108e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-lifecycle-transport:
         attempt: 0
         claim_id: null
@@ -15145,6 +15196,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-6e62b32bc555e1f94c3145f2"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-7d2f4709e4045d7407f115fc:
+        aggregate_digest: "sha256:18f96cf08b3e5595f865d69e83134c03f94d79c2aae2acb3de89a35e67bd7de4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:14:21.357Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_27c888ee2184ada2016412c9"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-7d2f4709e4045d7407f115fc"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 112
+          to: "COMPLETED"
+          work_item_id: "m3-lifecycle-authority"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-7d2f4709e4045d7407f115fc"
+        next_revision: 113
+        previous_revision: 112
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-7da8102b7dbb1a880d097fce:
@@ -15433,7 +15507,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "2f4980c1f34dcc449db27f0fb3e19f8d4505b704"
+    hash: "67283891914318012ceda7d15eca342a539c3191"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
