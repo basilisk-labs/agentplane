@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 128
+revision: 131
 origin:
   system: "manual"
 depends_on:
@@ -255,6 +255,8 @@ execution_contract:
       - "schemas/agent-work-order-v2.schema.json"
       - "scripts/baselines/v0.7-compatibility-candidate.json"
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/qualification/check-m3-self-hosting.mjs"
+      - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       - "scripts/release/smoke-bun-compiled-cli.mjs"
     external_effects: []
     repository_effects:
@@ -350,7 +352,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:82bd441a00f8a4f89e3b040c3f36e0f5f4887a559932d49962cab55e587d6b3d"
+      digest: "sha256:3d6680694d23e180876de787dd106ce5ca6110f00fc68e9d2b037c2da50172fd"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -504,6 +506,8 @@ execution_contract:
           - "schemas/agent-work-order-v2.schema.json"
           - "scripts/baselines/v0.7-compatibility-candidate.json"
           - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/qualification/check-m3-self-hosting.mjs"
+          - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
           - "scripts/release/smoke-bun-compiled-cli.mjs"
         external_effects: []
         repository_effects:
@@ -694,6 +698,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 20b3af7e3442. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 98fae647679d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1054,8 +1061,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 20b3af7e3442. CLI accepted one state-bound external-agent semantic result."
     commit: "20b3af7e344205b5705de1dc7b8af0d7efff5905"
+  -
+    type: "status"
+    at: "2026-09-02T00:41:33.395Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 98fae647679d. CLI accepted one state-bound external-agent semantic result."
+    commit: "98fae647679d3d10c9330a23b26323003482f3fb"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:36:26.007Z"
+doc_updated_at: "2026-09-02T00:41:33.395Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14892,9 +14907,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 128
+    revision: 131
     schema_version: 1
-    updated_at: "2026-09-02T00:36:27.136Z"
+    updated_at: "2026-09-02T00:41:34.509Z"
     work_items:
       m3-crash-migration:
         attempt: 1
@@ -15218,14 +15233,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-self-hosting:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-self-hosting"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:2e7393935b76b73802b259303a1fb404fcf58160fdb2139b775ced685dc4b907"
+            id: "m3-self-hosting-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-self-hosting"
+            provenance:
+              - "sha256:a512631b7a021c74dedef2964c56ebdbed90d6008b3829d2f2f74468c7e53e2c"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e0b49bf028ae685ef955a83e77067fa5f03e5872787d5448c44379ed779453b4"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:41:34.425Z"
+              repository_snapshot_digest: "sha256:e0b49bf028ae685ef955a83e77067fa5f03e5872787d5448c44379ed779453b4"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-task-classes:
         attempt: 1
         claim_id: null
@@ -15729,6 +15774,29 @@ extensions:
         previous_revision: 60
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-f4f15ef08bb166541335221f:
+        aggregate_digest: "sha256:17696508f350bab734d422fb4a598abbb39e0d6133d12b56b1cbb6ddf9d84fe4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:41:34.509Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_a361b731b2359900d7c26f1e"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-f4f15ef08bb166541335221f"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 130
+          to: "COMPLETED"
+          work_item_id: "m3-self-hosting"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-f4f15ef08bb166541335221f"
+        next_revision: 131
+        previous_revision: 130
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-f7580132433f3dc53c7c277a:
         aggregate_digest: "sha256:04cd00c1adae142dc0082a6b5e5f246ecb9d55059151b7e9c56ea403d73b69dc"
         event:
@@ -15854,7 +15922,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "20b3af7e344205b5705de1dc7b8af0d7efff5905"
+    hash: "98fae647679d3d10c9330a23b26323003482f3fb"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"

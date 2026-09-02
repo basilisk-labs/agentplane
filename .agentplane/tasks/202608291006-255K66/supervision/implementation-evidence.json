@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 60ab12fbe47266e5e0141bb35dc2c6ee66cc5ef0..20b3af7e344205b5705de1dc7b8af0d7efff5905",
+      "command": "git diff --check 5c0bd26ad89b368d4032bf7b90c31bde1f31eef7..98fae647679d3d10c9330a23b26323003482f3fb",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 60ab12fbe47266e5e0141bb35dc2c6ee66cc5ef0..20b3af7e344205b5705de1dc7b8af0d7efff5905",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5c0bd26ad89b368d4032bf7b90c31bde1f31eef7..98fae647679d3d10c9330a23b26323003482f3fb",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-migration.test.ts"
+        "A\tscripts/qualification/check-m3-self-hosting.mjs",
+        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "60ab12fbe47266e5e0141bb35dc2c6ee66cc5ef0",
-  "implementation_commit": "20b3af7e344205b5705de1dc7b8af0d7efff5905",
+  "execution_base_commit": "5c0bd26ad89b368d4032bf7b90c31bde1f31eef7",
+  "implementation_commit": "98fae647679d3d10c9330a23b26323003482f3fb",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
