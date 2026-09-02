@@ -52,6 +52,8 @@ Created: 2026-08-30T21:48:11.941Z
  .../commands/shared/verification-details.test.ts   |  33 +
  .../src/commands/shared/verification-details.ts    |   7 +-
  .../src/commands/shared/workflow-step-branch.ts    |  25 +-
+ .../commands/shared/workflow-step-quality.test.ts  |  25 +
+ .../src/commands/shared/workflow-step-quality.ts   |   8 +-
  .../agentplane/src/commands/task/active.command.ts | 110 ++-
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
@@ -123,7 +125,7 @@ Created: 2026-08-30T21:48:11.941Z
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 94 files changed, 7246 insertions(+), 572 deletions(-)
+ 96 files changed, 7276 insertions(+), 575 deletions(-)
 ```
 
 </details>
