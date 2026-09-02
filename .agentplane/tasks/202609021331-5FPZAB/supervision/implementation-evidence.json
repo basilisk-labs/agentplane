@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check a51e95514f2909177410f78a4057873140097edb..95337ac8dd30a296add5decc8a258de9dab23082",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a51e95514f2909177410f78a4057873140097edb..95337ac8dd30a296add5decc8a258de9dab23082",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609021331-5FPZAB/README.md",
+        "A\t.agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
+        "A\t.agentplane/tasks/202609021331-5FPZAB/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
+        "A\t.agentplane/tasks/202609021331-5FPZAB/pr/review.md",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-workspace.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "a51e95514f2909177410f78a4057873140097edb",
+  "implementation_commit": "95337ac8dd30a296add5decc8a258de9dab23082",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609021331-5FPZAB/README.md",
+      "?? .agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/github-title.txt",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609021331-5FPZAB/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609021331-5FPZAB/README.md",
+      "?? .agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/github-title.txt",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
+      "?? .agentplane/tasks/202609021331-5FPZAB/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609021331-5FPZAB"
+}
