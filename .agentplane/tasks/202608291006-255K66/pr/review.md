@@ -39,7 +39,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../task-backend/kernel-record-invariants.ts       |   2 +-
  .../src/adapters/task-backend/kernel-record.ts     |  22 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  | 431 +++++++++++
- .../cli/run-cli.core.task-next-action-json.test.ts | 116 ++-
+ .../cli/run-cli.core.task-next-action-json.test.ts | 119 ++-
  .../run-cli.core.task-status-token-usage.test.ts   |  73 ++
  ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/commands/guard/impl/allow.test.ts          |   3 +
@@ -108,7 +108,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 79 files changed, 6691 insertions(+), 502 deletions(-)
+ 79 files changed, 6695 insertions(+), 501 deletions(-)
 ```
 
 </details>

@@ -201,7 +201,12 @@ describe("task next-action JSON", () => {
     ).toMatchObject({
       state: "COMPLETED",
       validation_result: { status: "passed" },
-      output_manifests: [{ id: "route-result" }],
+      output_manifests: [
+        {
+          id: "route-result",
+          producer: { task_id: taskId, work_item_id: "exercise-route", attempt: 1 },
+        },
+      ],
     });
     const { stdout: setupStatus } = await execFileAsync("git", ["status", "--porcelain"], {
       cwd: root,
