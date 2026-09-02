@@ -716,7 +716,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       }),
     );
 
-    const result = await runWithFakeGh(fakeBin, [
+    const cleanupArgv = [
       "cleanup",
       "merged",
       "--task-id",
@@ -725,7 +725,8 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       "--yes",
       "--root",
       fixture.root,
-    ]);
+    ];
+    const result = await runWithFakeGh(fakeBin, cleanupArgv);
 
     expect(result.code, result.stderr).toBe(0);
     expect(result.stdout).toContain("proof=provider_merge");
@@ -733,6 +734,12 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await pathExists(fixture.worktreePath)).toBe(false);
     const queue = await readIntegrationQueue(fixture.root);
     expect(queue.entries[0]?.status).toBe("done");
+
+    const replay = await runWithFakeGh(fakeBin, cleanupArgv);
+    expect(replay.code, replay.stderr).toBe(0);
+    expect(replay.stdout).toContain(`already clean: task=${fixture.taskId}`);
+    const replayQueue = await readIntegrationQueue(fixture.root);
+    expect(replayQueue.entries[0]?.status).toBe("done");
   });
 
   it("keeps a directly registered /tmp worktree even for targeted finalization", async () => {
