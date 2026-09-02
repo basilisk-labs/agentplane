@@ -18,7 +18,7 @@ export const kernelWorkContractSchema = z.strictObject({
   verification_commands: z.array(text),
   role: z.enum(["PLANNER", "EXECUTOR", "EVALUATOR"]),
 });
-export const kernelExecutionRequirementsSchema = z.strictObject({
+const kernelExecutionRequirementsSchema = z.strictObject({
   scope_roots: z.array(root),
   repository_effects: z.array(text),
   external_effects: z.array(text),

@@ -8,7 +8,6 @@ export {
 export type {
   UserApprovalReceipt,
   UserApprovalReceiptRequest,
-  VerifiedUserApprovalReceipt,
 } from "../../adapters/authority/user-approval-receipt.js";
 
 export function userApprovalReceiptRequestForStep(

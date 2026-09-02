@@ -23,7 +23,7 @@ function unavailable(reason: string): never {
 }
 
 /** Content identity excludes native operational paths, never HEAD or index lifecycle state. */
-export function projectKernelRepository(
+function projectKernelRepository(
   snapshot: GitSnapshot,
   repositoryIdentity: k.Sha256Digest,
 ): KernelRepositoryObservation {

@@ -70,7 +70,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../task/external-agent-supervisor-recovery.ts     |   4 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
- .../src/commands/task/kernel-exchange.ts           | 143 ++++
+ .../src/commands/task/kernel-exchange.ts           | 139 ++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  79 ++
  .../agentplane/src/commands/task/kernel-read.ts    |  91 +++
  .../src/commands/task/kernel-run.testkit.ts        |  26 +
@@ -89,7 +89,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../agentplane/src/commands/task/status.command.ts |   5 +
  .../commands/task/task-centric-external-result.ts  |  29 +
  packages/agentplane/src/commands/task/update.ts    |   2 +
- .../src/commands/task/user-approval-receipt.ts     | 237 +-----
+ .../src/commands/task/user-approval-receipt.ts     | 234 +-----
  packages/agentplane/src/ports/kernel-authority.ts  |  50 ++
  .../src/runner/observation/git-snapshot.test.ts    |  66 +-
  .../src/runner/observation/git-snapshot/capture.ts | 119 +--
@@ -129,7 +129,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
  .../qualification/release-qualification.test.mjs   |  48 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 102 files changed, 7506 insertions(+), 622 deletions(-)
+ 102 files changed, 7500 insertions(+), 621 deletions(-)
 ```
 
 </details>

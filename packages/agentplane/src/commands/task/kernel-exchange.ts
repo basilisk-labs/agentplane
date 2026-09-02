@@ -14,11 +14,7 @@ import {
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 
 /** Immutable native exchange artifacts are evidence, not a second Task aggregate. */
-export async function kernelExchangeDirectory(
-  ctx: CommandContext,
-  taskId: string,
-  orderId: string,
-) {
+async function kernelExchangeDirectory(ctx: CommandContext, taskId: string, orderId: string) {
   if (!/^[A-Za-z0-9_-]+$/u.test(taskId) || !/^sha256:[a-f0-9]{64}$/u.test(orderId))
     throw new Error("Invalid canonical exchange identity");
   return path.join(
