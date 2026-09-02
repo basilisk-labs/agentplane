@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5670a95a3dd7997053b288e6ce304923c158c0fb..bf79e8efe2a8efbf1b8b668237a7753ddb52d834",
+      "command": "git diff --check 95bbaf16f45e30e66eddf48253bac5e66cc73644..05ddb7f628a954cce2427496b08eccf7831a8511",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5670a95a3dd7997053b288e6ce304923c158c0fb..bf79e8efe2a8efbf1b8b668237a7753ddb52d834",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 95bbaf16f45e30e66eddf48253bac5e66cc73644..05ddb7f628a954cce2427496b08eccf7831a8511",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,8 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-quality.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5670a95a3dd7997053b288e6ce304923c158c0fb",
-  "implementation_commit": "bf79e8efe2a8efbf1b8b668237a7753ddb52d834",
+  "execution_base_commit": "95bbaf16f45e30e66eddf48253bac5e66cc73644",
+  "implementation_commit": "05ddb7f628a954cce2427496b08eccf7831a8511",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

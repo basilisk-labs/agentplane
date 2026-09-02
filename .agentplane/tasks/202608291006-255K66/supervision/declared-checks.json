@@ -5,7 +5,7 @@
         "m3-invariants"
       ],
       "command": "bun run lifecycle:invariants",
-      "duration_ms": 127,
+      "duration_ms": 139,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
