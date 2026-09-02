@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 192
+revision: 193
 origin:
   system: "manual"
 depends_on:
@@ -1426,6 +1426,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The five dirty paths are intentional, bounded CODER rework for the two hosted failures, not an unrelated workspace conflict. The changes remove the CodeQL TOCTOU pattern and the dependency cycle, and the narrow checks pass. A mutation-capable episode is still required to record the implementation effect and make the task worktree clean."
 events:
   -
     type: "status"
@@ -1961,9 +1964,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "82d808b9029172e1e8877c63b0ace2b4be945791"
+  -
+    type: "comment"
+    at: "2026-09-02T11:44:32.106Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The five dirty paths are intentional, bounded CODER rework for the two hosted failures, not an unrelated workspace conflict. The changes remove the CodeQL TOCTOU pattern and the dependency cycle, and the narrow checks pass. A mutation-capable episode is still required to record the implementation effect and make the task worktree clean."
 doc_version: 3
-doc_updated_at: "2026-09-02T10:49:47.930Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-02T11:44:32.207Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
