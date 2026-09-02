@@ -251,6 +251,11 @@ describe("explicit canonical migration", () => {
         expect(recovered.kind).toBe("already_applied");
         expect(write).not.toHaveBeenCalled();
         if (recovered.kind !== "already_applied") throw new Error(JSON.stringify(recovered));
+        expect(recovered.proof.receipt).toMatchObject({
+          source_digest: taskBytesDigest(f.text),
+          backup_digest: taskBytesDigest(f.text),
+          repository_identity: identity,
+        });
         expect(await restarted.rollback(recovered.proof)).toEqual({
           kind: "rolled_back",
           source_digest: taskBytesDigest(f.text),
