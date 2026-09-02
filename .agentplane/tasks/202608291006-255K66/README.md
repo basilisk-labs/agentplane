@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 116
+revision: 119
 origin:
   system: "manual"
 depends_on:
@@ -187,6 +187,8 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
       - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
       - "packages/agentplane/src/commands/shared/task-mutation.ts"
+      - "packages/agentplane/src/commands/shared/verification-details.test.ts"
+      - "packages/agentplane/src/commands/shared/verification-details.ts"
       - "packages/agentplane/src/commands/task/active.command.ts"
       - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
@@ -344,7 +346,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:f135c9fcd2401dde31b06e4d526ec5308d9831688a9ccda7fcf4ac501a4267da"
+      digest: "sha256:82a339437c4d34bcf316c5bb60433f2c12254fc41c75b43d4109e9c3818fa52a"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -366,6 +368,8 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-mutation.ts"
+        - "central_path:packages/agentplane/src/commands/shared/verification-details.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/verification-details.ts"
         - "central_path:packages/core/schemas/agent-work-order-v2.schema.json"
         - "central_path:packages/core/src/runner/agent-semantic-result.test.ts"
         - "central_path:packages/core/src/runner/agent-semantic-result.ts"
@@ -425,6 +429,8 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.test.ts"
           - "packages/agentplane/src/commands/shared/pr-meta/verify-log.ts"
           - "packages/agentplane/src/commands/shared/task-mutation.ts"
+          - "packages/agentplane/src/commands/shared/verification-details.test.ts"
+          - "packages/agentplane/src/commands/shared/verification-details.ts"
           - "packages/agentplane/src/commands/task/active.command.ts"
           - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
@@ -665,6 +671,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b1d64c2eb998. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 76f05d8ae609. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -993,8 +1002,16 @@ events:
     to: "DOING"
     note: "Implementation committed: b1d64c2eb998. CLI accepted one state-bound external-agent semantic result."
     commit: "b1d64c2eb998729ba751b11102f776b5bf5b5896"
+  -
+    type: "status"
+    at: "2026-09-02T00:28:12.476Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 76f05d8ae609. CLI accepted one state-bound external-agent semantic result."
+    commit: "76f05d8ae609e8d71b8fd6a9c7e35a2567784024"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:15:54.462Z"
+doc_updated_at: "2026-09-02T00:28:12.476Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14831,9 +14848,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 116
+    revision: 119
     schema_version: 1
-    updated_at: "2026-09-02T00:23:45.738Z"
+    updated_at: "2026-09-02T00:28:13.632Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -14854,14 +14871,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-effects-validation:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-effects-validation"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a18ce920e756c212373676c1b7c9fd3e5086d551b2174e5f420a4fb73d5cc3fb"
+            id: "m3-effects-validation-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-effects-validation"
+            provenance:
+              - "sha256:f9fbcb29ccabd158ad5a1483b36267872ee73dbd010d8925166c16be42dc94fd"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:6a22f578d4aa6b574186b8fe3f3c63b56d56099c914cc17ba816a55f0fd2db74"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:28:13.565Z"
+              repository_snapshot_digest: "sha256:6a22f578d4aa6b574186b8fe3f3c63b56d56099c914cc17ba816a55f0fd2db74"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-final-qualification:
         attempt: 0
         claim_id: null
@@ -15109,6 +15156,29 @@ extensions:
         mutation_id: "external-result:work-order-202608291006-255K66-executor-300287213b594d39f872a713"
         next_revision: 53
         previous_revision: 52
+        schema_version: 1
+        task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-3897f0fd3e2fb7ead1dece35:
+        aggregate_digest: "sha256:144c689a56f8bc6d8c9001810602cc772f2adbe3be73a668b80cb82d7caefcdb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:28:13.632Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_3284a2de5623d38709b8ce75"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-3897f0fd3e2fb7ead1dece35"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 118
+          to: "COMPLETED"
+          work_item_id: "m3-effects-validation"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-3897f0fd3e2fb7ead1dece35"
+        next_revision: 119
+        previous_revision: 118
         schema_version: 1
         task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-3c723149e2bb89659d983ba6:
@@ -15581,7 +15651,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b1d64c2eb998729ba751b11102f776b5bf5b5896"
+    hash: "76f05d8ae609e8d71b8fd6a9c7e35a2567784024"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
