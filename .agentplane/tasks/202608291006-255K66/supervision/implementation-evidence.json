@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3e4da4735b714d1435b1d6188ff784493a179ec6..0020cbe98ffc19db543461a6dfa6a1d2f3bda35c",
+      "command": "git diff --check 62b0f0b32765f7f66efd86d95ef30c2a910d2f82..b6ad0005f22fdedc9c48fa3c605d8f286b24d46c",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e4da4735b714d1435b1d6188ff784493a179ec6..0020cbe98ffc19db543461a6dfa6a1d2f3bda35c",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 62b0f0b32765f7f66efd86d95ef30c2a910d2f82..b6ad0005f22fdedc9c48fa3c605d8f286b24d46c",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3e4da4735b714d1435b1d6188ff784493a179ec6",
-  "implementation_commit": "0020cbe98ffc19db543461a6dfa6a1d2f3bda35c",
+  "execution_base_commit": "62b0f0b32765f7f66efd86d95ef30c2a910d2f82",
+  "implementation_commit": "b6ad0005f22fdedc9c48fa3c605d8f286b24d46c",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

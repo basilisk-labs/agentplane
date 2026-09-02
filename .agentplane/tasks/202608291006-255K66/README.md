@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 122
+revision: 125
 origin:
   system: "manual"
 depends_on:
@@ -180,6 +180,7 @@ execution_contract:
       - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
       - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
@@ -190,6 +191,7 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/task-mutation.ts"
       - "packages/agentplane/src/commands/shared/verification-details.test.ts"
       - "packages/agentplane/src/commands/shared/verification-details.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
       - "packages/agentplane/src/commands/task/active.command.ts"
       - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
@@ -347,7 +349,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:5e065e5bee1b4626d198755a94a652a6c9e5043f36aa38ebdd4cadfbd7393b01"
+      digest: "sha256:a89ec1b7f2747857accd3dc14d5a5ba95abacefbb89679648a80da078c2fb141"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -363,6 +365,7 @@ execution_contract:
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "central_component:scripts/release/smoke-bun-compiled-cli.mjs"
         - "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
@@ -372,6 +375,7 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/task-mutation.ts"
         - "central_path:packages/agentplane/src/commands/shared/verification-details.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/verification-details.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
         - "central_path:packages/core/schemas/agent-work-order-v2.schema.json"
         - "central_path:packages/core/src/runner/agent-semantic-result.test.ts"
         - "central_path:packages/core/src/runner/agent-semantic-result.ts"
@@ -424,6 +428,7 @@ execution_contract:
           - "packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
           - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-status-token-usage.test.ts"
@@ -434,6 +439,7 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/task-mutation.ts"
           - "packages/agentplane/src/commands/shared/verification-details.test.ts"
           - "packages/agentplane/src/commands/shared/verification-details.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
           - "packages/agentplane/src/commands/task/active.command.ts"
           - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
@@ -680,6 +686,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0020cbe98ffc. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b6ad0005f22f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1024,8 +1033,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 0020cbe98ffc. CLI accepted one state-bound external-agent semantic result."
     commit: "0020cbe98ffc19db543461a6dfa6a1d2f3bda35c"
+  -
+    type: "status"
+    at: "2026-09-02T00:35:24.703Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b6ad0005f22f. CLI accepted one state-bound external-agent semantic result."
+    commit: "b6ad0005f22fdedc9c48fa3c605d8f286b24d46c"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:30:54.842Z"
+doc_updated_at: "2026-09-02T00:35:24.703Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14862,9 +14879,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 122
+    revision: 125
     schema_version: 1
-    updated_at: "2026-09-02T00:30:56.038Z"
+    updated_at: "2026-09-02T00:35:25.829Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -15167,18 +15184,71 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-task-classes:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-task-classes"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:427d5bebf26db39fac2682a3c04e8b68fd9681bc34ac287f77c1f690157db9aa"
+            id: "m3-task-classes-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-task-classes"
+            provenance:
+              - "sha256:1f46301fdd676db5f75de147bfedc23773f1ca681127ab32aac7ce5c9fa8d4d1"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8964d9b11e37484ebc6d30be8e954395a1771e0a4e0a58a31f0466fda2370d42"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:35:25.750Z"
+              repository_snapshot_digest: "sha256:8964d9b11e37484ebc6d30be8e954395a1771e0a4e0a58a31f0466fda2370d42"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
     mutation_receipts:
+      external-result:work-order-202608291006-255K66-executor-0f5e2912ad3f1f9035d0e922:
+        aggregate_digest: "sha256:c6cdb04fd917f55bad38ecb817e556473c9091e87170f2b33eab1b1b41959657"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:35:25.829Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_bb674677057222751e594835"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-0f5e2912ad3f1f9035d0e922"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 124
+          to: "COMPLETED"
+          work_item_id: "m3-task-classes"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-0f5e2912ad3f1f9035d0e922"
+        next_revision: 125
+        previous_revision: 124
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-2d62f576f00fbb0671aebd97:
         aggregate_digest: "sha256:0d550d27bf120b5def2053f5681a24f698c78ca70e2fefa1a726decf0a16d06a"
         event:
@@ -15718,7 +15788,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "0020cbe98ffc19db543461a6dfa6a1d2f3bda35c"
+    hash: "b6ad0005f22fdedc9c48fa3c605d8f286b24d46c"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
