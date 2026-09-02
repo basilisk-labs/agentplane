@@ -6,7 +6,7 @@ Created: 2026-08-30T21:48:11.941Z
 
 - Task: `202608291006-255K66`
 - Title: Cut over to the canonical Task kernel and retire legacy core paths
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire`
 - Canonical task record: `.agentplane/tasks/202608291006-255K66/README.md`
 
@@ -29,7 +29,7 @@ Created: 2026-08-30T21:48:11.941Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/harness-dev.mdx                     | 112 +++
+ docs/developer/harness-dev.mdx                     | 113 +++
  .../adapters/authority/user-approval-receipt.ts    | 226 ++++++
  .../task-backend/kernel-authority-schema.ts        |  54 ++
  .../task-backend/kernel-backend-adapter.test.ts    |  30 +-
@@ -117,7 +117,7 @@ Created: 2026-08-30T21:48:11.941Z
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 88 files changed, 6989 insertions(+), 518 deletions(-)
+ 88 files changed, 6990 insertions(+), 518 deletions(-)
 ```
 
 </details>

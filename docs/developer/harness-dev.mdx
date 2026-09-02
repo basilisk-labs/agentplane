@@ -283,7 +283,7 @@ computed. A frozen worktree inventory alone is insufficient retirement evidence.
 | 6     | `m3-crash-migration`     | Every specified crash boundary passes; real repository corpus migration has receipts.                          | Restore exact source bytes from verified migration backups.                                                       |
 | 7     | `m3-self-hosting`        | Twenty real sequential Tasks complete without manual state edits or duplicated effects.                        | Use the recorded controller-transfer receipt and reconcile in-flight work.                                        |
 | 8     | `m3-retirement`          | Production import audit finds no prohibited mutable legacy authority.                                          | Revert code only against the corresponding compatible state checkpoint.                                           |
-| 9     | `m3-final-qualification` | Three clean release drills, full CI and hosted exact-head checks agree on identities.                          | Keep delivery blocked on any missing or stale proof.                                                              |
+| 9     | `m3-final-qualification` | Full CI, self-hosting evidence, clean status, and hosted exact-head checks agree on identities.                | Keep delivery blocked on any missing or stale proof.                                                              |
 
 Each later gate must record its own concrete checkpoint, evidence digests and restore readback.
 This table defines the required rollback boundaries; it is not a claim that those receipts exist.
@@ -291,7 +291,8 @@ When a plan refinement changes only future gates, a completed WorkItem with a se
 unchanged definition must retain its runtime and evidence provenance. New or changed future
 WorkItems must be materialized from the approved revision. Ambiguous prior-plan history must fail
 closed instead of resetting completed work or replaying implementation.
-Stable release publication is outside this Task's approval.
+Release drills and stable release publication are outside this Task's approval and remain in the
+separate release lane. They are not substitutes for the M3 self-hosting or hosted exact-head gates.
 
 ### Projection-stage verification
 
