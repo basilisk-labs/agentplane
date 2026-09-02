@@ -12,8 +12,8 @@ Created: 2026-08-30T21:48:11.941Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-08-30T21:48:11.941Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-08-30T21:48:11.941Z
+- Updated: 2026-09-02T00:58:32.348Z
 - Branch: task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
