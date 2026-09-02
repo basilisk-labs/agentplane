@@ -57,6 +57,10 @@ import {
   PackagedMixedScopeContractError,
   packetExchange,
 } from "./check-packaged-mixed-scope-lifecycle.mjs";
+import {
+  assertM3SelfHostingEvidence,
+  M3_SELF_HOSTING_TASK_COUNT,
+} from "./check-m3-self-hosting.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -180,6 +184,39 @@ function supervisorLatencySample(duration_ms) {
 }
 
 describe("v0.7.1 release qualification contract", () => {
+  it("binds M3 self-hosting evidence to the source and package identities", () => {
+    const task = (sequence) => ({
+      sequence,
+      task_id: `task-${sequence}`,
+      task_commit: sequence.toString(16).padStart(40, "0"),
+      status: "DONE",
+      terminal: true,
+      verification: "ok",
+      evaluator: "pass",
+      exact_replay: true,
+      stale_exchange_rejected: true,
+      final_git_status: "",
+    });
+    const evidence = {
+      schema_version: 1,
+      kind: "agentplane.m3_self_hosting_evidence",
+      candidate_head: "a".repeat(40),
+      candidate_packages: ["@agentplaneorg/core", "@agentplaneorg/recipes", "agentplane"].map(
+        (name) => ({ name, version: "0.7.8-beta.1", sha256: `sha256:${"b".repeat(64)}` }),
+      ),
+      task_count: M3_SELF_HOSTING_TASK_COUNT,
+      tasks: Array.from({ length: M3_SELF_HOSTING_TASK_COUNT }, (_, index) => task(index + 1)),
+      manual_task_edits: 0,
+      manual_journal_edits: 0,
+      bypasses: 0,
+      lost_work_items: 0,
+      duplicate_effects: 0,
+      temp_cleanup: true,
+    };
+    assert.doesNotThrow(() => assertM3SelfHostingEvidence(evidence));
+    assert.throws(() => assertM3SelfHostingEvidence({ ...evidence, candidate_head: "stale" }));
+  });
+
   it("prints bounded child output for failed qualification scenarios", () => {
     assert.equal(
       formatQualificationScenarioFailure("hosted-boundary-matrix", "first\nsecond\n", 8),

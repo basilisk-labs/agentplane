@@ -27,6 +27,16 @@ function digest(value) {
 export function assertM3SelfHostingEvidence(evidence) {
   assert.equal(evidence.schema_version, 1);
   assert.equal(evidence.kind, "agentplane.m3_self_hosting_evidence");
+  assert.match(evidence.candidate_head, /^[0-9a-f]{40}$/u);
+  assert.deepEqual(evidence.candidate_packages.map(({ name }) => name).toSorted(), [
+    "@agentplaneorg/core",
+    "@agentplaneorg/recipes",
+    "agentplane",
+  ]);
+  for (const candidate of evidence.candidate_packages) {
+    assert.match(candidate.sha256, /^sha256:[0-9a-f]{64}$/u);
+    assert.ok(candidate.version);
+  }
   assert.equal(evidence.task_count, M3_SELF_HOSTING_TASK_COUNT);
   assert.equal(evidence.tasks.length, M3_SELF_HOSTING_TASK_COUNT);
   assert.equal(new Set(evidence.tasks.map((task) => task.task_id)).size, evidence.task_count);
@@ -58,6 +68,7 @@ export function runM3SelfHostingQualification() {
   mkdirSync(packDirectory, { recursive: true });
   mkdirSync(cacheDirectory, { recursive: true });
   const tasks = [];
+  const candidateHead = git(run, repoRoot, ["rev-parse", "HEAD"]);
   let packages;
   try {
     const installed = installPackedWorkspace({
@@ -99,6 +110,7 @@ export function runM3SelfHostingQualification() {
   const evidence = {
     schema_version: 1,
     kind: "agentplane.m3_self_hosting_evidence",
+    candidate_head: candidateHead,
     candidate_packages: packages,
     task_count: tasks.length,
     tasks,

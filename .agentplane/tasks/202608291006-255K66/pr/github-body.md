@@ -122,11 +122,11 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../baselines/v0.7-compatibility-candidate.json    |  23 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  .../checks/check-m3-legacy-authority-imports.mjs   |  71 ++
- scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
+ scripts/qualification/check-m3-self-hosting.mjs    | 137 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
- .../qualification/release-qualification.test.mjs   |   6 +
+ .../qualification/release-qualification.test.mjs   |  43 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 99 files changed, 7385 insertions(+), 589 deletions(-)
+ 99 files changed, 7434 insertions(+), 589 deletions(-)
 ```
 
 </details>
