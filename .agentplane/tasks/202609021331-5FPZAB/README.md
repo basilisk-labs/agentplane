@@ -4,7 +4,7 @@ title: "Repair lifecycle projection integrity after M3 cutover"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -132,10 +132,16 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/finish-shared.ts"
+      - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
+      - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
       - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+      - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -199,7 +205,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:2ed1033ca1836ea233a6b97c8f2f237015a78939b92eed73558f2f36f07b9d31"
+      digest: "sha256:12f4a0d29032810e975d33ee01d3bad283d3661703ed9890439135c243e1d447"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
@@ -243,10 +249,16 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/finish-shared.ts"
+          - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
+          - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
           - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+          - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -321,6 +333,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: dd283c655fa4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f5fb814c2426. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -399,8 +414,16 @@ events:
     to: "DOING"
     note: "Implementation committed: dd283c655fa4. CLI accepted one state-bound external-agent semantic result."
     commit: "dd283c655fa457aeccc0453f666f42b5f15d16c0"
+  -
+    type: "status"
+    at: "2026-09-02T22:21:09.945Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f5fb814c2426. CLI accepted one state-bound external-agent semantic result."
+    commit: "f5fb814c2426c10c2ad99e2a1c58b51117226686"
 doc_version: 3
-doc_updated_at: "2026-09-02T22:12:48.406Z"
+doc_updated_at: "2026-09-02T22:21:09.945Z"
 doc_updated_by: "SUPERVISOR"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
@@ -969,7 +992,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609021331-5FPZAB"
     intent:
@@ -2539,9 +2562,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 37
+    revision: 40
     schema_version: 1
-    updated_at: "2026-09-02T22:12:50.366Z"
+    updated_at: "2026-09-02T22:21:17.733Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 0
@@ -2553,14 +2576,54 @@ extensions:
         state: "PLANNED"
         validation_result: null
       projection-atomic-reconciliation:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "projection-atomic-reconciliation"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:bd577887b7c9f870750a5516ac050b69137d8d3e0edb9ad1f814927da8d55590"
+            id: "atomic-lifecycle-reconciliation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609021331-5FPZAB"
+              work_item_id: "projection-atomic-reconciliation"
+            provenance:
+              - "sha256:57b11ee59294a676b19172fe9ced508370d4dca13b12be90dfa56ddf4a4ea887"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:10d4032592d12dac5092ff961cae0000df60f635868ed1b15939eaaa4eeb5216"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "atomic-focused"
+              command_identity: "bunx vitest run packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-02T22:21:17.711Z"
+              repository_snapshot_digest: "sha256:10d4032592d12dac5092ff961cae0000df60f635868ed1b15939eaaa4eeb5216"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "lifecycle"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T22:21:17.711Z"
+              repository_snapshot_digest: "sha256:10d4032592d12dac5092ff961cae0000df60f635868ed1b15939eaaa4eeb5216"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       projection-authoritative-worktree:
         attempt: 1
         claim_id: null
@@ -2622,6 +2685,30 @@ extensions:
     checkpoints: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:11d1a8000dbf3c03f2b99ed1f885b99bf234d6430ca2fd66eb9c5022ad471665:
+        aggregate_digest: "sha256:340e5ce29c243196c8af22e2120e15c8bf13888ee3cbcba6209f351b9a417b71"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T22:21:09.945Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a8cd034ef62587067966af14"
+          mutation_id: "compatibility:sha256:11d1a8000dbf3c03f2b99ed1f885b99bf234d6430ca2fd66eb9c5022ad471665"
+          plan_digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 37
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:11d1a8000dbf3c03f2b99ed1f885b99bf234d6430ca2fd66eb9c5022ad471665"
+        next_revision: 38
+        previous_revision: 37
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       compatibility:sha256:17d4ac0dad16c93a4b89b37ce3098bca1d9d41590157b6db28d4223e243ba1e8:
         aggregate_digest: "sha256:3ce517808c80e373c58c261d1a181f3176c3a27fc532d1883f2811810bca73fb"
         event:
@@ -2906,6 +2993,29 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      external-result:work-order-202609021331-5FPZAB-executor-9d5a47386f7c9c4fccfa310e:
+        aggregate_digest: "sha256:968bb5e9b4e80fdd008ec62cf9af0f1c8759e74d872901bfc300673b4ce2f500"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T22:21:17.733Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_29081a889111db8a3ae0483b"
+          mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-9d5a47386f7c9c4fccfa310e"
+          plan_digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 39
+          to: "COMPLETED"
+          work_item_id: "projection-atomic-reconciliation"
+        mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-9d5a47386f7c9c4fccfa310e"
+        next_revision: 40
+        previous_revision: 39
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       external-result:work-order-202609021331-5FPZAB-executor-c246e5214a27e8c3ea7b1b69:
         aggregate_digest: "sha256:28f9829f4a9afcfef0ab72aaeedfc02988e489036fac03c92447283f7385e2e7"
         event:
@@ -3027,7 +3137,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "dd283c655fa457aeccc0453f666f42b5f15d16c0"
+    hash: "f5fb814c2426c10c2ad99e2a1c58b51117226686"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"

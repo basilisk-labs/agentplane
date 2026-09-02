@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 939f62acc66741fe6b864ad83210eb209db658c3..dd283c655fa457aeccc0453f666f42b5f15d16c0",
+      "command": "git diff --check d0cd2122d313a6934ffce393b2d21db3cc35693d..f5fb814c2426c10c2ad99e2a1c58b51117226686",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,18 +13,22 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 939f62acc66741fe6b864ad83210eb209db658c3..dd283c655fa457aeccc0453f666f42b5f15d16c0",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d0cd2122d313a6934ffce393b2d21db3cc35693d..f5fb814c2426c10c2ad99e2a1c58b51117226686",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609021331-5FPZAB/README.md",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/review.md",
-        "M\t.agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "A\tpackages/agentplane/src/commands/task/finish-task-store.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.state.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
       ]
     },
     {
@@ -34,42 +38,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "939f62acc66741fe6b864ad83210eb209db658c3",
-  "implementation_commit": "dd283c655fa457aeccc0453f666f42b5f15d16c0",
+  "execution_base_commit": "d0cd2122d313a6934ffce393b2d21db3cc35693d",
+  "implementation_commit": "f5fb814c2426c10c2ad99e2a1c58b51117226686",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609021331-5FPZAB/README.md",
-      " M .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609021331-5FPZAB/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609021331-5FPZAB/README.md",
-      " M .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
