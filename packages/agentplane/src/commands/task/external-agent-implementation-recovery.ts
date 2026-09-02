@@ -37,7 +37,10 @@ import {
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
 } from "./external-agent-exchange.js";
-import { resolveEvidenceOnlyReworkCommit } from "./evidence-only-rework-commit.js";
+import {
+  resolveEvidenceOnlyReworkCommit,
+  selectRecordedImplementationRecoveryCommit,
+} from "./evidence-only-rework-commit.js";
 
 export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
   command: CommandContext;
@@ -442,19 +445,23 @@ export async function resolveRecordedImplementationRecovery(opts: {
     typeof evidence.execution_base_commit !== "string"
   )
     return null;
-  const commit = opts.recorded_commit ?? evidence.implementation_commit;
-  if (
-    evidence.implementation_commit !== commit ||
-    !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(commit) ||
-    !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(evidence.execution_base_commit)
-  )
-    return null;
   const workItemId = opts.work_order.task.work_item_id ?? null;
   const taskLevelRework =
     workItemId === null &&
     opts.purpose === "implementation_rework" &&
     (opts.task.verification?.state === "needs_rework" ||
       ["rework", "blocked"].includes(opts.task.quality_review?.state ?? ""));
+  const commit = selectRecordedImplementationRecoveryCommit({
+    task_level_rework: taskLevelRework,
+    recorded_commit: opts.recorded_commit,
+    evidence_commit: evidence.implementation_commit,
+  });
+  if (
+    evidence.implementation_commit !== commit ||
+    !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(commit) ||
+    !/^[0-9a-f]{40}(?:[0-9a-f]{24})?$/u.test(evidence.execution_base_commit)
+  )
+    return null;
   if (workItemId === null && !taskLevelRework) return null;
   if (
     !plan ||

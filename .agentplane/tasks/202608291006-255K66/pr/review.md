@@ -6,14 +6,14 @@ Created: 2026-08-30T21:48:11.941Z
 
 - Task: `202608291006-255K66`
 - Title: Cut over to the canonical Task kernel and retire legacy core paths
-- Status: DONE
+- Status: DOING
 - Branch: `task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire`
 - Canonical task record: `.agentplane/tasks/202608291006-255K66/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -61,12 +61,12 @@ Created: 2026-08-30T21:48:11.941Z
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
  .../commands/task/direct-task-verification.test.ts |  71 +-
  .../src/commands/task/direct-task-verification.ts  |  62 +-
- .../commands/task/evidence-only-rework-commit.ts   |  32 +
+ .../commands/task/evidence-only-rework-commit.ts   |  42 ++
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
  .../external-agent-implementation-authority.ts     |  45 +-
- .../external-agent-implementation-recovery.test.ts |  34 +
- .../task/external-agent-implementation-recovery.ts |  65 +-
+ .../external-agent-implementation-recovery.test.ts |  54 ++
+ .../task/external-agent-implementation-recovery.ts |  86 ++-
  .../task/external-agent-plan-refinement.ts         |  19 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
  .../task/external-agent-supervisor-recovery.ts     |   4 +-
@@ -131,7 +131,7 @@ Created: 2026-08-30T21:48:11.941Z
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
  .../qualification/release-qualification.test.mjs   |  48 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 102 files changed, 7500 insertions(+), 621 deletions(-)
+ 102 files changed, 7544 insertions(+), 628 deletions(-)
 ```
 
 </details>

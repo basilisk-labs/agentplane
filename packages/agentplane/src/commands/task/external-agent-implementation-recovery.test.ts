@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
-import { resolveEvidenceOnlyReworkCommit } from "./evidence-only-rework-commit.js";
+import {
+  resolveEvidenceOnlyReworkCommit,
+  selectRecordedImplementationRecoveryCommit,
+} from "./evidence-only-rework-commit.js";
 import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
 
 const COMMIT = "a".repeat(40);
@@ -41,6 +44,23 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it("prefers fresh supervisor evidence for task-level verification rework", () => {
+    expect(
+      selectRecordedImplementationRecoveryCommit({
+        task_level_rework: true,
+        recorded_commit: "previous-quality-sha",
+        evidence_commit: "current-implementation-sha",
+      }),
+    ).toBe("current-implementation-sha");
+    expect(
+      selectRecordedImplementationRecoveryCommit({
+        task_level_rework: false,
+        recorded_commit: "work-item-sha",
+        evidence_commit: "current-implementation-sha",
+      }),
+    ).toBe("work-item-sha");
+  });
+
   it("rebinds a verified implementation through managed evidence-only commits", () => {
     const eligible = {
       purpose: "implementation_rework" as const,

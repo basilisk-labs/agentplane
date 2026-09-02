@@ -2,10 +2,10 @@
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 199
+revision: 202
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-09-02T12:08:32.993Z"
+  state: "needs_rework"
+  updated_at: "2026-09-02T12:45:05.214Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -290,6 +290,7 @@ execution_contract:
       - "scripts/release/smoke-bun-compiled-cli.mjs"
   observed:
     authority_violations:
+      - "verification:recorded-check-1:fail"
       - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/README.md"
       - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
       - "writable_scope:.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
@@ -592,7 +593,7 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
+        result: "fail"
       -
         id: "recorded-check-10"
         result: "pass"
@@ -1228,9 +1229,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "c7ac513330971e4de501486efd0ebaef3f61d834"
-  message: "🚧 255K66 task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1436,6 +1436,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ecdbcc74c4e6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -2004,9 +2007,23 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "c7ac513330971e4de501486efd0ebaef3f61d834"
+  -
+    type: "status"
+    at: "2026-09-02T12:38:03.959Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Implementation committed: ecdbcc74c4e6. CLI accepted one state-bound external-agent semantic result."
+    commit: "ecdbcc74c4e6c972aae13c5e0873e3b56c8bd36f"
+  -
+    type: "verify"
+    at: "2026-09-02T12:45:05.214Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-02T12:10:27.116Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-02T12:45:08.090Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -4075,6 +4092,41 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
     Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+    - old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202608291006-255K66
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-02T12:45:05.214Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:d19236aed8f1ea0e82e61f1bd87238852b3210f95a62f0f38370ad24f5fea2f0
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202608291006-255K66 declared verification
 
     BlueprintSnapshotRef:
     - state: current
@@ -19733,9 +19785,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "3e79d32c8ab91879d4bac3723b1bb8bff31ba617"
-    message: "🚧 255K66 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -21835,6 +21884,41 @@ Command: agentplane doctor
 Result: pass
 Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-5
 Scope: branch_pr task 202608291006-255K66 Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/tasks/202608291006-255K66/blueprint/resolved-snapshot.json
+- old_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- current_digest: 7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202608291006-255K66
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202608291006-255K66
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-02T12:45:05.214Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7b35e2746b84ccbdd7cd60fd8a880414e5cbe30ab9106aff16739408b4d882ab, input_digest=sha256:d19236aed8f1ea0e82e61f1bd87238852b3210f95a62f0f38370ad24f5fea2f0
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202608291006-255K66/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202608291006-255K66 declared verification
 
 BlueprintSnapshotRef:
 - state: current

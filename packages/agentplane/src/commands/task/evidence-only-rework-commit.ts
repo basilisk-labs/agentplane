@@ -30,3 +30,13 @@ export function resolveEvidenceOnlyReworkCommit(opts: {
     : opts.task_verification_state === "needs_rework" && opts.all_required_work_items_completed;
   return reworkReady ? opts.recorded_commit : null;
 }
+
+export function selectRecordedImplementationRecoveryCommit(opts: {
+  task_level_rework: boolean;
+  recorded_commit: string | null;
+  evidence_commit: string;
+}): string {
+  return opts.task_level_rework
+    ? opts.evidence_commit
+    : (opts.recorded_commit ?? opts.evidence_commit);
+}

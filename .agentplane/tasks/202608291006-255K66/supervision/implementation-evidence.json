@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 5be5e1741048b21dca6409a5973425926b828226..3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
+      "command": "git diff --check 8b3cd10893d08f7817c774720ff93062e50e2226..ecdbcc74c4e6c972aae13c5e0873e3b56c8bd36f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5be5e1741048b21dca6409a5973425926b828226..3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8b3cd10893d08f7817c774720ff93062e50e2226..ecdbcc74c4e6c972aae13c5e0873e3b56c8bd36f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,10 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tscripts/checks/check-m3-legacy-authority-imports.mjs"
+        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
+        "M\tpackages/agentplane/src/commands/task/user-approval-receipt.ts",
+        "M\tpackages/agentplane/src/runner/observation/kernel-repository.ts",
+        "M\tpackages/core/src/tasks/kernel-semantic.ts"
       ]
     },
     {
@@ -31,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "5be5e1741048b21dca6409a5973425926b828226",
-  "implementation_commit": "3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
+  "execution_base_commit": "8b3cd10893d08f7817c774720ff93062e50e2226",
+  "implementation_commit": "ecdbcc74c4e6c972aae13c5e0873e3b56c8bd36f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
