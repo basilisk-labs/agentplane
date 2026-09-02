@@ -3,8 +3,8 @@
   "branch": "task/202608291006-255K66/cut-over-to-the-canonical-task-kernel-and-retire",
   "created_at": "2026-08-30T21:48:11.941Z",
   "diffstat_sha256": "sha256:4548d91374b2344e3ca6745019ab36486b23fd72d356e824c2f8c24160a89da1",
-  "last_verified_at": "2026-09-02T07:39:08.986Z",
-  "last_verified_diffstat_sha256": "sha256:34e8f44da96db05b0b383fdb962be0d98ef303acee2ce074f7e6822f2417c795",
+  "last_verified_at": "2026-09-02T10:30:24.945Z",
+  "last_verified_diffstat_sha256": "sha256:4548d91374b2344e3ca6745019ab36486b23fd72d356e824c2f8c24160a89da1",
   "pr_number": 5886,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5886",
   "pre_merge_closure": {
