@@ -15,6 +15,8 @@
  .../src/commands/shared/pr-meta/verify-log.test.ts |  13 +
  .../src/commands/shared/pr-meta/verify-log.ts      |   2 +-
  .../src/commands/shared/task-mutation.ts           |  18 +
+ .../commands/shared/verification-details.test.ts   |  33 +
+ .../src/commands/shared/verification-details.ts    |   7 +-
  .../agentplane/src/commands/task/active.command.ts | 110 ++-
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
@@ -77,4 +79,4 @@
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 79 files changed, 6695 insertions(+), 501 deletions(-)
+ 81 files changed, 6731 insertions(+), 505 deletions(-)
