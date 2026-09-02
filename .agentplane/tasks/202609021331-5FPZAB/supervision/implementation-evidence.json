@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 6d1f913c5f80d28dba40eafd3ea0ede567893aab..939f62acc66741fe6b864ad83210eb209db658c3",
+      "command": "git diff --check 939f62acc66741fe6b864ad83210eb209db658c3..dd283c655fa457aeccc0453f666f42b5f15d16c0",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,18 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6d1f913c5f80d28dba40eafd3ea0ede567893aab..939f62acc66741fe6b864ad83210eb209db658c3",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 939f62acc66741fe6b864ad83210eb209db658c3..dd283c655fa457aeccc0453f666f42b5f15d16c0",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609021331-5FPZAB/README.md",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
         "M\t.agentplane/tasks/202609021331-5FPZAB/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+        "M\t.agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json",
+        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
       ]
     },
     {
@@ -31,15 +34,42 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "6d1f913c5f80d28dba40eafd3ea0ede567893aab",
-  "implementation_commit": "939f62acc66741fe6b864ad83210eb209db658c3",
+  "execution_base_commit": "939f62acc66741fe6b864ad83210eb209db658c3",
+  "implementation_commit": "dd283c655fa457aeccc0453f666f42b5f15d16c0",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202609021331-5FPZAB/README.md",
+      " M .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609021331-5FPZAB/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609021331-5FPZAB/README.md",
+      " M .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
