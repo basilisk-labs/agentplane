@@ -761,6 +761,274 @@
           ],
           "additionalProperties": false
         },
+        "canonical_binding": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "planning"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "implementation"
+                },
+                "work_item_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attempt": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "claim_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contract_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "authority_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase",
+                "work_item_id",
+                "attempt",
+                "claim_id",
+                "contract_digest",
+                "authority_digest"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "canonical_plan": {
+          "type": "object",
+          "properties": {
+            "work_items": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "depends_on": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required_inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "expected_outputs": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "execution_requirements": {
+                    "type": "object",
+                    "properties": {
+                      "scope_roots": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "repository_effects": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "external_effects": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "capabilities": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "resources": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope_roots",
+                      "repository_effects",
+                      "external_effects",
+                      "capabilities",
+                      "resources"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "optional": {
+                    "type": "boolean"
+                  },
+                  "contract": {
+                    "type": "object",
+                    "properties": {
+                      "objective": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "acceptance_criteria": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "verification_commands": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                      }
+                    },
+                    "required": [
+                      "objective",
+                      "acceptance_criteria",
+                      "verification_commands",
+                      "role"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "depends_on",
+                  "required_inputs",
+                  "expected_outputs",
+                  "execution_requirements",
+                  "optional",
+                  "contract"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["work_items"],
+          "additionalProperties": false
+        },
+        "canonical_outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
+            },
+            "required": ["id", "kind", "digest"],
+            "additionalProperties": false
+          }
+        },
         "plan_refinement": {
           "type": "object",
           "properties": {
@@ -1794,6 +2062,274 @@
           ],
           "additionalProperties": false
         },
+        "canonical_binding": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "planning"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "implementation"
+                },
+                "work_item_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attempt": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "claim_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contract_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "authority_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase",
+                "work_item_id",
+                "attempt",
+                "claim_id",
+                "contract_digest",
+                "authority_digest"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "canonical_plan": {
+          "type": "object",
+          "properties": {
+            "work_items": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "depends_on": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required_inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "expected_outputs": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "execution_requirements": {
+                    "type": "object",
+                    "properties": {
+                      "scope_roots": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "repository_effects": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "external_effects": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "capabilities": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "resources": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope_roots",
+                      "repository_effects",
+                      "external_effects",
+                      "capabilities",
+                      "resources"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "optional": {
+                    "type": "boolean"
+                  },
+                  "contract": {
+                    "type": "object",
+                    "properties": {
+                      "objective": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "acceptance_criteria": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "verification_commands": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                      }
+                    },
+                    "required": [
+                      "objective",
+                      "acceptance_criteria",
+                      "verification_commands",
+                      "role"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "depends_on",
+                  "required_inputs",
+                  "expected_outputs",
+                  "execution_requirements",
+                  "optional",
+                  "contract"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["work_items"],
+          "additionalProperties": false
+        },
+        "canonical_outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
+            },
+            "required": ["id", "kind", "digest"],
+            "additionalProperties": false
+          }
+        },
         "plan_refinement": {
           "type": "object",
           "properties": {
@@ -2826,6 +3362,274 @@
             "top_level_validation"
           ],
           "additionalProperties": false
+        },
+        "canonical_binding": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "planning"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "implementation"
+                },
+                "work_item_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attempt": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "claim_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contract_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "authority_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase",
+                "work_item_id",
+                "attempt",
+                "claim_id",
+                "contract_digest",
+                "authority_digest"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "canonical_plan": {
+          "type": "object",
+          "properties": {
+            "work_items": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "depends_on": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required_inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "expected_outputs": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "execution_requirements": {
+                    "type": "object",
+                    "properties": {
+                      "scope_roots": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "repository_effects": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "external_effects": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "capabilities": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "resources": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    "required": [
+                      "scope_roots",
+                      "repository_effects",
+                      "external_effects",
+                      "capabilities",
+                      "resources"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "optional": {
+                    "type": "boolean"
+                  },
+                  "contract": {
+                    "type": "object",
+                    "properties": {
+                      "objective": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "acceptance_criteria": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "verification_commands": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                      }
+                    },
+                    "required": [
+                      "objective",
+                      "acceptance_criteria",
+                      "verification_commands",
+                      "role"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "depends_on",
+                  "required_inputs",
+                  "expected_outputs",
+                  "execution_requirements",
+                  "optional",
+                  "contract"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["work_items"],
+          "additionalProperties": false
+        },
+        "canonical_outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              }
+            },
+            "required": ["id", "kind", "digest"],
+            "additionalProperties": false
+          }
         },
         "plan_refinement": {
           "type": "object",

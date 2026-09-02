@@ -1,3 +1,4 @@
+import { assertLegacyMutation } from "../shared/task-mutation.js";
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, emitCommandResult, unknownEntityMessage } from "../../cli/output.js";
@@ -45,6 +46,7 @@ export async function cmdTaskUpdate(opts: {
         message: unknownEntityMessage("task id", opts.taskId),
       });
     }
+    assertLegacyMutation(task);
     const next: TaskData = { ...task };
     if (opts.title !== undefined) next.title = opts.title;
     if (opts.description !== undefined) next.description = opts.description;

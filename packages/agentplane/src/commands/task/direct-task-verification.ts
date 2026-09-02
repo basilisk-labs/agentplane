@@ -59,6 +59,7 @@ export type DirectTaskVerificationResult = {
 type AdditionalDirectTaskCommand = Readonly<{
   command: string;
   timeout_ms?: number;
+  check_ids?: readonly string[];
 }>;
 
 export function blockingWorkItemCommands(validation: {
@@ -78,34 +79,11 @@ export function blockingWorkItemCommands(validation: {
       (check): check is typeof check & { command: string } =>
         typeof check.command === "string" && (check.required || criterionCheckIds.has(check.id)),
     )
-    .map(({ command, timeout_ms }) => ({
+    .map(({ id, command, timeout_ms }) => ({
       command,
+      check_ids: [id],
       ...(timeout_ms === undefined ? {} : { timeout_ms }),
     }));
-}
-
-export function resolveEvidenceOnlyReworkCommit(opts: {
-  purpose: string;
-  changed_paths: readonly string[];
-  recorded_commit: string | null;
-  head: string | null;
-  work_item_id: string | null;
-  work_item_state: string | null | undefined;
-  task_verification_state: string | undefined;
-  all_required_work_items_completed: boolean;
-}): string | null {
-  if (
-    !["implementation", "implementation_rework"].includes(opts.purpose) ||
-    opts.changed_paths.length > 0 ||
-    !opts.recorded_commit ||
-    opts.recorded_commit !== opts.head
-  ) {
-    return null;
-  }
-  const reworkReady = opts.work_item_id
-    ? opts.work_item_state === "REWORK_READY"
-    : opts.task_verification_state === "needs_rework" && opts.all_required_work_items_completed;
-  return reworkReady ? opts.recorded_commit : null;
 }
 
 export function isTaskLevelVerificationReworkState(opts: {
@@ -144,8 +122,14 @@ export async function recordDirectTaskVerification(opts: {
     task_id: opts.task.id,
     cwd: opts.checkout,
     additional_commands: additionalCommands,
+    additional_only: selectedWorkItem !== undefined,
     allow_empty: selectedWorkItem !== undefined,
   });
+  if (selectedWorkItem) {
+    // WorkItem validation is projected by recordTaskCentricExternalResult.
+    // Task-level verification remains pending until every required WorkItem is complete.
+    return checks;
+  }
   const exitCode = await cmdVerifyParsed({
     ctx: opts.command,
     cwd: opts.checkout,
@@ -189,7 +173,7 @@ export function renderDirectTaskVerificationDetails(opts: {
     opts.task.execution_contract?.verification.contract?.selected_checks ?? []
   ).filter((checkId) => checkId !== "hosted_integration");
   if (opts.result.status === "passed" && selectedChecks.length > 0) {
-    return selectedChecks
+    const contractDetails = selectedChecks
       .map((checkId) => {
         const matching = checks.filter((check) => check.check_ids.includes(checkId));
         if (matching.length === 0) return null;
@@ -207,6 +191,7 @@ export function renderDirectTaskVerificationDetails(opts: {
       })
       .filter((details): details is string => details !== null)
       .join("\n\n");
+    if (contractDetails) return contractDetails;
   }
   return checks
     .map((check, index) =>
@@ -401,20 +386,27 @@ export async function runDirectTaskVerification(opts: {
   task_id: string;
   cwd: string;
   additional_commands?: readonly AdditionalDirectTaskCommand[];
+  additional_only?: boolean;
   allow_empty?: boolean;
   run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
-  const commands = directTaskVerificationCommands(opts.task, opts.additional_commands);
+  const commands = opts.additional_only
+    ? [...new Set((opts.additional_commands ?? []).map(({ command }) => command))]
+    : directTaskVerificationCommands(opts.task, opts.additional_commands);
   const additionalTimeouts = new Map<string, number>();
+  const additionalCheckIds = new Map<string, Set<string>>();
   for (const additional of opts.additional_commands ?? []) {
+    const ids = additionalCheckIds.get(additional.command) ?? new Set<string>();
+    for (const checkId of additional.check_ids ?? []) ids.add(checkId);
+    additionalCheckIds.set(additional.command, ids);
     if (additional.timeout_ms === undefined) continue;
     additionalTimeouts.set(
       additional.command,
       Math.min(additionalTimeouts.get(additional.command) ?? Infinity, additional.timeout_ms),
     );
   }
-  const selectedChecks = selectedLocalChecks(opts.task);
+  const selectedChecks = opts.additional_only ? [] : selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
   const rootPackage =
     hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
@@ -476,7 +468,12 @@ export async function runDirectTaskVerification(opts: {
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
-        check_ids: checkIdsForCommand(command, selectedChecks),
+        check_ids: [
+          ...new Set([
+            ...(additionalCheckIds.get(declaredCommand) ?? []),
+            ...checkIdsForCommand(command, selectedChecks),
+          ]),
+        ],
         exit_code: Number.isInteger(executed.exitCode) ? executed.exitCode : null,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: tail(executed.stdout),
@@ -507,7 +504,12 @@ export async function runDirectTaskVerification(opts: {
         command,
         ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
         script: parsed.script,
-        check_ids: checkIdsForCommand(command, selectedChecks),
+        check_ids: [
+          ...new Set([
+            ...(additionalCheckIds.get(declaredCommand) ?? []),
+            ...checkIdsForCommand(command, selectedChecks),
+          ]),
+        ],
         exit_code: null,
         duration_ms: Math.max(0, Date.now() - started),
         stdout_tail: "",

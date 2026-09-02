@@ -1,4 +1,5 @@
 import { parseTaskStatus } from "@agentplaneorg/core/tasks";
+import { readTaskKernel, projectTaskKernelRead, reportTaskKernelRead } from "./kernel-read.js";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
@@ -17,6 +18,11 @@ export async function cmdReady(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const task = await ctx.taskBackend.getTask(opts.taskId);
+    const canonical = await readTaskKernel(ctx, opts.taskId, task ?? undefined);
+    if (canonical.kind !== "legacy_unmigrated" && canonical.kind !== "missing") {
+      const code = reportTaskKernelRead(canonical, opts.taskId, false);
+      return code || (projectTaskKernelRead(canonical, opts.taskId).ready ? 0 : 2);
+    }
     const warnings: string[] = [];
     let dep: {
       dependsOn: string[];

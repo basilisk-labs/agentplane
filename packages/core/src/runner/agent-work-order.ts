@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { kernelEpisodeBindingSchema } from "../tasks/kernel-semantic.js";
 
 import {
   assertValid,
@@ -224,6 +225,7 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
     authority: AGENT_WORK_ORDER_AUTHORITY_ZOD_SCHEMA,
     context_intent: AGENT_WORK_ORDER_CONTEXT_INTENT_ZOD_SCHEMA,
     planning_context: AGENT_WORK_ORDER_PLANNING_CONTEXT_ZOD_SCHEMA.optional(),
+    canonical_binding: kernelEpisodeBindingSchema.optional(),
     knowledge_refs: z.array(KNOWLEDGE_REF_ZOD_SCHEMA),
     prepared_evidence: z.array(AGENT_WORK_ORDER_PREPARED_EVIDENCE_ZOD_SCHEMA),
     required_inputs: z.array(ARTIFACT_REF_ZOD_SCHEMA),
@@ -234,6 +236,18 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
   })
   .strict()
   .superRefine((value, ctx) => {
+    if (
+      value.canonical_binding &&
+      (value.canonical_binding.task_id !== value.task.id ||
+        (value.canonical_binding.phase === "implementation" &&
+          value.canonical_binding.work_item_id !== value.task.work_item_id) ||
+        (value.canonical_binding.phase === "planning" && value.role !== "PLANNER"))
+    )
+      ctx.addIssue({
+        code: "custom",
+        path: ["canonical_binding"],
+        message: "Canonical binding must match the semantic Task, WorkItem and role.",
+      });
     if (value.planning_context) {
       const { digest, ...identity } = value.planning_context;
       if (digest !== taskCentricDigest(identity)) {
@@ -480,6 +494,13 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
   if (semanticResult.work_order_id !== workOrder.work_order_id) {
     throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
   }
+  if (
+    taskCentricDigest(workOrder.canonical_binding ?? null) !==
+    taskCentricDigest(semanticResult.canonical_binding ?? null)
+  )
+    throw new Error(
+      "Agent semantic result canonical_binding must match the prepared AgentWorkOrder.",
+    );
   if (workOrder.role === "EVALUATOR") {
     if (!semanticResult.review) {
       throw new Error("EVALUATOR semantic results require a typed review verdict.");

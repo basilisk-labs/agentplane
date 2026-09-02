@@ -1,4 +1,5 @@
 import path from "node:path";
+import { createCanonicalTask } from "./kernel-create.js";
 import {
   createTaskExecutionBaseIdentity,
   setMarkdownSection,
@@ -58,6 +59,7 @@ import {
 import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 
 export type TaskNewParsed = {
+  canonical?: boolean;
   title: string;
   description: string;
   owner: string;
@@ -386,11 +388,9 @@ export async function runTaskNewParsed(opts: {
         });
       }
 
-      const created = await writeTaskMutation({
-        ctx,
-        task,
-        writeOptions: { expectedRevision: 0 },
-      });
+      const created = p.canonical
+        ? await createCanonicalTask(ctx, task)
+        : await writeTaskMutation({ ctx, task, writeOptions: { expectedRevision: 0 } });
       if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
       if (p.showBlueprint) {
         const summary = await resolveTaskBlueprintLifecycleSummary({

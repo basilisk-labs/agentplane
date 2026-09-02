@@ -38,6 +38,19 @@ describe("verification child environment", () => {
     expect(source).not.toHaveProperty("PATH");
   });
 
+  it("keeps the selected parent PATH ahead of inherited manager hints", () => {
+    const env = verificationChildEnv({
+      PATH: "/preferred/bin:/usr/bin",
+      NVM_BIN: "/stale-nvm/bin",
+    });
+
+    expect(env.PATH!.split(path.delimiter).slice(0, 3)).toEqual([
+      "/preferred/bin",
+      "/usr/bin",
+      "/stale-nvm/bin",
+    ]);
+  });
+
   it("isolates dotenv values in the declared verification subprocess", async () => {
     const root = await mkdtemp(path.join(tmpdir(), "agentplane-verify-env-"));
     vi.stubEnv("AGENTPLANE_VERIFY_TEST_DOTENV", "repository-only");

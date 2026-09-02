@@ -202,6 +202,12 @@ export function validateWorkItemDefinitions(
   const ids = new Set<string>();
   const producers = new Map<string, string[]>();
   for (const definition of definitions) {
+    if (
+      definition.contract_digest !== undefined &&
+      !DIGEST_PATTERN.test(definition.contract_digest)
+    ) {
+      issues.push(`invalid_contract_digest:${definition.id}`);
+    }
     if (!definition.id || ids.has(definition.id)) issues.push(`duplicate:${definition.id}`);
     ids.add(definition.id);
     if (new Set(definition.expected_outputs).size !== definition.expected_outputs.length) {

@@ -1,3 +1,4 @@
+import { readTaskKernel, reportTaskKernelRead } from "./kernel-read.js";
 import { formatTaskTokenUsageSummary } from "@agentplaneorg/core/tasks";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
@@ -61,6 +62,10 @@ export function makeRunTaskStatusHandler(session: {
     const commandCtx = await (parsed.remote
       ? session.getRemoteContext("task status")
       : session.getLocalContext("task status"));
+    const canonical = await readTaskKernel(commandCtx, parsed.taskId);
+    if (canonical.kind !== "legacy_unmigrated") {
+      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json);
+    }
     const decision = await buildTaskRouteDecision({
       ctx: commandCtx,
       cwd: ctx.cwd,

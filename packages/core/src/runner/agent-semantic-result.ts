@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  kernelEpisodeBindingSchema,
+  kernelPlanProposalSchema,
+  kernelOutputClaimsSchema,
+} from "../tasks/kernel-semantic.js";
 
 import {
   NON_EMPTY_STRING,
@@ -215,37 +220,59 @@ const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   uncertainty: z.array(z.string()),
   task_intent: AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA.optional(),
   task_plan_proposal: TASK_PLAN_PROPOSAL_ZOD_SCHEMA.optional(),
+  canonical_binding: kernelEpisodeBindingSchema.optional(),
+  canonical_plan: kernelPlanProposalSchema.optional(),
+  canonical_outputs: kernelOutputClaimsSchema.optional(),
   plan_refinement: AGENT_SEMANTIC_RESULT_PLAN_REFINEMENT_ZOD_SCHEMA.optional(),
   claimed_checks: z.array(AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA).optional(),
   review: AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA.optional(),
 } as const;
 
-export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z.discriminatedUnion("status", [
-  z
-    .object({
-      ...AGENT_SEMANTIC_RESULT_BASE_SHAPE,
-      status: z.literal("blocked"),
-      blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA,
-      knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
-    })
-    .strict(),
-  z
-    .object({
-      ...AGENT_SEMANTIC_RESULT_BASE_SHAPE,
-      status: z.literal("needs_context"),
-      blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
-      knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA,
-    })
-    .strict(),
-  z
-    .object({
-      ...AGENT_SEMANTIC_RESULT_BASE_SHAPE,
-      status: z.enum(["completed", "failed"]),
-      blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
-      knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
-    })
-    .strict(),
-]);
+export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z
+  .discriminatedUnion("status", [
+    z
+      .object({
+        ...AGENT_SEMANTIC_RESULT_BASE_SHAPE,
+        status: z.literal("blocked"),
+        blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA,
+        knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
+      })
+      .strict(),
+    z
+      .object({
+        ...AGENT_SEMANTIC_RESULT_BASE_SHAPE,
+        status: z.literal("needs_context"),
+        blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
+        knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA,
+      })
+      .strict(),
+    z
+      .object({
+        ...AGENT_SEMANTIC_RESULT_BASE_SHAPE,
+        status: z.enum(["completed", "failed"]),
+        blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
+        knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
+      })
+      .strict(),
+  ])
+  .superRefine((value, ctx) => {
+    const binding = value.canonical_binding;
+    if (
+      (!binding && (value.canonical_plan || value.canonical_outputs)) ||
+      (binding && (value.task_intent || value.task_plan_proposal || value.plan_refinement)) ||
+      (binding?.phase === "planning" && value.canonical_outputs) ||
+      (binding?.phase === "implementation" && value.canonical_plan) ||
+      (binding &&
+        value.status === "completed" &&
+        !(binding.phase === "planning" ? value.canonical_plan : value.canonical_outputs))
+    )
+      ctx.addIssue({
+        code: "custom",
+        path: ["canonical_binding"],
+        message:
+          "Canonical payload must match its bound semantic phase and cannot carry legacy lifecycle instructions.",
+      });
+  });
 
 export type AgentSemanticResult = z.infer<typeof AGENT_SEMANTIC_RESULT_ZOD_SCHEMA>;
 export type AgentSemanticResultStatus = (typeof AGENT_SEMANTIC_RESULT_STATUS_VALUES)[number];

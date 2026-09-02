@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The Knip regression is resolved without widening budgets: AgentPlane CLI is 0/0 and reviewed core compatibility remains 21/21.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The recovery change is narrowly scoped: task-level verification rework selects the current supervisor-owned implementation evidence, while WorkItem recovery retains the explicit recorded-commit preference.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Existing fail-closed checks remain in force for Git ancestry, changed-path authority, README contract preservation, approved plan identity, and prior accepted exchange provenance.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "A focused regression test covers stale quality SHA versus newer supervisor evidence SHA; the recovery-contract suite passes 33 tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Supervisor-owned verification records ci:local:full, lifecycle:invariants, mixed-scope lifecycle qualification, policy routing, and doctor as passing for implementation 512c79a2a362c383f4820414906b5f448fd106cf.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "The earlier workspace-allocation failure was non-reproducible in two focused runs and the subsequent complete ci:local:full run passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The exact final head still requires hosted verification before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/f7cb7f87ca37c4c7e1a11cb42784f51a339632d312e80cbc7cca021901be3d37.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -226,6 +226,31 @@ describe("quality evidence refresh route", () => {
     expect(step.compatibility.command).toBeNull();
   });
 
+  it("compares evidence freshness by instant instead of timestamp spelling", () => {
+    const step = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          verification: { state: "ok", updated_at: "2026-07-29T15:00:00.000+02:00" },
+          quality_review: {
+            ...deterministicEvidenceGapReview(),
+            updated_at: "2026-07-29T14:00:00.000Z",
+          },
+        },
+        qualityReviewTargetSha: resume.head_sha,
+        blockers: [
+          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+        ],
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "quality_evidence_refresh_needed",
+      episode: { purpose: "verification", role: "TESTER" },
+    });
+  });
+
   it("refreshes deterministic evidence when later commits contain only task artifacts", () => {
     const semanticSha = "2222222222222222222222222222222222222222";
     const artifactSha = "3333333333333333333333333333333333333333";

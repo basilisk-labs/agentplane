@@ -21,7 +21,6 @@ import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-fi
 import {
   isTaskLevelVerificationReworkState,
   recordDirectTaskVerification,
-  resolveEvidenceOnlyReworkCommit,
 } from "./direct-task-verification.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
@@ -29,6 +28,7 @@ import { cmdTaskSetStatus } from "./set-status.js";
 import { recordObservedTaskExecutionContract } from "./task-execution-contract-observation.js";
 import {
   resolveRecordedImplementationRecovery,
+  resolveVerifiedEvidenceOnlyReworkCommit,
   assertRecoverableImplementationCommit,
   refreshRecoveredImplementationEvidence,
 } from "./external-agent-implementation-recovery.js";
@@ -63,44 +63,6 @@ function pathAllowed(value: string, allowed: readonly string[]): boolean {
 function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
   const prefix = `.agentplane/tasks/${taskId}/`;
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
-}
-
-function recordedEvidenceOnlyReworkCommit(opts: {
-  exchange: ExternalAgentExchange;
-  work_order: AgentWorkOrderV2;
-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
-  route_commit: string | null;
-  head: string | null;
-  changed_paths: readonly string[];
-}): string | null {
-  const extensionCommit = opts.task.extensions?.implementation_commit as
-    | { hash?: unknown }
-    | undefined;
-  const eventCommit = (opts.task.events ?? [])
-    .toReversed()
-    .map((event) => (event as unknown as { commit?: unknown }).commit)
-    .find((commit): commit is string => typeof commit === "string" && commit.trim().length > 0);
-  const recordedCommit =
-    opts.route_commit ??
-    (typeof extensionCommit?.hash === "string" ? extensionCommit.hash.trim() : null) ??
-    eventCommit?.trim() ??
-    null;
-  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  if (!aggregate?.current_plan) return null;
-  const workItemId = opts.work_order.task.work_item_id ?? null;
-  const allRequiredWorkItemsCompleted = aggregate.current_plan.proposal.work_items.work_items
-    .filter((item) => !item.optional)
-    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
-  return resolveEvidenceOnlyReworkCommit({
-    purpose: opts.exchange.purpose,
-    changed_paths: opts.changed_paths,
-    recorded_commit: recordedCommit,
-    head: opts.head,
-    work_item_id: workItemId,
-    work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
-    task_verification_state: opts.task.verification?.state,
-    all_required_work_items_completed: allRequiredWorkItemsCompleted,
-  });
 }
 
 function isTaskLevelVerificationRework(opts: {
@@ -384,7 +346,8 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    implementationCommit = recordedEvidenceOnlyReworkCommit({
+    implementationCommit = await resolveVerifiedEvidenceOnlyReworkCommit({
+      command: opts.command,
       exchange: opts.exchange,
       work_order: opts.work_order,
       task: taskAtReturn,
@@ -448,7 +411,7 @@ export async function applyExternalImplementationResult(opts: {
     exchange: opts.exchange,
     execution_base: recoveredExecutionBase,
     commit: implementationCommit,
-    preserve_recorded_evidence: reusedRecordedImplementation && !opts.work_order.task.work_item_id,
+    preserve_recorded_evidence: reusedRecordedImplementation,
   });
   const implementation = recoveredEvidence
     ? { status: "ready" as const, evidence: recoveredEvidence }

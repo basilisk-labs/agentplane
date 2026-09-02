@@ -1,3 +1,5 @@
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { runCanonicalTask } from "./kernel-run.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -102,6 +104,21 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
       const initialCommandCtx = await deps.getPreparationContext("task run", {
         includeRemote: parsed.remote,
       });
+      const canonicalSource = await initialCommandCtx.taskBackend.getTask(parsed.taskId);
+      if (
+        canonicalSource?.extensions &&
+        Object.hasOwn(canonicalSource.extensions, TASK_KERNEL_EXTENSION)
+      ) {
+        output.json(
+          await runCanonicalTask({
+            command: initialCommandCtx,
+            task_id: parsed.taskId,
+            dry_run: true,
+            sandbox: parsed.sandbox,
+          }),
+        );
+        return 0;
+      }
       const taskCommand = await loadTaskCommandContext({
         ctx: initialCommandCtx,
         taskIds: [parsed.taskId],
@@ -140,6 +157,20 @@ export function makeRunTaskRunHandler(deps: TaskRunContextDependencies) {
     const initialCommandCtx = await deps.getExecutionContext("task run", {
       includeRemote: parsed.remote,
     });
+    const canonicalSource = await initialCommandCtx.taskBackend.getTask(parsed.taskId);
+    if (
+      canonicalSource?.extensions &&
+      Object.hasOwn(canonicalSource.extensions, TASK_KERNEL_EXTENSION)
+    ) {
+      output.json(
+        await runCanonicalTask({
+          command: initialCommandCtx,
+          task_id: parsed.taskId,
+          sandbox: parsed.sandbox,
+        }),
+      );
+      return 0;
+    }
     const taskCommand = await loadTaskCommandContext({
       ctx: initialCommandCtx,
       taskIds: [parsed.taskId],

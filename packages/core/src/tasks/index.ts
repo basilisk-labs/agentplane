@@ -220,3 +220,13 @@ export {
 } from "./tasks-lint.js";
 
 export * from "./task-centric/index.js";
+
+export {
+  kernelIntentSchema,
+  kernelWorkContractSchema,
+  kernelPlanProposalSchema,
+  kernelEpisodeBindingSchema,
+  kernelOutputClaimsSchema,
+  type KernelEpisodeBinding,
+  type KernelPlanProposal,
+} from "./kernel-semantic.js";

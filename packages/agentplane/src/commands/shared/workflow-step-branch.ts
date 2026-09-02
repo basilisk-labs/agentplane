@@ -1,5 +1,4 @@
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
@@ -32,11 +31,9 @@ import {
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
-
 function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
   return state.blockers.some((blocker) => blocker.code === code);
 }
-
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
     state,
@@ -52,7 +49,6 @@ function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
     selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
   });
 }
-
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
   if (state.batchOwnership.role !== "primary") return null;
   const ownership = state.batchOwnership;
@@ -72,7 +68,6 @@ function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep |
     },
   });
 }
-
 function hostedCloseStep(state: WorkflowRouteState): WorkflowStep | null {
   const id = state.task.id;
   if (state.prFlow?.closeTail.state === "open") {
@@ -126,7 +121,6 @@ function hostedCloseStep(state: WorkflowRouteState): WorkflowStep | null {
   }
   return null;
 }
-
 function runnerWaitStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const summary = "wait for the active runner or reclaim with explicit force if it is orphaned";
@@ -158,7 +152,6 @@ function runnerWaitStep(state: WorkflowRouteState): WorkflowStep {
     }),
   };
 }
-
 function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
   const probe = state.taskWorktree;
   if (probe?.state === "unavailable") {
@@ -172,7 +165,6 @@ function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
     summary: "task worktree state could not be inspected",
   };
 }
-
 export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
@@ -355,7 +347,6 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
     selectedBlocker: null,
   });
 }
-
 export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const supersededStep = supersededProviderConflictStep(state);
@@ -500,9 +491,17 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const requiredWorkItemIncomplete = taskCentric?.current_plan?.proposal.work_items.work_items.some(
     (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
   );
-  const implementationMissing =
-    state.task.verification?.state !== "ok" && !state.task.commit?.hash?.trim();
-  if (requiredWorkItemIncomplete || implementationMissing) return branchImplementationStep(state);
+  const implementationCommit = state.task.commit?.hash?.trim() ?? "";
+  const implementationValidated =
+    Boolean(implementationCommit) &&
+    state.task.verification?.state === "ok" &&
+    state.task.quality_review?.state === "pass" &&
+    state.task.quality_review.evaluated_sha === implementationCommit;
+  if (
+    !implementationCommit &&
+    (requiredWorkItemIncomplete || state.task.verification?.state !== "ok")
+  )
+    return branchImplementationStep(state);
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({
       state,
@@ -517,6 +516,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
   }
+  if (requiredWorkItemIncomplete && !implementationValidated)
+    return branchImplementationStep(state);
   if (hasRouteBlocker(state, "verification_required")) {
     return verificationStep(state);
   }

@@ -1,5 +1,9 @@
 import { describe } from "vitest";
 import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { taskKernel } from "@agentplaneorg/core/tasks";
+import { resolveLogicalRepositoryIdentity } from "../commands/task/execution-authority-context.js";
 
 import {
   captureStdIO,
@@ -43,6 +47,75 @@ async function captureCli(args: string[]): Promise<string> {
 }
 
 describe("runCli completed task token usage", () => {
+  it("reads canonical state across commands without changing stored Task bytes", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    const repositoryIdentity = await resolveLogicalRepositoryIdentity({ git_root: root, task: {} });
+    const aggregate: taskKernel.TaskAggregate = {
+      schema_version: 1,
+      id: taskId,
+      revision: 1,
+      state: "PLANNING",
+      intent_digest: taskKernel.kernelDigest("intent"),
+      current_plan: null,
+      plan_history: [],
+      work_items: {},
+      final_validation: null,
+      effects: [],
+      mutation_receipts: {},
+      controller_transfer: null,
+      migration_receipts: [],
+    };
+    const record = {
+      schema_version: 1,
+      kind: "canonical_task",
+      repository_identity: repositoryIdentity,
+      aggregate,
+      events: [],
+    };
+    await seedTaskQueryFixture(root, [
+      {
+        id: taskId,
+        title: "Canonical status",
+        description: "Read-only canonical query",
+        status: "DONE",
+        priority: "med",
+        owner: "CODER",
+        depends_on: ["LEGACY-MISSING"],
+        tags: ["workflow"],
+        verify: [],
+        extensions: {
+          task_kernel: { ...record, digest: taskKernel.kernelDigest(record) },
+        },
+      },
+    ]);
+    await writeConfig(root, config);
+    const readme = path.join(root, config.paths.workflow_dir, taskId, "README.md");
+    const before = await readFile(readme, "utf8");
+    for (const command of ["status", "brief", "next-action"]) {
+      const view: unknown = JSON.parse(
+        await captureCli(["task", command, taskId, "--json", "--root", root]),
+      );
+      expect(view).toMatchObject({
+        source: "task_kernel",
+        record_kind: "canonical",
+        task: { id: taskId, state: "PLANNING", status: "TODO" },
+        ready: false,
+        next_action: { reason_code: "kernel_plan_required", command: null },
+      });
+    }
+    const active: unknown = JSON.parse(
+      await captureCli(["task", "active", "--json", "--root", root]),
+    );
+    expect(active).toMatchObject({
+      count: 1,
+      items: [
+        { task: { id: taskId, status: "PLANNING" }, next_action: { code: "kernel_plan_required" } },
+      ],
+    });
+    expect(await readFile(readme, "utf8")).toBe(before);
+  });
   it("keeps status, brief, and machine projections consistent", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();

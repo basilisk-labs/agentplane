@@ -143,6 +143,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
   );
   return {
     work_order_id: workOrder.work_order_id,
+    ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
     role: workOrder.role,
     task: {
       ...workOrder.task,

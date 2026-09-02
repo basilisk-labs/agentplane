@@ -22,3 +22,9 @@ export {
   workItemResourceConflicts,
 } from "./kernel.js";
 export type * from "./model.js";
+
+export {
+  authorityDigest,
+  canonicalAuthorityIssues,
+  continuationIssues,
+} from "./authority-lineage.js";

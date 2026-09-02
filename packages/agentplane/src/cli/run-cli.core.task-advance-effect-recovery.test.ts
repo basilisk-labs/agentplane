@@ -159,6 +159,7 @@ describe("task advance effect recovery", () => {
   it("requires replacement when plan approval changes pending implementation authority", () => {
     const taskDigest = `sha256:${"a".repeat(64)}`;
     const backendDigest = `sha256:${"b".repeat(64)}`;
+    const authorityDigest = `sha256:${"e".repeat(64)}`;
     const fingerprint = {
       task_id: "202608171106-XFN696",
       task_revision: 16,
@@ -166,6 +167,7 @@ describe("task advance effect recovery", () => {
       components: {
         task: { digest: taskDigest },
         backend_projection: { digest: backendDigest },
+        authority: { digest: authorityDigest },
       },
     };
     const decision = {
@@ -204,16 +206,40 @@ describe("task advance effect recovery", () => {
         work_order: workOrder,
       }),
     ).toBe(false);
+    expect(
+      requiresImplementationRecoveryReplacement({
+        decision: {
+          workflowStep: {
+            preconditionFingerprint: {
+              ...fingerprint,
+              components: {
+                ...fingerprint.components,
+                authority: { digest: `sha256:${"f".repeat(64)}` },
+              },
+            },
+          },
+        } as never,
+        exchange,
+        work_order: workOrder,
+      }),
+    ).toBe(true);
   });
 
   it("lets implementation rework proceed past stale verification failures only", () => {
     expect(
       blockingImplementationAuthorityViolations([
         "verification:verification-record:fail",
+        "verification",
+        "verification-record:fail",
         "repository_effect:ci",
         "external_effect:network_read",
       ]),
-    ).toEqual(["repository_effect:ci", "external_effect:network_read"]);
+    ).toEqual([
+      "verification",
+      "verification-record:fail",
+      "repository_effect:ci",
+      "external_effect:network_read",
+    ]);
   });
 
   it("retires a drifted result-less exchange and issues one exact-key replacement", async () => {

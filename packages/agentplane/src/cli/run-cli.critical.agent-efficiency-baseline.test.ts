@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("265commands/182args/866options");
+      expect(compatibility.stdout).toContain("265commands/182args/867options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -222,14 +222,15 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608211020-FGAPJC",
           "202608212244-6XZAYD",
           "202608291006-2A6BJC",
+          "202608291006-255K66",
           "202608301851-5W3XW6",
         ],
         candidate: {
-          surface_sha256: "a5e491720d1bd3da5f9a50b581e63ebf84d49470b063d80992004023a0b77f56",
+          surface_sha256: "188758d3816d44e2767842ffb416f054acb7fd4bbfca4b4854595d6f03a270be",
           section_digests: {
             agent_facing_context_contracts:
               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
-            cli_topology: "c36d98412cae805197772c9fb706af33e68b27f32e27c6d8943662ecbafa91ed",
+            cli_topology: "9a1daccdc588e364a76b4ed5f0e3ff6cc34215cacd55fbfcf4d20624a64ba5e7",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
@@ -348,9 +349,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
           agent_work_order_schema: {
             path: "schemas/agent-work-order-v2.schema.json",
-            sha256: "4dac39ec8e0ff777d6dda4524912be1ae1f38de1c2bfbea7f75c5e71015e6f1d",
+            sha256: "4f57a53b795c054d112b9126a6a06a69ba4e417e6cf5de1dd5b048f14ae73619",
             comparison: "canonical_json_exact",
-            source_task: "202608212244-6XZAYD",
+            source_task: "202608291006-255K66",
           },
           core_agent_work_order_exports: {
             comparison: "required_named_reexports",

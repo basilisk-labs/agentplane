@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  resolveEvidenceOnlyReworkCommit,
+  selectRecordedImplementationRecoveryCommit,
+} from "./evidence-only-rework-commit.js";
 import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
 
 const COMMIT = "a".repeat(40);
@@ -40,6 +44,56 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it("prefers fresh supervisor evidence for task-level verification rework", () => {
+    expect(
+      selectRecordedImplementationRecoveryCommit({
+        task_level_rework: true,
+        recorded_commit: "previous-quality-sha",
+        evidence_commit: "current-implementation-sha",
+      }),
+    ).toBe("current-implementation-sha");
+    expect(
+      selectRecordedImplementationRecoveryCommit({
+        task_level_rework: false,
+        recorded_commit: "work-item-sha",
+        evidence_commit: "current-implementation-sha",
+      }),
+    ).toBe("work-item-sha");
+  });
+
+  it("rebinds a verified implementation through managed evidence-only commits", () => {
+    const eligible = {
+      purpose: "implementation_rework" as const,
+      changed_paths: [],
+      recorded_commit: "implementation-sha",
+      head: "managed-evidence-head",
+      work_item_id: "work-item",
+      work_item_state: "REWORK_READY",
+      task_verification_state: "ok",
+      quality_review_state: "pass",
+      quality_review_evaluated_sha: "implementation-sha",
+      head_is_managed_descendant: true,
+      all_required_work_items_completed: false,
+    };
+
+    expect(resolveEvidenceOnlyReworkCommit(eligible)).toBe("implementation-sha");
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, task_verification_state: "needs_rework" }),
+    ).toBeNull();
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, quality_review_state: "rework" }),
+    ).toBeNull();
+    expect(
+      resolveEvidenceOnlyReworkCommit({
+        ...eligible,
+        quality_review_evaluated_sha: "different-sha",
+      }),
+    ).toBeNull();
+    expect(
+      resolveEvidenceOnlyReworkCommit({ ...eligible, head_is_managed_descendant: false }),
+    ).toBeNull();
+  });
+
   it("accepts only removal of creation-checkout provenance for the same valid identity", () => {
     const before = contextReadme({ ...BASE_CONTEXT, source: "creation_checkout" });
     const after = contextReadme(BASE_CONTEXT);

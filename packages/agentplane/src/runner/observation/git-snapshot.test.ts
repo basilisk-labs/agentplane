@@ -1,4 +1,4 @@
-import { chmod, mkdir, mkdtemp, rm, unlink, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, rm, symlink, unlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -14,6 +14,9 @@ import {
   type GitSnapshotDelta,
   type GitSnapshotDeltaEntry,
 } from "./git-snapshot.js";
+
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { observeKernelRepository, kernelRepositoryChangedPaths } from "./kernel-repository.js";
 
 const tempRoots: string[] = [];
 
@@ -305,5 +308,66 @@ describe("Git execution snapshot observation", () => {
     expect(snapshot.snapshot_sha256).toBeNull();
     expect(snapshot.errors).toHaveLength(1);
     expect(snapshot.errors[0]?.operation).toBe("git_root");
+  });
+});
+
+describe("canonical implementation identity", () => {
+  const identity = k.kernelDigest("logical-repository");
+  const observe = (root: string) =>
+    observeKernelRepository({
+      repository_root: root,
+      repository_identity: identity,
+      operational_paths: [".agentplane/tasks", ".agentplane/tasks.json"],
+    });
+
+  it("keeps content identity across staging, commits and native evidence writes", async () => {
+    const root = await createRepository();
+    const before = await observe(root);
+    await writeRepoFile(root, ".agentplane/tasks/T/README.md", "result received");
+    await writeRepoFile(root, ".agentplane/tasks.json", "revision 2");
+    await git(root, ["add", "."]);
+    await git(root, ["commit", "-qm", "native evidence"]);
+    const observation1 = await observe(root);
+    expect(observation1.fingerprint).toBe(before.fingerprint);
+    await writeRepoFile(root, "tracked.txt", "implementation");
+    const dirty = await observe(root);
+    expect(kernelRepositoryChangedPaths(before, dirty)).toEqual(["tracked.txt"]);
+    await git(root, ["add", "."]);
+    const observation2 = await observe(root);
+    expect(observation2.fingerprint).toBe(dirty.fingerprint);
+    await git(root, ["commit", "-qm", "implementation"]);
+    const observation3 = await observe(root);
+    expect(observation3.fingerprint).toBe(dirty.fingerprint);
+  });
+
+  it("detects repeated dirty writes, hidden tracked writes, executable bits and deleted files", async () => {
+    const root = await createRepository();
+    const before = await observe(root);
+    await git(root, ["update-index", "--assume-unchanged", "tracked.txt"]);
+    await writeRepoFile(root, "tracked.txt", "changed");
+    const changed = await observe(root);
+    expect(changed.fingerprint).not.toBe(before.fingerprint);
+    await writeRepoFile(root, "tracked.txt", "another");
+    const repeated = await observe(root);
+    expect(repeated.fingerprint).not.toBe(changed.fingerprint);
+    await chmod(path.join(root, "tracked.txt"), 0o755);
+    const executable = await observe(root);
+    expect(executable.fingerprint).not.toBe(repeated.fingerprint);
+    await unlink(path.join(root, "tracked.txt"));
+    const deleted = await observe(root);
+    expect(kernelRepositoryChangedPaths(executable, deleted)).toEqual(["tracked.txt"]);
+  });
+
+  it("observes a symlink target without following it and refuses escaping tracked parents", async () => {
+    const outside = await createRepository({ "private.txt": "not an implementation input" });
+    const root = await createRepository({ "dir/private.txt": "source" });
+    await symlink(path.join(outside, "private.txt"), path.join(root, "link"));
+    const first = await observe(root);
+    await writeRepoFile(outside, "private.txt", "different private data");
+    const observation4 = await observe(root);
+    expect(observation4.fingerprint).toBe(first.fingerprint);
+    await rm(path.join(root, "dir"), { recursive: true });
+    await symlink(outside, path.join(root, "dir"));
+    await expect(observe(root)).rejects.toMatchObject({ reason_code: "git_observation_failed" });
   });
 });

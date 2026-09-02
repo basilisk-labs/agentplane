@@ -351,6 +351,7 @@ function validateReviewedCandidate({
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
     "202608291006-2A6BJC",
+    "202608291006-255K66",
     "202608301851-5W3XW6",
   ];
   const expectedSourceTasks = [
@@ -395,6 +396,7 @@ function validateReviewedCandidate({
     "202608211020-FGAPJC",
     "202608212244-6XZAYD",
     "202608291006-2A6BJC",
+    "202608291006-255K66",
     "202608301851-5W3XW6",
   ];
   assert(
@@ -743,7 +745,7 @@ function validateReviewedCandidate({
     "AgentWorkOrder contract artifact comparison drift",
   );
   assert(
-    agentWorkOrderArtifact.source_task === "202608212244-6XZAYD",
+    agentWorkOrderArtifact.source_task === "202608291006-255K66",
     "AgentWorkOrder contract artifact source task drift",
   );
   const agentWorkOrderSchema = JSON.parse(
@@ -2083,6 +2085,7 @@ function validateReviewedCandidate({
       name: "yes",
       valueHint: null,
     },
+    { command: "task new", kind: "boolean", name: "canonical", valueHint: null },
     {
       command: "task new",
       name: "route",
@@ -2734,6 +2737,12 @@ function validateReviewedCandidate({
       command: "task kernel-migrate",
       name: "yes",
       source_task: "202608291006-2A6BJC",
+    },
+    {
+      kind: "option",
+      command: "task new",
+      name: "canonical",
+      source_task: "202608291006-255K66",
     },
     ...["apply", "expect-token", "refresh-planning-base"].map((name) => ({
       kind: "option",

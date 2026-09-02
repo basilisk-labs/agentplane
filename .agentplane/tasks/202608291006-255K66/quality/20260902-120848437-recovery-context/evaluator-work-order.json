@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202608291006-255K66-e0a3efa2aa9d4c6293a78975",
+  "prepared_at": "2026-09-02T12:08:48.437Z",
+  "task": {
+    "id": "202608291006-255K66",
+    "revision": 197,
+    "objective": "Cut over to the canonical Task kernel and retire legacy core paths\n\nAfter replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run lifecycle:invariants",
+      "bun run qualification:mixed-scope-lifecycle",
+      "- In scope: After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence.\n- Out of scope: unrelated refactors not required for \"Cut over to the canonical Task kernel and retire legacy core paths\".",
+      "Preserved the completed M3 graph and refined only self-hosting and final qualification evidence to match the current delivery scope.",
+      "PLANNER fallback scaffold for \"Cut over to the canonical Task kernel and retire legacy core paths\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Cut over to the canonical Task kernel and retire legacy core paths\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "3e79d32c8ab91879d4bac3723b1bb8bff31ba617",
+  "diff_base_sha": "36741ce5160d452ca9660a388241cb4da32f842a",
+  "blueprint_digest": "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202608291006-255K66/quality/20260902-120848437-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:16e72c48e6d0f19dc8e3b95737bcb0db631dfdbd8974d5526e34bcc9e598e2f4",
+    "prompt_path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/03fac2d5aaf2b44e1196d4f999a8b02f762865e91ba13e31f61d538764e38f6a.md",
+    "result_schema_path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202608291006-255K66/README.md",
+      "sha256": "sha256:fe9e347f150739109944bec5368a0454bc8bd009b8f89108a1abdd4e4e3e08d9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/aa2c851b2c2ebda2d6d6457f6cdd422d44c0bcb634decce41b25d7c6bc5b69c6.patch",
+      "sha256": "sha256:aa2c851b2c2ebda2d6d6457f6cdd422d44c0bcb634decce41b25d7c6bc5b69c6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/ad278564bd188a83eb457870490081d393908746afeae7c1b8d8e1ee23814f2d.json",
+      "sha256": "sha256:ad278564bd188a83eb457870490081d393908746afeae7c1b8d8e1ee23814f2d",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202608291006-255K66/verification/20260902120832993-89c8c1f0fd216ee8.json",
+      "sha256": "sha256:e3eedd8d6ac3c0c159410761a4fb968e5e752e2cffcb3895a440f7369993093b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json",
+      "sha256": "sha256:5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

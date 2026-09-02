@@ -42,6 +42,7 @@ async function repositoryIdentityFromAnchor(
 export async function resolveLogicalRepositoryIdentity(opts: {
   git_root: string;
   task: Pick<TaskData, "extensions">;
+  create_if_missing?: boolean;
 }): Promise<string> {
   const base = taskExecutionBaseFromExtensions(opts.task.extensions);
   const commonDir = await gitRevParse(opts.git_root, [
@@ -85,6 +86,9 @@ export async function resolveLogicalRepositoryIdentity(opts: {
     throw new Error("Task execution base does not belong to the current Git repository.");
   }
 
+  if (opts.create_if_missing === false) {
+    throw new Error("Logical repository identity is unavailable for read-only inspection.");
+  }
   const repository_identity = executionGrantDigest({
     schema_version: 1,
     kind: "agentplane.unborn_repository_identity",

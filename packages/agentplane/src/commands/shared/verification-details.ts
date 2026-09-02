@@ -31,12 +31,11 @@ export function parseVerificationCheckDetails(details: unknown): VerificationChe
   let fields: Map<VerificationField, string> | null = null;
   for (const [index, match] of matches.entries()) {
     const field = match[1] as VerificationField;
-    if (field === "Check" || (field === "Command" && fields?.has("Command"))) {
-      if (fields) checks.push(fields);
+    if (fields?.has(field)) {
+      checks.push(fields);
       fields = new Map();
     }
-    if (field === "Command" && !fields) fields = new Map();
-    if (!fields || fields.has(field)) return null;
+    fields ??= new Map();
     const valueStart = (match.index ?? 0) + match[0].length;
     const valueEnd = matches[index + 1]?.index ?? text.length;
     const value = text.slice(valueStart, valueEnd).trim();

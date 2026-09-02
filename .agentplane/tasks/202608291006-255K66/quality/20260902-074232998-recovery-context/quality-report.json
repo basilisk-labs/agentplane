@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task_id": "202608291006-255K66",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-02T07:45:35.616Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "e3f7dc4076963713aa7721f5bf63c407f18aeb1d",
+  "blueprint_digest": "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211",
+  "findings": [
+    "The frozen evidence does not prove the mandatory M3 self-hosting and release-readiness qualification. The blueprint requires twenty real sequential self-hosting Tasks, three clean release drills, hosted exact-head checks, and a receipt bound to the implementation SHA, while the observed evidence marks the qualification packet not required and contains no runtime evidence.",
+    "The frozen diff contains numerous task artifacts and implementation changes outside the approved writable roots, and the task record classifies them as writable-scope violations without evidence of explicit re-approval or an accepted concurrent-work drift classification.",
+    "The implementation evidence embedded in the observed-checks packet is bound to the earlier SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be, not the evaluated SHA e3f7dc4076963713aa7721f5bf63c407f18aeb1d, so its clean-status and reviewed-path assertions do not establish the final evaluated state."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json",
+    ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664.json",
+    ".agentplane/tasks/202608291006-255K66/README.md",
+    ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6e6b178b90391a5a592f1783e482fb3bd2ea9c883a68aacf81b8d75609092742.patch",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/tasks/202608291006-255K66/verification/20260902073908986-26b434d9dee6b5c9.json"
+  ],
+  "missing_tests": [
+    "Record and validate the twenty required sequential real self-hosting Tasks against the exact evaluated SHA, including interruption recovery, no duplicate effects, and no lost WorkItems.",
+    "Run and record the three clean release drills with source/package/tag/hosted-release/registry/installed-CLI identity agreement and hosted exact-head checks.",
+    "Capture a final evaluated-SHA-bound repository-status and path-authority check that classifies every outside-scope path as approved dependency work, explicitly re-approved drift, or unintended drift."
+  ],
+  "hidden_assumptions": [
+    "Local CI, lifecycle invariants, and mixed-scope qualification are assumed to substitute for the blueprint's explicitly mandatory real self-hosting and hosted release evidence.",
+    "The qualification packet is assumed to be unnecessary even though the approved blueprint makes M3 qualification a completion gate.",
+    "Changes from other task histories are assumed to be admissible concurrent or dependency work despite the frozen task record classifying them as outside-scope authority violations.",
+    "Clean repository evidence from SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be is assumed to remain valid for evaluated SHA e3f7dc4076963713aa7721f5bf63c407f18aeb1d."
+  ],
+  "residual_risks": [
+    "Requalify the exact evaluated SHA against the approved M3 blueprint: supply the twenty real self-hosting runs, three clean release drills, hosted exact-head and rollback receipts, then produce evaluated-SHA-bound clean-status evidence and explicitly resolve every recorded outside-scope path through approved dependency provenance, re-approval, or removal."
+  ]
+}

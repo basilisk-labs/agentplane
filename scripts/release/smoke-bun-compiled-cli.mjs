@@ -216,6 +216,11 @@ function smokeBunCompiledCli(args, repoRoot) {
       { cwd: repoRoot, timeout: 120_000 },
     );
 
+    if (process.platform === "darwin") {
+      // Bun's compile step can leave the temporary executable with an invalid linker signature.
+      run("codesign", ["--force", "--sign", "-", executable], { cwd: repoRoot });
+    }
+
     const versionOutput = run(executable, ["--version"], { cwd: tempDir }).trim();
     if (versionOutput !== version) {
       throw new Error(`Expected compiled version ${version}, got ${versionOutput}`);

@@ -181,6 +181,14 @@ export class KernelMigration {
     };
   }
 
+  private async readVerifiedBackup(receipt: KernelMigrationReceipt): Promise<string | null> {
+    const backup = await this.store.readBackup(receipt.backup_location);
+    return taskBytesDigest(backup) === receipt.backup_digest &&
+      receipt.backup_digest === receipt.source_digest
+      ? backup
+      : null;
+  }
+
   private async proveCurrent(
     source: Extract<MigrationSource, { kind: "canonical" | "archived" }>,
   ): Promise<KernelMigrationProof | null> {
@@ -191,12 +199,8 @@ export class KernelMigration {
       receipt.backend_identity !== this.store.backend_identity
     )
       return null;
-    const backup = await this.store.readBackup(receipt.backup_location);
-    if (
-      taskBytesDigest(backup) !== receipt.backup_digest ||
-      receipt.backup_digest !== receipt.source_digest
-    )
-      return null;
+    const backup = await this.readVerifiedBackup(receipt);
+    if (backup === null) return null;
     const original: TaskByteSnapshot = {
       task_id: receipt.task_id,
       text: backup,
@@ -303,17 +307,28 @@ export class KernelMigration {
       receipt.backend_identity !== this.store.backend_identity
     )
       return { kind: "refused", reason: "receipt_identity_mismatch" };
-    const current = await this.store.read(receipt.task_id);
+    let current: TaskByteSnapshot | null;
+    try {
+      current = await this.store.read(receipt.task_id);
+    } catch {
+      return { kind: "refused", reason: "rollback_in_doubt" };
+    }
+    if (current?.digest === receipt.source_digest && current.revision === receipt.source_revision) {
+      try {
+        return (await this.readVerifiedBackup(receipt)) === current.text
+          ? { kind: "rolled_back", source_digest: current.digest }
+          : { kind: "refused", reason: "backup_mismatch" };
+      } catch {
+        return { kind: "refused", reason: "backup_mismatch" };
+      }
+    }
     if (current?.digest !== outputDigest || current.revision !== receipt.output_revision)
       return { kind: "refused", reason: "state_changed_after_migration" };
     let backup: string;
     try {
-      backup = await this.store.readBackup(receipt.backup_location);
-      if (
-        taskBytesDigest(backup) !== receipt.backup_digest ||
-        receipt.backup_digest !== receipt.source_digest
-      )
-        return { kind: "refused", reason: "backup_mismatch" };
+      const verifiedBackup = await this.readVerifiedBackup(receipt);
+      if (verifiedBackup === null) return { kind: "refused", reason: "backup_mismatch" };
+      backup = verifiedBackup;
       const classification = classifyMigrationSource(current, this.repositoryIdentity);
       if (classification.kind !== "canonical" && classification.kind !== "archived")
         return { kind: "refused", reason: "state_changed_after_migration" };

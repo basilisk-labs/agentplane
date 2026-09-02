@@ -131,6 +131,58 @@ function aggregate(effects: readonly ExternalEffect[] = []): TaskAggregate {
 }
 
 describe("canonical task kernel invariants", () => {
+  it("binds a proposed plan to its complete definitions and semantic contracts", () => {
+    const { aggregate, plan, input, fingerprint } = dispatchFixtures;
+    const state = aggregate({ state: "PLANNING", current_plan: null, work_items: {} });
+    const definitions = plan.work_items.map((item) => ({
+      ...item,
+      contract_digest: kernelDigest({ objective: "Implement", acceptance: ["verified"] }),
+    }));
+    const proposal = {
+      ...plan,
+      state: "PROPOSED" as const,
+      approval_actor_id: null,
+      approval_evidence_digest: null,
+      work_items: definitions,
+      digest: kernelDigest({ revision: 1, work_items: definitions }),
+    };
+    const command: TaskCommand = {
+      kind: "propose_plan",
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: fingerprint,
+      plan: proposal,
+    };
+    expect(reduceTaskCommand(input(state, command))).toMatchObject({
+      kind: "accepted",
+      aggregate: { state: "AWAITING_PLAN_APPROVAL", current_plan: proposal },
+    });
+    const before = JSON.stringify(state);
+    expect(
+      reduceTaskCommand(
+        input(state, {
+          ...command,
+          plan: {
+            ...proposal,
+            work_items: definitions.map((item) => ({
+              ...item,
+              contract_digest: kernelDigest({ objective: "Changed", acceptance: [] }),
+            })),
+          },
+        }),
+      ),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_DIGEST_MISMATCH" });
+    expect(
+      reduceTaskCommand(
+        input(state, {
+          ...command,
+          plan: { ...proposal, revision: 3 },
+        }),
+      ),
+    ).toMatchObject({ kind: "rejected", code: "PLAN_REVISION_MISMATCH" });
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
   it("accepts only equal or narrower derived authority", () => {
     const parent = parentAuthority();
     expect(compareExecutionAuthority(parent, childAuthority(parent))).toEqual({ ok: true });

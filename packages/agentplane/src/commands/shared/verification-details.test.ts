@@ -128,4 +128,37 @@ describe("verification details", () => {
       },
     ]);
   });
+
+  it("normalizes field order and detects repeated blocks by any repeated field", () => {
+    expect(
+      parseVerificationCheckDetails(
+        [
+          "Evidence: focused report.json",
+          "Scope: focused behavior",
+          "Result: pass",
+          "Command: bun test focused",
+          "Scope: full repository",
+          "Check: full_regression",
+          "Command: bun run ci:local:full",
+          "Evidence: full report.json",
+          "Result: pass",
+        ].join("\n"),
+      ),
+    ).toEqual([
+      {
+        checkId: null,
+        command: "bun test focused",
+        result: "pass",
+        evidence: "focused report.json",
+        scope: "focused behavior",
+      },
+      {
+        checkId: "full_regression",
+        command: "bun run ci:local:full",
+        result: "pass",
+        evidence: "full report.json",
+        scope: "full repository",
+      },
+    ]);
+  });
 });

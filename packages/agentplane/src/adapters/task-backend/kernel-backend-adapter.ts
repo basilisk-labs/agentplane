@@ -1,3 +1,4 @@
+import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { taskKernel } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
@@ -10,6 +11,11 @@ import {
 } from "./kernel-record.js";
 import { projectKernelTask } from "./kernel-projector.js";
 import { readKernelNextAction } from "./kernel-next-action.js";
+import {
+  kernelDocumentIssues,
+  kernelDocumentsSchema,
+  type KernelDocuments,
+} from "./kernel-documents.js";
 
 export type KernelAdapterResult =
   | {
@@ -43,7 +49,18 @@ export class KernelBackendAdapter {
   ) {}
 
   async read(taskId: string): Promise<KernelRead> {
-    return readKernelRecord(await this.backend.getTask(taskId), this.repositoryIdentity);
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        return readKernelRecord(await this.backend.getTask(taskId), this.repositoryIdentity);
+      } catch (error) {
+        const transientReplacement =
+          (error as NodeJS.ErrnoException | null)?.code === "ELOOP" &&
+          error instanceof Error &&
+          error.message.startsWith(`Refusing changed task README ${taskId} path:`);
+        if (!transientReplacement || attempt >= 3) throw error;
+        await new Promise<void>((resolve) => setTimeout(resolve, 10 * (attempt + 1)));
+      }
+    }
   }
 
   async nextAction(taskId: string, repositoryFingerprint: taskKernel.Sha256Digest) {
@@ -82,7 +99,11 @@ export class KernelBackendAdapter {
     return null;
   }
 
-  async create(task: TaskData, input: KernelCommandInput): Promise<KernelAdapterResult> {
+  async create(
+    task: TaskData,
+    input: KernelCommandInput,
+    documents?: KernelDocuments,
+  ): Promise<KernelAdapterResult> {
     if (!this.supportsMutation()) return this.unavailable("backend_capability_missing");
     const rejection = this.repositoryRejection(input);
     if (rejection) return rejection;
@@ -95,7 +116,18 @@ export class KernelBackendAdapter {
       };
     }
     const existing = await this.read(task.id);
-    if (existing.kind === "canonical") return this.execute(input);
+    if (existing.kind === "canonical") {
+      if (
+        documents &&
+        (!existing.record.documents ||
+          !kernelDocumentsSchema.safeParse(documents).success ||
+          Object.keys(documents.contracts).length > 0 ||
+          taskKernel.kernelDigest(documents.intent) !==
+            taskKernel.kernelDigest(existing.record.documents.intent))
+      )
+        return this.unavailable("malformed", "creation_documents_changed");
+      return this.execute(input);
+    }
     if (existing.kind !== "missing") return this.unavailable("task_exists", existing.kind);
     const aggregate: taskKernel.TaskAggregate = {
       schema_version: 1,
@@ -114,15 +146,20 @@ export class KernelBackendAdapter {
     };
     const result = taskKernel.reduceTaskCommand({ ...input, aggregate });
     if (result.kind === "rejected") return result;
+    const documentFailure = this.validateRecordContents(result.aggregate, documents);
+    if (documentFailure) return documentFailure;
     return this.persist(
       task,
       0,
-      makeKernelRecord(this.repositoryIdentity, result.aggregate, result.events),
+      makeKernelRecord(this.repositoryIdentity, result.aggregate, result.events, documents),
       result.receipts,
     );
   }
 
-  async execute(input: KernelCommandInput): Promise<KernelAdapterResult> {
+  async execute(
+    input: KernelCommandInput,
+    documents?: KernelDocuments,
+  ): Promise<KernelAdapterResult> {
     if (!this.supportsMutation()) return this.unavailable("backend_capability_missing");
     const rejection = this.repositoryRejection(input);
     if (rejection) return rejection;
@@ -131,6 +168,31 @@ export class KernelBackendAdapter {
       return this.unavailable(current.kind, ...("reason" in current ? [current.reason] : []));
     const result = taskKernel.reduceTaskCommand({ ...input, aggregate: current.record.aggregate });
     if (result.kind === "rejected") return result;
+    const retained = documents ?? current.record.documents;
+    if (
+      documents &&
+      current.record.documents &&
+      (taskKernel.kernelDigest(documents.intent) !==
+        taskKernel.kernelDigest(current.record.documents.intent) ||
+        Object.entries(current.record.documents.contracts).some(
+          ([digest, contract]) =>
+            !Object.hasOwn(documents.contracts, digest) ||
+            taskKernel.kernelDigest(documents.contracts[digest]) !==
+              taskKernel.kernelDigest(contract),
+        ))
+    )
+      return this.unavailable("malformed", "immutable_documents_changed");
+    // Adding documents to an existing record is a migration, not an execution side effect.
+    if (documents && !current.record.documents)
+      return this.unavailable("malformed", "document_migration_required");
+    const documentFailure = this.validateRecordContents(result.aggregate, retained);
+    if (documentFailure) return documentFailure;
+    if (
+      result.events.length === 0 &&
+      taskKernel.kernelDigest(retained ?? null) !==
+        taskKernel.kernelDigest(current.record.documents ?? null)
+    )
+      return this.unavailable("malformed", "replay_documents_changed");
     if (result.events.length === 0)
       return {
         kind: "committed",
@@ -141,12 +203,31 @@ export class KernelBackendAdapter {
     return this.persist(
       current.task,
       current.task.revision ?? 1,
-      makeKernelRecord(this.repositoryIdentity, result.aggregate, [
-        ...current.record.events,
-        ...result.events,
-      ]),
+      makeKernelRecord(
+        this.repositoryIdentity,
+        result.aggregate,
+        [...current.record.events, ...result.events],
+        retained,
+      ),
       result.receipts,
     );
+  }
+
+  private validateRecordContents(
+    aggregate: taskKernel.TaskAggregate,
+    documents?: KernelDocuments,
+  ): KernelAdapterResult | null {
+    if (
+      aggregate.authority_lineage &&
+      !kernelAuthorityRecordSchema.array().safeParse(aggregate.authority_lineage).success
+    )
+      return this.unavailable("malformed", "invalid_authority_schema");
+    const authorityIssues = taskKernel.canonicalAuthorityIssues(aggregate);
+    if (authorityIssues.length > 0) return this.unavailable("malformed", ...authorityIssues);
+    if (documents && !kernelDocumentsSchema.safeParse(documents).success)
+      return this.unavailable("malformed", "invalid_documents_schema");
+    const issues = kernelDocumentIssues(aggregate, documents);
+    return issues.length > 0 ? this.unavailable("malformed", ...issues) : null;
   }
 
   /** Comparison only: never writes or invokes a provider. */

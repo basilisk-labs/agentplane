@@ -251,6 +251,11 @@ describe("explicit canonical migration", () => {
         expect(recovered.kind).toBe("already_applied");
         expect(write).not.toHaveBeenCalled();
         if (recovered.kind !== "already_applied") throw new Error(JSON.stringify(recovered));
+        expect(recovered.proof.receipt).toMatchObject({
+          source_digest: taskBytesDigest(f.text),
+          backup_digest: taskBytesDigest(f.text),
+          repository_identity: identity,
+        });
         expect(await restarted.rollback(recovered.proof)).toEqual({
           kind: "rolled_back",
           source_digest: taskBytesDigest(f.text),
@@ -291,6 +296,41 @@ describe("explicit canonical migration", () => {
       expect(await readFile(f.file)).toEqual(before);
     },
   );
+
+  it("confirms an exact rollback after its readback response is lost", async () => {
+    const f = await fixture();
+    const applied = await f.migration.apply(taskId, taskBytesDigest(f.text));
+    if (applied.kind !== "applied") throw new Error(JSON.stringify(applied));
+    const compare = f.store.compareAndSwap.bind(f.store);
+    const read = f.store.read.bind(f.store);
+    let loseReadback = false;
+    vi.spyOn(f.store, "compareAndSwap").mockImplementation(async (current, next) => {
+      const result = await compare(current, next);
+      loseReadback = result;
+      return result;
+    });
+    vi.spyOn(f.store, "read").mockImplementation(async (id) => {
+      if (loseReadback) {
+        loseReadback = false;
+        throw new Error("rollback readback unavailable");
+      }
+      return await read(id);
+    });
+
+    expect(await f.migration.rollback(applied.proof)).toEqual({
+      kind: "refused",
+      reason: "rollback_in_doubt",
+    });
+    const restarted = new KernelMigration(
+      new LocalTaskByteStore(new LocalBackend({ dir: f.root })),
+      identity,
+    );
+    expect(await restarted.rollback(applied.proof)).toEqual({
+      kind: "rolled_back",
+      source_digest: taskBytesDigest(f.text),
+    });
+    expect(await readFile(f.file, "utf8")).toBe(f.text);
+  });
 
   it.each(["malformed", "unknown_schema", "ambiguous", "invalid_encoding", "malformed_canonical"])(
     "quarantines %s without backup or output mutation",

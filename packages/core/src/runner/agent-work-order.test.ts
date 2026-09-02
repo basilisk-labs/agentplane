@@ -48,6 +48,55 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 describe("AgentWorkOrder v2 contract", () => {
+  it("requires an exact canonical execution binding in the returned result", () => {
+    const order = structuredClone(AGENT_WORK_ORDER_V2_VALID_FIXTURE);
+    const digest = `sha256:${"a".repeat(64)}`;
+    order.canonical_binding = {
+      phase: "implementation",
+      task_id: order.task.id,
+      repository_identity: digest,
+      repository_fingerprint: digest,
+      plan_revision: 1,
+      plan_digest: digest,
+      work_item_id: "build",
+      attempt: 1,
+      claim_id: "claim",
+      contract_digest: digest,
+      authority_digest: digest,
+    };
+    order.task.work_item_id = "build";
+    expect(validateAgentWorkOrderV2(order).canonical_binding).toEqual(order.canonical_binding);
+    const result = {
+      ...buildAgentSemanticResultV2ValidFixtures(order.work_order_id).completed,
+      canonical_binding: order.canonical_binding,
+      canonical_outputs: [{ id: "source", kind: "source", digest }],
+    };
+    expect(
+      validateAgentSemanticResultForWorkOrder({ work_order: order, semantic_result: result }),
+    ).toEqual(result);
+    expect(() =>
+      validateAgentSemanticResultForWorkOrder({
+        work_order: order,
+        semantic_result: {
+          ...result,
+          canonical_binding: { ...result.canonical_binding, claim_id: "foreign" },
+        },
+      }),
+    ).toThrow("canonical_binding");
+    expect(
+      listAgentWorkOrderV2SchemaErrors({
+        ...order,
+        task: { ...order.task, work_item_id: "foreign" },
+      }),
+    ).not.toEqual([]);
+    expect(
+      listAgentWorkOrderV2SchemaErrors({
+        ...order,
+        canonical_binding: { ...order.canonical_binding, task_id: "foreign" },
+      }),
+    ).not.toEqual([]);
+  });
+
   it("accepts the generated public fixture", async () => {
     const fixture = JSON.parse(
       await readFile(

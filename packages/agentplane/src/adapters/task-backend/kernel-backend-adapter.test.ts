@@ -138,6 +138,28 @@ describe("canonical kernel persistence boundary", () => {
     expect(write).not.toHaveBeenCalled();
   });
 
+  it("retries only transient atomic task README replacement observations", async () => {
+    const { adapter, backend } = await fixture();
+    await adapter.create(task(), input());
+    const original = backend.getTask.bind(backend);
+    const replacement = Object.assign(
+      new Error(`Refusing changed task README ${taskId} path: /fixture/README.md`),
+      { code: "ELOOP" },
+    );
+    const read = vi
+      .spyOn(backend, "getTask")
+      .mockRejectedValueOnce(replacement)
+      .mockImplementation(original);
+    expect(await adapter.read(taskId)).toMatchObject({ kind: "canonical" });
+    expect(read).toHaveBeenCalledTimes(2);
+
+    const unsafeSymlink = Object.assign(new Error("Refusing symlink task README path"), {
+      code: "ELOOP",
+    });
+    read.mockRejectedValue(unsafeSymlink);
+    await expect(adapter.read(taskId)).rejects.toBe(unsafeSymlink);
+  });
+
   it("does not turn legacy status, approval or verification into a canonical record", async () => {
     const { adapter, backend } = await fixture();
     await backend.writeTask({ ...task(), status: "DONE" });
@@ -422,9 +444,9 @@ it("keeps migrated terminal archives read only", async () => {
 it("persists approved plan and materialized WorkItems atomically through kernel commands", async () => {
   const { adapter } = await fixture();
   await adapter.create(task(), input());
-  const plan: taskKernel.PlanRecord = {
+  let plan: taskKernel.PlanRecord = {
     revision: 1,
-    digest: taskKernel.kernelDigest("one-work-item-plan"),
+    digest: taskKernel.kernelDigest("pending-plan-definition"),
     state: "PROPOSED",
     approval_actor_id: null,
     approval_evidence_digest: null,
@@ -444,6 +466,10 @@ it("persists approved plan and materialized WorkItems atomically through kernel 
         },
       },
     ],
+  };
+  plan = {
+    ...plan,
+    digest: taskKernel.kernelDigest({ revision: plan.revision, work_items: plan.work_items }),
   };
   const proposed = await adapter.execute({
     ...input(),

@@ -1,3 +1,5 @@
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { advanceCanonicalTask } from "./kernel-advance.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { computePlanDigest, taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
@@ -50,6 +52,19 @@ export function makeRunTaskAdvanceHandler(deps: {
       ctx: initialCommand,
       taskId: parsed.taskId,
     });
+    const source = await command.taskBackend.getTask(parsed.taskId);
+    if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+      if (parsed.replacement)
+        throw new Error("Canonical replacement requires an explicit recovery episode");
+      const packet = await advanceCanonicalTask({
+        command,
+        task_id: parsed.taskId,
+        transport: "host",
+        result_path: parsed.result,
+      });
+      createCliEmitter().json(packet);
+      return 0;
+    }
     const decide = async (freshHead = false): Promise<TaskRouteDecision> => {
       const routeCommand = freshHead
         ? await loadCommandContext({
