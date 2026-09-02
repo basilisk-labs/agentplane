@@ -614,7 +614,7 @@ describe("runCli route decision commands", () => {
     expect(readme).toContain('plan_approval:\n  state: "pending"');
   });
 
-  it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
+  it("converges the Arkady Factory stale-DONE projection after hosted close and exact replay", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -662,7 +662,10 @@ describe("runCli route decision commands", () => {
     expect(findingsIndex).toBeGreaterThan(0);
     await writeFile(
       readmePath,
-      `${readme.slice(0, findingsIndex)}## Findings\n\nClose tail landed upstream.\n`,
+      `${readme.slice(0, findingsIndex)}## Findings\n\nClose tail landed upstream.\n`.replace(
+        'status: "DOING"',
+        'status: "DONE"',
+      ),
       "utf8",
     );
     const suffix = taskId.split("-").at(-1);
@@ -681,7 +684,18 @@ describe("runCli route decision commands", () => {
     });
     await execFileAsync("git", ["reset", "--hard", localBaseCommit], { cwd: root });
 
+    const [staleTaskCode, staleTask] = await runJson<{ status: string }>([
+      "task",
+      "show",
+      taskId,
+      "--root",
+      root,
+    ]);
+    expect(staleTaskCode).toBe(0);
+    expect(staleTask.status).toBe("DOING");
+
     const statusIo = captureStdIO();
+    let staleNextAction: { code: string; command: string };
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
       expect(code).toBe(0);
@@ -712,9 +726,42 @@ describe("runCli route decision commands", () => {
         recommendedRole: "INTEGRATOR",
         safeToMutate: true,
       });
+      staleNextAction = parsed.nextAction;
     } finally {
       statusIo.restore();
     }
+
+    const [replayCode, replay] = await runJson<{
+      nextAction: { code: string; command: string };
+    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
+    expect(replayCode).toBe(0);
+    expect(replay.nextAction).toEqual(staleNextAction!);
+
+    await execFileAsync("git", ["reset", "--hard", "refs/remotes/origin/main"], { cwd: root });
+    const [terminalTaskCode, terminalTask] = await runJson<{ status: string }>([
+      "task",
+      "show",
+      taskId,
+      "--root",
+      root,
+    ]);
+    expect(terminalTaskCode).toBe(0);
+    expect(terminalTask.status).toBe("DONE");
+
+    const [terminalRouteCode, terminalRoute] = await runJson<{
+      nextAction: { code: string; command: string | null };
+    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
+    expect(terminalRouteCode).toBe(0);
+    expect(terminalRoute.nextAction).toMatchObject({ code: "done", command: null });
+
+    const taskBranches = await execFileAsync("git", ["branch", "--list", `task/${taskId}/*`], {
+      cwd: root,
+    });
+    expect(taskBranches.stdout.trim()).toBe("");
+    const worktrees = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+      cwd: root,
+    });
+    expect(worktrees.stdout.match(/^worktree /gmu)).toHaveLength(1);
   });
 
   it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {

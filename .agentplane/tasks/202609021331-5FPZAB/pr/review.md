@@ -30,6 +30,7 @@ Created: 2026-09-02T15:35:26.605Z
 
 ```text
  .../task-backend/task-centric-backend-adapter.ts   | 234 +++++++++++++++------
+ .../src/cli/run-cli.core.route-decision.test.ts    |  51 ++++-
  .../branch/cleanup-merged.targeted.test.ts         | 101 ++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  15 +-
  .../commands/shared/route-decision-workspace.ts    |   2 +-
@@ -49,7 +50,7 @@ Created: 2026-09-02T15:35:26.605Z
  .../src/commands/task/set-status.unit.test.ts      |  56 +++++
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
  .../commands/task/task-centric-external-result.ts  |  54 +++--
- 20 files changed, 969 insertions(+), 205 deletions(-)
+ 21 files changed, 1018 insertions(+), 207 deletions(-)
 ```
 
 </details>
