@@ -4,6 +4,7 @@ import {
   canonicalizeJson,
   createLegacyTaskAggregate,
   createTaskPlanRevision,
+  reconcileReplacementPlanWorkItems,
   taskCentricAggregateFromExtensions,
   TASK_CENTRIC_EXTENSION_KEY,
   validateTaskPlanProposal,
@@ -131,7 +132,10 @@ function planningTaskFields(opts: {
           ]
         : (existing?.plan_history ?? []),
       plan_amendments: [],
-      work_items: {},
+      work_items: reconcileReplacementPlanWorkItems({
+        task: aggregate,
+        proposal: structuredProposal,
+      }),
       final_validation: null,
       updated_at: createdAt,
     });

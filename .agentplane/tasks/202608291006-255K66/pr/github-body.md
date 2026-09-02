@@ -15,8 +15,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -59,6 +59,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
  .../external-agent-implementation-authority.ts     |   2 +-
+ .../task/external-agent-planning-authority.ts      |   6 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
  .../agentplane/src/commands/task/kernel-create.ts  |  49 ++
  .../src/commands/task/kernel-exchange.ts           | 143 ++++
@@ -99,6 +100,9 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  packages/core/src/runner/agent-work-order.ts       |  21 +
  packages/core/src/tasks/index.ts                   |  10 +
  packages/core/src/tasks/kernel-semantic.ts         |  64 ++
+ packages/core/src/tasks/task-centric/graph.ts      |  80 +-
+ packages/core/src/tasks/task-centric/index.ts      |   1 +
+ .../src/tasks/task-centric/task-centric.test.ts    |  62 ++
  .../src/tasks/task-kernel/authority-lineage.ts     | 140 ++++
  packages/core/src/tasks/task-kernel/digest.ts      |  20 +
  packages/core/src/tasks/task-kernel/index.ts       |   6 +
@@ -115,7 +119,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 88 files changed, 6990 insertions(+), 518 deletions(-)
+ 92 files changed, 7128 insertions(+), 529 deletions(-)
 ```
 
 </details>

@@ -234,6 +234,45 @@ export function createTaskPlanRevision(opts: {
   });
 }
 
+function freshWorkItemRuntime(item: WorkItem): WorkItemRuntime {
+  return Object.freeze({
+    id: item.id,
+    state: "PLANNED" as const,
+    revision: 1,
+    attempt: 0,
+    claim_id: null,
+    output_manifests: [],
+    validation_result: null,
+    last_failure: null,
+  });
+}
+
+/** Preserve runtime only when the replacement plan keeps the exact WorkItem contract. */
+export function reconcileReplacementPlanWorkItems(opts: {
+  task: TaskAggregate;
+  proposal: TaskPlanProposal;
+}): Readonly<Record<string, WorkItemRuntime>> {
+  const previous = new Map(
+    (opts.task.current_plan?.proposal.work_items.work_items ?? []).map((item) => [item.id, item]),
+  );
+  return Object.freeze(
+    Object.fromEntries(
+      opts.proposal.work_items.work_items.map((item) => {
+        const priorDefinition = previous.get(item.id);
+        const priorRuntime = opts.task.work_items[item.id];
+        return [
+          item.id,
+          priorDefinition &&
+          priorRuntime &&
+          taskCentricDigest(priorDefinition) === taskCentricDigest(item)
+            ? priorRuntime
+            : freshWorkItemRuntime(item),
+        ];
+      }),
+    ),
+  );
+}
+
 export function approveTaskPlan(opts: {
   plan: TaskPlanRevision;
   expected_digest: Sha256Digest;
@@ -283,8 +322,9 @@ export function materializeApprovedWorkItems(opts: {
     const planned = opts.plan.proposal.work_items.work_items;
     if (
       current?.revision !== opts.plan.revision ||
-      current.approval.state !== "approved" ||
-      current.approval.approved_digest !== opts.plan.digest ||
+      (current.approval.state !== "approved" && opts.task.lifecycle !== "AWAITING_PLAN_APPROVAL") ||
+      (current.approval.state === "approved" &&
+        current.approval.approved_digest !== opts.plan.digest) ||
       planContentDigest(opts.plan) !== opts.plan.digest ||
       taskCentricDigest(current.proposal) !== taskCentricDigest(opts.plan.proposal) ||
       existingIds.length !== planned.length ||
@@ -293,19 +333,39 @@ export function materializeApprovedWorkItems(opts: {
       throw new Error("Existing work item runtime does not match the approved current plan.");
     }
     // Reapproval is not a new execution. Preserve claims, outputs and validation atomically.
-    return opts.task;
+    if (
+      current.approval.state === "approved" &&
+      current.approval.approved_digest === opts.plan.digest &&
+      opts.task.lifecycle === "ACTIVE"
+    ) {
+      return opts.task;
+    }
+    const outputs = availableOutputIds(opts.task.work_items);
+    const workItems = Object.fromEntries(
+      planned.map((item) => {
+        const runtime = opts.task.work_items[item.id]!;
+        if (runtime.state !== "PLANNED") return [item.id, runtime];
+        const ready =
+          item.depends_on.every(
+            (dependency) => opts.task.work_items[dependency]?.state === "COMPLETED",
+          ) && item.required_inputs.every((input) => outputs.has(input));
+        return [item.id, ready ? Object.freeze({ ...runtime, state: "READY" as const }) : runtime];
+      }),
+    );
+    return Object.freeze({
+      ...opts.task,
+      revision: opts.task.revision + 1,
+      lifecycle: "ACTIVE",
+      current_plan: opts.plan,
+      work_items: Object.freeze(workItems),
+      updated_at: opts.now,
+    });
   }
   const workItems: Record<string, WorkItemRuntime> = {};
   for (const item of opts.plan.proposal.work_items.work_items) {
     workItems[item.id] = Object.freeze({
-      id: item.id,
+      ...freshWorkItemRuntime(item),
       state: item.depends_on.length === 0 ? "READY" : "PLANNED",
-      revision: 1,
-      attempt: 0,
-      claim_id: null,
-      output_manifests: [],
-      validation_result: null,
-      last_failure: null,
     });
   }
   return Object.freeze({

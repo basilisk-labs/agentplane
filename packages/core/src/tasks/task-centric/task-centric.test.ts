@@ -20,6 +20,7 @@ import {
   evaluateTaskCompletion,
   materializeApprovedWorkItems,
   parseTaskPlanProposal,
+  reconcileReplacementPlanWorkItems,
   recoveryDecisionForFailure,
   requiredOutputManifestsPresent,
   requiredOutputsSatisfied,
@@ -330,6 +331,67 @@ describe("task-centric domain", () => {
         now: NOW,
       }).work_items.new?.state,
     ).toBe("READY");
+  });
+
+  it("preserves only unchanged WorkItems across a replacement plan", () => {
+    const original = approvedTask([
+      item({ id: "done" }),
+      item({ id: "changed", depends_on: ["done"] }),
+    ]);
+    const completed: TaskAggregate = {
+      ...original,
+      work_items: {
+        done: {
+          ...original.work_items.done!,
+          state: "COMPLETED",
+          output_manifests: [manifest({ id: "out-done", work_item_id: "done" })],
+        },
+        changed: { ...original.work_items.changed!, state: "COMPLETED" },
+      },
+    };
+    const replacementProposal = proposal([
+      item({ id: "done" }),
+      item({ id: "changed", depends_on: ["done"], objective: "Refined objective" }),
+    ]);
+    const workItems = reconcileReplacementPlanWorkItems({
+      task: completed,
+      proposal: replacementProposal,
+    });
+
+    expect(workItems.done).toBe(completed.work_items.done);
+    expect(workItems.changed).toMatchObject({
+      state: "PLANNED",
+      revision: 1,
+      attempt: 0,
+      claim_id: null,
+      output_manifests: [],
+      validation_result: null,
+    });
+
+    const draft = createTaskPlanRevision({
+      proposal: replacementProposal,
+      revision: completed.current_plan!.revision + 1,
+      created_at: NOW,
+    });
+    const pending: TaskAggregate = {
+      ...completed,
+      lifecycle: "AWAITING_PLAN_APPROVAL",
+      current_plan: draft,
+      work_items: workItems,
+      final_validation: null,
+    };
+    const approved = approveTaskPlan({
+      plan: draft,
+      expected_digest: draft.digest,
+      actor: "denis",
+      approved_at: NOW,
+    });
+    const materialized = materializeApprovedWorkItems({ task: pending, plan: approved, now: NOW });
+
+    expect(materialized.work_items.done).toBe(completed.work_items.done);
+    expect(materialized.work_items.changed?.state).toBe("READY");
+    expect(materialized.current_plan).toBe(approved);
+    expect(materialized.lifecycle).toBe("ACTIVE");
   });
 
   it.each(["scope", "acceptance"] as const)(

@@ -23,6 +23,7 @@ export {
   computeReadyWorkItems,
   createTaskPlanRevision,
   materializeApprovedWorkItems,
+  reconcileReplacementPlanWorkItems,
   requiredOutputManifestsPresent,
   requiredOutputsSatisfied,
   resourceClaimsConflict,
