@@ -41,6 +41,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
  .../src/commands/shared/workflow-step-branch.ts    |  12 +-
  .../shared/workflow-step-fingerprint.test.ts       |  50 ++++-
  .../commands/shared/workflow-step-fingerprint.ts   |  33 ++-
+ .../workflow-step-projections-routing.test.ts      |  24 +++
  .../commands/shared/workflow-step-quality.test.ts  |   6 +-
  .../external-agent-implementation-authority.ts     |   4 +-
  .../agentplane/src/commands/task/finish-shared.ts  | 104 +++++----
@@ -54,7 +55,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
  .../commands/task/task-centric-external-result.ts  |  56 +++--
  .../task/verify-record.durability.unit.test.ts     |  38 +++-
- 27 files changed, 1184 insertions(+), 270 deletions(-)
+ 28 files changed, 1208 insertions(+), 270 deletions(-)
 ```
 
 </details>

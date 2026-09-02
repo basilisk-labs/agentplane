@@ -84,6 +84,30 @@ function executionPacket(state: ReturnType<typeof routeState>) {
 }
 
 describe("WorkflowStep routing projections", () => {
+  it("invalidates a routed projection when authoritative checkout identity changes", () => {
+    const first = routeState();
+    const exactReplay = routeState();
+    const replacementWorktree = `${taskWorktreePath}-replacement`;
+    const moved = routeState({
+      resume: { ...resume, workspace_root: replacementWorktree },
+      taskWorktree: {
+        state: "clean",
+        branch: taskBranch,
+        worktreePath: replacementWorktree,
+        changedPaths: [],
+      },
+    });
+
+    expect(exactReplay.preconditionFingerprint.digest).toBe(first.preconditionFingerprint.digest);
+    expect(moved.preconditionFingerprint.digest).not.toBe(first.preconditionFingerprint.digest);
+    expect(executionPacket(exactReplay).step.preconditionFingerprint.digest).toBe(
+      first.preconditionFingerprint.digest,
+    );
+    expect(executionPacket(moved).step.preconditionFingerprint.digest).toBe(
+      moved.preconditionFingerprint.digest,
+    );
+  });
+
   it("projects runner wait without a mutation path or executable argv", () => {
     const state = routeState({
       blockers: [{ code: "runner_alive", summary: "runner is active" }],
