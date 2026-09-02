@@ -2,10 +2,10 @@
 id: "202608291006-255K66"
 title: "Cut over to the canonical Task kernel and retire legacy core paths"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 190
+revision: 192
 origin:
   system: "manual"
 depends_on:
@@ -65,19 +65,19 @@ quality_review:
     - "Residual risk: Hosted PR verification, merge, and main reachability must still be proven by subsequent provider routes before integration completes."
     - "Residual risk: Six explicitly allowlisted compatibility imports and 745 production LOC remain as a constrained maintenance boundary."
 token_usage:
-  agent_runs: 24
-  input_tokens: null
-  journal_digest: "sha256:f898f093872fc2f03577de9ea3411361ec0721e32d051a69d1b70bc73e8b3d13"
-  observed_agent_runs: 0
+  agent_runs: 44
+  input_tokens: 378921
+  journal_digest: "sha256:69d86992a759d14c315da3105f19334b7a1c2ad2f0df8e0e4fc6d41bde94bbb4"
+  observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-02T01:08:15.375Z"
+  state: "partial"
+  total_tokens: 383800
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-09-02T10:49:47.902Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1228,8 +1228,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "245fdf56dcf46727628571fbb874ec0f62e97709"
-  message: "🚧 255K66 task: apply external agent result"
+  hash: "82d808b9029172e1e8877c63b0ace2b4be945791"
+  message: "🚧 255K66 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1423,6 +1423,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 245fdf56dcf4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -1950,9 +1953,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-02T10:49:47.902Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "82d808b9029172e1e8877c63b0ace2b4be945791"
 doc_version: 3
-doc_updated_at: "2026-09-02T10:49:41.958Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-02T10:49:47.930Z"
+doc_updated_by: "CODER"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -5144,7 +5155,56 @@ extensions:
       schema_version: 1
       task_id: "202608291006-255K66"
     event_cursor: 6
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:245fdf56dcf46727628571fbb874ec0f62e97709"
+          check_id: "m3-full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-02T10:47:23.562Z"
+          repository_snapshot_digest: "sha256:ea6ac7017db1a87c29150fe174fc600a1178307a90edd27b564b6c4e647f8c8c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:245fdf56dcf46727628571fbb874ec0f62e97709"
+          check_id: "m3-invariants"
+          command_identity: "bun run lifecycle:invariants"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-02T10:47:23.562Z"
+          repository_snapshot_digest: "sha256:ea6ac7017db1a87c29150fe174fc600a1178307a90edd27b564b6c4e647f8c8c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:245fdf56dcf46727628571fbb874ec0f62e97709"
+          check_id: "m3-packaged"
+          command_identity: "bun run qualification:mixed-scope-lifecycle"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-02T10:47:23.562Z"
+          repository_snapshot_digest: "sha256:ea6ac7017db1a87c29150fe174fc600a1178307a90edd27b564b6c4e647f8c8c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:245fdf56dcf46727628571fbb874ec0f62e97709"
+          check_id: "m3-self-hosting"
+          command_identity: "node scripts/qualification/check-m3-self-hosting.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-02T10:47:23.562Z"
+          repository_snapshot_digest: "sha256:ea6ac7017db1a87c29150fe174fc600a1178307a90edd27b564b6c4e647f8c8c"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202608291006-255K66"
     intent:
       acceptance_criteria:
@@ -5170,7 +5230,7 @@ extensions:
 
         After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence.
       task_id: "202608291006-255K66"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -17800,9 +17860,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 186
+    revision: 192
     schema_version: 1
-    updated_at: "2026-09-02T10:22:06.349Z"
+    updated_at: "2026-09-02T10:49:47.902Z"
     work_items:
       m3-crash-migration:
         attempt: 1
@@ -19281,6 +19341,31 @@ extensions:
         previous_revision: 140
         schema_version: 1
         task_id: "202608291006-255K66"
+      legacy-finish:202608291006-255K66:2026-09-02T10:47:23.562Z:245fdf56dcf46727628571fbb874ec0f62e97709:
+        aggregate_digest: "sha256:1de2e22263e3f0b2031dd5885c0534eb5c5be6ca32c3b2a7364f87096c3361aa"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-02T10:49:47.902Z"
+          cause_refs:
+            - "task-verification:202608291006-255K66"
+            - "git:245fdf56dcf46727628571fbb874ec0f62e97709"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bcd8d9aa92b81ec5b70582f5"
+          mutation_id: "legacy-finish:202608291006-255K66:2026-09-02T10:47:23.562Z:245fdf56dcf46727628571fbb874ec0f62e97709"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: "sha256:ea6ac7017db1a87c29150fe174fc600a1178307a90edd27b564b6c4e647f8c8c"
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 186
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202608291006-255K66:2026-09-02T10:47:23.562Z:245fdf56dcf46727628571fbb874ec0f62e97709"
+        next_revision: 192
+        previous_revision: 191
+        schema_version: 1
+        task_id: "202608291006-255K66"
       plan-refinement:work-order-202608291006-255K66-executor-0cbf5f78caa9bc3f54bc94a2:
         aggregate_digest: "sha256:24722ca93d771d22276073eea17e91e85cf61d90cb4571f33a9e25d8c9c00b0c"
         event:
@@ -19386,6 +19471,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "245fdf56dcf46727628571fbb874ec0f62e97709"
+    message: "🚧 255K66 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
@@ -21303,13 +21389,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/24` agent runs
-- Input tokens: `unavailable`
+- State: `partial`
+- Completeness: `1/44` agent runs
+- Input tokens: `378921`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
+- Total tokens: `383800`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f898f093872fc2f03577de9ea3411361ec0721e32d051a69d1b70bc73e8b3d13`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-02T01:08:15.375Z`
+- Journal digest: `sha256:69d86992a759d14c315da3105f19334b7a1c2ad2f0df8e0e4fc6d41bde94bbb4`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-09-02T10:49:47.902Z`
