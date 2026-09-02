@@ -113,8 +113,10 @@ Created: 2026-08-30T21:48:11.941Z
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  27 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
+ scripts/qualification/check-m3-self-hosting.mjs    | 125 ++++
+ .../check-packaged-mixed-scope-lifecycle.mjs       |   4 +-
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 85 files changed, 6791 insertions(+), 509 deletions(-)
+ 87 files changed, 6918 insertions(+), 511 deletions(-)
 ```
 
 </details>

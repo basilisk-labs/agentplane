@@ -670,7 +670,7 @@ function applyProductChange(accessLog, repo) {
   );
 }
 
-function runFixture({ run, cli, packages, tempRoot }) {
+export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
   const repo = path.join(tempRoot, "fixture");
   const accessLog = [];
   const approvalSigner = createApprovalSigner();
@@ -1057,7 +1057,7 @@ export function runPackagedMixedScopeLifecycle() {
       repoRoot,
       packageNames: PACKAGES,
     });
-    evidence = runFixture({
+    evidence = runPackagedMixedScopeFixture({
       run,
       cli: installed.cli,
       packages: installed.packages,
