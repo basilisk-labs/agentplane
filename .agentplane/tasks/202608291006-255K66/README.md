@@ -4,7 +4,7 @@ title: "Cut over to the canonical Task kernel and retire legacy core paths"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 113
+revision: 116
 origin:
   system: "manual"
 depends_on:
@@ -662,6 +662,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 672838919143. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b1d64c2eb998. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -982,8 +985,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 672838919143. CLI accepted one state-bound external-agent semantic result."
     commit: "67283891914318012ceda7d15eca342a539c3191"
+  -
+    type: "status"
+    at: "2026-09-02T00:15:54.462Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b1d64c2eb998. CLI accepted one state-bound external-agent semantic result."
+    commit: "b1d64c2eb998729ba751b11102f776b5bf5b5896"
 doc_version: 3
-doc_updated_at: "2026-09-02T00:06:47.679Z"
+doc_updated_at: "2026-09-02T00:15:54.462Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -14820,9 +14831,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 113
+    revision: 116
     schema_version: 1
-    updated_at: "2026-09-02T00:14:21.357Z"
+    updated_at: "2026-09-02T00:23:45.738Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -14959,14 +14970,54 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       m3-lifecycle-transport:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-lifecycle-transport"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:87950266a088f8c0edb75791168df161735f799ba9502fd4e2ff7f068ebda46b"
+            id: "m3-lifecycle-transport-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 11
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-lifecycle-transport"
+            provenance:
+              - "sha256:ad141ff970661ca927e7795ed4873e374e3432f8652f1ed8297367caff2299f8"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b74654df46fe7059bc96478d5e45f502f9f6a43233af235e593e527d2f520090"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T00:23:45.665Z"
+              repository_snapshot_digest: "sha256:b74654df46fe7059bc96478d5e45f502f9f6a43233af235e593e527d2f520090"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-02T00:23:45.665Z"
+              repository_snapshot_digest: "sha256:b74654df46fe7059bc96478d5e45f502f9f6a43233af235e593e527d2f520090"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-projections:
         attempt: 1
         claim_id: null
@@ -15336,6 +15387,29 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-dc133f4bc18eea0feea7ba5f:
+        aggregate_digest: "sha256:a1a865e69ada30caa80f41a70a928a463c40e532d3e975e05c2aacac3cf96282"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T00:23:45.738Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_9c56dfc3714ba61f934573b4"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-dc133f4bc18eea0feea7ba5f"
+          plan_digest: "sha256:2765ec831cb06d66900e16983e4aaaf4fbb75f08b2830ab9365cabf65b0b6467"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 115
+          to: "COMPLETED"
+          work_item_id: "m3-lifecycle-transport"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-dc133f4bc18eea0feea7ba5f"
+        next_revision: 116
+        previous_revision: 115
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-e10511b4664ca1b8f940076a:
         aggregate_digest: "sha256:eeabc87c9c76b8f97fd3694bfb522efc8e0a49148648b3459c9c78d148802672"
         event:
@@ -15507,7 +15581,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "67283891914318012ceda7d15eca342a539c3191"
+    hash: "b1d64c2eb998729ba751b11102f776b5bf5b5896"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
