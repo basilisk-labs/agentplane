@@ -8,12 +8,14 @@ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
 const sourceRoot = path.join(repoRoot, "packages/agentplane/src");
 const LEGACY_RUNTIME = "task-centric-backend-runtime";
 const LEGACY_ADAPTER = "task-centric-backend-adapter";
+const LEGACY_PRODUCTION_LOC_BUDGET = 745;
 
 const explicitCompatibilityBoundary = new Map([
   ["adapters/task-backend/kernel-migration-source.ts", [LEGACY_RUNTIME]],
   ["adapters/task-backend/task-centric-backend-adapter.ts", [LEGACY_RUNTIME]],
   ["commands/task/finish-shared.ts", [LEGACY_ADAPTER]],
   ["commands/task/task-centric-external-result.ts", [LEGACY_RUNTIME, LEGACY_ADAPTER]],
+  ["commands/branch/work-resume-planning-base.ts", [LEGACY_RUNTIME]],
 ]);
 
 function sourceFiles(directory) {
@@ -55,6 +57,7 @@ export function inspectM3LegacyAuthorityImports() {
     production_files: production.length,
     production_loc: productionLoc,
     legacy_production_loc: legacyProductionLoc,
+    legacy_production_loc_budget: LEGACY_PRODUCTION_LOC_BUDGET,
     imports,
     unexpected,
   };
@@ -66,6 +69,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
     report.unexpected,
     [],
     `Unexpected mutable legacy authority import: ${JSON.stringify(report.unexpected)}`,
+  );
+  assert.ok(
+    report.legacy_production_loc <= report.legacy_production_loc_budget,
+    `Legacy compatibility production LOC grew from ${report.legacy_production_loc_budget} to ${report.legacy_production_loc}`,
   );
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 }

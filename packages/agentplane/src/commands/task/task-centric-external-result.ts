@@ -6,6 +6,8 @@ import {
   taskCentricDigest,
   WorkItemScheduler,
   type SemanticWorkResult,
+  type PlanRefinement,
+  type RepositorySnapshot,
   type ValidationCheck,
   type ValidationEvidence,
 } from "@agentplaneorg/core/tasks";
@@ -15,9 +17,36 @@ import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-cent
 import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
 
 export const TASK_CENTRIC_EXECUTION_CAPABILITIES = new Set(["task.verify"]);
+
+export function taskCentricMutationReceipt(task: TaskData, idempotencyKey: string) {
+  return runtimeFrom(task).mutation_receipts[idempotencyKey];
+}
+
+export async function recordTaskCentricPlanRefinement(opts: {
+  command: CommandContext;
+  repository: RepositorySnapshot;
+  task_id: string;
+  expected_revision: number;
+  refinement: PlanRefinement;
+  actor_id: string;
+  idempotency_key: string;
+}) {
+  return await new TaskCentricBackendAdapter({
+    backend: opts.command.taskBackend,
+    observeRepository: () => Promise.resolve(opts.repository),
+  }).recordPlanRefinement({
+    task_id: opts.task_id,
+    expected_revision: opts.expected_revision,
+    refinement: opts.refinement,
+    actor_id: opts.actor_id,
+    at: opts.repository.captured_at,
+    idempotency_key: opts.idempotency_key,
+  });
+}
 
 export type TaskCentricExternalResultProjection =
   | Readonly<{ state: "legacy_task" }>

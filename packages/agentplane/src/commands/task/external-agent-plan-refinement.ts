@@ -5,8 +5,6 @@ import {
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
-import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
-import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -15,6 +13,10 @@ import type {
   ExternalAgentResultEnvelope,
 } from "./external-agent-exchange.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+import {
+  recordTaskCentricPlanRefinement,
+  taskCentricMutationReceipt,
+} from "./task-centric-external-result.js";
 
 type RefinementContext = {
   command: CommandContext;
@@ -30,7 +32,7 @@ export async function isExternalPlanRefinementApplied(opts: RefinementContext): 
   if (!opts.envelope.result.plan_refinement) return false;
   const raw = await opts.command.taskBackend.getTask(opts.exchange.task_id);
   if (!raw) return false;
-  const receipt = runtimeFrom(raw).mutation_receipts[refinementKey(opts.exchange.work_order_id)];
+  const receipt = taskCentricMutationReceipt(raw, refinementKey(opts.exchange.work_order_id));
   const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
   return Boolean(
     receipt &&
@@ -59,7 +61,7 @@ export async function applyExternalPlanRefinement(
   const sourceChanges = (lines: readonly string[]) =>
     lines.filter((line) => !line.slice(3).startsWith(prefix));
   const receipt =
-    raw && runtimeFrom(raw).mutation_receipts[refinementKey(opts.exchange.work_order_id)];
+    raw && taskCentricMutationReceipt(raw, refinementKey(opts.exchange.work_order_id));
   // Mixed implementation/refinement results retain the existing implementation admission path.
   if (!receipt && sourceChanges(status?.lines ?? []).length > 0) return false;
   if (!raw || !head || head !== opts.exchange.baseline.head || !status)
@@ -129,16 +131,13 @@ export async function applyExternalPlanRefinement(
     task_history_cursor: `task-revision:${raw.revision ?? aggregate.revision}`,
     captured_at: new Date().toISOString(),
   });
-  const adapter = new TaskCentricBackendAdapter({
-    backend: opts.command.taskBackend,
-    observeRepository: () => Promise.resolve(repository),
-  });
-  await adapter.recordPlanRefinement({
+  await recordTaskCentricPlanRefinement({
+    command: opts.command,
+    repository,
     task_id: raw.id,
     expected_revision: opts.work_order.task.revision,
     refinement: semantic.plan_refinement,
     actor_id: `external:${opts.work_order.role}`,
-    at: repository.captured_at,
     idempotency_key: refinementKey(opts.work_order.work_order_id),
   });
   return true;

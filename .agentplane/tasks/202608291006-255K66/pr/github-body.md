@@ -64,6 +64,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../external-agent-implementation-authority.ts     |  45 +-
  .../external-agent-implementation-recovery.test.ts |  34 +
  .../task/external-agent-implementation-recovery.ts |  65 +-
+ .../task/external-agent-plan-refinement.ts         |  19 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
  .../task/external-agent-supervisor-recovery.ts     |   4 +-
  .../agentplane/src/commands/task/kernel-advance.ts | 288 ++++++++
@@ -85,6 +86,7 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/commands/task/show-kernel.test.ts          | 121 ++++
  packages/agentplane/src/commands/task/show.ts      |  15 +-
  .../agentplane/src/commands/task/status.command.ts |   5 +
+ .../commands/task/task-centric-external-result.ts  |  29 +
  packages/agentplane/src/commands/task/update.ts    |   2 +
  .../src/commands/task/user-approval-receipt.ts     | 237 +-----
  packages/agentplane/src/ports/kernel-authority.ts  |  50 ++
@@ -121,12 +123,12 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  23 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- .../checks/check-m3-legacy-authority-imports.mjs   |  71 ++
+ .../checks/check-m3-legacy-authority-imports.mjs   |  78 ++
  scripts/qualification/check-m3-self-hosting.mjs    | 137 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
  .../qualification/release-qualification.test.mjs   |  43 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 99 files changed, 7434 insertions(+), 589 deletions(-)
+ 101 files changed, 7479 insertions(+), 599 deletions(-)
 ```
 
 </details>
