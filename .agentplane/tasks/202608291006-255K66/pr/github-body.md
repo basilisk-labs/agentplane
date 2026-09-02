@@ -15,8 +15,8 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -57,13 +57,13 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  .../src/commands/task/active.command.unit.test.ts  |  51 ++
  .../src/commands/task/advance.command.ts           |  15 +
  .../agentplane/src/commands/task/brief.command.ts  |   5 +
- .../commands/task/direct-task-verification.test.ts |  69 ++
- .../src/commands/task/direct-task-verification.ts  |  51 +-
+ .../commands/task/direct-task-verification.test.ts |  71 +-
+ .../src/commands/task/direct-task-verification.ts  |  62 +-
  .../task/execution-authority-context.test.ts       |  28 +-
  .../commands/task/execution-authority-context.ts   |   4 +
  .../external-agent-implementation-authority.ts     |  45 +-
- .../external-agent-implementation-recovery.test.ts |  34 +
- .../task/external-agent-implementation-recovery.ts |  65 +-
+ .../external-agent-implementation-recovery.test.ts |  38 +-
+ .../task/external-agent-implementation-recovery.ts |  97 ++-
  .../task/external-agent-plan-refinement.ts         |  19 +-
  .../task/external-agent-planning-authority.ts      |   6 +-
  .../task/external-agent-supervisor-recovery.ts     |   4 +-
@@ -123,12 +123,12 @@ After replay and migration gates pass, route all CLI and managed-runner consumer
  schemas/agent-work-order-v2.schema.json            | 108 +++
  .../baselines/v0.7-compatibility-candidate.json    |  23 +-
  .../check-compatibility-contract-baseline.mjs      |  11 +-
- .../checks/check-m3-legacy-authority-imports.mjs   |  78 ++
+ .../checks/check-m3-legacy-authority-imports.mjs   |  77 ++
  scripts/qualification/check-m3-self-hosting.mjs    | 137 ++++
  .../check-packaged-mixed-scope-lifecycle.mjs       |  22 +-
  .../qualification/release-qualification.test.mjs   |  48 ++
  scripts/release/smoke-bun-compiled-cli.mjs         |   5 +
- 101 files changed, 7484 insertions(+), 599 deletions(-)
+ 101 files changed, 7508 insertions(+), 623 deletions(-)
 ```
 
 </details>
