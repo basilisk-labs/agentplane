@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 168
+revision: 171
 origin:
   system: "manual"
 depends_on:
@@ -547,6 +547,7 @@ execution_contract:
       - "scripts/checks/check-m3-legacy-authority-imports.mjs"
       - "scripts/qualification/check-m3-self-hosting.mjs"
       - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+      - "scripts/qualification/release-qualification.test.mjs"
       - "scripts/release/smoke-bun-compiled-cli.mjs"
     external_effects: []
     repository_effects:
@@ -804,7 +805,7 @@ execution_contract:
           implementation_uncertainty: "material"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:df946fab01e1358f10a60c7371238d7cd0a3c8b122264ec6fbe6370dc4fab734"
+      digest: "sha256:f5c7b65645fb2da6024ef9448c9bc5921aaead229787c3eedb8647ba162c0145"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:packages/core/schemas/agent-work-order-v2.schema.json"
@@ -1140,6 +1141,7 @@ execution_contract:
           - "scripts/checks/check-m3-legacy-authority-imports.mjs"
           - "scripts/qualification/check-m3-self-hosting.mjs"
           - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+          - "scripts/qualification/release-qualification.test.mjs"
           - "scripts/release/smoke-bun-compiled-cli.mjs"
         external_effects: []
         repository_effects:
@@ -1366,6 +1368,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 05ddb7f628a9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4bef5f4dcd4c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1833,8 +1838,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 05ddb7f628a9. CLI accepted one state-bound external-agent semantic result."
     commit: "05ddb7f628a954cce2427496b08eccf7831a8511"
+  -
+    type: "status"
+    at: "2026-09-02T09:22:41.813Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4bef5f4dcd4c. CLI accepted one state-bound external-agent semantic result."
+    commit: "4bef5f4dcd4c58780ae970cd39bb3f6dbc3147bc"
 doc_version: 3
-doc_updated_at: "2026-09-02T09:19:50.786Z"
+doc_updated_at: "2026-09-02T09:22:41.992Z"
 doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
@@ -17311,9 +17324,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 168
+    revision: 171
     schema_version: 1
-    updated_at: "2026-09-02T09:19:51.795Z"
+    updated_at: "2026-09-02T09:22:43.025Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -17616,14 +17629,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-task-classes:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-task-classes"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:8694b17b8b88d95fb2e4822ae7ad13957411d55e8621d6e60eff85b8788f63b8"
+            id: "m3-task-classes-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 12
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-task-classes"
+            provenance:
+              - "sha256:62d6357a0c7e631d83a98ed7fc5da53a1b6715b25fb9e0c4d84d3339f746c642"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:6d740ddf5f6df825aa795ff9310d0b74e1defe31e7b442f38db4a6c03805e5ef"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T09:22:42.945Z"
+              repository_snapshot_digest: "sha256:6d740ddf5f6df825aa795ff9310d0b74e1defe31e7b442f38db4a6c03805e5ef"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     leases: []
@@ -18295,6 +18338,29 @@ extensions:
         previous_revision: 60
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-f25e0390049637c7ac985321:
+        aggregate_digest: "sha256:12c076a65cbc6576bb8abaa1e364514c15b46d830f3a955673d072b1f1cd4b6c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T09:22:43.025Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_fc7238be32134333b4526248"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-f25e0390049637c7ac985321"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 170
+          to: "COMPLETED"
+          work_item_id: "m3-task-classes"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-f25e0390049637c7ac985321"
+        next_revision: 171
+        previous_revision: 170
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-f4f15ef08bb166541335221f:
         aggregate_digest: "sha256:17696508f350bab734d422fb4a598abbb39e0d6133d12b56b1cbb6ddf9d84fe4"
         event:
@@ -18493,7 +18559,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "05ddb7f628a954cce2427496b08eccf7831a8511"
+    hash: "4bef5f4dcd4c58780ae970cd39bb3f6dbc3147bc"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"

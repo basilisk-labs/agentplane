@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 95bbaf16f45e30e66eddf48253bac5e66cc73644..05ddb7f628a954cce2427496b08eccf7831a8511",
+      "command": "git diff --check c3518001543299b1ee735c0b3ad3e29db565a7cf..4bef5f4dcd4c58780ae970cd39bb3f6dbc3147bc",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 95bbaf16f45e30e66eddf48253bac5e66cc73644..05ddb7f628a954cce2427496b08eccf7831a8511",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c3518001543299b1ee735c0b3ad3e29db565a7cf..4bef5f4dcd4c58780ae970cd39bb3f6dbc3147bc",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,8 @@
         "M\t.agentplane/tasks/202608291006-255K66/pr/github-body.md",
         "M\t.agentplane/tasks/202608291006-255K66/pr/meta.json",
         "M\t.agentplane/tasks/202608291006-255K66/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+        "M\tscripts/qualification/check-packaged-mixed-scope-lifecycle.mjs",
+        "M\tscripts/qualification/release-qualification.test.mjs"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "95bbaf16f45e30e66eddf48253bac5e66cc73644",
-  "implementation_commit": "05ddb7f628a954cce2427496b08eccf7831a8511",
+  "execution_base_commit": "c3518001543299b1ee735c0b3ad3e29db565a7cf",
+  "implementation_commit": "4bef5f4dcd4c58780ae970cd39bb3f6dbc3147bc",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
