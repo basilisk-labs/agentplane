@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 147
+revision: 150
 origin:
   system: "manual"
 depends_on:
@@ -28,38 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-09-02T07:39:08.986Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
-quality_review:
-  state: "rework"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-09-02T07:45:35.616Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "e3f7dc4076963713aa7721f5bf63c407f18aeb1d"
-  blueprint_digest: "7ad78cf9ada076212662bdace4e55b7fd34a3c410c0909dc85f3377c3151d211"
-  evidence_refs:
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/743625b979955131c70711cd97e40dfbac677d50662580ef4afde51200528f33.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/20260902-074232998-recovery-context/evaluator-evidence-manifest.json"
-    - ".agentplane/tasks/202608291006-255K66/README.md"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6e6b178b90391a5a592f1783e482fb3bd2ea9c883a68aacf81b8d75609092742.patch"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/6a6a2e771ac01458f56fdde09ab19fd708355649bbb213e488ebed5d42f38664.json"
-    - ".agentplane/tasks/202608291006-255K66/verification/20260902073908986-26b434d9dee6b5c9.json"
-    - ".agentplane/tasks/202608291006-255K66/quality/objects/sha256/5f1d6507c6d4dfa68f2a2f1d8a557bbfe7cbf41cf20617d5791b41956381ea71.json"
-    - ".agentplane/policy/dod.core.md"
-    - ".agentplane/policy/security.must.md"
-  findings:
-    - "The frozen evidence does not prove the mandatory M3 self-hosting and release-readiness qualification. The blueprint requires twenty real sequential self-hosting Tasks, three clean release drills, hosted exact-head checks, and a receipt bound to the implementation SHA, while the observed evidence marks the qualification packet not required and contains no runtime evidence."
-    - "The frozen diff contains numerous task artifacts and implementation changes outside the approved writable roots, and the task record classifies them as writable-scope violations without evidence of explicit re-approval or an accepted concurrent-work drift classification."
-    - "The implementation evidence embedded in the observed-checks packet is bound to the earlier SHA 1692b5eab62ec4ab274d5b9922fa7a441f9035be, not the evaluated SHA e3f7dc4076963713aa7721f5bf63c407f18aeb1d, so its clean-status and reviewed-path assertions do not establish the final evaluated state."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -85,6 +58,90 @@ execution_route:
     - "effect_schema"
     - "effect_security_boundary"
     - "material_implementation_uncertainty"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-follow-up.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-195600504-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-201603236-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/20260830-211405547-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/01b55826c06a0ceaab25425b86d9c8cd73549532e2ecc43ec87fab992c071097.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/312f8da8444bf36832098033f1008d74b0c823e54077fb96ca0148aba7eedfdd.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/4b7e0e19f5c827977cc0e2fe74adcc0e70f11e959e0e58adbee9825ec8e720e1.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/5e0407a494166417db26bb3edff44d2392a6c204a9a36772f548b1f2b4f571b5.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/72b3aab2f0da3340dc74fa676d1b67fd2493950373155ececa08d456c31276bc.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/79a86583166eb2ba9dd0fb04e99ea2fc364094c43dfabfd2246a8e66f0e05214.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/88d55613569a9881429b58e16be68aaecc010d82d2de9c0738e6655cc806a926.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/8bf281feaf0feb2d5a0b350bb465ecb07cd56ed14e2cf893cceb3fe2a7eec36c.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/d4e4f5b282b02ac9eed524824f9226d5d78f724442081ca23a734262cf0fc996.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/quality/objects/sha256/e851c6ff4d8240ee7502d4b5d7884c9a2711bb808bf435705a83ff265d6379e7.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830191715634-7507cadb6576870f.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830193558462-a8ce65c93fb33180.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830195451358-0ac34ff3aa90f0d5.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830201530164-c13219fe0d49d28e.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830205355533-5d4cdf9a599f48d8.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608301851-5W3XW6/verification/20260830211353583-f03c2dfc0d9cf290.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-190130469-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-200305077-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/20260831-203940876-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/4efd26c62ac4cc8e33aa95a8e372383f84ce1ad0fbefdc2654243a19114cb420.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/63c20a2ed914d1a63829fe955c93216c959d088da3bbad8ed3b4be7df94b8faa.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/65343480ac4e45a6761aef4e84aec9136266cd29fd24edaf0a75f3d4322a71a9.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/68caae31a4ce865f035255558b6006ebe2356931af6d76460040e2572802eb36.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/7a8998ad35bb4ec796a9fa87721c0c69bb0937d79fbb65e72c4df6489ae78477.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/8924d3f221b08f734ac08e86d950bd94980e5326cdb1b0b2eb1057dec29c4715.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a347189da546e99d6c85acb7f4c6a8ef838424407879a40b2bca56d05f2ab33b.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/a791510d3ed123dd2364844b9d21340957861e4760990aaeac41b2004e16dea1.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/bd5b576e5549df43dc0523a9261a89221a5b6f1d35d338441c19977b61b92a0c.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/quality/objects/sha256/dcbee63e2a2669d2448077679e94ec40ed46fb7f575c6717555c373024573987.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831174833111-4d6cb4170a29a6a3.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831193110903-64192167fd0b06c7.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831200253276-c183223976ffa32b.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831201225756-7cb703cc87ecd334.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831202714530-e8e1d4e1e2a0114a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202608311713-A0F906/verification/20260831203927494-45bb697c959c90f1.json"
+    - "observed_path_outside_scope:docs/user/cli-reference.generated.mdx"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -1112,9 +1169,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "69fc56e9e042cc85c479ab9337f15cb120c150ac"
-  message: "🚧 255K66 task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1269,6 +1324,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 90552723a60b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -1680,9 +1738,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-02T08:00:55.518Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 90552723a60b. CLI accepted one state-bound external-agent semantic result."
+    commit: "90552723a60bd6e8f956f35ca625d6771f811cf2"
 doc_version: 3
-doc_updated_at: "2026-09-02T07:56:51.639Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-02T08:00:55.697Z"
+doc_updated_by: "SUPERVISOR"
 description: "After replay and migration gates pass, route all CLI and managed-runner consumers through the canonical kernel, run self-hosting and crash-recovery qualification, remove production legacy lifecycle implementations, preserve only declared compatibility adapters, and produce rollback and release-readiness evidence."
 sections:
   Summary: |-
@@ -17158,9 +17224,9 @@ extensions:
         revision: 11
         schema_version: 1
         task_id: "202608291006-255K66"
-    revision: 145
+    revision: 150
     schema_version: 1
-    updated_at: "2026-09-02T07:56:49.138Z"
+    updated_at: "2026-09-02T08:00:56.769Z"
     work_items:
       m3-crash-migration:
         attempt: 0
@@ -17226,14 +17292,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       m3-projections:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "m3-projections"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:2e32f8e90a5a6d85be8e13644e5cf28c20c808ef692826121f748cd062b98381"
+            id: "m3-projections-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 12
+              task_id: "202608291006-255K66"
+              work_item_id: "m3-projections"
+            provenance:
+              - "sha256:838ea578f002123b608e7a76bdfef5708590774ff9201893604c8a861db5b316"
+              - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:103257ee037226d5be45d1be372bbd0d1a20868742b70f2e991e0bfee2000673"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202608291006-255K66/supervision/declared-checks.json"
+              check_id: "m3-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-02T08:00:56.691Z"
+              repository_snapshot_digest: "sha256:103257ee037226d5be45d1be372bbd0d1a20868742b70f2e991e0bfee2000673"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       m3-retirement:
         attempt: 0
         claim_id: null
@@ -17679,6 +17775,29 @@ extensions:
         previous_revision: 127
         schema_version: 1
         task_id: "202608291006-255K66"
+      external-result:work-order-202608291006-255K66-executor-bb63f8a2823086db7feacd7c:
+        aggregate_digest: "sha256:170fd97e8dcb5926253d8e24a2da69f96872bb576cac408ce62b5f517119b806"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T08:00:56.769Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_125c99acb79eaa81d1fac01e"
+          mutation_id: "external-result:work-order-202608291006-255K66-executor-bb63f8a2823086db7feacd7c"
+          plan_digest: "sha256:a57fbd9e9432403ed5598691dab25f34f379fcb2813444a9398efad01672e1f5"
+          plan_revision: 12
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202608291006-255K66"
+          task_revision: 149
+          to: "COMPLETED"
+          work_item_id: "m3-projections"
+        mutation_id: "external-result:work-order-202608291006-255K66-executor-bb63f8a2823086db7feacd7c"
+        next_revision: 150
+        previous_revision: 149
+        schema_version: 1
+        task_id: "202608291006-255K66"
       external-result:work-order-202608291006-255K66-executor-bf2785583fed4c8df073f5e8:
         aggregate_digest: "sha256:a4f459c343eb04e1c237e1264cafee80dcdca52d5835eb160a4bb80233d4a5c8"
         event:
@@ -17969,8 +18088,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "1692b5eab62ec4ab274d5b9922fa7a441f9035be"
-    message: "🚧 255K66 task: apply external agent result"
+    hash: "90552723a60bd6e8f956f35ca625d6771f811cf2"
   task_execution_context:
     base_ref: "main"
     base_sha: "36741ce5160d452ca9660a388241cb4da32f842a"
