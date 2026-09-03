@@ -2,10 +2,10 @@
   "checks": [
     {
       "check_ids": [
-        "invalidation-focused"
+        "cleanup-focused"
       ],
-      "command": "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts",
-      "duration_ms": 11821,
+      "command": "bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts",
+      "duration_ms": 28011,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -16,7 +16,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c\n\n\n Test Files  5 passed (5)\n      Tests  44 passed (44)\n   Start at  18:26:29\n   Duration  11.55s (transform 5.85s, setup 0ms, import 7.06s, tests 17.75s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c\n\n\n Test Files  6 passed (6)\n      Tests  80 passed (80)\n   Start at  18:28:18\n   Duration  27.75s (transform 7.52s, setup 0ms, import 7.54s, tests 61.20s, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
