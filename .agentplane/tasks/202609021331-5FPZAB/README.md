@@ -4,7 +4,7 @@ title: "Repair lifecycle projection integrity after M3 cutover"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 68
+revision: 71
 origin:
   system: "manual"
 depends_on: []
@@ -119,13 +119,19 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+      - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
+      - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
       - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
+      - "source_code"
       - "tests"
     verification_results: []
   reason_codes:
@@ -187,7 +193,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:3e391732f56bfce3b7b74b81456a03a2c9bf558b937d0295e32f35dcc1d1ceb8"
+      digest: "sha256:f5583b9ed6b5e3d6d61ba96889eec52a07ff8408b79dc4782309593c41fb055e"
       escalation_reasons:
         - "central_component:packages/core/src/git"
         - "central_component:packages/core/src/tasks"
@@ -205,13 +211,19 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+          - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
+          - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
           - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
+          - "source_code"
           - "tests"
       phase: "task"
       policy_floor:
@@ -250,7 +262,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "b6350071398029c378f986a0169222e3b2291e4a"
+  message: "🚧 5FPZAB task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -309,6 +323,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 8555ef930fd8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b63500713980. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -458,8 +475,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 8555ef930fd8. CLI accepted one state-bound external-agent semantic result."
     commit: "8555ef930fd814061df4ad533096ed12acf16bc3"
+  -
+    type: "status"
+    at: "2026-09-03T15:57:09.014Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b63500713980. CLI accepted one state-bound external-agent semantic result."
+    commit: "b6350071398029c378f986a0169222e3b2291e4a"
 doc_version: 3
-doc_updated_at: "2026-09-03T15:28:18.154Z"
+doc_updated_at: "2026-09-03T15:57:09.014Z"
 doc_updated_by: "SUPERVISOR"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
@@ -1059,7 +1084,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 18
+    event_cursor: 19
     final_validation: null
     id: "202609021331-5FPZAB"
     intent:
@@ -3691,19 +3716,89 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 68
+    revision: 71
     schema_version: 1
-    updated_at: "2026-09-03T15:28:46.689Z"
+    updated_at: "2026-09-03T16:05:25.939Z"
     work_items:
       projection-arkady-stale-done-e2e:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "projection-arkady-stale-done-e2e"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:31701689c0f223a8fcecfa27c1fa44597e3e608c397283afce342e3fc4786dfe"
+            id: "arkady-factory-stale-done-e2e"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609021331-5FPZAB"
+              work_item_id: "projection-arkady-stale-done-e2e"
+            provenance:
+              - "sha256:9e0c2076b2d9ed7793940ae39e3042a38efcf720c50e7788d99e180d61e2e30e"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:cddbab9a9ccfb24596ce3ed55724618cdac0a03b1f80479e76b6d7db410418ce"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "arkady-focused"
+              command_identity: "bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-03T16:05:25.893Z"
+              repository_snapshot_digest: "sha256:cddbab9a9ccfb24596ce3ed55724618cdac0a03b1f80479e76b6d7db410418ce"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "adapter-focused"
+              command_identity: "bunx vitest run packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-03T16:05:25.893Z"
+              repository_snapshot_digest: "sha256:cddbab9a9ccfb24596ce3ed55724618cdac0a03b1f80479e76b6d7db410418ce"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "compatibility"
+              command_identity: "bun run bench:compatibility:candidate:check"
+              detail: "Observed by bun run bench:compatibility:candidate:check."
+              exit_code: 0
+              observed_at: "2026-09-03T16:05:25.893Z"
+              repository_snapshot_digest: "sha256:cddbab9a9ccfb24596ce3ed55724618cdac0a03b1f80479e76b6d7db410418ce"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "hotspots"
+              command_identity: "bun run hotspots:check"
+              detail: "Observed by bun run hotspots:check."
+              exit_code: 0
+              observed_at: "2026-09-03T16:05:25.893Z"
+              repository_snapshot_digest: "sha256:cddbab9a9ccfb24596ce3ed55724618cdac0a03b1f80479e76b6d7db410418ce"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-03T16:05:25.893Z"
+              repository_snapshot_digest: "sha256:cddbab9a9ccfb24596ce3ed55724618cdac0a03b1f80479e76b6d7db410418ce"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       projection-atomic-reconciliation:
         attempt: 1
         claim_id: null
@@ -4086,6 +4181,30 @@ extensions:
         mutation_id: "compatibility:sha256:4ab10d6b2eb5edc4b90cc0f7d8d7ea9aa0b7a1abfe7a98a6fe9969b7a2993a5c"
         next_revision: 66
         previous_revision: 65
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:50ad17567a6c455c45cb0e6d2ff07019a069977a8e9afd19aa96200d49ce26c7:
+        aggregate_digest: "sha256:f18dd119651bba16d0f67dfc3d839206dddd03ba96c3dd306a5f8e679589781a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T15:57:09.014Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3dcf1486c493c75d97535a42"
+          mutation_id: "compatibility:sha256:50ad17567a6c455c45cb0e6d2ff07019a069977a8e9afd19aa96200d49ce26c7"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 68
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:50ad17567a6c455c45cb0e6d2ff07019a069977a8e9afd19aa96200d49ce26c7"
+        next_revision: 69
+        previous_revision: 68
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:6732ec2792083f727b9c58a43b968e5c8ced2ff91545a671b6a26db6a764a7f9:
@@ -4534,6 +4653,29 @@ extensions:
         previous_revision: 64
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      external-result:work-order-202609021331-5FPZAB-executor-785705b7542ee441ec81d17c:
+        aggregate_digest: "sha256:2548c8d6c1cb4ccc2547656ca9e193655f95d685ae59d33c51a266ffffcef364"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:05:25.939Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_3a007a42d9115db10cde2fea"
+          mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-785705b7542ee441ec81d17c"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 70
+          to: "COMPLETED"
+          work_item_id: "projection-arkady-stale-done-e2e"
+        mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-785705b7542ee441ec81d17c"
+        next_revision: 71
+        previous_revision: 70
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       external-result:work-order-202609021331-5FPZAB-executor-85a9e371afce1c746b5ec049:
         aggregate_digest: "sha256:3cbe116134ca101c1f0bf8e857cea8cfe13bfd677a3b1f80a41c853f1aa1d4b5"
         event:
@@ -4753,7 +4895,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "8555ef930fd814061df4ad533096ed12acf16bc3"
+    hash: "b6350071398029c378f986a0169222e3b2291e4a"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
