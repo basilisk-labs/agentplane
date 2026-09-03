@@ -4,7 +4,7 @@ title: "Repair lifecycle projection integrity after M3 cutover"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 62
+revision: 65
 origin:
   system: "manual"
 depends_on: []
@@ -120,6 +120,7 @@ execution_contract:
       - "packages/agentplane"
     changed_paths:
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
       - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
     external_effects: []
     repository_effects:
@@ -185,11 +186,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cb77f0e196c8226f831e4ebb254c3616dd698a9860f3084426886d15da4ef963"
+      digest: "sha256:10c9b245e2c5653ea09c293b4af556ccf454c59734ed32fcd07fe76c59768de0"
       escalation_reasons:
         - "central_component:packages/core/src/git"
         - "central_component:packages/core/src/tasks"
         - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
         - "effect_public_api"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -203,6 +205,7 @@ execution_contract:
           - "packages/agentplane"
         changed_files:
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
           - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
         external_effects: []
         repository_effects:
@@ -298,6 +301,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ac1bd42084f5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8d5db7806293. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -431,8 +437,16 @@ events:
     to: "DOING"
     note: "Implementation committed: ac1bd42084f5. CLI accepted one state-bound external-agent semantic result."
     commit: "ac1bd42084f5e902e9c3007b93ba4ef02416ea66"
+  -
+    type: "status"
+    at: "2026-09-03T15:26:28.712Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8d5db7806293. CLI accepted one state-bound external-agent semantic result."
+    commit: "8d5db7806293869c51c927a97b47be505a06034d"
 doc_version: 3
-doc_updated_at: "2026-09-03T15:24:00.301Z"
+doc_updated_at: "2026-09-03T15:26:28.712Z"
 doc_updated_by: "SUPERVISOR"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
@@ -1032,7 +1046,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609021331-5FPZAB"
     intent:
@@ -3664,9 +3678,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 62
+    revision: 65
     schema_version: 1
-    updated_at: "2026-09-03T15:24:08.411Z"
+    updated_at: "2026-09-03T15:26:41.049Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 0
@@ -3775,14 +3789,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       projection-invalidation:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "projection-invalidation"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:711d147a6e0b4cec32e347c4d3950729104a945542765cb13763459e1c1ce0af"
+            id: "projection-invalidation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609021331-5FPZAB"
+              work_item_id: "projection-invalidation"
+            provenance:
+              - "sha256:b4e016a73d36b4c2c3cccfdd1f2e7b322beff777b08b7ee339dc22a26f81f9ac"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:93e8fcf21e413d26492cf271299c03d16b951d53a271cb9e9f1edb0afd2fb060"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              check_id: "invalidation-focused"
+              command_identity: "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+              detail: "Observed by bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-03T15:26:41.025Z"
+              repository_snapshot_digest: "sha256:93e8fcf21e413d26492cf271299c03d16b951d53a271cb9e9f1edb0afd2fb060"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -3999,6 +4043,30 @@ extensions:
         mutation_id: "compatibility:sha256:6732ec2792083f727b9c58a43b968e5c8ced2ff91545a671b6a26db6a764a7f9"
         next_revision: 28
         previous_revision: 27
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:7166f5aec727d4f7f5b94ac19ff951717100c20aff8510324c2b1e4834b689f3:
+        aggregate_digest: "sha256:a4799ef8b8737f66ed776f8f1cac14afad0564f4da29ca7574dda646eaddb2b7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T15:26:28.712Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c564f9acd952e811e9228512"
+          mutation_id: "compatibility:sha256:7166f5aec727d4f7f5b94ac19ff951717100c20aff8510324c2b1e4834b689f3"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 62
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7166f5aec727d4f7f5b94ac19ff951717100c20aff8510324c2b1e4834b689f3"
+        next_revision: 63
+        previous_revision: 62
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:8ff361cca4826e66dad6a4e3b61bc863c9873ff3a2798ecd7f9ea9eb77b2a67d:
@@ -4353,6 +4421,29 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      external-result:work-order-202609021331-5FPZAB-executor-6e93f82bde617f7522844fd5:
+        aggregate_digest: "sha256:ab35a25a7c44850ccf728670a579e7fc3b6f66fe2de862ab36c181b572b53363"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T15:26:41.049Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_2d5c12615196d8b1ae5e2364"
+          mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-6e93f82bde617f7522844fd5"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 64
+          to: "COMPLETED"
+          work_item_id: "projection-invalidation"
+        mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-6e93f82bde617f7522844fd5"
+        next_revision: 65
+        previous_revision: 64
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       external-result:work-order-202609021331-5FPZAB-executor-85a9e371afce1c746b5ec049:
         aggregate_digest: "sha256:3cbe116134ca101c1f0bf8e857cea8cfe13bfd677a3b1f80a41c853f1aa1d4b5"
         event:
@@ -4572,7 +4663,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "ac1bd42084f5e902e9c3007b93ba4ef02416ea66"
+    hash: "8d5db7806293869c51c927a97b47be505a06034d"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
