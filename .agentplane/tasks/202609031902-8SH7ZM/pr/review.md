@@ -30,8 +30,8 @@ Created: 2026-09-03T19:09:23.499Z
 
 ```text
  .../task-centric-backend-adapter.test.ts           | 72 ++++++++++++++++++++++
- .../task-backend/task-centric-backend-adapter.ts   | 64 +++++++++++++++++++
- 2 files changed, 136 insertions(+)
+ .../task-backend/task-centric-backend-adapter.ts   | 66 +++++++++++++++++++-
+ 2 files changed, 137 insertions(+), 1 deletion(-)
 ```
 
 </details>
