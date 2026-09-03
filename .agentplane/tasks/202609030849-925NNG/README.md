@@ -1,10 +1,11 @@
 ---
 id: "202609030849-925NNG"
 title: "Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 53
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - "The new external plan graph guard prevents unproducible required_inputs from recreating unbound EXECUTOR loops."
     - "The branch is clean at reviewed head d6385561b700d1ee62b2e473e72c56bed877ce7f, full local CI and focused qualification are recorded, and no manual historical task artifact edit is part of the diff."
     - "Residual risk: Hosted PR integration and the real 202609021331-5FPZAB recovery are intentionally downstream supervisor operations and were not performed by this read-only EVALUATOR episode."
+token_usage:
+  agent_runs: 20
+  input_tokens: null
+  journal_digest: "sha256:232d388c0894f4b0b4f06e65807615f7e1f70282bb7931a39afc94a6e2964f5f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-03T13:02:38.568Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -339,8 +354,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b3ca56abe63fcca08fc766f4cfa489c7546104fb"
-  message: "🚧 925NNG task: apply external agent result"
+  hash: "b742ba8fac0bff396ba020eaa2f5cfea39de1a0f"
+  message: "🚧 925NNG task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -387,6 +402,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b3ca56abe63f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -529,9 +547,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-03T13:02:38.568Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "b742ba8fac0bff396ba020eaa2f5cfea39de1a0f"
 doc_version: 3
-doc_updated_at: "2026-09-03T13:01:16.672Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T13:02:38.574Z"
+doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
   Summary: |-
@@ -1716,7 +1742,155 @@ extensions:
       schema_version: 1
       task_id: "202609030849-925NNG"
     event_cursor: 0
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "lifecycle-invariants"
+          command_identity: "bun run lifecycle:invariants"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "hotspots"
+          command_identity: "bun run hotspots:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "lint"
+          command_identity: "bun run lint"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "routing-policy"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "full-local-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "independent-evaluator"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "hosted-integration"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "post-merge-recovery"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "focused-workspace"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "focused-cli"
+          command_identity: "bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "compatibility-candidate"
+          command_identity: "bun run bench:compatibility:candidate:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          check_id: "compatibility-baseline"
+          command_identity: "bun run bench:compatibility:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T13:01:15.573Z"
+          repository_snapshot_digest: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609030849-925NNG"
     intent:
       acceptance_criteria: []
@@ -1727,7 +1901,7 @@ extensions:
 
         Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB.
       task_id: "202609030849-925NNG"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -4400,9 +4574,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609030849-925NNG"
-    revision: 49
+    revision: 53
     schema_version: 1
-    updated_at: "2026-09-03T12:53:30.414Z"
+    updated_at: "2026-09-03T13:02:38.568Z"
     work_items:
       atomic-plan-rejection:
         attempt: 1
@@ -5013,6 +5187,24 @@ extensions:
         task_id: "202609030849-925NNG"
         task_revision: 48
         work_item_id: "work-item-completion-binding"
+      -
+        at: "2026-09-03T13:02:38.568Z"
+        from: "ACTIVE"
+        to: "COMPLETED"
+        actor_id: "CODER"
+        cause_refs:
+          - "task-verification:202609030849-925NNG"
+          - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+        entity: "task"
+        id: "event_2b483b1d38f7c6794a016e9c"
+        mutation_id: "legacy-finish:202609030849-925NNG:2026-09-03T13:01:15.573Z:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+        plan_digest: "sha256:9105b3af7bfd6b11eff54b81ab7ec485a7b194f0698ff47470d76fb7b6f11f69"
+        plan_revision: 6
+        repository_fingerprint: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+        task_revision: 49
+        work_item_id: null
     leases: []
     mutation_receipts:
       external-result:work-order-202609030849-925NNG-executor-5ebb0e6dc85a767201557419:
@@ -5105,6 +5297,31 @@ extensions:
         mutation_id: "external-result:work-order-202609030849-925NNG-executor-e373330d49f61d8770b964a5"
         next_revision: 36
         previous_revision: 35
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+      legacy-finish:202609030849-925NNG:2026-09-03T13:01:15.573Z:b3ca56abe63fcca08fc766f4cfa489c7546104fb:
+        aggregate_digest: "sha256:3816ad4e110f75ef3b35bc95eecec10d94338a802154dc0cf91b12e1c48057b1"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-03T13:02:38.568Z"
+          cause_refs:
+            - "task-verification:202609030849-925NNG"
+            - "git:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2b483b1d38f7c6794a016e9c"
+          mutation_id: "legacy-finish:202609030849-925NNG:2026-09-03T13:01:15.573Z:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+          plan_digest: "sha256:9105b3af7bfd6b11eff54b81ab7ec485a7b194f0698ff47470d76fb7b6f11f69"
+          plan_revision: 6
+          repository_fingerprint: "sha256:5aa2a22495c1685e0f61c6b69b1e23dbe2c30db73f9a330f98406ef8e89f66a6"
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          task_revision: 49
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609030849-925NNG:2026-09-03T13:01:15.573Z:b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+        next_revision: 53
+        previous_revision: 52
         schema_version: 1
         task_id: "202609030849-925NNG"
       plan-refinement:work-order-202609030849-925NNG-executor-0d343c85a70052304eb6865c:
@@ -5237,6 +5454,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+    message: "🚧 925NNG task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
@@ -5744,3 +5962,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/20` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:232d388c0894f4b0b4f06e65807615f7e1f70282bb7931a39afc94a6e2964f5f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-03T13:02:38.568Z`
