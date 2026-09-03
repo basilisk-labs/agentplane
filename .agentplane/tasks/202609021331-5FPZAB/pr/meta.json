@@ -8,10 +8,10 @@
   "pr_number": 5889,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5889",
   "pre_merge_closure": {
-    "basis_commit": "ff11af89686633f535492f973870cfcee3dc5974",
+    "basis_commit": "bf77042aaab8f6447a14db0280bb5b362c2debe2",
     "branch": "task/202609021331-5FPZAB/repair-lifecycle-projection-integrity-after-m3-c",
     "pr_number": 5889,
-    "recorded_at": "2026-09-03T16:16:27.024Z",
+    "recorded_at": "2026-09-03T16:49:00.705Z",
     "state": "closed_before_merge"
   },
   "provider": {

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 78
+revision: 79
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,9 @@ quality_review:
     - "The combined regression suite passed 9 files and 101 tests, including plan rejection recovery, planning authority, atomic task mutation, Arkady stale-DONE routing, and cleanup convergence."
     - "Full local CI at ee2358995 exited 0; docs contract, full regression, platform-critical, coverage, typecheck, lint, hotspots, compatibility, lifecycle invariants, and routing all pass."
 token_usage:
-  agent_runs: 27
+  agent_runs: 29
   input_tokens: null
-  journal_digest: "sha256:fb1bb22f52687696d3ed1c161d49e3588c45ec029397636fd12e1809f65f0753"
+  journal_digest: "sha256:5177cceb4fd6aa8798ff4080f682260ac782db9df25f2b20daa9041c7cb958b4"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -76,7 +76,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-03T16:16:26.942Z"
+  updated_at: "2026-09-03T16:49:00.615Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -692,8 +692,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ff11af89686633f535492f973870cfcee3dc5974"
-  message: "🚧 5FPZAB task: record external evaluator result"
+  hash: "bf77042aaab8f6447a14db0280bb5b362c2debe2"
+  message: "🚧 5FPZAB task: record worktree observation"
 comments:
   -
     author: "CODER"
@@ -764,6 +764,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned EVALUATOR artifacts for implementation SHA ee2358995. The README quality projection and both prepare/run evidence directories are current, auditable, and should be committed by AgentPlane; no source or test file is dirty."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -951,9 +954,17 @@ events:
     at: "2026-09-03T16:47:58.269Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned EVALUATOR artifacts for implementation SHA ee2358995. The README quality projection and both prepare/run evidence directories are current, auditable, and should be committed by AgentPlane; no source or test file is dirty."
+  -
+    type: "status"
+    at: "2026-09-03T16:49:00.615Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "bf77042aaab8f6447a14db0280bb5b362c2debe2"
 doc_version: 3
-doc_updated_at: "2026-09-03T16:47:58.319Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T16:49:00.644Z"
+doc_updated_by: "CODER"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
   Summary: |-
@@ -1822,7 +1833,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 25
+    event_cursor: 26
     final_validation:
       evidence:
         -
@@ -4547,9 +4558,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 78
+    revision: 79
     schema_version: 1
-    updated_at: "2026-09-03T16:47:58.269Z"
+    updated_at: "2026-09-03T16:49:00.615Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 1
@@ -4844,6 +4855,30 @@ extensions:
         mutation_id: "compatibility:sha256:0e0d6f55aed87d77da7abc32b815a65270ab68eaeb1437d7ac67dadab901e306"
         next_revision: 54
         previous_revision: 53
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:10777562456484df7f079176acf1605283ce96b2f76caaabaf1321bd31b2e169:
+        aggregate_digest: "sha256:af351bb88f3af8d776b182ba4017365be2aa02820f25c771f8ed2304d2d94895"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:49:00.615Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_b93e2729c5d1439d63b26f39"
+          mutation_id: "compatibility:sha256:10777562456484df7f079176acf1605283ce96b2f76caaabaf1321bd31b2e169"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 78
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:10777562456484df7f079176acf1605283ce96b2f76caaabaf1321bd31b2e169"
+        next_revision: 79
+        previous_revision: 78
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:11d1a8000dbf3c03f2b99ed1f885b99bf234d6430ca2fd66eb9c5022ad471665:
@@ -5895,8 +5930,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b6350071398029c378f986a0169222e3b2291e4a"
-    message: "🚧 5FPZAB task: apply external agent result"
+    hash: "ee2358995cddf25ee966b617457c1af911e22197"
+    message: "🔀 5FPZAB task: resolve projection recovery merge conflict"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
@@ -6217,12 +6252,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/27` agent runs
+- Completeness: `0/29` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:fb1bb22f52687696d3ed1c161d49e3588c45ec029397636fd12e1809f65f0753`
+- Journal digest: `sha256:5177cceb4fd6aa8798ff4080f682260ac782db9df25f2b20daa9041c7cb958b4`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-03T16:16:26.942Z`
+- Updated at: `2026-09-03T16:49:00.615Z`
