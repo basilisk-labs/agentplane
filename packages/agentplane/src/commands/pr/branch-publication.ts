@@ -2,6 +2,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
 
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
+import { isTaskLocalOnlyAdvance } from "../shared/task-local-freshness.js";
 import { observeExistingChangeRequestByBranch } from "./internal/change-request-provider.js";
 import { parseGitRemoteUrl } from "./internal/git-host-identity.js";
 import { ghEnv } from "./internal/gh-api.js";
@@ -219,11 +220,105 @@ async function pushRebasedBranchWithObservedLease(opts: {
   return true;
 }
 
+async function pushOrphanTaskArtifactBranchWithObservedLease(opts: {
+  gitRoot: string;
+  branch: string;
+  baseBranch: string | null;
+  prNumber: number | null;
+  taskId: string | null;
+  workflowDir: string | null;
+  tasksPath: string | null;
+  upstream: string;
+  remote: string;
+}): Promise<boolean> {
+  const baseBranch = opts.baseBranch?.trim() ?? "";
+  const taskId = opts.taskId?.trim() ?? "";
+  const workflowDir = opts.workflowDir?.trim() ?? "";
+  if (
+    !baseBranch ||
+    !taskId ||
+    !workflowDir ||
+    opts.prNumber !== null ||
+    opts.remote !== "origin" ||
+    opts.upstream !== `origin/${opts.branch}`
+  ) {
+    return false;
+  }
+
+  try {
+    if (
+      !(await remoteTargetsShareRepository({
+        gitRoot: opts.gitRoot,
+        remote: opts.remote,
+      }))
+    ) {
+      return false;
+    }
+
+    const observation = await observeExistingChangeRequestByBranch({
+      gitRoot: opts.gitRoot,
+      branch: opts.branch,
+      baseBranch,
+      requireUnique: true,
+    });
+    if (observation.state !== "not_found") return false;
+
+    const { localHead, remoteHead } = await resolvePublicationHeads({
+      gitRoot: opts.gitRoot,
+      branch: opts.branch,
+      remote: opts.remote,
+    });
+    if (
+      !localHead ||
+      !remoteHead ||
+      localHead === remoteHead ||
+      !GIT_OBJECT_ID_PATTERN.test(localHead) ||
+      !GIT_OBJECT_ID_PATTERN.test(remoteHead)
+    ) {
+      return false;
+    }
+    if (
+      !(await isTaskLocalOnlyAdvance({
+        gitRoot: opts.gitRoot,
+        workflowDir,
+        taskId,
+        tasksPath: opts.tasksPath ?? undefined,
+        fromRef: remoteHead,
+        toRef: localHead,
+      }))
+    ) {
+      return false;
+    }
+
+    const remoteRef = `refs/heads/${opts.branch}`;
+    await execFileAsync(
+      "git",
+      [
+        "push",
+        "--no-verify",
+        `--force-with-lease=${remoteRef}:${remoteHead}`,
+        opts.remote,
+        `${localHead}:${remoteRef}`,
+      ],
+      {
+        cwd: opts.gitRoot,
+        env: ghEnv(),
+      },
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function pushTaskBranchUpstreamIfConfigured(opts: {
   gitRoot: string;
   branch: string;
   baseBranch?: string | null;
   prNumber?: number | null;
+  taskId?: string | null;
+  workflowDir?: string | null;
+  tasksPath?: string | null;
 }): Promise<boolean> {
   const currentBranch = await gitCurrentBranch(opts.gitRoot).catch(() => "");
   if (currentBranch.trim() !== opts.branch.trim()) return false;
@@ -281,7 +376,20 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
       upstream: trimmedUpstream,
       remote,
     });
-    if (!publishedRebasedBranch) throw err;
+    const publishedOrphanTaskArtifactBranch = publishedRebasedBranch
+      ? false
+      : await pushOrphanTaskArtifactBranchWithObservedLease({
+          gitRoot: opts.gitRoot,
+          branch: opts.branch,
+          baseBranch: opts.baseBranch ?? null,
+          prNumber: opts.prNumber ?? null,
+          taskId: opts.taskId ?? null,
+          workflowDir: opts.workflowDir ?? null,
+          tasksPath: opts.tasksPath ?? null,
+          upstream: trimmedUpstream,
+          remote,
+        });
+    if (!publishedRebasedBranch && !publishedOrphanTaskArtifactBranch) throw err;
   }
   await gitRefreshBranchTrackingRef(opts.gitRoot, opts.branch);
   return true;
