@@ -27,7 +27,10 @@ Complete the Clean Core salvage boundary on current main without merging stale b
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  58 ++++
  .../src/cli/run-cli.core.task-handoff.test.ts      | 103 ++++++-
+ .../commands/branch/work-start.materialize.test.ts | 172 +++++++++++
+ .../src/commands/branch/work-start.materialize.ts  |  66 ++++-
  .../src/commands/pr/branch-publication.test.ts     | 325 ++++++++++++++++++++-
  .../src/commands/pr/branch-publication.ts          | 110 ++++++-
  packages/agentplane/src/commands/pr/flow-status.ts |  12 +-
@@ -38,7 +41,8 @@ Complete the Clean Core salvage boundary on current main without merging stale b
  .../src/commands/task/direct-task-verification.ts  | 181 ++++++++----
  .../src/commands/task/handoff-show.command.ts      |  37 ++-
  .../agentplane/src/commands/task/handoff.shared.ts |  27 +-
- 11 files changed, 1058 insertions(+), 96 deletions(-)
+ scripts/workflow/bootstrap-framework-dev.mjs       |  40 ++-
+ 15 files changed, 1390 insertions(+), 100 deletions(-)
 ```
 
 </details>
