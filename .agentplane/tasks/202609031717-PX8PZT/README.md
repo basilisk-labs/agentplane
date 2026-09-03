@@ -4,7 +4,7 @@ title: "Port the minimal missing Clean Core lifecycle boundary contracts from au
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +28,7 @@ plan_approval:
   note: "host_user_decision=sha256:f363bb4ac1ac0302dc6d1ec6e430b88599c582db408e8780ea49f15c7b4b293b"
 verification:
   state: "ok"
-  updated_at: "2026-09-03T18:29:35.979Z"
+  updated_at: "2026-09-03T21:47:43.960Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -440,8 +440,14 @@ events:
     at: "2026-09-03T18:33:52.951Z"
     author: "SUPERVISOR"
     body: "External EXECUTOR returned failed: The same authority mismatch remains at task revision 23. The required correction is limited to the protected task README, while this EXECUTOR packet again authorizes only implementation-code roots."
+  -
+    type: "verify"
+    at: "2026-09-03T21:47:43.960Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-03T18:33:52.951Z"
+doc_updated_at: "2026-09-03T21:47:45.282Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -454,11 +460,12 @@ sections:
     - Out of scope: unrelated refactors not required for "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches".
   Plan: "Prepared one bounded branch_pr plan with five strictly sequential WorkItems: four minimal current-architecture ports for missing Clean Core lifecycle contracts, followed by integrated qualification. The execution declaration, WorkItem scopes, and write claims use the same closed set of repository roots."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+    2. Run `bun x prettier --check packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/flow-status.ts packages/agentplane/src/commands/shared/task-handoff-reader.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/handoff-show.command.ts packages/agentplane/src/commands/task/handoff.shared.ts scripts/workflow/bootstrap-framework-dev.mjs`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+    3. Run `bun run lint:core`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+    4. Run `bun run typecheck`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+    5. Run `node .agentplane/policy/check-routing.mjs`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+    6. Run `bun run ci:local:full`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-09-03T18:29:35.979Z — VERIFY — ok
@@ -469,6 +476,162 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fa2be5f7a660a327df5c1c41ebefd45cc83a9215cdfc18aa8ce28e692c1d392a, input_digest=sha256:ac10823c520f5b763b45f5ab704b2543abbaf89540aaac21fcba203ff85bb361
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (1/5)
+
+    Check: real_e2e
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (2/5)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (3/5)
+
+    Check: real_e2e
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (4/5)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (5/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031717-PX8PZT-port-the-minimal-missing-clean-core-lifecycle-bo/.agentplane/tasks/202609031717-PX8PZT/blueprint/resolved-snapshot.json
+    - old_digest: 9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b
+    - current_digest: 9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609031717-PX8PZT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609031717-PX8PZT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-03T21:47:43.960Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:999575281ba3794ab2de1a42e8952a23d2ffe16b0ada2563480e16637d9d4def, input_digest=sha256:db27cd4c20f4f8f37740eb881cab18f63579a24c0a1857e299f0266b78585212
 
     Details:
 
@@ -1131,7 +1294,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 12
+    event_cursor: 14
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -1189,10 +1352,29 @@ extensions:
           risk_changed: false
           scope_roots_added: []
         schema_version: 1
+      -
+        actor_id: "external:EXECUTOR"
+        created_at: "2026-09-03T21:38:12.028Z"
+        digest: "sha256:c470f6e2220e801f8647b9b3cedcc346a5adbfc7d5c75277c2394e8a3a1acc2d"
+        id: "amendment_c470f6e2220e801f8647b9b3"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        refinement:
+          acceptance_changed: false
+          architecture_constraints_changed: false
+          dependencies_changed: false
+          description: "Clarify the visible plan document by replacing sections.Verify Steps fallback scaffold with the current approved task-specific validation sequence: combined focused regressions, touched-file Prettier check, bun run lint:core, bun run typecheck, node .agentplane/policy/check-routing.mjs, and bun run ci:local:full. Preserve all five sequential WorkItems, exact required_inputs to expected_outputs chaining, current writable roots, current implementation SHA, and exclusions for MPXQBK, full T4RR70/GitLab, 9RCWZQ release behavior, release/version/publication metadata, and dependency upgrades."
+          external_effects_added: []
+          operations:
+            - "clarify"
+          outputs_added: []
+          risk_changed: false
+          scope_roots_added: []
+        schema_version: 1
     plan_history: []
-    revision: 25
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-03T18:33:52.951Z"
+    updated_at: "2026-09-03T21:47:45.263Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -1538,6 +1720,22 @@ extensions:
         task_id: "202609031717-PX8PZT"
         task_revision: 21
         work_item_id: null
+      -
+        at: "2026-09-03T21:38:12.028Z"
+        from: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        to: "sha256:c470f6e2220e801f8647b9b3cedcc346a5adbfc7d5c75277c2394e8a3a1acc2d"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_301a3eb6fbb7a3ef5542ef5a"
+        mutation_id: "plan-refinement:work-order-202609031717-PX8PZT-executor-72b57d4e95a0854941a58eca"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+        task_revision: 25
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:014db468ea85e74045fc721f2d0d772030a72f4ade6b33b8c0dd2573854d5fa2:
@@ -1682,6 +1880,30 @@ extensions:
         mutation_id: "compatibility:sha256:9c42d2bc418358880bbe88fc360ed7981aa94957ba7920ae04b115bce1fb0933"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:a54a082f8088f140c8ee1df4e6a8c002e6fa04d5418c6febd220769294ef2483:
+        aggregate_digest: "sha256:c2bd63e37e1e4a7323e4c6b58bd287bcfd858a0a33663a934782ad80a9dc712d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T21:47:45.263Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1dfb13c16aa3f1612952d3df"
+          mutation_id: "compatibility:sha256:a54a082f8088f140c8ee1df4e6a8c002e6fa04d5418c6febd220769294ef2483"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a54a082f8088f140c8ee1df4e6a8c002e6fa04d5418c6febd220769294ef2483"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:a611653d77b9d49cd55422e9b6628d51702900098e8ae848e92e9a76b3808b4e:
@@ -1919,6 +2141,29 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202609031717-PX8PZT"
+      plan-refinement:work-order-202609031717-PX8PZT-executor-72b57d4e95a0854941a58eca:
+        aggregate_digest: "sha256:aa360a4d2cecc6c43a5328817203f8c9fb90343e0b7851d3d150a0df1506912b"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-03T21:38:12.028Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          id: "event_301a3eb6fbb7a3ef5542ef5a"
+          mutation_id: "plan-refinement:work-order-202609031717-PX8PZT-executor-72b57d4e95a0854941a58eca"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 25
+          to: "sha256:c470f6e2220e801f8647b9b3cedcc346a5adbfc7d5c75277c2394e8a3a1acc2d"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609031717-PX8PZT-executor-72b57d4e95a0854941a58eca"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
       plan-refinement:work-order-202609031717-PX8PZT-executor-a9ab463084fa6494df560da7:
         aggregate_digest: "sha256:136c0514b75c868fb5c1feef5b68a8186728bb1cb1a46b73bc05bd8aca3f97b2"
         event:
@@ -1974,11 +2219,12 @@ Prepared one bounded branch_pr plan with five strictly sequential WorkItems: fou
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+2. Run `bun x prettier --check packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/flow-status.ts packages/agentplane/src/commands/shared/task-handoff-reader.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/handoff-show.command.ts packages/agentplane/src/commands/task/handoff.shared.ts scripts/workflow/bootstrap-framework-dev.mjs`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+3. Run `bun run lint:core`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+4. Run `bun run typecheck`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+5. Run `node .agentplane/policy/check-routing.mjs`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
+6. Run `bun run ci:local:full`. Expected: All four minimal lifecycle contracts are implemented with fail-closed regressions, existing exact-head and protected-base validation remains passing, the touched files are formatted, lint/typecheck/routing pass, and the complete local CI gate passes without importing excluded release or provider scope.
 
 ## Verification
 
@@ -1991,6 +2237,162 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:fa2be5f7a660a327df5c1c41ebefd45cc83a9215cdfc18aa8ce28e692c1d392a, input_digest=sha256:ac10823c520f5b763b45f5ab704b2543abbaf89540aaac21fcba203ff85bb361
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check critical_paths (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (1/5)
+
+Check: real_e2e
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (2/5)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (3/5)
+
+Check: real_e2e
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (4/5)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check real_e2e (5/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609031717-PX8PZT Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031717-PX8PZT-port-the-minimal-missing-clean-core-lifecycle-bo/.agentplane/tasks/202609031717-PX8PZT/blueprint/resolved-snapshot.json
+- old_digest: 9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b
+- current_digest: 9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609031717-PX8PZT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609031717-PX8PZT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-03T21:47:43.960Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:999575281ba3794ab2de1a42e8952a23d2ffe16b0ada2563480e16637d9d4def, input_digest=sha256:db27cd4c20f4f8f37740eb881cab18f63579a24c0a1857e299f0266b78585212
 
 Details:
 
