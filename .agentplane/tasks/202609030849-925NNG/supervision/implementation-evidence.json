@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 47389c597cfaab95a08b282db8ea606aa350da79..89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e",
+      "command": "git diff --check 89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e..efa74b42a2e77bb77de2ff908af5b8b29194135d",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 47389c597cfaab95a08b282db8ea606aa350da79..89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e..efa74b42a2e77bb77de2ff908af5b8b29194135d",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,16 +24,8 @@
         "M\t.agentplane/tasks/202609030849-925NNG/pr/review.md",
         "M\t.agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json",
-        "M\tpackages/agentplane/src/cli/group-command.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog.test.ts",
-        "M\tpackages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
-        "M\tpackages/agentplane/src/commands/doctor/workspace-task-state.ts",
-        "M\tpackages/agentplane/src/commands/task/plan-approval-guard.ts",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        "A\t.agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json",
+        "M\tpackages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
       ]
     },
     {
@@ -43,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "47389c597cfaab95a08b282db8ea606aa350da79",
-  "implementation_commit": "89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e",
+  "execution_base_commit": "89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e",
+  "implementation_commit": "efa74b42a2e77bb77de2ff908af5b8b29194135d",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -54,7 +46,8 @@
       " M .agentplane/tasks/202609030849-925NNG/pr/review.md",
       " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
       " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+      " M packages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
+      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
     ],
     "classification": [
       {
@@ -83,7 +76,11 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+        "line": " M packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
       }
     ],
     "final": [],
@@ -95,7 +92,8 @@
       " M .agentplane/tasks/202609030849-925NNG/pr/review.md",
       " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
       " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+      " M packages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
+      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
     ],
     "unchanged_from_execution_baseline": []
   },
