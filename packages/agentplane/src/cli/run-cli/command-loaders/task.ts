@@ -376,6 +376,10 @@ export const loadTaskPlanRejectSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/plan-reject.command.js").then((m) =>
     m.makeRunTaskPlanRejectHandler(getSessionContext(session, "task.write")),
   );
+export const loadTaskPlanRecoverRejectionSpec = (session: TaskPlanApprovalSession) =>
+  import("../../../commands/task/plan-recover-rejection.command.js").then((m) =>
+    m.makeRunTaskPlanRecoverRejectionHandler(getSessionContext(session, "task.write")),
+  );
 export const loadTaskVerifyOkSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/verify-ok.command.js").then((m) =>
     m.makeRunTaskVerifyOkHandler(getSessionContext(session, "git.mutate")),

@@ -7,16 +7,20 @@ import {
   normalizeTaskStatus,
   parseTaskReadme,
   renderTaskDocFromSections,
+  taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
 
-type TaskDocSnapshot = {
+export type TaskDocSnapshot = {
   id?: unknown;
   status?: unknown;
   doc_version?: unknown;
+  revision?: unknown;
+  plan_approval?: unknown;
+  extensions?: Readonly<Record<string, unknown>>;
 };
 
 function taskDataToSnapshot(task: TaskSummary): TaskDocSnapshot {
@@ -24,6 +28,9 @@ function taskDataToSnapshot(task: TaskSummary): TaskDocSnapshot {
     id: task.id,
     status: task.status,
     doc_version: task.doc_version,
+    revision: task.revision,
+    plan_approval: task.plan_approval,
+    extensions: task.extensions,
   };
 }
 
@@ -135,6 +142,81 @@ export async function checkTaskReadmeMigrationState(
       ? projectionTasks
       : await readTaskDocSnapshotsFromReadmes(repoRoot, ctx);
   return buildTaskReadmeMigrationFindings(tasks);
+}
+
+function record(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+export function buildTaskCentricProjectionIntegrityFindings(
+  tasks: readonly TaskDocSnapshot[],
+): string[] {
+  const findings: string[] = [];
+  for (const task of tasks) {
+    const taskId = typeof task.id === "string" ? task.id : "unknown-task";
+    const readmeRevision = Number.isInteger(task.revision) ? Number(task.revision) : null;
+    let aggregate;
+    try {
+      aggregate = taskCentricAggregateFromExtensions(task.extensions);
+    } catch (error) {
+      findings.push(
+        renderDiagnosticFinding({
+          severity: "ERROR",
+          state: `task-centric projection is malformed for ${taskId}`,
+          likelyCause: error instanceof Error ? error.message : String(error),
+          details: [`Task: ${taskId}`],
+        }),
+      );
+      continue;
+    }
+    if (!aggregate || readmeRevision === null) continue;
+    const readmePlanState = String(record(task.plan_approval)?.state ?? "pending");
+    const aggregatePlanState = aggregate.current_plan?.approval.state ?? "missing";
+    if (
+      readmeRevision === aggregate.revision &&
+      !(readmePlanState === "rejected" && aggregatePlanState !== "rejected")
+    ) {
+      continue;
+    }
+    findings.push(
+      renderDiagnosticFinding({
+        severity: "ERROR",
+        state: `task-centric plan projection mismatch for ${taskId}`,
+        likelyCause:
+          "the task README and canonical aggregate did not commit the same plan mutation",
+        nextAction: {
+          command:
+            `agentplane task plan recover-rejection ${taskId} ` +
+            `--expected-readme-revision ${readmeRevision} ` +
+            `--expected-aggregate-revision ${aggregate.revision} ` +
+            `--rejected-plan-digest ${aggregate.current_plan?.digest ?? "<sha256>"} ` +
+            "--expected-state-fingerprint <sha256> --by USER --note <reason>",
+          reason:
+            "use the guarded receipt-backed recovery only after confirming the rejected README state",
+        },
+        details: [
+          `Task: ${taskId}`,
+          `README revision/state: ${readmeRevision}/${readmePlanState}`,
+          `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
+        ],
+      }),
+    );
+  }
+  return findings;
+}
+
+export async function checkTaskCentricProjectionIntegrityState(
+  repoRoot: string,
+  ctx?: CommandContext,
+): Promise<string[]> {
+  const projectionTasks = await readTaskDocSnapshotsFromProjection(ctx);
+  const tasks =
+    projectionTasks.length > 0
+      ? projectionTasks
+      : await readTaskDocSnapshotsFromReadmes(repoRoot, ctx);
+  return buildTaskCentricProjectionIntegrityFindings(tasks);
 }
 
 async function readUntrackedPaths(repoRoot: string, ctx?: CommandContext): Promise<Set<string>> {

@@ -1,9 +1,11 @@
 import {
   approveTaskPlan,
+  EXECUTION_GRANT_EXTENSION_KEY,
   createLegacyTaskAggregate,
   createRepositorySnapshot,
   createTaskPlanRevision,
   taskCentricDigest,
+  taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
   type DomainEvent,
   type ExecutionLease,
@@ -110,6 +112,24 @@ function approvedAggregate(): TaskAggregate {
   };
 }
 
+function pendingAggregate(revision = 1): TaskAggregate {
+  const approved = approvedAggregate();
+  return {
+    ...approved,
+    revision,
+    current_plan: {
+      ...approved.current_plan!,
+      approval: {
+        state: "pending",
+        approved_by: null,
+        approved_at: null,
+        approved_digest: null,
+        policy_facts: [],
+      },
+    },
+  };
+}
+
 function taskData(aggregate = approvedAggregate()): TaskData {
   return {
     id: TASK_ID,
@@ -192,6 +212,155 @@ function event(
 }
 
 describe("TaskCentricBackendAdapter", () => {
+  it("rejects a proposed plan as one atomic event and receipt and replays exactly", async () => {
+    const initial = taskData(pendingAggregate());
+    initial.plan_approval = { state: "pending", updated_at: null, updated_by: null, note: null };
+    initial.extensions = {
+      ...initial.extensions,
+      [EXECUTION_GRANT_EXTENSION_KEY]: { stale: true },
+    };
+    const backend = memoryBackend(initial);
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+    const plan = pendingAggregate().current_plan!;
+    const input = {
+      task_id: TASK_ID,
+      expected_revision: 1,
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+      actor_id: "USER",
+      note: "Revise authority roots",
+      rejected_at: NOW,
+      idempotency_key: "reject-plan-1",
+    } as const;
+
+    const receipt = await adapter.rejectPlan(input);
+    const stored = backend.current();
+    const aggregate = taskCentricAggregateFromExtensions(stored.extensions)!;
+    const runtime = stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as {
+      events: DomainEvent[];
+      mutation_receipts: Record<string, unknown>;
+    };
+    expect(stored.revision).toBe(2);
+    expect(stored.plan_approval).toMatchObject({
+      state: "rejected",
+      updated_by: "USER",
+      note: "Revise authority roots",
+    });
+    expect(aggregate).toMatchObject({ revision: 2, lifecycle: "PLANNING", event_cursor: 1 });
+    expect(aggregate.current_plan?.approval.state).toBe("rejected");
+    expect(runtime.events).toHaveLength(1);
+    expect(runtime.mutation_receipts["reject-plan-1"]).toEqual(receipt);
+    expect(stored.extensions).not.toHaveProperty(EXECUTION_GRANT_EXTENSION_KEY);
+    expect(stored.extensions).toHaveProperty("agentplane.task_centric_replan_required");
+
+    await expect(adapter.rejectPlan(input)).resolves.toEqual(receipt);
+    expect(backend.current()).toEqual(stored);
+  });
+
+  it("recovers the historical rejected README mismatch with a monotonic audited revision", async () => {
+    const aggregate = pendingAggregate(50);
+    const initial = {
+      ...taskData(aggregate),
+      revision: 52,
+      plan_approval: {
+        state: "rejected" as const,
+        updated_at: NOW,
+        updated_by: "USER",
+        note: "Rejected authority-incomplete plan",
+      },
+    };
+    const backend = memoryBackend(initial);
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+    const fingerprint = taskCentricDigest("historical-corruption");
+    const receipt = await adapter.recoverRejectedPlanProjection({
+      task_id: TASK_ID,
+      expected_readme_revision: 52,
+      expected_aggregate_revision: 50,
+      plan_digest: aggregate.current_plan!.digest,
+      expected_state_fingerprint: fingerprint,
+      observed_state_fingerprint: fingerprint,
+      actor_id: "USER",
+      note: "Repair split plan rejection",
+      recovered_at: NOW,
+      idempotency_key: "recover-rejection-1",
+    });
+    const stored = backend.current();
+    const recovered = taskCentricAggregateFromExtensions(stored.extensions)!;
+    expect(stored.revision).toBe(53);
+    expect(recovered).toMatchObject({ revision: 53, lifecycle: "PLANNING", event_cursor: 1 });
+    expect(recovered.current_plan?.approval.state).toBe("rejected");
+    expect(receipt).toMatchObject({ previous_revision: 50, next_revision: 53 });
+    expect(
+      (stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as { events: DomainEvent[] }).events,
+    ).toHaveLength(1);
+    await expect(
+      adapter.recoverRejectedPlanProjection({
+        task_id: TASK_ID,
+        expected_readme_revision: 52,
+        expected_aggregate_revision: 50,
+        plan_digest: aggregate.current_plan!.digest,
+        expected_state_fingerprint: fingerprint,
+        observed_state_fingerprint: fingerprint,
+        actor_id: "USER",
+        note: "Repair split plan rejection",
+        recovered_at: NOW,
+        idempotency_key: "recover-rejection-1",
+      }),
+    ).resolves.toEqual(receipt);
+  });
+
+  it("reconciles an interruption after the atomic write from the durable rejection receipt", async () => {
+    const initial = taskData(pendingAggregate());
+    initial.plan_approval = { state: "pending", updated_at: null, updated_by: null, note: null };
+    const durable = memoryBackend(initial);
+    let interrupt = true;
+    const backend: TaskBackend = {
+      ...durable,
+      async writeTask(next, options) {
+        await durable.writeTask(next, options);
+        if (interrupt) {
+          interrupt = false;
+          throw new Error("simulated interruption after durable write");
+        }
+      },
+    };
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+    const plan = pendingAggregate().current_plan!;
+    const input = {
+      task_id: TASK_ID,
+      expected_revision: 1,
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+      actor_id: "USER",
+      note: "Reject once",
+      rejected_at: NOW,
+      idempotency_key: "reject-after-write",
+    } as const;
+
+    await expect(adapter.rejectPlan(input)).rejects.toThrow(/simulated interruption/u);
+    const afterInterruption = durable.current();
+    expect(afterInterruption.plan_approval?.state).toBe("rejected");
+    expect(
+      taskCentricAggregateFromExtensions(afterInterruption.extensions)?.current_plan?.approval
+        .state,
+    ).toBe("rejected");
+    await expect(adapter.rejectPlan(input)).resolves.toMatchObject({
+      mutation_id: "reject-after-write",
+      previous_revision: 1,
+      next_revision: 2,
+    });
+    expect(durable.current()).toEqual(afterInterruption);
+  });
+
   it("materializes an approved graph atomically and makes duplicate mutation keys idempotent", async () => {
     const backend = memoryBackend();
     const adapter = new TaskCentricBackendAdapter({
