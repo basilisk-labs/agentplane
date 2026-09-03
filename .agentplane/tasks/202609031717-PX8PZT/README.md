@@ -4,7 +4,7 @@ title: "Port the minimal missing Clean Core lifecycle boundary contracts from au
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -111,6 +111,8 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/open.ts"
       - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
       - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/handoff-show.command.ts"
       - "packages/agentplane/src/commands/task/handoff.shared.ts"
     external_effects: []
@@ -169,7 +171,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:1f36eb299325f14b0fd03fd9f3758b1223d9b0d92d595a429ef657e451bab574"
+      digest: "sha256:55e0e8f17848324fc4fca909a6cd8d7bfd027cd121d58785b52512ac0d75a639"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
@@ -193,6 +195,8 @@ execution_contract:
           - "packages/agentplane/src/commands/pr/open.ts"
           - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
           - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/handoff-show.command.ts"
           - "packages/agentplane/src/commands/task/handoff.shared.ts"
         external_effects: []
@@ -247,6 +251,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0e4f863ae0f3. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6f64a7ffa132. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -271,8 +278,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 0e4f863ae0f3. CLI accepted one state-bound external-agent semantic result."
     commit: "0e4f863ae0f3390c9540e76cc495a136431f1941"
+  -
+    type: "status"
+    at: "2026-09-03T17:42:44.065Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6f64a7ffa132. CLI accepted one state-bound external-agent semantic result."
+    commit: "6f64a7ffa132069ab650d657e2c1eda53a746dd0"
 doc_version: 3
-doc_updated_at: "2026-09-03T17:36:30.831Z"
+doc_updated_at: "2026-09-03T17:42:44.065Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -806,7 +821,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 3
+    event_cursor: 4
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -846,9 +861,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-03T17:36:47.770Z"
+    updated_at: "2026-09-03T17:42:50.835Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 0
@@ -938,14 +953,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       safe-declared-check-sequence-execution:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "safe-declared-check-sequence-execution"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:faf2394e98142b073b6235eb304a79b00c66eceba789e17f4cde5eaadc465e8f"
+            id: "safe-declared-check-sequence-execution"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609031717-PX8PZT"
+              work_item_id: "safe-declared-check-sequence-execution"
+            provenance:
+              - "sha256:70177df85c4bcc1bc14065151ea490660b1eef2ece5410f14daaf58b2fa766ea"
+              - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:77b73921f6309a3af3fe8b69096feb2fdb7ebb35a38c43f75942ebeed4a5145e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "declared-sequence-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T17:42:50.829Z"
+              repository_snapshot_digest: "sha256:77b73921f6309a3af3fe8b69096feb2fdb7ebb35a38c43f75942ebeed4a5145e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       safe-worktree-dependency-preparation:
         attempt: 0
         claim_id: null
@@ -990,8 +1035,48 @@ extensions:
         task_id: "202609031717-PX8PZT"
         task_revision: 9
         work_item_id: "guarded-task-only-branch-publication"
+      -
+        at: "2026-09-03T17:42:50.835Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_9cb74416e665823a7f8b27c1"
+        mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-b1bc9b14718b9434ed0192e6"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+        task_revision: 12
+        work_item_id: "safe-declared-check-sequence-execution"
     leases: []
     mutation_receipts:
+      compatibility:sha256:6b42989c736fc56b93d565529e9b9f4b123f39072f05b9a5f27570bc2ba6b794:
+        aggregate_digest: "sha256:8628029f4b83c2cbc3b3960049a0800b357b48259ce6d4597ee589c3fe22a851"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T17:42:44.065Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d3e9bce8a0c9a31c130fbcee"
+          mutation_id: "compatibility:sha256:6b42989c736fc56b93d565529e9b9f4b123f39072f05b9a5f27570bc2ba6b794"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6b42989c736fc56b93d565529e9b9f4b123f39072f05b9a5f27570bc2ba6b794"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
       compatibility:sha256:9c42d2bc418358880bbe88fc360ed7981aa94957ba7920ae04b115bce1fb0933:
         aggregate_digest: "sha256:8510253d07aa288f1c5cae7283056a177d9baba57127fa81072576f01c046772"
         event:
@@ -1087,6 +1172,29 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609031717-PX8PZT"
+      external-result:work-order-202609031717-PX8PZT-executor-b1bc9b14718b9434ed0192e6:
+        aggregate_digest: "sha256:56f2ad55df5a3dcf70e6dce49ede1f02220eba48190a7df3e73ecce484a0e53d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T17:42:50.835Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_9cb74416e665823a7f8b27c1"
+          mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-b1bc9b14718b9434ed0192e6"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: "safe-declared-check-sequence-execution"
+        mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-b1bc9b14718b9434ed0192e6"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
       external-result:work-order-202609031717-PX8PZT-executor-d60de2f1dac0462fdd5210d5:
         aggregate_digest: "sha256:d85b1184c254e4ce8491c46880ff0f968acc74ca7c9bf12c925dc33bd532a869"
         event:
@@ -1114,7 +1222,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "0e4f863ae0f3390c9540e76cc495a136431f1941"
+    hash: "6f64a7ffa132069ab650d657e2c1eda53a746dd0"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
