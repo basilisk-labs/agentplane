@@ -4,7 +4,7 @@ title: "Repair lifecycle projection integrity after M3 cutover"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 72
+revision: 73
 origin:
   system: "manual"
 depends_on: []
@@ -35,6 +35,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-03T16:16:22.379Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "b6350071398029c378f986a0169222e3b2291e4a"
+  blueprint_digest: "3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea"
+  evidence_refs:
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/1099946cf2eef61c84ecd8135fb7b4800cefd87d2d47a16817dcd6d2b2c64884.md"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/README.md"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/3f06f48ccc2c1cdfc1eb120fac305fe49b17688b46986acab84107633753a6e9.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/verification/20260903161451365-4bc02634cc6e381d.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/a88f3717eb9360a7782bf645066af672be3625127337d648485b1ddc79c5efc7.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The task-centric compatibility mutation advances the legacy task revision and canonical aggregate revision together and records a deterministic transition receipt inside the same store update."
+    - "Authoritative worktree resolution fails closed for missing, duplicate, foreign, or branch-mismatched task registrations instead of falling back to an ambiguous snapshot."
+    - "WorkItem receipt replay validates current plan revision, digest, aggregate digest, and terminal state; a different receipt cannot silently reuse a completed WorkItem."
+    - "Cleanup reloads projection context after base synchronization and normalizes the terminal queue idempotently; the Arkady fixture proves stale-DONE synchronization, exact replay, terminal convergence, and removal of task branch/worktree state."
+    - "Observed verification is complete: exact focused suite 5 files/66 tests, compatibility baseline, 8 lifecycle invariants, lint, typecheck, routing policy, and full local CI all passed with exit code 0."
+    - "Residual risk: Exact-head hosted checks, provider merge, fresh-main readback, hosted close, and final cleanup are intentionally pending supervisor-owned branch_pr lifecycle stages."
 execution_route:
   frozen: true
   reason_codes:
@@ -1440,7 +1469,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 20
+    event_cursor: 21
     final_validation: null
     id: "202609021331-5FPZAB"
     intent:
@@ -4072,9 +4101,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 72
+    revision: 73
     schema_version: 1
-    updated_at: "2026-09-03T16:14:52.435Z"
+    updated_at: "2026-09-03T16:14:52.459Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 1
@@ -4513,6 +4542,30 @@ extensions:
         mutation_id: "compatibility:sha256:48583ada1d903e52c43f82f4f093400e4328b0e35d0364ea22dd59b39438e306"
         next_revision: 41
         previous_revision: 40
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:49692e4045ae0efd9069400921e7851fbc17d16f736eb4b74eddd17e26686528:
+        aggregate_digest: "sha256:bb1df3776ebf3438d27375f5b737ce7583d9433c5f2eb5f7061f0686afc64f27"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:14:52.459Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1f0bb0c0f7617e0ed88e8d05"
+          mutation_id: "compatibility:sha256:49692e4045ae0efd9069400921e7851fbc17d16f736eb4b74eddd17e26686528"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 72
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:49692e4045ae0efd9069400921e7851fbc17d16f736eb4b74eddd17e26686528"
+        next_revision: 73
+        previous_revision: 72
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:4ab10d6b2eb5edc4b90cc0f7d8d7ea9aa0b7a1abfe7a98a6fe9969b7a2993a5c:

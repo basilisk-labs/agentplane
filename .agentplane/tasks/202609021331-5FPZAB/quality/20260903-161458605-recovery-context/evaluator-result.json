@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The task-centric compatibility mutation advances the legacy task revision and canonical aggregate revision together and records a deterministic transition receipt inside the same store update.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Authoritative worktree resolution fails closed for missing, duplicate, foreign, or branch-mismatched task registrations instead of falling back to an ambiguous snapshot.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "WorkItem receipt replay validates current plan revision, digest, aggregate digest, and terminal state; a different receipt cannot silently reuse a completed WorkItem.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Cleanup reloads projection context after base synchronization and normalizes the terminal queue idempotently; the Arkady fixture proves stale-DONE synchronization, exact replay, terminal convergence, and removal of task branch/worktree state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Observed verification is complete: exact focused suite 5 files/66 tests, compatibility baseline, 8 lifecycle invariants, lint, typecheck, routing policy, and full local CI all passed with exit code 0.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Exact-head hosted checks, provider merge, fresh-main readback, hosted close, and final cleanup are intentionally pending supervisor-owned branch_pr lifecycle stages.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
