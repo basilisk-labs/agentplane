@@ -739,7 +739,12 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(replay.code, replay.stderr).toBe(0);
     expect(replay.stdout).toContain(`already clean: task=${fixture.taskId}`);
     const replayQueue = await readIntegrationQueue(fixture.root);
-    expect(replayQueue.entries[0]?.status).toBe("done");
+    expect(replayQueue.entries).toHaveLength(1);
+    expect(replayQueue.entries[0]).toMatchObject({
+      task_id: fixture.taskId,
+      head_sha: fixture.branchHead,
+      status: "done",
+    });
   });
 
   it("keeps a directly registered /tmp worktree even for targeted finalization", async () => {

@@ -29,7 +29,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
 ```text
  .../task-backend/task-centric-backend-adapter.ts   | 234 +++++++++++++++------
  .../src/cli/run-cli.core.route-decision.test.ts    |  56 ++++-
- .../branch/cleanup-merged.targeted.test.ts         | 108 +++++++++-
+ .../branch/cleanup-merged.targeted.test.ts         | 113 +++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  15 +-
  .../commands/shared/route-decision-workspace.ts    |   2 +-
  .../shared/task-backend-branch-snapshot.ts         | 123 ++++++++++-
@@ -57,7 +57,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
  .../commands/task/task-centric-external-result.ts  |  56 +++--
  .../task/verify-record.durability.unit.test.ts     |  38 +++-
- 30 files changed, 1286 insertions(+), 287 deletions(-)
+ 30 files changed, 1291 insertions(+), 287 deletions(-)
 ```
 
 </details>
