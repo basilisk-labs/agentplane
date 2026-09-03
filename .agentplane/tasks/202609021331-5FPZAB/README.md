@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 74
+revision: 76
 origin:
   system: "manual"
 depends_on: []
@@ -32,9 +32,9 @@ plan_approval:
   note: "host_user_decision=sha256:954de20e6719eae0a1b58927857f36408f501fe23807c0e0b19e66e8160d523c"
 verification:
   state: "ok"
-  updated_at: "2026-09-03T16:14:51.365Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-09-03T16:43:52.253Z"
+  updated_by: "TESTER"
+  note: "Verified merge-resolution implementation at ee2358995; all required checks passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -159,16 +159,106 @@ execution_contract:
       - "scripts/checks"
       - "scripts/qualification"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "repository_effect:documentation"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/README.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/pr/diffstat.txt"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/pr/github-body.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/pr/github-title.txt"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/pr/meta.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/pr/review.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-evidence-manifest.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-opinion.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-result.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-work-order.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/quality-report.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6691b629df9ee51cc974c7ade2ece06d840e988bba3dec8df77d9d14d530dda0.patch"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6e38d236c5aa1cb48bbf32d38f6f3545c0fcea97d2c8666af35ac550f7f0d261.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/d28c01dbf6528ee568ddc9036213993cb1f19e639614042a550647111d729662.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/eb8f2d88b5dd0a38e0eaef39545380b9f1e1538d9318e1574b16c190b33b7820.md"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903091454444-96c41af32da98426.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903130115573-d16b397210190907.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903134024104-b0c8dd27f7dcba79.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903134705071-b999cdf2dc4eb73a.json"
+      - "writable_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903142143530-887877885d3a721d.json"
+      - "writable_scope:packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+      - "writable_scope:packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+      - "writable_scope:packages/agentplane/src/commands/doctor/workspace.ts"
+      - "writable_scope:scripts/baselines/v0.7-compatibility-candidate.json"
     changed_components:
+      - ".agentplane"
       - "packages/agentplane"
+      - "scripts"
     changed_paths:
+      - ".agentplane/tasks/202609030849-925NNG/README.md"
+      - ".agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json"
+      - ".agentplane/tasks/202609030849-925NNG/pr/diffstat.txt"
+      - ".agentplane/tasks/202609030849-925NNG/pr/github-body.md"
+      - ".agentplane/tasks/202609030849-925NNG/pr/github-title.txt"
+      - ".agentplane/tasks/202609030849-925NNG/pr/meta.json"
+      - ".agentplane/tasks/202609030849-925NNG/pr/review.md"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-evidence-manifest.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-opinion.md"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-result.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-work-order.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/quality-report.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6691b629df9ee51cc974c7ade2ece06d840e988bba3dec8df77d9d14d530dda0.patch"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6e38d236c5aa1cb48bbf32d38f6f3545c0fcea97d2c8666af35ac550f7f0d261.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/d28c01dbf6528ee568ddc9036213993cb1f19e639614042a550647111d729662.md"
+      - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/eb8f2d88b5dd0a38e0eaef39545380b9f1e1538d9318e1574b16c190b33b7820.md"
+      - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+      - ".agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903091454444-96c41af32da98426.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903130115573-d16b397210190907.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903134024104-b0c8dd27f7dcba79.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903134705071-b999cdf2dc4eb73a.json"
+      - ".agentplane/tasks/202609030849-925NNG/verification/20260903142143530-887877885d3a721d.json"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
+      - "packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts"
+      - "packages/agentplane/src/cli/group-command.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
+      - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+      - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+      - "packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+      - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+      - "packages/agentplane/src/commands/doctor/workspace.ts"
       - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
@@ -184,19 +274,30 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
       - "packages/agentplane/src/commands/task/finish-shared.ts"
       - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
       - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
       - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
       - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
       - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+      - "packages/agentplane/src/commands/task/plan-approval-guard.ts"
+      - "packages/agentplane/src/commands/task/plan-recover-rejection.command.ts"
+      - "packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/plan-rejection-recovery.ts"
+      - "packages/agentplane/src/commands/task/plan.command.ts"
+      - "packages/agentplane/src/commands/task/plan.ts"
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
       - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
     external_effects: []
     repository_effects:
+      - "documentation"
       - "repository_write"
       - "source_code"
       - "tests"
@@ -294,6 +395,45 @@ execution_contract:
     - "effect_external_write"
     - "effect_public_api"
     - "effect_publish"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6691b629df9ee51cc974c7ade2ece06d840e988bba3dec8df77d9d14d530dda0.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6e38d236c5aa1cb48bbf32d38f6f3545c0fcea97d2c8666af35ac550f7f0d261.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/d28c01dbf6528ee568ddc9036213993cb1f19e639614042a550647111d729662.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/eb8f2d88b5dd0a38e0eaef39545380b9f1e1538d9318e1574b16c190b33b7820.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903091454444-96c41af32da98426.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903130115573-d16b397210190907.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903134024104-b0c8dd27f7dcba79.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903134705071-b999cdf2dc4eb73a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609030849-925NNG/verification/20260903142143530-887877885d3a721d.json"
+    - "observed_path_outside_scope:packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+    - "observed_path_outside_scope:packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+    - "observed_path_outside_scope:packages/agentplane/src/commands/doctor/workspace.ts"
+    - "observed_path_outside_scope:scripts/baselines/v0.7-compatibility-candidate.json"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -328,6 +468,7 @@ execution_contract:
           - "external_effect:network_read"
           - "external_effect:publish"
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:public_api"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
@@ -347,11 +488,18 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:c69929c3eb33842eaf0bc90a8b639eb4bd362ac064df30c087a9473b5aa42378"
+      digest: "sha256:253ab997be34fe483758d1333b72ac6fd90b782b9a67f90e65ca09cde9fe254e"
       escalation_reasons:
         - "central_component:packages/core/src/git"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/group-command.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
@@ -366,9 +514,39 @@ execution_contract:
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "effect_public_api"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6691b629df9ee51cc974c7ade2ece06d840e988bba3dec8df77d9d14d530dda0.patch"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6e38d236c5aa1cb48bbf32d38f6f3545c0fcea97d2c8666af35ac550f7f0d261.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903091454444-96c41af32da98426.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903130115573-d16b397210190907.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903134024104-b0c8dd27f7dcba79.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903134705071-b999cdf2dc4eb73a.json"
+        - "unknown_path:.agentplane/tasks/202609030849-925NNG/verification/20260903142143530-887877885d3a721d.json"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -376,14 +554,64 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "packages/agentplane"
+          - "scripts"
         changed_files:
+          - ".agentplane/tasks/202609030849-925NNG/README.md"
+          - ".agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202609030849-925NNG/pr/diffstat.txt"
+          - ".agentplane/tasks/202609030849-925NNG/pr/github-body.md"
+          - ".agentplane/tasks/202609030849-925NNG/pr/github-title.txt"
+          - ".agentplane/tasks/202609030849-925NNG/pr/meta.json"
+          - ".agentplane/tasks/202609030849-925NNG/pr/review.md"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6691b629df9ee51cc974c7ade2ece06d840e988bba3dec8df77d9d14d530dda0.patch"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6e38d236c5aa1cb48bbf32d38f6f3545c0fcea97d2c8666af35ac550f7f0d261.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/d28c01dbf6528ee568ddc9036213993cb1f19e639614042a550647111d729662.md"
+          - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/eb8f2d88b5dd0a38e0eaef39545380b9f1e1538d9318e1574b16c190b33b7820.md"
+          - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903091454444-96c41af32da98426.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903130115573-d16b397210190907.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903134024104-b0c8dd27f7dcba79.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903134705071-b999cdf2dc4eb73a.json"
+          - ".agentplane/tasks/202609030849-925NNG/verification/20260903142143530-887877885d3a721d.json"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
+          - "packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts"
+          - "packages/agentplane/src/cli/group-command.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
+          - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+          - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+          - "packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+          - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+          - "packages/agentplane/src/commands/doctor/workspace.ts"
           - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
@@ -399,19 +627,30 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
           - "packages/agentplane/src/commands/task/finish-shared.ts"
           - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
           - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
           - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
           - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
           - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+          - "packages/agentplane/src/commands/task/plan-approval-guard.ts"
+          - "packages/agentplane/src/commands/task/plan-recover-rejection.command.ts"
+          - "packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/plan-rejection-recovery.ts"
+          - "packages/agentplane/src/commands/task/plan.command.ts"
+          - "packages/agentplane/src/commands/task/plan.ts"
           - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
           - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -426,6 +665,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -447,6 +687,7 @@ execution_contract:
       - "external_effect:network_read"
       - "external_effect:publish"
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:public_api"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
@@ -519,6 +760,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned verification artifacts from the successful replacement verification for merge-resolution SHA ee2358995. No source files are dirty, no manual task artifact edits remain, and the task verification receipt covers every required persisted check including docs_contract."
 events:
   -
     type: "status"
@@ -690,9 +934,20 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "ff11af89686633f535492f973870cfcee3dc5974"
+  -
+    type: "verify"
+    at: "2026-09-03T16:43:52.253Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified merge-resolution implementation at ee2358995; all required checks passed."
+  -
+    type: "comment"
+    at: "2026-09-03T16:44:52.268Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned verification artifacts from the successful replacement verification for merge-resolution SHA ee2358995. No source files are dirty, no manual task artifact edits remain, and the task verification receipt covers every required persisted check including docs_contract."
 doc_version: 3
-doc_updated_at: "2026-09-03T16:16:26.942Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-03T16:44:52.321Z"
+doc_updated_by: "SUPERVISOR"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
   Summary: |-
@@ -911,6 +1166,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609021331-5FPZAB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-03T16:43:52.253Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified merge-resolution implementation at ee2358995; all required checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f326b8e4dcec1a7d8c978bc86cc2fbf2e56ccc59deb48acc6de59c83e3c2230a, input_digest=sha256:1a59e2c84cef6c9ab5cf76b1666fed64f316c6018708bfea3fb4b783fe18e91e
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+    Result: pass
+    Evidence: 9 test files and 101 tests passed on ee2358995.
+    Scope: atomic rejection recovery, task-centric projections, routing, cleanup, and merge-resolution compatibility.
+
+    Check: critical_paths
+    Command: bun run lifecycle:invariants && bun run typecheck && bun run lint:core
+    Result: pass
+    Evidence: 8 lifecycle invariants passed; TypeScript and ESLint exited 0.
+    Scope: canonical lifecycle ownership, replay invariants, types, and static correctness.
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: docs-schema, generated references, docs site typecheck/build/design, and policy routing all passed.
+    Scope: documentation, generated artifacts, and policy contract on the merged tree.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: full local CI exited 0; all five groups, platform-critical 98 tests, and significant coverage 101 tests passed.
+    Scope: complete repository regression at ee2358995.
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+    Result: pass
+    Evidence: branch cleanup and Arkady stale-DONE route scenarios passed within the 101-test combined focused run.
+    Scope: task-centric branch_pr routing, stale projection convergence, and cleanup replay.
+
+    Check: task_outcome
+    Command: bun run bench:compatibility:candidate:check && node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: compatibility candidate is current and policy routing is OK.
+    Scope: approved projection-integrity outcome, compatibility boundary, and route policy.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/.agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json
+    - old_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+    - current_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609021331-5FPZAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1495,7 +1816,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 21
+    event_cursor: 23
     final_validation:
       evidence:
         -
@@ -4220,9 +4541,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 74
+    revision: 76
     schema_version: 1
-    updated_at: "2026-09-03T16:16:26.942Z"
+    updated_at: "2026-09-03T16:44:52.268Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 1
@@ -4591,6 +4912,30 @@ extensions:
         previous_revision: 55
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      compatibility:sha256:26518c5faa9089449080f08c86355f88026d36e7159ba723b1a7663878040b57:
+        aggregate_digest: "sha256:ad24b8e9392b9f1f82686819a662dfe475fcd2a1898e2f93c5a3d4d956eb4ea7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:43:56.226Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_91b5e71acfd8a5631946bcc6"
+          mutation_id: "compatibility:sha256:26518c5faa9089449080f08c86355f88026d36e7159ba723b1a7663878040b57"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 74
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:26518c5faa9089449080f08c86355f88026d36e7159ba723b1a7663878040b57"
+        next_revision: 75
+        previous_revision: 74
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       compatibility:sha256:3b14bf123960f633b9de9d1e11b610212c646c3f5737a5d74be0c2372e4ad482:
         aggregate_digest: "sha256:a2559e4c262fb50763d20119ad74089b39beb759b441c8d7f264900d9c88996a"
         event:
@@ -4877,6 +5222,30 @@ extensions:
         mutation_id: "compatibility:sha256:dad651f498d8cb2d53f23cef9551af6b615a33c94fb78093dc0b76f0c3832b3c"
         next_revision: 57
         previous_revision: 56
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:dd5253a22025193261c485bcd5ecde3c581689357eedadf9de15111fefdcc2b8:
+        aggregate_digest: "sha256:732e6350d56561bec3b186ac46200a5baaf073c14b8f254a69b4e6a470289603"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:44:52.268Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_23e57e53bfc47c6d358b1c15"
+          mutation_id: "compatibility:sha256:dd5253a22025193261c485bcd5ecde3c581689357eedadf9de15111fefdcc2b8"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 75
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dd5253a22025193261c485bcd5ecde3c581689357eedadf9de15111fefdcc2b8"
+        next_revision: 76
+        previous_revision: 75
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:e0e6be405dda122f343c42e3db52e95d05a205691c83746c1e3ba8196688d0ed:
@@ -5710,6 +6079,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609021331-5FPZAB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-03T16:43:52.253Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified merge-resolution implementation at ee2358995; all required checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f326b8e4dcec1a7d8c978bc86cc2fbf2e56ccc59deb48acc6de59c83e3c2230a, input_digest=sha256:1a59e2c84cef6c9ab5cf76b1666fed64f316c6018708bfea3fb4b783fe18e91e
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+Result: pass
+Evidence: 9 test files and 101 tests passed on ee2358995.
+Scope: atomic rejection recovery, task-centric projections, routing, cleanup, and merge-resolution compatibility.
+
+Check: critical_paths
+Command: bun run lifecycle:invariants && bun run typecheck && bun run lint:core
+Result: pass
+Evidence: 8 lifecycle invariants passed; TypeScript and ESLint exited 0.
+Scope: canonical lifecycle ownership, replay invariants, types, and static correctness.
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: docs-schema, generated references, docs site typecheck/build/design, and policy routing all passed.
+Scope: documentation, generated artifacts, and policy contract on the merged tree.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: full local CI exited 0; all five groups, platform-critical 98 tests, and significant coverage 101 tests passed.
+Scope: complete repository regression at ee2358995.
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+Result: pass
+Evidence: branch cleanup and Arkady stale-DONE route scenarios passed within the 101-test combined focused run.
+Scope: task-centric branch_pr routing, stale projection convergence, and cleanup replay.
+
+Check: task_outcome
+Command: bun run bench:compatibility:candidate:check && node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: compatibility candidate is current and policy routing is OK.
+Scope: approved projection-integrity outcome, compatibility boundary, and route policy.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/.agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json
+- old_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+- current_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609021331-5FPZAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

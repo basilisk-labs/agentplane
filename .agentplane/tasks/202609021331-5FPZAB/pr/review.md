@@ -13,7 +13,7 @@ Created: 2026-09-02T15:35:26.605Z
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified merge-resolution implementation at ee2358995; all required checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
