@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 76
+revision: 78
 origin:
   system: "manual"
 depends_on: []
@@ -39,32 +39,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-03T16:16:22.379Z"
+  updated_at: "2026-09-03T16:46:40.757Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "b6350071398029c378f986a0169222e3b2291e4a"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "ee2358995cddf25ee966b617457c1af911e22197"
   blueprint_digest: "3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea"
   evidence_refs:
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/1099946cf2eef61c84ecd8135fb7b4800cefd87d2d47a16817dcd6d2b2c64884.md"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-161458605-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-164640435-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-164640435-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/4d4b9137061d4215e6410fef22e4572a4fe8d3dab7efdcde9a1d013ab1a86c1c.md"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-164640435-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-164640435-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/20260903-164640435-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609021331-5FPZAB/README.md"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/22e58a4b65b3c386c1058e53042e746e0dc50c0e8ebc2defb458a945942585d5.patch"
-    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/3f06f48ccc2c1cdfc1eb120fac305fe49b17688b46986acab84107633753a6e9.json"
-    - ".agentplane/tasks/202609021331-5FPZAB/verification/20260903161451365-4bc02634cc6e381d.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/4d434d86183d706a8b6b4855f7bc046fcd718d2b8d6cc4e3f17ebd8da6f131e7.patch"
+    - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/0b456d8cb931fae8cfab05f41df58c5436704b55c2ba3ec019502b073ac00325.json"
+    - ".agentplane/tasks/202609021331-5FPZAB/verification/20260903164352253-be6c8a6c4d1288a3.json"
     - ".agentplane/tasks/202609021331-5FPZAB/quality/objects/sha256/a88f3717eb9360a7782bf645066af672be3625127337d648485b1ddc79c5efc7.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The task-centric compatibility mutation advances the legacy task revision and canonical aggregate revision together and records a deterministic transition receipt inside the same store update."
-    - "Authoritative worktree resolution fails closed for missing, duplicate, foreign, or branch-mismatched task registrations instead of falling back to an ambiguous snapshot."
-    - "WorkItem receipt replay validates current plan revision, digest, aggregate digest, and terminal state; a different receipt cannot silently reuse a completed WorkItem."
-    - "Cleanup reloads projection context after base synchronization and normalizes the terminal queue idempotently; the Arkady fixture proves stale-DONE synchronization, exact replay, terminal convergence, and removal of task branch/worktree state."
-    - "Observed verification is complete: exact focused suite 5 files/66 tests, compatibility baseline, 8 lifecycle invariants, lint, typecheck, routing policy, and full local CI all passed with exit code 0."
-    - "Residual risk: Exact-head hosted checks, provider merge, fresh-main readback, hosted close, and final cleanup are intentionally pending supervisor-owned branch_pr lifecycle stages."
+    - "The merge keeps rejection event journaling, receipt persistence, execution-grant invalidation, and CLI-owned recovery from bootstrap PR #5888 while retaining the extracted completion and compatibility projection module."
+    - "The compatibility projector now accepts a canonical aggregate already advanced by exactly one revision, preventing the integrated rejection path from being rejected solely because the digest excludes revision; stale or skipped revisions remain fail-closed."
+    - "The combined regression suite passed 9 files and 101 tests, including plan rejection recovery, planning authority, atomic task mutation, Arkady stale-DONE routing, and cleanup convergence."
+    - "Full local CI at ee2358995 exited 0; docs contract, full regression, platform-critical, coverage, typecheck, lint, hotspots, compatibility, lifecycle invariants, and routing all pass."
 token_usage:
   agent_runs: 27
   input_tokens: null
@@ -763,6 +761,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned verification artifacts from the successful replacement verification for merge-resolution SHA ee2358995. No source files are dirty, no manual task artifact edits remain, and the task verification receipt covers every required persisted check including docs_contract."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned EVALUATOR artifacts for implementation SHA ee2358995. The README quality projection and both prepare/run evidence directories are current, auditable, and should be committed by AgentPlane; no source or test file is dirty."
 events:
   -
     type: "status"
@@ -945,8 +946,13 @@ events:
     at: "2026-09-03T16:44:52.268Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned verification artifacts from the successful replacement verification for merge-resolution SHA ee2358995. No source files are dirty, no manual task artifact edits remain, and the task verification receipt covers every required persisted check including docs_contract."
+  -
+    type: "comment"
+    at: "2026-09-03T16:47:58.269Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The scoped workspace changes are intended CLI-owned EVALUATOR artifacts for implementation SHA ee2358995. The README quality projection and both prepare/run evidence directories are current, auditable, and should be committed by AgentPlane; no source or test file is dirty."
 doc_version: 3
-doc_updated_at: "2026-09-03T16:44:52.321Z"
+doc_updated_at: "2026-09-03T16:47:58.319Z"
 doc_updated_by: "SUPERVISOR"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
@@ -1816,7 +1822,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 23
+    event_cursor: 25
     final_validation:
       evidence:
         -
@@ -4541,9 +4547,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 76
+    revision: 78
     schema_version: 1
-    updated_at: "2026-09-03T16:44:52.268Z"
+    updated_at: "2026-09-03T16:47:58.269Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 1
@@ -5200,6 +5206,30 @@ extensions:
         previous_revision: 31
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      compatibility:sha256:d7b69bcd926d3ac9fb8c8f6c04ed979d3f390fc71b49550d754e05b2f551ce8e:
+        aggregate_digest: "sha256:813685c3a1158a6360aaafeb3ab82d8b29e01152f3a3dfbbed848668a7e0dfa6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:44:52.321Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_16b20bd6f0c0e0d7d52ce79f"
+          mutation_id: "compatibility:sha256:d7b69bcd926d3ac9fb8c8f6c04ed979d3f390fc71b49550d754e05b2f551ce8e"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 76
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d7b69bcd926d3ac9fb8c8f6c04ed979d3f390fc71b49550d754e05b2f551ce8e"
+        next_revision: 77
+        previous_revision: 76
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       compatibility:sha256:dad651f498d8cb2d53f23cef9551af6b615a33c94fb78093dc0b76f0c3832b3c:
         aggregate_digest: "sha256:76f42889f98d037d3e72c77d4dbdf2cf29cd563b021d0f7bf8038d39784d3f01"
         event:
@@ -5318,6 +5348,30 @@ extensions:
         mutation_id: "compatibility:sha256:efbce705b5372fed1b1b4e61c33841675e43684defbee8350c11c917ddd53efe"
         next_revision: 34
         previous_revision: 33
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:f5caacc1c503463b0fb3589249022c630b7ae70e8327585a8b2b743a836ad099:
+        aggregate_digest: "sha256:ec6b031c087c189f1b04b2ee46c1e208bd0d5cf9f3b0c0a02aad1c787e8255be"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:47:58.269Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_cd1b8ea661040b19b8c157a0"
+          mutation_id: "compatibility:sha256:f5caacc1c503463b0fb3589249022c630b7ae70e8327585a8b2b743a836ad099"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 77
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f5caacc1c503463b0fb3589249022c630b7ae70e8327585a8b2b743a836ad099"
+        next_revision: 78
+        previous_revision: 77
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:f7d4935568c356919525cfc5403ea00b1f8fba4af881dbf9ae801552807fd70e:
