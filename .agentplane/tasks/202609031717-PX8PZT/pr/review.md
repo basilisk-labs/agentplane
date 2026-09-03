@@ -36,9 +36,11 @@ Created: 2026-09-03T17:26:07.913Z
  packages/agentplane/src/commands/pr/open.ts        |   3 +
  .../commands/shared/task-handoff-reader.test.ts    | 163 +++++++++++
  .../src/commands/shared/task-handoff-reader.ts     |  78 +++++
+ .../commands/task/direct-task-verification.test.ts | 115 ++++++++
+ .../src/commands/task/direct-task-verification.ts  | 181 ++++++++----
  .../src/commands/task/handoff-show.command.ts      |  37 ++-
  .../agentplane/src/commands/task/handoff.shared.ts |  27 +-
- 9 files changed, 826 insertions(+), 32 deletions(-)
+ 11 files changed, 1058 insertions(+), 96 deletions(-)
 ```
 
 </details>
