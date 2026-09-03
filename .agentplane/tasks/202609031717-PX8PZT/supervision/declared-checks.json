@@ -2,10 +2,10 @@
   "checks": [
     {
       "check_ids": [
-        "protected-handoff-focused"
+        "branch-publication-focused"
       ],
-      "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts --maxWorkers=1",
-      "duration_ms": 831,
+      "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/branch-publication.test.ts --maxWorkers=1",
+      "duration_ms": 16554,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
@@ -16,7 +16,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031717-PX8PZT-port-the-minimal-missing-clean-core-lifecycle-bo\n\n\n Test Files  1 passed (1)\n      Tests  18 passed (18)\n   Start at  20:32:58\n   Duration  542ms (transform 305ms, setup 0ms, import 444ms, tests 38ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031717-PX8PZT-port-the-minimal-missing-clean-core-lifecycle-bo\n\n\n Test Files  1 passed (1)\n      Tests  17 passed (17)\n   Start at  20:36:31\n   Duration  16.28s (transform 1.10s, setup 0ms, import 1.41s, tests 14.82s, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
