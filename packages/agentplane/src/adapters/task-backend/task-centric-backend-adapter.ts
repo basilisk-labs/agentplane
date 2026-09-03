@@ -23,7 +23,7 @@ import {
   type ValidationEvidence,
 } from "@agentplaneorg/core/tasks";
 
-import type { TaskBackend } from "../../backends/task-backend.js";
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { projectTaskCentricCompletion } from "./task-centric-backend-projection.js";
 import {
   aggregateFrom,
