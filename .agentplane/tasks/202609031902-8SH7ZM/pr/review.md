@@ -30,11 +30,12 @@ Created: 2026-09-03T19:09:23.499Z
 
 ```text
  .../task-centric-backend-adapter.test.ts           | 72 ++++++++++++++++++++++
- .../task-backend/task-centric-backend-adapter.ts   | 66 +++++++++++++++++++-
+ .../task-backend/task-centric-backend-adapter.ts   | 23 ++++++-
+ .../task-centric-verification-projection.ts        | 50 +++++++++++++++
  ...n-cli.core.task-advance.evidence-rework.test.ts | 50 +++++++++++++--
  .../src/commands/shared/route-decision-blockers.ts |  8 +++
  .../commands/shared/route-decision-verification.ts | 32 +++++++++-
- 5 files changed, 219 insertions(+), 9 deletions(-)
+ 6 files changed, 226 insertions(+), 9 deletions(-)
 ```
 
 </details>
