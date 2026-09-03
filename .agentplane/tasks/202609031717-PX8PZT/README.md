@@ -4,7 +4,7 @@ title: "Port the minimal missing Clean Core lifecycle boundary contracts from au
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -35,19 +35,19 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-03T18:31:33.744Z"
+  updated_at: "2026-09-03T21:36:41.358Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 5 typed finding(s)."
   evaluated_sha: "9360c020cc206d344c496d95c7c147e2adba09d2"
   blueprint_digest: "9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b"
   evidence_refs:
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/60ba5c293ca5b4c87970ffd39dc62c148a891063039005a80e63cbafde01a2cf.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-213224066-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-213224066-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/ec53ab65b763372fb47e480e281db5c08e14245a67a22247f95924dd7ac4928c.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-213224066-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-213224066-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-213224066-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-213224066-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609031717-PX8PZT/README.md"
     - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
     - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/c3035c5c8729c7c40e0c3effcadcc5593470ad66a5860b342f7f9380f3bbbdb3.json"
@@ -58,11 +58,11 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff contains the four approved implementation areas and their regressions; it does not add release/version/publication metadata, dependency changes, MPXQBK, or broad GitLab/provider-neutral behavior."
-    - "Supervisor-observed verification is green for full local CI, lint, typecheck, focused regressions, routing, clean committed diff, and clean repository status at implementation SHA 9360c020cc206d344c496d95c7c147e2adba09d2."
-    - "Task frontmatter contains task-specific top-level validation checks, but sections.Verify Steps still says PLANNER fallback scaffold and asks for replacement. The evaluator work order lists that replacement as required acceptance, so the visible task contract is internally inconsistent."
-    - "The smallest rework is to project the already-approved task-specific top-level checks into sections.Verify Steps without changing implementation scope, ordering, authority roots, effects, or verification strength."
-    - "Residual risk: Hosted provider and integration evidence remains pending and must not be inferred from local checks."
+    - "The frozen diff remains confined to the four approved implementation areas and their regressions; it introduces no MPXQBK, broad GitLab, release/version/publication metadata, or dependency changes."
+    - "Supervisor evidence records full local CI, lint, typecheck, focused regressions, routing, committed-diff checks, and a clean implementation repository status at SHA 9360c020cc206d344c496d95c7c147e2adba09d2."
+    - "An independent rerun of the focused suite passed 80 tests across five discovered files, covering protected handoff ownership, guarded no-PR publication, declared-check sequences, and dependency-layout preparation."
+    - "The approved amendment describes the exact task-specific Verify Steps replacement, but sections.Verify Steps still contains the fallback scaffold and the frozen evaluator contract continues to list replacement as required acceptance. The remaining defect is therefore task-document projection, not implementation behavior."
+    - "Residual risk: Hosted provider and integration evidence remains pending and must be established by AgentPlane after the task-document contract converges."
 execution_route:
   frozen: true
   reason_codes:
@@ -370,6 +370,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9360c020cc20. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The evaluator finding cannot be addressed by this EXECUTOR packet. AgentPlane persisted the requested clarification as plan amendment amendment_6a35809ecd99c402ce5b898f, but sections.Verify Steps remains unchanged and the only required target is protected from this packet."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The same authority mismatch remains at task revision 23. The required correction is limited to the protected task README, while this EXECUTOR packet again authorizes only implementation-code roots."
 events:
   -
     type: "status"
@@ -424,8 +430,18 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "comment"
+    at: "2026-09-03T18:33:07.343Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The evaluator finding cannot be addressed by this EXECUTOR packet. AgentPlane persisted the requested clarification as plan amendment amendment_6a35809ecd99c402ce5b898f, but sections.Verify Steps remains unchanged and the only required target is protected from this packet."
+  -
+    type: "comment"
+    at: "2026-09-03T18:33:52.951Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The same authority mismatch remains at task revision 23. The required correction is limited to the protected task README, while this EXECUTOR packet again authorizes only implementation-code roots."
 doc_version: 3
-doc_updated_at: "2026-09-03T18:29:37.132Z"
+doc_updated_at: "2026-09-03T18:33:52.951Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -1115,7 +1131,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 8
+    event_cursor: 12
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -1153,11 +1169,30 @@ extensions:
         Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full.
       task_id: "202609031717-PX8PZT"
     lifecycle: "ACTIVE"
-    plan_amendments: []
+    plan_amendments:
+      -
+        actor_id: "external:EXECUTOR"
+        created_at: "2026-09-03T18:32:20.304Z"
+        digest: "sha256:6a35809ecd99c402ce5b898fafbe5547c66070e0f885af113b13f7330751f0f7"
+        id: "amendment_6a35809ecd99c402ce5b898f"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        refinement:
+          acceptance_changed: false
+          architecture_constraints_changed: false
+          dependencies_changed: false
+          description: "Clarify the plan document by replacing sections.Verify Steps fallback scaffold with the current approved task-specific validation sequence: combined focused regressions, touched-file Prettier check, bun run lint:core, bun run typecheck, node .agentplane/policy/check-routing.mjs, and bun run ci:local:full. Preserve all five sequential WorkItems, exact required_inputs to expected_outputs chaining, current writable roots, current implementation SHA, and exclusions for MPXQBK, full T4RR70/GitLab, 9RCWZQ release behavior, release/version/publication metadata, and dependency upgrades."
+          external_effects_added: []
+          operations:
+            - "clarify"
+          outputs_added: []
+          risk_changed: false
+          scope_roots_added: []
+        schema_version: 1
     plan_history: []
-    revision: 21
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-03T18:29:37.132Z"
+    updated_at: "2026-09-03T18:33:52.951Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -1487,6 +1522,22 @@ extensions:
         task_id: "202609031717-PX8PZT"
         task_revision: 18
         work_item_id: "clean-core-salvage-qualification"
+      -
+        at: "2026-09-03T18:32:20.304Z"
+        from: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        to: "sha256:6a35809ecd99c402ce5b898fafbe5547c66070e0f885af113b13f7330751f0f7"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_2f9c755b078473b5aa66f20b"
+        mutation_id: "plan-refinement:work-order-202609031717-PX8PZT-executor-a9ab463084fa6494df560da7"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+        task_revision: 21
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:014db468ea85e74045fc721f2d0d772030a72f4ade6b33b8c0dd2573854d5fa2:
@@ -1511,6 +1562,54 @@ extensions:
         mutation_id: "compatibility:sha256:014db468ea85e74045fc721f2d0d772030a72f4ade6b33b8c0dd2573854d5fa2"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:2c65a39d7b0c7425773debd54d5b1b7293075d9e606e74277ccd87904efdbbaf:
+        aggregate_digest: "sha256:96d67c328c8a5967bbd19f0164c650fb44135fea9759e453eb2b6d337c849c80"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T18:33:07.343Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bf833276ac93c41e9a6cca7a"
+          mutation_id: "compatibility:sha256:2c65a39d7b0c7425773debd54d5b1b7293075d9e606e74277ccd87904efdbbaf"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2c65a39d7b0c7425773debd54d5b1b7293075d9e606e74277ccd87904efdbbaf"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:41ebc68813069e3f99d749bd4eb5db05a4b67e0fb6207a7859a5354994c37f61:
+        aggregate_digest: "sha256:0ad2cc7948f566d033b4f1f4fabcb888ce41ccb9366a19adf0b37022102d06aa"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T18:33:52.951Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cde530b50bf5b15a530dbc8e"
+          mutation_id: "compatibility:sha256:41ebc68813069e3f99d749bd4eb5db05a4b67e0fb6207a7859a5354994c37f61"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:41ebc68813069e3f99d749bd4eb5db05a4b67e0fb6207a7859a5354994c37f61"
+        next_revision: 24
+        previous_revision: 23
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:6608e57477826b732b66380eef6a2bde010196597266ef82512affb5da4cb23a:
@@ -1583,6 +1682,30 @@ extensions:
         mutation_id: "compatibility:sha256:9c42d2bc418358880bbe88fc360ed7981aa94957ba7920ae04b115bce1fb0933"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:a611653d77b9d49cd55422e9b6628d51702900098e8ae848e92e9a76b3808b4e:
+        aggregate_digest: "sha256:54e73e56f9d2c9976a3ca0e0e010ba407d27713ba20a376036db72883a3829e5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T18:33:52.951Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e6449435af5a566f41669baa"
+          mutation_id: "compatibility:sha256:a611653d77b9d49cd55422e9b6628d51702900098e8ae848e92e9a76b3808b4e"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a611653d77b9d49cd55422e9b6628d51702900098e8ae848e92e9a76b3808b4e"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:b683699e59a42f657fb67dc0ec611e6fa63fa2a5a96d05f4a7bbc82f7fa17b2e:
@@ -1794,6 +1917,29 @@ extensions:
         mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-dda7d3600c819a84bf7b848f"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      plan-refinement:work-order-202609031717-PX8PZT-executor-a9ab463084fa6494df560da7:
+        aggregate_digest: "sha256:136c0514b75c868fb5c1feef5b68a8186728bb1cb1a46b73bc05bd8aca3f97b2"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-03T18:32:20.304Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          id: "event_2f9c755b078473b5aa66f20b"
+          mutation_id: "plan-refinement:work-order-202609031717-PX8PZT-executor-a9ab463084fa6494df560da7"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 21
+          to: "sha256:6a35809ecd99c402ce5b898fafbe5547c66070e0f885af113b13f7330751f0f7"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609031717-PX8PZT-executor-a9ab463084fa6494df560da7"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609031717-PX8PZT"
     pending_effects: []
