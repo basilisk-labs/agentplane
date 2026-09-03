@@ -37,12 +37,13 @@ Complete the Clean Core salvage boundary on current main without merging stale b
  packages/agentplane/src/commands/pr/open.ts        |   3 +
  .../commands/shared/task-handoff-reader.test.ts    | 163 +++++++++++
  .../src/commands/shared/task-handoff-reader.ts     |  78 +++++
- .../commands/task/direct-task-verification.test.ts | 115 ++++++++
- .../src/commands/task/direct-task-verification.ts  | 181 ++++++++----
+ .../direct-task-verification.sequence.cases.ts     | 130 +++++++++
+ .../commands/task/direct-task-verification.test.ts |   1 +
+ .../src/commands/task/direct-task-verification.ts  | 183 ++++++++----
  .../src/commands/task/handoff-show.command.ts      |  37 ++-
  .../agentplane/src/commands/task/handoff.shared.ts |  27 +-
  scripts/workflow/bootstrap-framework-dev.mjs       |  40 ++-
- 15 files changed, 1390 insertions(+), 100 deletions(-)
+ 16 files changed, 1408 insertions(+), 100 deletions(-)
 ```
 
 </details>

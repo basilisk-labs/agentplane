@@ -155,16 +155,16 @@ describe("task-worktree install layout materialization", () => {
 
     await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
 
-    expect((await lstat(path.join(worktreePath, "node_modules"))).isSymbolicLink()).toBe(true);
+    const workspaceNodeModules = await lstat(path.join(worktreePath, "node_modules"));
+    const websiteNodeModules = await lstat(path.join(worktreePath, "website", "node_modules"));
+    const recipes = await lstat(path.join(worktreePath, "agentplane-recipes"));
+
+    expect(workspaceNodeModules.isSymbolicLink()).toBe(true);
     expect(await readlink(path.join(worktreePath, "node_modules"))).toBe(
       path.join(repoRoot, "node_modules"),
     );
-    expect((await lstat(path.join(worktreePath, "website", "node_modules"))).isSymbolicLink()).toBe(
-      true,
-    );
-    expect((await lstat(path.join(worktreePath, "agentplane-recipes"))).isSymbolicLink()).toBe(
-      true,
-    );
+    expect(websiteNodeModules.isSymbolicLink()).toBe(true);
+    expect(recipes.isSymbolicLink()).toBe(true);
     await expect(
       readFile(path.join(worktreePath, "packages", "core", "node_modules", "marker.txt"), "utf8"),
     ).resolves.toBe("healthy\n");
