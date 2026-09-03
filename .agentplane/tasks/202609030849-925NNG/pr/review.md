@@ -13,7 +13,7 @@ Created: 2026-09-03T08:57:33.898Z
 ## Verification
 
 - State: ok
-- Note: Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
