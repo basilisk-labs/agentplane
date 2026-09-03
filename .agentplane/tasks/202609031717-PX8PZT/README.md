@@ -4,7 +4,7 @@ title: "Port the minimal missing Clean Core lifecycle boundary contracts from au
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -115,6 +115,7 @@ execution_contract:
       - "packages/agentplane/src/commands/pr/open.ts"
       - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
       - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/handoff-show.command.ts"
@@ -176,7 +177,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:f3d963988b645ae240660f0ac6494e8ae7cc7be0a7518213e8b61afe7ce7e5b8"
+      digest: "sha256:b7d40f790f8a7ff35b6b543d0c1439f91c4ef52aad85a1ec965fdf86bbadf32f"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
@@ -206,6 +207,7 @@ execution_contract:
           - "packages/agentplane/src/commands/pr/open.ts"
           - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
           - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/handoff-show.command.ts"
@@ -252,7 +254,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9360c020cc206d344c496d95c7c147e2adba09d2"
+  message: "🚧 PX8PZT task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -269,6 +273,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: deecd2dbf00d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9360c020cc20. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -309,8 +316,16 @@ events:
     to: "DOING"
     note: "Implementation committed: deecd2dbf00d. CLI accepted one state-bound external-agent semantic result."
     commit: "deecd2dbf00da94107ca70546de2c0b23de33044"
+  -
+    type: "status"
+    at: "2026-09-03T18:10:22.382Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9360c020cc20. CLI accepted one state-bound external-agent semantic result."
+    commit: "9360c020cc206d344c496d95c7c147e2adba09d2"
 doc_version: 3
-doc_updated_at: "2026-09-03T17:47:08.672Z"
+doc_updated_at: "2026-09-03T18:10:22.382Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -844,7 +859,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -884,19 +899,99 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-03T17:47:10.194Z"
+    updated_at: "2026-09-03T18:19:26.215Z"
     work_items:
       clean-core-salvage-qualification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "clean-core-salvage-qualification"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:06caa58446989f354af4696fc8b679f80ac1df7e50c1ef3246235c326c80203f"
+            id: "clean-core-salvage-qualification-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609031717-PX8PZT"
+              work_item_id: "clean-core-salvage-qualification"
+            provenance:
+              - "sha256:db769faad216ce664d069dde44626d9bf55d8c0c2500c276095bf44be7f62e56"
+              - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "salvage-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T18:19:26.201Z"
+              repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "format-touched"
+              command_identity: "bun x prettier --check packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/flow-status.ts packages/agentplane/src/commands/shared/task-handoff-reader.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/handoff-show.command.ts packages/agentplane/src/commands/task/handoff.shared.ts scripts/workflow/bootstrap-framework-dev.mjs"
+              detail: "Observed by bun x prettier --check packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/flow-status.ts packages/agentplane/src/commands/shared/task-handoff-reader.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/handoff-show.command.ts packages/agentplane/src/commands/task/handoff.shared.ts scripts/workflow/bootstrap-framework-dev.mjs."
+              exit_code: 0
+              observed_at: "2026-09-03T18:19:26.201Z"
+              repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "lint-core"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-09-03T18:19:26.201Z"
+              repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-03T18:19:26.201Z"
+              repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "routing"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-03T18:19:26.201Z"
+              repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-03T18:19:26.201Z"
+              repository_snapshot_digest: "sha256:31d4829463a2118af42a3a709c7fcd7a88d3ad423b717c7e6b7b48ff042ddde0"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       guarded-task-only-branch-publication:
         attempt: 1
         claim_id: null
@@ -1120,6 +1215,22 @@ extensions:
         task_id: "202609031717-PX8PZT"
         task_revision: 15
         work_item_id: "safe-worktree-dependency-preparation"
+      -
+        at: "2026-09-03T18:19:26.215Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_da5b25ede24ada63b0901ff1"
+        mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-dda7d3600c819a84bf7b848f"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+        task_revision: 18
+        work_item_id: "clean-core-salvage-qualification"
     leases: []
     mutation_receipts:
       compatibility:sha256:014db468ea85e74045fc721f2d0d772030a72f4ade6b33b8c0dd2573854d5fa2:
@@ -1144,6 +1255,30 @@ extensions:
         mutation_id: "compatibility:sha256:014db468ea85e74045fc721f2d0d772030a72f4ade6b33b8c0dd2573854d5fa2"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:6608e57477826b732b66380eef6a2bde010196597266ef82512affb5da4cb23a:
+        aggregate_digest: "sha256:95e8458bec74acbcc0b38a7b57e057f07be5501c92fa3cf75a3f73aa371782e0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T18:10:22.382Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cb1a3fe92782617166131ab8"
+          mutation_id: "compatibility:sha256:6608e57477826b732b66380eef6a2bde010196597266ef82512affb5da4cb23a"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6608e57477826b732b66380eef6a2bde010196597266ef82512affb5da4cb23a"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:6b42989c736fc56b93d565529e9b9f4b123f39072f05b9a5f27570bc2ba6b794:
@@ -1334,11 +1469,34 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609031717-PX8PZT"
+      external-result:work-order-202609031717-PX8PZT-executor-dda7d3600c819a84bf7b848f:
+        aggregate_digest: "sha256:c8b605d390c6af06855f5e595bfb92d39bc2bde17bb94063385d377d3f4c9bbb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T18:19:26.215Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_da5b25ede24ada63b0901ff1"
+          mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-dda7d3600c819a84bf7b848f"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: "clean-core-salvage-qualification"
+        mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-dda7d3600c819a84bf7b848f"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "deecd2dbf00da94107ca70546de2c0b23de33044"
+    hash: "9360c020cc206d344c496d95c7c147e2adba09d2"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
