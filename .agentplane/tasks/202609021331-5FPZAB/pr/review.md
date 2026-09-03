@@ -6,7 +6,7 @@ Created: 2026-09-02T15:35:26.605Z
 
 - Task: `202609021331-5FPZAB`
 - Title: Repair lifecycle projection integrity after M3 cutover
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609021331-5FPZAB/repair-lifecycle-projection-integrity-after-m3-c`
 - Canonical task record: `.agentplane/tasks/202609021331-5FPZAB/README.md`
 
