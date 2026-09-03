@@ -2,10 +2,10 @@
   "checks": [
     {
       "check_ids": [
-        "worktree-dependency-focused"
+        "salvage-focused"
       ],
-      "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1",
-      "duration_ms": 1144,
+      "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1",
+      "duration_ms": 22696,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
@@ -16,7 +16,97 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "pping git submodule update\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-x4bzG0\n==> Installing workspace dependencies\n==> Recipes submodule already available in common repo root; skipping local git submodule update: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-8zttuk\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-laa4WN\n==> Installing workspace dependencies\n==> Recipes submodule already available in common repo root; skipping local git submodule update: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-7B3BEu\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-llhviW\n==> Installing workspace dependencies\n==> Recipes submodule already available in common repo root; skipping local git submodule update: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-sQ6hXA\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-aRToHu\n==> Bootstrap install layout already present; skipping bun install\n==> Recipes submodule already initialized; skipping git submodule update\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-0XiM2M\n==> Installing workspace dependencies\n==> Initializing agentplane-recipes submodule\n\n Test Files  2 passed (2)\n      Tests  19 passed (19)\n   Start at  20:47:09\n   Duration  856ms (transform 266ms, setup 0ms, import 394ms, tests 354ms, environment 0ms)\n\n"
+      "stdout_tail": "ing git submodule update\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-no4RSf\n==> Installing workspace dependencies\n==> Recipes submodule already available in common repo root; skipping local git submodule update: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-SfExFw\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-DWBx2T\n==> Installing workspace dependencies\n==> Recipes submodule already available in common repo root; skipping local git submodule update: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-ugQl0Q\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-7YC9n5\n==> Installing workspace dependencies\n==> Recipes submodule already available in common repo root; skipping local git submodule update: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-6zOCcc\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-3K4KJD\n==> Bootstrap install layout already present; skipping bun install\n==> Recipes submodule already initialized; skipping git submodule update\n==> Building @agentplaneorg/core\n==> Building agentplane\n==> Building @agentplane/testkit\n==> Reconciling managed git hooks: commit-msg, pre-commit, pre-push, post-merge\n==> Verifying repo-local runtime\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n==> Framework repo: /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-framework-bootstrap-c4unif\n==> Installing workspace dependencies\n==> Initializing agentplane-recipes submodule\n\n Test Files  5 passed (5)\n      Tests  80 passed (80)\n   Start at  21:10:22\n   Duration  22.39s (transform 1.12s, setup 0ms, import 1.92s, tests 20.18s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "format-touched"
+      ],
+      "command": "bun x prettier --check packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/flow-status.ts packages/agentplane/src/commands/shared/task-handoff-reader.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/handoff-show.command.ts packages/agentplane/src/commands/task/handoff.shared.ts scripts/workflow/bootstrap-framework-dev.mjs",
+      "duration_ms": 370,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [
+        "lint-core"
+      ],
+      "command": "bun run lint:core",
+      "duration_ms": 54498,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "typecheck"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 221,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "routing"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 102,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [
+        "full-regression"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 464960,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3258139d57db107ef7f17c50134e6046e703ec20076975ba519669bb2ada6324",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-03T18:17:09.664Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-ohlZDi/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-ohlZDi/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-03T18:17:09.685Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-R1P9xS/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-R1P9xS/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-03T18:17:09.690Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-R1P9xS/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-R1P9xS/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-03T18:17:09.696Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-kYt8lA/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-kYt8lA/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-03T18:17:09.698Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-03T18:17:13.606Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-03T18:17:13.630Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-03T18:17:13.631Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-03T18:17:13.633Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-03T18:17:13.633Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-03T18:17:13.636Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "ironment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 17981ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  17.80s (transform 2.04s, setup 0ms, import 1.46s, tests 16.28s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1806ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.65s (transform 1.14s, setup 0ms, import 1.36s, tests 226ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 4795ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.63s (transform 1.09s, setup 0ms, import 1.31s, tests 3.27s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":22256},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16335},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":301076},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":84286}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":428325,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 232 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031717-PX8PZT-port-the-minimal-missing-clean-core-lifecycle-bo\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  21:18:57\n   Duration  24.79s (transform 9.71s, setup 0ms, import 8.47s, tests 74.67s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031717-PX8PZT-port-the-minimal-missing-clean-core-lifecycle-bo\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  21:19:22\n   Duration  2.98s (transform 3.75s, setup 0ms, import 4.17s, tests 2.87s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
     }
   ],
   "kind": "direct_task_declared_checks",

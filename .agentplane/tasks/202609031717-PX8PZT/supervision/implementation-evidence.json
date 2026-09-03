@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 261fb24c2e09bb296e47c192b7f9036993fe3304..deecd2dbf00da94107ca70546de2c0b23de33044",
+      "command": "git diff --check 9452919865bc83522a368f8a24e0cfc0ac0f40fd..9360c020cc206d344c496d95c7c147e2adba09d2",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 261fb24c2e09bb296e47c192b7f9036993fe3304..deecd2dbf00da94107ca70546de2c0b23de33044",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9452919865bc83522a368f8a24e0cfc0ac0f40fd..9360c020cc206d344c496d95c7c147e2adba09d2",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,10 +21,10 @@
         "M\t.agentplane/tasks/202609031717-PX8PZT/pr/github-body.md",
         "M\t.agentplane/tasks/202609031717-PX8PZT/pr/meta.json",
         "M\t.agentplane/tasks/202609031717-PX8PZT/pr/review.md",
-        "M\tpackages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts",
-        "A\tpackages/agentplane/src/commands/branch/work-start.materialize.test.ts",
-        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.ts",
-        "M\tscripts/workflow/bootstrap-framework-dev.mjs"
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.test.ts",
+        "A\tpackages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
       ]
     },
     {
@@ -34,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "261fb24c2e09bb296e47c192b7f9036993fe3304",
-  "implementation_commit": "deecd2dbf00da94107ca70546de2c0b23de33044",
+  "execution_base_commit": "9452919865bc83522a368f8a24e0cfc0ac0f40fd",
+  "implementation_commit": "9360c020cc206d344c496d95c7c147e2adba09d2",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
