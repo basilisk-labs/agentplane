@@ -172,7 +172,9 @@ export function buildTaskCentricProjectionIntegrityFindings(
       continue;
     }
     if (!aggregate || readmeRevision === null) continue;
-    const readmePlanState = String(record(task.plan_approval)?.state ?? "pending");
+    const readmePlanStateValue = record(task.plan_approval)?.state;
+    const readmePlanState =
+      typeof readmePlanStateValue === "string" ? readmePlanStateValue : "pending";
     const aggregatePlanState = aggregate.current_plan?.approval.state ?? "missing";
     if (readmePlanState !== "rejected" || aggregatePlanState === "rejected") continue;
     findings.push(

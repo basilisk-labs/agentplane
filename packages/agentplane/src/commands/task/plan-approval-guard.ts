@@ -1,7 +1,5 @@
-import {
-  taskCentricAggregateFromExtensions,
-  taskCentricReplanRequiredFromExtensions,
-} from "@agentplaneorg/core/tasks";
+import { taskCentricReplanRequiredFromExtensions } from "@agentplaneorg/core/tasks";
+import type { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
 
