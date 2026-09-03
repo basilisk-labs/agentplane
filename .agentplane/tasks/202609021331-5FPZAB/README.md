@@ -1,10 +1,11 @@
 ---
 id: "202609021331-5FPZAB"
 title: "Repair lifecycle projection integrity after M3 cutover"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 73
+revision: 74
 origin:
   system: "manual"
 depends_on: []
@@ -64,6 +65,20 @@ quality_review:
     - "Cleanup reloads projection context after base synchronization and normalizes the terminal queue idempotently; the Arkady fixture proves stale-DONE synchronization, exact replay, terminal convergence, and removal of task branch/worktree state."
     - "Observed verification is complete: exact focused suite 5 files/66 tests, compatibility baseline, 8 lifecycle invariants, lint, typecheck, routing policy, and full local CI all passed with exit code 0."
     - "Residual risk: Exact-head hosted checks, provider merge, fresh-main readback, hosted close, and final cleanup are intentionally pending supervisor-owned branch_pr lifecycle stages."
+token_usage:
+  agent_runs: 27
+  input_tokens: null
+  journal_digest: "sha256:fb1bb22f52687696d3ed1c161d49e3588c45ec029397636fd12e1809f65f0753"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-03T16:16:26.942Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -438,8 +453,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b6350071398029c378f986a0169222e3b2291e4a"
-  message: "🚧 5FPZAB task: apply external agent result"
+  hash: "ff11af89686633f535492f973870cfcee3dc5974"
+  message: "🚧 5FPZAB task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -501,6 +516,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b63500713980. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -664,9 +682,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-03T16:16:26.942Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "ff11af89686633f535492f973870cfcee3dc5974"
 doc_version: 3
-doc_updated_at: "2026-09-03T16:14:52.459Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T16:16:26.942Z"
+doc_updated_by: "CODER"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
   Summary: |-
@@ -1470,7 +1496,100 @@ extensions:
       schema_version: 1
       task_id: "202609021331-5FPZAB"
     event_cursor: 21
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "focused"
+          command_identity: "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "compatibility"
+          command_identity: "bun run bench:compatibility:candidate:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "lifecycle"
+          command_identity: "bun run lifecycle:invariants"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "hotspots"
+          command_identity: "bun run hotspots:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "lint-core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "routing"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          check_id: "full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T16:14:51.365Z"
+          repository_snapshot_digest: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609021331-5FPZAB"
     intent:
       acceptance_criteria:
@@ -1496,7 +1615,7 @@ extensions:
 
         After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK.
       task_id: "202609021331-5FPZAB"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -4101,9 +4220,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 73
+    revision: 74
     schema_version: 1
-    updated_at: "2026-09-03T16:14:52.459Z"
+    updated_at: "2026-09-03T16:16:26.942Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 1
@@ -5224,6 +5343,31 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      legacy-finish:202609021331-5FPZAB:2026-09-03T16:14:51.365Z:b6350071398029c378f986a0169222e3b2291e4a:
+        aggregate_digest: "sha256:3ac9363d2f3958f089a8271b932624f1a9e25150ea0d9b431398c10057e80a2c"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-03T16:16:26.942Z"
+          cause_refs:
+            - "task-verification:202609021331-5FPZAB"
+            - "git:b6350071398029c378f986a0169222e3b2291e4a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ac6bc48a9c5bef42198a9309"
+          mutation_id: "legacy-finish:202609021331-5FPZAB:2026-09-03T16:14:51.365Z:b6350071398029c378f986a0169222e3b2291e4a"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: "sha256:2c2c55c18d81a141df12f2e241b9c6c17f6322b8af73d74d6d329db630cc76ba"
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 73
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609021331-5FPZAB:2026-09-03T16:14:51.365Z:b6350071398029c378f986a0169222e3b2291e4a"
+        next_revision: 74
+        previous_revision: 73
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       plan-refinement:work-order-202609021331-5FPZAB-executor-66e6b4ac77f4d85e120d0a0c:
         aggregate_digest: "sha256:751fe09129f59fbc68f01247e32b0b3da0bc63337982a34449ebbbcb361d42ad"
         event:
@@ -5329,6 +5473,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "b6350071398029c378f986a0169222e3b2291e4a"
+    message: "🚧 5FPZAB task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
@@ -5579,3 +5724,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/27` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:fb1bb22f52687696d3ed1c161d49e3588c45ec029397636fd12e1809f65f0753`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-03T16:16:26.942Z`
