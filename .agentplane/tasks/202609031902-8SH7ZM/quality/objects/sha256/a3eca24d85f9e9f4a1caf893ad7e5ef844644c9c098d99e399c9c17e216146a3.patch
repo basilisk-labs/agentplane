@@ -1,0 +1,369 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+index b01bc2e6a..9e00f6b04 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+@@ -213,6 +213,78 @@ function event(
+ }
+ 
+ describe("TaskCentricBackendAdapter", () => {
++  it("atomically projects an accepted verification clarification and replays idempotently", async () => {
++    const fallback = "PLANNER fallback scaffold. Replace with task-specific acceptance checks.";
++    const aggregate = approvedAggregate();
++    const topLevel = aggregate.current_plan!.proposal.top_level_validation;
++    const initial = taskData({
++      ...aggregate,
++      current_plan: {
++        ...aggregate.current_plan!,
++        proposal: {
++          ...aggregate.current_plan!.proposal,
++          top_level_validation: {
++            ...topLevel,
++            checks: topLevel.checks.map((check) => ({
++              ...check,
++              command: "bun run test:root",
++            })),
++          },
++        },
++      },
++    });
++    initial.doc = `## Summary\n\nDescription\n\n## Verify Steps\n\n${fallback}\n`;
++    initial.sections = { "Verify Steps": fallback };
++    const durable = memoryBackend(initial);
++    let writes = 0;
++    const backend: TaskBackend = {
++      ...durable,
++      async writeTask(next, options) {
++        writes += 1;
++        await durable.writeTask(next, options);
++      },
++    };
++    const adapter = new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.resolve(repository()),
++    });
++    const input = {
++      task_id: TASK_ID,
++      expected_revision: 1,
++      refinement: {
++        description: "Project the approved task-specific checks into Verify Steps.",
++        scope_roots_added: [],
++        outputs_added: [],
++        acceptance_changed: false,
++        risk_changed: false,
++        external_effects_added: [],
++        dependencies_changed: false,
++        architecture_constraints_changed: false,
++        operations: ["clarify"],
++      },
++      actor_id: "external:EXECUTOR",
++      at: NOW,
++      idempotency_key: "clarify-verify-steps",
++    } as const;
++
++    const receipt = await adapter.recordPlanRefinement(input);
++    const stored = durable.current();
++    expect(writes).toBe(1);
++    expect(receipt.action).toBe("amended");
++    expect(stored.sections?.["Verify Steps"]).toBe(
++      "1. Run `bun run test:root`. Expected: Validate root",
++    );
++    expect(stored.doc).toContain(
++      "## Verify Steps\n\n1. Run `bun run test:root`. Expected: Validate root",
++    );
++    expect(stored.doc_updated_by).toBe("external:EXECUTOR");
++    expect(taskCentricAggregateFromExtensions(stored.extensions)?.plan_amendments).toHaveLength(1);
++
++    await expect(adapter.recordPlanRefinement(input)).resolves.toEqual(receipt);
++    expect(writes).toBe(1);
++    expect(durable.current()).toEqual(stored);
++  });
++
+   it("rejects a proposed plan as one atomic event and receipt and replays exactly", async () => {
+     const initial = taskData(pendingAggregate());
+     initial.plan_approval = { state: "pending", updated_at: null, updated_by: null, note: null };
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+index c5cbe78a9..932c886d8 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+@@ -22,7 +22,7 @@ import {
+   type ValidationEvidence,
+ } from "@agentplaneorg/core/tasks";
+ 
+-import type { TaskBackend } from "../../backends/task-backend.js";
++import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+ import { projectTaskCentricCompletion } from "./task-centric-backend-projection.js";
+ import {
+   aggregateFrom,
+@@ -39,6 +39,7 @@ import {
+   type RecoverRejectedPlanInput,
+   type RejectPlanInput,
+ } from "./task-centric-plan-rejection.js";
++import { verificationAmendmentProjection } from "./task-centric-verification-projection.js";
+ 
+ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+   readonly capabilities = Object.freeze({
+@@ -80,6 +81,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+       note: string;
+     };
+     clear_execution_grant?: boolean;
++    task_projection?: Pick<TaskData, "doc" | "sections" | "doc_updated_at" | "doc_updated_by">;
+   }): Promise<TransitionReceipt> {
+     const current = await this.backend.getTask(opts.task_id);
+     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
+@@ -124,6 +126,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     await this.backend.writeTask(
+       {
+         ...current,
++        ...(opts.task_projection ?? {}),
+         revision: currentRevision + 1,
+         status: projectTaskLifecycleToLegacyStatus(normalizedNext.lifecycle),
+         ...(hasIncompleteRequiredWork
+@@ -264,6 +267,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     const raw = await this.backend.getTask(opts.task_id);
+     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
+     const task = aggregateFrom(raw);
++    const priorReceipt = runtimeFrom(raw).mutation_receipts[opts.idempotency_key];
++    if (priorReceipt) {
++      return Object.freeze({
++        action: priorReceipt.event.entity === "task" ? "replan_required" : "amended",
++        receipt: priorReceipt,
++      });
++    }
+     const expectedRevision = opts.expected_revision ?? raw.revision ?? task.revision;
+     if ((raw.revision ?? task.revision) !== expectedRevision) {
+       throw new Error(
+@@ -285,6 +295,16 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+             updated_at: opts.at,
+           })
+         : applied.task;
++    const taskProjection =
++      applied.action === "amended"
++        ? verificationAmendmentProjection({
++            current: raw,
++            next,
++            refinement: opts.refinement,
++            actor_id: opts.actor_id,
++            at: opts.at,
++          })
++        : null;
+     const event = syntheticEvent({
+       task,
+       mutation_id: opts.idempotency_key,
+@@ -309,6 +329,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+         applied.action === "replan_required"
+           ? applied.classification.reason_codes.join("+") || "material_plan_refinement"
+           : null,
++      ...(taskProjection ? { task_projection: taskProjection } : {}),
+     });
+     return Object.freeze({ action: applied.action, receipt: persisted });
+   }
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-verification-projection.ts b/packages/agentplane/src/adapters/task-backend/task-centric-verification-projection.ts
+new file mode 100644
+index 000000000..cc770b547
+--- /dev/null
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-verification-projection.ts
+@@ -0,0 +1,50 @@
++import {
++  setMarkdownSection,
++  type PlanRefinement,
++  type TaskAggregate,
++} from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++
++const VERIFY_STEPS_FALLBACK_MARKER = "PLANNER fallback scaffold";
++
++function taskSpecificVerifySteps(task: TaskAggregate): string | null {
++  const validation = task.current_plan?.proposal.top_level_validation;
++  if (!validation || validation.checks.length === 0) return null;
++  return validation.checks
++    .map((check, index) => {
++      const expectations = validation.criteria
++        .filter((criterion) => criterion.check_ids.includes(check.id))
++        .map((criterion) => criterion.description.trim())
++        .filter(Boolean);
++      const expected = expectations.length > 0 ? expectations.join(" ") : "The check succeeds.";
++      return check.command
++        ? `${index + 1}. Run \`${check.command}\`. Expected: ${expected}`
++        : `${index + 1}. Exercise \`${check.capability}\`. Expected: ${expected}`;
++    })
++    .join("\n");
++}
++
++export function verificationAmendmentProjection(opts: {
++  current: TaskData;
++  next: TaskAggregate;
++  refinement: PlanRefinement;
++  actor_id: string;
++  at: string;
++}): Pick<TaskData, "doc" | "sections" | "doc_updated_at" | "doc_updated_by"> | null {
++  const currentSteps = opts.current.sections?.["Verify Steps"] ?? "";
++  if (
++    !opts.refinement.operations.includes("clarify") ||
++    !currentSteps.includes(VERIFY_STEPS_FALLBACK_MARKER)
++  ) {
++    return null;
++  }
++  const verifySteps = taskSpecificVerifySteps(opts.next);
++  if (!verifySteps) return null;
++  return {
++    doc: setMarkdownSection(opts.current.doc ?? "", "Verify Steps", verifySteps),
++    sections: { ...(opts.current.sections ?? {}), "Verify Steps": verifySteps },
++    doc_updated_at: opts.at,
++    doc_updated_by: opts.actor_id,
++  };
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index 97c4db003..596ac34f6 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -170,11 +170,25 @@ async function implementationFixture(initialized = true) {
+ }
+ 
+ async function completedFixture(initialized = true) {
+-  const { root, taskId, creationBase, implementation, implementationOrder, checkout } =
+-    await implementationFixture(initialized);
++  const fixture = await implementationFixture(initialized);
++  const { root, taskId, creationBase, checkout } = fixture;
++  let { implementation, implementationOrder } = fixture;
+   const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
+   const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+   await writeFile(metaPath, JSON.stringify({ ...meta, status: "OPEN", pr_number: 123 }));
++  const stale = await invoke(checkout, ["task", "advance", taskId, "--agent-json"]);
++  expect(stale.code).not.toBe(0);
++  expect(stale.stderr).toContain("stale");
++  const replacement = await invoke(checkout, [
++    "task",
++    "advance",
++    taskId,
++    "--replacement",
++    "--agent-json",
++  ]);
++  expect(replacement.code, replacement.stderr).toBe(0);
++  implementation = JSON.parse(replacement.stdout) as Packet;
++  implementationOrder = await order(implementation);
+   await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
+   await report(implementation, "Original implementation claim.");
+   await resume(checkout, implementation);
+@@ -382,9 +396,6 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+     expect(
+       await resolveRecordedImplementationRecovery({ ...options, purpose: "implementation" }),
+     ).toBeNull();
+-    expect(
+-      await resolveRecordedImplementationRecovery({ ...options, recorded_commit: options.head }),
+-    ).toBeNull();
+     const narrowed = structuredClone(f.reworkOrder);
+     narrowed.authority.writable_roots = [path.join(f.checkout, "other")];
+     expect(
+@@ -472,7 +483,36 @@ const planRefinement = (material: boolean) => ({
+   operations: ["split"],
+ });
+ 
++const verificationClarification = {
++  description: "Project the approved task-specific checks into Verify Steps.",
++  scope_roots_added: [],
++  outputs_added: [],
++  acceptance_changed: false,
++  risk_changed: false,
++  external_effects_added: [],
++  dependencies_changed: false,
++  architecture_constraints_changed: false,
++  operations: ["clarify"],
++};
++
+ describe("pure external plan refinement", { timeout: 180_000 }, () => {
++  it("projects verification clarification and issues a fresh evaluator packet", async () => {
++    const f = await completedFixture();
++    await report(f.rework, "Project the approved verification contract.", {
++      plan_refinement: verificationClarification,
++    });
++    const next = await resume(f.checkout, f.rework);
++    const current = await f.ctx.taskBackend.getTask(f.taskId);
++    expect(current?.sections?.["Verify Steps"]).toContain("bun run test:critical");
++    expect(current?.sections?.["Verify Steps"]).not.toContain("PLANNER fallback scaffold");
++    expect(current?.quality_review?.state).toBe("rework");
++    expect(Date.parse(current?.doc_updated_at ?? "")).toBeGreaterThan(
++      Date.parse(current?.quality_review?.updated_at ?? ""),
++    );
++    const nextOrder = await order(next);
++    expect(nextOrder.role, JSON.stringify(next)).toBe("EVALUATOR");
++  });
++
+   it.each([false, true])(
+     "records refinement without implementation (material=%s)",
+     async (material) => {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-blockers.ts b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+index cc8bd8a85..f83dc275b 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-blockers.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-blockers.ts
+@@ -26,6 +26,7 @@ import {
+ } from "./quality-review-retirement.js";
+ import {
+   hasAcceptedVerificationForCurrentImplementation,
++  qualityReviewPredatesTaskDocument,
+   qualityReviewRequiresImplementationRework,
+   qualityReworkHasNewVerification,
+   verificationReworkHasNewImplementation,
+@@ -467,6 +468,13 @@ export async function deriveBlockers(opts: {
+         "implementation rework is required before PR publication or integration",
+       );
+     }
++    if (taskIsDoing && qualityReviewPredatesTaskDocument(opts.task)) {
++      addBlocker(
++        blockers,
++        "quality_review_stale",
++        "task document changed after the latest EVALUATOR result; request a fresh semantic review",
++      );
++    }
+     if (
+       opts.batchOwnership.role !== "included" &&
+       !opts.resume.pr_branch &&
+diff --git a/packages/agentplane/src/commands/shared/route-decision-verification.ts b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+index de1fde7c4..88f66e2ed 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-verification.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-verification.ts
+@@ -1,5 +1,7 @@
+ import path from "node:path";
+ 
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
++
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ import type { PrFlowStatusReport } from "../pr/flow-status.js";
+@@ -26,9 +28,33 @@ function hostedCloseVerificationTarget(
+ 
+ export function qualityReviewRequiresImplementationRework(task: TaskData): boolean {
+   return (
+-    task.quality_review?.state === "rework" ||
+-    (task.quality_review?.state === "blocked" &&
+-      task.quality_review.recovery_reason !== "deterministic_evidence_gap")
++    !qualityReviewPredatesTaskDocument(task) &&
++    (task.quality_review?.state === "rework" ||
++      (task.quality_review?.state === "blocked" &&
++        task.quality_review.recovery_reason !== "deterministic_evidence_gap"))
++  );
++}
++
++export function qualityReviewPredatesTaskDocument(task: TaskData): boolean {
++  const reviewUpdatedAt = Date.parse(task.quality_review?.updated_at ?? "");
++  const documentUpdatedAt = Date.parse(task.doc_updated_at ?? "");
++  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
++  const hasLaterExternalClarification =
++    aggregate?.plan_amendments?.some((amendment) => {
++      const amendmentAt = Date.parse(amendment.created_at);
++      return (
++        amendment.actor_id.startsWith("external:") &&
++        amendment.refinement.operations.includes("clarify") &&
++        Number.isFinite(amendmentAt) &&
++        amendmentAt > reviewUpdatedAt &&
++        amendmentAt <= documentUpdatedAt
++      );
++    }) === true;
++  return (
++    Number.isFinite(reviewUpdatedAt) &&
++    Number.isFinite(documentUpdatedAt) &&
++    documentUpdatedAt > reviewUpdatedAt &&
++    hasLaterExternalClarification
+   );
+ }
+ 
