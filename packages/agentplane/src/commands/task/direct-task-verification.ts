@@ -211,8 +211,45 @@ function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }
 
+function mergedOutput(values: readonly string[]): string {
+  return tail(values.filter(Boolean).join("\n"));
+}
+
 export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
   return parseDeclaredTaskCheck(command);
+}
+
+function parseDirectTaskCheckSequence(command: string): ParsedDirectTaskCheck[] | null {
+  const parsed: ParsedDirectTaskCheck[] = [];
+  let segmentStart = 0;
+  let quote: "'" | '"' | null = null;
+  for (let index = 0; index < command.length; index += 1) {
+    const char = command[index] ?? "";
+    if (quote) {
+      if (char === quote) quote = null;
+      else if (char === "\\" && quote === '"' && index + 1 < command.length) index += 1;
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+    if (char === "\\" && index + 1 < command.length) {
+      index += 1;
+      continue;
+    }
+    if (char !== "&" || command[index + 1] !== "&") continue;
+    const before = command[index - 1] ?? "";
+    const after = command[index + 2] ?? "";
+    if (!/\s/u.test(before) || !/\s/u.test(after)) return null;
+    const check = parseDirectTaskCheck(command.slice(segmentStart, index).trim());
+    if (!check) return null;
+    parsed.push(check);
+    index += 1;
+    segmentStart = index + 1;
+  }
+  const finalCheck = parseDirectTaskCheck(command.slice(segmentStart).trim());
+  return finalCheck ? [...parsed, finalCheck] : null;
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -261,9 +298,7 @@ function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string
   );
 }
 
-function isFullRegressionCommand(command: string): boolean {
-  const parsed = parseDirectTaskCheck(command);
-  if (!parsed) return false;
+function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
   if (parsed.script === "ci:local:full") return true;
   if (
     ["npm", "pnpm", "yarn"].includes(parsed.executable) &&
@@ -282,6 +317,10 @@ function isFullRegressionCommand(command: string): boolean {
     return parsed.args.slice(2).every((argument) => argument.startsWith("-"));
   }
   return parsed.executable === "go" && parsed.args[0] === "test" && parsed.args.includes("./...");
+}
+
+function isFullRegressionCommand(command: string): boolean {
+  return parseDirectTaskCheckSequence(command)?.some(isFullRegressionCheck) ?? false;
 }
 
 function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
@@ -391,6 +430,7 @@ export async function runDirectTaskVerification(opts: {
   additional_only?: boolean;
   allow_empty?: boolean;
   run_process?: typeof runProcess;
+  now?: () => number;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
   const commands = opts.additional_only
@@ -442,8 +482,8 @@ export async function runDirectTaskVerification(opts: {
           package_scripts: rootPackage?.scripts ?? null,
         })
       : declaredCommand;
-    const parsed = parseDirectTaskCheck(command);
-    if (!parsed) {
+    const parsedSequence = parseDirectTaskCheckSequence(command);
+    if (!parsedSequence) {
       const result = {
         status: "unsupported" as const,
         checks,
@@ -451,74 +491,87 @@ export async function runDirectTaskVerification(opts: {
       };
       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
     }
-    const started = Date.now();
+    const now = opts.now ?? Date.now;
+    const started = now();
+    const timeoutBudgetMs =
+      additionalTimeouts.get(declaredCommand) ??
+      Math.max(...parsedSequence.map((parsed) => directTaskCheckTimeoutMs(parsed.script)));
+    const deadline = started + timeoutBudgetMs;
     const env = verificationChildEnv();
-    const runtime = localRuntimeEvidence(parsed.executable, env);
+    let runtime = localRuntimeEvidence(parsedSequence[0]!.executable, env);
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    let exitCode: number | null = 0;
+    let zeroTests = false;
+    let infrastructureFailure = false;
+    const completedCheck = (error?: unknown): DirectTaskCheck => ({
+      runtime,
+      ...(infrastructureFailure || (error && isRuntimeInfrastructureError(error))
+        ? { failure_kind: "infrastructure" as const }
+        : {}),
+      command,
+      ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+      script: parsedSequence.length === 1 ? (parsedSequence[0]?.script ?? null) : null,
+      check_ids: [
+        ...new Set([
+          ...(additionalCheckIds.get(declaredCommand) ?? []),
+          ...checkIdsForCommand(command, selectedChecks),
+        ]),
+      ],
+      exit_code: error ? null : exitCode,
+      duration_ms: Math.max(0, now() - started),
+      stdout_tail: mergedOutput(stdout),
+      stderr_tail: mergedOutput([
+        ...stderr,
+        ...(error ? [error instanceof Error ? error.message : "unknown process failure"] : []),
+      ]),
+    });
     try {
-      const executed = await (opts.run_process ?? runProcess)({
-        command: parsed.executable,
-        args: parsed.args,
-        cwd: opts.cwd,
-        env,
-        timeoutMs:
-          additionalTimeouts.get(declaredCommand) ?? directTaskCheckTimeoutMs(parsed.script),
-        maxBuffer: 1024 * 1024,
-        reject: false,
-      });
-      checks.push({
-        runtime,
-        command,
-        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
-        script: parsed.script,
-        check_ids: [
-          ...new Set([
-            ...(additionalCheckIds.get(declaredCommand) ?? []),
-            ...checkIdsForCommand(command, selectedChecks),
-          ]),
-        ],
-        exit_code: Number.isInteger(executed.exitCode) ? executed.exitCode : null,
-        duration_ms: Math.max(0, Date.now() - started),
-        stdout_tail: tail(executed.stdout),
-        stderr_tail: tail(executed.stderr),
-      });
-      if (executed.exitCode !== 0) {
-        const infrastructure =
-          runtime.status === "unavailable" || isRuntimeInfrastructureError(executed);
-        if (infrastructure) checks[checks.length - 1]!.failure_kind = "infrastructure";
-        const result = {
-          status: infrastructure ? ("unsupported" as const) : ("failed" as const),
-          checks,
-          reason: `Declared check failed: ${command}`,
-        };
-        return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+      for (const parsed of parsedSequence) {
+        const remainingTimeoutMs = parsedSequence.length === 1 ? timeoutBudgetMs : deadline - now();
+        if (remainingTimeoutMs <= 0) {
+          throw new Error(
+            `Declared check exhausted its ${String(timeoutBudgetMs)}ms timeout budget.`,
+          );
+        }
+        const segmentRuntime = localRuntimeEvidence(parsed.executable, env);
+        const executed = await (opts.run_process ?? runProcess)({
+          command: parsed.executable,
+          args: parsed.args,
+          cwd: opts.cwd,
+          env,
+          timeoutMs: remainingTimeoutMs,
+          maxBuffer: 1024 * 1024,
+          reject: false,
+        });
+        stdout.push(executed.stdout);
+        stderr.push(executed.stderr);
+        exitCode = Number.isInteger(executed.exitCode) ? executed.exitCode : null;
+        zeroTests = bunTestReportedZeroTests({
+          parsed,
+          stdout: executed.stdout,
+          stderr: executed.stderr,
+        });
+        infrastructureFailure =
+          segmentRuntime.status === "unavailable" || isRuntimeInfrastructureError(executed);
+        if (infrastructureFailure || exitCode !== 0 || zeroTests) {
+          runtime = segmentRuntime;
+          break;
+        }
       }
-      if (bunTestReportedZeroTests({ parsed, stdout: executed.stdout, stderr: executed.stderr })) {
+      checks.push(completedCheck());
+      if (exitCode !== 0 || zeroTests) {
         const result = {
-          status: "failed" as const,
+          status: infrastructureFailure ? ("unsupported" as const) : ("failed" as const),
           checks,
-          reason: `Declared bun test check executed zero tests: ${command}`,
+          reason: zeroTests
+            ? `Declared bun test check executed zero tests: ${command}`
+            : `Declared check failed: ${command}`,
         };
         return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
       }
     } catch (error) {
-      checks.push({
-        runtime,
-        command,
-        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
-        script: parsed.script,
-        check_ids: [
-          ...new Set([
-            ...(additionalCheckIds.get(declaredCommand) ?? []),
-            ...checkIdsForCommand(command, selectedChecks),
-          ]),
-        ],
-        exit_code: null,
-        duration_ms: Math.max(0, Date.now() - started),
-        stdout_tail: "",
-        stderr_tail: error instanceof Error ? tail(error.message) : "unknown process failure",
-      });
-      if (isRuntimeInfrastructureError(error))
-        checks[checks.length - 1]!.failure_kind = "infrastructure";
+      checks.push(completedCheck(error));
       const result = {
         status: isRuntimeInfrastructureError(error)
           ? ("unsupported" as const)

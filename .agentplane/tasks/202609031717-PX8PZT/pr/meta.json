@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609031717-PX8PZT/port-the-minimal-missing-clean-core-lifecycle-bo",
   "created_at": "2026-09-03T17:26:07.913Z",
-  "diffstat_sha256": "sha256:071a1013ca5d954dfdc4b9e106604e03196af4fecf2bfe6cb194e1c600f75073",
+  "diffstat_sha256": "sha256:9536fc366091e0eb8a6c2e2fd21a643fd75a8ac5ef2a78265f7fed9cd15d4985",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
