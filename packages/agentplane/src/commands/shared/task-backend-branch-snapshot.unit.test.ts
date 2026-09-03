@@ -150,6 +150,31 @@ describe("task branch snapshot inventory", () => {
     });
   });
 
+  it("rejects a registered same-task worktree on a different branch", async () => {
+    vi.spyOn(git, "listWorktrees").mockResolvedValue([
+      {
+        path: "/repo/.agentplane/worktrees/alpha-recovery",
+        branch: "refs/heads/task/202607260001-ALPHA/recovery",
+      },
+    ]);
+
+    await expect(
+      resolveAuthoritativeTaskWorktree({
+        ctx: makeContext(),
+        taskId: "202607260001-ALPHA",
+        branch: "task/202607260001-ALPHA/local",
+        requireRegistration: true,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_worktree_branch_mismatch",
+        expected_branch: "task/202607260001-ALPHA/local",
+        registered_branch: "task/202607260001-ALPHA/recovery",
+      },
+    });
+  });
+
   it("rejects foreign branches and missing local registrations", async () => {
     const ctx = makeContext();
     vi.spyOn(git, "listWorktrees").mockResolvedValue([

@@ -4,7 +4,7 @@ title: "Repair lifecycle projection integrity after M3 cutover"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 56
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ verify:
   - "bun run ci:local:full"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-02T22:10:17.708Z"
-  updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:a383991ecbddcbb48af693affcf9acadb206588ed2838cf5c776df298fdecbb8"
+  updated_at: "2026-09-03T15:19:22.901Z"
+  updated_by: "HOST:local:USER"
+  note: "host_user_decision=sha256:954de20e6719eae0a1b58927857f36408f501fe23807c0e0b19e66e8160d523c"
 verification:
   state: "pending"
   updated_at: null
@@ -76,8 +76,10 @@ execution_contract:
       - "packages/agentplane/src/backends/task-backend"
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/branch"
+      - "packages/agentplane/src/commands/pr"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
+      - "packages/core/src/git"
       - "packages/core/src/tasks"
       - "scripts/checks"
       - "scripts/qualification"
@@ -105,49 +107,19 @@ execution_contract:
       - "packages/agentplane/src/backends/task-backend"
       - "packages/agentplane/src/cli"
       - "packages/agentplane/src/commands/branch"
+      - "packages/agentplane/src/commands/pr"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
+      - "packages/core/src/git"
       - "packages/core/src/tasks"
       - "scripts/checks"
       - "scripts/qualification"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
-      - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
-      - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
-      - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
-      - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
-      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
-      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
-      - "packages/agentplane/src/commands/shared/task-backend.test.ts"
-      - "packages/agentplane/src/commands/shared/task-backend.ts"
-      - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
-      - "packages/agentplane/src/commands/shared/task-mutation.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
-      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
-      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
-      - "packages/agentplane/src/commands/task/finish-shared.ts"
-      - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
-      - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
-      - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
-      - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
-      - "packages/agentplane/src/commands/task/hosted-close.command.ts"
-      - "packages/agentplane/src/commands/task/plan.unit.test.ts"
-      - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
-      - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
-      - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
-      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
+    repository_effects: []
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -176,8 +148,10 @@ execution_contract:
           - "packages/agentplane/src/backends/task-backend"
           - "packages/agentplane/src/cli"
           - "packages/agentplane/src/commands/branch"
+          - "packages/agentplane/src/commands/pr"
           - "packages/agentplane/src/commands/shared"
           - "packages/agentplane/src/commands/task"
+          - "packages/core/src/git"
           - "packages/core/src/tasks"
           - "scripts/checks"
           - "scripts/qualification"
@@ -206,22 +180,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:9f67ba99c1bb64d9a625a1b5afedf83616125ebd40966625bd2c905b8bb57e38"
+      digest: "sha256:aeddcdb341d4b4a0823dc73cdaf6cfac51e643fa780c607ac65dfa6217457f42"
       escalation_reasons:
+        - "central_component:packages/core/src/git"
         - "central_component:packages/core/src/tasks"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.ts"
-        - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
-        - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
-        - "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/task-mutation.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
         - "effect_public_api"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -231,42 +193,10 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
-          - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
-          - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
-          - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
-          - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
-          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
-          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
-          - "packages/agentplane/src/commands/shared/task-backend.test.ts"
-          - "packages/agentplane/src/commands/shared/task-backend.ts"
-          - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
-          - "packages/agentplane/src/commands/shared/task-mutation.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
-          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
-          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
-          - "packages/agentplane/src/commands/task/finish-shared.ts"
-          - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
-          - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
-          - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
-          - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
-          - "packages/agentplane/src/commands/task/hosted-close.command.ts"
-          - "packages/agentplane/src/commands/task/plan.unit.test.ts"
-          - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
-          - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
-          - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
-          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -345,6 +275,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 143095a470a5. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 944c8f81d30e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -447,9 +383,24 @@ events:
     to: "DOING"
     note: "Implementation committed: 143095a470a5. CLI accepted one state-bound external-agent semantic result."
     commit: "143095a470a5f341d8d580bfdb839f3056feb5e1"
+  -
+    type: "status"
+    at: "2026-09-02T22:53:21.025Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 944c8f81d30e. CLI accepted one state-bound external-agent semantic result."
+    commit: "944c8f81d30e4751abbb0d4d99edac62b684cd18"
+  -
+    type: "status"
+    at: "2026-09-03T15:19:28.806Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-09-02T22:29:43.891Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T15:19:28.806Z"
+doc_updated_by: "CODER"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
   Summary: |-
@@ -459,7 +410,7 @@ sections:
   Scope: |-
     - In scope: After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK.
     - Out of scope: unrelated refactors not required for "Repair lifecycle projection integrity after M3 cutover".
-  Plan: "Rebuilt the approved five-stage plan with the same strict order and task-specific checks, adding commands/task only to the fifth WorkItem resource claim so its full-CI rework is authorized."
+  Plan: "Reissued the five-stage projection-integrity plan with authority closure corrected for every existing WorkItem scope and resource claim; order, typed chaining, verification, and exclusions are unchanged."
   Verify Steps: |-
     1. Run `bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts`. Expected: authoritative-worktree identity, atomic projection, stale invalidation, cleanup convergence, and Arkady Factory cases pass.
     2. Run `bun run bench:compatibility:candidate:check`. Expected: the compatibility baseline remains fail-closed; any increase is allowlisted and justified by a focused regression.
@@ -477,8 +428,8 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:a383991ecbddcbb48af693affcf9acadb206588ed2838cf5c776df298fdecbb8"
+    actor: "HOST:local:USER"
+    approval_evidence_digest: "sha256:954de20e6719eae0a1b58927857f36408f501fe23807c0e0b19e66e8160d523c"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -489,12 +440,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:37b38a2b1a35a0f6539df0741b7e202623a7d4e9dd6d9481f15fc651ab9c7564"
-    digest: "sha256:e71b2a0f41c92196ed9fbd3f5051b341ab4a0a7abe61dfde7a35835ed7cfef88"
-    grant_id: "83d2b403-71a5-456e-a47d-c6c3a9bc9325"
-    issued_at: "2026-09-02T22:10:17.708Z"
+    digest: "sha256:b47e4182077ac3947a4c1374094236074b044ae4442341822842865518805278"
+    grant_id: "eda2641e-6e4d-47ad-9079-0d4af15c6ca5"
+    issued_at: "2026-09-03T15:19:22.901Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:65505221f766a797e2c07412f13b0820ccf94e2c34aececa097f8a197180019f"
-    plan_revision: 32
+    plan_digest: "sha256:ded727c0db862cd0448eb4cd743332b1304620c417a8b11fbb0092dc53d6a273"
+    plan_revision: 54
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:fe0e5a0b1993fe8d8204c9ba194992241beaaaf08ccf9cd1fc1b83c66229424e"
@@ -503,26 +454,26 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-02T22:10:17.708Z"
-        approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+        approved_at: "2026-09-03T15:19:22.901Z"
+        approved_by: "HOST:local:USER"
+        approved_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-02T17:51:48.788Z"
-      digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+      created_at: "2026-09-03T14:44:50.699Z"
+      digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
       proposal:
         assumptions:
-          - "M3 is terminal on main at a51e95514f2909177410f78a4057873140097edb and is immutable dependency provenance."
-          - "Existing task backend, kernel, route, hosted-close, and cleanup owners are reused; no parallel projection store is added."
-          - "Only one WorkItem is active, and every required_inputs value is an exact predecessor expected_outputs ID."
-          - "Compatibility edges and LOC remain a measured fail-closed baseline; necessary growth requires an allowlist update and focused regression."
-          - "MPXQBK and all release/version/publication work remain excluded."
+          - "M3 is immutable dependency provenance."
+          - "Existing task backend, kernel, route, hosted-close, and cleanup owners remain authoritative; no parallel projection store is added."
+          - "Only one WorkItem is active and each required input exactly names its predecessor output."
+          - "Compatibility growth remains fail-closed and requires a focused regression."
+          - "MPXQBK and release, version, and package publication work remain excluded."
         planning_baseline:
-          captured_at: "2026-09-02T17:49:37.581Z"
+          captured_at: "2026-09-03T14:41:16.102Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+          digest: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
           dirty_paths:
             - ".agentplane/tasks/202609021331-5FPZAB/README.md"
             - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
@@ -530,10 +481,10 @@ extensions:
           git:
             kind: "commit"
             ref: null
-            sha: "939f62acc66741fe6b864ad83210eb209db658c3"
+            sha: "944c8f81d30e4751abbb0d4d99edac62b684cd18"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:31"
+          task_history_cursor: "task-revision:53"
         schema_version: 1
         task_id: "202609021331-5FPZAB"
         top_level_validation:
@@ -559,6 +510,13 @@ extensions:
               kind: "deterministic"
               required: true
               timeout_ms: 900000
+            -
+              capability: "task.verify"
+              command: "bun run hotspots:check"
+              id: "hotspots"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 600000
             -
               capability: "task.verify"
               command: "bun run lint:core"
@@ -593,14 +551,15 @@ extensions:
                 - "focused"
                 - "compatibility"
                 - "lifecycle"
+                - "hotspots"
                 - "lint-core"
                 - "typecheck"
                 - "routing"
                 - "full"
-              description: "All five sequential WorkItems pass and public lifecycle readback converges on one authoritative task, WorkItem, route, provider, queue, branch, and worktree state."
+              description: "All five sequential WorkItems pass; exact-head verification, evaluation, integration, fresh-main readback, hosted close, and cleanup converge on one authoritative terminal state."
               id: "projection-integrity-complete"
               required: true
-          evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+          evidence_fingerprint: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -611,7 +570,7 @@ extensions:
                 -
                   check_ids:
                     - "authoritative-focused"
-                  description: "An active branch_pr Task has one authoritative checkout identity; ambiguous, stale, foreign, base-only, and missing identities fail closed."
+                  description: "One authoritative checkout identity drives reads and mutations; ambiguity fails closed."
                   id: "authoritative-worktree"
                   required: true
               capabilities:
@@ -630,7 +589,7 @@ extensions:
               expected_outputs:
                 - "authoritative-worktree-identity"
               id: "projection-authoritative-worktree"
-              objective: "Resolve active branch_pr Task identity from exactly one authoritative registered worktree and bind backend reads, route observations, and mutation paths to that identity. Reject base fallback, stale hints, duplicate same-task registrations, foreign branches, and missing registrations without redirecting state."
+              objective: "Resolve active branch_pr Task identity from exactly one authoritative registered worktree and fail closed for stale, duplicate, foreign, base-only, or missing identities."
               optional: false
               priority: 0
               required_inputs: []
@@ -670,10 +629,10 @@ extensions:
                   -
                     check_ids:
                       - "authoritative-focused"
-                    description: "An active branch_pr Task has one authoritative checkout identity; ambiguous, stale, foreign, base-only, and missing identities fail closed."
+                    description: "One authoritative checkout identity drives reads and mutations; ambiguity fails closed."
                     id: "authoritative-worktree"
                     required: true
-                evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                evidence_fingerprint: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -681,7 +640,7 @@ extensions:
                   check_ids:
                     - "atomic-focused"
                     - "lifecycle"
-                  description: "Set-status, merge, and hosted close produce one revision-consistent projection or fail without partial visibility; replay is idempotent."
+                  description: "Lifecycle mutation, aggregate revision, event, and receipt persistence are atomic and replay-safe."
                   id: "atomic-reconciliation"
                   required: true
               capabilities:
@@ -702,7 +661,7 @@ extensions:
               expected_outputs:
                 - "atomic-lifecycle-reconciliation"
               id: "projection-atomic-reconciliation"
-              objective: "Use existing kernel operations and receipts to reconcile canonical and supported compatibility projections atomically after set-status, provider-proven merge, and hosted close. An interruption exposes no partial status, WorkItem, route, or provider view, and exact replay creates no duplicate transition."
+              objective: "Reconcile canonical and supported compatibility projections atomically after lifecycle mutations; interruption exposes no partial view and exact replay creates no duplicate transition."
               optional: false
               priority: 1
               required_inputs:
@@ -761,17 +720,17 @@ extensions:
                     check_ids:
                       - "atomic-focused"
                       - "lifecycle"
-                    description: "Set-status, merge, and hosted close produce one revision-consistent projection or fail without partial visibility; replay is idempotent."
+                    description: "Lifecycle mutation, aggregate revision, event, and receipt persistence are atomic and replay-safe."
                     id: "atomic-reconciliation"
                     required: true
-                evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                evidence_fingerprint: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
                 schema_version: 1
             -
               acceptance_criteria:
                 -
                   check_ids:
                     - "invalidation-focused"
-                  description: "No WorkItem or route projection derived from an older canonical or repository identity remains eligible after relevant state changes."
+                  description: "No projection from an older canonical or repository identity remains eligible after relevant state changes."
                   id: "invalidate-stale"
                   required: true
               capabilities:
@@ -792,7 +751,7 @@ extensions:
               expected_outputs:
                 - "projection-invalidation"
               id: "projection-invalidation"
-              objective: "Invalidate WorkItem summaries, route decisions, and compatibility views when canonical revision, plan binding, result receipt, repository identity, provider observation, or authoritative checkout changes, while preserving unchanged exact replay."
+              objective: "Invalidate WorkItem, route, receipt, repository, provider, and checkout projections when their canonical binding changes while preserving unchanged exact replay."
               optional: false
               priority: 2
               required_inputs:
@@ -833,17 +792,17 @@ extensions:
                   -
                     check_ids:
                       - "invalidation-focused"
-                    description: "No WorkItem or route projection derived from an older canonical or repository identity remains eligible after relevant state changes."
+                    description: "No projection from an older canonical or repository identity remains eligible after relevant state changes."
                     id: "invalidate-stale"
                     required: true
-                evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                evidence_fingerprint: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
                 schema_version: 1
             -
               acceptance_criteria:
                 -
                   check_ids:
                     - "cleanup-focused"
-                  description: "A completed branch_pr task converges to terminal projection and done queue state with no clean merged task checkout or branch; unsafe work is preserved."
+                  description: "Completed cleanup reaches terminal state with a done queue and no clean merged task checkout or branch; unsafe work is preserved."
                   id: "cleanup-converges"
                   required: true
               capabilities:
@@ -864,7 +823,7 @@ extensions:
               expected_outputs:
                 - "completed-branch-pr-cleanup-convergence"
               id: "projection-cleanup-convergence"
-              objective: "Make completed branch_pr cleanup converge from provider-proven merge or hosted-close truth after stale base synchronization. Normalize the queue, remove only clean proven task worktrees and task branches, tolerate replay, and preserve dirty, ambiguous, open, or unique work."
+              objective: "Converge completed branch_pr cleanup from fresh provider and repository truth, normalize the queue, remove only clean proven refs, preserve unsafe work, and tolerate replay."
               optional: false
               priority: 3
               required_inputs:
@@ -909,25 +868,27 @@ extensions:
                   -
                     check_ids:
                       - "cleanup-focused"
-                    description: "A completed branch_pr task converges to terminal projection and done queue state with no clean merged task checkout or branch; unsafe work is preserved."
+                    description: "Completed cleanup reaches terminal state with a done queue and no clean merged task checkout or branch; unsafe work is preserved."
                     id: "cleanup-converges"
                     required: true
-                evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                evidence_fingerprint: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
                 schema_version: 1
             -
               acceptance_criteria:
                 -
                   check_ids:
                     - "arkady-focused"
+                    - "adapter-focused"
                     - "compatibility"
+                    - "hotspots"
                     - "full"
-                  description: "The real-Git scenario cannot leave DONE visible in only one projection; terminal identities agree, replay is idempotent, queue is done, and clean merged task refs are absent."
+                  description: "Terminal identities agree, replay is idempotent, queue is done, clean merged refs are absent, and no production module exceeds the enforced limit."
                   id: "arkady-e2e"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 144000
+                max_bytes: 160000
                 optional_sources: []
                 required_sources:
                   - "repository"
@@ -936,13 +897,13 @@ extensions:
                   - "runCli"
                   - "routeTaskNextAction"
                   - "cleanupMerged"
-                  - "Arkady Factory"
+                  - "TaskCentricBackendAdapter"
               depends_on:
                 - "projection-cleanup-convergence"
               expected_outputs:
                 - "arkady-factory-stale-done-e2e"
               id: "projection-arkady-stale-done-e2e"
-              objective: "Strengthen the existing real-Git public CLI harness with the Arkady Factory stale-DONE scenario from authoritative worktree through set-status, WorkItem completion, exact replay, provider merge, hosted close, base sync, queue normalization, and cleanup to one terminal readback."
+              objective: "Complete the real-Git Arkady stale-DONE scenario and consolidate the existing task-centric backend adapter so all focused and repository-required gates pass without a compatibility layer or hotspot exception."
               optional: false
               priority: 4
               required_inputs:
@@ -972,6 +933,10 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/commands/task"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/adapters/task-backend"
               risk: "high"
               scope_roots:
                 - "packages/agentplane/src/cli"
@@ -980,19 +945,34 @@ extensions:
                 - "scripts/qualification"
                 - "scripts/checks"
                 - "packages/agentplane/src/commands/task"
+                - "packages/agentplane/src/adapters/task-backend"
               validation:
                 checks:
                   -
                     capability: "task.verify"
-                    command: "bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+                    command: "bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
                     id: "arkady-focused"
                     kind: "deterministic"
                     required: true
                     timeout_ms: 1800000
                   -
                     capability: "task.verify"
+                    command: "bunx vitest run packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+                    id: "adapter-focused"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 1200000
+                  -
+                    capability: "task.verify"
                     command: "bun run bench:compatibility:candidate:check"
                     id: "compatibility"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bun run hotspots:check"
+                    id: "hotspots"
                     kind: "deterministic"
                     required: true
                     timeout_ms: 600000
@@ -1007,17 +987,19 @@ extensions:
                   -
                     check_ids:
                       - "arkady-focused"
+                      - "adapter-focused"
                       - "compatibility"
+                      - "hotspots"
                       - "full"
-                    description: "The real-Git scenario cannot leave DONE visible in only one projection; terminal identities agree, replay is idempotent, queue is done, and clean merged task refs are absent."
+                    description: "Terminal identities agree, replay is idempotent, queue is done, clean merged refs are absent, and no production module exceeds the enforced limit."
                     id: "arkady-e2e"
                     required: true
-                evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                evidence_fingerprint: "sha256:62f0cdc8fc6f621a507ee508361620ee039087b16d65514788a4734b6591ddf7"
                 schema_version: 1
-      revision: 4
+      revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 11
+    event_cursor: 14
     final_validation: null
     id: "202609021331-5FPZAB"
     intent:
@@ -2587,9 +2569,1071 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 46
+      -
+        approval:
+          approved_at: "2026-09-02T22:10:17.708Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-02T17:51:48.788Z"
+        digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+        proposal:
+          assumptions:
+            - "M3 is terminal on main at a51e95514f2909177410f78a4057873140097edb and is immutable dependency provenance."
+            - "Existing task backend, kernel, route, hosted-close, and cleanup owners are reused; no parallel projection store is added."
+            - "Only one WorkItem is active, and every required_inputs value is an exact predecessor expected_outputs ID."
+            - "Compatibility edges and LOC remain a measured fail-closed baseline; necessary growth requires an allowlist update and focused regression."
+            - "MPXQBK and all release/version/publication work remain excluded."
+          planning_baseline:
+            captured_at: "2026-09-02T17:49:37.581Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+            dirty_paths:
+              - ".agentplane/tasks/202609021331-5FPZAB/README.md"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "939f62acc66741fe6b864ad83210eb209db658c3"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:31"
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                id: "focused"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run bench:compatibility:candidate:check"
+                id: "compatibility"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run lifecycle:invariants"
+                id: "lifecycle"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run lint:core"
+                id: "lint-core"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "routing"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "focused"
+                  - "compatibility"
+                  - "lifecycle"
+                  - "lint-core"
+                  - "typecheck"
+                  - "routing"
+                  - "full"
+                description: "All five sequential WorkItems pass and public lifecycle readback converges on one authoritative task, WorkItem, route, provider, queue, branch, and worktree state."
+                id: "projection-integrity-complete"
+                required: true
+            evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "authoritative-focused"
+                    description: "An active branch_pr Task has one authoritative checkout identity; ambiguous, stale, foreign, base-only, and missing identities fail closed."
+                    id: "authoritative-worktree"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "findWorktreeForBranch"
+                    - "resolveWorkflowWorkspace"
+                    - "readTaskBackendBranchSnapshot"
+                depends_on: []
+                expected_outputs:
+                  - "authoritative-worktree-identity"
+                id: "projection-authoritative-worktree"
+                objective: "Resolve active branch_pr Task identity from exactly one authoritative registered worktree and bind backend reads, route observations, and mutation paths to that identity. Reject base fallback, stale hints, duplicate same-task registrations, foreign branches, and missing registrations without redirecting state."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/git"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/branch"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/core/src/git"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
+                      id: "authoritative-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "authoritative-focused"
+                      description: "An active branch_pr Task has one authoritative checkout identity; ambiguous, stale, foreign, base-only, and missing identities fail closed."
+                      id: "authoritative-worktree"
+                      required: true
+                  evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                      - "lifecycle"
+                    description: "Set-status, merge, and hosted close produce one revision-consistent projection or fail without partial visibility; replay is idempotent."
+                    id: "atomic-reconciliation"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 128000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelTaskLifecycle"
+                    - "KernelBackendAdapter"
+                    - "cmdTaskSetStatus"
+                    - "reconcileHostedClose"
+                depends_on:
+                  - "projection-authoritative-worktree"
+                expected_outputs:
+                  - "atomic-lifecycle-reconciliation"
+                id: "projection-atomic-reconciliation"
+                objective: "Use existing kernel operations and receipts to reconcile canonical and supported compatibility projections atomically after set-status, provider-proven merge, and hosted close. An interruption exposes no partial status, WorkItem, route, or provider view, and exact replay creates no duplicate transition."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "authoritative-worktree-identity"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts"
+                      id: "atomic-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                        - "lifecycle"
+                      description: "Set-status, merge, and hosted close produce one revision-consistent projection or fail without partial visibility; replay is idempotent."
+                      id: "atomic-reconciliation"
+                      required: true
+                  evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "invalidation-focused"
+                    description: "No WorkItem or route projection derived from an older canonical or repository identity remains eligible after relevant state changes."
+                    id: "invalidate-stale"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 112000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "buildWorkflowStepProjections"
+                    - "routeTaskNextAction"
+                    - "stateFingerprint"
+                    - "workItem"
+                depends_on:
+                  - "projection-atomic-reconciliation"
+                expected_outputs:
+                  - "projection-invalidation"
+                id: "projection-invalidation"
+                objective: "Invalidate WorkItem summaries, route decisions, and compatibility views when canonical revision, plan binding, result receipt, repository identity, provider observation, or authoritative checkout changes, while preserving unchanged exact replay."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "atomic-lifecycle-reconciliation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+                      id: "invalidation-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                  criteria:
+                    -
+                      check_ids:
+                        - "invalidation-focused"
+                      description: "No WorkItem or route projection derived from an older canonical or repository identity remains eligible after relevant state changes."
+                      id: "invalidate-stale"
+                      required: true
+                  evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "cleanup-focused"
+                    description: "A completed branch_pr task converges to terminal projection and done queue state with no clean merged task checkout or branch; unsafe work is preserved."
+                    id: "cleanup-converges"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 128000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "cleanupMerged"
+                    - "resolveTargetedCleanupProof"
+                    - "normalizeIntegrationQueueEntry"
+                    - "sync_hosted_close"
+                depends_on:
+                  - "projection-invalidation"
+                expected_outputs:
+                  - "completed-branch-pr-cleanup-convergence"
+                id: "projection-cleanup-convergence"
+                objective: "Make completed branch_pr cleanup converge from provider-proven merge or hosted-close truth after stale base synchronization. Normalize the queue, remove only clean proven task worktrees and task branches, tolerate replay, and preserve dirty, ambiguous, open, or unique work."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "projection-invalidation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-queue"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/branch"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/pr"
+                  - "packages/agentplane/src/cli"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
+                      id: "cleanup-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                  criteria:
+                    -
+                      check_ids:
+                        - "cleanup-focused"
+                      description: "A completed branch_pr task converges to terminal projection and done queue state with no clean merged task checkout or branch; unsafe work is preserved."
+                      id: "cleanup-converges"
+                      required: true
+                  evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "arkady-focused"
+                      - "compatibility"
+                      - "full"
+                    description: "The real-Git scenario cannot leave DONE visible in only one projection; terminal identities agree, replay is idempotent, queue is done, and clean merged task refs are absent."
+                    id: "arkady-e2e"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 144000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "runCli"
+                    - "routeTaskNextAction"
+                    - "cleanupMerged"
+                    - "Arkady Factory"
+                depends_on:
+                  - "projection-cleanup-convergence"
+                expected_outputs:
+                  - "arkady-factory-stale-done-e2e"
+                id: "projection-arkady-stale-done-e2e"
+                objective: "Strengthen the existing real-Git public CLI harness with the Arkady Factory stale-DONE scenario from authoritative worktree through set-status, WorkItem completion, exact replay, provider merge, hosted close, base sync, queue normalization, and cleanup to one terminal readback."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "completed-branch-pr-cleanup-convergence"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/branch"
+                  - "scripts/qualification"
+                  - "scripts/checks"
+                  - "packages/agentplane/src/commands/task"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+                      id: "arkady-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:compatibility:candidate:check"
+                      id: "compatibility"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "arkady-focused"
+                        - "compatibility"
+                        - "full"
+                      description: "The real-Git scenario cannot leave DONE visible in only one projection; terminal identities agree, replay is idempotent, queue is done, and clean merged task refs are absent."
+                      id: "arkady-e2e"
+                      required: true
+                  evidence_fingerprint: "sha256:2f7436364f04d4a27d97241bc901f0a75c40f2ca9d21c3e0e6301f362f50022f"
+                  schema_version: 1
+        revision: 4
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      -
+        approval:
+          approved_at: null
+          approved_by: null
+          approved_digest: null
+          policy_facts: []
+          state: "rejected"
+        created_at: "2026-09-02T23:05:25.130Z"
+        digest: "sha256:0400fd1e8ff048ccf14f446cc2f85f3c5ddf5f66c2bb9d0ac51830769161a572"
+        proposal:
+          assumptions:
+            - "M3 is immutable dependency provenance."
+            - "Existing task backend, kernel, route, hosted-close, and cleanup owners remain authoritative; no parallel projection store is added."
+            - "Only one WorkItem is active and each required input exactly names its predecessor output."
+            - "Compatibility growth remains fail-closed and requires a focused regression."
+            - "MPXQBK and release, version, and package publication work remain excluded."
+          planning_baseline:
+            captured_at: "2026-09-02T23:02:17.369Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+            dirty_paths:
+              - ".agentplane/tasks/202609021331-5FPZAB/README.md"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609021331-5FPZAB/supervision/implementation-evidence.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "944c8f81d30e4751abbb0d4d99edac62b684cd18"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:50"
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                id: "focused"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run bench:compatibility:candidate:check"
+                id: "compatibility"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run lifecycle:invariants"
+                id: "lifecycle"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run hotspots:check"
+                id: "hotspots"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run lint:core"
+                id: "lint-core"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "routing"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "focused"
+                  - "compatibility"
+                  - "lifecycle"
+                  - "hotspots"
+                  - "lint-core"
+                  - "typecheck"
+                  - "routing"
+                  - "full"
+                description: "All five sequential WorkItems pass; exact-head verification, evaluation, integration, fresh-main readback, hosted close, and cleanup converge on one authoritative terminal state."
+                id: "projection-integrity-complete"
+                required: true
+            evidence_fingerprint: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "authoritative-focused"
+                    description: "One authoritative checkout identity drives reads and mutations; ambiguity fails closed."
+                    id: "authoritative-worktree"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 96000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "findWorktreeForBranch"
+                    - "resolveWorkflowWorkspace"
+                    - "readTaskBackendBranchSnapshot"
+                depends_on: []
+                expected_outputs:
+                  - "authoritative-worktree-identity"
+                id: "projection-authoritative-worktree"
+                objective: "Resolve active branch_pr Task identity from exactly one authoritative registered worktree and fail closed for stale, duplicate, foreign, base-only, or missing identities."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/git"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/branch"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/core/src/git"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
+                      id: "authoritative-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "authoritative-focused"
+                      description: "One authoritative checkout identity drives reads and mutations; ambiguity fails closed."
+                      id: "authoritative-worktree"
+                      required: true
+                  evidence_fingerprint: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                      - "lifecycle"
+                    description: "Lifecycle mutation, aggregate revision, event, and receipt persistence are atomic and replay-safe."
+                    id: "atomic-reconciliation"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 128000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "KernelTaskLifecycle"
+                    - "KernelBackendAdapter"
+                    - "cmdTaskSetStatus"
+                    - "reconcileHostedClose"
+                depends_on:
+                  - "projection-authoritative-worktree"
+                expected_outputs:
+                  - "atomic-lifecycle-reconciliation"
+                id: "projection-atomic-reconciliation"
+                objective: "Reconcile canonical and supported compatibility projections atomically after lifecycle mutations; interruption exposes no partial view and exact replay creates no duplicate transition."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "authoritative-worktree-identity"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/backends/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/backends/task-backend"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts"
+                      id: "atomic-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                  criteria:
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                        - "lifecycle"
+                      description: "Lifecycle mutation, aggregate revision, event, and receipt persistence are atomic and replay-safe."
+                      id: "atomic-reconciliation"
+                      required: true
+                  evidence_fingerprint: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "invalidation-focused"
+                    description: "No projection from an older canonical or repository identity remains eligible after relevant state changes."
+                    id: "invalidate-stale"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 112000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "buildWorkflowStepProjections"
+                    - "routeTaskNextAction"
+                    - "stateFingerprint"
+                    - "workItem"
+                depends_on:
+                  - "projection-atomic-reconciliation"
+                expected_outputs:
+                  - "projection-invalidation"
+                id: "projection-invalidation"
+                objective: "Invalidate WorkItem, route, receipt, repository, provider, and checkout projections when their canonical binding changes while preserving unchanged exact replay."
+                optional: false
+                priority: 2
+                required_inputs:
+                  - "atomic-lifecycle-reconciliation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
+                      id: "invalidation-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                  criteria:
+                    -
+                      check_ids:
+                        - "invalidation-focused"
+                      description: "No projection from an older canonical or repository identity remains eligible after relevant state changes."
+                      id: "invalidate-stale"
+                      required: true
+                  evidence_fingerprint: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "cleanup-focused"
+                    description: "Completed cleanup reaches terminal state with a done queue and no clean merged task checkout or branch; unsafe work is preserved."
+                    id: "cleanup-converges"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 128000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "cleanupMerged"
+                    - "resolveTargetedCleanupProof"
+                    - "normalizeIntegrationQueueEntry"
+                    - "sync_hosted_close"
+                depends_on:
+                  - "projection-invalidation"
+                expected_outputs:
+                  - "completed-branch-pr-cleanup-convergence"
+                id: "projection-cleanup-convergence"
+                objective: "Converge completed branch_pr cleanup from fresh provider and repository truth, normalize the queue, remove only clean proven refs, preserve unsafe work, and tolerate replay."
+                optional: false
+                priority: 3
+                required_inputs:
+                  - "projection-invalidation"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/pr"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "provider_queue"
+                    mode: "exclusive"
+                    resource: "integration-queue"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/branch"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/pr"
+                  - "packages/agentplane/src/cli"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
+                      id: "cleanup-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                  criteria:
+                    -
+                      check_ids:
+                        - "cleanup-focused"
+                      description: "Completed cleanup reaches terminal state with a done queue and no clean merged task checkout or branch; unsafe work is preserved."
+                      id: "cleanup-converges"
+                      required: true
+                  evidence_fingerprint: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "arkady-focused"
+                      - "adapter-focused"
+                      - "compatibility"
+                      - "hotspots"
+                      - "full"
+                    description: "Terminal identities agree, replay is idempotent, queue is done, clean merged refs are absent, and no production module exceeds the enforced limit."
+                    id: "arkady-e2e"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 160000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                  symbol_hints:
+                    - "runCli"
+                    - "routeTaskNextAction"
+                    - "cleanupMerged"
+                    - "TaskCentricBackendAdapter"
+                depends_on:
+                  - "projection-cleanup-convergence"
+                expected_outputs:
+                  - "arkady-factory-stale-done-e2e"
+                id: "projection-arkady-stale-done-e2e"
+                objective: "Complete the real-Git Arkady stale-DONE scenario and consolidate the existing task-centric backend adapter so all focused and repository-required gates pass without a compatibility layer or hotspot exception."
+                optional: false
+                priority: 4
+                required_inputs:
+                  - "completed-branch-pr-cleanup-convergence"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/qualification"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/branch"
+                  - "scripts/qualification"
+                  - "scripts/checks"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/adapters/task-backend"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
+                      id: "arkady-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest run packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+                      id: "adapter-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:compatibility:candidate:check"
+                      id: "compatibility"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run hotspots:check"
+                      id: "hotspots"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "arkady-focused"
+                        - "adapter-focused"
+                        - "compatibility"
+                        - "hotspots"
+                        - "full"
+                      description: "Terminal identities agree, replay is idempotent, queue is done, clean merged refs are absent, and no production module exceeds the enforced limit."
+                      id: "arkady-e2e"
+                      required: true
+                  evidence_fingerprint: "sha256:d163abfb3be35bee72a5c8d910fe4216f949214754ec3b60fee33a573893ab2f"
+                  schema_version: 1
+        revision: 5
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+    revision: 56
     schema_version: 1
-    updated_at: "2026-09-02T22:30:11.619Z"
+    updated_at: "2026-09-03T15:19:28.806Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 0
@@ -2601,175 +3645,91 @@ extensions:
         state: "PLANNED"
         validation_result: null
       projection-atomic-reconciliation:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "projection-atomic-reconciliation"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:bd577887b7c9f870750a5516ac050b69137d8d3e0edb9ad1f814927da8d55590"
-            id: "atomic-lifecycle-reconciliation"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 4
-              task_id: "202609021331-5FPZAB"
-              work_item_id: "projection-atomic-reconciliation"
-            provenance:
-              - "sha256:57b11ee59294a676b19172fe9ced508370d4dca13b12be90dfa56ddf4a4ea887"
-              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:10d4032592d12dac5092ff961cae0000df60f635868ed1b15939eaaa4eeb5216"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-              check_id: "atomic-focused"
-              command_identity: "bunx vitest run packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts"
-              detail: "Observed by bunx vitest run packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-02T22:21:17.711Z"
-              repository_snapshot_digest: "sha256:10d4032592d12dac5092ff961cae0000df60f635868ed1b15939eaaa4eeb5216"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-              check_id: "lifecycle"
-              command_identity: "bun run lifecycle:invariants"
-              detail: "Observed by bun run lifecycle:invariants."
-              exit_code: 0
-              observed_at: "2026-09-02T22:21:17.711Z"
-              repository_snapshot_digest: "sha256:10d4032592d12dac5092ff961cae0000df60f635868ed1b15939eaaa4eeb5216"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
       projection-authoritative-worktree:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "projection-authoritative-worktree"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:9fcb15d2498bf0b8a3d514332f05d2bc4a0eb1061dc360e8b766ac9a4067a992"
-            id: "authoritative-worktree-identity"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 4
-              task_id: "202609021331-5FPZAB"
-              work_item_id: "projection-authoritative-worktree"
-            provenance:
-              - "sha256:c2c68c97d8111c2e05a95662ff190e9fad83b3d768e8e364ddbfdbe8aba30b21"
-              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:6f0c3969cac3a9aac919d98d755102f1c31152d6c569950b5b0b6b56cc8b9cd4"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-              check_id: "authoritative-focused"
-              command_identity: "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
-              detail: "Observed by bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-02T22:12:50.352Z"
-              repository_snapshot_digest: "sha256:6f0c3969cac3a9aac919d98d755102f1c31152d6c569950b5b0b6b56cc8b9cd4"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
       projection-cleanup-convergence:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "projection-cleanup-convergence"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:bd0289dd9029dfff07bc9eed5909c021bad419ee715fa2e782018addb1dea95b"
-            id: "completed-branch-pr-cleanup-convergence"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 4
-              task_id: "202609021331-5FPZAB"
-              work_item_id: "projection-cleanup-convergence"
-            provenance:
-              - "sha256:3a8802d540e6b1665d2ad402e461d030280eda6b6235506b9e744d78704ce106"
-              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:5af20b79d48fb87ea2ced25445922a4b1707bd7ed040c381109aa93d1d688d8b"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-              check_id: "cleanup-focused"
-              command_identity: "bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts"
-              detail: "Observed by bunx vitest run packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-rebase.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-receipt.test.ts packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.test.ts packages/agentplane/src/commands/branch/cleanup-merged.batch.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-02T22:30:11.603Z"
-              repository_snapshot_digest: "sha256:5af20b79d48fb87ea2ced25445922a4b1707bd7ed040c381109aa93d1d688d8b"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
       projection-invalidation:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "projection-invalidation"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:aee1dc3cae34f5951e4efab02ac770cd8e1456da2df58ccfe6bd260b18b96a09"
-            id: "projection-invalidation"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 4
-              task_id: "202609021331-5FPZAB"
-              work_item_id: "projection-invalidation"
-            provenance:
-              - "sha256:d9cf05ed3893ec1861c5fde6c8ab621ae823c694c6033d385f9f27ab7396b6bc"
-              - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:52b95e90179b3ebe14f5701f8e34b7bce40ab0b20e97fd0d140735af56c69a9b"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json"
-              check_id: "invalidation-focused"
-              command_identity: "bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts"
-              detail: "Observed by bunx vitest run packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.verification.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-02T22:24:57.375Z"
-              repository_snapshot_digest: "sha256:52b95e90179b3ebe14f5701f8e34b7bce40ab0b20e97fd0d140735af56c69a9b"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
+    events:
+      -
+        at: "2026-09-03T14:40:59.428Z"
+        from: "AWAITING_PLAN_APPROVAL"
+        to: "PLANNING"
+        actor_id: "USER"
+        cause_refs:
+          - "projection-recovery:plan-rejection"
+          - "readme-revision:52"
+          - "aggregate-revision:50"
+          - "state-fingerprint:sha256:707b2466467d82fc5b3b7a12082e832d1e5871a85868b3be07a0ce31385a1fc6"
+          - "note:sha256:64f738394a2cea3bb282ad91813a73a523d18fc64ac980e6706aec58c1de7b92"
+        entity: "task"
+        id: "event_7ae4b8030abbe4145affbd37"
+        mutation_id: "plan-rejection-recovery-39a26db04a6d03957c22021b5eafc784"
+        plan_digest: "sha256:0400fd1e8ff048ccf14f446cc2f85f3c5ddf5f66c2bb9d0ac51830769161a572"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+        task_revision: 50
+        work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:0e0d6f55aed87d77da7abc32b815a65270ab68eaeb1437d7ac67dadab901e306:
+        aggregate_digest: "sha256:67ef71dd6dbacaeba12411b61710a4b7ad799843082c1338c27428267b6fe808"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T14:44:50.717Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "PLANNING"
+          id: "event_399c451c1bb3ce240af60cbd"
+          mutation_id: "compatibility:sha256:0e0d6f55aed87d77da7abc32b815a65270ab68eaeb1437d7ac67dadab901e306"
+          plan_digest: "sha256:0400fd1e8ff048ccf14f446cc2f85f3c5ddf5f66c2bb9d0ac51830769161a572"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 53
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0e0d6f55aed87d77da7abc32b815a65270ab68eaeb1437d7ac67dadab901e306"
+        next_revision: 54
+        previous_revision: 53
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       compatibility:sha256:11d1a8000dbf3c03f2b99ed1f885b99bf234d6430ca2fd66eb9c5022ad471665:
         aggregate_digest: "sha256:340e5ce29c243196c8af22e2120e15c8bf13888ee3cbcba6209f351b9a417b71"
         event:
@@ -2816,6 +3776,30 @@ extensions:
         mutation_id: "compatibility:sha256:17d4ac0dad16c93a4b89b37ce3098bca1d9d41590157b6db28d4223e243ba1e8"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:22965c2bb2c1887acdfae79071bba8939d3e9fb82e33cb3b1fe61213ecf849f0:
+        aggregate_digest: "sha256:87c1b41d68c281a293d2215bd4b4e08c20162e0fbae5e001d95369bbf7b3fd61"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T15:19:28.806Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_51d41c7eb835a11c47cf8170"
+          mutation_id: "compatibility:sha256:22965c2bb2c1887acdfae79071bba8939d3e9fb82e33cb3b1fe61213ecf849f0"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 55
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:22965c2bb2c1887acdfae79071bba8939d3e9fb82e33cb3b1fe61213ecf849f0"
+        next_revision: 56
+        previous_revision: 55
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:3b14bf123960f633b9de9d1e11b610212c646c3f5737a5d74be0c2372e4ad482:
@@ -3126,6 +4110,29 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      external-result:work-order-202609021331-5FPZAB-executor-5b98f2a970d1e6b52ece77b3:
+        aggregate_digest: "sha256:9a0c81a8661bb24d91a38f5c312c8d4152b9f0d6d98c632b28c19f977565eda6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-02T23:01:02.356Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_1057d16b401ad796fb3216ce"
+          mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-5b98f2a970d1e6b52ece77b3"
+          plan_digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 48
+          to: "REWORK_READY"
+          work_item_id: "projection-arkady-stale-done-e2e"
+        mutation_id: "external-result:work-order-202609021331-5FPZAB-executor-5b98f2a970d1e6b52ece77b3"
+        next_revision: 49
+        previous_revision: 48
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       external-result:work-order-202609021331-5FPZAB-executor-5c8bb03cec254489b2112765:
         aggregate_digest: "sha256:f669abd6993850d4700faa10de854637ed1662cf73a725447c60c27d7f7038e3"
         event:
@@ -3264,6 +4271,30 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      plan-refinement:work-order-202609021331-5FPZAB-executor-66e6b4ac77f4d85e120d0a0c:
+        aggregate_digest: "sha256:751fe09129f59fbc68f01247e32b0b3da0bc63337982a34449ebbbcb361d42ad"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-02T23:02:15.794Z"
+          cause_refs:
+            - "scope_expanded"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7c8319a6e68ab8fe0d9ffd6b"
+          mutation_id: "plan-refinement:work-order-202609021331-5FPZAB-executor-66e6b4ac77f4d85e120d0a0c"
+          plan_digest: "sha256:8f09961c6fb81eb30a102705168a252b920e1d1412db49b677e7bd5683686081"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 49
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609021331-5FPZAB-executor-66e6b4ac77f4d85e120d0a0c"
+        next_revision: 50
+        previous_revision: 49
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
       plan-refinement:work-order-202609021331-5FPZAB-executor-8ee49119abba4bbc913a762f:
         aggregate_digest: "sha256:5f838ac03a3fe36d22929d3bc6c6014b4aa43242f8e6c132d1d36134ae83c352"
         event:
@@ -3312,11 +4343,39 @@ extensions:
         previous_revision: 30
         schema_version: 1
         task_id: "202609021331-5FPZAB"
+      plan-rejection-recovery-39a26db04a6d03957c22021b5eafc784:
+        aggregate_digest: "sha256:314db200e05b36e10bf86625d1a97eb016960fe8221a3ddcefd1f4b364312c99"
+        event:
+          actor_id: "USER"
+          at: "2026-09-03T14:40:59.428Z"
+          cause_refs:
+            - "projection-recovery:plan-rejection"
+            - "readme-revision:52"
+            - "aggregate-revision:50"
+            - "state-fingerprint:sha256:707b2466467d82fc5b3b7a12082e832d1e5871a85868b3be07a0ce31385a1fc6"
+            - "note:sha256:64f738394a2cea3bb282ad91813a73a523d18fc64ac980e6706aec58c1de7b92"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_7ae4b8030abbe4145affbd37"
+          mutation_id: "plan-rejection-recovery-39a26db04a6d03957c22021b5eafc784"
+          plan_digest: "sha256:0400fd1e8ff048ccf14f446cc2f85f3c5ddf5f66c2bb9d0ac51830769161a572"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 50
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-rejection-recovery-39a26db04a6d03957c22021b5eafc784"
+        next_revision: 53
+        previous_revision: 50
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "143095a470a5f341d8d580bfdb839f3056feb5e1"
+    hash: "944c8f81d30e4751abbb0d4d99edac62b684cd18"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
@@ -3341,7 +4400,7 @@ After M3 is integrated, repair the demonstrated lifecycle projection-integrity g
 
 ## Plan
 
-Rebuilt the approved five-stage plan with the same strict order and task-specific checks, adding commands/task only to the fifth WorkItem resource claim so its full-CI rework is authorized.
+Reissued the five-stage projection-integrity plan with authority closure corrected for every existing WorkItem scope and resource claim; order, typed chaining, verification, and exclusions are unchanged.
 
 ## Verify Steps
 
