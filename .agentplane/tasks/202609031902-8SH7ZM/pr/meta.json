@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:447c7435e0662d46fc1cfc3496f515db478e7791822713f4ca88bd7cbe2e7525",
   "pr_number": 5891,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5891",
+  "pre_merge_closure": {
+    "basis_commit": "1772e8a6974108c4f37a9b85d1cf178e6cfe3312",
+    "branch": "task/202609031902-8SH7ZM/repair-plan-amendment-verify-steps-projection-ro",
+    "pr_number": 5891,
+    "recorded_at": "2026-09-03T20:41:34.086Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
