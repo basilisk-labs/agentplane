@@ -26,6 +26,7 @@ import {
 } from "./quality-review-retirement.js";
 import {
   hasAcceptedVerificationForCurrentImplementation,
+  qualityReviewPredatesTaskDocument,
   qualityReviewRequiresImplementationRework,
   qualityReworkHasNewVerification,
   verificationReworkHasNewImplementation,
@@ -465,6 +466,13 @@ export async function deriveBlockers(opts: {
         blockers,
         "implementation_rework_required",
         "implementation rework is required before PR publication or integration",
+      );
+    }
+    if (taskIsDoing && qualityReviewPredatesTaskDocument(opts.task)) {
+      addBlocker(
+        blockers,
+        "quality_review_stale",
+        "task document changed after the latest EVALUATOR result; request a fresh semantic review",
       );
     }
     if (

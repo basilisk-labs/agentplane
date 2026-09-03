@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202609031902-8SH7ZM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-03T20:31:09.975Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 4 typed finding(s).",
+  "evaluated_sha": "7395512128320b38054c39ddb8446da03cc35993",
+  "blueprint_digest": "987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86",
+  "findings": [
+    "The source diff implements atomic projection, receipt-first replay, stale-review invalidation, and fresh evaluator routing within the approved scope.",
+    "All declared local checks pass, including ci:local:full.",
+    "The current task README still contains 'PLANNER fallback scaffold', so acceptance-2 is not yet satisfied.",
+    "Residual risk: Closing now would leave the exact authoritative-document defect present in the recovery task itself."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Do not change implementation. Return a non-material plan_refinement with operation clarify so AgentPlane projects the already approved task-specific validation contract into Verify Steps, removes the fallback scaffold atomically, invalidates this evaluator packet, and emits a fresh EVALUATOR packet."
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609031902-8SH7ZM-9be8355cb4d08f7e7e8660d9",
+  "prepared_at": "2026-09-03T20:29:52.518Z",
+  "task": {
+    "id": "202609031902-8SH7ZM",
+    "revision": 21,
+    "objective": "Repair plan-amendment Verify Steps projection routing\n\nFix the AgentPlane invariant where a task-specific plan amendment is persisted but sections.Verify Steps remains a PLANNER fallback scaffold, causing EVALUATOR rework to loop into code-only EXECUTOR authority that excludes protected task projections. Materialize accepted task-specific verification amendments atomically into the authoritative task document, invalidate stale evaluator/context packets, and route document-level rework to PLANNER or the AgentPlane-owned projection owner before emitting a fresh EVALUATOR packet. Add focused replay, idempotency, authority-closure, projection, stale-packet, and impossible-loop regressions. Do not grant ordinary EXECUTOR episodes access to .agentplane/tasks, weaken quality gates, hand-edit PX8PZT state, or touch release/version/publication/dependency scope.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run lifecycle:invariants",
+      "bun run lint:core",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Fix the AgentPlane invariant where a task-specific plan amendment is persisted but sections.Verify Steps remains a PLANNER fallback scaffold, causing EVALUATOR rework to loop into code-only EXECUTOR authority that excludes protected task projections. Materialize accepted task-specific verification amendments atomically into the authoritative task document, invalidate stale evaluator/context packets, and route document-level rework to PLANNER or the AgentPlane-owned projection owner before emitting a fresh EVALUATOR packet. Add focused replay, idempotency, authority-closure, projection, stale-packet, and impossible-loop regressions. Do not grant ordinary EXECUTOR episodes access to .agentplane/tasks, weaken quality gates, hand-edit PX8PZT state, or touch release/version/publication/dependency scope.\n- Out of scope: unrelated refactors not required for \"Repair plan-amendment Verify Steps projection routing\".",
+      "Refined the three-stage recovery plan so every WorkItem validation command is an exact declared Task check, while preserving commit 57487e09cfbd905e2dda2e16dd240905367ddb1d and assigning the stale CLI fixture correction only to the WorkItem that already owns packages/agentplane/src/cli.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run lint:core`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run lifecycle:invariants`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "7395512128320b38054c39ddb8446da03cc35993",
+  "diff_base_sha": "65625c1a19230dd1ca73e87f31a1b975c5363b54",
+  "blueprint_digest": "987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2b219a9b750ad077c403f8d18dc079ae0089564cd4e9e2becb11b63a364eedb0",
+    "prompt_path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/e94e56ee374989535e6ebc92d6166c283531b932ec7dd2e7dcd904c5abb7b6cb.md",
+    "result_schema_path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609031902-8SH7ZM/README.md",
+      "sha256": "sha256:26e38d859c6fa6854691cde76db75d6046279c830aec5d5f226b4063b5002d3c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch",
+      "sha256": "sha256:a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/c438b1bb65d06ae180b916b15305baa8f98779245f74fbc300ea420ee821812f.json",
+      "sha256": "sha256:c438b1bb65d06ae180b916b15305baa8f98779245f74fbc300ea420ee821812f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609031902-8SH7ZM/verification/20260903202946053-a6bdc341db234dcf.json",
+      "sha256": "sha256:4a9b2e847ccf6ba259058d644e0604971e9d071dd0d54aac8da76668f05c6434",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/34d93b299b7f6aeb06593326a7d00f9e329c15c8fe759c0d4bca0cbb97b53d11.json",
+      "sha256": "sha256:34d93b299b7f6aeb06593326a7d00f9e329c15c8fe759c0d4bca0cbb97b53d11",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

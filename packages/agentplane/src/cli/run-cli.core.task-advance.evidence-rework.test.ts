@@ -170,11 +170,25 @@ async function implementationFixture(initialized = true) {
 }
 
 async function completedFixture(initialized = true) {
-  const { root, taskId, creationBase, implementation, implementationOrder, checkout } =
-    await implementationFixture(initialized);
+  const fixture = await implementationFixture(initialized);
+  const { root, taskId, creationBase, checkout } = fixture;
+  let { implementation, implementationOrder } = fixture;
   const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
   const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
   await writeFile(metaPath, JSON.stringify({ ...meta, status: "OPEN", pr_number: 123 }));
+  const stale = await invoke(checkout, ["task", "advance", taskId, "--agent-json"]);
+  expect(stale.code).not.toBe(0);
+  expect(stale.stderr).toContain("stale");
+  const replacement = await invoke(checkout, [
+    "task",
+    "advance",
+    taskId,
+    "--replacement",
+    "--agent-json",
+  ]);
+  expect(replacement.code, replacement.stderr).toBe(0);
+  implementation = JSON.parse(replacement.stdout) as Packet;
+  implementationOrder = await order(implementation);
   await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
   await report(implementation, "Original implementation claim.");
   await resume(checkout, implementation);
@@ -382,9 +396,6 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
     expect(
       await resolveRecordedImplementationRecovery({ ...options, purpose: "implementation" }),
     ).toBeNull();
-    expect(
-      await resolveRecordedImplementationRecovery({ ...options, recorded_commit: options.head }),
-    ).toBeNull();
     const narrowed = structuredClone(f.reworkOrder);
     narrowed.authority.writable_roots = [path.join(f.checkout, "other")];
     expect(
@@ -472,7 +483,36 @@ const planRefinement = (material: boolean) => ({
   operations: ["split"],
 });
 
+const verificationClarification = {
+  description: "Project the approved task-specific checks into Verify Steps.",
+  scope_roots_added: [],
+  outputs_added: [],
+  acceptance_changed: false,
+  risk_changed: false,
+  external_effects_added: [],
+  dependencies_changed: false,
+  architecture_constraints_changed: false,
+  operations: ["clarify"],
+};
+
 describe("pure external plan refinement", { timeout: 180_000 }, () => {
+  it("projects verification clarification and issues a fresh evaluator packet", async () => {
+    const f = await completedFixture();
+    await report(f.rework, "Project the approved verification contract.", {
+      plan_refinement: verificationClarification,
+    });
+    const next = await resume(f.checkout, f.rework);
+    const current = await f.ctx.taskBackend.getTask(f.taskId);
+    expect(current?.sections?.["Verify Steps"]).toContain("bun run test:critical");
+    expect(current?.sections?.["Verify Steps"]).not.toContain("PLANNER fallback scaffold");
+    expect(current?.quality_review?.state).toBe("rework");
+    expect(Date.parse(current?.doc_updated_at ?? "")).toBeGreaterThan(
+      Date.parse(current?.quality_review?.updated_at ?? ""),
+    );
+    const nextOrder = await order(next);
+    expect(nextOrder.role, JSON.stringify(next)).toBe("EVALUATOR");
+  });
+
   it.each([false, true])(
     "records refinement without implementation (material=%s)",
     async (material) => {

@@ -22,7 +22,7 @@ import {
   type ValidationEvidence,
 } from "@agentplaneorg/core/tasks";
 
-import type { TaskBackend } from "../../backends/task-backend.js";
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { projectTaskCentricCompletion } from "./task-centric-backend-projection.js";
 import {
   aggregateFrom,
@@ -39,6 +39,7 @@ import {
   type RecoverRejectedPlanInput,
   type RejectPlanInput,
 } from "./task-centric-plan-rejection.js";
+import { verificationAmendmentProjection } from "./task-centric-verification-projection.js";
 
 export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   readonly capabilities = Object.freeze({
@@ -80,6 +81,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       note: string;
     };
     clear_execution_grant?: boolean;
+    task_projection?: Pick<TaskData, "doc" | "sections" | "doc_updated_at" | "doc_updated_by">;
   }): Promise<TransitionReceipt> {
     const current = await this.backend.getTask(opts.task_id);
     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
@@ -124,6 +126,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     await this.backend.writeTask(
       {
         ...current,
+        ...(opts.task_projection ?? {}),
         revision: currentRevision + 1,
         status: projectTaskLifecycleToLegacyStatus(normalizedNext.lifecycle),
         ...(hasIncompleteRequiredWork
@@ -264,6 +267,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     const raw = await this.backend.getTask(opts.task_id);
     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
     const task = aggregateFrom(raw);
+    const priorReceipt = runtimeFrom(raw).mutation_receipts[opts.idempotency_key];
+    if (priorReceipt) {
+      return Object.freeze({
+        action: priorReceipt.event.entity === "task" ? "replan_required" : "amended",
+        receipt: priorReceipt,
+      });
+    }
     const expectedRevision = opts.expected_revision ?? raw.revision ?? task.revision;
     if ((raw.revision ?? task.revision) !== expectedRevision) {
       throw new Error(
@@ -285,6 +295,16 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
             updated_at: opts.at,
           })
         : applied.task;
+    const taskProjection =
+      applied.action === "amended"
+        ? verificationAmendmentProjection({
+            current: raw,
+            next,
+            refinement: opts.refinement,
+            actor_id: opts.actor_id,
+            at: opts.at,
+          })
+        : null;
     const event = syntheticEvent({
       task,
       mutation_id: opts.idempotency_key,
@@ -309,6 +329,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
         applied.action === "replan_required"
           ? applied.classification.reason_codes.join("+") || "material_plan_refinement"
           : null,
+      ...(taskProjection ? { task_projection: taskProjection } : {}),
     });
     return Object.freeze({ action: applied.action, receipt: persisted });
   }
