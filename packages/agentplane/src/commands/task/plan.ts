@@ -42,8 +42,6 @@ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.
 import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
 
-export { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
-
 export type TaskPlanSetResult = {
   taskId: string;
   readmePath: string;

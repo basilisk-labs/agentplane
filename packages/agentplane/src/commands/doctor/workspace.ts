@@ -13,10 +13,7 @@ import {
   checkTaskCentricProjectionIntegrityState,
 } from "./workspace-task-state.js";
 
-export {
-  checkTaskReadmeMigrationState,
-  checkTaskCentricProjectionIntegrityState,
-} from "./workspace-task-state.js";
+export { checkTaskReadmeMigrationState } from "./workspace-task-state.js";
 
 async function pathExists(absPath: string): Promise<boolean> {
   try {
