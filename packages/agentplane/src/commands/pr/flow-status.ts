@@ -20,7 +20,7 @@ import {
   preMergeClosureBasisIsAncestor,
   taskIsClosedByPreMergeClosure,
 } from "../task/hosted-close.command.js";
-import { readTaskHandoffLatest, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
+import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
 import {
   readIntegrationQueue,
   type IntegrationQueueEntry,
@@ -236,14 +236,9 @@ async function resolveHandoffStatus(opts: {
   gitRoot: string;
   workflowDir: string;
   taskId: string;
+  baseBranch: string;
 }): Promise<HandoffStatus> {
-  const handoff = await readTaskHandoffLatest(
-    resolveTaskHandoffPaths({
-      git_root: opts.gitRoot,
-      workflow_dir: opts.workflowDir,
-      task_id: opts.taskId,
-    }),
-  );
+  const handoff = await readTaskHandoffForTask({ ...opts, workflowMode: "branch_pr" });
   if (!handoff) return { present: false };
   const providerBaseSha = trimmed(handoff.route?.provider_base_sha);
   const routeProviderBaseShaState =
@@ -531,6 +526,7 @@ export async function resolvePrFlowStatus(opts: {
       gitRoot: resolved.gitRoot,
       workflowDir: config.paths.workflow_dir,
       taskId: task.id,
+      baseBranch,
     }),
   ]);
   const report: PrFlowStatusReport = {
