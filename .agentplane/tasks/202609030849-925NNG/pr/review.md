@@ -6,7 +6,7 @@ Created: 2026-09-03T08:57:33.898Z
 
 - Task: `202609030849-925NNG`
 - Title: Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-...
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609030849-925NNG/repair-task-centric-plan-rejection-projection-at`
 - Canonical task record: `.agentplane/tasks/202609030849-925NNG/README.md`
 

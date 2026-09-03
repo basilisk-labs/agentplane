@@ -1,1 +1,1 @@
-🚧 925NNG task: Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB ... [202609030849-925NNG]
+✅ 925NNG task: Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB ... [202609030849-925NNG]
