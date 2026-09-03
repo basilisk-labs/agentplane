@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 65625c1a19230dd1ca73e87f31a1b975c5363b54..ee67f20fdba5934ae7302446a5644e1bde7ec3c6",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 65625c1a19230dd1ca73e87f31a1b975c5363b54..ee67f20fdba5934ae7302446a5644e1bde7ec3c6",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609031717-PX8PZT/README.md",
+        "A\t.agentplane/tasks/202609031717-PX8PZT/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609031717-PX8PZT/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609031717-PX8PZT/pr/github-body.md",
+        "A\t.agentplane/tasks/202609031717-PX8PZT/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609031717-PX8PZT/pr/meta.json",
+        "A\t.agentplane/tasks/202609031717-PX8PZT/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-handoff.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/flow-status.ts",
+        "A\tpackages/agentplane/src/commands/shared/task-handoff-reader.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/task-handoff-reader.ts",
+        "M\tpackages/agentplane/src/commands/task/handoff-show.command.ts",
+        "M\tpackages/agentplane/src/commands/task/handoff.shared.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "65625c1a19230dd1ca73e87f31a1b975c5363b54",
+  "implementation_commit": "ee67f20fdba5934ae7302446a5644e1bde7ec3c6",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609031717-PX8PZT/README.md",
+      "?? .agentplane/tasks/202609031717-PX8PZT/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/github-body.md",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/github-title.txt",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/meta.json",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609031717-PX8PZT/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609031717-PX8PZT/README.md",
+      "?? .agentplane/tasks/202609031717-PX8PZT/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/github-body.md",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/github-title.txt",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/meta.json",
+      "?? .agentplane/tasks/202609031717-PX8PZT/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609031717-PX8PZT"
+}
