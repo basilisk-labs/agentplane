@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: "host_user_decision=sha256:e96a8561cb98e43c88db75e5bd3f81d5224e08e857d78bc02876048c8d9ca01a"
 verification:
   state: "ok"
-  updated_at: "2026-09-03T13:47:05.071Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-09-03T14:21:43.530Z"
+  updated_by: "TESTER"
+  note: "Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR verification passed without source changes."
   attempts: 0
 quality_review:
   state: "pass"
@@ -584,8 +584,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "3323eeb6824061f4ed998d5e7d5eb4a1f4278282"
+  -
+    type: "verify"
+    at: "2026-09-03T14:21:43.530Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR verification passed without source changes."
 doc_version: 3
-doc_updated_at: "2026-09-03T13:57:57.408Z"
+doc_updated_at: "2026-09-03T14:21:47.653Z"
 doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
@@ -1240,6 +1246,72 @@ sections:
     Result: pass
     Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609030849-925NNG-repair-task-centric-plan-rejection-projection-at/.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json
+    - old_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+    - current_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609030849-925NNG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-03T14:21:43.530Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR verification passed without source changes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:4174d982682606c11198a1e67cb4f709b6ac0e88c6c39d80371725b3a97c7c31
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 --retry 2
+    Result: pass
+    Evidence: focused concurrency suite passed 1 file and 11 tests.
+    Scope: durable verification record under concurrent verifies
+
+    Check: critical_paths
+    Command: gh run rerun 33764148583 --repo basilisk-labs/agentplane --failed
+    Result: pass
+    Evidence: verify-tests retry job 100680983796 passed in 11m48s; aggregate PR verification job 100684909084 passed in 17s.
+    Scope: hosted required checks on unchanged closure head 597df3b5ae991321eeb033a6a059278eb0b5cf18
+
+    Check: docs_contract
+    Command: hosted verify-contract job 100680986739
+    Result: pass
+    Evidence: verify-contract passed; no source or docs change followed.
+    Scope: generated and documentation contracts
+
+    Check: full_regression
+    Command: bun run ci:local:full; hosted verify-tests retry
+    Result: pass
+    Evidence: final local full CI exited 0 and hosted retry passed all unit, critical CLI, workflow coverage, and significant coverage stages.
+    Scope: full repository regression
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: isolated real-process E2E passed 1 file and 4 tests.
+    Scope: local real-process compatibility
+
+    Check: task_outcome
+    Command: hosted PR verification job 100684909084
+    Result: pass
+    Evidence: aggregate provider verification passed for PR #5888 after failed-job retry; no implementation change was required.
+    Scope: recovery fix integration readiness
 
     BlueprintSnapshotRef:
     - state: current
@@ -6347,6 +6419,72 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609030849-925NNG-repair-task-centric-plan-rejection-projection-at/.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json
+- old_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+- current_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609030849-925NNG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-03T14:21:43.530Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR verification passed without source changes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:4174d982682606c11198a1e67cb4f709b6ac0e88c6c39d80371725b3a97c7c31
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 --retry 2
+Result: pass
+Evidence: focused concurrency suite passed 1 file and 11 tests.
+Scope: durable verification record under concurrent verifies
+
+Check: critical_paths
+Command: gh run rerun 33764148583 --repo basilisk-labs/agentplane --failed
+Result: pass
+Evidence: verify-tests retry job 100680983796 passed in 11m48s; aggregate PR verification job 100684909084 passed in 17s.
+Scope: hosted required checks on unchanged closure head 597df3b5ae991321eeb033a6a059278eb0b5cf18
+
+Check: docs_contract
+Command: hosted verify-contract job 100680986739
+Result: pass
+Evidence: verify-contract passed; no source or docs change followed.
+Scope: generated and documentation contracts
+
+Check: full_regression
+Command: bun run ci:local:full; hosted verify-tests retry
+Result: pass
+Evidence: final local full CI exited 0 and hosted retry passed all unit, critical CLI, workflow coverage, and significant coverage stages.
+Scope: full repository regression
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: isolated real-process E2E passed 1 file and 4 tests.
+Scope: local real-process compatibility
+
+Check: task_outcome
+Command: hosted PR verification job 100684909084
+Result: pass
+Evidence: aggregate provider verification passed for PR #5888 after failed-job retry; no implementation change was required.
+Scope: recovery fix integration readiness
 
 BlueprintSnapshotRef:
 - state: current

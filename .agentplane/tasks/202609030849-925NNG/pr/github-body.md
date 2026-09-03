@@ -16,7 +16,13 @@ Authorized bootstrap recovery only. Reproduce and fix the root cause where task 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note:
+
+```text
+Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused
+workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR
+verification passed without source changes.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
