@@ -4,7 +4,7 @@ title: "Repair task-centric plan-rejection projection atomicity and recover task
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -96,10 +96,14 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -142,7 +146,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:ab022e87a13b2832d513163d959623f6d75994613c9d9b07c4e5128e5d49934e"
+      digest: "sha256:747e6fbc147ed3db923a6d322341524cb89e5a5066e1a7298f08b510183b3279"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-kernel"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
@@ -154,10 +158,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -233,6 +241,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f07873bcf8b8. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -353,9 +364,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-03T12:33:14.554Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f07873bcf8b8. CLI accepted one state-bound external-agent semantic result."
+    commit: "f07873bcf8b85cc6a362af91588a8416bdfbe60a"
 doc_version: 3
-doc_updated_at: "2026-09-03T12:31:47.637Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-03T12:33:14.554Z"
+doc_updated_by: "SUPERVISOR"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
   Summary: |-
@@ -4098,9 +4117,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609030849-925NNG"
-    revision: 42
+    revision: 46
     schema_version: 1
-    updated_at: "2026-09-03T12:31:39.835Z"
+    updated_at: "2026-09-03T12:33:28.495Z"
     work_items:
       atomic-plan-rejection:
         attempt: 1
@@ -4167,14 +4186,154 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       diagnostic-and-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "diagnostic-and-recovery"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:db5369199d7c30edc80418f499a7f160120383ad732db6ec088d56f4650c4e35"
+            id: "recovery-operation-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609030849-925NNG"
+              work_item_id: "diagnostic-and-recovery"
+            provenance:
+              - "sha256:9044137f57eebc37332595031758c38444db8f1e2cb951df5d6ca895fbe56a10"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:6bdc5ffbcf27af3bc27b67d5a1a7246c7f78ac478e7c13417c1aec06805dd684"
+            id: "diagnostic-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609030849-925NNG"
+              work_item_id: "diagnostic-and-recovery"
+            provenance:
+              - "sha256:9044137f57eebc37332595031758c38444db8f1e2cb951df5d6ca895fbe56a10"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:0dac3964a268693a521c7ac28c4a6aa3327e1c4387e643c6f3752f079368e52d"
+            id: "compatibility-candidate-update"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609030849-925NNG"
+              work_item_id: "diagnostic-and-recovery"
+            provenance:
+              - "sha256:9044137f57eebc37332595031758c38444db8f1e2cb951df5d6ca895fbe56a10"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:238f14f3522f34c60a926b268d1eab5bde27afa088a7058daa73c948cfa225e5"
+            id: "historical-recovery-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609030849-925NNG"
+              work_item_id: "diagnostic-and-recovery"
+            provenance:
+              - "sha256:9044137f57eebc37332595031758c38444db8f1e2cb951df5d6ca895fbe56a10"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:e3ea6c56b6cb7649021792284a57a27cf3065f22ad47cc8d240d69d35953143e"
+            id: "reviewed-compatibility-ratchet-update"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 6
+              task_id: "202609030849-925NNG"
+              work_item_id: "diagnostic-and-recovery"
+            provenance:
+              - "sha256:9044137f57eebc37332595031758c38444db8f1e2cb951df5d6ca895fbe56a10"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "lifecycle-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-03T12:33:28.464Z"
+              repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "routing-policy"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-03T12:33:28.464Z"
+              repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "recovery-focused-workspace"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T12:33:28.464Z"
+              repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "recovery-focused-cli"
+              command_identity: "bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T12:33:28.464Z"
+              repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "compatibility-candidate"
+              command_identity: "bun run bench:compatibility:candidate:check"
+              detail: "Observed by bun run bench:compatibility:candidate:check."
+              exit_code: 0
+              observed_at: "2026-09-03T12:33:28.464Z"
+              repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "compatibility-baseline"
+              command_identity: "bun run bench:compatibility:check"
+              detail: "Observed by bun run bench:compatibility:check."
+              exit_code: 0
+              observed_at: "2026-09-03T12:33:28.464Z"
+              repository_snapshot_digest: "sha256:bcecbac6671f547e269579023469fbca36ea57b3be552923e768e17fc4e735c9"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       work-item-completion-binding:
         attempt: 0
         claim_id: null
@@ -4309,6 +4468,22 @@ extensions:
         task_id: "202609030849-925NNG"
         task_revision: 39
         work_item_id: null
+      -
+        at: "2026-09-03T12:33:28.495Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_7c571affacd49e90fe67f137"
+        mutation_id: "external-result:work-order-202609030849-925NNG-executor-90fb3b263e1af02b83fa4f0b"
+        plan_digest: "sha256:9105b3af7bfd6b11eff54b81ab7ec485a7b194f0698ff47470d76fb7b6f11f69"
+        plan_revision: 6
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+        task_revision: 45
+        work_item_id: "diagnostic-and-recovery"
     leases: []
     mutation_receipts:
       external-result:work-order-202609030849-925NNG-executor-5ebb0e6dc85a767201557419:
@@ -4332,6 +4507,29 @@ extensions:
         mutation_id: "external-result:work-order-202609030849-925NNG-executor-5ebb0e6dc85a767201557419"
         next_revision: 39
         previous_revision: 38
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+      external-result:work-order-202609030849-925NNG-executor-90fb3b263e1af02b83fa4f0b:
+        aggregate_digest: "sha256:71009a05e5d558639defd1b427591defec7bb5bd2b57119ac891efc535c2a559"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T12:33:28.495Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_7c571affacd49e90fe67f137"
+          mutation_id: "external-result:work-order-202609030849-925NNG-executor-90fb3b263e1af02b83fa4f0b"
+          plan_digest: "sha256:9105b3af7bfd6b11eff54b81ab7ec485a7b194f0698ff47470d76fb7b6f11f69"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          task_revision: 45
+          to: "COMPLETED"
+          work_item_id: "diagnostic-and-recovery"
+        mutation_id: "external-result:work-order-202609030849-925NNG-executor-90fb3b263e1af02b83fa4f0b"
+        next_revision: 46
+        previous_revision: 45
         schema_version: 1
         task_id: "202609030849-925NNG"
       external-result:work-order-202609030849-925NNG-executor-e373330d49f61d8770b964a5:
@@ -4486,7 +4684,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "7bfa0304918ae557b05c6082b69aa4d9a3c1dfc1"
+    hash: "f07873bcf8b85cc6a362af91588a8416bdfbe60a"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
