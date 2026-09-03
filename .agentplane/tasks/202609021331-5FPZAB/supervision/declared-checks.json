@@ -2,13 +2,13 @@
   "checks": [
     {
       "check_ids": [
-        "arkady-focused"
+        "authoritative-focused"
       ],
-      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
-      "duration_ms": 26753,
+      "command": "bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts",
+      "duration_ms": 1507,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
+        "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
         "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
         "kind": "local_runtime_resolution",
         "status": "resolved",
@@ -16,48 +16,12 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c\n\n\n Test Files  3 passed (3)\n      Tests  42 passed (42)\n   Start at  01:53:21\n   Duration  26.43s (transform 5.31s, setup 0ms, import 4.32s, tests 42.30s, environment 0ms)\n\n"
-    },
-    {
-      "check_ids": [
-        "compatibility"
-      ],
-      "command": "bun run bench:compatibility:candidate:check",
-      "duration_ms": 1790,
-      "exit_code": 0,
-      "runtime": {
-        "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
-        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
-        "kind": "local_runtime_resolution",
-        "status": "resolved",
-        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
-      },
-      "script": "bench:compatibility:candidate:check",
-      "stderr_tail": "$ node scripts/bench/capture-compatibility-candidate.mjs --check\n",
-      "stdout_tail": "compatibility candidate is current\n"
-    },
-    {
-      "check_ids": [
-        "full"
-      ],
-      "command": "bun run ci:local:full",
-      "duration_ms": 432272,
-      "exit_code": 1,
-      "runtime": {
-        "environment_digest": "sha256:af5dff090a292ac4b0a964a4af2f7dde46fb8f3bbe4bfde47729977fd5c19d61",
-        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
-        "kind": "local_runtime_resolution",
-        "status": "resolved",
-        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
-      },
-      "script": "ci:local:full",
-      "stderr_tail": "ℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-02T22:59:21.813Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-a8MZM4/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-a8MZM4/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-02T22:59:21.831Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-Yf9EKC/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-Yf9EKC/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-02T22:59:21.838Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-Yf9EKC/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-Yf9EKC/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-02T22:59:21.854Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-uIVyMr/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-uIVyMr/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-02T22:59:21.857Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-02T22:59:25.721Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-02T22:59:25.736Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-02T22:59:25.736Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-02T22:59:25.738Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-02T22:59:25.738Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-02T22:59:25.740Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":21670},{\"id\":\"docs-schema\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":15823},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":305652},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":84330}]}\nfile:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/scripts/checks/run-local-ci.mjs:522\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/scripts/checks/run-local-ci.mjs:522:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/scripts/checks/run-local-ci.mjs:597:7\n\nNode.js v24.18.0\nerror: script \"ci:local:full\" exited with code 1\n",
-      "stdout_tail": "4 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nVitest suite critical-cli: chunk 4/14 passed in 16259ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  16.09s (transform 1.10s, setup 0ms, import 1.36s, tests 14.67s, environment 0ms))\nVitest suite critical-cli: chunk 5/14 (1 files): packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts\nVitest suite critical-cli: chunk 5/14 passed in 1869ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  1.70s (transform 1.05s, setup 0ms, import 1.34s, tests 294ms, environment 0ms))\nVitest suite critical-cli: chunk 6/14 (1 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts\nVitest suite critical-cli: chunk 6/14 passed in 6143ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  5.96s (transform 2.11s, setup 0ms, import 1.48s, tests 4.42s, environment 0ms))\nVitest suite critical-cli: chunk 7/14 (1 files): packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 7/14 passed in 2539ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.38s (transform 1.02s, setup 0ms, import 1.33s, tests 981ms, environment 0ms))\nVitest suite critical-cli: chunk 8/14 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 8/14 passed in 2431ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.27s (transform 1.06s, setup 0ms, import 1.37s, tests 837ms, environment 0ms))\nVitest suite critical-cli: chunk 9/14 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 9/14 passed in 2640ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  2.48s (transform 1.02s, setup 0ms, import 1.33s, tests 1.09s, environment 0ms))\nVitest suite critical-cli: chunk 10/14 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 10/14 passed in 2845ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.68s (transform 1.03s, setup 0ms, import 1.34s, tests 1.29s, environment 0ms))\nVitest suite critical-cli: chunk 11/14 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 11/14 passed in 2653ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.49s (transform 1.25s, setup 0ms, import 1.62s, tests 812ms, environment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 17397ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  17.22s (transform 2.17s, setup 0ms, import 1.58s, tests 15.57s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1824ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.66s (transform 1.14s, setup 0ms, import 1.36s, tests 238ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 4906ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.73s (transform 1.15s, setup 0ms, import 1.38s, tests 3.29s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":21670},{\"id\":\"docs-schema\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":15823},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":305652},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":84330}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":432125,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c\n\n\n Test Files  3 passed (3)\n      Tests  42 passed (42)\n   Start at  18:21:50\n   Duration  1.19s (transform 1.15s, setup 0ms, import 1.63s, tests 42ms, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run ci:local:full",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609021331-5FPZAB"
 }
