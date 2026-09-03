@@ -4,7 +4,7 @@ title: "Repair plan-amendment Verify Steps projection routing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -101,6 +101,9 @@ execution_contract:
     changed_paths:
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -146,9 +149,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:89edbd2fc18570bef9595e725f7a502a623da228259bff9263ecc8fd5124c99a"
+      digest: "sha256:204219e14eefa939cd9247aeadc06daa893aa6f13beccde9733a66ef98151ebb"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-centric"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-verification.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -162,6 +168,9 @@ execution_contract:
         changed_files:
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -214,6 +223,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b3e8d65e05a1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 5888c0e9e952. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -251,8 +263,16 @@ events:
     to: "DOING"
     note: "Implementation committed: b3e8d65e05a1. CLI accepted one state-bound external-agent semantic result."
     commit: "b3e8d65e05a17f47b45b1bdbc364c8cd97fedd60"
+  -
+    type: "status"
+    at: "2026-09-03T19:51:02.855Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 5888c0e9e952. CLI accepted one state-bound external-agent semantic result."
+    commit: "5888c0e9e9529164181c1429197e76bab8aeded2"
 doc_version: 3
-doc_updated_at: "2026-09-03T19:35:11.639Z"
+doc_updated_at: "2026-09-03T19:51:02.855Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the AgentPlane invariant where a task-specific plan amendment is persisted but sections.Verify Steps remains a PLANNER fallback scaffold, causing EVALUATOR rework to loop into code-only EXECUTOR authority that excludes protected task projections. Materialize accepted task-specific verification amendments atomically into the authoritative task document, invalidate stale evaluator/context packets, and route document-level rework to PLANNER or the AgentPlane-owned projection owner before emitting a fresh EVALUATOR packet. Add focused replay, idempotency, authority-closure, projection, stale-packet, and impossible-loop regressions. Do not grant ordinary EXECUTOR episodes access to .agentplane/tasks, weaken quality gates, hand-edit PX8PZT state, or touch release/version/publication/dependency scope."
 sections:
@@ -732,7 +752,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609031902-8SH7ZM"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609031902-8SH7ZM"
     intent:
@@ -1149,9 +1169,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
-    revision: 14
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-03T19:35:12.156Z"
+    updated_at: "2026-09-03T19:51:57.954Z"
     work_items:
       materialize-verification-amendment:
         attempt: 1
@@ -1202,14 +1222,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       route-document-rework:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "route-document-rework"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:e3c0f446c5d0d2c9cd55636a1d9468d5c9a0f6ff885fd63adba7068b5cc4bf82"
+            id: "artifact:document-rework-routing"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609031902-8SH7ZM"
+              work_item_id: "route-document-rework"
+            provenance:
+              - "sha256:3976657291316aed6a7c42cbd237825b2f236db19d226a0ce0c268136ef6df35"
+              - ".agentplane/tasks/202609031902-8SH7ZM/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:1ec54a1bc9ec0f36b92de46fa7379b499d027d9b1154a014cef8f677c72bb005"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031902-8SH7ZM/supervision/declared-checks.json"
+              check_id: "lint-core"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-09-03T19:51:57.944Z"
+              repository_snapshot_digest: "sha256:1ec54a1bc9ec0f36b92de46fa7379b499d027d9b1154a014cef8f677c72bb005"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1246,6 +1296,22 @@ extensions:
         task_id: "202609031902-8SH7ZM"
         task_revision: 13
         work_item_id: "materialize-verification-amendment"
+      -
+        at: "2026-09-03T19:51:57.954Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_8e5cbeb4290566553f0e5538"
+        mutation_id: "external-result:work-order-202609031902-8SH7ZM-executor-0bb39ec7807e102971f0cf9a"
+        plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
+        task_revision: 16
+        work_item_id: "route-document-rework"
     leases: []
     mutation_receipts:
       compatibility:sha256:899eb14641cb7bbef1fdc413b6989b5398c1f4d3a271ec1c1a3050aa9d6c4ff8:
@@ -1344,6 +1410,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
+      compatibility:sha256:e11d6b75a765de3d5961dd5e371f76a5c70998a7b71fd28961ca4cc4b035c9a2:
+        aggregate_digest: "sha256:73e1f2a9d636f3fab8cff7a73cd9a5e1f7582079f206645fda35beb272260faf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T19:51:02.855Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bc596924d106ff6eab444605"
+          mutation_id: "compatibility:sha256:e11d6b75a765de3d5961dd5e371f76a5c70998a7b71fd28961ca4cc4b035c9a2"
+          plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031902-8SH7ZM"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e11d6b75a765de3d5961dd5e371f76a5c70998a7b71fd28961ca4cc4b035c9a2"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
       compatibility:sha256:f37bdfaee058ac8b29a42117cef8a5c76eb84c76920c559993b6b59712865ecd:
         aggregate_digest: "sha256:82c587eb9e9a4e9cada0b1136d7477fbe19fa4846c6ddc8afcd83fba98ead1b0"
         event:
@@ -1366,6 +1456,29 @@ extensions:
         mutation_id: "compatibility:sha256:f37bdfaee058ac8b29a42117cef8a5c76eb84c76920c559993b6b59712865ecd"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
+      external-result:work-order-202609031902-8SH7ZM-executor-0bb39ec7807e102971f0cf9a:
+        aggregate_digest: "sha256:5b3badaa69ee6eca0f21dc6d8baaf0e115b9e43c7bc793bb278f56c213415c36"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T19:51:57.954Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_8e5cbeb4290566553f0e5538"
+          mutation_id: "external-result:work-order-202609031902-8SH7ZM-executor-0bb39ec7807e102971f0cf9a"
+          plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031902-8SH7ZM"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: "route-document-rework"
+        mutation_id: "external-result:work-order-202609031902-8SH7ZM-executor-0bb39ec7807e102971f0cf9a"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
       external-result:work-order-202609031902-8SH7ZM-executor-5200afdc59bf3d0cc0f3df7f:
@@ -1419,7 +1532,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b3e8d65e05a17f47b45b1bdbc364c8cd97fedd60"
+    hash: "5888c0e9e9529164181c1429197e76bab8aeded2"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
