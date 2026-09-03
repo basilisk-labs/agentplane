@@ -29,13 +29,16 @@ Created: 2026-09-03T17:26:07.913Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.task-handoff.test.ts      | 103 ++++++++++++-
+ .../src/cli/run-cli.core.task-handoff.test.ts      | 103 ++++++-
+ .../src/commands/pr/branch-publication.test.ts     | 325 ++++++++++++++++++++-
+ .../src/commands/pr/branch-publication.ts          | 110 ++++++-
  packages/agentplane/src/commands/pr/flow-status.ts |  12 +-
- .../commands/shared/task-handoff-reader.test.ts    | 163 +++++++++++++++++++++
- .../src/commands/shared/task-handoff-reader.ts     |  78 ++++++++++
- .../src/commands/task/handoff-show.command.ts      |  37 ++++-
- .../agentplane/src/commands/task/handoff.shared.ts |  27 ++--
- 6 files changed, 390 insertions(+), 30 deletions(-)
+ packages/agentplane/src/commands/pr/open.ts        |   3 +
+ .../commands/shared/task-handoff-reader.test.ts    | 163 +++++++++++
+ .../src/commands/shared/task-handoff-reader.ts     |  78 +++++
+ .../src/commands/task/handoff-show.command.ts      |  37 ++-
+ .../agentplane/src/commands/task/handoff.shared.ts |  27 +-
+ 9 files changed, 826 insertions(+), 32 deletions(-)
 ```
 
 </details>
