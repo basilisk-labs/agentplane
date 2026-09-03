@@ -32,4 +32,31 @@ describe("task-centric projection integrity diagnostics", () => {
     expect(findings[0]).toContain("Aggregate revision/state: 50/missing");
     expect(findings[0]).toContain("task plan recover-rejection");
   });
+
+  it("does not treat ordinary README revision drift as a rejected-plan corruption", () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "ordinary-active-task",
+      revision: 11,
+      title: "Ordinary task",
+      description: "Fixture",
+      status: "DOING",
+      acceptance_criteria: ["complete"],
+      captured_at: "2026-09-03T10:00:00.000Z",
+      updated_at: "2026-09-03T10:00:00.000Z",
+    });
+
+    const findings = buildTaskCentricProjectionIntegrityFindings([
+      {
+        id: aggregate.id,
+        status: "DOING",
+        doc_version: 3,
+        revision: 29,
+        plan_approval: { state: "approved" },
+        extensions: withTaskCentricAggregate({}, aggregate),
+      },
+    ]);
+
+    expect(findings).toEqual([]);
+  });
+
 });

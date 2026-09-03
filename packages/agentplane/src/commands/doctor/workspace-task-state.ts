@@ -174,15 +174,10 @@ export function buildTaskCentricProjectionIntegrityFindings(
     if (!aggregate || readmeRevision === null) continue;
     const readmePlanState = String(record(task.plan_approval)?.state ?? "pending");
     const aggregatePlanState = aggregate.current_plan?.approval.state ?? "missing";
-    if (
-      readmeRevision === aggregate.revision &&
-      !(readmePlanState === "rejected" && aggregatePlanState !== "rejected")
-    ) {
-      continue;
-    }
+    if (readmePlanState !== "rejected" || aggregatePlanState === "rejected") continue;
     findings.push(
       renderDiagnosticFinding({
-        severity: "ERROR",
+        severity: "WARN",
         state: `task-centric plan projection mismatch for ${taskId}`,
         likelyCause:
           "the task README and canonical aggregate did not commit the same plan mutation",

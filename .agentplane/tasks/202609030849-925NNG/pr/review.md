@@ -12,8 +12,8 @@ Created: 2026-09-03T08:57:33.898Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: agentplane doctor
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,8 +37,8 @@ Created: 2026-09-03T08:57:33.898Z
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 240 +++++++++++++++++++++
  .../src/cli/run-cli/command-catalog/task.ts        |   8 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
- .../commands/doctor/workspace-task-state.test.ts   |  35 +++
- .../src/commands/doctor/workspace-task-state.ts    |  84 +++++++-
+ .../commands/doctor/workspace-task-state.test.ts   |  62 ++++++
+ .../src/commands/doctor/workspace-task-state.ts    |  79 ++++++-
  .../agentplane/src/commands/doctor/workspace.ts    |   7 +-
  .../task/external-agent-planning-authority.ts      |   1 +
  .../src/commands/task/plan-approval-guard.ts       |  25 +++
@@ -47,7 +47,8 @@ Created: 2026-09-03T08:57:33.898Z
  .../src/commands/task/plan-rejection-recovery.ts   |  79 +++++++
  .../agentplane/src/commands/task/plan.command.ts   |   4 +-
  packages/agentplane/src/commands/task/plan.ts      |  54 ++++-
- 18 files changed, 1189 insertions(+), 18 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  93 +++++++-
+ 19 files changed, 1297 insertions(+), 25 deletions(-)
 ```
 
 </details>
