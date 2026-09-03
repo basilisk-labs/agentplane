@@ -4,7 +4,7 @@ title: "Repair plan-amendment Verify Steps projection routing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -35,35 +35,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-03T20:31:09.975Z"
+  updated_at: "2026-09-03T20:41:27.138Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
   evaluated_sha: "7395512128320b38054c39ddb8446da03cc35993"
   blueprint_digest: "987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86"
   evidence_refs:
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/e94e56ee374989535e6ebc92d6166c283531b932ec7dd2e7dcd904c5abb7b6cb.md"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-204044384-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-204044384-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/ed7c186b4b3a83120632c50719d5f4a9a3c0c1988220466d7bec2a4bed60f788.md"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-204044384-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-204044384-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-204044384-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609031902-8SH7ZM/README.md"
     - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
-    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/c438b1bb65d06ae180b916b15305baa8f98779245f74fbc300ea420ee821812f.json"
-    - ".agentplane/tasks/202609031902-8SH7ZM/verification/20260903202946053-a6bdc341db234dcf.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/f621f3ad1ba858d9e5755c7e8fd1fcff462858fc88f1c1833c7ca50bf2ff4949.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/verification/20260903204036948-97f04bc02c7b04f6.json"
     - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/34d93b299b7f6aeb06593326a7d00f9e329c15c8fe759c0d4bca0cbb97b53d11.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The source diff implements atomic projection, receipt-first replay, stale-review invalidation, and fresh evaluator routing within the approved scope."
-    - "All declared local checks pass, including ci:local:full."
-    - "The current task README still contains 'PLANNER fallback scaffold', so acceptance-2 is not yet satisfied."
-    - "Residual risk: Closing now would leave the exact authoritative-document defect present in the recovery task itself."
+    - "The authoritative Verify Steps section contains only the five approved task-specific gates and no fallback scaffold."
+    - "The clarification is durably recorded as a plan amendment, and this evaluator packet has a fresh state fingerprint after that transition."
+    - "Atomic projection, idempotent replay, provider-bound packet replacement, owner routing, and full local verification are covered by passing evidence."
+    - "The implementation does not broaden ordinary EXECUTOR authority and does not touch release, dependency, workflow, policy, security-boundary, or MPXQBK scope."
 execution_route:
   frozen: true
   reason_codes:
@@ -1175,7 +1174,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609031902-8SH7ZM"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609031902-8SH7ZM"
     intent:
@@ -1611,9 +1610,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
-    revision: 24
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-03T20:40:38.295Z"
+    updated_at: "2026-09-03T20:40:38.314Z"
     work_items:
       materialize-verification-amendment:
         attempt: 1
@@ -1880,6 +1879,30 @@ extensions:
         mutation_id: "compatibility:sha256:395fa9df3adbfdedeccb812bab4d1f70e109beb0bc6cb01d23a0a481e7301af5"
         next_revision: 24
         previous_revision: 23
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
+      compatibility:sha256:4becd29b96930b16f62552d0f1eb66b637f04da5cfa2000661fb04d037acde16:
+        aggregate_digest: "sha256:2c6d6eaf56415180308230ccde720791bee6092310f5813f4222413238bfd5f7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T20:40:38.314Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e44394ea8b89a08b905832f7"
+          mutation_id: "compatibility:sha256:4becd29b96930b16f62552d0f1eb66b637f04da5cfa2000661fb04d037acde16"
+          plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031902-8SH7ZM"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4becd29b96930b16f62552d0f1eb66b637f04da5cfa2000661fb04d037acde16"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
       compatibility:sha256:508bd66d49cc8280276a33f876d6676d4923e590bc424a9464c27ddea5e7bced:
