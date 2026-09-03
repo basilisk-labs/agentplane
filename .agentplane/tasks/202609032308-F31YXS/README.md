@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -98,6 +98,8 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+      - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -155,8 +157,9 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e1193e9fe9beff7c59bdd7299bdeceb8b52041dbe8b4fd26ee7801c6d3e5f8ad"
+      digest: "sha256:e4914022955d68c5ba75c100d0bd38a896dbe7560f2bd5048a7d4c35205238d9"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -168,6 +171,8 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+          - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -222,6 +227,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 099ca9948c77. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: e37f30c53768. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -238,8 +246,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 099ca9948c77. CLI accepted one state-bound external-agent semantic result."
     commit: "099ca9948c77311198a1c3139d91e06647084c26"
+  -
+    type: "status"
+    at: "2026-09-03T23:37:51.883Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e37f30c53768. CLI accepted one state-bound external-agent semantic result."
+    commit: "e37f30c53768d99c19a95dc74973cc909fa3e315"
 doc_version: 3
-doc_updated_at: "2026-09-03T23:35:00.416Z"
+doc_updated_at: "2026-09-03T23:37:51.883Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -753,7 +769,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 2
+    event_cursor: 3
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -793,9 +809,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-03T23:35:09.927Z"
+    updated_at: "2026-09-03T23:37:59.823Z"
     work_items:
       integrated-recovery-qualification:
         attempt: 0
@@ -816,14 +832,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       task-centric-rework-atomicity:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "task-centric-rework-atomicity"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:0eb38213f22b29dd32b791c31e5050ac8ace0dc023f0aa90e9760de285659ecc"
+            id: "task-centric-rework-atomicity"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609032308-F31YXS"
+              work_item_id: "task-centric-rework-atomicity"
+            provenance:
+              - "sha256:8f7a9ff55b2ab6e2fef341c2aefc11bb889b48507cb3fb87c16cb8afda3d5fd7"
+              - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:be1b5ff260120b023a308d60da5f88f329cdf255eca88815abff45f101a09214"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "rework-projection-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T23:37:59.818Z"
+              repository_snapshot_digest: "sha256:be1b5ff260120b023a308d60da5f88f329cdf255eca88815abff45f101a09214"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       verification-contract-atomicity:
         attempt: 1
         claim_id: null
@@ -882,8 +928,48 @@ extensions:
         task_id: "202609032308-F31YXS"
         task_revision: 6
         work_item_id: "verification-contract-atomicity"
+      -
+        at: "2026-09-03T23:37:59.823Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_999f835bbf172de2609fd383"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-73cbb791dbfa329983cb524d"
+        plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+        task_revision: 9
+        work_item_id: "task-centric-rework-atomicity"
     leases: []
     mutation_receipts:
+      compatibility:sha256:006e22756bc5a08db92bf228206a39cfd6b663d86af760e684ce7fc2a34a132a:
+        aggregate_digest: "sha256:8dae2ae476f9151890a4bff523ca7ed23c7ad7ccab003e0bbf4b65963ea099db"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T23:37:51.883Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_754a3da8b957294416c706f8"
+          mutation_id: "compatibility:sha256:006e22756bc5a08db92bf228206a39cfd6b663d86af760e684ce7fc2a34a132a"
+          plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:006e22756bc5a08db92bf228206a39cfd6b663d86af760e684ce7fc2a34a132a"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       compatibility:sha256:3204719e7e5825455f6c79309cda9f40ce68b66e30585314c085b317899965eb:
         aggregate_digest: "sha256:47694b9731ff5da761b75fcd6e59204702701ed2423cd15e0683c3bced0f4bf9"
         event:
@@ -932,6 +1018,29 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      external-result:work-order-202609032308-F31YXS-executor-73cbb791dbfa329983cb524d:
+        aggregate_digest: "sha256:56ac68f62c6d3ea3ac3bce8f69b16764d465a020c7cb2bcb3fc5831b26e10500"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T23:37:59.823Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_999f835bbf172de2609fd383"
+          mutation_id: "external-result:work-order-202609032308-F31YXS-executor-73cbb791dbfa329983cb524d"
+          plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: "task-centric-rework-atomicity"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-73cbb791dbfa329983cb524d"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       external-result:work-order-202609032308-F31YXS-executor-eb90ac46e451ca16dc2fd438:
         aggregate_digest: "sha256:f547a19657592f09d18ff4caf385f7cd6c61b6052e6e32774737e25dd4b58b37"
         event:
@@ -959,7 +1068,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "099ca9948c77311198a1c3139d91e06647084c26"
+    hash: "e37f30c53768d99c19a95dc74973cc909fa3e315"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
