@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 55
+revision: 56
 origin:
   system: "manual"
 depends_on: []
@@ -59,7 +59,7 @@ quality_review:
 token_usage:
   agent_runs: 20
   input_tokens: null
-  journal_digest: "sha256:232d388c0894f4b0b4f06e65807615f7e1f70282bb7931a39afc94a6e2964f5f"
+  journal_digest: "sha256:e40889b2dbc8faee2ee737adc026f36d96baaa70c2fee2c44999cb4fd8c5af41"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-03T13:02:38.568Z"
+  updated_at: "2026-09-03T13:43:13.739Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -349,8 +349,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b742ba8fac0bff396ba020eaa2f5cfea39de1a0f"
-  message: "🚧 925NNG task: record external evaluator result"
+  hash: "4d2fd5a8a6111ba3f47fb47f96924b15051d13f4"
+  message: "🔍 925NNG quality: record rework evaluator pass"
 comments:
   -
     author: "CODER"
@@ -400,6 +400,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -556,8 +559,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c."
+  -
+    type: "status"
+    at: "2026-09-03T13:43:13.739Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "4d2fd5a8a6111ba3f47fb47f96924b15051d13f4"
 doc_version: 3
-doc_updated_at: "2026-09-03T13:42:13.827Z"
+doc_updated_at: "2026-09-03T13:43:13.776Z"
 doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
@@ -5520,8 +5531,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "b3ca56abe63fcca08fc766f4cfa489c7546104fb"
-    message: "🚧 925NNG task: apply external agent result"
+    hash: "ac53261209a4623880059cb38f0a2d4bb32c445c"
+    message: "🩹 925NNG cli: remove unused recovery re-exports"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
@@ -6105,6 +6116,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:232d388c0894f4b0b4f06e65807615f7e1f70282bb7931a39afc94a6e2964f5f`
+- Journal digest: `sha256:e40889b2dbc8faee2ee737adc026f36d96baaa70c2fee2c44999cb4fd8c5af41`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-03T13:02:38.568Z`
+- Updated at: `2026-09-03T13:43:13.739Z`
