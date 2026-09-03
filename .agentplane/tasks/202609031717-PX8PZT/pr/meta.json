@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:dd73649a0ee814da241fa0de48ef14830a22d66931b5bc712110745f387164d7",
   "pr_number": 5890,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5890",
+  "pre_merge_closure": {
+    "basis_commit": "f31c2433ea80e3af40f71a9d277db1f55c6bba6a",
+    "branch": "task/202609031717-PX8PZT/port-the-minimal-missing-clean-core-lifecycle-bo",
+    "pr_number": 5890,
+    "recorded_at": "2026-09-03T21:48:43.355Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
