@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609031717-PX8PZT-af6e12a97bbad7d722510ef9",
+  "task_id": "202609031717-PX8PZT",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Return control through AgentPlane for a bounded plan/task-document correction only: replace the fallback Verify Steps section with the existing approved focused, formatting, lint, typecheck, routing, and full-CI commands. Preserve the five sequential WorkItems, exact input/output chain, current authority roots, implementation SHA, and all exclusions.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The frozen diff contains the four approved implementation areas and their regressions; it does not add release/version/publication metadata, dependency changes, MPXQBK, or broad GitLab/provider-neutral behavior.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Supervisor-observed verification is green for full local CI, lint, typecheck, focused regressions, routing, clean committed diff, and clean repository status at implementation SHA 9360c020cc206d344c496d95c7c147e2adba09d2.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Task frontmatter contains task-specific top-level validation checks, but sections.Verify Steps still says PLANNER fallback scaffold and asks for replacement. The evaluator work order lists that replacement as required acceptance, so the visible task contract is internally inconsistent.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "The smallest rework is to project the already-approved task-specific top-level checks into sections.Verify Steps without changing implementation scope, ordering, authority roots, effects, or verification strength.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: Hosted provider and integration evidence remains pending and must not be inferred from local checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-result.json"
+}
