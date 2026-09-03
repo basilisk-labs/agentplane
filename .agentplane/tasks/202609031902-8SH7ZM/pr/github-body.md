@@ -15,8 +15,8 @@ Fix the AgentPlane invariant where a task-specific plan amendment is persisted b
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,7 +29,10 @@ Fix the AgentPlane invariant where a task-specific plan amendment is persisted b
 ```text
  .../task-centric-backend-adapter.test.ts           | 72 ++++++++++++++++++++++
  .../task-backend/task-centric-backend-adapter.ts   | 66 +++++++++++++++++++-
- 2 files changed, 137 insertions(+), 1 deletion(-)
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 50 +++++++++++++--
+ .../src/commands/shared/route-decision-blockers.ts |  8 +++
+ .../commands/shared/route-decision-verification.ts | 32 +++++++++-
+ 5 files changed, 219 insertions(+), 9 deletions(-)
 ```
 
 </details>
