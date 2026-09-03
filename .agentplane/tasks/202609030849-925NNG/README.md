@@ -4,7 +4,7 @@ title: "Repair task-centric plan-rejection projection atomicity and recover task
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:5dc913c65f64a2ba71f7b9298060f3cd9a30789e35f508b2330387d3d4da2fdf"
 verification:
-  state: "ok"
-  updated_at: "2026-09-03T12:14:10.399Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
   attempts: 0
 execution_route:
   frozen: true
@@ -96,10 +96,16 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -142,7 +148,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:ab022e87a13b2832d513163d959623f6d75994613c9d9b07c4e5128e5d49934e"
+      digest: "sha256:c149710c58bfb03478a51b293a0e6422ebd06957da6a0f76bfca4ba05c350164"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-kernel"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
@@ -154,10 +160,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -192,9 +204,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
-  message: "🚧 925NNG task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -226,6 +236,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b5d0b776104b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -323,9 +336,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-03T12:27:37.157Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b5d0b776104b. CLI accepted one state-bound external-agent semantic result."
+    commit: "b5d0b776104b19ec5fc68526526993bac6536626"
 doc_version: 3
-doc_updated_at: "2026-09-03T12:24:40.155Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-03T12:27:37.157Z"
+doc_updated_by: "SUPERVISOR"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
   Summary: |-
@@ -3396,19 +3417,74 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609030849-925NNG"
-    revision: 32
+    revision: 36
     schema_version: 1
-    updated_at: "2026-09-03T12:24:34.261Z"
+    updated_at: "2026-09-03T12:27:38.528Z"
     work_items:
       atomic-plan-rejection:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "atomic-plan-rejection"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:76658e1dd7df0a017f649ccf4b4b4c0e26382ac544ae401226e866048b7ff79a"
+            id: "atomic-plan-rejection-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609030849-925NNG"
+              work_item_id: "atomic-plan-rejection"
+            provenance:
+              - "sha256:3d29a06c815d9957b087eca352abb708e1e1c9727c2dc0ea933e542adb7c9caa"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8f3d0b4a8cb891cc4d1b8160c31af61fa20f5beb70238f54b153278f9e0df37d"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:e0eefdeab907c4efcff2dbe25816c70008f7c20b053e6c81e2b46ce844920d8b"
+            id: "plan-rejection-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609030849-925NNG"
+              work_item_id: "atomic-plan-rejection"
+            provenance:
+              - "sha256:3d29a06c815d9957b087eca352abb708e1e1c9727c2dc0ea933e542adb7c9caa"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:8f3d0b4a8cb891cc4d1b8160c31af61fa20f5beb70238f54b153278f9e0df37d"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "atomic-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T12:27:38.513Z"
+              repository_snapshot_digest: "sha256:8f3d0b4a8cb891cc4d1b8160c31af61fa20f5beb70238f54b153278f9e0df37d"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              check_id: "lifecycle-invariants"
+              command_identity: "bun run lifecycle:invariants"
+              detail: "Observed by bun run lifecycle:invariants."
+              exit_code: 0
+              observed_at: "2026-09-03T12:27:38.513Z"
+              repository_snapshot_digest: "sha256:8f3d0b4a8cb891cc4d1b8160c31af61fa20f5beb70238f54b153278f9e0df37d"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       diagnostic-and-recovery:
         attempt: 0
         claim_id: null
@@ -3503,8 +3579,47 @@ extensions:
         task_id: "202609030849-925NNG"
         task_revision: 29
         work_item_id: null
+      -
+        at: "2026-09-03T12:27:38.528Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_785c8a4eda1cf712610aac1d"
+        mutation_id: "external-result:work-order-202609030849-925NNG-executor-e373330d49f61d8770b964a5"
+        plan_digest: "sha256:33a57055dc30c890a383a0ae40b9417142cad190a14347182f678e92b837865c"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+        task_revision: 35
+        work_item_id: "atomic-plan-rejection"
     leases: []
     mutation_receipts:
+      external-result:work-order-202609030849-925NNG-executor-e373330d49f61d8770b964a5:
+        aggregate_digest: "sha256:affd431bba4aa8b0b1795501be8ef4849b9ac1d6d15308d5e63f17bf3b967713"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T12:27:38.528Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_785c8a4eda1cf712610aac1d"
+          mutation_id: "external-result:work-order-202609030849-925NNG-executor-e373330d49f61d8770b964a5"
+          plan_digest: "sha256:33a57055dc30c890a383a0ae40b9417142cad190a14347182f678e92b837865c"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          task_revision: 35
+          to: "COMPLETED"
+          work_item_id: "atomic-plan-rejection"
+        mutation_id: "external-result:work-order-202609030849-925NNG-executor-e373330d49f61d8770b964a5"
+        next_revision: 36
+        previous_revision: 35
+        schema_version: 1
+        task_id: "202609030849-925NNG"
       plan-refinement:work-order-202609030849-925NNG-executor-0d343c85a70052304eb6865c:
         aggregate_digest: "sha256:6b6f2b155fe2a62575f7f8f09a93c085d9990ba0b51e3920fd3748b214d04368"
         event:
@@ -3610,7 +3725,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
+    hash: "b5d0b776104b19ec5fc68526526993bac6536626"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
