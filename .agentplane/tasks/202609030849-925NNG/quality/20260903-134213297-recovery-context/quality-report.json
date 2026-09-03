@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609030849-925NNG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-03T13:42:13.741Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "ac53261209a4623880059cb38f0a2d4bb32c445c",
+  "blueprint_digest": "3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686",
+  "findings": [
+    "No blocking finding: checkTaskCentricProjectionIntegrityState and assertCanonicalPlanCanBeApproved remain directly imported and invoked at their runtime call sites; only unused barrel exposure was removed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
