@@ -106,6 +106,13 @@ describe("WorkflowStep routing projections", () => {
     expect(executionPacket(moved).step.preconditionFingerprint.digest).toBe(
       moved.preconditionFingerprint.digest,
     );
+    expect(executionPacket(exactReplay).packet).toEqual(executionPacket(first).packet);
+    expect(exactReplay.preconditionFingerprint.components.git.digest).toBe(
+      first.preconditionFingerprint.components.git.digest,
+    );
+    expect(moved.preconditionFingerprint.components.git.digest).not.toBe(
+      first.preconditionFingerprint.components.git.digest,
+    );
   });
 
   it("projects runner wait without a mutation path or executable argv", () => {
