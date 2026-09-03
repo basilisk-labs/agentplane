@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -255,7 +255,7 @@ events:
     note: "Implementation committed: e37f30c53768. CLI accepted one state-bound external-agent semantic result."
     commit: "e37f30c53768d99c19a95dc74973cc909fa3e315"
 doc_version: 3
-doc_updated_at: "2026-09-03T23:37:51.883Z"
+doc_updated_at: "2026-09-03T23:41:24.510Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -268,11 +268,15 @@ sections:
     - Out of scope: unrelated refactors not required for "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete".
   Plan: "Prepared one bounded branch_pr recovery plan with four strictly sequential WorkItems: stabilize the verification contract across execution and persistence, make task-centric rework projection atomic, prove the PX8PZT failure path, and qualify the combined repair. The execution declaration, WorkItem scopes, and resource claims use one closed set of four repository roots."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    2. Run `bun x prettier --check packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    3. Run `bun run lint:core`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    4. Run `bun run typecheck`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    5. Run `node .agentplane/policy/check-routing.mjs`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    6. Run `agentplane task lint 202609032308-F31YXS`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    7. Run `agentplane doctor`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    8. Run `git diff --check`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+    9. Run `bun run ci:local:full`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -769,7 +773,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 3
+    event_cursor: 4
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -807,11 +811,30 @@ extensions:
         Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work.
       task_id: "202609032308-F31YXS"
     lifecycle: "ACTIVE"
-    plan_amendments: []
+    plan_amendments:
+      -
+        actor_id: "external:EXECUTOR"
+        created_at: "2026-09-03T23:41:24.470Z"
+        digest: "sha256:26b5f39fb42b14512e2235a2b8e83d3e359ec0835f316f4abf452d0f096c60de"
+        id: "amendment_26b5f39fb42b14512e2235a2"
+        plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+        plan_revision: 1
+        refinement:
+          acceptance_changed: false
+          architecture_constraints_changed: false
+          dependencies_changed: false
+          description: "Replace --project agentplane with --project cli-core only for validation commands that include packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts. Preserve all other command arguments and all approved requirements."
+          external_effects_added: []
+          operations:
+            - "clarify"
+          outputs_added: []
+          risk_changed: false
+          scope_roots_added: []
+        schema_version: 1
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-03T23:37:59.823Z"
+    updated_at: "2026-09-03T23:41:24.470Z"
     work_items:
       integrated-recovery-qualification:
         attempt: 0
@@ -944,6 +967,22 @@ extensions:
         task_id: "202609032308-F31YXS"
         task_revision: 9
         work_item_id: "task-centric-rework-atomicity"
+      -
+        at: "2026-09-03T23:41:24.470Z"
+        from: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+        to: "sha256:26b5f39fb42b14512e2235a2b8e83d3e359ec0835f316f4abf452d0f096c60de"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_74a2393ae742513d151afc44"
+        mutation_id: "plan-refinement:work-order-202609032308-F31YXS-executor-60e3ba2d0f49fb0e8c7dfe80"
+        plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+        task_revision: 10
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:006e22756bc5a08db92bf228206a39cfd6b663d86af760e684ce7fc2a34a132a:
@@ -1064,6 +1103,29 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      plan-refinement:work-order-202609032308-F31YXS-executor-60e3ba2d0f49fb0e8c7dfe80:
+        aggregate_digest: "sha256:81cced5fc9b7ad4e3f34a02e66326714bd6ba901d82871584a5aab73a2fcf2c2"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-03T23:41:24.470Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+          id: "event_74a2393ae742513d151afc44"
+          mutation_id: "plan-refinement:work-order-202609032308-F31YXS-executor-60e3ba2d0f49fb0e8c7dfe80"
+          plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 10
+          to: "sha256:26b5f39fb42b14512e2235a2b8e83d3e359ec0835f316f4abf452d0f096c60de"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609032308-F31YXS-executor-60e3ba2d0f49fb0e8c7dfe80"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -1097,11 +1159,15 @@ Prepared one bounded branch_pr recovery plan with four strictly sequential WorkI
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+2. Run `bun x prettier --check packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+3. Run `bun run lint:core`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+4. Run `bun run typecheck`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+5. Run `node .agentplane/policy/check-routing.mjs`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+6. Run `agentplane task lint 202609032308-F31YXS`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+7. Run `agentplane doctor`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+8. Run `git diff --check`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
+9. Run `bun run ci:local:full`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
 
 ## Verification
 

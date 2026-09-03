@@ -30,6 +30,7 @@ Created: 2026-09-03T23:29:34.750Z
 
 ```text
  .../task-centric-backend-projection.ts             |  10 +-
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  18 ++-
  .../src/commands/shared/task-mutation.test.ts      | 143 +++++++++++++++++++++
  .../commands/task/direct-task-verification.test.ts |   9 ++
  .../src/commands/task/direct-task-verification.ts  |   4 +-
@@ -37,7 +38,7 @@ Created: 2026-09-03T23:29:34.750Z
  .../src/commands/task/verify-record-execute.ts     |  43 ++++---
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
  .../src/commands/task/verify-record.types.ts       |   8 ++
- 8 files changed, 215 insertions(+), 23 deletions(-)
+ 9 files changed, 231 insertions(+), 25 deletions(-)
 ```
 
 </details>
