@@ -1,10 +1,11 @@
 ---
 id: "202609031717-PX8PZT"
 title: "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -63,6 +64,20 @@ quality_review:
     - "Worktree dependency reuse rejects missing, incomplete, foreign, or task-worktree-owned layouts; the bootstrap path rebuilds invalid layouts."
     - "The frozen diff stays within the approved four-contract scope and excludes MPXQBK, full GitLab/provider expansion, release/version/publication metadata, and dependency changes."
     - "Residual risk: Hosted provider and integration behavior remains to be established by AgentPlane's external delivery stages; it is not inferred from local checks."
+token_usage:
+  agent_runs: 14
+  input_tokens: null
+  journal_digest: "sha256:b6f1d99f6c0bc5e713efb1f1980ac0712eba8b20942a2f99096ca85dc8b879cd"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-03T21:48:43.283Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -349,8 +364,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9360c020cc206d344c496d95c7c147e2adba09d2"
-  message: "🚧 PX8PZT task: apply external agent result"
+  hash: "f31c2433ea80e3af40f71a9d277db1f55c6bba6a"
+  message: "🚧 PX8PZT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -376,6 +391,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "External EXECUTOR returned failed: The same authority mismatch remains at task revision 23. The required correction is limited to the protected task README, while this EXECUTOR packet again authorizes only implementation-code roots."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -446,9 +464,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-03T21:48:43.283Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f31c2433ea80e3af40f71a9d277db1f55c6bba6a"
 doc_version: 3
-doc_updated_at: "2026-09-03T21:47:45.282Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T21:48:43.283Z"
+doc_updated_by: "CODER"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
   Summary: |-
@@ -1295,7 +1321,78 @@ extensions:
       schema_version: 1
       task_id: "202609031717-PX8PZT"
     event_cursor: 15
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          check_id: "salvage-focused"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T21:47:43.960Z"
+          repository_snapshot_digest: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          check_id: "format-touched"
+          command_identity: "bun x prettier --check packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/commands/branch/work-start.materialize.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/flow-status.ts packages/agentplane/src/commands/shared/task-handoff-reader.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/handoff-show.command.ts packages/agentplane/src/commands/task/handoff.shared.ts scripts/workflow/bootstrap-framework-dev.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T21:47:43.960Z"
+          repository_snapshot_digest: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          check_id: "lint-core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T21:47:43.960Z"
+          repository_snapshot_digest: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T21:47:43.960Z"
+          repository_snapshot_digest: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          check_id: "routing"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T21:47:43.960Z"
+          repository_snapshot_digest: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T21:47:43.960Z"
+          repository_snapshot_digest: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609031717-PX8PZT"
     intent:
       acceptance_criteria:
@@ -1331,7 +1428,7 @@ extensions:
 
         Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full.
       task_id: "202609031717-PX8PZT"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -1372,9 +1469,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 28
+    revision: 29
     schema_version: 1
-    updated_at: "2026-09-03T21:47:45.282Z"
+    updated_at: "2026-09-03T21:48:43.283Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -2165,6 +2262,31 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202609031717-PX8PZT"
+      legacy-finish:202609031717-PX8PZT:2026-09-03T21:47:43.960Z:9360c020cc206d344c496d95c7c147e2adba09d2:
+        aggregate_digest: "sha256:e22841586115d493b26e34119d4f4b4db89ef3b459788cd81ce4df1b3836dd2f"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-03T21:48:43.283Z"
+          cause_refs:
+            - "task-verification:202609031717-PX8PZT"
+            - "git:9360c020cc206d344c496d95c7c147e2adba09d2"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_515610ad60d86a6491842df6"
+          mutation_id: "legacy-finish:202609031717-PX8PZT:2026-09-03T21:47:43.960Z:9360c020cc206d344c496d95c7c147e2adba09d2"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: "sha256:6d9ab67637f465b9ae7f12d69afca29f57c3ee3f500eeb91b0452a587be62112"
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 28
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609031717-PX8PZT:2026-09-03T21:47:43.960Z:9360c020cc206d344c496d95c7c147e2adba09d2"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
       plan-refinement:work-order-202609031717-PX8PZT-executor-72b57d4e95a0854941a58eca:
         aggregate_digest: "sha256:aa360a4d2cecc6c43a5328817203f8c9fb90343e0b7851d3d150a0df1506912b"
         event:
@@ -2216,6 +2338,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "9360c020cc206d344c496d95c7c147e2adba09d2"
+    message: "🚧 PX8PZT task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
@@ -2573,3 +2696,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/14` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b6f1d99f6c0bc5e713efb1f1980ac0712eba8b20942a2f99096ca85dc8b879cd`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-03T21:48:43.283Z`
