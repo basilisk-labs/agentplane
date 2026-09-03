@@ -4,7 +4,7 @@ title: "Repair task-centric plan-rejection projection atomicity and recover task
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -20,12 +20,12 @@ blueprint_request: "code.branch_pr"
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-03T11:32:01.234Z"
+  updated_at: "2026-09-03T12:24:34.261Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:490fd6caaf0298d0e941adf03ea509f12c27a85ec06548a12aa76eb7849a294a"
+  note: "host_user_decision=sha256:5dc913c65f64a2ba71f7b9298060f3cd9a30789e35f508b2330387d3d4da2fdf"
 verification:
   state: "ok"
-  updated_at: "2026-09-03T12:01:45.892Z"
+  updated_at: "2026-09-03T12:14:10.399Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
@@ -96,87 +96,11 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-      - "scripts"
-    changed_paths:
-      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
-      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
-      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
-      - "packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts"
-      - "packages/agentplane/src/cli/group-command.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
-      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
-      - "packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
-      - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
-      - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
-      - "packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
-      - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
-      - "packages/agentplane/src/commands/doctor/workspace.ts"
-      - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
-      - "packages/agentplane/src/commands/task/plan-approval-guard.ts"
-      - "packages/agentplane/src/commands/task/plan-recover-rejection.command.ts"
-      - "packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts"
-      - "packages/agentplane/src/commands/task/plan-rejection-recovery.ts"
-      - "packages/agentplane/src/commands/task/plan.command.ts"
-      - "packages/agentplane/src/commands/task/plan.ts"
-      - "scripts/baselines/v0.7-compatibility-candidate.json"
-      - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -218,59 +142,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:4c842b91e0a9dbcbb1db938f406c6d2c7a5bacdaf04ce7661a7282713df3667a"
+      digest: "sha256:ab022e87a13b2832d513163d959623f6d75994613c9d9b07c4e5128e5d49934e"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-kernel"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
-        - "central_path:packages/agentplane/src/cli/group-command.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
-        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
-        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-          - "scripts"
-        changed_files:
-          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
-          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
-          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts"
-          - "packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts"
-          - "packages/agentplane/src/cli/group-command.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
-          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
-          - "packages/agentplane/src/cli/run-cli/command-catalog.test.ts"
-          - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
-          - "packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
-          - "packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
-          - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
-          - "packages/agentplane/src/commands/doctor/workspace.ts"
-          - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
-          - "packages/agentplane/src/commands/task/plan-approval-guard.ts"
-          - "packages/agentplane/src/commands/task/plan-recover-rejection.command.ts"
-          - "packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts"
-          - "packages/agentplane/src/commands/task/plan-rejection-recovery.ts"
-          - "packages/agentplane/src/commands/task/plan.command.ts"
-          - "packages/agentplane/src/commands/task/plan.ts"
-          - "scripts/baselines/v0.7-compatibility-candidate.json"
-          - "scripts/checks/check-compatibility-contract-baseline.mjs"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -306,7 +193,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e"
+  hash: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
   message: "🚧 925NNG task: apply external agent result"
 comments:
   -
@@ -327,6 +214,18 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 89bc65eccd28. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: efa74b42a2e7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The prepared implementation episode is stale and cannot be executed safely: it has no WorkItem binding even though the approved canonical plan still contains two PLANNED WorkItems, while the task already records implementation commit efa74b42a2e77bb77de2ff908af5b8b29194135d and successful verification."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -391,9 +290,42 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-03T12:06:25.012Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: efa74b42a2e7. CLI accepted one state-bound external-agent semantic result."
+    commit: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
+  -
+    type: "verify"
+    at: "2026-09-03T12:14:10.399Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "comment"
+    at: "2026-09-03T12:15:52.052Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The prepared implementation episode is stale and cannot be executed safely: it has no WorkItem binding even though the approved canonical plan still contains two PLANNED WorkItems, while the task already records implementation commit efa74b42a2e77bb77de2ff908af5b8b29194135d and successful verification."
+  -
+    type: "status"
+    at: "2026-09-03T12:21:23.132Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-03T12:24:40.155Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-09-03T12:01:47.723Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T12:24:40.155Z"
+doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
   Summary: |-
@@ -403,7 +335,7 @@ sections:
   Scope: |-
     - In scope: Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB.
     - Out of scope: unrelated refactors not required for "Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation".
-  Plan: "Refined the branch_pr recovery plan to include the compatibility ratchet checker required to review the new internal CLI recovery command."
+  Plan: "Refine the bounded branch_pr plan with an executable output chain and fail-closed validation for unproduced required_inputs, preserving the completed plan-rejection recovery scope."
   Verify Steps: |-
     PLANNER fallback scaffold for "Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation". Replace with task-specific acceptance checks when PLANNER context is available.
 
@@ -623,6 +555,132 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-03T12:14:10.399Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:8bae660f6bd1e9954513792c06ff27d5ff122519a1630d154e0cceefe634d5c2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check critical_paths (3/3)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check docs_contract (1/3)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check docs_contract (2/3)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check docs_contract (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check real_e2e (1/3)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check real_e2e (2/3)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check real_e2e (3/3)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609030849-925NNG-repair-task-centric-plan-rejection-projection-at/.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json
+    - old_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+    - current_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609030849-925NNG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -631,7 +689,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:490fd6caaf0298d0e941adf03ea509f12c27a85ec06548a12aa76eb7849a294a"
+    approval_evidence_digest: "sha256:5dc913c65f64a2ba71f7b9298060f3cd9a30789e35f508b2330387d3d4da2fdf"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -641,12 +699,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:e2948d9d384b38b3f5e77112cf7ab5b5144ff9c778c1bde311f0402d7c728526"
-    digest: "sha256:1961786f6a192074eb0b31b0a149534dfb70232f1073d8dd5ff5772567be7c14"
-    grant_id: "2dd0dc97-03d0-4b99-ac0d-c6601c7cd511"
-    issued_at: "2026-09-03T11:32:01.234Z"
+    digest: "sha256:74eb873c7bb59367fc30ca3f263e6203d39b9b21959ba0c2be33d9b8899a8f95"
+    grant_id: "3b0a1ca2-98dd-496a-a193-2afdf1601d84"
+    issued_at: "2026-09-03T12:24:34.261Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:0b03171c6441811340c3f5a31813727d519d8c6c2ef1dd4639587ddd9bd801c0"
-    plan_revision: 16
+    plan_digest: "sha256:13888b8d7c95a3778051d4398f4f78821c6924e22315c5ff209228207bfb7a46"
+    plan_revision: 31
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:f4fbd7586006095d0e046d670c8df7a6ea758e42387969ea67c87d3a14759130"
@@ -655,40 +713,43 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-03T11:32:01.234Z"
+        approved_at: "2026-09-03T12:24:34.261Z"
         approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:81536767b7980658b2e961f037c86359470c9aee1ab7f243a05e4567a197e00b"
+        approved_digest: "sha256:33a57055dc30c890a383a0ae40b9417142cad190a14347182f678e92b837865c"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-03T11:31:01.148Z"
-      digest: "sha256:81536767b7980658b2e961f037c86359470c9aee1ab7f243a05e4567a197e00b"
+      created_at: "2026-09-03T12:24:19.989Z"
+      digest: "sha256:33a57055dc30c890a383a0ae40b9417142cad190a14347182f678e92b837865c"
       proposal:
         assumptions:
           - "The repair reuses the existing kernel reject_plan command and task-centric CAS/receipt machinery instead of introducing a second lifecycle model."
           - "The historical task will be reconciled only after independent evaluation and integration on fresh main."
           - "The recovery command requires exact task id, rejected digest, observed revisions, and current fingerprint so unrelated corruptions fail closed."
           - "The compatibility candidate and ratchet checker will record only the intentional recover-rejection command descriptor, options, and task provenance."
+          - "The new WorkItem will reproduce the binding loss through the public task-centric external-result path before changing the route."
+          - "Existing implementation commits and verification evidence remain preserved; the supervisor decides whether they can be reused after the binding fix."
+          - "Historical task recovery remains prohibited until the repair, including this routing fix, is independently evaluated and integrated."
+          - "External planning authority can call the exported kernel WorkItem invariant without changing task-centric persistence semantics."
+          - "The corrected plan graph is schedulable because every required input is produced by exactly one declared predecessor."
         planning_baseline:
-          captured_at: "2026-09-03T11:30:12.647Z"
+          captured_at: "2026-09-03T12:22:52.699Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:c17d428d7ff391ce0b6ea64045541fab73326b933fee216dbe8e3542075a6104"
+          digest: "sha256:6a5013aa6e2b457fad79b1dc3e7225042db2e9b49dbd798dca936ce9f978453b"
           dirty_paths:
             - ".agentplane/tasks/202609030849-925NNG/README.md"
-            - ".agentplane/tasks/202609030849-925NNG/pr/github-body.md"
             - ".agentplane/tasks/202609030849-925NNG/pr/meta.json"
-            - ".agentplane/tasks/202609030849-925NNG/pr/review.md"
             - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
             - ".agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+            - ".agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
           git:
             kind: "commit"
             ref: null
-            sha: "47389c597cfaab95a08b282db8ea606aa350da79"
+            sha: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:15"
+          task_history_cursor: "task-revision:30"
         schema_version: 1
         task_id: "202609030849-925NNG"
         top_level_validation:
@@ -847,10 +908,7 @@ extensions:
               objective: "Reproduce the split-brain plan rejection in an isolated task-centric fixture, identify the bypass of the canonical reject_plan transition, and implement one atomic receipt-backed rejection mutation whose replay, interruption behavior, route invalidation, and stale approval handling are fail-closed."
               optional: false
               priority: 100
-              required_inputs:
-                - "planning-baseline"
-                - "confirmed-corrupted-state"
-                - "rejected-plan-digest"
+              required_inputs: []
               resource_claims:
                 -
                   kind: "path"
@@ -940,23 +998,6 @@ extensions:
                   description: "The compatibility candidate records only the intentional CLI topology addition and both compatibility checks pass."
                   id: "recovery-4"
                   required: true
-                -
-                  check_ids:
-                    - "hotspots"
-                    - "lint"
-                    - "typecheck"
-                    - "full-local-ci"
-                    - "independent-evaluator"
-                    - "hosted-integration"
-                  description: "All requested quality gates pass, an independent EVALUATOR passes the implementation, and branch_pr integration completes before historical recovery."
-                  id: "recovery-5"
-                  required: true
-                -
-                  check_ids:
-                    - "post-merge-recovery"
-                  description: "On fresh main the CLI-owned operation recovers 202609021331-5FPZAB, records its receipt and evidence, emits a fresh agent.planning packet, and no plan is approved on the user's behalf."
-                  id: "recovery-6"
-                  required: true
               capabilities:
                 - "task.verify"
               context:
@@ -984,8 +1025,6 @@ extensions:
                 - "diagnostic-regression-evidence"
                 - "compatibility-candidate-update"
                 - "historical-recovery-regression-evidence"
-                - "integrated-repair"
-                - "historical-task-recovery-evidence"
                 - "reviewed-compatibility-ratchet-update"
               id: "diagnostic-and-recovery"
               objective: "Add mismatch diagnostics and a deterministic CLI-owned historical recovery, update the compatibility candidate for the intentional command topology, qualify the repair, integrate it, and only then recover the historical task on fresh main without approving its new plan."
@@ -1062,6 +1101,149 @@ extensions:
                     timeout_ms: 180000
                   -
                     capability: "task.verify"
+                    command: "node .agentplane/policy/check-routing.mjs"
+                    id: "routing-policy"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 60000
+                criteria:
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                    description: "Focused workspace diagnostic test detects the historical mismatch without mutation."
+                    id: "recovery-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                    description: "Focused adapter, CLI, and recovery tests cover exact preconditions, preservation, monotonic history, event, receipt, and auditability."
+                    id: "recovery-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                      - "lifecycle-invariants"
+                    description: "Focused tests and invariants verify digest invalidation and post-recovery agent.planning."
+                    id: "recovery-3"
+                    required: true
+                  -
+                    check_ids:
+                      - "compatibility"
+                      - "routing-policy"
+                    description: "Compatibility and routing checks verify the intentional CLI surface addition."
+                    id: "recovery-4"
+                    required: true
+                evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+                schema_version: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "binding-focused"
+                  description: "Focused external-planning tests reject an unproduced, multiply produced, self-produced, or cyclic required input before task plan persistence, while the corrected plan output chain remains executable."
+                  id: "binding-1"
+                  required: true
+                -
+                  check_ids:
+                    - "binding-focused"
+                    - "lifecycle-invariants"
+                  description: "A valid corrected graph preserves canonical WorkItem selection and result application exactly once; stale or absent bindings fail closed without partial lifecycle mutation."
+                  id: "binding-2"
+                  required: true
+                -
+                  check_ids:
+                    - "binding-focused"
+                  description: "After deterministic verification, task next-action reaches independent EVALUATOR and does not loop through an EXECUTOR packet with work_item_id null."
+                  id: "binding-3"
+                  required: true
+                -
+                  check_ids:
+                    - "binding-focused"
+                    - "lifecycle-invariants"
+                    - "compatibility"
+                    - "hotspots"
+                    - "lint"
+                    - "typecheck"
+                    - "routing-policy"
+                    - "full-local-ci"
+                    - "independent-evaluator"
+                    - "hosted-integration"
+                  description: "Focused regressions, lifecycle invariants, compatibility, hotspots, lint, typecheck, routing policy, full local CI, independent EVALUATOR, and hosted integration all pass before historical recovery."
+                  id: "binding-4"
+                  required: true
+                -
+                  check_ids:
+                    - "post-merge-recovery"
+                  description: "On fresh main only the CLI-owned recovery operation reconciles 202609021331-5FPZAB and task advance stops at a fresh unapproved agent.planning boundary."
+                  id: "binding-5"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 120000
+                optional_sources:
+                  - "packages/core/src/tasks/task-centric/graph.ts"
+                required_sources:
+                  - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+                  - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+                  - "packages/core/src/tasks/task-kernel/invariants.ts"
+                symbol_hints:
+                  - "planningTaskFields"
+                  - "validateTaskPlanProposal"
+                  - "validateWorkItemDefinitions"
+                  - "recordTaskCentricExternalResult"
+              depends_on:
+                - "atomic-plan-rejection"
+                - "diagnostic-and-recovery"
+              expected_outputs:
+                - "task-plan-graph-validation-fix"
+                - "invalid-required-input-regression-evidence"
+                - "work-item-completion-binding-fix"
+                - "work-item-binding-regression-evidence"
+                - "independent-evaluator-pass"
+                - "integrated-repair"
+                - "historical-task-recovery-evidence"
+              id: "work-item-completion-binding"
+              objective: "Reject invalid external TaskPlanProposal graphs before persistence, including unproduced, multiply produced, self-produced, and cyclic required_inputs, while preserving canonical WorkItem binding and routing the corrected verified branch_pr task to independent EVALUATOR."
+              optional: false
+              priority: 80
+              required_inputs:
+                - "recovery-operation-implementation"
+                - "diagnostic-regression-evidence"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task"
+              risk: "high"
+              scope_roots:
+                - "packages/agentplane/src/commands/task"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --maxWorkers=1"
+                    id: "binding-focused"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 240000
+                  -
+                    capability: "task.verify"
+                    command: "bun run lifecycle:invariants"
+                    id: "lifecycle-invariants"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "bun run bench:compatibility:candidate:check && bun run bench:compatibility:check"
+                    id: "compatibility"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 180000
+                  -
+                    capability: "task.verify"
                     command: "bun run hotspots:check"
                     id: "hotspots"
                     kind: "deterministic"
@@ -1113,50 +1295,47 @@ extensions:
                 criteria:
                   -
                     check_ids:
-                      - "recovery-focused"
-                    description: "Focused workspace diagnostic test detects the historical mismatch without mutation."
-                    id: "recovery-1"
+                      - "binding-focused"
+                    description: "Focused tests prove fail-closed required-input graph validation and acceptance of the corrected output chain."
+                    id: "binding-1"
                     required: true
                   -
                     check_ids:
-                      - "recovery-focused"
-                    description: "Focused adapter, CLI, and recovery tests cover exact preconditions, preservation, monotonic history, event, receipt, and auditability."
-                    id: "recovery-2"
-                    required: true
-                  -
-                    check_ids:
-                      - "recovery-focused"
+                      - "binding-focused"
                       - "lifecycle-invariants"
-                    description: "Focused tests and invariants verify digest invalidation and post-recovery agent.planning."
-                    id: "recovery-3"
+                    description: "Focused tests and lifecycle invariants prove exactly-once WorkItem completion and idempotent replay."
+                    id: "binding-2"
                     required: true
                   -
                     check_ids:
+                      - "binding-focused"
+                    description: "The verified branch_pr route reaches EVALUATOR without an unbound EXECUTOR loop."
+                    id: "binding-3"
+                    required: true
+                  -
+                    check_ids:
+                      - "binding-focused"
+                      - "lifecycle-invariants"
                       - "compatibility"
-                      - "routing-policy"
-                    description: "Compatibility and routing checks verify the intentional CLI surface addition."
-                    id: "recovery-4"
-                    required: true
-                  -
-                    check_ids:
                       - "hotspots"
                       - "lint"
                       - "typecheck"
+                      - "routing-policy"
                       - "full-local-ci"
                       - "independent-evaluator"
                       - "hosted-integration"
-                    description: "Static, full regression, independent review, and hosted integration gates all pass."
-                    id: "recovery-5"
+                    description: "The full requested qualification, independent review, and hosted integration remain green."
+                    id: "binding-4"
                     required: true
                   -
                     check_ids:
                       - "post-merge-recovery"
-                    description: "Post-merge semantic evidence proves historical recovery and the unapproved fresh planning boundary."
-                    id: "recovery-6"
+                    description: "Post-merge evidence proves historical recovery and the unapproved planning boundary."
+                    id: "binding-5"
                     required: true
                 evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
                 schema_version: 1
-      revision: 3
+      revision: 5
       schema_version: 1
       task_id: "202609030849-925NNG"
     event_cursor: 0
@@ -2078,9 +2257,1148 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609030849-925NNG"
-    revision: 17
+      -
+        approval:
+          approved_at: "2026-09-03T11:32:01.234Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:81536767b7980658b2e961f037c86359470c9aee1ab7f243a05e4567a197e00b"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-03T11:31:01.148Z"
+        digest: "sha256:81536767b7980658b2e961f037c86359470c9aee1ab7f243a05e4567a197e00b"
+        proposal:
+          assumptions:
+            - "The repair reuses the existing kernel reject_plan command and task-centric CAS/receipt machinery instead of introducing a second lifecycle model."
+            - "The historical task will be reconciled only after independent evaluation and integration on fresh main."
+            - "The recovery command requires exact task id, rejected digest, observed revisions, and current fingerprint so unrelated corruptions fail closed."
+            - "The compatibility candidate and ratchet checker will record only the intentional recover-rejection command descriptor, options, and task provenance."
+          planning_baseline:
+            captured_at: "2026-09-03T11:30:12.647Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:c17d428d7ff391ce0b6ea64045541fab73326b933fee216dbe8e3542075a6104"
+            dirty_paths:
+              - ".agentplane/tasks/202609030849-925NNG/README.md"
+              - ".agentplane/tasks/202609030849-925NNG/pr/github-body.md"
+              - ".agentplane/tasks/202609030849-925NNG/pr/meta.json"
+              - ".agentplane/tasks/202609030849-925NNG/pr/review.md"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202609030849-925NNG/verification/20260903112957796-21c9078b9095e3cb.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "47389c597cfaab95a08b282db8ea606aa350da79"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:15"
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1 && bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1"
+                id: "focused-regressions"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run lifecycle:invariants"
+                id: "lifecycle-invariants"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun run bench:compatibility:candidate:check && bun run bench:compatibility:check"
+                id: "compatibility"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bun run hotspots:check"
+                id: "hotspots"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun run lint"
+                id: "lint"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "routing-policy"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 60000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-local-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                id: "independent-evaluator"
+                kind: "semantic"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted-integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "post-merge-recovery"
+                kind: "semantic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused-regressions"
+                description: "All eight requested regression scenarios pass and demonstrate atomic rejection plus deterministic historical recovery."
+                id: "top-1"
+                required: true
+              -
+                check_ids:
+                  - "lifecycle-invariants"
+                  - "compatibility"
+                  - "hotspots"
+                  - "lint"
+                  - "typecheck"
+                  - "routing-policy"
+                  - "full-local-ci"
+                description: "Lifecycle invariants, compatibility, hotspots, lint, typecheck, routing policy, and full local CI pass without relaxed checks."
+                id: "top-2"
+                required: true
+              -
+                check_ids:
+                  - "independent-evaluator"
+                  - "hosted-integration"
+                description: "An independent EVALUATOR passes the exact implementation and AgentPlane integrates it through branch_pr before historical recovery."
+                id: "top-3"
+                required: true
+              -
+                check_ids:
+                  - "post-merge-recovery"
+                description: "Fresh main uses only the new CLI operation to recover the historical task and stops at an unapproved fresh planning boundary."
+                id: "top-4"
+                required: true
+            evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                    description: "Proposal followed by rejection atomically commits README projection, canonical aggregate, revision, event, receipt, rejected plan state, invalidation, and kernel_plan_required route."
+                    id: "atomic-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                    description: "Exact rejection replay returns the durable receipt without a second revision or event, and interruption cannot expose a rejected README with an approval-eligible canonical plan."
+                    id: "atomic-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                      - "lifecycle-invariants"
+                    description: "Stale approval packets and host decisions for the rejected digest fail closed, and task advance emits agent.planning."
+                    id: "atomic-3"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 120000
+                  optional_sources:
+                    - "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/plan.ts"
+                    - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+                    - "packages/core/src/tasks/task-kernel/kernel.ts"
+                    - "packages/agentplane/src/commands/task/kernel-advance.ts"
+                  symbol_hints:
+                    - "cmdTaskPlanReject"
+                    - "reject_plan"
+                    - "TaskCentricBackendAdapter"
+                    - "advanceCanonicalTask"
+                depends_on: []
+                expected_outputs:
+                  - "atomic-plan-rejection-implementation"
+                  - "plan-rejection-regression-evidence"
+                id: "atomic-plan-rejection"
+                objective: "Reproduce the split-brain plan rejection in an isolated task-centric fixture, identify the bypass of the canonical reject_plan transition, and implement one atomic receipt-backed rejection mutation whose replay, interruption behavior, route invalidation, and stale approval handling are fail-closed."
+                optional: false
+                priority: 100
+                required_inputs:
+                  - "planning-baseline"
+                  - "confirmed-corrupted-state"
+                  - "rejected-plan-digest"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks/task-kernel"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts --maxWorkers=1"
+                      id: "atomic-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                  criteria:
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                      description: "Focused tests verify atomic canonical rejection across all projections and persistence records."
+                      id: "atomic-1"
+                      required: true
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                      description: "Focused tests verify replay idempotency and simulated interruption boundaries."
+                      id: "atomic-2"
+                      required: true
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                        - "lifecycle-invariants"
+                      description: "Focused tests and lifecycle invariants verify stale approval rejection and planning route selection."
+                      id: "atomic-3"
+                      required: true
+                  evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                    description: "A read-only diagnostic detects the 52 versus 50 revision mismatch and rejected README versus approval-eligible canonical plan without mutation."
+                    id: "recovery-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                    description: "The guarded CLI recovery validates exact historical preconditions, preserves task content and evidence, and appends the canonical event and receipt with monotonic revision history."
+                    id: "recovery-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                      - "lifecycle-invariants"
+                    description: "Equivalent fixture recovery invalidates the rejected digest and post-recovery advance emits agent.planning with a new fingerprint."
+                    id: "recovery-3"
+                    required: true
+                  -
+                    check_ids:
+                      - "compatibility"
+                      - "routing-policy"
+                    description: "The compatibility candidate records only the intentional CLI topology addition and both compatibility checks pass."
+                    id: "recovery-4"
+                    required: true
+                  -
+                    check_ids:
+                      - "hotspots"
+                      - "lint"
+                      - "typecheck"
+                      - "full-local-ci"
+                      - "independent-evaluator"
+                      - "hosted-integration"
+                    description: "All requested quality gates pass, an independent EVALUATOR passes the implementation, and branch_pr integration completes before historical recovery."
+                    id: "recovery-5"
+                    required: true
+                  -
+                    check_ids:
+                      - "post-merge-recovery"
+                    description: "On fresh main the CLI-owned operation recovers 202609021331-5FPZAB, records its receipt and evidence, emits a fresh agent.planning packet, and no plan is approved on the user's behalf."
+                    id: "recovery-6"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 160000
+                  optional_sources:
+                    - "packages/agentplane/src/adapters/task-backend/kernel-migration.ts"
+                    - "docs/reference"
+                  required_sources:
+                    - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+                    - "packages/agentplane/src/commands/task/plan.ts"
+                    - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+                    - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+                    - "scripts/baselines/v0.7-compatibility-candidate.json"
+                    - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  symbol_hints:
+                    - "checkTaskReadmeMigrationState"
+                    - "cmdTaskPlanReject"
+                    - "mutation_receipts"
+                    - "task command catalog"
+                    - "compatibility candidate"
+                depends_on:
+                  - "atomic-plan-rejection"
+                expected_outputs:
+                  - "recovery-operation-implementation"
+                  - "diagnostic-regression-evidence"
+                  - "compatibility-candidate-update"
+                  - "historical-recovery-regression-evidence"
+                  - "integrated-repair"
+                  - "historical-task-recovery-evidence"
+                  - "reviewed-compatibility-ratchet-update"
+                id: "diagnostic-and-recovery"
+                objective: "Add mismatch diagnostics and a deterministic CLI-owned historical recovery, update the compatibility candidate for the intentional command topology, qualify the repair, integrate it, and only then recover the historical task on fresh main without approving its new plan."
+                optional: false
+                priority: 90
+                required_inputs:
+                  - "atomic-plan-rejection-implementation"
+                  - "plan-rejection-regression-evidence"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/doctor"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/commands/doctor"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks/task-kernel"
+                  - "docs/reference"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1 && bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1"
+                      id: "recovery-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:compatibility:candidate:check && bun run bench:compatibility:check"
+                      id: "compatibility"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run hotspots:check"
+                      id: "hotspots"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lint"
+                      id: "lint"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "routing-policy"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 60000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-local-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      id: "independent-evaluator"
+                      kind: "semantic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "hosted-integration"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "post-merge-recovery"
+                      kind: "semantic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "recovery-focused"
+                      description: "Focused workspace diagnostic test detects the historical mismatch without mutation."
+                      id: "recovery-1"
+                      required: true
+                    -
+                      check_ids:
+                        - "recovery-focused"
+                      description: "Focused adapter, CLI, and recovery tests cover exact preconditions, preservation, monotonic history, event, receipt, and auditability."
+                      id: "recovery-2"
+                      required: true
+                    -
+                      check_ids:
+                        - "recovery-focused"
+                        - "lifecycle-invariants"
+                      description: "Focused tests and invariants verify digest invalidation and post-recovery agent.planning."
+                      id: "recovery-3"
+                      required: true
+                    -
+                      check_ids:
+                        - "compatibility"
+                        - "routing-policy"
+                      description: "Compatibility and routing checks verify the intentional CLI surface addition."
+                      id: "recovery-4"
+                      required: true
+                    -
+                      check_ids:
+                        - "hotspots"
+                        - "lint"
+                        - "typecheck"
+                        - "full-local-ci"
+                        - "independent-evaluator"
+                        - "hosted-integration"
+                      description: "Static, full regression, independent review, and hosted integration gates all pass."
+                      id: "recovery-5"
+                      required: true
+                    -
+                      check_ids:
+                        - "post-merge-recovery"
+                      description: "Post-merge semantic evidence proves historical recovery and the unapproved fresh planning boundary."
+                      id: "recovery-6"
+                      required: true
+                  evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+      -
+        approval:
+          approved_at: "2026-09-03T12:21:17.857Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:8de03667daef5084512fb73ee416b72cf1f87bac69e7f57ef472e2c49235c312"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-03T12:19:42.778Z"
+        digest: "sha256:8de03667daef5084512fb73ee416b72cf1f87bac69e7f57ef472e2c49235c312"
+        proposal:
+          assumptions:
+            - "The repair reuses the existing kernel reject_plan command and task-centric CAS/receipt machinery instead of introducing a second lifecycle model."
+            - "The historical task will be reconciled only after independent evaluation and integration on fresh main."
+            - "The recovery command requires exact task id, rejected digest, observed revisions, and current fingerprint so unrelated corruptions fail closed."
+            - "The compatibility candidate and ratchet checker will record only the intentional recover-rejection command descriptor, options, and task provenance."
+            - "The new WorkItem will reproduce the binding loss through the public task-centric external-result path before changing the route."
+            - "Existing implementation commits and verification evidence remain preserved; the supervisor decides whether they can be reused after the binding fix."
+            - "Historical task recovery remains prohibited until the repair, including this routing fix, is independently evaluated and integrated."
+          planning_baseline:
+            captured_at: "2026-09-03T12:16:51.655Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:4cadfe7aa554ebde5f84359c9cbd28dce2c6f612c2b53d996c57d72b0ec5de4f"
+            dirty_paths:
+              - ".agentplane/tasks/202609030849-925NNG/README.md"
+              - ".agentplane/tasks/202609030849-925NNG/pr/meta.json"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:26"
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1 && bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1"
+                id: "focused-regressions"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run lifecycle:invariants"
+                id: "lifecycle-invariants"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun run bench:compatibility:candidate:check && bun run bench:compatibility:check"
+                id: "compatibility"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bun run hotspots:check"
+                id: "hotspots"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 120000
+              -
+                capability: "task.verify"
+                command: "bun run lint"
+                id: "lint"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "routing-policy"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 60000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-local-ci"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                id: "independent-evaluator"
+                kind: "semantic"
+                required: true
+              -
+                capability: "task.verify"
+                id: "hosted-integration"
+                kind: "provider"
+                required: true
+              -
+                capability: "task.verify"
+                id: "post-merge-recovery"
+                kind: "semantic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused-regressions"
+                description: "All eight requested regression scenarios pass and demonstrate atomic rejection plus deterministic historical recovery."
+                id: "top-1"
+                required: true
+              -
+                check_ids:
+                  - "lifecycle-invariants"
+                  - "compatibility"
+                  - "hotspots"
+                  - "lint"
+                  - "typecheck"
+                  - "routing-policy"
+                  - "full-local-ci"
+                description: "Lifecycle invariants, compatibility, hotspots, lint, typecheck, routing policy, and full local CI pass without relaxed checks."
+                id: "top-2"
+                required: true
+              -
+                check_ids:
+                  - "independent-evaluator"
+                  - "hosted-integration"
+                description: "An independent EVALUATOR passes the exact implementation and AgentPlane integrates it through branch_pr before historical recovery."
+                id: "top-3"
+                required: true
+              -
+                check_ids:
+                  - "post-merge-recovery"
+                description: "Fresh main uses only the new CLI operation to recover the historical task and stops at an unapproved fresh planning boundary."
+                id: "top-4"
+                required: true
+            evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                    description: "Proposal followed by rejection atomically commits README projection, canonical aggregate, revision, event, receipt, rejected plan state, invalidation, and kernel_plan_required route."
+                    id: "atomic-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                    description: "Exact rejection replay returns the durable receipt without a second revision or event, and interruption cannot expose a rejected README with an approval-eligible canonical plan."
+                    id: "atomic-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "atomic-focused"
+                      - "lifecycle-invariants"
+                    description: "Stale approval packets and host decisions for the rejected digest fail closed, and task advance emits agent.planning."
+                    id: "atomic-3"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 120000
+                  optional_sources:
+                    - "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/plan.ts"
+                    - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+                    - "packages/core/src/tasks/task-kernel/kernel.ts"
+                    - "packages/agentplane/src/commands/task/kernel-advance.ts"
+                  symbol_hints:
+                    - "cmdTaskPlanReject"
+                    - "reject_plan"
+                    - "TaskCentricBackendAdapter"
+                    - "advanceCanonicalTask"
+                depends_on: []
+                expected_outputs:
+                  - "atomic-plan-rejection-implementation"
+                  - "plan-rejection-regression-evidence"
+                id: "atomic-plan-rejection"
+                objective: "Reproduce the split-brain plan rejection in an isolated task-centric fixture, identify the bypass of the canonical reject_plan transition, and implement one atomic receipt-backed rejection mutation whose replay, interruption behavior, route invalidation, and stale approval handling are fail-closed."
+                optional: false
+                priority: 100
+                required_inputs:
+                  - "planning-baseline"
+                  - "confirmed-corrupted-state"
+                  - "rejected-plan-digest"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks/task-kernel"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts --maxWorkers=1"
+                      id: "atomic-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                  criteria:
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                      description: "Focused tests verify atomic canonical rejection across all projections and persistence records."
+                      id: "atomic-1"
+                      required: true
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                      description: "Focused tests verify replay idempotency and simulated interruption boundaries."
+                      id: "atomic-2"
+                      required: true
+                    -
+                      check_ids:
+                        - "atomic-focused"
+                        - "lifecycle-invariants"
+                      description: "Focused tests and lifecycle invariants verify stale approval rejection and planning route selection."
+                      id: "atomic-3"
+                      required: true
+                  evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                    description: "A read-only diagnostic detects the 52 versus 50 revision mismatch and rejected README versus approval-eligible canonical plan without mutation."
+                    id: "recovery-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                    description: "The guarded CLI recovery validates exact historical preconditions, preserves task content and evidence, and appends the canonical event and receipt with monotonic revision history."
+                    id: "recovery-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "recovery-focused"
+                      - "lifecycle-invariants"
+                    description: "Equivalent fixture recovery invalidates the rejected digest and post-recovery advance emits agent.planning with a new fingerprint."
+                    id: "recovery-3"
+                    required: true
+                  -
+                    check_ids:
+                      - "compatibility"
+                      - "routing-policy"
+                    description: "The compatibility candidate records only the intentional CLI topology addition and both compatibility checks pass."
+                    id: "recovery-4"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 160000
+                  optional_sources:
+                    - "packages/agentplane/src/adapters/task-backend/kernel-migration.ts"
+                    - "docs/reference"
+                  required_sources:
+                    - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+                    - "packages/agentplane/src/commands/task/plan.ts"
+                    - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+                    - "packages/agentplane/src/cli/run-cli/command-catalog/task.ts"
+                    - "scripts/baselines/v0.7-compatibility-candidate.json"
+                    - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                  symbol_hints:
+                    - "checkTaskReadmeMigrationState"
+                    - "cmdTaskPlanReject"
+                    - "mutation_receipts"
+                    - "task command catalog"
+                    - "compatibility candidate"
+                depends_on:
+                  - "atomic-plan-rejection"
+                expected_outputs:
+                  - "recovery-operation-implementation"
+                  - "diagnostic-regression-evidence"
+                  - "compatibility-candidate-update"
+                  - "historical-recovery-regression-evidence"
+                  - "reviewed-compatibility-ratchet-update"
+                id: "diagnostic-and-recovery"
+                objective: "Add mismatch diagnostics and a deterministic CLI-owned historical recovery, update the compatibility candidate for the intentional command topology, qualify the repair, integrate it, and only then recover the historical task on fresh main without approving its new plan."
+                optional: false
+                priority: 90
+                required_inputs:
+                  - "atomic-plan-rejection-implementation"
+                  - "plan-rejection-regression-evidence"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/doctor"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-kernel"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/commands/doctor"
+                  - "packages/agentplane/src/cli"
+                  - "packages/core/src/tasks/task-kernel"
+                  - "docs/reference"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/task/plan-approval-guard.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts --maxWorkers=1 && bun x vitest --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts --maxWorkers=1"
+                      id: "recovery-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:compatibility:candidate:check && bun run bench:compatibility:check"
+                      id: "compatibility"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "routing-policy"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 60000
+                  criteria:
+                    -
+                      check_ids:
+                        - "recovery-focused"
+                      description: "Focused workspace diagnostic test detects the historical mismatch without mutation."
+                      id: "recovery-1"
+                      required: true
+                    -
+                      check_ids:
+                        - "recovery-focused"
+                      description: "Focused adapter, CLI, and recovery tests cover exact preconditions, preservation, monotonic history, event, receipt, and auditability."
+                      id: "recovery-2"
+                      required: true
+                    -
+                      check_ids:
+                        - "recovery-focused"
+                        - "lifecycle-invariants"
+                      description: "Focused tests and invariants verify digest invalidation and post-recovery agent.planning."
+                      id: "recovery-3"
+                      required: true
+                    -
+                      check_ids:
+                        - "compatibility"
+                        - "routing-policy"
+                      description: "Compatibility and routing checks verify the intentional CLI surface addition."
+                      id: "recovery-4"
+                      required: true
+                  evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "binding-focused"
+                    description: "A focused task-centric fixture reproduces plan refinement followed by external implementation result completion and proves the issued episode remains bound to a WorkItem present in the approved plan."
+                    id: "binding-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "binding-focused"
+                      - "lifecycle-invariants"
+                    description: "Successful result application records WorkItem completion and output evidence exactly once; exact replay is idempotent and a stale or absent binding fails closed without partial lifecycle mutation."
+                    id: "binding-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "binding-focused"
+                    description: "After deterministic verification, task next-action reaches independent EVALUATOR and does not loop through an EXECUTOR packet with work_item_id null."
+                    id: "binding-3"
+                    required: true
+                  -
+                    check_ids:
+                      - "binding-focused"
+                      - "lifecycle-invariants"
+                      - "compatibility"
+                      - "hotspots"
+                      - "lint"
+                      - "typecheck"
+                      - "routing-policy"
+                      - "full-local-ci"
+                      - "independent-evaluator"
+                      - "hosted-integration"
+                    description: "Focused regressions, lifecycle invariants, compatibility, hotspots, lint, typecheck, routing policy, full local CI, independent EVALUATOR, and hosted integration all pass before historical recovery."
+                    id: "binding-4"
+                    required: true
+                  -
+                    check_ids:
+                      - "post-merge-recovery"
+                    description: "On fresh main only the CLI-owned recovery operation reconciles 202609021331-5FPZAB and task advance stops at a fresh unapproved agent.planning boundary."
+                    id: "binding-5"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 120000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/kernel-advance.ts"
+                    - "packages/core/src/tasks/task-kernel/kernel.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+                    - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+                    - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+                  symbol_hints:
+                    - "recordTaskCentricExternalResult"
+                    - "work_item_id"
+                    - "approved task plan"
+                    - "plan refinement"
+                depends_on:
+                  - "atomic-plan-rejection"
+                  - "diagnostic-and-recovery"
+                expected_outputs:
+                  - "work-item-completion-binding-fix"
+                  - "work-item-binding-regression-evidence"
+                  - "independent-evaluator-pass"
+                  - "integrated-repair"
+                  - "historical-task-recovery-evidence"
+                id: "work-item-completion-binding"
+                objective: "Reproduce and repair loss of the canonical WorkItem binding across task-centric plan refinement and external-result completion so the supervisor records completion exactly once and routes a verified branch_pr task to independent EVALUATOR instead of issuing unbound EXECUTOR episodes."
+                optional: false
+                priority: 80
+                required_inputs:
+                  - "atomic-plan-rejection-implementation"
+                  - "recovery-operation-implementation"
+                  - "recorded-implementation-commit"
+                  - "successful-verification-evidence"
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/adapters/task-backend"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/task-centric-external-result.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts --maxWorkers=1"
+                      id: "binding-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 240000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lifecycle:invariants"
+                      id: "lifecycle-invariants"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run bench:compatibility:candidate:check && bun run bench:compatibility:check"
+                      id: "compatibility"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run hotspots:check"
+                      id: "hotspots"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 120000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lint"
+                      id: "lint"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "routing-policy"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 60000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-local-ci"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      id: "independent-evaluator"
+                      kind: "semantic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "hosted-integration"
+                      kind: "provider"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      id: "post-merge-recovery"
+                      kind: "semantic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "binding-focused"
+                      description: "Focused tests prove binding preservation and fail-closed stale binding handling."
+                      id: "binding-1"
+                      required: true
+                    -
+                      check_ids:
+                        - "binding-focused"
+                        - "lifecycle-invariants"
+                      description: "Focused tests and lifecycle invariants prove exactly-once WorkItem completion and idempotent replay."
+                      id: "binding-2"
+                      required: true
+                    -
+                      check_ids:
+                        - "binding-focused"
+                      description: "The verified branch_pr route reaches EVALUATOR without an unbound EXECUTOR loop."
+                      id: "binding-3"
+                      required: true
+                    -
+                      check_ids:
+                        - "binding-focused"
+                        - "lifecycle-invariants"
+                        - "compatibility"
+                        - "hotspots"
+                        - "lint"
+                        - "typecheck"
+                        - "routing-policy"
+                        - "full-local-ci"
+                        - "independent-evaluator"
+                        - "hosted-integration"
+                      description: "The full requested qualification, independent review, and hosted integration remain green."
+                      id: "binding-4"
+                      required: true
+                    -
+                      check_ids:
+                        - "post-merge-recovery"
+                      description: "Post-merge evidence proves historical recovery and the unapproved planning boundary."
+                      id: "binding-5"
+                      required: true
+                  evidence_fingerprint: "sha256:4a0294837ebfa73896c3052f58320005f7f8ae5dc5ac369b3193a3c6ee050c3e"
+                  schema_version: 1
+        revision: 4
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-03T11:32:01.234Z"
+    updated_at: "2026-09-03T12:24:34.261Z"
     work_items:
       atomic-plan-rejection:
         attempt: 0
@@ -2089,12 +3407,21 @@ extensions:
         last_failure: null
         output_manifests: []
         revision: 1
-        state: "PLANNED"
+        state: "READY"
         validation_result: null
       diagnostic-and-recovery:
         attempt: 0
         claim_id: null
         id: "diagnostic-and-recovery"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
+      work-item-completion-binding:
+        attempt: 0
+        claim_id: null
+        id: "work-item-completion-binding"
         last_failure: null
         output_manifests: []
         revision: 1
@@ -2139,8 +3466,96 @@ extensions:
         task_id: "202609030849-925NNG"
         task_revision: 14
         work_item_id: null
+      -
+        at: "2026-09-03T12:16:50.059Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "outputs_changed"
+          - "acceptance_changed"
+        entity: "task"
+        id: "event_a7e9fdb0eabfa14f1c87cfc5"
+        mutation_id: "plan-refinement:work-order-202609030849-925NNG-executor-aa44ea9e9f43da649a768934"
+        plan_digest: "sha256:81536767b7980658b2e961f037c86359470c9aee1ab7f243a05e4567a197e00b"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+        task_revision: 25
+        work_item_id: null
+      -
+        at: "2026-09-03T12:22:51.079Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "outputs_changed"
+          - "acceptance_changed"
+          - "dependencies_changed"
+        entity: "task"
+        id: "event_5534167aa74a7292d94e61a4"
+        mutation_id: "plan-refinement:work-order-202609030849-925NNG-executor-0d343c85a70052304eb6865c"
+        plan_digest: "sha256:8de03667daef5084512fb73ee416b72cf1f87bac69e7f57ef472e2c49235c312"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+        task_revision: 29
+        work_item_id: null
     leases: []
     mutation_receipts:
+      plan-refinement:work-order-202609030849-925NNG-executor-0d343c85a70052304eb6865c:
+        aggregate_digest: "sha256:6b6f2b155fe2a62575f7f8f09a93c085d9990ba0b51e3920fd3748b214d04368"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-03T12:22:51.079Z"
+          cause_refs:
+            - "outputs_changed"
+            - "acceptance_changed"
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5534167aa74a7292d94e61a4"
+          mutation_id: "plan-refinement:work-order-202609030849-925NNG-executor-0d343c85a70052304eb6865c"
+          plan_digest: "sha256:8de03667daef5084512fb73ee416b72cf1f87bac69e7f57ef472e2c49235c312"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          task_revision: 29
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609030849-925NNG-executor-0d343c85a70052304eb6865c"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609030849-925NNG"
+      plan-refinement:work-order-202609030849-925NNG-executor-aa44ea9e9f43da649a768934:
+        aggregate_digest: "sha256:e22e4bcb4fa4a055f6934237b2c57ddca9e2036dbec8c4eb2e2744abb559a0d5"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-03T12:16:50.059Z"
+          cause_refs:
+            - "outputs_changed"
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a7e9fdb0eabfa14f1c87cfc5"
+          mutation_id: "plan-refinement:work-order-202609030849-925NNG-executor-aa44ea9e9f43da649a768934"
+          plan_digest: "sha256:81536767b7980658b2e961f037c86359470c9aee1ab7f243a05e4567a197e00b"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609030849-925NNG"
+          task_revision: 25
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609030849-925NNG-executor-aa44ea9e9f43da649a768934"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609030849-925NNG"
       plan-refinement:work-order-202609030849-925NNG-executor-c1110e3e6e7c620b2db0e9ad:
         aggregate_digest: "sha256:1fc0b90b67259acad5fec47dcf1c129fe8a6f04d521b6be3a302267f79840b91"
         event:
@@ -2195,7 +3610,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e"
+    hash: "efa74b42a2e77bb77de2ff908af5b8b29194135d"
   task_execution_context:
     base_ref: "main"
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
@@ -2219,7 +3634,7 @@ Authorized bootstrap recovery only. Reproduce and fix the root cause where task 
 
 ## Plan
 
-Refined the branch_pr recovery plan to include the compatibility ratchet checker required to review the new internal CLI recovery command.
+Refine the bounded branch_pr plan with an executable output chain and fail-closed validation for unproduced required_inputs, preserving the completed plan-rejection recovery scope.
 
 ## Verify Steps
 
@@ -2325,6 +3740,132 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:8372e964a0ee2c20927169a6cd09f7f8266d46e5e217461c81053038b5186e49
+
+Details:
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609030849-925NNG Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609030849-925NNG Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609030849-925NNG Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609030849-925NNG Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609030849-925NNG Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609030849-925NNG Verification Contract check critical_paths (3/3)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609030849-925NNG Verification Contract check docs_contract (1/3)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609030849-925NNG Verification Contract check docs_contract (2/3)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609030849-925NNG Verification Contract check docs_contract (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609030849-925NNG Verification Contract check full_regression
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609030849-925NNG Verification Contract check real_e2e (1/3)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609030849-925NNG Verification Contract check real_e2e (2/3)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609030849-925NNG Verification Contract check real_e2e (3/3)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609030849-925NNG Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609030849-925NNG-repair-task-centric-plan-rejection-projection-at/.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json
+- old_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+- current_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609030849-925NNG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-03T12:14:10.399Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:8bae660f6bd1e9954513792c06ff27d5ff122519a1630d154e0cceefe634d5c2
 
 Details:
 
