@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609030849-925NNG-5951bce5c2887be847fc8029",
+  "prepared_at": "2026-09-03T13:42:13.297Z",
+  "task": {
+    "id": "202609030849-925NNG",
+    "revision": 54,
+    "objective": "Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\n\nAuthorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB.",
+    "acceptance_criteria": [
+      "- In scope: Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB.\n- Out of scope: unrelated refactors not required for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\".",
+      "Refine the executable branch_pr recovery plan so every deterministic validation check is one supervisor-observable command, preserving the completed atomic WorkItem and the exact output chain.",
+      "PLANNER fallback scaffold for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "ac53261209a4623880059cb38f0a2d4bb32c445c",
+  "diff_base_sha": "a51e95514f2909177410f78a4057873140097edb",
+  "blueprint_digest": "3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609030849-925NNG/quality/20260903-134213297-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7bb5910278c4d61558b2203d9fd33f20e33094031544d8924928e89b04dd17ed",
+    "prompt_path": ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/eb8f2d88b5dd0a38e0eaef39545380b9f1e1538d9318e1574b16c190b33b7820.md",
+    "result_schema_path": ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609030849-925NNG/README.md",
+      "sha256": "sha256:3e29437d8f3183540f17ceff3a16e14e45e5129398a0b3e2d0d576666d57c7fc",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch",
+      "sha256": "sha256:1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd.json",
+      "sha256": "sha256:9e8da0e943c95b581d0921904a3ef43fef5d4479dc4d85f3d977f743b709f8bd",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609030849-925NNG/verification/20260903134024104-b0c8dd27f7dcba79.json",
+      "sha256": "sha256:f0477f8c208e28a9ee4db1dda5d7c8320d443e09dc26f76f27de5f7868f7d50c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json",
+      "sha256": "sha256:b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

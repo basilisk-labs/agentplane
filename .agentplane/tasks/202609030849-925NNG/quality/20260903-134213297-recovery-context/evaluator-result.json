@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "No blocking finding: checkTaskCentricProjectionIntegrityState and assertCanonicalPlanCanBeApproved remain directly imported and invoked at their runtime call sites; only unused barrel exposure was removed.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/1ca9d6a93e4e2399dab5d41b96ba6778554241e2f0518a4653fbdaccb3191bc6.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
