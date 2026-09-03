@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609031902-8SH7ZM-9be8355cb4d08f7e7e8660d9",
+  "task_id": "202609031902-8SH7ZM",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Do not change implementation. Return a non-material plan_refinement with operation clarify so AgentPlane projects the already approved task-specific validation contract into Verify Steps, removes the fallback scaffold atomically, invalidates this evaluator packet, and emits a fresh EVALUATOR packet.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The source diff implements atomic projection, receipt-first replay, stale-review invalidation, and fresh evaluator routing within the approved scope.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "All declared local checks pass, including ci:local:full.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "The current task README still contains 'PLANNER fallback scaffold', so acceptance-2 is not yet satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Residual risk: Closing now would leave the exact authoritative-document defect present in the recovery task itself.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-result.json"
+}

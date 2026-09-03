@@ -4,7 +4,7 @@ title: "Repair plan-amendment Verify Steps projection routing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -34,6 +34,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-03T20:31:09.975Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "7395512128320b38054c39ddb8446da03cc35993"
+  blueprint_digest: "987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86"
+  evidence_refs:
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/e94e56ee374989535e6ebc92d6166c283531b932ec7dd2e7dcd904c5abb7b6cb.md"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/20260903-202952518-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/README.md"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/a3eca24d85f9e9f4a1caf893ad7e5ef844644c9c098d99e399c9c17e216146a3.patch"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/c438b1bb65d06ae180b916b15305baa8f98779245f74fbc300ea420ee821812f.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/verification/20260903202946053-a6bdc341db234dcf.json"
+    - ".agentplane/tasks/202609031902-8SH7ZM/quality/objects/sha256/34d93b299b7f6aeb06593326a7d00f9e329c15c8fe759c0d4bca0cbb97b53d11.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The source diff implements atomic projection, receipt-first replay, stale-review invalidation, and fresh evaluator routing within the approved scope."
+    - "All declared local checks pass, including ci:local:full."
+    - "The current task README still contains 'PLANNER fallback scaffold', so acceptance-2 is not yet satisfied."
+    - "Residual risk: Closing now would leave the exact authoritative-document defect present in the recovery task itself."
 execution_route:
   frozen: true
   reason_codes:
@@ -987,7 +1017,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609031902-8SH7ZM"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609031902-8SH7ZM"
     intent:
@@ -1404,9 +1434,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-03T20:29:47.191Z"
+    updated_at: "2026-09-03T20:29:47.211Z"
     work_items:
       materialize-verification-amendment:
         attempt: 1
@@ -1657,6 +1687,30 @@ extensions:
         mutation_id: "compatibility:sha256:508bd66d49cc8280276a33f876d6676d4923e590bc424a9464c27ddea5e7bced"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
+      compatibility:sha256:796e6868060507622375e6971f636614516b72742eb7746593464e5aa818d254:
+        aggregate_digest: "sha256:368656e25024b21a0ffa98588254ee0614b2b34de1748310ae3f18c33bdbb0f6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T20:29:47.211Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_456ab36e4be0b8813e542721"
+          mutation_id: "compatibility:sha256:796e6868060507622375e6971f636614516b72742eb7746593464e5aa818d254"
+          plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031902-8SH7ZM"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:796e6868060507622375e6971f636614516b72742eb7746593464e5aa818d254"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
       compatibility:sha256:899eb14641cb7bbef1fdc413b6989b5398c1f4d3a271ec1c1a3050aa9d6c4ff8:
