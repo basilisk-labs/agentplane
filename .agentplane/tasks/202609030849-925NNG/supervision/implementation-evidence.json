@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e..efa74b42a2e77bb77de2ff908af5b8b29194135d",
+      "command": "git diff --check efa74b42a2e77bb77de2ff908af5b8b29194135d..b5d0b776104b19ec5fc68526526993bac6536626",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e..efa74b42a2e77bb77de2ff908af5b8b29194135d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB efa74b42a2e77bb77de2ff908af5b8b29194135d..b5d0b776104b19ec5fc68526526993bac6536626",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,8 +24,9 @@
         "M\t.agentplane/tasks/202609030849-925NNG/pr/review.md",
         "M\t.agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json",
-        "M\tpackages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+        "A\t.agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json",
+        "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.ts"
       ]
     },
     {
@@ -35,19 +36,16 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "89bc65eccd2896aac9bad3c3d4f050fbbd07fe3e",
-  "implementation_commit": "efa74b42a2e77bb77de2ff908af5b8b29194135d",
+  "execution_base_commit": "efa74b42a2e77bb77de2ff908af5b8b29194135d",
+  "implementation_commit": "b5d0b776104b19ec5fc68526526993bac6536626",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609030849-925NNG/README.md",
-      " M .agentplane/tasks/202609030849-925NNG/pr/github-body.md",
       " M .agentplane/tasks/202609030849-925NNG/pr/meta.json",
-      " M .agentplane/tasks/202609030849-925NNG/pr/review.md",
       " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
       " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
-      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
     ],
     "classification": [
       {
@@ -56,15 +54,7 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609030849-925NNG/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609030849-925NNG/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609030849-925NNG/pr/review.md"
       },
       {
         "classification": "removed_during_execution",
@@ -76,24 +66,17 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+        "line": "?? .agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609030849-925NNG/README.md",
-      " M .agentplane/tasks/202609030849-925NNG/pr/github-body.md",
       " M .agentplane/tasks/202609030849-925NNG/pr/meta.json",
-      " M .agentplane/tasks/202609030849-925NNG/pr/review.md",
       " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
       " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
-      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903120145892-af3f2d13e90c9fb4.json"
+      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
     ],
     "unchanged_from_execution_baseline": []
   },
