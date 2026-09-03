@@ -4,7 +4,7 @@ title: "Repair lifecycle projection integrity after M3 cutover"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 71
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -30,10 +30,10 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:954de20e6719eae0a1b58927857f36408f501fe23807c0e0b19e66e8160d523c"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-03T16:14:51.365Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -121,19 +121,129 @@ execution_contract:
     changed_paths:
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts"
       - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
+      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
+      - "packages/agentplane/src/commands/shared/task-mutation.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/finish-shared.ts"
       - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
       - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+      - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+      - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
+      - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+      - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
@@ -193,12 +303,25 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:f5583b9ed6b5e3d6d61ba96889eec52a07ff8408b79dc4782309593c41fb055e"
+      digest: "sha256:c69929c3eb33842eaf0bc90a8b639eb4bd362ac064df30c087a9473b5aa42378"
       escalation_reasons:
         - "central_component:packages/core/src/git"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-mutation.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
         - "effect_public_api"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -213,13 +336,36 @@ execution_contract:
         changed_files:
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts"
           - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-workspace.ts"
+          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
+          - "packages/agentplane/src/commands/shared/task-mutation.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/finish-shared.ts"
           - "packages/agentplane/src/commands/task/finish-task-store.testkit.ts"
           - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+          - "packages/agentplane/src/commands/task/hosted-close.command.ts"
+          - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
+          - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
+          - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -483,8 +629,14 @@ events:
     to: "DOING"
     note: "Implementation committed: b63500713980. CLI accepted one state-bound external-agent semantic result."
     commit: "b6350071398029c378f986a0169222e3b2291e4a"
+  -
+    type: "verify"
+    at: "2026-09-03T16:14:51.365Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-03T15:57:09.014Z"
+doc_updated_at: "2026-09-03T16:14:52.459Z"
 doc_updated_by: "SUPERVISOR"
 description: "After M3 is integrated, repair the demonstrated lifecycle projection-integrity gaps without release work or MPXQBK. Deliver five sequential WorkItems: (1) authoritative-worktree task identity; (2) atomic lifecycle projection reconciliation after set-status, hosted close, and merge; (3) invalidation of stale WorkItem and route projections; (4) convergence of completed branch_pr cleanup; (5) an Arkady Factory stale-DONE end-to-end regression. Reuse existing code and tests before adding new code. Prefer deletion or consolidation over compatibility layers. Treat the current compatibility-import edges and line count as a measured baseline, not a hard cap; any necessary expansion must be explicit in the allowlist and covered by a focused regression so growth remains fail-closed. Keep all changes bounded to projection integrity and lifecycle cleanup. Do not include release/version/publish work or MPXQBK."
 sections:
@@ -506,6 +658,210 @@ sections:
     7. Require exact-head hosted checks, EVALUATOR pass, AgentPlane-authorized merge, fresh-main readback, hosted close, and cleanup. Expected: all projections agree on terminal state and no clean merged task branch or worktree remains.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-03T16:14:51.365Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f326b8e4dcec1a7d8c978bc86cc2fbf2e56ccc59deb48acc6de59c83e3c2230a, input_digest=sha256:f2ff0d1dbb3a4ab7748af8512e814948c458d2448c6801ad8e0ba359a8e9cd2d
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (1/7)
+
+    Check: affected_unit_integration
+    Command: bun run bench:compatibility:candidate:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (2/7)
+
+    Check: affected_unit_integration
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (3/7)
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (4/7)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (5/7)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (6/7)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (7/7)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (1/7)
+
+    Check: critical_paths
+    Command: bun run bench:compatibility:candidate:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (2/7)
+
+    Check: critical_paths
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (3/7)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (4/7)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (5/7)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (6/7)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (7/7)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (1/7)
+
+    Check: real_e2e
+    Command: bun run bench:compatibility:candidate:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (2/7)
+
+    Check: real_e2e
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (3/7)
+
+    Check: real_e2e
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (4/7)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (5/7)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (6/7)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (7/7)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (1/7)
+
+    Check: task_outcome
+    Command: bun run bench:compatibility:candidate:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (2/7)
+
+    Check: task_outcome
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (3/7)
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (4/7)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (5/7)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (6/7)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (7/7)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/.agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json
+    - old_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+    - current_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609021331-5FPZAB
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609021331-5FPZAB
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1084,7 +1440,7 @@ extensions:
       revision: 6
       schema_version: 1
       task_id: "202609021331-5FPZAB"
-    event_cursor: 19
+    event_cursor: 20
     final_validation: null
     id: "202609021331-5FPZAB"
     intent:
@@ -3716,9 +4072,9 @@ extensions:
         revision: 5
         schema_version: 1
         task_id: "202609021331-5FPZAB"
-    revision: 71
+    revision: 72
     schema_version: 1
-    updated_at: "2026-09-03T16:05:25.939Z"
+    updated_at: "2026-09-03T16:14:52.435Z"
     work_items:
       projection-arkady-stale-done-e2e:
         attempt: 1
@@ -4277,6 +4633,30 @@ extensions:
         mutation_id: "compatibility:sha256:8ff361cca4826e66dad6a4e3b61bc863c9873ff3a2798ecd7f9ea9eb77b2a67d"
         next_revision: 35
         previous_revision: 34
+        schema_version: 1
+        task_id: "202609021331-5FPZAB"
+      compatibility:sha256:b1481a71d5d86d6e807f8deea1a6c4f52a23f16ef22c69a88eb30a9bd4ae0b97:
+        aggregate_digest: "sha256:fd46d9714cacdcf0048649cc83c36ccb2928eda5d81e40f761b48722c4e06404"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T16:14:52.435Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3404b2f58e87232188c6c6b9"
+          mutation_id: "compatibility:sha256:b1481a71d5d86d6e807f8deea1a6c4f52a23f16ef22c69a88eb30a9bd4ae0b97"
+          plan_digest: "sha256:96458936152f5cea706916ddc22309601f32f24a73e3372958e4f78ce6783dd0"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609021331-5FPZAB"
+          task_revision: 71
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b1481a71d5d86d6e807f8deea1a6c4f52a23f16ef22c69a88eb30a9bd4ae0b97"
+        next_revision: 72
+        previous_revision: 71
         schema_version: 1
         task_id: "202609021331-5FPZAB"
       compatibility:sha256:c60fa63b906e963430b806232af1040e1de571e1fcffd33b6e286b99ac5b098c:
@@ -4901,7 +5281,6 @@ extensions:
     base_sha: "a51e95514f2909177410f78a4057873140097edb"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "a51e95514f2909177410f78a4057873140097edb"
     version: 1
@@ -4935,6 +5314,210 @@ Reissued the five-stage projection-integrity plan with authority closure correct
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-03T16:14:51.365Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f326b8e4dcec1a7d8c978bc86cc2fbf2e56ccc59deb48acc6de59c83e3c2230a, input_digest=sha256:f2ff0d1dbb3a4ab7748af8512e814948c458d2448c6801ad8e0ba359a8e9cd2d
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (1/7)
+
+Check: affected_unit_integration
+Command: bun run bench:compatibility:candidate:check
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (2/7)
+
+Check: affected_unit_integration
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (3/7)
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (4/7)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (5/7)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (6/7)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check affected_unit_integration (7/7)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (1/7)
+
+Check: critical_paths
+Command: bun run bench:compatibility:candidate:check
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (2/7)
+
+Check: critical_paths
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (3/7)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (4/7)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (5/7)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (6/7)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check critical_paths (7/7)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check full_regression
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (1/7)
+
+Check: real_e2e
+Command: bun run bench:compatibility:candidate:check
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (2/7)
+
+Check: real_e2e
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (3/7)
+
+Check: real_e2e
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (4/7)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (5/7)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (6/7)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check real_e2e (7/7)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (1/7)
+
+Check: task_outcome
+Command: bun run bench:compatibility:candidate:check
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (2/7)
+
+Check: task_outcome
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (3/7)
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (4/7)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (5/7)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (6/7)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609021331-5FPZAB/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609021331-5FPZAB Verification Contract check task_outcome (7/7)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609021331-5FPZAB-repair-lifecycle-projection-integrity-after-m3-c/.agentplane/tasks/202609021331-5FPZAB/blueprint/resolved-snapshot.json
+- old_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+- current_digest: 3dd73484114dbca2b507287d85730c48b62f30ad2920a8d25365be77caa40eea
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609021331-5FPZAB
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609021331-5FPZAB
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

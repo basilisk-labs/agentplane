@@ -12,8 +12,8 @@ Created: 2026-09-02T15:35:26.605Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-02T15:35:26.605Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-02T15:35:26.605Z
+- Updated: 2026-09-03T16:05:34.805Z
 - Branch: task/202609021331-5FPZAB/repair-lifecycle-projection-integrity-after-m3-c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
