@@ -320,7 +320,9 @@ function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
 }
 
 function isFullRegressionCommand(command: string): boolean {
-  return parseDirectTaskCheckSequence(command)?.some(isFullRegressionCheck) ?? false;
+  return (
+    parseDirectTaskCheckSequence(command)?.some((parsed) => isFullRegressionCheck(parsed)) ?? false
+  );
 }
 
 function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
