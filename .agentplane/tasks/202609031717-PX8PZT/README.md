@@ -4,7 +4,7 @@ title: "Port the minimal missing Clean Core lifecycle boundary contracts from au
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -101,10 +101,20 @@ execution_contract:
       - "scripts/workflow"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+      - "packages/agentplane/src/commands/pr/flow-status.ts"
+      - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
+      - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+      - "packages/agentplane/src/commands/task/handoff-show.command.ts"
+      - "packages/agentplane/src/commands/task/handoff.shared.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -156,8 +166,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:6ea95960613a25aadb15970c83abff5856b2868ceea3311e03dff2c1dece999d"
+      digest: "sha256:4f1dd6c4ceec9dd35338e9a019ff6066b085c5b4b699d5f2602a01f0cf0829d3"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-handoff-reader.ts"
         - "effect_ci"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -167,10 +180,20 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
+          - "packages/agentplane/src/commands/pr/flow-status.ts"
+          - "packages/agentplane/src/commands/shared/task-handoff-reader.test.ts"
+          - "packages/agentplane/src/commands/shared/task-handoff-reader.ts"
+          - "packages/agentplane/src/commands/task/handoff-show.command.ts"
+          - "packages/agentplane/src/commands/task/handoff.shared.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -212,6 +235,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ee67f20fdba5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -220,9 +246,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-03T17:32:58.322Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ee67f20fdba5. CLI accepted one state-bound external-agent semantic result."
+    commit: "ee67f20fdba5934ae7302446a5644e1bde7ec3c6"
 doc_version: 3
-doc_updated_at: "2026-09-03T17:26:07.810Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-03T17:32:58.322Z"
+doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
   Summary: |-
@@ -755,7 +789,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 1
+    event_cursor: 2
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -795,9 +829,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 4
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-03T17:26:07.810Z"
+    updated_at: "2026-09-03T17:32:59.522Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 0
@@ -818,14 +852,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       protected-handoff-owner-resolution:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "protected-handoff-owner-resolution"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:c0c5d16c756ed6ea1cb72cb8f7bc4d432a81dd4fcadbb4e9268b57d29828a0d5"
+            id: "protected-handoff-owner-resolution"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609031717-PX8PZT"
+              work_item_id: "protected-handoff-owner-resolution"
+            provenance:
+              - "sha256:69b216e49ae2d441b3e177886ffacab0a3372be143862bf384e6e8400509f974"
+              - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:015a41cbd388a4e07f5228bce7645065306a340c4e718079074c0c7b414020b7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609031717-PX8PZT/supervision/declared-checks.json"
+              check_id: "protected-handoff-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/commands/shared/task-handoff-reader.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T17:32:59.518Z"
+              repository_snapshot_digest: "sha256:015a41cbd388a4e07f5228bce7645065306a340c4e718079074c0c7b414020b7"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       safe-declared-check-sequence-execution:
         attempt: 0
         claim_id: null
@@ -846,7 +910,23 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-03T17:32:59.522Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_eb45263543cedf9d15d6b5a0"
+        mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-d60de2f1dac0462fdd5210d5"
+        plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+        task_revision: 6
+        work_item_id: "protected-handoff-owner-resolution"
     leases: []
     mutation_receipts:
       compatibility:sha256:b683699e59a42f657fb67dc0ec611e6fa63fa2a5a96d05f4a7bbc82f7fa17b2e:
@@ -873,9 +953,58 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609031717-PX8PZT"
+      compatibility:sha256:fe0c0d2f1996bf33276c803e28db50f807e444bbd2861da75bd6fc9fb72de926:
+        aggregate_digest: "sha256:9845ee460045e1514be0c9792b2e551b4c55ff61f12ed757e44f15ba9e074d40"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T17:32:58.322Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3ce687967b8dbe6d7d5766f5"
+          mutation_id: "compatibility:sha256:fe0c0d2f1996bf33276c803e28db50f807e444bbd2861da75bd6fc9fb72de926"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 4
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fe0c0d2f1996bf33276c803e28db50f807e444bbd2861da75bd6fc9fb72de926"
+        next_revision: 5
+        previous_revision: 4
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      external-result:work-order-202609031717-PX8PZT-executor-d60de2f1dac0462fdd5210d5:
+        aggregate_digest: "sha256:d85b1184c254e4ce8491c46880ff0f968acc74ca7c9bf12c925dc33bd532a869"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T17:32:59.522Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_eb45263543cedf9d15d6b5a0"
+          mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-d60de2f1dac0462fdd5210d5"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 6
+          to: "COMPLETED"
+          work_item_id: "protected-handoff-owner-resolution"
+        mutation_id: "external-result:work-order-202609031717-PX8PZT-executor-d60de2f1dac0462fdd5210d5"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "ee67f20fdba5934ae7302446a5644e1bde7ec3c6"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
