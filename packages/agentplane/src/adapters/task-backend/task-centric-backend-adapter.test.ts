@@ -4,6 +4,7 @@ import {
   createLegacyTaskAggregate,
   createRepositorySnapshot,
   createTaskPlanRevision,
+  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
   taskCentricDigest,
   taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
@@ -296,6 +297,17 @@ describe("TaskCentricBackendAdapter", () => {
     expect(recovered).toMatchObject({ revision: 53, lifecycle: "PLANNING", event_cursor: 1 });
     expect(recovered.current_plan?.approval.state).toBe("rejected");
     expect(receipt).toMatchObject({ previous_revision: 50, next_revision: 53 });
+    expect(stored.extensions?.[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]).toEqual({
+      schema_version: 1,
+      reason_code: "plan_rejection_projection_recovered",
+    });
+    expect(
+      (
+        stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as {
+          mutation_receipts: Record<string, unknown>;
+        }
+      ).mutation_receipts["recover-rejection-1"],
+    ).toEqual(receipt);
     expect(
       (stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as { events: DomainEvent[] }).events,
     ).toHaveLength(1);
