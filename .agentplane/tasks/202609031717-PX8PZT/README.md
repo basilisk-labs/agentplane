@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -397,6 +397,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Classified the sole dirty task-worktree artifact as intended AgentPlane verification evidence. It records a transient full-CI failure in workspace-allocation/allocate.test.ts; the exact focused test passes without source changes, while the hosted knip defect remains fixed in commit 0b00202511638c4b198469c9d2d59738c25d8c4a."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Classified the current workspace conflict: the sole dirty artifact is fresh passing AgentPlane verification output, while verification persistence is blocked by a control-plane mismatch between runtime-required docs_contract and the persisted selected_checks projection."
 events:
   -
     type: "status"
@@ -480,8 +483,13 @@ events:
     at: "2026-09-03T22:36:12.094Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Classified the sole dirty task-worktree artifact as intended AgentPlane verification evidence. It records a transient full-CI failure in workspace-allocation/allocate.test.ts; the exact focused test passes without source changes, while the hosted knip defect remains fixed in commit 0b00202511638c4b198469c9d2d59738c25d8c4a."
+  -
+    type: "comment"
+    at: "2026-09-03T22:48:01.280Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Classified the current workspace conflict: the sole dirty artifact is fresh passing AgentPlane verification output, while verification persistence is blocked by a control-plane mismatch between runtime-required docs_contract and the persisted selected_checks projection."
 doc_version: 3
-doc_updated_at: "2026-09-03T22:36:12.129Z"
+doc_updated_at: "2026-09-03T22:48:01.325Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -1328,7 +1336,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 16
+    event_cursor: 17
     final_validation:
       evidence:
         -
@@ -1477,9 +1485,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 30
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-03T22:36:12.094Z"
+    updated_at: "2026-09-03T22:48:01.280Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -1889,6 +1897,30 @@ extensions:
         mutation_id: "compatibility:sha256:2c65a39d7b0c7425773debd54d5b1b7293075d9e606e74277ccd87904efdbbaf"
         next_revision: 23
         previous_revision: 22
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:37e6e7c3bddbb300b778de266dc2634ff58ab1bf55301b151c0db6d8b83eae6f:
+        aggregate_digest: "sha256:92ee4e4813f923da3570743b6d1ad6b56161e45671186f50c850b3de0c62bad7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T22:48:01.280Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_7561ebe885297661605a6f14"
+          mutation_id: "compatibility:sha256:37e6e7c3bddbb300b778de266dc2634ff58ab1bf55301b151c0db6d8b83eae6f"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 30
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:37e6e7c3bddbb300b778de266dc2634ff58ab1bf55301b151c0db6d8b83eae6f"
+        next_revision: 31
+        previous_revision: 30
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:41ebc68813069e3f99d749bd4eb5db05a4b67e0fb6207a7859a5354994c37f61:
