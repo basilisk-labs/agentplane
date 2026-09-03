@@ -8,7 +8,6 @@ import type {
 } from "@agentplaneorg/core/schemas";
 import { validateTaskHandoff } from "@agentplaneorg/core/schemas";
 
-import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { isRecord } from "../../shared/guards.js";
@@ -116,19 +115,6 @@ export async function readTaskHandoffLatest(
     if (code === "ENOENT") return null;
     throw err;
   }
-}
-
-export async function readTaskHandoffLatestRequired(opts: {
-  task_id: string;
-  paths: TaskHandoffPaths;
-}): Promise<TaskHandoffArtifact> {
-  const handoff = await readTaskHandoffLatest(opts.paths);
-  if (handoff) return handoff;
-  throw new CliError({
-    exitCode: 4,
-    code: "E_IO",
-    message: `Task handoff artifact not found for ${opts.task_id} (${opts.paths.latest_path})`,
-  });
 }
 
 export async function writeTaskHandoff(opts: {
