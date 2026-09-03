@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609031717-PX8PZT/port-the-minimal-missing-clean-core-lifecycle-bo",
+  "created_at": "2026-09-03T17:26:07.913Z",
+  "diffstat_sha256": "sha256:7f7880a2c708c13d54120b4982cc9f50d608da33ebcc7cfa1cb7003fe2078714",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609031717-PX8PZT",
+  "updated_at": "2026-09-03T17:26:07.913Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

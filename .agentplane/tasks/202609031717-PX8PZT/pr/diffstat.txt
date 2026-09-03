@@ -1,0 +1,7 @@
+ .../src/cli/run-cli.core.task-handoff.test.ts      | 103 ++++++++++++-
+ packages/agentplane/src/commands/pr/flow-status.ts |  12 +-
+ .../commands/shared/task-handoff-reader.test.ts    | 163 +++++++++++++++++++++
+ .../src/commands/shared/task-handoff-reader.ts     |  78 ++++++++++
+ .../src/commands/task/handoff-show.command.ts      |  37 ++++-
+ .../agentplane/src/commands/task/handoff.shared.ts |  27 ++--
+ 6 files changed, 390 insertions(+), 30 deletions(-)

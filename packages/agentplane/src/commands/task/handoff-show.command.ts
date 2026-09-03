@@ -1,9 +1,14 @@
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CliReportEntry } from "../../cli/output.js";
+import { CliError } from "../../shared/errors.js";
 
 import { loadCommandContext } from "../shared/task-backend.js";
-import { readTaskHandoffLatestRequired, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
+import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
+import { readTaskPrMetaSummary, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
 
 export type TaskHandoffShowParsed = {
   taskId: string;
@@ -41,10 +46,34 @@ export const runTaskHandoffShow = async (ctx: CommandCtx, parsed: TaskHandoffSho
     workflow_dir: commandCtx.config.paths.workflow_dir,
     task_id: parsed.taskId,
   });
-  const handoff = await readTaskHandoffLatestRequired({
-    task_id: parsed.taskId,
-    paths,
+  const task = await commandCtx.taskBackend.getTask(parsed.taskId);
+  const workflowMode =
+    task?.execution_contract?.selected_mode ??
+    task?.execution_route?.selected_mode ??
+    commandCtx.config.workflow_mode;
+  const prMeta = await readTaskPrMetaSummary({ ctx: commandCtx, task_id: parsed.taskId });
+  const frozenBase = task ? taskExecutionBaseFromExtensions(task.extensions) : null;
+  const handoff = await readTaskHandoffForTask({
+    gitRoot: commandCtx.resolvedProject.gitRoot,
+    workflowDir: commandCtx.config.paths.workflow_dir,
+    taskId: parsed.taskId,
+    workflowMode,
+    baseBranch:
+      frozenBase?.base_ref ??
+      prMeta.base ??
+      (await resolveBaseBranch({
+        cwd: commandCtx.resolvedProject.gitRoot,
+        rootOverride: commandCtx.resolvedProject.gitRoot,
+        mode: workflowMode,
+      }).catch(() => null)),
   });
+  if (!handoff) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `Task handoff artifact not found for ${parsed.taskId} (${paths.latest_path})`,
+    });
+  }
   if (parsed.json) {
     emitter.json(handoff);
     return 0;
