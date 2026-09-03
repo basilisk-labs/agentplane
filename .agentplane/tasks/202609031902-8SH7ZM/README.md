@@ -1,10 +1,11 @@
 ---
 id: "202609031902-8SH7ZM"
 title: "Repair plan-amendment Verify Steps projection routing"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -63,6 +64,20 @@ quality_review:
     - "The clarification is durably recorded as a plan amendment, and this evaluator packet has a fresh state fingerprint after that transition."
     - "Atomic projection, idempotent replay, provider-bound packet replacement, owner routing, and full local verification are covered by passing evidence."
     - "The implementation does not broaden ordinary EXECUTOR authority and does not touch release, dependency, workflow, policy, security-boundary, or MPXQBK scope."
+token_usage:
+  agent_runs: 9
+  input_tokens: null
+  journal_digest: "sha256:e49b303a13bb08a26e25f43b9148d27a0c5e62021bc93c25f427680a6083583f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-03T20:41:34.018Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -299,8 +314,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "7395512128320b38054c39ddb8446da03cc35993"
-  message: "🚧 8SH7ZM task: apply external agent result"
+  hash: "1772e8a6974108c4f37a9b85d1cf178e6cfe3312"
+  message: "🚧 8SH7ZM task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -320,6 +335,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 739551212832. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -385,9 +403,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-03T20:41:34.018Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "1772e8a6974108c4f37a9b85d1cf178e6cfe3312"
 doc_version: 3
-doc_updated_at: "2026-09-03T20:40:38.314Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-03T20:41:34.018Z"
+doc_updated_by: "CODER"
 description: "Fix the AgentPlane invariant where a task-specific plan amendment is persisted but sections.Verify Steps remains a PLANNER fallback scaffold, causing EVALUATOR rework to loop into code-only EXECUTOR authority that excludes protected task projections. Materialize accepted task-specific verification amendments atomically into the authoritative task document, invalidate stale evaluator/context packets, and route document-level rework to PLANNER or the AgentPlane-owned projection owner before emitting a fresh EVALUATOR packet. Add focused replay, idempotency, authority-closure, projection, stale-packet, and impossible-loop regressions. Do not grant ordinary EXECUTOR episodes access to .agentplane/tasks, weaken quality gates, hand-edit PX8PZT state, or touch release/version/publication/dependency scope."
 sections:
   Summary: |-
@@ -1175,7 +1201,67 @@ extensions:
       schema_version: 1
       task_id: "202609031902-8SH7ZM"
     event_cursor: 12
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609031902-8SH7ZM"
+            - "git:7395512128320b38054c39ddb8446da03cc35993"
+          check_id: "lint-core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T20:40:36.948Z"
+          repository_snapshot_digest: "sha256:52963cea0fed187d84ca3b53a1c16496f87cb9ee9942fbd72001110111b08de5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031902-8SH7ZM"
+            - "git:7395512128320b38054c39ddb8446da03cc35993"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T20:40:36.948Z"
+          repository_snapshot_digest: "sha256:52963cea0fed187d84ca3b53a1c16496f87cb9ee9942fbd72001110111b08de5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031902-8SH7ZM"
+            - "git:7395512128320b38054c39ddb8446da03cc35993"
+          check_id: "routing-policy"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T20:40:36.948Z"
+          repository_snapshot_digest: "sha256:52963cea0fed187d84ca3b53a1c16496f87cb9ee9942fbd72001110111b08de5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031902-8SH7ZM"
+            - "git:7395512128320b38054c39ddb8446da03cc35993"
+          check_id: "lifecycle-invariants"
+          command_identity: "bun run lifecycle:invariants"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T20:40:36.948Z"
+          repository_snapshot_digest: "sha256:52963cea0fed187d84ca3b53a1c16496f87cb9ee9942fbd72001110111b08de5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609031902-8SH7ZM"
+            - "git:7395512128320b38054c39ddb8446da03cc35993"
+          check_id: "full-local-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-03T20:40:36.948Z"
+          repository_snapshot_digest: "sha256:52963cea0fed187d84ca3b53a1c16496f87cb9ee9942fbd72001110111b08de5"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609031902-8SH7ZM"
     intent:
       acceptance_criteria:
@@ -1211,7 +1297,7 @@ extensions:
 
         Fix the AgentPlane invariant where a task-specific plan amendment is persisted but sections.Verify Steps remains a PLANNER fallback scaffold, causing EVALUATOR rework to loop into code-only EXECUTOR authority that excludes protected task projections. Materialize accepted task-specific verification amendments atomically into the authoritative task document, invalidate stale evaluator/context packets, and route document-level rework to PLANNER or the AgentPlane-owned projection owner before emitting a fresh EVALUATOR packet. Add focused replay, idempotency, authority-closure, projection, stale-packet, and impossible-loop regressions. Do not grant ordinary EXECUTOR episodes access to .agentplane/tasks, weaken quality gates, hand-edit PX8PZT state, or touch release/version/publication/dependency scope.
       task_id: "202609031902-8SH7ZM"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -1610,9 +1696,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
-    revision: 25
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-03T20:40:38.314Z"
+    updated_at: "2026-09-03T20:41:34.018Z"
     work_items:
       materialize-verification-amendment:
         attempt: 1
@@ -2190,6 +2276,31 @@ extensions:
         previous_revision: 19
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
+      legacy-finish:202609031902-8SH7ZM:2026-09-03T20:40:36.948Z:7395512128320b38054c39ddb8446da03cc35993:
+        aggregate_digest: "sha256:3d43b55509bea232d5404369927e7af280060b0f8fb7f4049c4dd9e17e2c9b0a"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-03T20:41:34.018Z"
+          cause_refs:
+            - "task-verification:202609031902-8SH7ZM"
+            - "git:7395512128320b38054c39ddb8446da03cc35993"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2e95405c2a28a6c7e618fa3f"
+          mutation_id: "legacy-finish:202609031902-8SH7ZM:2026-09-03T20:40:36.948Z:7395512128320b38054c39ddb8446da03cc35993"
+          plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+          plan_revision: 2
+          repository_fingerprint: "sha256:52963cea0fed187d84ca3b53a1c16496f87cb9ee9942fbd72001110111b08de5"
+          schema_version: 1
+          task_id: "202609031902-8SH7ZM"
+          task_revision: 25
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609031902-8SH7ZM:2026-09-03T20:40:36.948Z:7395512128320b38054c39ddb8446da03cc35993"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
       plan-refinement:work-order-202609031902-8SH7ZM-executor-6b7854f90b7b872be4a891e9:
         aggregate_digest: "sha256:d7adc5aff85f50ea9f7cb206b812ec0393a6c46362386cf0fa032d207bcc283a"
         event:
@@ -2242,6 +2353,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "7395512128320b38054c39ddb8446da03cc35993"
+    message: "🚧 8SH7ZM task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
@@ -2633,3 +2745,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e49b303a13bb08a26e25f43b9148d27a0c5e62021bc93c25f427680a6083583f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-03T20:41:34.018Z`
