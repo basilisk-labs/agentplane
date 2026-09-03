@@ -4,7 +4,7 @@ title: "Port the minimal missing Clean Core lifecycle boundary contracts from au
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-03T18:31:33.744Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "9360c020cc206d344c496d95c7c147e2adba09d2"
+  blueprint_digest: "9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b"
+  evidence_refs:
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/60ba5c293ca5b4c87970ffd39dc62c148a891063039005a80e63cbafde01a2cf.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260903-182943375-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/README.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/6a08e4e83c7cd81fca4a7162b6cf3b0f93bc0826818b152eeb6f43bcad71cd7b.patch"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/c3035c5c8729c7c40e0c3effcadcc5593470ad66a5860b342f7f9380f3bbbdb3.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/verification/20260903182935979-a3730860e91ec7d4.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/f96d2471c24f99ab9127f5b739d35405eeca63442083386a09659c09fc0fc4e6.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff contains the four approved implementation areas and their regressions; it does not add release/version/publication metadata, dependency changes, MPXQBK, or broad GitLab/provider-neutral behavior."
+    - "Supervisor-observed verification is green for full local CI, lint, typecheck, focused regressions, routing, clean committed diff, and clean repository status at implementation SHA 9360c020cc206d344c496d95c7c147e2adba09d2."
+    - "Task frontmatter contains task-specific top-level validation checks, but sections.Verify Steps still says PLANNER fallback scaffold and asks for replacement. The evaluator work order lists that replacement as required acceptance, so the visible task contract is internally inconsistent."
+    - "The smallest rework is to project the already-approved task-specific top-level checks into sections.Verify Steps without changing implementation scope, ordering, authority roots, effects, or verification strength."
+    - "Residual risk: Hosted provider and integration evidence remains pending and must not be inferred from local checks."
 execution_route:
   frozen: true
   reason_codes:
@@ -1084,7 +1115,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 7
+    event_cursor: 8
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -1124,9 +1155,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-03T18:29:37.111Z"
+    updated_at: "2026-09-03T18:29:37.132Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -1576,6 +1607,30 @@ extensions:
         mutation_id: "compatibility:sha256:b683699e59a42f657fb67dc0ec611e6fa63fa2a5a96d05f4a7bbc82f7fa17b2e"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:c83670a33c8a6796e2c10ccb905d89959188c778b3188ba5e104ad2531be6fbf:
+        aggregate_digest: "sha256:31abae93ced9df2474164534e0555f72aa6dc4b06d4f8e98266e17f0b5f446ca"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T18:29:37.132Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ef7488891ffa343d174701ac"
+          mutation_id: "compatibility:sha256:c83670a33c8a6796e2c10ccb905d89959188c778b3188ba5e104ad2531be6fbf"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c83670a33c8a6796e2c10ccb905d89959188c778b3188ba5e104ad2531be6fbf"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:e6ce575b03f068c4e38a7c4d095519d9576eca968412d39045ab7001857243c9:
