@@ -55,11 +55,11 @@ Created: 2026-09-02T15:35:26.605Z
  .../commands/task/finish.validation.unit.test.ts   |  39 +---
  .../src/commands/task/hosted-close.command.ts      |   1 +
  .../agentplane/src/commands/task/plan.unit.test.ts |  30 ++-
- .../src/commands/task/set-status.unit.test.ts      |  56 +++++
+ .../src/commands/task/set-status.unit.test.ts      |  64 ++++++
  .../task/task-centric-external-result.test.ts      |  85 ++++++++
  .../commands/task/task-centric-external-result.ts  |  56 +++--
  .../task/verify-record.durability.unit.test.ts     |  38 +++-
- 30 files changed, 1271 insertions(+), 287 deletions(-)
+ 30 files changed, 1279 insertions(+), 287 deletions(-)
 ```
 
 </details>

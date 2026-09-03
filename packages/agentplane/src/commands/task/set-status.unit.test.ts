@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
-import { createLegacyTaskAggregate, withTaskCentricAggregate } from "@agentplaneorg/core/tasks";
+import {
+  createLegacyTaskAggregate,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({
@@ -327,5 +331,9 @@ describe("task set-status command (unit)", () => {
       context: { reason_code: "task_centric_projection_mismatch" },
     });
     expect(currentTask.status).toBe("DOING");
+    expect(currentTask.revision).toBe(4);
+    const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
+    expect(persistedAggregate?.revision).toBe(4);
+    expect(persistedAggregate?.events).toEqual(aggregate.events);
   });
 });
