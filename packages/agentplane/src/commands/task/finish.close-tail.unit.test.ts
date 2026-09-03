@@ -1,12 +1,11 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
-import { createMutableTaskStore } from "./finish-task-store.testkit.js";
+import { applyStorePatch, createMutableTaskStore } from "./finish-task-store.testkit.js";
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
   cmdCommit: vi.fn(),
@@ -170,37 +169,6 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     backend,
   };
   return { ...ctx, ...overrides };
-}
-
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return current;
-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-  if (patch.appendComments && patch.appendComments.length > 0) {
-    next.comments = [
-      ...(Array.isArray(current.comments) ? current.comments : []),
-      ...patch.appendComments,
-    ];
-  }
-  if (patch.appendEvents && patch.appendEvents.length > 0) {
-    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
-  }
-  if (patch.doc) {
-    if (patch.doc.kind === "replace-doc") {
-      next.doc = patch.doc.doc;
-    } else {
-      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
-      next.doc = ensureDocSections(
-        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
-        patch.doc.requiredSections,
-      );
-    }
-  }
-  if (patch.doc || patch.docMeta?.touch === true) {
-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
-  }
-  return next;
 }
 
 describe("task finish close-tail", () => {

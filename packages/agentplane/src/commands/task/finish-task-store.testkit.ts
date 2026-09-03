@@ -1,7 +1,37 @@
 import { vi } from "vitest";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskStorePatch } from "../shared/task-store.js";
+
+export function applyStorePatch(
+  current: TaskData,
+  patch: TaskStorePatch | null | undefined,
+): TaskData {
+  if (!patch) return current;
+  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
+  if (patch.appendComments?.length) {
+    next.comments = [...(current.comments ?? []), ...patch.appendComments];
+  }
+  if (patch.appendEvents?.length) {
+    next.events = [...(current.events ?? []), ...patch.appendEvents];
+  }
+  if (patch.doc?.kind === "replace-doc") {
+    next.doc = patch.doc.doc;
+  } else if (patch.doc) {
+    const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
+    next.doc = ensureDocSections(
+      setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
+      patch.doc.requiredSections,
+    );
+  }
+  if (patch.doc || patch.docMeta?.touch === true) {
+    next.doc_version = patch.docMeta?.version ?? next.doc_version;
+    next.doc_updated_at = new Date().toISOString();
+    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
+  }
+  return next;
+}
 
 export function createMutableTaskStore(
   task: TaskData,
