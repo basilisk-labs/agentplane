@@ -1,0 +1,3 @@
+ .../task-centric-backend-adapter.test.ts           | 72 ++++++++++++++++++++++
+ .../task-backend/task-centric-backend-adapter.ts   | 64 +++++++++++++++++++
+ 2 files changed, 136 insertions(+)

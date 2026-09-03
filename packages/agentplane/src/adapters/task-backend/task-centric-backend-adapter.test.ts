@@ -213,6 +213,78 @@ function event(
 }
 
 describe("TaskCentricBackendAdapter", () => {
+  it("atomically projects an accepted verification clarification and replays idempotently", async () => {
+    const fallback = "PLANNER fallback scaffold. Replace with task-specific acceptance checks.";
+    const aggregate = approvedAggregate();
+    const topLevel = aggregate.current_plan!.proposal.top_level_validation;
+    const initial = taskData({
+      ...aggregate,
+      current_plan: {
+        ...aggregate.current_plan!,
+        proposal: {
+          ...aggregate.current_plan!.proposal,
+          top_level_validation: {
+            ...topLevel,
+            checks: topLevel.checks.map((check) => ({
+              ...check,
+              command: "bun run test:root",
+            })),
+          },
+        },
+      },
+    });
+    initial.doc = `## Summary\n\nDescription\n\n## Verify Steps\n\n${fallback}\n`;
+    initial.sections = { "Verify Steps": fallback };
+    const durable = memoryBackend(initial);
+    let writes = 0;
+    const backend: TaskBackend = {
+      ...durable,
+      async writeTask(next, options) {
+        writes += 1;
+        await durable.writeTask(next, options);
+      },
+    };
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+    const input = {
+      task_id: TASK_ID,
+      expected_revision: 1,
+      refinement: {
+        description: "Project the approved task-specific checks into Verify Steps.",
+        scope_roots_added: [],
+        outputs_added: [],
+        acceptance_changed: false,
+        risk_changed: false,
+        external_effects_added: [],
+        dependencies_changed: false,
+        architecture_constraints_changed: false,
+        operations: ["clarify"],
+      },
+      actor_id: "external:EXECUTOR",
+      at: NOW,
+      idempotency_key: "clarify-verify-steps",
+    } as const;
+
+    const receipt = await adapter.recordPlanRefinement(input);
+    const stored = durable.current();
+    expect(writes).toBe(1);
+    expect(receipt.action).toBe("amended");
+    expect(stored.sections?.["Verify Steps"]).toBe(
+      "1. Run `bun run test:root`. Expected: Validate root",
+    );
+    expect(stored.doc).toContain(
+      "## Verify Steps\n\n1. Run `bun run test:root`. Expected: Validate root",
+    );
+    expect(stored.doc_updated_by).toBe("external:EXECUTOR");
+    expect(taskCentricAggregateFromExtensions(stored.extensions)?.plan_amendments).toHaveLength(1);
+
+    await expect(adapter.recordPlanRefinement(input)).resolves.toEqual(receipt);
+    expect(writes).toBe(1);
+    expect(durable.current()).toEqual(stored);
+  });
+
   it("rejects a proposed plan as one atomic event and receipt and replays exactly", async () => {
     const initial = taskData(pendingAggregate());
     initial.plan_approval = { state: "pending", updated_at: null, updated_by: null, note: null };
