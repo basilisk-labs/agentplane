@@ -1,0 +1,102 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/workflow.verify-hooks.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 --retry 2\nResult: pass\nEvidence: focused concurrency suite passed 1 file and 11 tests.\nScope: durable verification record under concurrent verifies\n\nCheck: critical_paths\nCommand: gh run rerun 33764148583 --repo basilisk-labs/agentplane --failed\nResult: pass\nEvidence: verify-tests retry job 100680983796 passed in 11m48s; aggregate PR verification job 100684909084 passed in 17s.\nScope: hosted required checks on unchanged closure head 597df3b5ae991321eeb033a6a059278eb0b5cf18\n\nCheck: docs_contract\nCommand: hosted verify-contract job 100680986739\nResult: pass\nEvidence: verify-contract passed; no source or docs change followed.\nScope: generated and documentation contracts\n\nCheck: full_regression\nCommand: bun run ci:local:full; hosted verify-tests retry\nResult: pass\nEvidence: final local full CI exited 0 and hosted retry passed all unit, critical CLI, workflow coverage, and significant coverage stages.\nScope: full repository regression\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: isolated real-process E2E passed 1 file and 4 tests.\nScope: local real-process compatibility\n\nCheck: task_outcome\nCommand: hosted PR verification job 100684909084\nResult: pass\nEvidence: aggregate provider verification passed for PR #5888 after failed-job retry; no implementation change was required.\nScope: recovery fix integration readiness",
+  "digest": "sha256:887877885d3a721d222ffa2b0507a464d15a3c8c4905f2a06debc0414d8101f8",
+  "implementation_sha": "ac53261209a4623880059cb38f0a2d4bb32c445c",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4174d982682606c11198a1e67cb4f709b6ac0e88c6c39d80371725b3a97c7c31",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:2a185b2b85c51b225027965b2a2d54e39404682f08b058ce00a955118d0dfbb0",
+      "digest": "sha256:396f50680d702e3f6bf2f33324c8880c4c9e8f75969ceed1d09e8808dbb95303",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "a51e95514f2909177410f78a4057873140097edb",
+      "digest": "sha256:1e2acf517d2f716d2071c882c1dbbc6f4c4aa9590055997add536a48715e9aec",
+      "primary_task_id": "202609030849-925NNG",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609030849-925NNG"
+      ]
+    },
+    "implementation": {
+      "base_sha": "a51e95514f2909177410f78a4057873140097edb",
+      "digest": "sha256:8b43ff06486d1e09bb2bbd59baaf30d53ff10450417b6f259884437bc20db323",
+      "strategy": "branch_diff",
+      "target_sha": "ac53261209a4623880059cb38f0a2d4bb32c445c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:2565dddf9529115f6750dcc9ea44b714d02025fb4acf80974d79c0a7baa72042",
+    "verify_steps_digest": "sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006"
+  },
+  "kind": "task_verification_record",
+  "note": "Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR verification passed without source changes.",
+  "recorded_at": "2026-09-03T14:21:43.530Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006",
+  "task_id": "202609030849-925NNG",
+  "verification_command": "agentplane verify 202609030849-925NNG --ok --by TESTER",
+  "verifier": "TESTER"
+}
