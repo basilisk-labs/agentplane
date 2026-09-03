@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 50445b574549e7c62707652a60711b1ecf7b079d..5888c0e9e9529164181c1429197e76bab8aeded2",
+      "command": "git diff --check e92d66429e9f8c83c1d003925e6de83420a86e5f..7395512128320b38054c39ddb8446da03cc35993",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 50445b574549e7c62707652a60711b1ecf7b079d..5888c0e9e9529164181c1429197e76bab8aeded2",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e92d66429e9f8c83c1d003925e6de83420a86e5f..7395512128320b38054c39ddb8446da03cc35993",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,9 +21,8 @@
         "M\t.agentplane/tasks/202609031902-8SH7ZM/pr/github-body.md",
         "M\t.agentplane/tasks/202609031902-8SH7ZM/pr/meta.json",
         "M\t.agentplane/tasks/202609031902-8SH7ZM/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
-        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.ts"
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/task-centric-verification-projection.ts"
       ]
     },
     {
@@ -33,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "50445b574549e7c62707652a60711b1ecf7b079d",
-  "implementation_commit": "5888c0e9e9529164181c1429197e76bab8aeded2",
+  "execution_base_commit": "e92d66429e9f8c83c1d003925e6de83420a86e5f",
+  "implementation_commit": "7395512128320b38054c39ddb8446da03cc35993",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
