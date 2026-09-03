@@ -1,4 +1,5 @@
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -272,8 +273,8 @@ describe("task verification durability", () => {
       await execFileAsync("git", ["commit", "-m", "test: central implementation diff"], {
         cwd: root,
       });
-      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
-      ctx.config.workflow_mode = "branch_pr";
+      const taskCtx = await loadCommandContext({ cwd: root, rootOverride: null });
+      taskCtx.config.workflow_mode = "branch_pr";
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       await mkdir(prDir, { recursive: true });
       await writeFile(
@@ -295,9 +296,9 @@ describe("task verification durability", () => {
         cwd: root,
       });
       const implementationSha = implementationOutput.trim();
-      const initial = await ctx.taskBackend.getTask(taskId);
+      const initial = await taskCtx.taskBackend.getTask(taskId);
       if (!initial) throw new Error("missing branch verification fixture");
-      await ctx.taskBackend.writeTask?.({
+      await taskCtx.taskBackend.writeTask?.({
         ...initial,
         extensions: { ...initial.extensions, implementation_commit: { hash: implementationSha } },
       });
@@ -308,22 +309,28 @@ describe("task verification durability", () => {
       const { stdout: taskHeadOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,
       });
+      await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+      const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-verify-worktree-"));
+      const taskWorktree = path.join(worktreeParent, "task");
+      await execFileAsync("git", ["worktree", "add", taskWorktree, taskBranch], { cwd: root });
       if (checkout === "base") {
-        await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
         await writeFile(path.join(root, "unrelated.ts"), "export const unrelated = true;\n");
         await execFileAsync("git", ["add", "unrelated.ts"], { cwd: root });
         await execFileAsync("git", ["commit", "-m", "test: independent base change"], {
           cwd: root,
         });
       }
+      const commandRoot = checkout === "task" ? taskWorktree : root;
+      const ctx = await loadCommandContext({ cwd: commandRoot, rootOverride: null });
+      ctx.config.workflow_mode = "branch_pr";
       const { stdout: checkoutHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-        cwd: root,
+        cwd: commandRoot,
       });
 
       const verify = () =>
         cmdVerifyParsed({
           ctx,
-          cwd: root,
+          cwd: commandRoot,
           rootOverride: undefined,
           taskId,
           state: "ok",
@@ -336,7 +343,8 @@ describe("task verification durability", () => {
       await verify();
       await verify();
 
-      const task = await ctx.taskBackend.getTask(taskId);
+      const authoritativeCtx = await loadCommandContext({ cwd: taskWorktree, rootOverride: null });
+      const task = await authoritativeCtx.taskBackend.getTask(taskId);
       const contract = task?.execution_contract?.verification.contract;
       expect(task?.execution_contract?.observed.changed_paths).toEqual([
         ".github/workflows/ci.yml",
@@ -356,7 +364,13 @@ describe("task verification durability", () => {
       expect(contract?.escalation_reasons).toContain("effect_ci");
       expect(contract?.escalation_reasons).toContain("effect_schema");
 
-      const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
+      const verificationDir = path.join(
+        taskWorktree,
+        ".agentplane",
+        "tasks",
+        taskId,
+        "verification",
+      );
       const recordNames = await readdir(verificationDir);
       expect(recordNames).toHaveLength(2);
       for (const recordName of recordNames) {
@@ -368,7 +382,9 @@ describe("task verification durability", () => {
           input: { verification_contract_digest: contract?.digest },
         });
       }
-      const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: commandRoot,
+      });
       const currentTaskHead = await execFileAsync("git", ["rev-parse", taskBranch], { cwd: root });
       expect(currentHead.stdout).toBe(checkoutHead);
       expect(currentTaskHead.stdout).toBe(taskHeadOutput);

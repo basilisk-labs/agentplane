@@ -7,19 +7,16 @@ import {
 } from "@agentplaneorg/core/tasks";
 import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 
-import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+import { projectTaskCentricCompletion } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import { emitTraceEvent } from "../../shared/trace-events.js";
 import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
 import { cmdCommit } from "../guard/impl/commit.js";
-import {
-  backendUsesLocalTaskStore,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
-import { getTaskStore, mutateTaskStore } from "../shared/task-store.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
+import { mutateTaskStore, type getTaskStore } from "../shared/task-store.js";
 
 import {
   ensureAgentFilledRequiredDocSections,
@@ -253,12 +250,10 @@ export async function writeFinishedTasks(opts: {
   taskCommitInfo: ResolvedCommitInfo | null;
   implementationCommitInfo?: ResolvedCommitInfo | null;
 }): Promise<void> {
-  const useStore = backendUsesLocalTaskStore(opts.ctx);
-  const store = useStore ? getTaskStore(opts.ctx) : null;
   const taskCount = opts.loadedTasks.length;
 
   for (const loaded of opts.loadedTasks) {
-    const { taskId, task } = loaded;
+    const { taskId } = loaded;
     const at = nowIso();
     const tokenUsage = await resolveTaskTokenUsageOnFinish({
       git_root: opts.ctx.resolvedProject.gitRoot,
@@ -328,53 +323,50 @@ export async function writeFinishedTasks(opts: {
       });
     };
 
-    if (useStore) {
-      const result = await mutateTaskStore(store!, taskId, async (currentTask) => {
+    const mutation = await applyTaskMutation({
+      ctx: opts.ctx,
+      taskId,
+      policyAction: "task_status_transition",
+      phase: "finish",
+      build: async (currentTask) => {
         const execution = await applyTransition(currentTask);
-        return execution.intents;
-      });
-      loaded.task = result.task;
-    } else {
-      const execution = await applyTransition(task);
-      await opts.ctx.taskBackend.writeTask(execution.nextTask);
-      loaded.task = execution.nextTask;
-    }
-
-    const canonical = taskCentricAggregateFromExtensions(loaded.task.extensions);
-    if (canonical?.current_plan && canonical.lifecycle !== "COMPLETED") {
-      const implementationHash =
-        opts.implementationCommitInfo?.hash ?? opts.taskCommitInfo?.hash ?? "";
-      const repository = createRepositorySnapshot({
-        git: isGitObjectId(implementationHash)
-          ? { kind: "commit", sha: implementationHash, ref: null }
-          : {
-              kind: "unavailable",
-              reason_code: "implementation_commit_unavailable",
-              detail: implementationHash || undefined,
-            },
-        dirty_paths: [],
-        policy_digest: null,
-        config_digest: null,
-        context_digest: null,
-        task_history_cursor: `task-revision:${String(loaded.task.revision ?? canonical.revision)}`,
-        captured_at: at,
-      });
-      const adapter = new TaskCentricBackendAdapter({
-        backend: opts.ctx.taskBackend,
-        observeRepository: () => Promise.resolve(repository),
-      });
-      await adapter.completeTaskFromLegacyVerification({
-        task_id: taskId,
-        repository,
-        actor_id: opts.author,
-        evidence_refs: [
-          `task-verification:${taskId}`,
-          ...(implementationHash ? [`git:${implementationHash}`] : []),
-        ],
-        idempotency_key: `legacy-finish:${taskId}:${loaded.task.verification?.updated_at ?? at}:${implementationHash}`,
-      });
-      loaded.task = (await opts.ctx.taskBackend.getTask(taskId)) ?? loaded.task;
-    }
+        const currentCanonical = taskCentricAggregateFromExtensions(currentTask.extensions);
+        if (!currentCanonical?.current_plan || currentCanonical.lifecycle === "COMPLETED") {
+          return { nextTask: execution.nextTask };
+        }
+        const implementationHash =
+          opts.implementationCommitInfo?.hash ?? opts.taskCommitInfo?.hash ?? "";
+        const repository = createRepositorySnapshot({
+          git: isGitObjectId(implementationHash)
+            ? { kind: "commit", sha: implementationHash, ref: null }
+            : {
+                kind: "unavailable",
+                reason_code: "implementation_commit_unavailable",
+                detail: implementationHash || undefined,
+              },
+          dirty_paths: [],
+          policy_digest: null,
+          config_digest: null,
+          context_digest: null,
+          task_history_cursor: `task-revision:${String((currentTask.revision ?? currentCanonical.revision) + 1)}`,
+          captured_at: at,
+        });
+        const completion = projectTaskCentricCompletion({
+          task_id: taskId,
+          current: currentTask,
+          next: execution.nextTask,
+          repository,
+          actor_id: opts.author,
+          evidence_refs: [
+            `task-verification:${taskId}`,
+            ...(implementationHash ? [`git:${implementationHash}`] : []),
+          ],
+          idempotency_key: `legacy-finish:${taskId}:${execution.nextTask.verification?.updated_at ?? at}:${implementationHash}`,
+        });
+        return { nextTask: completion?.task ?? execution.nextTask };
+      },
+    });
+    loaded.task = mutation.task;
   }
 }
 

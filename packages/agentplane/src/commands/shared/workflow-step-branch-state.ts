@@ -1,5 +1,5 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
-import { cliOperationStep, terminalStep } from "./workflow-step-factory.js";
+import { cliOperationStep, routeBlockerFor, terminalStep } from "./workflow-step-factory.js";
 import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request.js";
 
 export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
@@ -41,6 +41,22 @@ export function primaryIncludeTaskIds(state: WorkflowRouteState): readonly strin
 
 export function preMergeCommit(state: WorkflowRouteState): string | null {
   return state.prFlow?.branch.headSha ?? null;
+}
+
+export function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
+  return terminalStep({
+    state,
+    id: "terminal.branch_head_repair",
+    code: "repair_branch_head",
+    phase: "branch_head_missing",
+    checkout: "base_checkout",
+    role: "CODER",
+    outcome: "repair_required",
+    summary:
+      "the structured task branch exists but its local head is unavailable; recover or fetch that branch before PR, closure, or integration operations",
+    evidenceMissing: ["task_branch_head"],
+    selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
+  });
 }
 
 export function missingPrRemoteRefreshStep(state: WorkflowRouteState): WorkflowStep {

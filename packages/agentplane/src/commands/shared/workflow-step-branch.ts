@@ -3,6 +3,7 @@ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
+  branchHeadRepairStep,
   blockedTaskStep,
   missingPrRemoteRefreshStep,
   preMergeCommit,
@@ -33,21 +34,6 @@ import {
 } from "./workflow-step-factory.js";
 function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
   return state.blockers.some((blocker) => blocker.code === code);
-}
-function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
-  return terminalStep({
-    state,
-    id: "terminal.branch_head_repair",
-    code: "repair_branch_head",
-    phase: "branch_head_missing",
-    checkout: "base_checkout",
-    role: "CODER",
-    outcome: "repair_required",
-    summary:
-      "the structured task branch exists but its local head is unavailable; recover or fetch that branch before PR, closure, or integration operations",
-    evidenceMissing: ["task_branch_head"],
-    selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
-  });
 }
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
   if (state.batchOwnership.role !== "primary") return null;
@@ -488,9 +474,17 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
-  const requiredWorkItemIncomplete = taskCentric?.current_plan?.proposal.work_items.work_items.some(
-    (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
+  // A freshly materialized graph is not evidence that compatibility-driven
+  // implementation has entered canonical WorkItem execution. Once a claim or
+  // attempt exists, the canonical graph becomes authoritative for routing.
+  const canonicalWorkItemExecutionStarted = Object.values(taskCentric?.work_items ?? {}).some(
+    (item) => item.attempt > 0 || item.claim_id !== null,
   );
+  const requiredWorkItemIncomplete =
+    canonicalWorkItemExecutionStarted &&
+    taskCentric?.current_plan?.proposal.work_items.work_items.some(
+      (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
+    );
   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
   const implementationValidated =
     Boolean(implementationCommit) &&

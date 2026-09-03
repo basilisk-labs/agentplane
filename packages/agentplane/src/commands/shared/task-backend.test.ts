@@ -174,7 +174,7 @@ describe(
       await expect(resolvePrimaryCheckoutCommandContext(primaryCtx)).resolves.toBe(primaryCtx);
     });
 
-    it("does not retain a stale worktree merely because another worktree owns the task branch", async () => {
+    it("routes a stale caller to the worktree that owns the task branch", async () => {
       const repo = await tempRepo({ branch: "main" });
       const root = repo.root;
       await configureGitUser(root);
@@ -225,13 +225,13 @@ describe(
         taskId: created.id,
       });
 
-      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
+      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(taskWorktree));
       await expect(ownerCtx.taskBackend.getTask(created.id)).resolves.toMatchObject({
         id: created.id,
       });
     });
 
-    it("loadTaskFromContext falls back to a branch-backed task README in branch_pr mode", async () => {
+    it("rejects a local task branch without a registered authoritative worktree", async () => {
       const repo = await tempRepo({ branch: "main" });
       const root = repo.root;
       await configureGitUser(root);
@@ -280,9 +280,10 @@ describe(
       );
 
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-      const task = await loadTaskFromContext({ ctx, taskId: created.id });
-      expect(task.id).toBe(created.id);
-      expect(task.title).toBe("Context branch fallback");
+      await expect(loadTaskFromContext({ ctx, taskId: created.id })).rejects.toMatchObject({
+        code: "E_VALIDATION",
+        context: { reason_code: "task_worktree_registration_missing" },
+      });
     });
 
     it("loadTaskFromContext can read the active task README from a live branch_pr worktree", async () => {
@@ -354,7 +355,7 @@ describe(
       expect(task.status).toBe("DOING");
     });
 
-    it("loadTaskFromContext can prefer an explicit branch snapshot over a stale base task copy", async () => {
+    it("rejects an explicit local branch snapshot without an authoritative worktree", async () => {
       const repo = await tempRepo({ branch: "main" });
       const root = repo.root;
       await configureGitUser(root);
@@ -392,15 +393,17 @@ describe(
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
 
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-      const task = await loadTaskFromContext({
-        ctx,
-        taskId: created.id,
-        preferBranchSnapshot: true,
-        branchSnapshotBranch: branch,
+      await expect(
+        loadTaskFromContext({
+          ctx,
+          taskId: created.id,
+          preferBranchSnapshot: true,
+          branchSnapshotBranch: branch,
+        }),
+      ).rejects.toMatchObject({
+        code: "E_VALIDATION",
+        context: { reason_code: "task_worktree_registration_missing" },
       });
-
-      expect(task.id).toBe(created.id);
-      expect(task.title).toBe("Branch task title");
     });
 
     it(

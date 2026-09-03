@@ -1,4 +1,8 @@
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
+import {
+  createLegacyTaskAggregate,
+  ensureDocSections,
+  setMarkdownSection,
+} from "@agentplaneorg/core/tasks";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
@@ -92,8 +96,19 @@ describe("task plan commands (unit)", () => {
 
   it("setTaskPlan clears the replan marker when a replacement canonical plan is supplied", async () => {
     const ctx = mkCtx();
+    const currentAggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 1,
+      title: "Task",
+      description: "Current plan",
+      status: "TODO",
+      acceptance_criteria: ["replacement plan is accepted"],
+      captured_at: "2026-03-13T00:00:00.000Z",
+      updated_at: "2026-03-13T00:00:00.000Z",
+    });
     let currentTask = mkTask({
       id: "T-1",
+      revision: 1,
       doc: [
         "## Summary",
         "x",
@@ -108,14 +123,23 @@ describe("task plan commands (unit)", () => {
         "n/a",
       ].join("\n"),
       extensions: {
-        "agentplane.task_centric": { schema_version: 1, id: "T-1" },
+        "agentplane.task_centric": currentAggregate,
         "agentplane.task_centric_replan_required": {
           schema_version: 1,
           reason_code: "plan_changed",
         },
       },
     });
-    const replacement = { schema_version: 1, id: "T-1", revision: 2 };
+    const replacement = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 2,
+      title: "Task",
+      description: "Replacement plan",
+      status: "TODO",
+      acceptance_criteria: ["replacement plan is accepted"],
+      captured_at: "2026-03-13T00:01:00.000Z",
+      updated_at: "2026-03-13T00:01:00.000Z",
+    });
     const store = {
       update: vi
         .fn()

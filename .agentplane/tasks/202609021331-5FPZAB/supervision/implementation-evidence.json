@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check e46e4b531660c5d312135950c033ba7d788bd45e..b6350071398029c378f986a0169222e3b2291e4a",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e46e4b531660c5d312135950c033ba7d788bd45e..b6350071398029c378f986a0169222e3b2291e4a",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609021331-5FPZAB/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609021331-5FPZAB/pr/github-body.md",
+        "M\t.agentplane/tasks/202609021331-5FPZAB/pr/meta.json",
+        "M\t.agentplane/tasks/202609021331-5FPZAB/pr/review.md",
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts",
+        "A\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-task-store.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "e46e4b531660c5d312135950c033ba7d788bd45e",
+  "implementation_commit": "b6350071398029c378f986a0169222e3b2291e4a",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609021331-5FPZAB"
+}

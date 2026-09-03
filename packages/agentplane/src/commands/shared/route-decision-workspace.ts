@@ -16,7 +16,7 @@ export async function findRouteWorktreePath(
   branch: string | null,
 ): Promise<string | null> {
   if (!branch) return null;
-  return findWorktreeForBranch(cwd, branch).catch(() => null);
+  return await findWorktreeForBranch(cwd, branch);
 }
 
 export function inferTaskRouteBranch(

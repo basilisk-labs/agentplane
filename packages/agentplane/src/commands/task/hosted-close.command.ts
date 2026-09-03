@@ -131,6 +131,7 @@ async function closeHostedTask(opts: {
       taskId: target.taskId,
       preferBranchSnapshot: !existingMetaAlreadyMerged,
       branchSnapshotBranch: existingMetaAlreadyMerged ? null : target.branch,
+      requireBranchWorktree: false,
     });
   } catch (err) {
     if (!isMissingTaskReadmeError(err, taskReadmePath)) throw err;

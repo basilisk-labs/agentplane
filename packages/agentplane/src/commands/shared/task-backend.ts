@@ -18,16 +18,20 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { findWorktreeForBranch, GitContext, listWorktrees } from "@agentplaneorg/core/git";
+import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
 import {
   loadTaskFromBranchSnapshot,
+  resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
+  taskBranchHasLocalRef,
 } from "./task-backend-branch-snapshot.js";
 
 export {
   loadTaskFromBranchSnapshot,
+  resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
+  taskBranchHasLocalRef,
 } from "./task-backend-branch-snapshot.js";
 
 export type CommandMemo = {
@@ -37,6 +41,7 @@ export type CommandMemo = {
     localBranches: string[];
     remoteBranches: string[];
   }>;
+  taskWorktreeInventory?: Promise<{ path: string; branch: string | null }[]>;
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
   gitCommonDir?: Promise<string>;
@@ -232,29 +237,39 @@ export async function resolveTaskOwnerCommandContext(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<CommandContext> {
-  if (await opts.ctx.taskBackend.getTask(opts.taskId)) return opts.ctx;
-
-  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
-  const branchTask = await loadTaskFromBranchSnapshot({
-    ctx: opts.ctx,
-    taskId: opts.taskId,
-    readmePath: path.join(tasksDir, opts.taskId, "README.md"),
-    branch: taskBranch,
-  });
-  if (branchTask && taskBranch) {
-    const ownerWorktree = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, taskBranch);
-    if (
-      ownerWorktree &&
-      path.resolve(ownerWorktree) === path.resolve(opts.ctx.resolvedProject.gitRoot)
-    ) {
-      return opts.ctx;
+  if (taskBranch) {
+    const owner = await resolveAuthoritativeTaskWorktree({
+      ctx: opts.ctx,
+      taskId: opts.taskId,
+      branch: taskBranch,
+      requireRegistration: await taskBranchHasLocalRef({ ctx: opts.ctx, branch: taskBranch }),
+    });
+    if (owner) {
+      if (path.resolve(owner.path) === path.resolve(opts.ctx.resolvedProject.gitRoot)) {
+        await loadTaskFromContext({
+          ctx: opts.ctx,
+          taskId: opts.taskId,
+          preferBranchSnapshot: true,
+        });
+        return opts.ctx;
+      }
+      const ownerCtx = await loadCommandContext({ cwd: owner.path, rootOverride: null });
+      await loadTaskFromContext({ ctx: ownerCtx, taskId: opts.taskId, preferBranchSnapshot: true });
+      return ownerCtx;
     }
   }
 
   const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
-  if (primaryCtx === opts.ctx) return opts.ctx;
-  return (await primaryCtx.taskBackend.getTask(opts.taskId)) ? primaryCtx : opts.ctx;
+  if (await primaryCtx.taskBackend.getTask(opts.taskId)) return primaryCtx;
+  if (
+    primaryCtx !== opts.ctx &&
+    opts.ctx.config.workflow_mode !== "branch_pr" &&
+    (await opts.ctx.taskBackend.getTask(opts.taskId))
+  ) {
+    return opts.ctx;
+  }
+  return primaryCtx;
 }
 
 export async function loadTaskFromContext(opts: {
@@ -262,6 +277,7 @@ export async function loadTaskFromContext(opts: {
   taskId: string;
   preferBranchSnapshot?: boolean;
   branchSnapshotBranch?: string | null;
+  requireBranchWorktree?: boolean;
 }): Promise<TaskData> {
   const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
   const readmePath = path.join(tasksDir, opts.taskId, "README.md");
@@ -271,6 +287,7 @@ export async function loadTaskFromContext(opts: {
       taskId: opts.taskId,
       readmePath,
       branch: opts.branchSnapshotBranch ?? null,
+      requireWorktree: opts.requireBranchWorktree,
     });
 
   if (opts.preferBranchSnapshot) {

@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609021331-5FPZAB/repair-lifecycle-projection-integrity-after-m3-c",
+  "created_at": "2026-09-02T15:35:26.605Z",
+  "diffstat_sha256": "sha256:260cfa2ef3e303dd9718d3196875d05febd9a089683059197ff11327022e1db5",
+  "last_verified_at": "2026-09-03T16:43:52.253Z",
+  "last_verified_diffstat_sha256": "sha256:260cfa2ef3e303dd9718d3196875d05febd9a089683059197ff11327022e1db5",
+  "pr_number": 5889,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5889",
+  "pre_merge_closure": {
+    "basis_commit": "bf77042aaab8f6447a14db0280bb5b362c2debe2",
+    "branch": "task/202609021331-5FPZAB/repair-lifecycle-projection-integrity-after-m3-c",
+    "pr_number": 5889,
+    "recorded_at": "2026-09-03T16:49:00.705Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609021331-5FPZAB",
+  "updated_at": "2026-09-03T16:05:34.805Z",
+  "verify": {
+    "status": "pass"
+  }
+}

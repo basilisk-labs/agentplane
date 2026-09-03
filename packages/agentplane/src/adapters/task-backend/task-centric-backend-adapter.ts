@@ -2,11 +2,9 @@ import {
   aggregateValidation,
   applyPlanRefinement,
   EXECUTION_GRANT_EXTENSION_KEY,
-  evaluateTaskCompletion,
   materializeApprovedWorkItems,
   projectTaskLifecycleToLegacyStatus,
   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
-  taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
   type DomainEvent,
   type ExecutionLease,
@@ -25,6 +23,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend } from "../../backends/task-backend.js";
+import { projectTaskCentricCompletion } from "./task-centric-backend-projection.js";
 import {
   aggregateFrom,
   applyEvent,
@@ -439,65 +438,11 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   }): Promise<TransitionReceipt | null> {
     const raw = await this.backend.getTask(opts.task_id);
     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
-    const task = taskCentricAggregateFromExtensions(raw.extensions);
-    if (!task?.current_plan) return null;
-    const runtime = runtimeFrom(raw);
-    const already = runtime.mutation_receipts[opts.idempotency_key];
-    if (already) return already;
-    if (task.lifecycle === "COMPLETED") return null;
-    if (raw.verification?.state !== "ok") {
-      throw new Error("Task-centric completion requires a recorded successful task verification.");
-    }
-    const evidence: ValidationEvidence[] =
-      task.current_plan.proposal.top_level_validation.checks.map((check) => ({
-        check_id: check.id,
-        status: "passed",
-        observed_at: raw.verification?.updated_at ?? opts.repository.captured_at,
-        repository_snapshot_digest: opts.repository.digest,
-        command_identity: check.command ?? check.capability,
-        exit_code: 0,
-        artifact_refs: opts.evidence_refs,
-        detail: raw.verification?.note ?? "Passed by the recorded task verification.",
-      }));
-    const finalValidation = aggregateValidation(
-      task.current_plan.proposal.top_level_validation,
-      evidence,
-    );
-    const candidate: TaskAggregate = Object.freeze({
-      ...task,
-      lifecycle: "COMPLETED",
-      final_validation: finalValidation,
-      updated_at: opts.repository.captured_at,
-    });
-    const eligibility = evaluateTaskCompletion({
-      task: candidate,
-      repository_digest: opts.repository.digest,
-      pending_effects: runtime.pending_effects,
-    });
-    if (!eligibility.eligible) {
-      throw new Error(
-        `Task-centric completion is not eligible: ${eligibility.reason_codes.join(", ")}.`,
-      );
-    }
-    const event = syntheticEvent({
-      task,
-      mutation_id: opts.idempotency_key,
-      entity: "task",
-      from: task.lifecycle,
-      to: "COMPLETED",
-      at: opts.repository.captured_at,
-      actor_id: opts.actor_id,
-      cause_refs: opts.evidence_refs,
-      repository_fingerprint: opts.repository.digest,
-    });
-    return await this.persist({
-      task_id: task.id,
-      expected_revision: raw.revision ?? task.revision,
-      mutation_id: opts.idempotency_key,
-      event,
-      next: candidate,
-      runtime,
-    });
+    const projected = projectTaskCentricCompletion({ ...opts, current: raw, next: raw });
+    if (!projected) return null;
+    if (projected.task === raw) return projected.receipt;
+    await this.backend.writeTask(projected.task, { expectedRevision: raw.revision ?? 1 });
+    return projected.receipt;
   }
 
   async writeCheckpoint(checkpoint: TaskCheckpoint): Promise<void> {
@@ -594,5 +539,10 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     });
   }
 }
+
+export {
+  projectTaskCentricCompatibilityMutation,
+  projectTaskCentricCompletion,
+} from "./task-centric-backend-projection.js";
 
 export { TASK_CENTRIC_RUNTIME_EXTENSION_KEY } from "./task-centric-backend-runtime.js";

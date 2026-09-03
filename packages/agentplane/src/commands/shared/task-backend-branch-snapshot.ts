@@ -2,10 +2,10 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  findWorktreeForBranch,
   gitEnv,
   gitListTaskBranches,
   gitShowFile,
+  listWorktrees,
   parseTaskIdFromBranch,
   toGitPath,
 } from "@agentplaneorg/core/git";
@@ -63,6 +63,99 @@ export async function resolveTaskBranchFromContext(opts: {
     });
   }
   return null;
+}
+
+function normalizeBranch(branch: string): string {
+  const withoutRemote = stripOriginPrefix(branch);
+  return withoutRemote.startsWith("refs/heads/")
+    ? withoutRemote.slice("refs/heads/".length)
+    : withoutRemote;
+}
+
+export async function taskBranchHasLocalRef(opts: {
+  ctx: CommandContext;
+  branch: string;
+}): Promise<boolean> {
+  const { localBranches } = await loadTaskBranchInventory(opts.ctx);
+  const expected = normalizeBranch(opts.branch);
+  return localBranches.some((branch) => normalizeBranch(branch) === expected);
+}
+
+export async function resolveAuthoritativeTaskWorktree(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  branch: string;
+  requireRegistration?: boolean;
+}): Promise<{ path: string; branch: string } | null> {
+  const expectedBranch = normalizeBranch(opts.branch);
+  if (parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, expectedBranch) !== opts.taskId) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Task branch ${expectedBranch} does not belong to ${opts.taskId}.`,
+      context: {
+        reason_code: "foreign_task_branch",
+        task_id: opts.taskId,
+        branch: expectedBranch,
+      },
+    });
+  }
+
+  opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
+  const worktrees = await opts.ctx.memo.taskWorktreeInventory;
+  const registrations = worktrees.filter(
+    (entry) =>
+      entry.branch !== null &&
+      parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch) === opts.taskId,
+  );
+  if (registrations.length > 1) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `Multiple worktrees are registered for task ${opts.taskId}: ` +
+        registrations.map((entry) => entry.path).join(", "),
+      context: {
+        reason_code: "duplicate_task_worktree_registration",
+        task_id: opts.taskId,
+        worktrees: registrations.map((entry) => ({ path: entry.path, branch: entry.branch })),
+      },
+    });
+  }
+
+  const registration = registrations[0];
+  if (!registration) {
+    if (opts.requireRegistration) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Local task branch ${expectedBranch} has no registered authoritative worktree for ${opts.taskId}.`,
+        context: {
+          reason_code: "task_worktree_registration_missing",
+          task_id: opts.taskId,
+          branch: expectedBranch,
+        },
+      });
+    }
+    return null;
+  }
+
+  const registeredBranch = normalizeBranch(registration.branch!);
+  if (registeredBranch !== expectedBranch) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Task ${opts.taskId} is registered on ${registeredBranch}, not ${expectedBranch}.`,
+      context: {
+        reason_code: "task_worktree_branch_mismatch",
+        task_id: opts.taskId,
+        expected_branch: expectedBranch,
+        registered_branch: registeredBranch,
+        authoritative_worktree: registration.path,
+      },
+    });
+  }
+  return { path: registration.path, branch: registeredBranch };
 }
 
 function stripOriginPrefix(branch: string): string {
@@ -135,6 +228,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
   taskId: string;
   readmePath: string;
   branch?: string | null;
+  requireWorktree?: boolean;
 }): Promise<TaskData | null> {
   if (!backendSupportsTaskBranchSnapshots(opts.ctx)) {
     return null;
@@ -146,10 +240,16 @@ export async function loadTaskFromBranchSnapshot(opts: {
       : await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (!branch) return null;
 
-  const liveWorktreePath = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, branch);
-  if (liveWorktreePath) {
+  const localBranch = await taskBranchHasLocalRef({ ctx: opts.ctx, branch });
+  const authoritativeWorktree = await resolveAuthoritativeTaskWorktree({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    branch,
+    requireRegistration: localBranch && opts.requireWorktree !== false,
+  });
+  if (authoritativeWorktree) {
     const liveReadmePath = path.join(
-      liveWorktreePath,
+      authoritativeWorktree.path,
       path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath),
     );
     try {
@@ -160,7 +260,20 @@ export async function loadTaskFromBranchSnapshot(opts: {
         text: liveText,
       });
     } catch {
-      // Fall back to the committed branch snapshot when the live worktree lacks the README.
+      throw new CliError({
+        exitCode: 4,
+        code: "E_IO",
+        message:
+          `Authoritative task worktree ${authoritativeWorktree.path} does not contain a valid ` +
+          `README for ${opts.taskId}.`,
+        context: {
+          reason_code: "authoritative_task_readme_unavailable",
+          task_id: opts.taskId,
+          branch: authoritativeWorktree.branch,
+          authoritative_worktree: authoritativeWorktree.path,
+          readme_path: liveReadmePath,
+        },
+      });
     }
   }
 

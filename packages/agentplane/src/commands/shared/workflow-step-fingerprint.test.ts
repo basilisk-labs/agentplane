@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -297,7 +297,7 @@ it("captures every live route component from the authoritative task worktree", a
   expect(preparationTrace).toContain('"output_bytes":');
   expect(preparationTrace).toContain('"fingerprint_inputs":');
   expect(preparationTrace).toContain('"invalidation_reasons":["no_prior_observation"]');
-  expect(fingerprint.worktree).toBe(worktree);
+  expect(fingerprint.worktree).toBe(await realpath(worktree));
   expect(fingerprint.components.blueprint).toMatchObject({
     state: "present",
     digest: componentDigest({
@@ -444,6 +444,12 @@ it("captures every live route component from the authoritative task worktree", a
   });
 
   const initial = fingerprint;
+  const alias = `${root}-live-fingerprint-alias`;
+  await symlink(worktree, alias, "dir");
+  const aliased = await capture({ ctx, root, worktree: alias });
+  expect(aliased.worktree).toBe(initial.worktree);
+  expect(aliased.digest).toBe(initial.digest);
+
   const evaluatorArtifactPath = path.join(
     worktree,
     ".agentplane",
@@ -531,6 +537,46 @@ it("captures every live route component from the authoritative task worktree", a
   const providerBefore = await capture({ ctx, root, worktree, state: localHeadBefore });
   const providerAfter = await capture({ ctx, root, worktree, state: localHeadAfter });
   expect(changedComponents(providerBefore, providerAfter)).toEqual([]);
+
+  const hostedBeforeState = routeState(worktree);
+  hostedBeforeState.prFlow = {
+    ...prFlow(),
+    pr: { provider: "github", state: "not_found", source: "lookup" },
+    providerObservation: { state: "not_found" },
+  };
+  const hostedAfterState = structuredClone(hostedBeforeState);
+  hostedAfterState.prFlow!.hostedChecks = {
+    checked: true,
+    total: 1,
+    pending: 0,
+    failing: 0,
+    passing: 1,
+    missingRequired: [],
+    rows: [{ name: "PR verification", state: "SUCCESS" }],
+  };
+  const hostedBefore = await capture({ ctx, root, worktree, state: hostedBeforeState });
+  const hostedAfter = await capture({ ctx, root, worktree, state: hostedAfterState });
+  expect(changedComponents(hostedBefore, hostedAfter)).toEqual(["provider"]);
+  const reorderedHostedState = structuredClone(hostedAfterState);
+  reorderedHostedState.prFlow!.hostedChecks = {
+    checked: true,
+    total: 2,
+    pending: 0,
+    failing: 0,
+    passing: 2,
+    missingRequired: [],
+    rows: [
+      { name: "Typecheck", state: "SUCCESS" },
+      { name: "PR verification", state: "SUCCESS" },
+    ],
+  };
+  const reverseHostedState = structuredClone(reorderedHostedState);
+  if (reverseHostedState.prFlow?.hostedChecks.checked) {
+    reverseHostedState.prFlow.hostedChecks.rows.reverse();
+  }
+  const reorderedHosted = await capture({ ctx, root, worktree, state: reorderedHostedState });
+  const reverseHosted = await capture({ ctx, root, worktree, state: reverseHostedState });
+  expect(changedComponents(reorderedHosted, reverseHosted)).toEqual([]);
 
   const conditionalPolicyState = routeState(worktree);
   conditionalPolicyState.taskWorktree = {

@@ -75,7 +75,6 @@ function normalizeRequestedTaskIds(taskIds: readonly string[] | undefined): stri
 }
 
 async function normalizeQueueAfterFinalize(opts: {
-  ctx: CommandContext;
   cwd: string;
   rootOverride?: string;
   gitRoot: string;
@@ -83,8 +82,12 @@ async function normalizeQueueAfterFinalize(opts: {
   quiet: boolean;
 }): Promise<void> {
   if (!opts.finalize) return;
+  const ctx = await loadCommandContext({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
   await normalizeTerminalQueueEntries({
-    ctx: opts.ctx,
+    ctx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     gitRoot: opts.gitRoot,
@@ -121,7 +124,7 @@ export async function cmdCleanupMerged(opts: {
   taskIds?: readonly string[];
 }): Promise<number> {
   try {
-    const ctx =
+    let ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const resolved = ctx.resolvedProject;
@@ -177,6 +180,10 @@ export async function cmdCleanupMerged(opts: {
       await execFileAsync("git", ["pull", "--ff-only", "origin", baseBranch], {
         cwd: resolved.gitRoot,
         env: gitEnv(),
+      });
+      ctx = await loadCommandContext({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
       });
     }
 
@@ -257,7 +264,6 @@ export async function cmdCleanupMerged(opts: {
         rows: reportRows,
       });
       await normalizeQueueAfterFinalize({
-        ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         gitRoot: resolved.gitRoot,
@@ -411,7 +417,6 @@ export async function cmdCleanupMerged(opts: {
     }
 
     await normalizeQueueAfterFinalize({
-      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       gitRoot: resolved.gitRoot,

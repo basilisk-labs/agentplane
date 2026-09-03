@@ -1,0 +1,3392 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+index 19aa65732..c25a4325a 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+@@ -1,11 +1,9 @@
+ import {
+   aggregateValidation,
+   applyPlanRefinement,
+-  evaluateTaskCompletion,
+   materializeApprovedWorkItems,
+   projectTaskLifecycleToLegacyStatus,
+   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
+-  taskCentricAggregateFromExtensions,
+   withTaskCentricAggregate,
+   type DomainEvent,
+   type ExecutionLease,
+@@ -24,6 +22,7 @@ import {
+ } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskBackend } from "../../backends/task-backend.js";
++import { projectTaskCentricCompletion } from "./task-centric-backend-projection.js";
+ import {
+   aggregateFrom,
+   applyEvent,
+@@ -410,65 +409,11 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+   }): Promise<TransitionReceipt | null> {
+     const raw = await this.backend.getTask(opts.task_id);
+     if (!raw) throw new Error(`Task not found: ${opts.task_id}`);
+-    const task = taskCentricAggregateFromExtensions(raw.extensions);
+-    if (!task?.current_plan) return null;
+-    const runtime = runtimeFrom(raw);
+-    const already = runtime.mutation_receipts[opts.idempotency_key];
+-    if (already) return already;
+-    if (task.lifecycle === "COMPLETED") return null;
+-    if (raw.verification?.state !== "ok") {
+-      throw new Error("Task-centric completion requires a recorded successful task verification.");
+-    }
+-    const evidence: ValidationEvidence[] =
+-      task.current_plan.proposal.top_level_validation.checks.map((check) => ({
+-        check_id: check.id,
+-        status: "passed",
+-        observed_at: raw.verification?.updated_at ?? opts.repository.captured_at,
+-        repository_snapshot_digest: opts.repository.digest,
+-        command_identity: check.command ?? check.capability,
+-        exit_code: 0,
+-        artifact_refs: opts.evidence_refs,
+-        detail: raw.verification?.note ?? "Passed by the recorded task verification.",
+-      }));
+-    const finalValidation = aggregateValidation(
+-      task.current_plan.proposal.top_level_validation,
+-      evidence,
+-    );
+-    const candidate: TaskAggregate = Object.freeze({
+-      ...task,
+-      lifecycle: "COMPLETED",
+-      final_validation: finalValidation,
+-      updated_at: opts.repository.captured_at,
+-    });
+-    const eligibility = evaluateTaskCompletion({
+-      task: candidate,
+-      repository_digest: opts.repository.digest,
+-      pending_effects: runtime.pending_effects,
+-    });
+-    if (!eligibility.eligible) {
+-      throw new Error(
+-        `Task-centric completion is not eligible: ${eligibility.reason_codes.join(", ")}.`,
+-      );
+-    }
+-    const event = syntheticEvent({
+-      task,
+-      mutation_id: opts.idempotency_key,
+-      entity: "task",
+-      from: task.lifecycle,
+-      to: "COMPLETED",
+-      at: opts.repository.captured_at,
+-      actor_id: opts.actor_id,
+-      cause_refs: opts.evidence_refs,
+-      repository_fingerprint: opts.repository.digest,
+-    });
+-    return await this.persist({
+-      task_id: task.id,
+-      expected_revision: raw.revision ?? task.revision,
+-      mutation_id: opts.idempotency_key,
+-      event,
+-      next: candidate,
+-      runtime,
+-    });
++    const projected = projectTaskCentricCompletion({ ...opts, current: raw, next: raw });
++    if (!projected) return null;
++    if (projected.task === raw) return projected.receipt;
++    await this.backend.writeTask(projected.task, { expectedRevision: raw.revision ?? 1 });
++    return projected.receipt;
+   }
+ 
+   async writeCheckpoint(checkpoint: TaskCheckpoint): Promise<void> {
+@@ -566,4 +511,9 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+   }
+ }
+ 
++export {
++  projectTaskCentricCompatibilityMutation,
++  projectTaskCentricCompletion,
++} from "./task-centric-backend-projection.js";
++
+ export { TASK_CENTRIC_RUNTIME_EXTENSION_KEY } from "./task-centric-backend-runtime.js";
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts
+new file mode 100644
+index 000000000..e2e57cdc7
+--- /dev/null
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts
+@@ -0,0 +1,185 @@
++import {
++  aggregateValidation,
++  evaluateTaskCompletion,
++  projectTaskLifecycleToLegacyStatus,
++  taskCentricAggregateFromExtensions,
++  taskCentricDigest,
++  withTaskCentricAggregate,
++  type RepositorySnapshot,
++  type TaskAggregate,
++  type TransitionReceipt,
++  type ValidationEvidence,
++} from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import {
++  runtimeFrom,
++  syntheticEvent,
++  TASK_CENTRIC_RUNTIME_EXTENSION_KEY,
++  transitionReceipt,
++} from "./task-centric-backend-runtime.js";
++
++export function projectTaskCentricCompletion(opts: {
++  task_id: string;
++  current: TaskData;
++  next: TaskData;
++  repository: RepositorySnapshot;
++  actor_id: string;
++  evidence_refs: readonly string[];
++  idempotency_key: string;
++}): { task: TaskData; receipt: TransitionReceipt } | null {
++  const aggregate = taskCentricAggregateFromExtensions(opts.current.extensions);
++  if (!aggregate?.current_plan) return null;
++  const runtime = runtimeFrom(opts.current);
++  const already = runtime.mutation_receipts[opts.idempotency_key];
++  if (already) return { task: opts.current, receipt: already };
++  if (aggregate.lifecycle === "COMPLETED") return null;
++  if (opts.next.verification?.state !== "ok") {
++    throw new Error("Task-centric completion requires a recorded successful task verification.");
++  }
++  const evidence: ValidationEvidence[] =
++    aggregate.current_plan.proposal.top_level_validation.checks.map((check) => ({
++      check_id: check.id,
++      status: "passed",
++      observed_at: opts.next.verification?.updated_at ?? opts.repository.captured_at,
++      repository_snapshot_digest: opts.repository.digest,
++      command_identity: check.command ?? check.capability,
++      exit_code: 0,
++      artifact_refs: opts.evidence_refs,
++      detail: opts.next.verification?.note ?? "Passed by the recorded task verification.",
++    }));
++  const currentRevision = opts.current.revision ?? aggregate.revision;
++  const candidate: TaskAggregate = Object.freeze({
++    ...aggregate,
++    revision: currentRevision + 1,
++    lifecycle: "COMPLETED",
++    final_validation: aggregateValidation(
++      aggregate.current_plan.proposal.top_level_validation,
++      evidence,
++    ),
++    updated_at: opts.repository.captured_at,
++  });
++  const eligibility = evaluateTaskCompletion({
++    task: candidate,
++    repository_digest: opts.repository.digest,
++    pending_effects: runtime.pending_effects,
++  });
++  if (!eligibility.eligible) {
++    throw new Error(
++      `Task-centric completion is not eligible: ${eligibility.reason_codes.join(", ")}.`,
++    );
++  }
++  const event = syntheticEvent({
++    task: aggregate,
++    mutation_id: opts.idempotency_key,
++    entity: "task",
++    from: aggregate.lifecycle,
++    to: "COMPLETED",
++    at: opts.repository.captured_at,
++    actor_id: opts.actor_id,
++    cause_refs: opts.evidence_refs,
++    repository_fingerprint: opts.repository.digest,
++  });
++  const receipt = transitionReceipt({
++    task_id: aggregate.id,
++    previous_revision: currentRevision,
++    next: candidate,
++    mutation_id: opts.idempotency_key,
++    event,
++  });
++  return {
++    receipt,
++    task: {
++      ...opts.next,
++      revision: currentRevision + 1,
++      status: projectTaskLifecycleToLegacyStatus(candidate.lifecycle),
++      extensions: {
++        ...withTaskCentricAggregate(opts.next.extensions, candidate),
++        [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: Object.freeze({
++          ...runtime,
++          mutation_receipts: Object.freeze({
++            ...runtime.mutation_receipts,
++            [opts.idempotency_key]: receipt,
++          }),
++        }),
++      },
++    },
++  };
++}
++
++export function projectTaskCentricCompatibilityMutation(opts: {
++  current: TaskData;
++  next: TaskData;
++}): TaskData {
++  if (JSON.stringify(opts.current) === JSON.stringify(opts.next)) return opts.next;
++  const storedAggregate = taskCentricAggregateFromExtensions(opts.current.extensions);
++  const nextAggregate = taskCentricAggregateFromExtensions(opts.next.extensions);
++  if (!nextAggregate) {
++    if (!storedAggregate) return opts.next;
++    throw new Error("Task-centric compatibility mutation cannot remove the canonical aggregate.");
++  }
++  const currentAggregate = storedAggregate ?? nextAggregate;
++  const currentRevision = opts.current.revision ?? currentAggregate.revision;
++  const nextRevision = currentRevision + 1;
++  const aggregateChanged = taskCentricDigest(currentAggregate) !== taskCentricDigest(nextAggregate);
++  if (aggregateChanged && nextAggregate.revision === nextRevision) {
++    return { ...opts.next, revision: nextRevision };
++  }
++  if (nextAggregate.revision !== currentRevision) {
++    throw new Error(
++      `Task-centric mutation revision mismatch: expected ${nextRevision}, observed ${nextAggregate.revision}.`,
++    );
++  }
++
++  const at = opts.next.doc_updated_at ?? currentAggregate.updated_at;
++  const mutationId = `compatibility:${taskCentricDigest({
++    task_id: opts.current.id,
++    previous_revision: currentRevision,
++    status: opts.next.status,
++    comments: opts.next.comments,
++    events: opts.next.events,
++    verification: opts.next.verification,
++    commit: opts.next.commit,
++    aggregate: aggregateChanged ? taskCentricDigest(nextAggregate) : null,
++    doc_version: opts.next.doc_version,
++    doc_updated_at: opts.next.doc_updated_at,
++    doc_updated_by: opts.next.doc_updated_by,
++  })}`;
++  const candidate: TaskAggregate = Object.freeze({
++    ...nextAggregate,
++    revision: nextRevision,
++    event_cursor: Math.max(nextAggregate.event_cursor, currentAggregate.event_cursor + 1),
++    updated_at: at,
++  });
++  const event = syntheticEvent({
++    task: currentAggregate,
++    mutation_id: mutationId,
++    entity: "task",
++    from: currentAggregate.lifecycle,
++    to: currentAggregate.lifecycle,
++    at,
++    cause_refs: ["compatibility_projection_mutation"],
++  });
++  const receipt = transitionReceipt({
++    task_id: currentAggregate.id,
++    previous_revision: currentRevision,
++    next: candidate,
++    mutation_id: mutationId,
++    event,
++  });
++  const runtime = runtimeFrom(opts.current);
++  return {
++    ...opts.next,
++    revision: nextRevision,
++    extensions: {
++      ...withTaskCentricAggregate(opts.next.extensions, candidate),
++      [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: Object.freeze({
++        ...runtime,
++        mutation_receipts: Object.freeze({
++          ...runtime.mutation_receipts,
++          [mutationId]: receipt,
++        }),
++      }),
++    },
++  };
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+index 2083fe1ed..b5889073a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.test.ts
+@@ -614,7 +614,7 @@ describe("runCli route decision commands", () => {
+     expect(readme).toContain('plan_approval:\n  state: "pending"');
+   });
+ 
+-  it("routes stale local branch_pr state to base sync after hosted close is recorded upstream", async () => {
++  it("converges the Arkady Factory stale-DONE projection after hosted close and exact replay", async () => {
+     const root = await mkGitRepoRootWithCommit();
+     const config = defaultConfig();
+     config.workflow_mode = "branch_pr";
+@@ -662,7 +662,10 @@ describe("runCli route decision commands", () => {
+     expect(findingsIndex).toBeGreaterThan(0);
+     await writeFile(
+       readmePath,
+-      `${readme.slice(0, findingsIndex)}## Findings\n\nClose tail landed upstream.\n`,
++      `${readme.slice(0, findingsIndex)}## Findings\n\nClose tail landed upstream.\n`.replace(
++        'status: "DOING"',
++        'status: "DONE"',
++      ),
+       "utf8",
+     );
+     const suffix = taskId.split("-").at(-1);
+@@ -681,7 +684,18 @@ describe("runCli route decision commands", () => {
+     });
+     await execFileAsync("git", ["reset", "--hard", localBaseCommit], { cwd: root });
+ 
++    const [staleTaskCode, staleTask] = await runJson<{ status: string }>([
++      "task",
++      "show",
++      taskId,
++      "--root",
++      root,
++    ]);
++    expect(staleTaskCode).toBe(0);
++    expect(staleTask.status).toBe("DOING");
++
+     const statusIo = captureStdIO();
++    let staleNextAction: { code: string; command: string };
+     try {
+       const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+       expect(code).toBe(0);
+@@ -712,9 +726,47 @@ describe("runCli route decision commands", () => {
+         recommendedRole: "INTEGRATOR",
+         safeToMutate: true,
+       });
++      staleNextAction = parsed.nextAction;
+     } finally {
+       statusIo.restore();
+     }
++
++    const [replayCode, replay] = await runJson<{
++      nextAction: { code: string; command: string };
++    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
++    expect(replayCode).toBe(0);
++    expect(replay.nextAction).toEqual(staleNextAction!);
++
++    await execFileAsync("git", ["reset", "--hard", "refs/remotes/origin/main"], { cwd: root });
++    const [terminalTaskCode, terminalTask] = await runJson<{ status: string }>([
++      "task",
++      "show",
++      taskId,
++      "--root",
++      root,
++    ]);
++    expect(terminalTaskCode).toBe(0);
++    expect(terminalTask.status).toBe("DONE");
++
++    const [terminalRouteCode, terminalRoute] = await runJson<{
++      nextAction: { code: string; command: string | null };
++    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
++    expect(terminalRouteCode).toBe(0);
++    expect(terminalRoute.nextAction).toMatchObject({ code: "done", command: null });
++    const [terminalReplayCode, terminalReplay] = await runJson<{
++      nextAction: { code: string; command: string | null };
++    }>(["task", "status", taskId, "--route", "--json", "--root", root]);
++    expect(terminalReplayCode).toBe(0);
++    expect(terminalReplay.nextAction).toEqual(terminalRoute.nextAction);
++
++    const taskBranches = await execFileAsync("git", ["branch", "--list", `task/${taskId}/*`], {
++      cwd: root,
++    });
++    expect(taskBranches.stdout.trim()).toBe("");
++    const worktrees = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
++      cwd: root,
++    });
++    expect(worktrees.stdout.match(/^worktree /gmu)).toHaveLength(1);
+   });
+ 
+   it("keeps done direct-mode tasks on a direct-safe terminal route", async () => {
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts
+new file mode 100644
+index 000000000..39d8fbc65
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.support.test.ts
+@@ -0,0 +1,462 @@
++import { execFile } from "node:child_process";
++import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++import { defaultConfig } from "@agentplaneorg/core/config";
++import { parseTaskReadme, readTask, renderTaskFrontmatter } from "@agentplaneorg/core/tasks";
++
++import { runCli } from "../../cli/run-cli.js";
++import {
++  captureStdIO,
++  cleanGitEnv,
++  commitAll,
++  configureGitUser,
++  mkGitRepoRootWithBranch,
++  mkTempDir,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++
++const execFileAsync = promisify(execFile);
++const TEST_WORKFLOW_GITIGNORE =
++  ".agentplane/worktrees\n" +
++  ".agentplane/cache\n" +
++  ".agentplane/cache.sqlite\n" +
++  ".agentplane/cache.sqlite-wal\n" +
++  ".agentplane/cache.sqlite-shm\n";
++
++export type TargetedFixture = {
++  root: string;
++  taskId: string;
++  branch: string;
++  branchHead: string;
++  mergeCommit: string;
++  worktreePath: string;
++  unrelatedBranch: string;
++  unrelatedWorktreePath: string;
++  siblingBaseWorktreePath: string | null;
++};
++
++export async function createTask(root: string, title: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    expect(
++      await runCli([
++        "task",
++        "new",
++        "--title",
++        title,
++        "--description",
++        "targeted cleanup fixture",
++        "--priority",
++        "med",
++        "--owner",
++        "CODER",
++        "--tag",
++        "nodejs",
++        "--root",
++        root,
++      ]),
++    ).toBe(0);
++    return io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++}
++
++export function markDone(readme: string, commitHash: string): string {
++  const done = readme.replace('status: "TODO"', 'status: "DONE"');
++  const commitBlock = `commit:\n  hash: "${commitHash}"\n  message: "pre-merge closure basis"`;
++  return done.includes("commit: null")
++    ? done.replace("commit: null", commitBlock)
++    : done.replace("comments:", `${commitBlock}\ncomments:`);
++}
++
++export async function createTargetedFixture(
++  opts: {
++    directExternalWorktree?: boolean;
++    legacyMissingPrNumber?: boolean;
++    nestedSiblingWorktree?: boolean;
++  } = {},
++): Promise<TargetedFixture> {
++  const root = await mkGitRepoRootWithBranch("main");
++  await configureGitUser(root);
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  await writeFile(path.join(root, "README.md"), "base\n", "utf8");
++  await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
++  await commitAll(root, "chore base");
++  await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++
++  const taskId = await createTask(root, "Targeted rebase cleanup");
++  await commitAll(root, `chore ${taskId} scaffold`);
++  const scaffoldCommitResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++    cwd: root,
++    env: cleanGitEnv(),
++  });
++  const scaffoldCommit = scaffoldCommitResult.stdout.trim();
++
++  const branch = `task/${taskId}/targeted-rebase-cleanup`;
++  const siblingBaseWorktreePath = opts.nestedSiblingWorktree
++    ? path.join(await mkTempDir(), "base-main")
++    : null;
++  const directExternalWorktreeRoot = opts.directExternalWorktree ? await mkTempDir() : null;
++  if (siblingBaseWorktreePath) {
++    await execFileAsync("git", ["worktree", "add", "--force", siblingBaseWorktreePath, "main"], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++  }
++  const worktreePath = siblingBaseWorktreePath
++    ? path.join(siblingBaseWorktreePath, ".agentplane", "worktrees", `${taskId}-targeted`)
++    : directExternalWorktreeRoot
++      ? path.join(directExternalWorktreeRoot, `${taskId}-targeted`)
++      : path.join(root, ".agentplane", "worktrees", `${taskId}-targeted`);
++  await mkdir(path.dirname(worktreePath), { recursive: true });
++  await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
++    cwd: root,
++    env: cleanGitEnv(),
++  });
++  const task = await readTask({ cwd: worktreePath, taskId });
++  await writeFile(
++    task.readmePath,
++    markDone(await readFile(task.readmePath, "utf8"), scaffoldCommit),
++    "utf8",
++  );
++  const prDir = path.join(worktreePath, ".agentplane", "tasks", taskId, "pr");
++  await mkdir(prDir, { recursive: true });
++  await writeFile(
++    path.join(prDir, "meta.json"),
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        task_id: taskId,
++        branch,
++        base: "main",
++        ...(opts.legacyMissingPrNumber
++          ? {}
++          : {
++              pr_number: 123,
++              pr_url: "https://github.com/example/repo/pull/123",
++              status: "OPEN",
++            }),
++        created_at: "2026-07-23T00:00:00.000Z",
++        updated_at: "2026-07-23T00:00:00.000Z",
++        last_verified_at: "2026-07-23T00:00:00.000Z",
++        verify: { status: "pass" },
++        pre_merge_closure: {
++          state: "closed_before_merge",
++          branch,
++          basis_commit: scaffoldCommit,
++          recorded_at: "2026-07-23T00:00:00.000Z",
++          ...(opts.legacyMissingPrNumber ? {} : { pr_number: 123 }),
++        },
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++  await writeFile(path.join(worktreePath, "targeted-change.txt"), "landed by rebase\n", "utf8");
++  await commitAll(worktreePath, `chore ${taskId} pre-merge closure`);
++  const branchHeadResult = await execFileAsync("git", ["rev-parse", branch], {
++    cwd: root,
++    env: cleanGitEnv(),
++  });
++  const branchHead = branchHeadResult.stdout.trim();
++
++  await writeFile(path.join(root, "base-only.txt"), "forces rewritten commit identity\n", "utf8");
++  await commitAll(root, "chore advance base before rebase merge");
++  await execFileAsync("git", ["cherry-pick", branchHead], { cwd: root, env: cleanGitEnv() });
++  const mergeCommitResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
++    cwd: root,
++    env: cleanGitEnv(),
++  });
++  const mergeCommit = mergeCommitResult.stdout.trim();
++  expect(mergeCommit).not.toBe(branchHead);
++
++  const unrelatedTaskId = await createTask(root, "Unrelated cleanup candidate");
++  await commitAll(root, `chore ${unrelatedTaskId} scaffold`);
++  const unrelatedTask = await readTask({ cwd: root, taskId: unrelatedTaskId });
++  await writeFile(
++    unrelatedTask.readmePath,
++    markDone(await readFile(unrelatedTask.readmePath, "utf8"), mergeCommit),
++    "utf8",
++  );
++  await commitAll(root, `chore ${unrelatedTaskId} done`);
++  const unrelatedBranch = `task/${unrelatedTaskId}/unrelated`;
++  const unrelatedWorktreePath = path.join(
++    root,
++    ".agentplane",
++    "worktrees",
++    `${unrelatedTaskId}-unrelated`,
++  );
++  await execFileAsync(
++    "git",
++    ["worktree", "add", "-b", unrelatedBranch, unrelatedWorktreePath, "main"],
++    { cwd: root, env: cleanGitEnv() },
++  );
++  await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
++    cwd: root,
++    env: cleanGitEnv(),
++  });
++  return {
++    root,
++    taskId,
++    branch,
++    branchHead,
++    mergeCommit,
++    worktreePath,
++    unrelatedBranch,
++    unrelatedWorktreePath,
++    siblingBaseWorktreePath,
++  };
++}
++
++export async function installFakeGh(opts: {
++  additionalBranchPrNumbers?: number[];
++  kind: "found" | "not_found" | "unavailable";
++  fixture: TargetedFixture;
++  headSha?: string;
++  baseRef?: string;
++  mergeCommitSha?: string;
++  prNumber?: number;
++  providerStatus?: "MERGED" | "OPEN" | "CLOSED";
++  providerUpdateBaseSha?: string;
++}): Promise<string> {
++  const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
++  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
++  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
++  const providerStatus = opts.providerStatus ?? "MERGED";
++  const payload = {
++    number: opts.prNumber ?? 123,
++    state: providerStatus === "OPEN" ? "open" : "closed",
++    merged_at: providerStatus === "MERGED" ? "2026-07-23T00:01:00.000Z" : null,
++    merge_commit_sha: opts.mergeCommitSha ?? opts.fixture.mergeCommit,
++    html_url: "https://github.com/example/repo/pull/123",
++    head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
++    base: { ref: opts.baseRef ?? "main" },
++  };
++  const branchPayloads = [
++    payload,
++    ...(opts.additionalBranchPrNumbers ?? []).map((number) => ({
++      ...payload,
++      number,
++      html_url: `https://github.com/example/repo/pull/${number}`,
++    })),
++  ];
++  const providerUpdatePayload =
++    opts.providerUpdateBaseSha && opts.headSha
++      ? {
++          sha: opts.headSha,
++          parents: [{ sha: opts.fixture.branchHead }, { sha: opts.providerUpdateBaseSha }],
++        }
++      : null;
++  await writeFile(
++    scriptPath,
++    [
++      "const args = process.argv.slice(2);",
++      'if (args[0] !== "api") process.exit(90);',
++      providerUpdatePayload
++        ? `if (args[1] === ${JSON.stringify(
++            `repos/example/repo/commits/${opts.headSha}`,
++          )}) { console.log(${JSON.stringify(JSON.stringify(providerUpdatePayload))}); process.exit(0); }`
++        : "",
++      opts.kind === "found"
++        ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
++            JSON.stringify(branchPayloads),
++          )} : ${JSON.stringify(JSON.stringify(payload))});`
++        : opts.kind === "not_found"
++          ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
++              JSON.stringify([
++                {
++                  ...payload,
++                  head: { ...payload.head, ref: `${payload.head.ref}-different` },
++                },
++              ]),
++            )} : ${JSON.stringify(
++              JSON.stringify({
++                ...payload,
++                head: { ...payload.head, ref: `${payload.head.ref}-different` },
++              }),
++            )});`
++          : `console.error(${JSON.stringify("authentication required")});`,
++      `process.exit(${opts.kind === "unavailable" ? 1 : 0});`,
++      "",
++    ].join("\n"),
++    "utf8",
++  );
++  if (process.platform === "win32") {
++    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
++  } else {
++    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
++    await chmod(ghPath, 0o755);
++  }
++  return fakeBin;
++}
++
++export async function configureFinalizationRemote(fixture: TargetedFixture): Promise<string> {
++  const remoteRoot = path.join(await mkTempDir(), "origin.git");
++  await execFileAsync("git", ["init", "--bare", remoteRoot], {
++    cwd: fixture.root,
++    env: cleanGitEnv(),
++  });
++  await execFileAsync("git", ["remote", "set-url", "origin", remoteRoot], {
++    cwd: fixture.root,
++    env: cleanGitEnv(),
++  });
++  await execFileAsync("git", ["push", "-u", "origin", "main"], {
++    cwd: fixture.root,
++    env: cleanGitEnv(),
++  });
++  await execFileAsync("git", ["push", "-u", "origin", fixture.branch], {
++    cwd: fixture.root,
++    env: cleanGitEnv(),
++  });
++  return remoteRoot;
++}
++
++export async function commitAuthorityOnlyTail(fixture: TargetedFixture): Promise<string> {
++  const task = await readTask({ cwd: fixture.worktreePath, taskId: fixture.taskId });
++  const readme = await readFile(task.readmePath, "utf8");
++  const parsed = parseTaskReadme(readme);
++  const updated = `${renderTaskFrontmatter({
++    ...parsed.frontmatter,
++    extensions: {
++      ...parsed.frontmatter.extensions,
++      "agentplane.side_effect_authority": {
++        schemaVersion: 1,
++        grants: [],
++        audit: [],
++      },
++    },
++  })}${parsed.body}`;
++  expect(updated).not.toBe(readme);
++  await writeFile(task.readmePath, updated, "utf8");
++  await commitAll(fixture.worktreePath, `authority ${fixture.taskId} post-merge cleanup`);
++  const { stdout } = await execFileAsync("git", ["rev-parse", fixture.branch], {
++    cwd: fixture.root,
++    env: cleanGitEnv(),
++  });
++  return stdout.trim();
++}
++
++export async function installFakeGithubOriginLookup(
++  fakeBin: string,
++  pullRemote?: string,
++): Promise<void> {
++  const locator = process.platform === "win32" ? "where" : "which";
++  const { stdout } = await execFileAsync(locator, ["git"], { env: cleanGitEnv() });
++  const actualGit = stdout
++    .split(/\r?\n/)
++    .find((line) => line.trim().length > 0)
++    ?.trim();
++  if (!actualGit) throw new Error("Could not resolve the real git executable for the test fixture");
++
++  const gitPath = path.join(fakeBin, process.platform === "win32" ? "git.cmd" : "git");
++  if (process.platform === "win32") {
++    await writeFile(
++      gitPath,
++      [
++        "@echo off",
++        'if "%~1"=="remote" if "%~2"=="get-url" if "%~3"=="origin" (',
++        "  echo https://github.com/example/repo.git",
++        "  exit /b 0",
++        ")",
++        ...(pullRemote
++          ? [
++              'if "%~1"=="pull" if "%~2"=="--ff-only" if "%~3"=="origin" (',
++              `  "${actualGit}" pull --ff-only "${pullRemote}" "%~4"`,
++              "  exit /b %errorlevel%",
++              ")",
++              'if "%~1"=="fetch" if "%~2"=="--prune" if "%~3"=="origin" (',
++              `  "${actualGit}" fetch --prune "${pullRemote}" "+refs/heads/*:refs/remotes/origin/*"`,
++              "  exit /b %errorlevel%",
++              ")",
++              'if "%~1"=="ls-remote" if "%~2"=="--heads" if "%~3"=="origin" (',
++              `  "${actualGit}" ls-remote --heads "${pullRemote}" "%~4"`,
++              "  exit /b %errorlevel%",
++              ")",
++              'if "%~1"=="push" if "%~2"=="origin" if "%~3"=="--delete" (',
++              `  "${actualGit}" push "${pullRemote}" --delete "%~4"`,
++              "  exit /b %errorlevel%",
++              ")",
++            ]
++          : []),
++        `"${actualGit}" %*`,
++        "",
++      ].join("\r\n"),
++      "utf8",
++    );
++    return;
++  }
++
++  await writeFile(
++    gitPath,
++    [
++      "#!/bin/sh",
++      'if [ "$1" = "remote" ] && [ "$2" = "get-url" ] && [ "$3" = "origin" ]; then',
++      "  printf '%s\\n' 'https://github.com/example/repo.git'",
++      "  exit 0",
++      "fi",
++      ...(pullRemote
++        ? [
++            'if [ "$1" = "pull" ] && [ "$2" = "--ff-only" ] && [ "$3" = "origin" ]; then',
++            `  exec ${JSON.stringify(actualGit)} pull --ff-only ${JSON.stringify(pullRemote)} "$4"`,
++            "fi",
++            'if [ "$1" = "fetch" ] && [ "$2" = "--prune" ] && [ "$3" = "origin" ]; then',
++            `  exec ${JSON.stringify(actualGit)} fetch --prune ${JSON.stringify(pullRemote)} '+refs/heads/*:refs/remotes/origin/*'`,
++            "fi",
++            'if [ "$1" = "ls-remote" ] && [ "$2" = "--heads" ] && [ "$3" = "origin" ]; then',
++            `  exec ${JSON.stringify(actualGit)} ls-remote --heads ${JSON.stringify(pullRemote)} "$4"`,
++            "fi",
++            'if [ "$1" = "push" ] && [ "$2" = "origin" ] && [ "$3" = "--delete" ]; then',
++            `  exec ${JSON.stringify(actualGit)} push ${JSON.stringify(pullRemote)} --delete "$4"`,
++            "fi",
++          ]
++        : []),
++      `exec ${JSON.stringify(actualGit)} "$@"`,
++      "",
++    ].join("\n"),
++    "utf8",
++  );
++  await chmod(gitPath, 0o755);
++}
++
++export async function runWithFakeGh(fakeBin: string, argv: string[]) {
++  const previous = process.env.PATH;
++  process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
++  try {
++    const io = captureStdIO();
++    try {
++      return { code: await runCli(argv), stdout: io.stdout, stderr: io.stderr };
++    } finally {
++      io.restore();
++    }
++  } finally {
++    if (previous === undefined) delete process.env.PATH;
++    else process.env.PATH = previous;
++  }
++}
++
++export async function runTargetedCleanup(fakeBin: string, fixture: TargetedFixture) {
++  return runWithFakeGh(fakeBin, [
++    "cleanup",
++    "merged",
++    "--task-id",
++    fixture.taskId,
++    "--yes",
++    "--root",
++    fixture.root,
++  ]);
++}
++
++describe("targeted cleanup test support", () => {
++  it("exposes the reusable real-Git fixture helpers", () => {
++    expect(createTargetedFixture).toBeTypeOf("function");
++    expect(runTargetedCleanup).toBeTypeOf("function");
++  });
++});
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+index adf6e397f..cbe4c2792 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+@@ -1,12 +1,11 @@
+ import { execFile } from "node:child_process";
+-import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+-import os from "node:os";
++import { readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ import { promisify } from "node:util";
+ import { describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+-import { parseTaskReadme, readTask, renderTaskFrontmatter } from "@agentplaneorg/core/tasks";
++import { readTask } from "@agentplaneorg/core/tasks";
+ 
+ import { runCli } from "../../cli/run-cli.js";
+ import {
+@@ -17,11 +16,27 @@ import {
+   gitBranchExists,
+   installRunCliIntegrationHarness,
+   mkGitRepoRootWithBranch,
+-  mkTempDir,
+   pathExists,
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit";
++import {
++  emptyIntegrationQueue,
++  readIntegrationQueue,
++  upsertQueuedEntry,
++  writeIntegrationQueue,
++} from "../pr/integrate/queue-state.js";
++import {
++  commitAuthorityOnlyTail,
++  configureFinalizationRemote,
++  createTask,
++  createTargetedFixture,
++  installFakeGh,
++  installFakeGithubOriginLookup,
++  markDone,
++  runTargetedCleanup,
++  runWithFakeGh,
++} from "./cleanup-merged.targeted.support.test.js";
+ 
+ installRunCliIntegrationHarness();
+ const execFileAsync = promisify(execFile);
+@@ -39,392 +54,6 @@ const TEST_WORKFLOW_GITIGNORE =
+   ".agentplane/cache.sqlite-wal\n" +
+   ".agentplane/cache.sqlite-shm\n";
+ 
+-type TargetedFixture = {
+-  root: string;
+-  taskId: string;
+-  branch: string;
+-  branchHead: string;
+-  mergeCommit: string;
+-  worktreePath: string;
+-  unrelatedBranch: string;
+-  unrelatedWorktreePath: string;
+-  siblingBaseWorktreePath: string | null;
+-};
+-
+-async function createTask(root: string, title: string): Promise<string> {
+-  const io = captureStdIO();
+-  try {
+-    expect(
+-      await runCli([
+-        "task",
+-        "new",
+-        "--title",
+-        title,
+-        "--description",
+-        "targeted cleanup fixture",
+-        "--priority",
+-        "med",
+-        "--owner",
+-        "CODER",
+-        "--tag",
+-        "nodejs",
+-        "--root",
+-        root,
+-      ]),
+-    ).toBe(0);
+-    return io.stdout.trim();
+-  } finally {
+-    io.restore();
+-  }
+-}
+-
+-function markDone(readme: string, commitHash: string): string {
+-  const done = readme.replace('status: "TODO"', 'status: "DONE"');
+-  const commitBlock = `commit:\n  hash: "${commitHash}"\n  message: "pre-merge closure basis"`;
+-  return done.includes("commit: null")
+-    ? done.replace("commit: null", commitBlock)
+-    : done.replace("comments:", `${commitBlock}\ncomments:`);
+-}
+-
+-async function createTargetedFixture(
+-  opts: {
+-    directExternalWorktree?: boolean;
+-    legacyMissingPrNumber?: boolean;
+-    nestedSiblingWorktree?: boolean;
+-  } = {},
+-): Promise<TargetedFixture> {
+-  const root = await mkGitRepoRootWithBranch("main");
+-  await configureGitUser(root);
+-  const config = defaultConfig();
+-  config.workflow_mode = "branch_pr";
+-  await writeConfig(root, config);
+-  await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+-  await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+-  await commitAll(root, "chore base");
+-  await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+-
+-  const taskId = await createTask(root, "Targeted rebase cleanup");
+-  await commitAll(root, `chore ${taskId} scaffold`);
+-  const scaffoldCommitResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+-    cwd: root,
+-    env: cleanGitEnv(),
+-  });
+-  const scaffoldCommit = scaffoldCommitResult.stdout.trim();
+-
+-  const branch = `task/${taskId}/targeted-rebase-cleanup`;
+-  const siblingBaseWorktreePath = opts.nestedSiblingWorktree
+-    ? path.join(await mkTempDir(), "base-main")
+-    : null;
+-  const directExternalWorktreeRoot = opts.directExternalWorktree ? await mkTempDir() : null;
+-  if (siblingBaseWorktreePath) {
+-    await execFileAsync("git", ["worktree", "add", "--force", siblingBaseWorktreePath, "main"], {
+-      cwd: root,
+-      env: cleanGitEnv(),
+-    });
+-  }
+-  const worktreePath = siblingBaseWorktreePath
+-    ? path.join(siblingBaseWorktreePath, ".agentplane", "worktrees", `${taskId}-targeted`)
+-    : directExternalWorktreeRoot
+-      ? path.join(directExternalWorktreeRoot, `${taskId}-targeted`)
+-      : path.join(root, ".agentplane", "worktrees", `${taskId}-targeted`);
+-  await mkdir(path.dirname(worktreePath), { recursive: true });
+-  await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+-    cwd: root,
+-    env: cleanGitEnv(),
+-  });
+-  const task = await readTask({ cwd: worktreePath, taskId });
+-  await writeFile(
+-    task.readmePath,
+-    markDone(await readFile(task.readmePath, "utf8"), scaffoldCommit),
+-    "utf8",
+-  );
+-  const prDir = path.join(worktreePath, ".agentplane", "tasks", taskId, "pr");
+-  await mkdir(prDir, { recursive: true });
+-  await writeFile(
+-    path.join(prDir, "meta.json"),
+-    `${JSON.stringify(
+-      {
+-        schema_version: 1,
+-        task_id: taskId,
+-        branch,
+-        base: "main",
+-        ...(opts.legacyMissingPrNumber
+-          ? {}
+-          : {
+-              pr_number: 123,
+-              pr_url: "https://github.com/example/repo/pull/123",
+-              status: "OPEN",
+-            }),
+-        created_at: "2026-07-23T00:00:00.000Z",
+-        updated_at: "2026-07-23T00:00:00.000Z",
+-        last_verified_at: "2026-07-23T00:00:00.000Z",
+-        verify: { status: "pass" },
+-        pre_merge_closure: {
+-          state: "closed_before_merge",
+-          branch,
+-          basis_commit: scaffoldCommit,
+-          recorded_at: "2026-07-23T00:00:00.000Z",
+-          ...(opts.legacyMissingPrNumber ? {} : { pr_number: 123 }),
+-        },
+-      },
+-      null,
+-      2,
+-    )}\n`,
+-    "utf8",
+-  );
+-  await writeFile(path.join(worktreePath, "targeted-change.txt"), "landed by rebase\n", "utf8");
+-  await commitAll(worktreePath, `chore ${taskId} pre-merge closure`);
+-  const branchHeadResult = await execFileAsync("git", ["rev-parse", branch], {
+-    cwd: root,
+-    env: cleanGitEnv(),
+-  });
+-  const branchHead = branchHeadResult.stdout.trim();
+-
+-  await writeFile(path.join(root, "base-only.txt"), "forces rewritten commit identity\n", "utf8");
+-  await commitAll(root, "chore advance base before rebase merge");
+-  await execFileAsync("git", ["cherry-pick", branchHead], { cwd: root, env: cleanGitEnv() });
+-  const mergeCommitResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+-    cwd: root,
+-    env: cleanGitEnv(),
+-  });
+-  const mergeCommit = mergeCommitResult.stdout.trim();
+-  expect(mergeCommit).not.toBe(branchHead);
+-
+-  const unrelatedTaskId = await createTask(root, "Unrelated cleanup candidate");
+-  await commitAll(root, `chore ${unrelatedTaskId} scaffold`);
+-  const unrelatedTask = await readTask({ cwd: root, taskId: unrelatedTaskId });
+-  await writeFile(
+-    unrelatedTask.readmePath,
+-    markDone(await readFile(unrelatedTask.readmePath, "utf8"), mergeCommit),
+-    "utf8",
+-  );
+-  await commitAll(root, `chore ${unrelatedTaskId} done`);
+-  const unrelatedBranch = `task/${unrelatedTaskId}/unrelated`;
+-  const unrelatedWorktreePath = path.join(
+-    root,
+-    ".agentplane",
+-    "worktrees",
+-    `${unrelatedTaskId}-unrelated`,
+-  );
+-  await execFileAsync(
+-    "git",
+-    ["worktree", "add", "-b", unrelatedBranch, unrelatedWorktreePath, "main"],
+-    { cwd: root, env: cleanGitEnv() },
+-  );
+-  await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+-    cwd: root,
+-    env: cleanGitEnv(),
+-  });
+-  return {
+-    root,
+-    taskId,
+-    branch,
+-    branchHead,
+-    mergeCommit,
+-    worktreePath,
+-    unrelatedBranch,
+-    unrelatedWorktreePath,
+-    siblingBaseWorktreePath,
+-  };
+-}
+-
+-async function installFakeGh(opts: {
+-  additionalBranchPrNumbers?: number[];
+-  kind: "found" | "not_found" | "unavailable";
+-  fixture: TargetedFixture;
+-  headSha?: string;
+-  baseRef?: string;
+-  mergeCommitSha?: string;
+-  prNumber?: number;
+-  providerStatus?: "MERGED" | "OPEN" | "CLOSED";
+-  providerUpdateBaseSha?: string;
+-}): Promise<string> {
+-  const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
+-  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+-  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+-  const providerStatus = opts.providerStatus ?? "MERGED";
+-  const payload = {
+-    number: opts.prNumber ?? 123,
+-    state: providerStatus === "OPEN" ? "open" : "closed",
+-    merged_at: providerStatus === "MERGED" ? "2026-07-23T00:01:00.000Z" : null,
+-    merge_commit_sha: opts.mergeCommitSha ?? opts.fixture.mergeCommit,
+-    html_url: "https://github.com/example/repo/pull/123",
+-    head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
+-    base: { ref: opts.baseRef ?? "main" },
+-  };
+-  const branchPayloads = [
+-    payload,
+-    ...(opts.additionalBranchPrNumbers ?? []).map((number) => ({
+-      ...payload,
+-      number,
+-      html_url: `https://github.com/example/repo/pull/${number}`,
+-    })),
+-  ];
+-  const providerUpdatePayload =
+-    opts.providerUpdateBaseSha && opts.headSha
+-      ? {
+-          sha: opts.headSha,
+-          parents: [{ sha: opts.fixture.branchHead }, { sha: opts.providerUpdateBaseSha }],
+-        }
+-      : null;
+-  await writeFile(
+-    scriptPath,
+-    [
+-      "const args = process.argv.slice(2);",
+-      'if (args[0] !== "api") process.exit(90);',
+-      providerUpdatePayload
+-        ? `if (args[1] === ${JSON.stringify(
+-            `repos/example/repo/commits/${opts.headSha}`,
+-          )}) { console.log(${JSON.stringify(JSON.stringify(providerUpdatePayload))}); process.exit(0); }`
+-        : "",
+-      opts.kind === "found"
+-        ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
+-            JSON.stringify(branchPayloads),
+-          )} : ${JSON.stringify(JSON.stringify(payload))});`
+-        : opts.kind === "not_found"
+-          ? `console.log(args[1]?.includes("pulls?") ? ${JSON.stringify(
+-              JSON.stringify([
+-                {
+-                  ...payload,
+-                  head: { ...payload.head, ref: `${payload.head.ref}-different` },
+-                },
+-              ]),
+-            )} : ${JSON.stringify(
+-              JSON.stringify({
+-                ...payload,
+-                head: { ...payload.head, ref: `${payload.head.ref}-different` },
+-              }),
+-            )});`
+-          : `console.error(${JSON.stringify("authentication required")});`,
+-      `process.exit(${opts.kind === "unavailable" ? 1 : 0});`,
+-      "",
+-    ].join("\n"),
+-    "utf8",
+-  );
+-  if (process.platform === "win32") {
+-    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
+-  } else {
+-    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
+-    await chmod(ghPath, 0o755);
+-  }
+-  return fakeBin;
+-}
+-
+-async function configureFinalizationRemote(fixture: TargetedFixture): Promise<void> {
+-  const remoteRoot = path.join(await mkTempDir(), "origin.git");
+-  await execFileAsync("git", ["init", "--bare", remoteRoot], {
+-    cwd: fixture.root,
+-    env: cleanGitEnv(),
+-  });
+-  await execFileAsync("git", ["remote", "set-url", "origin", remoteRoot], {
+-    cwd: fixture.root,
+-    env: cleanGitEnv(),
+-  });
+-  await execFileAsync("git", ["push", "-u", "origin", "main"], {
+-    cwd: fixture.root,
+-    env: cleanGitEnv(),
+-  });
+-  await execFileAsync("git", ["push", "-u", "origin", fixture.branch], {
+-    cwd: fixture.root,
+-    env: cleanGitEnv(),
+-  });
+-}
+-
+-async function commitAuthorityOnlyTail(fixture: TargetedFixture): Promise<string> {
+-  const task = await readTask({ cwd: fixture.worktreePath, taskId: fixture.taskId });
+-  const readme = await readFile(task.readmePath, "utf8");
+-  const parsed = parseTaskReadme(readme);
+-  const updated = `${renderTaskFrontmatter({
+-    ...parsed.frontmatter,
+-    extensions: {
+-      ...parsed.frontmatter.extensions,
+-      "agentplane.side_effect_authority": {
+-        schemaVersion: 1,
+-        grants: [],
+-        audit: [],
+-      },
+-    },
+-  })}${parsed.body}`;
+-  expect(updated).not.toBe(readme);
+-  await writeFile(task.readmePath, updated, "utf8");
+-  await commitAll(fixture.worktreePath, `authority ${fixture.taskId} post-merge cleanup`);
+-  const { stdout } = await execFileAsync("git", ["rev-parse", fixture.branch], {
+-    cwd: fixture.root,
+-    env: cleanGitEnv(),
+-  });
+-  return stdout.trim();
+-}
+-
+-async function installFakeGithubOriginLookup(fakeBin: string): Promise<void> {
+-  const locator = process.platform === "win32" ? "where" : "which";
+-  const { stdout } = await execFileAsync(locator, ["git"], { env: cleanGitEnv() });
+-  const actualGit = stdout
+-    .split(/\r?\n/)
+-    .find((line) => line.trim().length > 0)
+-    ?.trim();
+-  if (!actualGit) throw new Error("Could not resolve the real git executable for the test fixture");
+-
+-  const gitPath = path.join(fakeBin, process.platform === "win32" ? "git.cmd" : "git");
+-  if (process.platform === "win32") {
+-    await writeFile(
+-      gitPath,
+-      [
+-        "@echo off",
+-        'if "%~1"=="remote" if "%~2"=="get-url" if "%~3"=="origin" (',
+-        "  echo https://github.com/example/repo.git",
+-        "  exit /b 0",
+-        ")",
+-        `"${actualGit}" %*`,
+-        "",
+-      ].join("\r\n"),
+-      "utf8",
+-    );
+-    return;
+-  }
+-
+-  await writeFile(
+-    gitPath,
+-    [
+-      "#!/bin/sh",
+-      'if [ "$1" = "remote" ] && [ "$2" = "get-url" ] && [ "$3" = "origin" ]; then',
+-      "  printf '%s\\n' 'https://github.com/example/repo.git'",
+-      "  exit 0",
+-      "fi",
+-      `exec ${JSON.stringify(actualGit)} "$@"`,
+-      "",
+-    ].join("\n"),
+-    "utf8",
+-  );
+-  await chmod(gitPath, 0o755);
+-}
+-
+-async function runWithFakeGh(fakeBin: string, argv: string[]) {
+-  const previous = process.env.PATH;
+-  process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
+-  try {
+-    const io = captureStdIO();
+-    try {
+-      return { code: await runCli(argv), stdout: io.stdout, stderr: io.stderr };
+-    } finally {
+-      io.restore();
+-    }
+-  } finally {
+-    if (previous === undefined) delete process.env.PATH;
+-    else process.env.PATH = previous;
+-  }
+-}
+-
+-async function runTargetedCleanup(fakeBin: string, fixture: TargetedFixture) {
+-  return runWithFakeGh(fakeBin, [
+-    "cleanup",
+-    "merged",
+-    "--task-id",
+-    fixture.taskId,
+-    "--yes",
+-    "--root",
+-    fixture.root,
+-  ]);
+-}
+ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS }, () => {
+   it("recovers a legacy missing PR number from an exact merged branch-and-base lookup", async () => {
+     const fixture = await createTargetedFixture({ legacyMissingPrNumber: true });
+@@ -638,6 +267,72 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
+     expect(await pathExists(fixture.unrelatedWorktreePath)).toBe(true);
+   });
+ 
++  it("synchronizes a stale base before cleanup and normalizes its completed queue entry", async () => {
++    const fixture = await createTargetedFixture();
++    const pullRemote = await configureFinalizationRemote(fixture);
++    await execFileAsync(
++      "git",
++      ["remote", "set-url", "origin", "https://github.com/example/repo.git"],
++      { cwd: fixture.root, env: cleanGitEnv() },
++    );
++    const fakeBin = await installFakeGh({ kind: "found", fixture });
++    await installFakeGithubOriginLookup(fakeBin, pullRemote);
++
++    const staleBaseResult = await execFileAsync("git", ["rev-parse", `${fixture.mergeCommit}^`], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    const staleBase = staleBaseResult.stdout.trim();
++    await execFileAsync("git", ["reset", "--hard", staleBase], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    await writeIntegrationQueue(
++      fixture.root,
++      upsertQueuedEntry(emptyIntegrationQueue(), {
++        task_id: fixture.taskId,
++        branch: fixture.branch,
++        base: "main",
++        head_sha: fixture.branchHead,
++        base_sha: staleBase,
++        changed_paths: ["targeted-change.txt"],
++        pr_number: 123,
++        pr_url: "https://github.com/example/repo/pull/123",
++        priority: 0,
++      }),
++    );
++
++    const cleanupArgv = [
++      "cleanup",
++      "merged",
++      "--task-id",
++      fixture.taskId,
++      "--finalize",
++      "--yes",
++      "--root",
++      fixture.root,
++    ];
++    const result = await runWithFakeGh(fakeBin, cleanupArgv);
++
++    expect(result.code, result.stderr).toBe(0);
++    expect(result.stdout).toContain("proof=provider_merge");
++    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
++    expect(await pathExists(fixture.worktreePath)).toBe(false);
++    const queue = await readIntegrationQueue(fixture.root);
++    expect(queue.entries[0]?.status).toBe("done");
++
++    const replay = await runWithFakeGh(fakeBin, cleanupArgv);
++    expect(replay.code, replay.stderr).toBe(0);
++    expect(replay.stdout).toContain(`already clean: task=${fixture.taskId}`);
++    const replayQueue = await readIntegrationQueue(fixture.root);
++    expect(replayQueue.entries).toHaveLength(1);
++    expect(replayQueue.entries[0]).toMatchObject({
++      task_id: fixture.taskId,
++      head_sha: fixture.branchHead,
++      status: "done",
++    });
++  });
++
+   it("keeps a directly registered /tmp worktree even for targeted finalization", async () => {
+     const fixture = await createTargetedFixture({ directExternalWorktree: true });
+     await configureFinalizationRemote(fixture);
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.ts b/packages/agentplane/src/commands/branch/cleanup-merged.ts
+index 76829b84b..07dc1d981 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.ts
+@@ -75,7 +75,6 @@ function normalizeRequestedTaskIds(taskIds: readonly string[] | undefined): stri
+ }
+ 
+ async function normalizeQueueAfterFinalize(opts: {
+-  ctx: CommandContext;
+   cwd: string;
+   rootOverride?: string;
+   gitRoot: string;
+@@ -83,8 +82,12 @@ async function normalizeQueueAfterFinalize(opts: {
+   quiet: boolean;
+ }): Promise<void> {
+   if (!opts.finalize) return;
++  const ctx = await loadCommandContext({
++    cwd: opts.cwd,
++    rootOverride: opts.rootOverride ?? null,
++  });
+   await normalizeTerminalQueueEntries({
+-    ctx: opts.ctx,
++    ctx,
+     cwd: opts.cwd,
+     rootOverride: opts.rootOverride ?? null,
+     gitRoot: opts.gitRoot,
+@@ -121,7 +124,7 @@ export async function cmdCleanupMerged(opts: {
+   taskIds?: readonly string[];
+ }): Promise<number> {
+   try {
+-    const ctx =
++    let ctx =
+       opts.ctx ??
+       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+     const resolved = ctx.resolvedProject;
+@@ -178,6 +181,10 @@ export async function cmdCleanupMerged(opts: {
+         cwd: resolved.gitRoot,
+         env: gitEnv(),
+       });
++      ctx = await loadCommandContext({
++        cwd: opts.cwd,
++        rootOverride: opts.rootOverride ?? null,
++      });
+     }
+ 
+     const repoRoot = await resolvePathFallback(resolved.gitRoot);
+@@ -257,7 +264,6 @@ export async function cmdCleanupMerged(opts: {
+         rows: reportRows,
+       });
+       await normalizeQueueAfterFinalize({
+-        ctx,
+         cwd: opts.cwd,
+         rootOverride: opts.rootOverride,
+         gitRoot: resolved.gitRoot,
+@@ -411,7 +417,6 @@ export async function cmdCleanupMerged(opts: {
+     }
+ 
+     await normalizeQueueAfterFinalize({
+-      ctx,
+       cwd: opts.cwd,
+       rootOverride: opts.rootOverride,
+       gitRoot: resolved.gitRoot,
+diff --git a/packages/agentplane/src/commands/shared/route-decision-workspace.ts b/packages/agentplane/src/commands/shared/route-decision-workspace.ts
+index 0574fa29d..e856bcc4e 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-workspace.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-workspace.ts
+@@ -16,7 +16,7 @@ export async function findRouteWorktreePath(
+   branch: string | null,
+ ): Promise<string | null> {
+   if (!branch) return null;
+-  return findWorktreeForBranch(cwd, branch).catch(() => null);
++  return await findWorktreeForBranch(cwd, branch);
+ }
+ 
+ export function inferTaskRouteBranch(
+diff --git a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
+index 44a0fbfe1..806434472 100644
+--- a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
++++ b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
+@@ -2,10 +2,10 @@ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
+-  findWorktreeForBranch,
+   gitEnv,
+   gitListTaskBranches,
+   gitShowFile,
++  listWorktrees,
+   parseTaskIdFromBranch,
+   toGitPath,
+ } from "@agentplaneorg/core/git";
+@@ -65,6 +65,99 @@ export async function resolveTaskBranchFromContext(opts: {
+   return null;
+ }
+ 
++function normalizeBranch(branch: string): string {
++  const withoutRemote = stripOriginPrefix(branch);
++  return withoutRemote.startsWith("refs/heads/")
++    ? withoutRemote.slice("refs/heads/".length)
++    : withoutRemote;
++}
++
++export async function taskBranchHasLocalRef(opts: {
++  ctx: CommandContext;
++  branch: string;
++}): Promise<boolean> {
++  const { localBranches } = await loadTaskBranchInventory(opts.ctx);
++  const expected = normalizeBranch(opts.branch);
++  return localBranches.some((branch) => normalizeBranch(branch) === expected);
++}
++
++export async function resolveAuthoritativeTaskWorktree(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  branch: string;
++  requireRegistration?: boolean;
++}): Promise<{ path: string; branch: string } | null> {
++  const expectedBranch = normalizeBranch(opts.branch);
++  if (parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, expectedBranch) !== opts.taskId) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message: `Task branch ${expectedBranch} does not belong to ${opts.taskId}.`,
++      context: {
++        reason_code: "foreign_task_branch",
++        task_id: opts.taskId,
++        branch: expectedBranch,
++      },
++    });
++  }
++
++  opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
++  const worktrees = await opts.ctx.memo.taskWorktreeInventory;
++  const registrations = worktrees.filter(
++    (entry) =>
++      entry.branch !== null &&
++      parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch) === opts.taskId,
++  );
++  if (registrations.length > 1) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        `Multiple worktrees are registered for task ${opts.taskId}: ` +
++        registrations.map((entry) => entry.path).join(", "),
++      context: {
++        reason_code: "duplicate_task_worktree_registration",
++        task_id: opts.taskId,
++        worktrees: registrations.map((entry) => ({ path: entry.path, branch: entry.branch })),
++      },
++    });
++  }
++
++  const registration = registrations[0];
++  if (!registration) {
++    if (opts.requireRegistration) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message: `Local task branch ${expectedBranch} has no registered authoritative worktree for ${opts.taskId}.`,
++        context: {
++          reason_code: "task_worktree_registration_missing",
++          task_id: opts.taskId,
++          branch: expectedBranch,
++        },
++      });
++    }
++    return null;
++  }
++
++  const registeredBranch = normalizeBranch(registration.branch!);
++  if (registeredBranch !== expectedBranch) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message: `Task ${opts.taskId} is registered on ${registeredBranch}, not ${expectedBranch}.`,
++      context: {
++        reason_code: "task_worktree_branch_mismatch",
++        task_id: opts.taskId,
++        expected_branch: expectedBranch,
++        registered_branch: registeredBranch,
++        authoritative_worktree: registration.path,
++      },
++    });
++  }
++  return { path: registration.path, branch: registeredBranch };
++}
++
+ function stripOriginPrefix(branch: string): string {
+   return branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
+ }
+@@ -135,6 +228,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
+   taskId: string;
+   readmePath: string;
+   branch?: string | null;
++  requireWorktree?: boolean;
+ }): Promise<TaskData | null> {
+   if (!backendSupportsTaskBranchSnapshots(opts.ctx)) {
+     return null;
+@@ -146,10 +240,16 @@ export async function loadTaskFromBranchSnapshot(opts: {
+       : await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+   if (!branch) return null;
+ 
+-  const liveWorktreePath = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, branch);
+-  if (liveWorktreePath) {
++  const localBranch = await taskBranchHasLocalRef({ ctx: opts.ctx, branch });
++  const authoritativeWorktree = await resolveAuthoritativeTaskWorktree({
++    ctx: opts.ctx,
++    taskId: opts.taskId,
++    branch,
++    requireRegistration: localBranch && opts.requireWorktree !== false,
++  });
++  if (authoritativeWorktree) {
+     const liveReadmePath = path.join(
+-      liveWorktreePath,
++      authoritativeWorktree.path,
+       path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath),
+     );
+     try {
+@@ -160,7 +260,20 @@ export async function loadTaskFromBranchSnapshot(opts: {
+         text: liveText,
+       });
+     } catch {
+-      // Fall back to the committed branch snapshot when the live worktree lacks the README.
++      throw new CliError({
++        exitCode: 4,
++        code: "E_IO",
++        message:
++          `Authoritative task worktree ${authoritativeWorktree.path} does not contain a valid ` +
++          `README for ${opts.taskId}.`,
++        context: {
++          reason_code: "authoritative_task_readme_unavailable",
++          task_id: opts.taskId,
++          branch: authoritativeWorktree.branch,
++          authoritative_worktree: authoritativeWorktree.path,
++          readme_path: liveReadmePath,
++        },
++      });
+     }
+   }
+ 
+diff --git a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+index 948a21196..aaa0aa590 100644
+--- a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
++++ b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+ import * as git from "@agentplaneorg/core/git";
+ import * as process from "@agentplaneorg/core/process";
+ import type { CommandContext } from "./task-backend.js";
+-import { resolveTaskBranchFromContext } from "./task-backend-branch-snapshot.js";
++import {
++  resolveAuthoritativeTaskWorktree,
++  resolveTaskBranchFromContext,
++} from "./task-backend-branch-snapshot.js";
+ 
+ function makeContext(): CommandContext {
+   return {
+@@ -67,4 +70,135 @@ describe("task branch snapshot inventory", () => {
+     expect(git.gitListTaskBranches).toHaveBeenCalledTimes(2);
+     expect(process.execFileAsync).toHaveBeenCalledTimes(2);
+   });
++
++  it("resolves exactly one registered worktree as the authoritative task checkout", async () => {
++    vi.spyOn(git, "listWorktrees").mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++      {
++        path: "/repo/.agentplane/worktrees/alpha",
++        branch: "refs/heads/task/202607260001-ALPHA/local",
++      },
++    ]);
++
++    await expect(
++      resolveAuthoritativeTaskWorktree({
++        ctx: makeContext(),
++        taskId: "202607260001-ALPHA",
++        branch: "task/202607260001-ALPHA/local",
++        requireRegistration: true,
++      }),
++    ).resolves.toEqual({
++      path: "/repo/.agentplane/worktrees/alpha",
++      branch: "task/202607260001-ALPHA/local",
++    });
++  });
++
++  it("shares one authoritative worktree inventory across concurrent command reads", async () => {
++    const listWorktrees = vi.spyOn(git, "listWorktrees").mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++      {
++        path: "/repo/.agentplane/worktrees/alpha",
++        branch: "refs/heads/task/202607260001-ALPHA/local",
++      },
++    ]);
++    const ctx = makeContext();
++
++    const [first, replay] = await Promise.all([
++      resolveAuthoritativeTaskWorktree({
++        ctx,
++        taskId: "202607260001-ALPHA",
++        branch: "task/202607260001-ALPHA/local",
++        requireRegistration: true,
++      }),
++      resolveAuthoritativeTaskWorktree({
++        ctx,
++        taskId: "202607260001-ALPHA",
++        branch: "refs/heads/task/202607260001-ALPHA/local",
++        requireRegistration: true,
++      }),
++    ]);
++
++    expect(first).toEqual(replay);
++    expect(first).toEqual({
++      path: "/repo/.agentplane/worktrees/alpha",
++      branch: "task/202607260001-ALPHA/local",
++    });
++    expect(listWorktrees).toHaveBeenCalledTimes(1);
++  });
++
++  it("rejects duplicate same-task worktree registrations", async () => {
++    vi.spyOn(git, "listWorktrees").mockResolvedValue([
++      {
++        path: "/repo/.agentplane/worktrees/alpha-a",
++        branch: "refs/heads/task/202607260001-ALPHA/local",
++      },
++      {
++        path: "/repo/.agentplane/worktrees/alpha-b",
++        branch: "refs/heads/task/202607260001-ALPHA/recovery",
++      },
++    ]);
++
++    await expect(
++      resolveAuthoritativeTaskWorktree({
++        ctx: makeContext(),
++        taskId: "202607260001-ALPHA",
++        branch: "task/202607260001-ALPHA/local",
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: { reason_code: "duplicate_task_worktree_registration" },
++    });
++  });
++
++  it("rejects a registered same-task worktree on a different branch", async () => {
++    vi.spyOn(git, "listWorktrees").mockResolvedValue([
++      {
++        path: "/repo/.agentplane/worktrees/alpha-recovery",
++        branch: "refs/heads/task/202607260001-ALPHA/recovery",
++      },
++    ]);
++
++    await expect(
++      resolveAuthoritativeTaskWorktree({
++        ctx: makeContext(),
++        taskId: "202607260001-ALPHA",
++        branch: "task/202607260001-ALPHA/local",
++        requireRegistration: true,
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: {
++        reason_code: "task_worktree_branch_mismatch",
++        expected_branch: "task/202607260001-ALPHA/local",
++        registered_branch: "task/202607260001-ALPHA/recovery",
++      },
++    });
++  });
++
++  it("rejects foreign branches and missing local registrations", async () => {
++    const ctx = makeContext();
++    vi.spyOn(git, "listWorktrees").mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++    ]);
++
++    await expect(
++      resolveAuthoritativeTaskWorktree({
++        ctx,
++        taskId: "202607260001-ALPHA",
++        branch: "task/202607260002-BRAVO/local",
++      }),
++    ).rejects.toMatchObject({
++      context: { reason_code: "foreign_task_branch" },
++    });
++    await expect(
++      resolveAuthoritativeTaskWorktree({
++        ctx,
++        taskId: "202607260001-ALPHA",
++        branch: "task/202607260001-ALPHA/local",
++        requireRegistration: true,
++      }),
++    ).rejects.toMatchObject({
++      context: { reason_code: "task_worktree_registration_missing" },
++    });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/shared/task-backend.test.ts b/packages/agentplane/src/commands/shared/task-backend.test.ts
+index 586af1087..2493a055a 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.test.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.test.ts
+@@ -174,7 +174,7 @@ describe(
+       await expect(resolvePrimaryCheckoutCommandContext(primaryCtx)).resolves.toBe(primaryCtx);
+     });
+ 
+-    it("does not retain a stale worktree merely because another worktree owns the task branch", async () => {
++    it("routes a stale caller to the worktree that owns the task branch", async () => {
+       const repo = await tempRepo({ branch: "main" });
+       const root = repo.root;
+       await configureGitUser(root);
+@@ -225,13 +225,13 @@ describe(
+         taskId: created.id,
+       });
+ 
+-      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(root));
++      expect(await realpath(ownerCtx.resolvedProject.gitRoot)).toBe(await realpath(taskWorktree));
+       await expect(ownerCtx.taskBackend.getTask(created.id)).resolves.toMatchObject({
+         id: created.id,
+       });
+     });
+ 
+-    it("loadTaskFromContext falls back to a branch-backed task README in branch_pr mode", async () => {
++    it("rejects a local task branch without a registered authoritative worktree", async () => {
+       const repo = await tempRepo({ branch: "main" });
+       const root = repo.root;
+       await configureGitUser(root);
+@@ -280,9 +280,10 @@ describe(
+       );
+ 
+       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+-      const task = await loadTaskFromContext({ ctx, taskId: created.id });
+-      expect(task.id).toBe(created.id);
+-      expect(task.title).toBe("Context branch fallback");
++      await expect(loadTaskFromContext({ ctx, taskId: created.id })).rejects.toMatchObject({
++        code: "E_VALIDATION",
++        context: { reason_code: "task_worktree_registration_missing" },
++      });
+     });
+ 
+     it("loadTaskFromContext can read the active task README from a live branch_pr worktree", async () => {
+@@ -354,7 +355,7 @@ describe(
+       expect(task.status).toBe("DOING");
+     });
+ 
+-    it("loadTaskFromContext can prefer an explicit branch snapshot over a stale base task copy", async () => {
++    it("rejects an explicit local branch snapshot without an authoritative worktree", async () => {
+       const repo = await tempRepo({ branch: "main" });
+       const root = repo.root;
+       await configureGitUser(root);
+@@ -392,15 +393,17 @@ describe(
+       await execFileAsync("git", ["checkout", "main"], { cwd: root });
+ 
+       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+-      const task = await loadTaskFromContext({
+-        ctx,
+-        taskId: created.id,
+-        preferBranchSnapshot: true,
+-        branchSnapshotBranch: branch,
++      await expect(
++        loadTaskFromContext({
++          ctx,
++          taskId: created.id,
++          preferBranchSnapshot: true,
++          branchSnapshotBranch: branch,
++        }),
++      ).rejects.toMatchObject({
++        code: "E_VALIDATION",
++        context: { reason_code: "task_worktree_registration_missing" },
+       });
+-
+-      expect(task.id).toBe(created.id);
+-      expect(task.title).toBe("Branch task title");
+     });
+ 
+     it(
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index fdc9e3d25..b5c9583ae 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -18,16 +18,20 @@ import {
+   type TaskData,
+   type TaskSummary,
+ } from "../../backends/task-backend.js";
+-import { findWorktreeForBranch, GitContext, listWorktrees } from "@agentplaneorg/core/git";
++import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
+ import { resolveCommonGitDirectory } from "../../shared/env.js";
+ import {
+   loadTaskFromBranchSnapshot,
++  resolveAuthoritativeTaskWorktree,
+   resolveTaskBranchFromContext,
++  taskBranchHasLocalRef,
+ } from "./task-backend-branch-snapshot.js";
+ 
+ export {
+   loadTaskFromBranchSnapshot,
++  resolveAuthoritativeTaskWorktree,
+   resolveTaskBranchFromContext,
++  taskBranchHasLocalRef,
+ } from "./task-backend-branch-snapshot.js";
+ 
+ export type CommandMemo = {
+@@ -37,6 +41,7 @@ export type CommandMemo = {
+     localBranches: string[];
+     remoteBranches: string[];
+   }>;
++  taskWorktreeInventory?: Promise<{ path: string; branch: string | null }[]>;
+   changedPaths?: Promise<string[]>;
+   headCommit?: Promise<string>;
+   gitCommonDir?: Promise<string>;
+@@ -232,29 +237,39 @@ export async function resolveTaskOwnerCommandContext(opts: {
+   ctx: CommandContext;
+   taskId: string;
+ }): Promise<CommandContext> {
+-  if (await opts.ctx.taskBackend.getTask(opts.taskId)) return opts.ctx;
+-
+-  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
+   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+-  const branchTask = await loadTaskFromBranchSnapshot({
+-    ctx: opts.ctx,
+-    taskId: opts.taskId,
+-    readmePath: path.join(tasksDir, opts.taskId, "README.md"),
+-    branch: taskBranch,
+-  });
+-  if (branchTask && taskBranch) {
+-    const ownerWorktree = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, taskBranch);
+-    if (
+-      ownerWorktree &&
+-      path.resolve(ownerWorktree) === path.resolve(opts.ctx.resolvedProject.gitRoot)
+-    ) {
+-      return opts.ctx;
++  if (taskBranch) {
++    const owner = await resolveAuthoritativeTaskWorktree({
++      ctx: opts.ctx,
++      taskId: opts.taskId,
++      branch: taskBranch,
++      requireRegistration: await taskBranchHasLocalRef({ ctx: opts.ctx, branch: taskBranch }),
++    });
++    if (owner) {
++      if (path.resolve(owner.path) === path.resolve(opts.ctx.resolvedProject.gitRoot)) {
++        await loadTaskFromContext({
++          ctx: opts.ctx,
++          taskId: opts.taskId,
++          preferBranchSnapshot: true,
++        });
++        return opts.ctx;
++      }
++      const ownerCtx = await loadCommandContext({ cwd: owner.path, rootOverride: null });
++      await loadTaskFromContext({ ctx: ownerCtx, taskId: opts.taskId, preferBranchSnapshot: true });
++      return ownerCtx;
+     }
+   }
+ 
+   const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
+-  if (primaryCtx === opts.ctx) return opts.ctx;
+-  return (await primaryCtx.taskBackend.getTask(opts.taskId)) ? primaryCtx : opts.ctx;
++  if (await primaryCtx.taskBackend.getTask(opts.taskId)) return primaryCtx;
++  if (
++    primaryCtx !== opts.ctx &&
++    opts.ctx.config.workflow_mode !== "branch_pr" &&
++    (await opts.ctx.taskBackend.getTask(opts.taskId))
++  ) {
++    return opts.ctx;
++  }
++  return primaryCtx;
+ }
+ 
+ export async function loadTaskFromContext(opts: {
+@@ -262,6 +277,7 @@ export async function loadTaskFromContext(opts: {
+   taskId: string;
+   preferBranchSnapshot?: boolean;
+   branchSnapshotBranch?: string | null;
++  requireBranchWorktree?: boolean;
+ }): Promise<TaskData> {
+   const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
+   const readmePath = path.join(tasksDir, opts.taskId, "README.md");
+@@ -271,6 +287,7 @@ export async function loadTaskFromContext(opts: {
+       taskId: opts.taskId,
+       readmePath,
+       branch: opts.branchSnapshotBranch ?? null,
++      requireWorktree: opts.requireBranchWorktree,
+     });
+ 
+   if (opts.preferBranchSnapshot) {
+diff --git a/packages/agentplane/src/commands/shared/task-mutation.test.ts b/packages/agentplane/src/commands/shared/task-mutation.test.ts
+index 278a4b8f7..6e17adcde 100644
+--- a/packages/agentplane/src/commands/shared/task-mutation.test.ts
++++ b/packages/agentplane/src/commands/shared/task-mutation.test.ts
+@@ -1,4 +1,9 @@
+ import { afterEach, describe, expect, it, vi } from "vitest";
++import {
++  createLegacyTaskAggregate,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
++} from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+ import {
+@@ -179,6 +184,70 @@ describe("applyTaskMutation", () => {
+     expect(store.update).toHaveBeenCalledTimes(1);
+   });
+ 
++  it("persists a compatibility mutation and its task-centric receipt in one revision", async () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 4,
++      title: "Task",
++      description: "Atomic compatibility projection",
++      status: "DOING",
++      acceptance_criteria: ["done"],
++      captured_at: "2026-03-31T00:00:00.000Z",
++      updated_at: "2026-03-31T00:00:00.000Z",
++    });
++    let currentTask = mkTask({
++      id: "T-1",
++      revision: 4,
++      status: "DOING",
++      extensions: withTaskCentricAggregate({}, aggregate),
++    });
++    const store = {
++      update: vi.fn((_taskId: string, updater: (task: TaskData) => Promise<TaskData> | TaskData) =>
++        Promise.resolve(updater(cloneTask(currentTask))).then((nextTask) => {
++          const changed = JSON.stringify(currentTask) !== JSON.stringify(nextTask);
++          currentTask = cloneTask(nextTask);
++          return { changed, task: cloneTask(currentTask) };
++        }),
++      ),
++    };
++    const ctx = mkCtx(mkBackend());
++    vi.doMock("./task-store.js", async () => ({
++      ...(await vi.importActual("./task-store.js")),
++      getTaskStore: () => store,
++    }));
++    vi.doMock("./task-backend.js", async () => ({
++      ...(await vi.importActual("./task-backend.js")),
++      backendUsesLocalTaskStore: () => true,
++    }));
++
++    const { applyTaskMutation } = await import("./task-mutation.js");
++    const first = await applyTaskMutation({
++      ctx,
++      taskId: "T-1",
++      build: (current) => ({ nextTask: { ...current, owner: "INTEGRATOR" } }),
++    });
++    const projected = taskCentricAggregateFromExtensions(first.task.extensions)!;
++    const firstRuntime = first.task.extensions?.["agentplane.task_centric_runtime"] as {
++      mutation_receipts: Record<string, unknown>;
++    };
++    const receiptIds = Object.keys(firstRuntime.mutation_receipts);
++
++    expect(first.task).toMatchObject({ revision: 5, status: "DOING", owner: "INTEGRATOR" });
++    expect(projected).toMatchObject({ revision: 5, lifecycle: "ACTIVE", event_cursor: 1 });
++    expect(receiptIds).toHaveLength(1);
++
++    const replay = await applyTaskMutation({
++      ctx,
++      taskId: "T-1",
++      build: (current) => ({ nextTask: cloneTask(current) }),
++    });
++    expect(replay.changed).toBe(false);
++    const replayRuntime = replay.task.extensions?.["agentplane.task_centric_runtime"] as {
++      mutation_receipts: Record<string, unknown>;
++    };
++    expect(Object.keys(replayRuntime.mutation_receipts)).toEqual(receiptIds);
++  });
++
+   it("applies intents and writes through the backend when the backend is not local", async () => {
+     const currentTask = mkTask();
+     let persistedTask = cloneTask(currentTask);
+diff --git a/packages/agentplane/src/commands/shared/task-mutation.ts b/packages/agentplane/src/commands/shared/task-mutation.ts
+index af22f0489..4ddbc5ab2 100644
+--- a/packages/agentplane/src/commands/shared/task-mutation.ts
++++ b/packages/agentplane/src/commands/shared/task-mutation.ts
+@@ -1,9 +1,15 @@
+ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
++import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-adapter.js";
++import {
++  projectTaskLifecycleToLegacyStatus,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ 
+ import path from "node:path";
+ 
+ import type { TaskData, TaskWriteOptions, TaskWriteResult } from "../../backends/task-backend.js";
+ import { PolicyEngine } from "../../policy/engine.js";
++import { CliError } from "../../shared/errors.js";
+ import type { PolicyPhase, TaskPolicyState } from "../../policy/model.js";
+ import type { PolicyActionId } from "../../policy/taxonomy.js";
+ import { throwIfPolicyDecisionDenied } from "./policy-deny.js";
+@@ -25,6 +31,33 @@ export function assertLegacyMutation(task: TaskData): void {
+       "Canonical Task mutations require the kernel lifecycle; legacy mutation is refused",
+     );
+ }
++
++function assertTaskCentricProjection(opts: { current: TaskData; next: TaskData }): void {
++  const task = opts.next;
++  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
++  if (!aggregate) return;
++  const expectedStatus = projectTaskLifecycleToLegacyStatus(aggregate.lifecycle);
++  const changed = JSON.stringify(opts.current) !== JSON.stringify(task);
++  const expectedRevision = changed
++    ? (opts.current.revision ?? aggregate.revision - 1) + 1
++    : (opts.current.revision ?? aggregate.revision);
++  if (task.status === expectedStatus && aggregate.revision === expectedRevision) return;
++  throw new CliError({
++    code: "E_VALIDATION",
++    message:
++      `Legacy mutation would expose a partial task-centric projection for ${task.id}: ` +
++      `task status/revision=${task.status}/${String(expectedRevision)}, ` +
++      `canonical status/revision=${expectedStatus}/${String(aggregate.revision)}.`,
++    context: {
++      reason_code: "task_centric_projection_mismatch",
++      task_id: task.id,
++      task_status: task.status,
++      task_revision: expectedRevision,
++      canonical_status: expectedStatus,
++      canonical_revision: aggregate.revision,
++    },
++  });
++}
+ export type TaskMutationPlan = {
+   intents?: TaskStoreIntentResult;
+   nextTask?: TaskData;
+@@ -187,9 +220,21 @@ export async function applyTaskMutation(opts: {
+         });
+         const plan = await opts.build({ ...current });
+         if (!plan) return current;
+-        if (plan.nextTask !== undefined) return plan.nextTask;
++        if (plan.nextTask !== undefined) {
++          const next = projectTaskCentricCompatibilityMutation({
++            current,
++            next: plan.nextTask,
++          });
++          assertTaskCentricProjection({ current, next });
++          return next;
++        }
+         if (plan.intents !== undefined) {
+-          return applyTaskStoreIntentsToTask(current, plan.intents);
++          const next = projectTaskCentricCompatibilityMutation({
++            current,
++            next: applyTaskStoreIntentsToTask(current, plan.intents),
++          });
++          assertTaskCentricProjection({ current, next });
++          return next;
+         }
+         return current;
+       },
+@@ -232,10 +277,15 @@ export async function applyTaskMutation(opts: {
+   if (nextTask === undefined) {
+     return { changed: false, task: current, mode: "backend" };
+   }
++  const reconciledTask = projectTaskCentricCompatibilityMutation({
++    current: materializedCurrent,
++    next: nextTask,
++  });
++  assertTaskCentricProjection({ current: materializedCurrent, next: reconciledTask });
+ 
+-  const changed = JSON.stringify(materializedCurrent) !== JSON.stringify(nextTask);
++  const changed = JSON.stringify(materializedCurrent) !== JSON.stringify(reconciledTask);
+   if (!changed && plan.forceWrite !== true) {
+-    return { changed: false, task: nextTask, mode: "backend" };
++    return { changed: false, task: reconciledTask, mode: "backend" };
+   }
+ 
+   const mergedWriteOptions: TaskWriteOptions = {};
+@@ -243,7 +293,7 @@ export async function applyTaskMutation(opts: {
+   if (plan.writeOptions) Object.assign(mergedWriteOptions, plan.writeOptions);
+   const mutation = await writeTaskMutation({
+     ctx: opts.ctx,
+-    task: nextTask,
++    task: reconciledTask,
+     writeOptions: mergedWriteOptions,
+   });
+   return { changed, task: mutation.task, mode: "backend" };
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+index 90d919935..989e77c90 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+@@ -1,5 +1,5 @@
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+-import { cliOperationStep, terminalStep } from "./workflow-step-factory.js";
++import { cliOperationStep, routeBlockerFor, terminalStep } from "./workflow-step-factory.js";
+ import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request.js";
+ 
+ export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
+@@ -43,6 +43,22 @@ export function preMergeCommit(state: WorkflowRouteState): string | null {
+   return state.prFlow?.branch.headSha ?? null;
+ }
+ 
++export function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
++  return terminalStep({
++    state,
++    id: "terminal.branch_head_repair",
++    code: "repair_branch_head",
++    phase: "branch_head_missing",
++    checkout: "base_checkout",
++    role: "CODER",
++    outcome: "repair_required",
++    summary:
++      "the structured task branch exists but its local head is unavailable; recover or fetch that branch before PR, closure, or integration operations",
++    evidenceMissing: ["task_branch_head"],
++    selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
++  });
++}
++
+ export function missingPrRemoteRefreshStep(state: WorkflowRouteState): WorkflowStep {
+   return cliOperationStep({
+     state,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 301999046..194dffc5b 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -3,6 +3,7 @@ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+ import type { RouteBlocker } from "./route-oracle.js";
+ import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
+ import {
++  branchHeadRepairStep,
+   blockedTaskStep,
+   missingPrRemoteRefreshStep,
+   preMergeCommit,
+@@ -34,21 +35,6 @@ import {
+ function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
+   return state.blockers.some((blocker) => blocker.code === code);
+ }
+-function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
+-  return terminalStep({
+-    state,
+-    id: "terminal.branch_head_repair",
+-    code: "repair_branch_head",
+-    phase: "branch_head_missing",
+-    checkout: "base_checkout",
+-    role: "CODER",
+-    outcome: "repair_required",
+-    summary:
+-      "the structured task branch exists but its local head is unavailable; recover or fetch that branch before PR, closure, or integration operations",
+-    evidenceMissing: ["task_branch_head"],
+-    selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
+-  });
+-}
+ function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
+   if (state.batchOwnership.role !== "primary") return null;
+   const ownership = state.batchOwnership;
+@@ -488,9 +474,17 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+     });
+   }
+   const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
+-  const requiredWorkItemIncomplete = taskCentric?.current_plan?.proposal.work_items.work_items.some(
+-    (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
++  // A freshly materialized graph is not evidence that compatibility-driven
++  // implementation has entered canonical WorkItem execution. Once a claim or
++  // attempt exists, the canonical graph becomes authoritative for routing.
++  const canonicalWorkItemExecutionStarted = Object.values(taskCentric?.work_items ?? {}).some(
++    (item) => item.attempt > 0 || item.claim_id !== null,
+   );
++  const requiredWorkItemIncomplete =
++    canonicalWorkItemExecutionStarted &&
++    taskCentric?.current_plan?.proposal.work_items.work_items.some(
++      (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
++    );
+   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
+   const implementationValidated =
+     Boolean(implementationCommit) &&
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+index a210289bc..888bad0f5 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts
+@@ -1,6 +1,6 @@
+ import { execFile } from "node:child_process";
+ import { createHash } from "node:crypto";
+-import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
++import { mkdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+@@ -297,7 +297,7 @@ it("captures every live route component from the authoritative task worktree", a
+   expect(preparationTrace).toContain('"output_bytes":');
+   expect(preparationTrace).toContain('"fingerprint_inputs":');
+   expect(preparationTrace).toContain('"invalidation_reasons":["no_prior_observation"]');
+-  expect(fingerprint.worktree).toBe(worktree);
++  expect(fingerprint.worktree).toBe(await realpath(worktree));
+   expect(fingerprint.components.blueprint).toMatchObject({
+     state: "present",
+     digest: componentDigest({
+@@ -444,6 +444,12 @@ it("captures every live route component from the authoritative task worktree", a
+   });
+ 
+   const initial = fingerprint;
++  const alias = `${root}-live-fingerprint-alias`;
++  await symlink(worktree, alias, "dir");
++  const aliased = await capture({ ctx, root, worktree: alias });
++  expect(aliased.worktree).toBe(initial.worktree);
++  expect(aliased.digest).toBe(initial.digest);
++
+   const evaluatorArtifactPath = path.join(
+     worktree,
+     ".agentplane",
+@@ -532,6 +538,46 @@ it("captures every live route component from the authoritative task worktree", a
+   const providerAfter = await capture({ ctx, root, worktree, state: localHeadAfter });
+   expect(changedComponents(providerBefore, providerAfter)).toEqual([]);
+ 
++  const hostedBeforeState = routeState(worktree);
++  hostedBeforeState.prFlow = {
++    ...prFlow(),
++    pr: { provider: "github", state: "not_found", source: "lookup" },
++    providerObservation: { state: "not_found" },
++  };
++  const hostedAfterState = structuredClone(hostedBeforeState);
++  hostedAfterState.prFlow!.hostedChecks = {
++    checked: true,
++    total: 1,
++    pending: 0,
++    failing: 0,
++    passing: 1,
++    missingRequired: [],
++    rows: [{ name: "PR verification", state: "SUCCESS" }],
++  };
++  const hostedBefore = await capture({ ctx, root, worktree, state: hostedBeforeState });
++  const hostedAfter = await capture({ ctx, root, worktree, state: hostedAfterState });
++  expect(changedComponents(hostedBefore, hostedAfter)).toEqual(["provider"]);
++  const reorderedHostedState = structuredClone(hostedAfterState);
++  reorderedHostedState.prFlow!.hostedChecks = {
++    checked: true,
++    total: 2,
++    pending: 0,
++    failing: 0,
++    passing: 2,
++    missingRequired: [],
++    rows: [
++      { name: "Typecheck", state: "SUCCESS" },
++      { name: "PR verification", state: "SUCCESS" },
++    ],
++  };
++  const reverseHostedState = structuredClone(reorderedHostedState);
++  if (reverseHostedState.prFlow?.hostedChecks.checked) {
++    reverseHostedState.prFlow.hostedChecks.rows.reverse();
++  }
++  const reorderedHosted = await capture({ ctx, root, worktree, state: reorderedHostedState });
++  const reverseHosted = await capture({ ctx, root, worktree, state: reverseHostedState });
++  expect(changedComponents(reorderedHosted, reverseHosted)).toEqual([]);
++
+   const conditionalPolicyState = routeState(worktree);
+   conditionalPolicyState.taskWorktree = {
+     ...conditionalPolicyState.taskWorktree!,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index cf998331e..54eb67440 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -1,4 +1,5 @@
+ import { createHash } from "node:crypto";
++import { realpath } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
+@@ -141,15 +142,24 @@ function providerComponent(state: WorkflowRouteStateInput): StateFingerprintComp
+   if (flow.pr.source !== "lookup" && !flow.providerObservation) {
+     return unavailableComponent("workflow_route_provider", "provider_metadata_only", evidence);
+   }
+-  /**
+-   * State fingerprints retain a component digest, not its raw value. The
+-   * provider component must therefore be stable across the authority record's
+-   * own technical PR-head update. It binds PR identity and lifecycle state;
+-   * route construction and the protected command still re-evaluate volatile
+-   * hosted checks, review threads, and queue eligibility immediately before
+-   * executing a side effect.
+-   */
+-  return presentComponent("workflow_route_provider", authorityScope);
++  const hostedChecks = flow.hostedChecks.checked
++    ? {
++        ...flow.hostedChecks,
++        missingRequired: [...flow.hostedChecks.missingRequired].toSorted(),
++        rows: [...flow.hostedChecks.rows].toSorted((left, right) =>
++          `${left.name ?? ""}\u0000${left.state ?? ""}`.localeCompare(
++            `${right.name ?? ""}\u0000${right.state ?? ""}`,
++          ),
++        ),
++      }
++    : flow.hostedChecks;
++  return presentComponent("workflow_route_provider", {
++    ...authorityScope,
++    observation: flow.providerObservation ?? null,
++    hostedChecks,
++    reviewThreads: flow.reviewThreads,
++    closeTail: flow.closeTail,
++  });
+ }
+ 
+ function checkoutPath(checkout: WorkflowCheckout, paths: WorkflowFingerprintPaths): string | null {
+@@ -402,7 +412,10 @@ export async function captureWorkflowStepFingerprint(opts: {
+   onGitSnapshot?: (snapshot: GitSnapshot | null) => void;
+ }): Promise<StateFingerprint> {
+   const fingerprintCheckout = workflowStepFingerprintCheckout(opts.step);
+-  const authoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
++  const observedAuthoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
++  const authoritativePath = observedAuthoritativePath
++    ? await realpath(observedAuthoritativePath).catch(() => path.resolve(observedAuthoritativePath))
++    : null;
+   const fallbackWorktree = `unavailable:${fingerprintCheckout}`;
+   const repositoryRoot = authoritativePath;
+   const blueprintPath = path.join(
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts b/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts
+index 67b1c6796..ce78aa36f 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts
+@@ -66,7 +66,14 @@ const prFlow = {
+     mergeCommit: "3333333333333333333333333333333333333333",
+   },
+   closeTail: { state: "recorded_on_base", base: "main" },
+-  hostedChecks: { checked: true, failing: 0, pending: 0, total: 21 },
++  hostedChecks: {
++    checked: true,
++    failing: 0,
++    pending: 0,
++    total: 21,
++    missingRequired: [],
++    rows: [],
++  },
+   reviewThreads: { checked: true, unresolved: 0 },
+   queue: { present: true, status: "done", reason: null, updatedAt: null },
+   handoff: { present: false },
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts
+index bea539680..99d0566f8 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts
+@@ -84,6 +84,37 @@ function executionPacket(state: ReturnType<typeof routeState>) {
+ }
+ 
+ describe("WorkflowStep routing projections", () => {
++  it("invalidates a routed projection when authoritative checkout identity changes", () => {
++    const first = routeState();
++    const exactReplay = routeState();
++    const replacementWorktree = `${taskWorktreePath}-replacement`;
++    const moved = routeState({
++      resume: { ...resume, workspace_root: replacementWorktree },
++      taskWorktree: {
++        state: "clean",
++        branch: taskBranch,
++        worktreePath: replacementWorktree,
++        changedPaths: [],
++      },
++    });
++
++    expect(exactReplay.preconditionFingerprint.digest).toBe(first.preconditionFingerprint.digest);
++    expect(moved.preconditionFingerprint.digest).not.toBe(first.preconditionFingerprint.digest);
++    expect(executionPacket(exactReplay).step.preconditionFingerprint.digest).toBe(
++      first.preconditionFingerprint.digest,
++    );
++    expect(executionPacket(moved).step.preconditionFingerprint.digest).toBe(
++      moved.preconditionFingerprint.digest,
++    );
++    expect(executionPacket(exactReplay).packet).toEqual(executionPacket(first).packet);
++    expect(exactReplay.preconditionFingerprint.components.git.digest).toBe(
++      first.preconditionFingerprint.components.git.digest,
++    );
++    expect(moved.preconditionFingerprint.components.git.digest).not.toBe(
++      first.preconditionFingerprint.components.git.digest,
++    );
++  });
++
+   it("projects runner wait without a mutation path or executable argv", () => {
+     const state = routeState({
+       blockers: [{ code: "runner_alive", summary: "runner is active" }],
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts b/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+index deed6bf3f..595c19cf9 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+@@ -112,7 +112,7 @@ function deterministicEvidenceGapReview(evaluatedSha = resume.head_sha) {
+   } satisfies NonNullable<TaskData["quality_review"]>;
+ }
+ 
+-function taskCentricExtensions(workItemState: "READY" | "COMPLETED") {
++function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLETED") {
+   const digest = `sha256:${"a".repeat(64)}`;
+   return {
+     "agentplane.task_centric": {
+@@ -145,7 +145,7 @@ function taskCentricExtensions(workItemState: "READY" | "COMPLETED") {
+           id: "required-route-fix",
+           state: workItemState,
+           revision: 1,
+-          attempt: workItemState === "COMPLETED" ? 1 : 0,
++          attempt: workItemState === "READY" ? 0 : 1,
+           claim_id: null,
+           output_manifests: [],
+           validation_result: null,
+@@ -175,7 +175,7 @@ describe("quality evidence refresh route", () => {
+     };
+     const incomplete = reduceRouteState(
+       routeState({
+-        task: { ...verifiedTask, extensions: taskCentricExtensions("READY") },
++        task: { ...verifiedTask, extensions: taskCentricExtensions("REWORK_READY") },
+         blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+       }),
+     );
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 1649f8d4b..2973bb2a9 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -98,7 +98,9 @@ function assertExternalImplementationReturnState(opts: {
+     current.task_revision !== expected.task_revision ||
+     current.worktree !== expected.worktree ||
+     current.components.task.digest !== expected.components.task.digest ||
+-    current.components.backend_projection.digest !== expected.components.backend_projection.digest
++    current.components.backend_projection.digest !==
++      expected.components.backend_projection.digest ||
++    current.components.provider.digest !== expected.components.provider.digest
+   ) {
+     throw new CliError({
+       code: "E_VALIDATION",
+diff --git a/packages/agentplane/src/commands/task/finish-shared.ts b/packages/agentplane/src/commands/task/finish-shared.ts
+index 1cc165ca3..7f0e35233 100644
+--- a/packages/agentplane/src/commands/task/finish-shared.ts
++++ b/packages/agentplane/src/commands/task/finish-shared.ts
+@@ -7,19 +7,16 @@ import {
+ } from "@agentplaneorg/core/tasks";
+ import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
+ 
+-import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
++import { projectTaskCentricCompletion } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+ import { isRecord } from "../../shared/guards.js";
+ import { emitTraceEvent } from "../../shared/trace-events.js";
+ import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
+ import { cmdCommit } from "../guard/impl/commit.js";
+-import {
+-  backendUsesLocalTaskStore,
+-  loadTaskFromContext,
+-  type CommandContext,
+-} from "../shared/task-backend.js";
+-import { getTaskStore, mutateTaskStore } from "../shared/task-store.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
++import { mutateTaskStore, type getTaskStore } from "../shared/task-store.js";
+ 
+ import {
+   ensureAgentFilledRequiredDocSections,
+@@ -253,12 +250,10 @@ export async function writeFinishedTasks(opts: {
+   taskCommitInfo: ResolvedCommitInfo | null;
+   implementationCommitInfo?: ResolvedCommitInfo | null;
+ }): Promise<void> {
+-  const useStore = backendUsesLocalTaskStore(opts.ctx);
+-  const store = useStore ? getTaskStore(opts.ctx) : null;
+   const taskCount = opts.loadedTasks.length;
+ 
+   for (const loaded of opts.loadedTasks) {
+-    const { taskId, task } = loaded;
++    const { taskId } = loaded;
+     const at = nowIso();
+     const tokenUsage = await resolveTaskTokenUsageOnFinish({
+       git_root: opts.ctx.resolvedProject.gitRoot,
+@@ -328,53 +323,50 @@ export async function writeFinishedTasks(opts: {
+       });
+     };
+ 
+-    if (useStore) {
+-      const result = await mutateTaskStore(store!, taskId, async (currentTask) => {
++    const mutation = await applyTaskMutation({
++      ctx: opts.ctx,
++      taskId,
++      policyAction: "task_status_transition",
++      phase: "finish",
++      build: async (currentTask) => {
+         const execution = await applyTransition(currentTask);
+-        return execution.intents;
+-      });
+-      loaded.task = result.task;
+-    } else {
+-      const execution = await applyTransition(task);
+-      await opts.ctx.taskBackend.writeTask(execution.nextTask);
+-      loaded.task = execution.nextTask;
+-    }
+-
+-    const canonical = taskCentricAggregateFromExtensions(loaded.task.extensions);
+-    if (canonical?.current_plan && canonical.lifecycle !== "COMPLETED") {
+-      const implementationHash =
+-        opts.implementationCommitInfo?.hash ?? opts.taskCommitInfo?.hash ?? "";
+-      const repository = createRepositorySnapshot({
+-        git: isGitObjectId(implementationHash)
+-          ? { kind: "commit", sha: implementationHash, ref: null }
+-          : {
+-              kind: "unavailable",
+-              reason_code: "implementation_commit_unavailable",
+-              detail: implementationHash || undefined,
+-            },
+-        dirty_paths: [],
+-        policy_digest: null,
+-        config_digest: null,
+-        context_digest: null,
+-        task_history_cursor: `task-revision:${String(loaded.task.revision ?? canonical.revision)}`,
+-        captured_at: at,
+-      });
+-      const adapter = new TaskCentricBackendAdapter({
+-        backend: opts.ctx.taskBackend,
+-        observeRepository: () => Promise.resolve(repository),
+-      });
+-      await adapter.completeTaskFromLegacyVerification({
+-        task_id: taskId,
+-        repository,
+-        actor_id: opts.author,
+-        evidence_refs: [
+-          `task-verification:${taskId}`,
+-          ...(implementationHash ? [`git:${implementationHash}`] : []),
+-        ],
+-        idempotency_key: `legacy-finish:${taskId}:${loaded.task.verification?.updated_at ?? at}:${implementationHash}`,
+-      });
+-      loaded.task = (await opts.ctx.taskBackend.getTask(taskId)) ?? loaded.task;
+-    }
++        const currentCanonical = taskCentricAggregateFromExtensions(currentTask.extensions);
++        if (!currentCanonical?.current_plan || currentCanonical.lifecycle === "COMPLETED") {
++          return { nextTask: execution.nextTask };
++        }
++        const implementationHash =
++          opts.implementationCommitInfo?.hash ?? opts.taskCommitInfo?.hash ?? "";
++        const repository = createRepositorySnapshot({
++          git: isGitObjectId(implementationHash)
++            ? { kind: "commit", sha: implementationHash, ref: null }
++            : {
++                kind: "unavailable",
++                reason_code: "implementation_commit_unavailable",
++                detail: implementationHash || undefined,
++              },
++          dirty_paths: [],
++          policy_digest: null,
++          config_digest: null,
++          context_digest: null,
++          task_history_cursor: `task-revision:${String((currentTask.revision ?? currentCanonical.revision) + 1)}`,
++          captured_at: at,
++        });
++        const completion = projectTaskCentricCompletion({
++          task_id: taskId,
++          current: currentTask,
++          next: execution.nextTask,
++          repository,
++          actor_id: opts.author,
++          evidence_refs: [
++            `task-verification:${taskId}`,
++            ...(implementationHash ? [`git:${implementationHash}`] : []),
++          ],
++          idempotency_key: `legacy-finish:${taskId}:${execution.nextTask.verification?.updated_at ?? at}:${implementationHash}`,
++        });
++        return { nextTask: completion?.task ?? execution.nextTask };
++      },
++    });
++    loaded.task = mutation.task;
+   }
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/finish-task-store.testkit.ts b/packages/agentplane/src/commands/task/finish-task-store.testkit.ts
+new file mode 100644
+index 000000000..7db37038e
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/finish-task-store.testkit.ts
+@@ -0,0 +1,63 @@
++import { vi } from "vitest";
++import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { TaskStorePatch } from "../shared/task-store.js";
++
++export function applyStorePatch(
++  current: TaskData,
++  patch: TaskStorePatch | null | undefined,
++): TaskData {
++  if (!patch) return current;
++  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
++  if (patch.appendComments?.length) {
++    next.comments = [...(current.comments ?? []), ...patch.appendComments];
++  }
++  if (patch.appendEvents?.length) {
++    next.events = [...(current.events ?? []), ...patch.appendEvents];
++  }
++  if (patch.doc?.kind === "replace-doc") {
++    next.doc = patch.doc.doc;
++  } else if (patch.doc) {
++    const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
++    next.doc = ensureDocSections(
++      setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
++      patch.doc.requiredSections,
++    );
++  }
++  if (patch.doc || patch.docMeta?.touch === true) {
++    next.doc_version = patch.docMeta?.version ?? next.doc_version;
++    next.doc_updated_at = new Date().toISOString();
++    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
++  }
++  return next;
++}
++
++export function createMutableTaskStore(
++  task: TaskData,
++  applyPatch: (current: TaskData, patch: TaskStorePatch | null | undefined) => TaskData,
++) {
++  return {
++    get: vi.fn().mockImplementation(() => Promise.resolve(task)),
++    patch: vi
++      .fn()
++      .mockImplementation(
++        async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
++          const next = applyPatch(task, await builder({ ...task }));
++          const changed = JSON.stringify(next) !== JSON.stringify(task);
++          Object.assign(task, next);
++          return { changed, task };
++        },
++      ),
++    update: vi
++      .fn()
++      .mockImplementation(
++        async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
++          const next = await updater({ ...task });
++          const changed = JSON.stringify(next) !== JSON.stringify(task);
++          Object.assign(task, next);
++          return { changed, task };
++        },
++      ),
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts b/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
+index fc6274b8e..a40254526 100644
+--- a/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts
+@@ -1,11 +1,11 @@
+ import type { ResolvedProject } from "@agentplaneorg/core/project";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
+ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import type { GitContext } from "@agentplaneorg/core/git";
+ import type { TaskStorePatch } from "../shared/task-store.js";
++import { applyStorePatch, createMutableTaskStore } from "./finish-task-store.testkit.js";
+ const mocks = vi.hoisted(() => ({
+   commitFromComment: vi.fn(),
+   cmdCommit: vi.fn(),
+@@ -148,6 +148,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
+     listTasks: () => Promise.resolve([]),
+     getTask: () => Promise.resolve(null),
+     writeTask: () => Promise.resolve(),
++    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
+   };
+ 
+   const ctx: CommandContext = {
+@@ -170,37 +171,6 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
+   return { ...ctx, ...overrides };
+ }
+ 
+-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
+-  if (!patch) return current;
+-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
+-  if (patch.appendComments && patch.appendComments.length > 0) {
+-    next.comments = [
+-      ...(Array.isArray(current.comments) ? current.comments : []),
+-      ...patch.appendComments,
+-    ];
+-  }
+-  if (patch.appendEvents && patch.appendEvents.length > 0) {
+-    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
+-  }
+-  if (patch.doc) {
+-    if (patch.doc.kind === "replace-doc") {
+-      next.doc = patch.doc.doc;
+-    } else {
+-      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
+-      next.doc = ensureDocSections(
+-        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
+-        patch.doc.requiredSections,
+-      );
+-    }
+-  }
+-  if (patch.doc || patch.docMeta?.touch === true) {
+-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
+-    next.doc_updated_at = new Date().toISOString();
+-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
+-  }
+-  return next;
+-}
+-
+ describe("task finish close-tail", () => {
+   afterEach(() => {
+     vi.unstubAllEnvs();
+@@ -858,18 +828,8 @@ describe("task finish close-tail", () => {
+     const ctx = mkCtx();
+     ctx.config.workflow_mode = "direct";
+     mocks.backendIsLocalFileBackend.mockReturnValue(true);
+-    mocks.getTaskStore.mockReturnValue({
+-      get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+-      patch: vi.fn(
+-        async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => ({
+-          changed: true,
+-          task: applyStorePatch(
+-            mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
+-            await builder(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+-          ),
+-        }),
+-      ),
+-    });
++    const task = mkTask({ id: "T-1", status: "DOING", tags: ["docs"] });
++    mocks.getTaskStore.mockReturnValue(createMutableTaskStore(task, applyStorePatch));
+ 
+     const { cmdFinish } = await import("./finish-command.js");
+     const rc = await cmdFinish({
+@@ -955,6 +915,16 @@ describe("task finish close-tail", () => {
+             return { changed: true, task: currentTask };
+           },
+         ),
++      update: vi
++        .fn()
++        .mockImplementation(
++          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
++            const next = await updater({ ...currentTask });
++            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
++            currentTask = next;
++            return { changed, task: currentTask };
++          },
++        ),
+     };
+     const ctx = mkCtx();
+     ctx.config.workflow_mode = "branch_pr";
+diff --git a/packages/agentplane/src/commands/task/finish.state.unit.test.ts b/packages/agentplane/src/commands/task/finish.state.unit.test.ts
+index 9a8dcc9f2..95e2a6944 100644
+--- a/packages/agentplane/src/commands/task/finish.state.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish.state.unit.test.ts
+@@ -184,6 +184,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
+     listTasks: () => Promise.resolve([]),
+     getTask: () => Promise.resolve(null),
+     writeTask: () => Promise.resolve(),
++    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
+   };
+ 
+   const ctx: CommandContext = {
+@@ -452,6 +453,16 @@ describeCompatible("task finish state and errors", () => {
+             return { changed: true, task: currentTask };
+           },
+         ),
++      update: vi
++        .fn()
++        .mockImplementation(
++          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
++            const next = await updater({ ...currentTask });
++            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
++            currentTask = next;
++            return { changed, task: currentTask };
++          },
++        ),
+     };
+     const ctx = mkCtx();
+     ctx.config.workflow_mode = "branch_pr";
+@@ -485,7 +496,8 @@ describeCompatible("task finish state and errors", () => {
+ 
+     expect(rc).toBe(0);
+     expect(store.get).not.toHaveBeenCalled();
+-    expect(store.patch).toHaveBeenCalledTimes(2);
++    expect(store.patch).toHaveBeenCalledTimes(1);
++    expect(store.update).toHaveBeenCalledTimes(1);
+     expect(currentTask.status).toBe("DONE");
+     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
+     expect(currentTask.comments).toEqual([
+@@ -526,6 +538,16 @@ describeCompatible("task finish state and errors", () => {
+             return { changed: true, task: currentTask };
+           },
+         ),
++      update: vi
++        .fn()
++        .mockImplementation(
++          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
++            const next = await updater({ ...currentTask });
++            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
++            currentTask = next;
++            return { changed, task: currentTask };
++          },
++        ),
+     };
+     const ctx = mkCtx();
+     ctx.config.agents = {
+@@ -559,7 +581,8 @@ describeCompatible("task finish state and errors", () => {
+ 
+     expect(rc).toBe(0);
+     expect(store.get).not.toHaveBeenCalled();
+-    expect(store.patch).toHaveBeenCalledTimes(2);
++    expect(store.patch).toHaveBeenCalledTimes(1);
++    expect(store.update).toHaveBeenCalledTimes(1);
+     expect(currentTask.status).toBe("DONE");
+   });
+ 
+diff --git a/packages/agentplane/src/commands/task/finish.validation.unit.test.ts b/packages/agentplane/src/commands/task/finish.validation.unit.test.ts
+index 61e04fba7..0e3a5331c 100644
+--- a/packages/agentplane/src/commands/task/finish.validation.unit.test.ts
++++ b/packages/agentplane/src/commands/task/finish.validation.unit.test.ts
+@@ -6,6 +6,7 @@ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ import { GitContext } from "@agentplaneorg/core/git";
+ import type { TaskStorePatch } from "../shared/task-store.js";
++import { createMutableTaskStore } from "./finish-task-store.testkit.js";
+ 
+ const mocks = vi.hoisted(() => ({
+   commitFromComment: vi.fn(),
+@@ -164,6 +165,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
+     listTasks: () => Promise.resolve([]),
+     getTask: () => Promise.resolve(null),
+     writeTask: () => Promise.resolve(),
++    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
+   };
+ 
+   const ctx: CommandContext = {
+@@ -705,17 +707,7 @@ describe("task finish validation", () => {
+       tags: ["meta"],
+       commit: { hash: "impl-hash", message: "feat: implement T-1" },
+     });
+-    const store = {
+-      get: vi.fn().mockResolvedValue(task),
+-      patch: vi
+-        .fn()
+-        .mockImplementation(
+-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+-            applyStorePatch(task, await builder(task));
+-            return { changed: true, task };
+-          },
+-        ),
+-    };
++    const store = createMutableTaskStore(task, applyStorePatch);
+     mocks.backendIsLocalFileBackend.mockReturnValue(true);
+     mocks.getTaskStore.mockReturnValue(store);
+ 
+@@ -777,6 +769,7 @@ describe("task finish validation", () => {
+         listTasks: () => Promise.resolve([]),
+         getTask: () => Promise.resolve(task),
+         writeTask: () => Promise.resolve(),
++        writeTaskWithResult: (next) => Promise.resolve({ changed: true, task: next }),
+       } as TaskBackend,
+     });
+     ctx.config.workflow_mode = "direct";
+@@ -822,17 +815,7 @@ describe("task finish validation", () => {
+       tags: ["meta"],
+       commit: { hash: "impl-hash", message: "feat: implement T-1" },
+     });
+-    const store = {
+-      get: vi.fn().mockResolvedValue(task),
+-      patch: vi
+-        .fn()
+-        .mockImplementation(
+-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+-            applyStorePatch(task, await builder(task));
+-            return { changed: true, task };
+-          },
+-        ),
+-    };
++    const store = createMutableTaskStore(task, applyStorePatch);
+     mocks.backendIsLocalFileBackend.mockReturnValue(true);
+     mocks.getTaskStore.mockReturnValue(store);
+ 
+@@ -950,17 +933,7 @@ describe("task finish validation", () => {
+       tags: ["meta"],
+       commit: { hash: "impl-hash", message: "feat: implement T-1" },
+     });
+-    const store = {
+-      get: vi.fn().mockResolvedValue(task),
+-      patch: vi
+-        .fn()
+-        .mockImplementation(
+-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+-            applyStorePatch(task, await builder(task));
+-            return { changed: true, task };
+-          },
+-        ),
+-    };
++    const store = createMutableTaskStore(task, applyStorePatch);
+     mocks.backendIsLocalFileBackend.mockReturnValue(true);
+     mocks.getTaskStore.mockReturnValue(store);
+ 
+diff --git a/packages/agentplane/src/commands/task/hosted-close.command.ts b/packages/agentplane/src/commands/task/hosted-close.command.ts
+index e8e1c4066..a0c807d55 100644
+--- a/packages/agentplane/src/commands/task/hosted-close.command.ts
++++ b/packages/agentplane/src/commands/task/hosted-close.command.ts
+@@ -131,6 +131,7 @@ async function closeHostedTask(opts: {
+       taskId: target.taskId,
+       preferBranchSnapshot: !existingMetaAlreadyMerged,
+       branchSnapshotBranch: existingMetaAlreadyMerged ? null : target.branch,
++      requireBranchWorktree: false,
+     });
+   } catch (err) {
+     if (!isMissingTaskReadmeError(err, taskReadmePath)) throw err;
+diff --git a/packages/agentplane/src/commands/task/plan.unit.test.ts b/packages/agentplane/src/commands/task/plan.unit.test.ts
+index e6ba15e90..01a3f1f31 100644
+--- a/packages/agentplane/src/commands/task/plan.unit.test.ts
++++ b/packages/agentplane/src/commands/task/plan.unit.test.ts
+@@ -1,4 +1,8 @@
+-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
++import {
++  createLegacyTaskAggregate,
++  ensureDocSections,
++  setMarkdownSection,
++} from "@agentplaneorg/core/tasks";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+@@ -92,8 +96,19 @@ describe("task plan commands (unit)", () => {
+ 
+   it("setTaskPlan clears the replan marker when a replacement canonical plan is supplied", async () => {
+     const ctx = mkCtx();
++    const currentAggregate = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 1,
++      title: "Task",
++      description: "Current plan",
++      status: "TODO",
++      acceptance_criteria: ["replacement plan is accepted"],
++      captured_at: "2026-03-13T00:00:00.000Z",
++      updated_at: "2026-03-13T00:00:00.000Z",
++    });
+     let currentTask = mkTask({
+       id: "T-1",
++      revision: 1,
+       doc: [
+         "## Summary",
+         "x",
+@@ -108,14 +123,23 @@ describe("task plan commands (unit)", () => {
+         "n/a",
+       ].join("\n"),
+       extensions: {
+-        "agentplane.task_centric": { schema_version: 1, id: "T-1" },
++        "agentplane.task_centric": currentAggregate,
+         "agentplane.task_centric_replan_required": {
+           schema_version: 1,
+           reason_code: "plan_changed",
+         },
+       },
+     });
+-    const replacement = { schema_version: 1, id: "T-1", revision: 2 };
++    const replacement = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 2,
++      title: "Task",
++      description: "Replacement plan",
++      status: "TODO",
++      acceptance_criteria: ["replacement plan is accepted"],
++      captured_at: "2026-03-13T00:01:00.000Z",
++      updated_at: "2026-03-13T00:01:00.000Z",
++    });
+     const store = {
+       update: vi
+         .fn()
+diff --git a/packages/agentplane/src/commands/task/set-status.unit.test.ts b/packages/agentplane/src/commands/task/set-status.unit.test.ts
+index e9e57ae54..29ee731fe 100644
+--- a/packages/agentplane/src/commands/task/set-status.unit.test.ts
++++ b/packages/agentplane/src/commands/task/set-status.unit.test.ts
+@@ -2,6 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+ import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
++import {
++  createLegacyTaskAggregate,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
++} from "@agentplaneorg/core/tasks";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ const mocks = vi.hoisted(() => ({
+@@ -272,4 +277,63 @@ describe("task set-status command (unit)", () => {
+     expect(warnings).toHaveLength(1);
+     stderrWrite.mockRestore();
+   });
++
++  it("rejects a status write that would diverge from the task-centric aggregate", async () => {
++    const ctx = mkCtx();
++    const aggregate = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 4,
++      title: "Task",
++      description: "Task-centric projection guard",
++      status: "DOING",
++      acceptance_criteria: ["done"],
++      captured_at: "2026-03-13T00:00:00.000Z",
++      updated_at: "2026-03-13T00:00:00.000Z",
++    });
++    let currentTask = mkTask({
++      id: "T-1",
++      revision: 4,
++      status: "DOING",
++      extensions: withTaskCentricAggregate({}, aggregate),
++    });
++    const store = {
++      update: vi
++        .fn()
++        .mockImplementation(
++          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
++            currentTask = await builder(currentTask);
++            return { changed: true, task: currentTask };
++          },
++        ),
++    };
++    mocks.backendIsLocalFileBackend.mockReturnValue(true);
++    mocks.getTaskStore.mockReturnValue(store);
++
++    const { cmdTaskSetStatus } = await import("./set-status.js");
++    await expect(
++      cmdTaskSetStatus({
++        ctx,
++        cwd: "/repo",
++        taskId: "T-1",
++        status: "BLOCKED",
++        force: false,
++        yes: false,
++        commitFromComment: false,
++        commitAllow: [],
++        commitAutoAllow: false,
++        commitAllowTasks: false,
++        commitRequireClean: false,
++        confirmStatusCommit: false,
++        quiet: true,
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: { reason_code: "task_centric_projection_mismatch" },
++    });
++    expect(currentTask.status).toBe("DOING");
++    expect(currentTask.revision).toBe(4);
++    const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
++    expect(persistedAggregate?.revision).toBe(4);
++    expect(persistedAggregate?.events).toEqual(aggregate.events);
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+index 66f8b2e33..2e6be5d70 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+@@ -333,6 +333,91 @@ describe("recordTaskCentricExternalResult", () => {
+     expect(backend.current().revision).toBe(completedRevision);
+   });
+ 
++  it("rejects an old result receipt after the canonical aggregate or plan changes", async () => {
++    const backend = memoryBackend();
++    const command = { taskBackend: backend } as unknown as CommandContext;
++    const verification = {
++      status: "passed" as const,
++      artifact_path: ".agentplane/checks.json",
++      checks: [],
++      reason: null,
++    };
++    const issued = workOrder("a", "work-stale-receipt");
++    const result = { ...semantic, work_order_id: "work-stale-receipt" };
++
++    await recordTaskCentricExternalResult({
++      command,
++      work_order: issued,
++      semantic: result,
++      verification,
++      head: HEAD,
++      dirty_paths: [],
++    });
++    const current = backend.current();
++    const aggregate = taskCentricAggregateFromExtensions(current.extensions)!;
++    backend.replace({
++      ...current,
++      revision: current.revision! + 1,
++      extensions: withTaskCentricAggregate(current.extensions, {
++        ...aggregate,
++        revision: aggregate.revision + 1,
++        current_plan: {
++          ...aggregate.current_plan!,
++          revision: aggregate.current_plan!.revision + 1,
++          digest: taskCentricDigest("amended-plan"),
++        },
++        updated_at: "2026-08-22T00:01:00.000Z",
++      }),
++    });
++
++    await expect(
++      recordTaskCentricExternalResult({
++        command,
++        work_order: issued,
++        semantic: result,
++        verification,
++        head: HEAD,
++        dirty_paths: [],
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      message: "Recorded WorkItem result receipt is stale for the current task projection.",
++    });
++  });
++
++  it("does not reuse a WorkItem completed by a different result receipt", async () => {
++    const backend = memoryBackend();
++    const command = { taskBackend: backend } as unknown as CommandContext;
++    const verification = {
++      status: "passed" as const,
++      artifact_path: ".agentplane/checks.json",
++      checks: [],
++      reason: null,
++    };
++    await recordTaskCentricExternalResult({
++      command,
++      work_order: workOrder("a", "work-original"),
++      semantic: { ...semantic, work_order_id: "work-original" },
++      verification,
++      head: HEAD,
++      dirty_paths: [],
++    });
++
++    await expect(
++      recordTaskCentricExternalResult({
++        command,
++        work_order: workOrder("a", "work-foreign"),
++        semantic: { ...semantic, work_order_id: "work-foreign" },
++        verification,
++        head: HEAD,
++        dirty_paths: [],
++      }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      message: "WorkItem a was completed by a different result receipt.",
++    });
++  });
++
+   it("advances internal WorkItems while keeping one top-level Task", async () => {
+     const backend = memoryBackend();
+     const command = { taskBackend: backend } as unknown as CommandContext;
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.ts b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+index 45e80185b..f016cadc2 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+@@ -113,8 +113,10 @@ export async function recordTaskCentricExternalResult(opts: {
+       code: "E_VALIDATION",
+       message: "Task disappeared before WorkItem result recording.",
+     });
+-  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
+-  if (!aggregate?.current_plan) return { state: "legacy_task" };
++  const initialAggregate = taskCentricAggregateFromExtensions(raw.extensions);
++  if (!initialAggregate?.current_plan) return { state: "legacy_task" };
++  let aggregate = initialAggregate;
++  let currentPlan = initialAggregate.current_plan;
+   if (!isGitObjectId(opts.head ?? "")) {
+     throw new CliError({
+       code: "E_VALIDATION",
+@@ -125,7 +127,18 @@ export async function recordTaskCentricExternalResult(opts: {
+   const priorReceipt = runtimeFrom(raw).mutation_receipts[idempotencyKey];
+   const priorWorkItemId = priorReceipt?.event.work_item_id ?? null;
+   if (priorReceipt?.event.entity === "work_item" && priorWorkItemId) {
+-    const remaining = aggregate.current_plan.proposal.work_items.work_items.filter(
++    if (
++      priorReceipt.event.plan_revision !== currentPlan.revision ||
++      priorReceipt.event.plan_digest !== currentPlan.digest ||
++      taskCentricDigest(aggregate) !== priorReceipt.aggregate_digest ||
++      aggregate.work_items[priorWorkItemId]?.state !== priorReceipt.event.to
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Recorded WorkItem result receipt is stale for the current task projection.",
++      });
++    }
++    const remaining = currentPlan.proposal.work_items.work_items.filter(
+       (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+     ).length;
+     return {
+@@ -173,20 +186,27 @@ export async function recordTaskCentricExternalResult(opts: {
+       return {
+         state: "replan_required",
+         work_item_id: requestedId,
+-        remaining_required_work_items: aggregate.current_plan.proposal.work_items.work_items.filter(
++        remaining_required_work_items: currentPlan.proposal.work_items.work_items.filter(
+           (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+         ).length,
+       };
+     }
++    const refinedAggregate = taskCentricAggregateFromExtensions(refinedRaw?.extensions);
++    if (!refinedAggregate?.current_plan) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Refined task plan disappeared before WorkItem result recording.",
++      });
++    }
++    aggregate = refinedAggregate;
++    currentPlan = refinedAggregate.current_plan;
+   }
+   const selected = requestedId
+-    ? aggregate.current_plan.proposal.work_items.work_items.find((item) => item.id === requestedId)
++    ? currentPlan.proposal.work_items.work_items.find((item) => item.id === requestedId)
+     : claimedIds.length === 1
+-      ? aggregate.current_plan.proposal.work_items.work_items.find(
+-          (item) => item.id === claimedIds[0],
+-        )
++      ? currentPlan.proposal.work_items.work_items.find((item) => item.id === claimedIds[0])
+       : new WorkItemScheduler(1).select({
+-          graph: aggregate.current_plan.proposal.work_items,
++          graph: currentPlan.proposal.work_items,
+           runtime: aggregate.work_items,
+           active_leases: [],
+         })[0];
+@@ -198,14 +218,10 @@ export async function recordTaskCentricExternalResult(opts: {
+   }
+   const runtime = aggregate.work_items[selected.id];
+   if (runtime?.state === "COMPLETED") {
+-    const remaining = aggregate.current_plan.proposal.work_items.work_items.filter(
+-      (item) => !item.optional && aggregate.work_items[item.id]?.state !== "COMPLETED",
+-    ).length;
+-    return {
+-      state: "work_item_completed",
+-      work_item_id: selected.id,
+-      remaining_required_work_items: remaining,
+-    };
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `WorkItem ${selected.id} was completed by a different result receipt.`,
++    });
+   }
+   if (!runtime || !["PLANNED", "READY", "REWORK_READY", "CLAIMED"].includes(runtime.state)) {
+     throw new CliError({
+@@ -224,8 +240,8 @@ export async function recordTaskCentricExternalResult(opts: {
+     schema_version: 1,
+     kind: runtime.state === "REWORK_READY" ? "repair" : "execute",
+     task_id: aggregate.id,
+-    plan_revision: aggregate.current_plan.revision,
+-    plan_digest: aggregate.current_plan.digest,
++    plan_revision: currentPlan.revision,
++    plan_digest: currentPlan.digest,
+     work_item_id: selected.id,
+     context_digest:
+       (opts.work_order.planning_context?.digest as `sha256:${string}` | undefined) ??
+@@ -244,7 +260,7 @@ export async function recordTaskCentricExternalResult(opts: {
+     digest: taskCentricDigest({ id, result }),
+     producer: {
+       task_id: aggregate.id,
+-      plan_revision: aggregate.current_plan!.revision,
++      plan_revision: currentPlan.revision,
+       work_item_id: selected.id,
+       attempt: runtime.attempt + 1,
+     },
+diff --git a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+index 822c58367..946b614ae 100644
+--- a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+@@ -1,4 +1,5 @@
+-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
++import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+@@ -272,8 +273,8 @@ describe("task verification durability", () => {
+       await execFileAsync("git", ["commit", "-m", "test: central implementation diff"], {
+         cwd: root,
+       });
+-      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+-      ctx.config.workflow_mode = "branch_pr";
++      const taskCtx = await loadCommandContext({ cwd: root, rootOverride: null });
++      taskCtx.config.workflow_mode = "branch_pr";
+       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+       await mkdir(prDir, { recursive: true });
+       await writeFile(
+@@ -295,9 +296,9 @@ describe("task verification durability", () => {
+         cwd: root,
+       });
+       const implementationSha = implementationOutput.trim();
+-      const initial = await ctx.taskBackend.getTask(taskId);
++      const initial = await taskCtx.taskBackend.getTask(taskId);
+       if (!initial) throw new Error("missing branch verification fixture");
+-      await ctx.taskBackend.writeTask?.({
++      await taskCtx.taskBackend.writeTask?.({
+         ...initial,
+         extensions: { ...initial.extensions, implementation_commit: { hash: implementationSha } },
+       });
+@@ -308,22 +309,28 @@ describe("task verification durability", () => {
+       const { stdout: taskHeadOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+         cwd: root,
+       });
++      await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
++      const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-verify-worktree-"));
++      const taskWorktree = path.join(worktreeParent, "task");
++      await execFileAsync("git", ["worktree", "add", taskWorktree, taskBranch], { cwd: root });
+       if (checkout === "base") {
+-        await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+         await writeFile(path.join(root, "unrelated.ts"), "export const unrelated = true;\n");
+         await execFileAsync("git", ["add", "unrelated.ts"], { cwd: root });
+         await execFileAsync("git", ["commit", "-m", "test: independent base change"], {
+           cwd: root,
+         });
+       }
++      const commandRoot = checkout === "task" ? taskWorktree : root;
++      const ctx = await loadCommandContext({ cwd: commandRoot, rootOverride: null });
++      ctx.config.workflow_mode = "branch_pr";
+       const { stdout: checkoutHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+-        cwd: root,
++        cwd: commandRoot,
+       });
+ 
+       const verify = () =>
+         cmdVerifyParsed({
+           ctx,
+-          cwd: root,
++          cwd: commandRoot,
+           rootOverride: undefined,
+           taskId,
+           state: "ok",
+@@ -336,7 +343,8 @@ describe("task verification durability", () => {
+       await verify();
+       await verify();
+ 
+-      const task = await ctx.taskBackend.getTask(taskId);
++      const authoritativeCtx = await loadCommandContext({ cwd: taskWorktree, rootOverride: null });
++      const task = await authoritativeCtx.taskBackend.getTask(taskId);
+       const contract = task?.execution_contract?.verification.contract;
+       expect(task?.execution_contract?.observed.changed_paths).toEqual([
+         ".github/workflows/ci.yml",
+@@ -356,7 +364,13 @@ describe("task verification durability", () => {
+       expect(contract?.escalation_reasons).toContain("effect_ci");
+       expect(contract?.escalation_reasons).toContain("effect_schema");
+ 
+-      const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
++      const verificationDir = path.join(
++        taskWorktree,
++        ".agentplane",
++        "tasks",
++        taskId,
++        "verification",
++      );
+       const recordNames = await readdir(verificationDir);
+       expect(recordNames).toHaveLength(2);
+       for (const recordName of recordNames) {
+@@ -368,7 +382,9 @@ describe("task verification durability", () => {
+           input: { verification_contract_digest: contract?.digest },
+         });
+       }
+-      const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++      const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: commandRoot,
++      });
+       const currentTaskHead = await execFileAsync("git", ["rev-parse", taskBranch], { cwd: root });
+       expect(currentHead.stdout).toBe(checkoutHead);
+       expect(currentTaskHead.stdout).toBe(taskHeadOutput);

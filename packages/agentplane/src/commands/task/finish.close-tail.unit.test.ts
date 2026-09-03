@@ -1,11 +1,11 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
+import { applyStorePatch, createMutableTaskStore } from "./finish-task-store.testkit.js";
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
   cmdCommit: vi.fn(),
@@ -148,6 +148,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
+    writeTaskWithResult: (task) => Promise.resolve({ changed: true, task }),
   };
 
   const ctx: CommandContext = {
@@ -168,37 +169,6 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     backend,
   };
   return { ...ctx, ...overrides };
-}
-
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return current;
-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-  if (patch.appendComments && patch.appendComments.length > 0) {
-    next.comments = [
-      ...(Array.isArray(current.comments) ? current.comments : []),
-      ...patch.appendComments,
-    ];
-  }
-  if (patch.appendEvents && patch.appendEvents.length > 0) {
-    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
-  }
-  if (patch.doc) {
-    if (patch.doc.kind === "replace-doc") {
-      next.doc = patch.doc.doc;
-    } else {
-      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
-      next.doc = ensureDocSections(
-        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
-        patch.doc.requiredSections,
-      );
-    }
-  }
-  if (patch.doc || patch.docMeta?.touch === true) {
-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
-  }
-  return next;
 }
 
 describe("task finish close-tail", () => {
@@ -858,18 +828,8 @@ describe("task finish close-tail", () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
-    mocks.getTaskStore.mockReturnValue({
-      get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
-      patch: vi.fn(
-        async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => ({
-          changed: true,
-          task: applyStorePatch(
-            mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
-            await builder(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
-          ),
-        }),
-      ),
-    });
+    const task = mkTask({ id: "T-1", status: "DOING", tags: ["docs"] });
+    mocks.getTaskStore.mockReturnValue(createMutableTaskStore(task, applyStorePatch));
 
     const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
@@ -953,6 +913,16 @@ describe("task finish close-tail", () => {
           async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
             currentTask = applyStorePatch(currentTask, await builder(currentTask));
             return { changed: true, task: currentTask };
+          },
+        ),
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            const next = await updater({ ...currentTask });
+            const changed = JSON.stringify(next) !== JSON.stringify(currentTask);
+            currentTask = next;
+            return { changed, task: currentTask };
           },
         ),
     };
