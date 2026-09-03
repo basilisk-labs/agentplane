@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -26,9 +28,33 @@ function hostedCloseVerificationTarget(
 
 export function qualityReviewRequiresImplementationRework(task: TaskData): boolean {
   return (
-    task.quality_review?.state === "rework" ||
-    (task.quality_review?.state === "blocked" &&
-      task.quality_review.recovery_reason !== "deterministic_evidence_gap")
+    !qualityReviewPredatesTaskDocument(task) &&
+    (task.quality_review?.state === "rework" ||
+      (task.quality_review?.state === "blocked" &&
+        task.quality_review.recovery_reason !== "deterministic_evidence_gap"))
+  );
+}
+
+export function qualityReviewPredatesTaskDocument(task: TaskData): boolean {
+  const reviewUpdatedAt = Date.parse(task.quality_review?.updated_at ?? "");
+  const documentUpdatedAt = Date.parse(task.doc_updated_at ?? "");
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  const hasLaterExternalClarification =
+    aggregate?.plan_amendments?.some((amendment) => {
+      const amendmentAt = Date.parse(amendment.created_at);
+      return (
+        amendment.actor_id.startsWith("external:") &&
+        amendment.refinement.operations.includes("clarify") &&
+        Number.isFinite(amendmentAt) &&
+        amendmentAt > reviewUpdatedAt &&
+        amendmentAt <= documentUpdatedAt
+      );
+    }) === true;
+  return (
+    Number.isFinite(reviewUpdatedAt) &&
+    Number.isFinite(documentUpdatedAt) &&
+    documentUpdatedAt > reviewUpdatedAt &&
+    hasLaterExternalClarification
   );
 }
 

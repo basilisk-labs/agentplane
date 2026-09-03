@@ -1,3 +1,6 @@
  .../task-centric-backend-adapter.test.ts           | 72 ++++++++++++++++++++++
  .../task-backend/task-centric-backend-adapter.ts   | 66 +++++++++++++++++++-
- 2 files changed, 137 insertions(+), 1 deletion(-)
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 50 +++++++++++++--
+ .../src/commands/shared/route-decision-blockers.ts |  8 +++
+ .../commands/shared/route-decision-verification.ts | 32 +++++++++-
+ 5 files changed, 219 insertions(+), 9 deletions(-)
