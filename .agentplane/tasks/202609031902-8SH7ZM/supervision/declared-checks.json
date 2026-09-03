@@ -2,10 +2,10 @@
   "checks": [
     {
       "check_ids": [
-        "typecheck"
+        "lint-core"
       ],
-      "command": "bun run typecheck",
-      "duration_ms": 170,
+      "command": "bun run lint:core",
+      "duration_ms": 54521,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -14,8 +14,8 @@
         "status": "resolved",
         "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
       },
-      "script": "typecheck",
-      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
       "stdout_tail": ""
     }
   ],
