@@ -18,6 +18,7 @@ export const TASK_CENTRIC_RUNTIME_EXTENSION_KEY = "agentplane.task_centric_runti
 
 export type TaskCentricRuntimeProjection = Readonly<{
   schema_version: 1;
+  events: readonly DomainEvent[];
   leases: readonly ExecutionLease[];
   pending_effects: readonly PendingEffect[];
   checkpoints: readonly TaskCheckpoint[];
@@ -28,6 +29,7 @@ export type TaskCentricRuntimeProjection = Readonly<{
 function emptyRuntime(): TaskCentricRuntimeProjection {
   return Object.freeze({
     schema_version: 1,
+    events: [],
     leases: [],
     pending_effects: [],
     checkpoints: [],
@@ -59,7 +61,10 @@ export function runtimeFrom(task: TaskData): TaskCentricRuntimeProjection {
   ) {
     throw new Error("Task-centric runtime projection is malformed.");
   }
-  return runtime as TaskCentricRuntimeProjection;
+  return Object.freeze({
+    ...(runtime as Omit<TaskCentricRuntimeProjection, "events">),
+    events: Array.isArray(runtime.events) ? (runtime.events as readonly DomainEvent[]) : [],
+  });
 }
 
 function acceptanceDescriptions(task: TaskData): string[] {

@@ -119,6 +119,7 @@ function planningTaskFields(opts: {
     });
     structuredExtensions = withTaskCentricAggregate(opts.task.extensions, {
       ...aggregate,
+      revision: (opts.task.revision ?? aggregate.revision) + 1,
       lifecycle: "AWAITING_PLAN_APPROVAL",
       current_plan: plan,
       plan_history: existing?.current_plan

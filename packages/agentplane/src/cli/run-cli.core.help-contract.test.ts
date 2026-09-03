@@ -335,8 +335,12 @@ describe("cli help contract", () => {
     try {
       const code = await runCli(["task", "plan", "--help"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("task plan - Task plan commands (set/approve/reject).");
-      expect(io.stdout).toContain("agentplane task plan <set|approve|reject> [args] [options]");
+      expect(io.stdout).toContain(
+        "task plan - Task plan commands (set/approve/reject/recover-rejection).",
+      );
+      expect(io.stdout).toContain(
+        "agentplane task plan <set|approve|reject|recover-rejection> [args] [options]",
+      );
       expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
       expect(io.stdout).not.toContain("Unknown command: task plan");
     } finally {

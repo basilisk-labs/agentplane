@@ -12,7 +12,7 @@ import {
   taskDocToSectionMap,
   type PlanApprovalEvidenceKind,
   taskCentricAggregateFromExtensions,
-  taskCentricReplanRequiredFromExtensions,
+  taskCentricDigest,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 
@@ -39,6 +39,10 @@ import {
 } from "./plan-shared.js";
 import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
+
+export { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
 
 export type TaskPlanSetResult = {
   taskId: string;
@@ -297,16 +301,7 @@ export async function cmdTaskPlanApprove(opts: {
               issued_at: approvedAt,
             });
             const taskCentric = taskCentricAggregateFromExtensions(current.extensions);
-            if (
-              taskCentric?.current_plan &&
-              taskCentricReplanRequiredFromExtensions(current.extensions)
-            ) {
-              throw new CliError({
-                code: "E_VALIDATION",
-                message:
-                  "Canonical task plan is stale after the task document changed; complete replanning before approval.",
-              });
-            }
+            assertCanonicalPlanCanBeApproved(taskCentric, current.extensions);
             if (
               opts.expectedPlanDigest !== undefined &&
               taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
@@ -381,6 +376,7 @@ export async function cmdTaskPlanApprove(opts: {
           issued_at: approvedAt,
         });
         const taskCentric = taskCentricAggregateFromExtensions(task.extensions);
+        assertCanonicalPlanCanBeApproved(taskCentric, task.extensions);
         if (
           opts.expectedPlanDigest !== undefined &&
           taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
@@ -467,6 +463,42 @@ export async function cmdTaskPlanReject(opts: {
     }
 
     const rejectedAt = nowIso();
+    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+    const taskCentric = taskCentricAggregateFromExtensions(task.extensions);
+    if (taskCentric?.current_plan) {
+      assertTaskMutationPolicy({
+        ctx,
+        taskId: opts.taskId,
+        task,
+        action: "task_plan_reject",
+        phase: "plan",
+      });
+      const existingDoc =
+        (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+      const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+      assertPlanSectionPresent(task.id, baseDoc, "reject");
+      const idempotencyKey = `plan-reject-${taskCentricDigest({
+        task_id: task.id,
+        plan_revision: taskCentric.current_plan.revision,
+        plan_digest: taskCentric.current_plan.digest,
+        by,
+        note,
+      }).slice(7, 39)}`;
+      await new TaskCentricBackendAdapter({
+        backend,
+        observeRepository: () => Promise.reject(new Error("Repository observation not required.")),
+      }).rejectPlan({
+        task_id: task.id,
+        expected_revision: task.revision ?? taskCentric.revision,
+        plan_revision: taskCentric.current_plan.revision,
+        plan_digest: taskCentric.current_plan.digest,
+        actor_id: by,
+        note,
+        rejected_at: rejectedAt,
+        idempotency_key: idempotencyKey,
+      });
+      return 0;
+    }
     await withTaskMutationStorage({
       ctx,
       local: async (store) => {

@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609030849-925NNG/repair-task-centric-plan-rejection-projection-at",
+  "created_at": "2026-09-03T08:57:33.898Z",
+  "diffstat_sha256": "sha256:2b5f5c9490c24a5a377fd22a5803ce97a0d9694bf2bf9b1929fedbf1892216e1",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609030849-925NNG",
+  "updated_at": "2026-09-03T08:57:33.898Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
