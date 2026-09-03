@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: "host_user_decision=sha256:e96a8561cb98e43c88db75e5bd3f81d5224e08e857d78bc02876048c8d9ca01a"
 verification:
   state: "ok"
-  updated_at: "2026-09-03T13:01:15.573Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-09-03T13:40:24.104Z"
+  updated_by: "TESTER"
+  note: "Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c."
   attempts: 0
 quality_review:
   state: "pass"
@@ -555,8 +555,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "b742ba8fac0bff396ba020eaa2f5cfea39de1a0f"
+  -
+    type: "verify"
+    at: "2026-09-03T13:40:24.104Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c."
 doc_version: 3
-doc_updated_at: "2026-09-03T13:02:38.574Z"
+doc_updated_at: "2026-09-03T13:40:28.466Z"
 doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
@@ -1033,6 +1039,72 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609030849-925NNG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-03T13:40:24.104Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:ca54bc04b3360dd8339701dca0828f925b11f1a954ac3e12fdce61e66fc495ae
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+    Result: pass
+    Evidence: 3 files and 10 tests passed.
+    Scope: plan rejection, diagnostic, recovery, and task-centric adapter regressions
+
+    Check: critical_paths
+    Command: bun run knip:check; bun run lint:core; bun run typecheck; bun run format:check
+    Result: pass
+    Evidence: AgentPlane CLI Knip budget 0/0; lint, TypeScript build, and Prettier all exited 0.
+    Scope: changed CLI and doctor modules
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: docs schema, generated reference, docs site generate, typecheck, build, design, and workflow contract all passed in the final full run.
+    Scope: repository documentation and generated CLI contract
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: full-fast ok=true wall_clock_ms=414757; Windows 7 files 98 tests passed; significant coverage 8 files 101 tests passed and 17 source targets satisfied.
+    Scope: full repository local CI on committed rework head
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: isolated real-process E2E rerun passed 1 file and 4 tests after an unrelated temporary-directory ENOTEMPTY race in the preceding full run.
+    Scope: local real-process E2E compatibility
+
+    Check: task_outcome
+    Command: bun run ci:local:full; bun run knip:check
+    Result: pass
+    Evidence: final full CI exited 0 and the hosted blocker is resolved locally with AgentPlane CLI Knip budget restored to 0/0; task recovery focused tests remain 10/10.
+    Scope: acceptance outcome for atomic rejection and CLI-owned recovery implementation
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609030849-925NNG-repair-task-centric-plan-rejection-projection-at/.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json
+    - old_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+    - current_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609030849-925NNG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -5948,6 +6020,72 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609030849-925NNG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-03T13:40:24.104Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006, input_digest=sha256:ca54bc04b3360dd8339701dca0828f925b11f1a954ac3e12fdce61e66fc495ae
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+Result: pass
+Evidence: 3 files and 10 tests passed.
+Scope: plan rejection, diagnostic, recovery, and task-centric adapter regressions
+
+Check: critical_paths
+Command: bun run knip:check; bun run lint:core; bun run typecheck; bun run format:check
+Result: pass
+Evidence: AgentPlane CLI Knip budget 0/0; lint, TypeScript build, and Prettier all exited 0.
+Scope: changed CLI and doctor modules
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: docs schema, generated reference, docs site generate, typecheck, build, design, and workflow contract all passed in the final full run.
+Scope: repository documentation and generated CLI contract
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: full-fast ok=true wall_clock_ms=414757; Windows 7 files 98 tests passed; significant coverage 8 files 101 tests passed and 17 source targets satisfied.
+Scope: full repository local CI on committed rework head
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: isolated real-process E2E rerun passed 1 file and 4 tests after an unrelated temporary-directory ENOTEMPTY race in the preceding full run.
+Scope: local real-process E2E compatibility
+
+Check: task_outcome
+Command: bun run ci:local:full; bun run knip:check
+Result: pass
+Evidence: final full CI exited 0 and the hosted blocker is resolved locally with AgentPlane CLI Knip budget restored to 0/0; task recovery focused tests remain 10/10.
+Scope: acceptance outcome for atomic rejection and CLI-owned recovery implementation
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609030849-925NNG-repair-task-centric-plan-rejection-projection-at/.agentplane/tasks/202609030849-925NNG/blueprint/resolved-snapshot.json
+- old_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+- current_digest: 3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609030849-925NNG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

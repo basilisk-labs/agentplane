@@ -1,0 +1,117 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts\nResult: pass\nEvidence: 3 files and 10 tests passed.\nScope: plan rejection, diagnostic, recovery, and task-centric adapter regressions\n\nCheck: critical_paths\nCommand: bun run knip:check; bun run lint:core; bun run typecheck; bun run format:check\nResult: pass\nEvidence: AgentPlane CLI Knip budget 0/0; lint, TypeScript build, and Prettier all exited 0.\nScope: changed CLI and doctor modules\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: docs schema, generated reference, docs site generate, typecheck, build, design, and workflow contract all passed in the final full run.\nScope: repository documentation and generated CLI contract\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: full-fast ok=true wall_clock_ms=414757; Windows 7 files 98 tests passed; significant coverage 8 files 101 tests passed and 17 source targets satisfied.\nScope: full repository local CI on committed rework head\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: isolated real-process E2E rerun passed 1 file and 4 tests after an unrelated temporary-directory ENOTEMPTY race in the preceding full run.\nScope: local real-process E2E compatibility\n\nCheck: task_outcome\nCommand: bun run ci:local:full; bun run knip:check\nResult: pass\nEvidence: final full CI exited 0 and the hosted blocker is resolved locally with AgentPlane CLI Knip budget restored to 0/0; task recovery focused tests remain 10/10.\nScope: acceptance outcome for atomic rejection and CLI-owned recovery implementation",
+  "digest": "sha256:b0c8dd27f7dcba7977231e45751bf8316a58084352118fc440f0b82e258e6779",
+  "implementation_sha": "ac53261209a4623880059cb38f0a2d4bb32c445c",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ca54bc04b3360dd8339701dca0828f925b11f1a954ac3e12fdce61e66fc495ae",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:9d55d301340eea3b1275cef022616d7838946fe3d686056b68a87f187f7f8c01",
+      "digest": "sha256:be27a1961bb86db08a5114bf6e002cf01d1d19ad40d44630c93f0c28c3955220",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "0/0",
+          "reference": "0/0",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "10/10.",
+          "reference": "10/10.",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "a51e95514f2909177410f78a4057873140097edb",
+      "digest": "sha256:1e2acf517d2f716d2071c882c1dbbc6f4c4aa9590055997add536a48715e9aec",
+      "primary_task_id": "202609030849-925NNG",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609030849-925NNG"
+      ]
+    },
+    "implementation": {
+      "base_sha": "a51e95514f2909177410f78a4057873140097edb",
+      "digest": "sha256:8b43ff06486d1e09bb2bbd59baaf30d53ff10450417b6f259884437bc20db323",
+      "strategy": "branch_diff",
+      "target_sha": "ac53261209a4623880059cb38f0a2d4bb32c445c"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:2565dddf9529115f6750dcc9ea44b714d02025fb4acf80974d79c0a7baa72042",
+    "verify_steps_digest": "sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework removes only two unused public re-exports; task-centric recovery behavior is unchanged and all required checks pass on committed head ac53261209a4623880059cb38f0a2d4bb32c445c.",
+  "recorded_at": "2026-09-03T13:40:24.104Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair task-centric plan-rejection projection atomicity and recover task 202609021331-5FPZAB via a CLI-owned receipt-backed operation\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:78c61303ba5d3fc22d189833290074e6cdc14a8e26fa1e75e1ba212f1d49f006",
+  "task_id": "202609030849-925NNG",
+  "verification_command": "agentplane verify 202609030849-925NNG --ok --by TESTER",
+  "verifier": "TESTER"
+}
