@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 68e6c6becb9a09efcbebcfa69ef2f87ab0a66c11..e37f30c53768d99c19a95dc74973cc909fa3e315",
+      "command": "git diff --check 1820a0b8bb305fdba9293dfee7d9e4649e32c1a6..d326f81b44c8f11a1d409fb7427c8d224062ee68",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,16 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 68e6c6becb9a09efcbebcfa69ef2f87ab0a66c11..e37f30c53768d99c19a95dc74973cc909fa3e315",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1820a0b8bb305fdba9293dfee7d9e4649e32c1a6..d326f81b44c8f11a1d409fb7427c8d224062ee68",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609032308-F31YXS/README.md",
         "M\t.agentplane/tasks/202609032308-F31YXS/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609032308-F31YXS/pr/github-body.md",
         "M\t.agentplane/tasks/202609032308-F31YXS/pr/meta.json",
         "M\t.agentplane/tasks/202609032308-F31YXS/pr/review.md",
-        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-mutation.test.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
       ]
     },
     {
@@ -32,15 +32,24 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "68e6c6becb9a09efcbebcfa69ef2f87ab0a66c11",
-  "implementation_commit": "e37f30c53768d99c19a95dc74973cc909fa3e315",
+  "execution_base_commit": "1820a0b8bb305fdba9293dfee7d9e4649e32c1a6",
+  "implementation_commit": "d326f81b44c8f11a1d409fb7427c8d224062ee68",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202609032308-F31YXS/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609032308-F31YXS/README.md"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609032308-F31YXS/README.md"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
