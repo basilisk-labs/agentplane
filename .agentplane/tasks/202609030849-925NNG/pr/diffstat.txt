@@ -1,0 +1,25 @@
+ .../task-centric-backend-adapter.test.ts           | 194 +++++++++++++++++
+ .../task-backend/task-centric-backend-adapter.ts   |  29 +++
+ .../task-backend/task-centric-backend-runtime.ts   |   7 +-
+ .../task-backend/task-centric-plan-rejection.ts    | 232 ++++++++++++++++++++
+ packages/agentplane/src/cli/group-command.test.ts  |   1 +
+ .../src/cli/run-cli.core.help-contract.test.ts     |   8 +-
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 240 +++++++++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+ .../src/cli/run-cli/command-catalog.test.ts        |   7 +-
+ .../src/cli/run-cli/command-catalog/task.ts        |   8 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../commands/doctor/workspace-task-state.test.ts   |  62 ++++++
+ .../src/commands/doctor/workspace-task-state.ts    |  81 ++++++-
+ .../agentplane/src/commands/doctor/workspace.ts    |   2 +
+ .../task/external-agent-planning-authority.test.ts | 165 +++++++++++++-
+ .../task/external-agent-planning-authority.ts      |  33 +++
+ .../src/commands/task/plan-approval-guard.ts       |  23 ++
+ .../task/plan-recover-rejection.command.ts         | 126 +++++++++++
+ .../commands/task/plan-rejection-recovery.test.ts  |  95 ++++++++
+ .../src/commands/task/plan-rejection-recovery.ts   |  79 +++++++
+ .../agentplane/src/commands/task/plan.command.ts   |   4 +-
+ packages/agentplane/src/commands/task/plan.ts      |  52 ++++-
+ .../baselines/v0.7-compatibility-candidate.json    | 140 +++++++++++-
+ .../check-compatibility-contract-baseline.mjs      |  97 +++++++++
+ 24 files changed, 1664 insertions(+), 32 deletions(-)

@@ -1,11 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TASK_CENTRIC_EXTENSION_KEY } from "@agentplaneorg/core/tasks";
+import {
+  createRepositorySnapshot,
+  taskCentricDigest,
+  TASK_CENTRIC_EXTENSION_KEY,
+  type TaskPlanProposal,
+} from "@agentplaneorg/core/tasks";
 
 const mocks = vi.hoisted(() => ({ loadTask: vi.fn() }));
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
 
-import { isExternalPlanningResultApplied } from "./external-agent-planning-authority.js";
+import {
+  assertExternalPlanningResultApplicable,
+  isExternalPlanningResultApplied,
+} from "./external-agent-planning-authority.js";
 
 const summary = "Preserve exact planning-result recovery.";
 // These projections isolate comparison after the envelope has already been validated.
@@ -147,5 +155,158 @@ describe("persisted external planning-result comparison", () => {
     expect(await applied({ intent })).toBe(true);
     mocks.loadTask.mockResolvedValue({ ...record, mutation_scope: "docs" });
     expect(await applied({ intent })).toBe(false);
+  });
+});
+
+describe("external TaskPlanProposal graph validation", () => {
+  const repository = createRepositorySnapshot({
+    git: { kind: "commit", sha: "a".repeat(40), ref: null },
+    dirty_paths: [],
+    policy_digest: null,
+    config_digest: null,
+    context_digest: null,
+    task_history_cursor: "task-revision:1",
+    captured_at: "2026-08-19T00:00:00.000Z",
+  });
+  const validation = {
+    schema_version: 1 as const,
+    criteria: [{ id: "done", description: "done", required: true, check_ids: ["test"] }],
+    checks: [
+      {
+        id: "test",
+        kind: "deterministic" as const,
+        required: true,
+        capability: "task.verify",
+        command: "bun test",
+      },
+    ],
+    evidence_fingerprint: taskCentricDigest("validation"),
+  };
+  const item = (opts: {
+    id: string;
+    depends_on?: readonly string[];
+    required_inputs?: readonly string[];
+    expected_outputs: readonly string[];
+  }) => ({
+    id: opts.id,
+    objective: `Implement ${opts.id}`,
+    depends_on: [...(opts.depends_on ?? [])],
+    required_inputs: [...(opts.required_inputs ?? [])],
+    expected_outputs: [...opts.expected_outputs],
+    scope_roots: ["packages/agentplane/src/commands/task"],
+    acceptance_criteria: validation.criteria,
+    validation,
+    context: {
+      required_sources: ["repository"],
+      optional_sources: [],
+      symbol_hints: [],
+      max_bytes: 8192,
+    },
+    risk: "medium" as const,
+    capabilities: ["task.verify"],
+    resource_claims: [
+      {
+        kind: "path" as const,
+        resource: "packages/agentplane/src/commands/task",
+        mode: "write" as const,
+      },
+    ],
+    optional: false,
+    priority: 1,
+  });
+
+  function proposal(workItems: TaskPlanProposal["work_items"]["work_items"]): TaskPlanProposal {
+    return {
+      schema_version: 1,
+      task_id: returnedProposal.task_id,
+      planning_baseline: repository,
+      work_items: { schema_version: 1, work_items: workItems },
+      assumptions: [],
+      unresolved_questions: [],
+      top_level_validation: validation,
+    };
+  }
+
+  async function assertApplicable(plan: TaskPlanProposal) {
+    mocks.loadTask.mockResolvedValue({
+      id: returnedProposal.task_id,
+      title: "Task",
+      description: "Task",
+      status: "DOING",
+      revision: 1,
+      verify: [],
+      mutation_scope: "code",
+      task_kind: "code",
+      extensions: {},
+    });
+    return assertExternalPlanningResultApplicable({
+      command: {} as never,
+      exchange: { task_id: returnedProposal.task_id } as never,
+      envelope: {
+        result: {
+          status: "completed",
+          summary: "Plan",
+          task_plan_proposal: plan,
+        },
+      } as never,
+      work_order: {
+        role: "PLANNER",
+        task: { id: returnedProposal.task_id, work_item_id: null },
+        state_fingerprint: { digest: taskCentricDigest("state"), git_head: null },
+        planning_context: { repository_snapshot: repository },
+      } as never,
+    });
+  }
+
+  it("accepts a required input produced by exactly one predecessor", async () => {
+    await expect(
+      assertApplicable(
+        proposal([
+          item({ id: "first", expected_outputs: ["first-output"] }),
+          item({
+            id: "second",
+            depends_on: ["first"],
+            required_inputs: ["first-output"],
+            expected_outputs: ["second-output"],
+          }),
+        ]),
+      ),
+    ).resolves.toBeUndefined();
+  });
+
+  it.each([
+    [
+      "unproduced",
+      [item({ id: "first", required_inputs: ["missing"], expected_outputs: ["out"] })],
+    ],
+    ["self-produced", [item({ id: "first", required_inputs: ["out"], expected_outputs: ["out"] })]],
+    [
+      "multiply produced",
+      [
+        item({ id: "first", expected_outputs: ["shared"] }),
+        item({ id: "second", expected_outputs: ["shared"] }),
+        item({ id: "consumer", required_inputs: ["shared"], expected_outputs: ["result"] }),
+      ],
+    ],
+    [
+      "input-induced cyclic",
+      [
+        item({
+          id: "first",
+          required_inputs: ["second-output"],
+          expected_outputs: ["first-output"],
+        }),
+        item({
+          id: "second",
+          required_inputs: ["first-output"],
+          expected_outputs: ["second-output"],
+        }),
+      ],
+    ],
+    ["duplicate output", [item({ id: "first", expected_outputs: ["duplicate", "duplicate"] })]],
+  ])("rejects a %s required input before persistence", async (_label, workItems) => {
+    await expect(assertApplicable(proposal(workItems))).rejects.toThrow(
+      "missing_dependency@work_items.required_inputs",
+    );
   });
 });

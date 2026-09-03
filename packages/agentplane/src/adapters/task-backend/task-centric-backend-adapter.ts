@@ -1,6 +1,7 @@
 import {
   aggregateValidation,
   applyPlanRefinement,
+  EXECUTION_GRANT_EXTENSION_KEY,
   materializeApprovedWorkItems,
   projectTaskLifecycleToLegacyStatus,
   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
@@ -32,6 +33,12 @@ import {
   transitionReceipt,
   type TaskCentricRuntimeProjection,
 } from "./task-centric-backend-runtime.js";
+import {
+  recoverRejectedPlanProjection,
+  rejectTaskCentricPlan,
+  type RecoverRejectedPlanInput,
+  type RejectPlanInput,
+} from "./task-centric-plan-rejection.js";
 
 export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   readonly capabilities = Object.freeze({
@@ -66,6 +73,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     mutation_id: string;
     runtime?: TaskCentricRuntimeProjection;
     replan_required_reason_code?: string | null;
+    plan_approval?: {
+      state: "rejected";
+      updated_at: string;
+      updated_by: string;
+      note: string;
+    };
+    clear_execution_grant?: boolean;
   }): Promise<TransitionReceipt> {
     const current = await this.backend.getTask(opts.task_id);
     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
@@ -88,6 +102,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     });
     const nextRuntime: TaskCentricRuntimeProjection = Object.freeze({
       ...runtime,
+      events: Object.freeze([...runtime.events, opts.event]),
       mutation_receipts: Object.freeze({
         ...runtime.mutation_receipts,
         [opts.mutation_id]: nextReceipt,
@@ -99,6 +114,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
         (item) => !item.optional && normalizedNext.work_items[item.id]?.state !== "COMPLETED",
       ) === true;
     const extensions = withTaskCentricAggregate(current.extensions, normalizedNext);
+    if (opts.clear_execution_grant) delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
     if (opts.replan_required_reason_code) {
       extensions[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
         schema_version: 1,
@@ -123,6 +139,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
               quality_review: undefined,
             }
           : {}),
+        ...(opts.plan_approval ? { plan_approval: opts.plan_approval } : {}),
         extensions: {
           ...extensions,
           [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: nextRuntime,
@@ -131,6 +148,18 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       { expectedRevision: currentRevision },
     );
     return nextReceipt;
+  }
+
+  async rejectPlan(opts: RejectPlanInput): Promise<TransitionReceipt> {
+    return await rejectTaskCentricPlan({
+      backend: this.backend,
+      input: opts,
+      persist: async (input) => await this.persist(input),
+    });
+  }
+
+  async recoverRejectedPlanProjection(opts: RecoverRejectedPlanInput): Promise<TransitionReceipt> {
+    return await recoverRejectedPlanProjection({ backend: this.backend, input: opts });
   }
 
   async compareAndSwap(opts: {

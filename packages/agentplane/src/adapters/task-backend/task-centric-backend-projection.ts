@@ -122,7 +122,7 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   const currentRevision = opts.current.revision ?? currentAggregate.revision;
   const nextRevision = currentRevision + 1;
   const aggregateChanged = taskCentricDigest(currentAggregate) !== taskCentricDigest(nextAggregate);
-  if (aggregateChanged && nextAggregate.revision === nextRevision) {
+  if (nextAggregate.revision === nextRevision) {
     return { ...opts.next, revision: nextRevision };
   }
   if (nextAggregate.revision !== currentRevision) {

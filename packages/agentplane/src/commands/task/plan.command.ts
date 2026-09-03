@@ -10,8 +10,8 @@ type TaskPlanGroupParsed = GroupCommandParsed;
 export const taskPlanSpec: CommandSpec<TaskPlanGroupParsed> = {
   id: ["task", "plan"],
   group: "Task",
-  summary: "Task plan commands (set/approve/reject).",
-  synopsis: ["agentplane task plan <set|approve|reject> [args] [options]"],
+  summary: "Task plan commands (set/approve/reject/recover-rejection).",
+  synopsis: ["agentplane task plan <set|approve|reject|recover-rejection> [args] [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   examples: [
     {

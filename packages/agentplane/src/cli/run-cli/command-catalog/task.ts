@@ -44,6 +44,7 @@ import {
 import { taskNormalizeSpec } from "../../../commands/task/normalize.command.js";
 import { taskPlanApproveSpec } from "../../../commands/task/plan-approve.command.js";
 import { taskPlanRejectSpec } from "../../../commands/task/plan-reject.command.js";
+import { taskPlanRecoverRejectionSpec } from "../../../commands/task/plan-recover-rejection.command.js";
 import { taskPlanSetSpec } from "../../../commands/task/plan-set.command.js";
 import { taskPlanSpec } from "../../../commands/task/plan.command.js";
 import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
@@ -174,6 +175,7 @@ import {
   loadTaskPlanSetSpec,
   loadTaskPlanApproveSpec,
   loadTaskPlanRejectSpec,
+  loadTaskPlanRecoverRejectionSpec,
   loadTaskVerifyOkSpec,
   loadTaskVerifyReworkSpec,
   loadTaskVerifyShowSpec,
@@ -551,6 +553,12 @@ export const TASK_COMMANDS = [
     requirements: TASK_WRITE_REQUIREMENTS,
     surface: "advanced",
     helpGroup: "Advanced",
+  }),
+  declareSessionCommand(taskPlanRecoverRejectionSpec, {
+    load: loadTaskPlanRecoverRejectionSpec,
+    requirements: TASK_PLAN_APPROVAL_REQUIREMENTS,
+    surface: "internal",
+    helpGroup: "Maintenance",
   }),
   fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", {
     requirements: NO_CONTEXT_REQUIREMENTS,

@@ -23,6 +23,8 @@ import {
   parseTaskReadme,
   readTask,
   renderTaskReadme,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
@@ -193,6 +195,244 @@ async function prepareHostApproval(root: string, taskId: string): Promise<Record
 }
 
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
+  it("atomically rejects a task-centric proposal, invalidates stale approval, and replans", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await writeDefaultConfig(root);
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Atomic rejection",
+          "--description",
+          "Reject the structured plan atomically",
+          "--priority",
+          "high",
+          "--owner",
+          "CODER",
+          "--tag",
+          "code",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+    const staleRequest = await prepareHostApproval(root, taskId);
+    const before = parseTaskReadme(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    ).frontmatter;
+    const beforeAggregate = taskCentricAggregateFromExtensions(before.extensions)!;
+
+    const rejectIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "plan",
+          "reject",
+          taskId,
+          "--by",
+          "USER",
+          "--note",
+          "Revise authority roots",
+          "--root",
+          root,
+        ]),
+        rejectIo.stderr,
+      ).toBe(0);
+    } finally {
+      rejectIo.restore();
+    }
+    const rejected = parseTaskReadme(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
+    ).frontmatter;
+    const aggregate = taskCentricAggregateFromExtensions(rejected.extensions)!;
+    const runtime = rejected.extensions?.["agentplane.task_centric_runtime"] as {
+      events: unknown[];
+      mutation_receipts: Record<string, unknown>;
+    };
+    expect(Number(rejected.revision)).toBe(Number(before.revision) + 1);
+    expect(aggregate.revision).toBe(rejected.revision);
+    expect(aggregate).toMatchObject({ lifecycle: "PLANNING" });
+    expect(aggregate.current_plan?.approval.state).toBe("rejected");
+    expect(aggregate.current_plan?.digest).toBe(beforeAggregate.current_plan?.digest);
+    expect(runtime.events).toHaveLength(1);
+    expect(Object.keys(runtime.mutation_receipts)).toHaveLength(1);
+
+    const staleDecision = Buffer.from(
+      JSON.stringify({
+        schema_version: 1,
+        ...staleRequest,
+        host_id: "codex",
+        conversation_id: "stale-rejection",
+        message_id: "stale-approval",
+        decided_at: "2026-09-03T10:00:00.000Z",
+      }),
+      "utf8",
+    ).toString("base64url");
+    const staleIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "plan",
+          "approve",
+          taskId,
+          "--host-user-decision",
+          staleDecision,
+          "--root",
+          root,
+        ]),
+      ).not.toBe(0);
+      expect(staleIo.stderr).toContain("current route no longer requests plan approval");
+    } finally {
+      staleIo.restore();
+    }
+
+    const advanceIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
+      const packet = JSON.parse(advanceIo.stdout) as {
+        action: { kind: string };
+        authority: { role: string };
+        state_fingerprint: string;
+      };
+      expect(packet.action.kind).toBe("agent_episode");
+      expect(packet.authority.role).toBe("PLANNER");
+      expect(packet.state_fingerprint).not.toBe(staleRequest.state_fingerprint);
+    } finally {
+      advanceIo.restore();
+    }
+  });
+
+  it("recovers a 52/50 rejected projection fixture and emits a fresh planning packet", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await writeDefaultConfig(root);
+    const createIo = captureStdIO();
+    let taskId = "";
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Historical rejection recovery",
+          "--description",
+          "Recover the split projection fixture",
+          "--priority",
+          "high",
+          "--owner",
+          "CODER",
+          "--tag",
+          "code",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = createIo.stdout.trim();
+    } finally {
+      createIo.restore();
+    }
+    await prepareHostApproval(root, taskId);
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const proposed = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
+    const proposedAggregate = taskCentricAggregateFromExtensions(proposed.extensions)!;
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          ...proposed,
+          revision: 52,
+          plan_approval: {
+            state: "rejected",
+            updated_at: "2026-09-02T13:52:00.000Z",
+            updated_by: "USER",
+            note: "Rejected authority-incomplete plan",
+          },
+          extensions: withTaskCentricAggregate(proposed.extensions, {
+            ...proposedAggregate,
+            revision: 50,
+          }),
+        },
+        "",
+      ),
+      "utf8",
+    );
+
+    const staleIo = captureStdIO();
+    let stalePacket: {
+      state_fingerprint: string;
+      action: { kind: string };
+    };
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
+      stalePacket = JSON.parse(staleIo.stdout) as typeof stalePacket;
+      expect(stalePacket.action.kind).toBe("approval_required");
+    } finally {
+      staleIo.restore();
+    }
+
+    const recoveryIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "plan",
+          "recover-rejection",
+          taskId,
+          "--expected-readme-revision",
+          "52",
+          "--expected-aggregate-revision",
+          "50",
+          "--rejected-plan-digest",
+          proposedAggregate.current_plan!.digest,
+          "--expected-state-fingerprint",
+          stalePacket!.state_fingerprint,
+          "--by",
+          "USER",
+          "--note",
+          "Repair historical split rejection",
+          "--root",
+          root,
+        ]),
+        recoveryIo.stderr,
+      ).toBe(0);
+      const output = JSON.parse(recoveryIo.stdout) as {
+        receipt: { previous_revision: number; next_revision: number };
+      };
+      expect(output.receipt).toMatchObject({ previous_revision: 50, next_revision: 53 });
+    } finally {
+      recoveryIo.restore();
+    }
+
+    const recovered = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
+    const aggregate = taskCentricAggregateFromExtensions(recovered.extensions)!;
+    expect(recovered.revision).toBe(53);
+    expect(aggregate.revision).toBe(53);
+    expect(aggregate.current_plan?.approval.state).toBe("rejected");
+
+    const advanceIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
+      const packet = JSON.parse(advanceIo.stdout) as {
+        action: { kind: string };
+        authority: { role: string };
+        state_fingerprint: string;
+      };
+      expect(packet.action.kind).toBe("agent_episode");
+      expect(packet.authority.role).toBe("PLANNER");
+      expect(packet.state_fingerprint).not.toBe(stalePacket!.state_fingerprint);
+    } finally {
+      advanceIo.restore();
+    }
+  });
+
   it("task plan approve rejects verify-required tasks with missing Verify Steps", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -353,6 +353,7 @@ function validateReviewedCandidate({
     "202608291006-2A6BJC",
     "202608291006-255K66",
     "202608301851-5W3XW6",
+    "202609030849-925NNG",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -398,6 +399,7 @@ function validateReviewedCandidate({
     "202608291006-2A6BJC",
     "202608291006-255K66",
     "202608301851-5W3XW6",
+    "202609030849-925NNG",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1566,6 +1568,40 @@ function validateReviewedCandidate({
       visibility: "advanced",
     },
     {
+      id: ["task", "plan", "recover-rejection"],
+      visibility: "internal",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        {
+          name: "expected-readme-revision",
+          kind: "string",
+          valueHint: "<n>",
+          required: true,
+        },
+        {
+          name: "expected-aggregate-revision",
+          kind: "string",
+          valueHint: "<n>",
+          required: true,
+        },
+        {
+          name: "rejected-plan-digest",
+          kind: "string",
+          valueHint: "<sha256>",
+          required: true,
+        },
+        {
+          name: "expected-state-fingerprint",
+          kind: "string",
+          valueHint: "<sha256>",
+          required: true,
+        },
+        { name: "by", kind: "string", valueHint: "<id>", required: true },
+        { name: "note", kind: "string", valueHint: "<text>", required: true },
+      ],
+    },
+    {
       id: ["task", "run", "reconcile"],
       visibility: "internal",
       group: "Task",
@@ -2105,6 +2141,48 @@ function validateReviewedCandidate({
       name: "host-user-decision",
       kind: "string",
       valueHint: "<base64url>",
+    },
+    {
+      command: "task plan recover-rejection",
+      name: "by",
+      kind: "string",
+      valueHint: "<id>",
+      required: true,
+    },
+    {
+      command: "task plan recover-rejection",
+      name: "expected-aggregate-revision",
+      kind: "string",
+      valueHint: "<n>",
+      required: true,
+    },
+    {
+      command: "task plan recover-rejection",
+      name: "expected-readme-revision",
+      kind: "string",
+      valueHint: "<n>",
+      required: true,
+    },
+    {
+      command: "task plan recover-rejection",
+      name: "expected-state-fingerprint",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
+    },
+    {
+      command: "task plan recover-rejection",
+      name: "note",
+      kind: "string",
+      valueHint: "<text>",
+      required: true,
+    },
+    {
+      command: "task plan recover-rejection",
+      name: "rejected-plan-digest",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
     },
     {
       command: "task run",
@@ -2750,6 +2828,24 @@ function validateReviewedCandidate({
       name,
       source_task: "202608301851-5W3XW6",
     })),
+    {
+      kind: "command",
+      command: "task plan recover-rejection",
+      source_task: "202609030849-925NNG",
+    },
+    ...[
+      "by",
+      "expected-aggregate-revision",
+      "expected-readme-revision",
+      "expected-state-fingerprint",
+      "note",
+      "rejected-plan-digest",
+    ].map((name) => ({
+      kind: "option",
+      command: "task plan recover-rejection",
+      name,
+      source_task: "202609030849-925NNG",
+    })),
   ];
   const expectedVisibilityMutations = [
     ["task begin", "user", "advanced", "title", "<title>"],
@@ -2857,6 +2953,7 @@ function validateReviewedCandidate({
         "task authority grant",
         "task create",
         "task kernel-migrate",
+        "task plan recover-rejection",
         "task run reconcile",
         "task run resolve-effect",
         "task run resume-effect",

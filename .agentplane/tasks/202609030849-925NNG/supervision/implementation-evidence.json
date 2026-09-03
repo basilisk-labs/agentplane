@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 5f5676851cf0d1ec5722d287e013a459dc416309..b3ca56abe63fcca08fc766f4cfa489c7546104fb",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 5f5676851cf0d1ec5722d287e013a459dc416309..b3ca56abe63fcca08fc766f4cfa489c7546104fb",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609030849-925NNG/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609030849-925NNG/pr/github-body.md",
+        "M\t.agentplane/tasks/202609030849-925NNG/pr/meta.json",
+        "M\t.agentplane/tasks/202609030849-925NNG/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "5f5676851cf0d1ec5722d287e013a459dc416309",
+  "implementation_commit": "b3ca56abe63fcca08fc766f4cfa489c7546104fb",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609030849-925NNG"
+}

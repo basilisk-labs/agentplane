@@ -10,6 +10,7 @@ import {
   checkDoneTaskReadmeArchiveDrift,
   checkTaskProjectionDrift,
   checkTaskReadmeMigrationState,
+  checkTaskCentricProjectionIntegrityState,
 } from "./workspace-task-state.js";
 
 export { checkTaskReadmeMigrationState } from "./workspace-task-state.js";
@@ -231,6 +232,7 @@ export async function checkWorkspace(
     ...(await checkBackendReadiness(opts?.ctx)),
     ...(await checkManagedHookShimReadiness(repoRoot)),
     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
+    ...(await checkTaskCentricProjectionIntegrityState(repoRoot, opts?.ctx)),
     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
     ...(opts?.deep ? await checkTaskProjectionDrift(repoRoot, opts?.ctx) : []),
   );

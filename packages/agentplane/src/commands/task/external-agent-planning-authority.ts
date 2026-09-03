@@ -5,6 +5,7 @@ import {
   createLegacyTaskAggregate,
   createTaskPlanRevision,
   reconcileReplacementPlanWorkItems,
+  taskKernel,
   taskCentricAggregateFromExtensions,
   TASK_CENTRIC_EXTENSION_KEY,
   validateTaskPlanProposal,
@@ -69,6 +70,37 @@ function planningTaskFields(opts: {
         supported_capabilities: TASK_CENTRIC_EXECUTION_CAPABILITIES,
       }),
     ];
+    const canonicalGraphIssues = taskKernel
+      .validateWorkItemDefinitions(
+        structuredProposal.work_items.work_items.map((item) => ({
+          id: item.id,
+          depends_on: item.depends_on,
+          required_inputs: item.required_inputs,
+          expected_outputs: item.expected_outputs,
+          execution_requirements: {
+            scope_roots: item.scope_roots,
+            repository_effects: [],
+            external_effects: [],
+            capabilities: item.capabilities,
+            resources: item.resource_claims.map((claim) => claim.resource),
+          },
+          optional: item.optional,
+        })),
+      )
+      .filter(
+        (issue) =>
+          issue.startsWith("invalid_input:") ||
+          issue.startsWith("self_input:") ||
+          issue.startsWith("duplicate_output:") ||
+          issue === "dependency_cycle",
+      );
+    for (const issue of canonicalGraphIssues) {
+      issues.push({
+        code: "missing_dependency",
+        path: "work_items.required_inputs",
+        message: `Invalid canonical WorkItem graph: ${issue}.`,
+      });
+    }
     if (
       issuedRepository &&
       structuredProposal.planning_baseline.digest !== issuedRepository.digest
@@ -119,6 +151,7 @@ function planningTaskFields(opts: {
     });
     structuredExtensions = withTaskCentricAggregate(opts.task.extensions, {
       ...aggregate,
+      revision: (opts.task.revision ?? aggregate.revision) + 1,
       lifecycle: "AWAITING_PLAN_APPROVAL",
       current_plan: plan,
       plan_history: existing?.current_plan
