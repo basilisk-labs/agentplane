@@ -8,10 +8,10 @@
   "pr_number": 5888,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5888",
   "pre_merge_closure": {
-    "basis_commit": "4d2fd5a8a6111ba3f47fb47f96924b15051d13f4",
+    "basis_commit": "3323eeb6824061f4ed998d5e7d5eb4a1f4278282",
     "branch": "task/202609030849-925NNG/repair-task-centric-plan-rejection-projection-at",
     "pr_number": 5888,
-    "recorded_at": "2026-09-03T13:43:13.872Z",
+    "recorded_at": "2026-09-03T13:57:57.469Z",
     "state": "closed_before_merge"
   },
   "provider": {

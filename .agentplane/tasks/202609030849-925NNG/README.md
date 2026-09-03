@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on: []
@@ -59,7 +59,7 @@ quality_review:
 token_usage:
   agent_runs: 20
   input_tokens: null
-  journal_digest: "sha256:e40889b2dbc8faee2ee737adc026f36d96baaa70c2fee2c44999cb4fd8c5af41"
+  journal_digest: "sha256:d64d42523a8afdcdc6753557f046f4545cfa15c98634613ec4ea9d9868c64ba6"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-03T13:43:13.739Z"
+  updated_at: "2026-09-03T13:57:57.384Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -349,8 +349,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4d2fd5a8a6111ba3f47fb47f96924b15051d13f4"
-  message: "🔍 925NNG quality: record rework evaluator pass"
+  hash: "3323eeb6824061f4ed998d5e7d5eb4a1f4278282"
+  message: "✅ 925NNG task: record branch verification"
 comments:
   -
     author: "CODER"
@@ -400,6 +400,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -573,8 +576,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-03T13:57:57.384Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "3323eeb6824061f4ed998d5e7d5eb4a1f4278282"
 doc_version: 3
-doc_updated_at: "2026-09-03T13:47:08.970Z"
+doc_updated_at: "2026-09-03T13:57:57.408Z"
 doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
@@ -6374,6 +6385,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e40889b2dbc8faee2ee737adc026f36d96baaa70c2fee2c44999cb4fd8c5af41`
+- Journal digest: `sha256:d64d42523a8afdcdc6753557f046f4545cfa15c98634613ec4ea9d9868c64ba6`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-03T13:43:13.739Z`
+- Updated at: `2026-09-03T13:57:57.384Z`
