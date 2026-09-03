@@ -4,7 +4,7 @@ title: "Repair plan-amendment Verify Steps projection routing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:cedcb4b2170ae36f6151c5513c204e75f95eae7fdb479c8346e8bec5c5cb1f28"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-03T19:33:39.803Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -94,7 +94,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/tasks/task-centric"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -105,7 +106,10 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -195,9 +199,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "57487e09cfbd905e2dda2e16dd240905367ddb1d"
-  message: "🚧 8SH7ZM task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+commit: null
 comments:
   -
     author: "CODER"
@@ -231,8 +234,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-09-03T19:33:39.803Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-03T19:33:10.894Z"
+doc_updated_at: "2026-09-03T19:33:40.707Z"
 doc_updated_by: "CODER"
 description: "Fix the AgentPlane invariant where a task-specific plan amendment is persisted but sections.Verify Steps remains a PLANNER fallback scaffold, causing EVALUATOR rework to loop into code-only EXECUTOR authority that excludes protected task projections. Materialize accepted task-specific verification amendments atomically into the authoritative task document, invalidate stale evaluator/context packets, and route document-level rework to PLANNER or the AgentPlane-owned projection owner before emitting a fresh EVALUATOR packet. Add focused replay, idempotency, authority-closure, projection, stale-packet, and impossible-loop regressions. Do not grant ordinary EXECUTOR episodes access to .agentplane/tasks, weaken quality gates, hand-edit PX8PZT state, or touch release/version/publication/dependency scope."
 sections:
@@ -256,6 +265,41 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-03T19:33:39.803Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e5760cbcb744625659d15e314a6b7fcbe83138c978c561d51d27e780214877f8, input_digest=sha256:9ced16bc821c58b1aaa61bde540ff01d8d44498398c77acf8c2688938b6e117c
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609031902-8SH7ZM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609031902-8SH7ZM declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031902-8SH7ZM-repair-plan-amendment-verify-steps-projection-ro/.agentplane/tasks/202609031902-8SH7ZM/blueprint/resolved-snapshot.json
+    - old_digest: 987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86
+    - current_digest: 987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609031902-8SH7ZM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609031902-8SH7ZM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -677,7 +721,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609031902-8SH7ZM"
-    event_cursor: 3
+    event_cursor: 4
     final_validation: null
     id: "202609031902-8SH7ZM"
     intent:
@@ -1094,9 +1138,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-03T19:33:10.894Z"
+    updated_at: "2026-09-03T19:33:40.688Z"
     work_items:
       materialize-verification-amendment:
         attempt: 0
@@ -1195,6 +1239,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609031902-8SH7ZM"
+      compatibility:sha256:d45c75d9e5d1405e563383cb2361495de2e7f3d1b7d54e17ae42e2fa1ff02fdb:
+        aggregate_digest: "sha256:563baa3d27251936cc84c83adca9743b2489d5f26d800597fc09c4139671644f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T19:33:40.688Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ed5c76f97b32fc25bfa2b27c"
+          mutation_id: "compatibility:sha256:d45c75d9e5d1405e563383cb2361495de2e7f3d1b7d54e17ae42e2fa1ff02fdb"
+          plan_digest: "sha256:929a588da25f068e7dda287a31a540859c12481d851b2d6fcfb7e4a9cedbae61"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031902-8SH7ZM"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d45c75d9e5d1405e563383cb2361495de2e7f3d1b7d54e17ae42e2fa1ff02fdb"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609031902-8SH7ZM"
       compatibility:sha256:f37bdfaee058ac8b29a42117cef8a5c76eb84c76920c559993b6b59712865ecd:
         aggregate_digest: "sha256:82c587eb9e9a4e9cada0b1136d7477fbe19fa4846c6ddc8afcd83fba98ead1b0"
         event:
@@ -1246,14 +1314,11 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "57487e09cfbd905e2dda2e16dd240905367ddb1d"
   task_execution_context:
     base_ref: "main"
     base_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "65625c1a19230dd1ca73e87f31a1b975c5363b54"
     version: 1
@@ -1289,6 +1354,41 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-03T19:33:39.803Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e5760cbcb744625659d15e314a6b7fcbe83138c978c561d51d27e780214877f8, input_digest=sha256:9ced16bc821c58b1aaa61bde540ff01d8d44498398c77acf8c2688938b6e117c
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609031902-8SH7ZM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609031902-8SH7ZM declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609031902-8SH7ZM-repair-plan-amendment-verify-steps-projection-ro/.agentplane/tasks/202609031902-8SH7ZM/blueprint/resolved-snapshot.json
+- old_digest: 987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86
+- current_digest: 987811c4f3427d4b5170038f00505c25a6dd1d2f653225367cdfc6f209a7ec86
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609031902-8SH7ZM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609031902-8SH7ZM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

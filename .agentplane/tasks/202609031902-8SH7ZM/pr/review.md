@@ -12,8 +12,8 @@ Created: 2026-09-03T19:09:23.499Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-03T19:09:23.499Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-03T19:09:23.499Z
+- Updated: 2026-09-03T19:33:17.505Z
 - Branch: task/202609031902-8SH7ZM/repair-plan-amendment-verify-steps-projection-ro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
