@@ -1,0 +1,7 @@
+ .../commands/task/direct-task-verification.test.ts |  9 +++++
+ .../src/commands/task/direct-task-verification.ts  |  4 +-
+ .../task/external-agent-implementation-recovery.ts | 18 ++++++++-
+ .../src/commands/task/verify-record-execute.ts     | 43 +++++++++++++---------
+ .../agentplane/src/commands/task/verify-record.ts  |  3 +-
+ .../src/commands/task/verify-record.types.ts       |  8 ++++
+ 6 files changed, 63 insertions(+), 22 deletions(-)
