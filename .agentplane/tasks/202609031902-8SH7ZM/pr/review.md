@@ -6,7 +6,7 @@ Created: 2026-09-03T19:09:23.499Z
 
 - Task: `202609031902-8SH7ZM`
 - Title: Repair plan-amendment Verify Steps projection routing
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609031902-8SH7ZM/repair-plan-amendment-verify-steps-projection-ro`
 - Canonical task record: `.agentplane/tasks/202609031902-8SH7ZM/README.md`
 
