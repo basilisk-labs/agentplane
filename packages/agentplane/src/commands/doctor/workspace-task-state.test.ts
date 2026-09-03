@@ -27,6 +27,7 @@ describe("task-centric projection integrity diagnostics", () => {
     ]);
 
     expect(findings).toHaveLength(1);
+    expect(findings[0]).toContain("[WARN]");
     expect(findings[0]).toContain("task-centric plan projection mismatch");
     expect(findings[0]).toContain("README revision/state: 52/rejected");
     expect(findings[0]).toContain("Aggregate revision/state: 50/missing");

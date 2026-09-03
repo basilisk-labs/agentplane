@@ -12,8 +12,8 @@ Created: 2026-09-03T08:57:33.898Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -40,7 +40,7 @@ Created: 2026-09-03T08:57:33.898Z
  .../src/cli/run-cli/command-catalog.test.ts        |   7 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   8 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
- .../commands/doctor/workspace-task-state.test.ts   |  61 ++++++
+ .../commands/doctor/workspace-task-state.test.ts   |  62 ++++++
  .../src/commands/doctor/workspace-task-state.ts    |  81 ++++++-
  .../agentplane/src/commands/doctor/workspace.ts    |   7 +-
  .../task/external-agent-planning-authority.ts      |   1 +
@@ -52,7 +52,7 @@ Created: 2026-09-03T08:57:33.898Z
  packages/agentplane/src/commands/task/plan.ts      |  54 ++++-
  .../baselines/v0.7-compatibility-candidate.json    | 140 +++++++++++-
  .../check-compatibility-contract-baseline.mjs      |  97 +++++++++
- 23 files changed, 1449 insertions(+), 31 deletions(-)
+ 23 files changed, 1450 insertions(+), 31 deletions(-)
 ```
 
 </details>
