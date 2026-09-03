@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 59
+revision: 60
 origin:
   system: "manual"
 depends_on: []
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-03T13:57:57.384Z"
+  updated_at: "2026-09-03T14:22:45.670Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -349,8 +349,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3323eeb6824061f4ed998d5e7d5eb4a1f4278282"
-  message: "✅ 925NNG task: record branch verification"
+  hash: "a5b233f604c1ffd843f783f2ba9d4eb8e3cc4610"
+  message: "🧪 925NNG test: record hosted retry pass"
 comments:
   -
     author: "CODER"
@@ -400,6 +400,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -590,8 +593,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted verify-tests transient concurrency race was reproduced as non-deterministic: the focused workflow.verify-hooks suite passed 11/11 locally, failed-job retry passed, and aggregate PR verification passed without source changes."
+  -
+    type: "status"
+    at: "2026-09-03T14:22:45.670Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "a5b233f604c1ffd843f783f2ba9d4eb8e3cc4610"
 doc_version: 3
-doc_updated_at: "2026-09-03T14:21:47.653Z"
+doc_updated_at: "2026-09-03T14:22:45.699Z"
 doc_updated_by: "CODER"
 description: "Authorized bootstrap recovery only. Reproduce and fix the root cause where task plan reject updates README without atomically applying the canonical task-centric aggregate transition, revision, event, receipt, plan invalidation, and route. Add focused regression and interruption tests, mismatch diagnostics, deterministic auditable CLI recovery, then run the requested verification gates, obtain independent EVALUATOR review, integrate through branch_pr, and only on fresh main recover 202609021331-5FPZAB using the new CLI operation. Preserve its worktree, commits, rejected-plan note, five WorkItems, and evidence. Do not continue Clean Core and do not approve any plan for 202609021331-5FPZAB."
 sections:
@@ -6525,4 +6536,4 @@ DecisionContextRef:
 - Provenance: `supervisor_journal/agentplane`
 - Journal digest: `sha256:d64d42523a8afdcdc6753557f046f4545cfa15c98634613ec4ea9d9868c64ba6`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-03T13:57:57.384Z`
+- Updated at: `2026-09-03T14:22:45.670Z`
