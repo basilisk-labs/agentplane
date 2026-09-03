@@ -39,6 +39,7 @@ describe("group-command helper", () => {
   it("loads direct subcommands from the canonical command graph lazily", async () => {
     await expect(loadDirectSubcommandNames(["task", "plan"])).resolves.toEqual([
       "approve",
+      "recover-rejection",
       "reject",
       "set",
     ]);

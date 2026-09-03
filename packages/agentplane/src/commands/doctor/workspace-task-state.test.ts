@@ -58,5 +58,4 @@ describe("task-centric projection integrity diagnostics", () => {
 
     expect(findings).toEqual([]);
   });
-
 });

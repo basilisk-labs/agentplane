@@ -257,7 +257,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       events: unknown[];
       mutation_receipts: Record<string, unknown>;
     };
-    expect(rejected.revision).toBe(before.revision! + 1);
+    expect(Number(rejected.revision)).toBe(Number(before.revision) + 1);
     expect(aggregate.revision).toBe(rejected.revision);
     expect(aggregate).toMatchObject({ lifecycle: "PLANNING" });
     expect(aggregate.current_plan?.approval.state).toBe("rejected");
