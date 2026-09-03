@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check efa74b42a2e77bb77de2ff908af5b8b29194135d..b5d0b776104b19ec5fc68526526993bac6536626",
+      "command": "git diff --check 6af0089b279ebb31939330529e6b948cbdbb1b8c..7bfa0304918ae557b05c6082b69aa4d9a3c1dfc1",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB efa74b42a2e77bb77de2ff908af5b8b29194135d..b5d0b776104b19ec5fc68526526993bac6536626",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6af0089b279ebb31939330529e6b948cbdbb1b8c..7bfa0304918ae557b05c6082b69aa4d9a3c1dfc1",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609030849-925NNG/README.md",
         "M\t.agentplane/tasks/202609030849-925NNG/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609030849-925NNG/pr/github-body.md",
         "M\t.agentplane/tasks/202609030849-925NNG/pr/meta.json",
         "M\t.agentplane/tasks/202609030849-925NNG/pr/review.md",
-        "M\t.agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-        "A\t.agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json",
-        "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
       ]
     },
     {
@@ -36,48 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "efa74b42a2e77bb77de2ff908af5b8b29194135d",
-  "implementation_commit": "b5d0b776104b19ec5fc68526526993bac6536626",
+  "execution_base_commit": "6af0089b279ebb31939330529e6b948cbdbb1b8c",
+  "implementation_commit": "7bfa0304918ae557b05c6082b69aa4d9a3c1dfc1",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609030849-925NNG/README.md",
-      " M .agentplane/tasks/202609030849-925NNG/pr/meta.json",
-      " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609030849-925NNG/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609030849-925NNG/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609030849-925NNG/README.md",
-      " M .agentplane/tasks/202609030849-925NNG/pr/meta.json",
-      " M .agentplane/tasks/202609030849-925NNG/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609030849-925NNG/supervision/implementation-evidence.json",
-      "?? .agentplane/tasks/202609030849-925NNG/verification/20260903121410399-e250debe6a8716e3.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

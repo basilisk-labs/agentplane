@@ -297,6 +297,19 @@ describe("TaskCentricBackendAdapter", () => {
     expect(recovered).toMatchObject({ revision: 53, lifecycle: "PLANNING", event_cursor: 1 });
     expect(recovered.current_plan?.approval.state).toBe("rejected");
     expect(receipt).toMatchObject({ previous_revision: 50, next_revision: 53 });
+    expect(receipt.event).toMatchObject({
+      entity: "task",
+      from: "AWAITING_PLAN_APPROVAL",
+      to: "PLANNING",
+      work_item_id: null,
+      cause_refs: [
+        "projection-recovery:plan-rejection",
+        "readme-revision:52",
+        "aggregate-revision:50",
+        `state-fingerprint:${fingerprint}`,
+        expect.stringMatching(/^note:sha256:[0-9a-f]{64}$/u),
+      ],
+    });
     expect(stored.extensions?.[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]).toEqual({
       schema_version: 1,
       reason_code: "plan_rejection_projection_recovered",
