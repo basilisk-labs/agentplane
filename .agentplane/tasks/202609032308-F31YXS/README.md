@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -95,10 +95,20 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record.ts"
+      - "packages/agentplane/src/commands/task/verify-record.types.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -145,7 +155,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:9f07963eb247422e8ac3341f0d8bca29d2ac161d6c736ef8f27052f60e05520f"
+      digest: "sha256:e1193e9fe9beff7c59bdd7299bdeceb8b52041dbe8b4fd26ee7801c6d3e5f8ad"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -155,10 +165,20 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record.ts"
+          - "packages/agentplane/src/commands/task/verify-record.types.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -199,6 +219,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 099ca9948c77. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -207,9 +230,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-03T23:35:00.416Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 099ca9948c77. CLI accepted one state-bound external-agent semantic result."
+    commit: "099ca9948c77311198a1c3139d91e06647084c26"
 doc_version: 3
-doc_updated_at: "2026-09-03T23:29:34.650Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-03T23:35:00.416Z"
+doc_updated_by: "SUPERVISOR"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
   Summary: |-
@@ -722,7 +753,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 1
+    event_cursor: 2
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -762,9 +793,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 4
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-03T23:29:34.650Z"
+    updated_at: "2026-09-03T23:35:09.927Z"
     work_items:
       integrated-recovery-qualification:
         attempt: 0
@@ -794,17 +825,63 @@ extensions:
         state: "PLANNED"
         validation_result: null
       verification-contract-atomicity:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "verification-contract-atomicity"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:238e8319b6ea8e51c448004afca8b05fba0de21a2fedaa4e7439098202ccff5d"
+            id: "verification-contract-atomicity"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609032308-F31YXS"
+              work_item_id: "verification-contract-atomicity"
+            provenance:
+              - "sha256:2a082fee301ecfb159845ba79fdc378dccf02333ddda04c40df1aacbcf98e634"
+              - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:ed96492773e8daad72a0aacb9c7efd223a711df250dab575838bbe04c8b83350"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "verification-contract-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-03T23:35:09.922Z"
+              repository_snapshot_digest: "sha256:ed96492773e8daad72a0aacb9c7efd223a711df250dab575838bbe04c8b83350"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-03T23:35:09.927Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_4a9a5b096aca0ab6221c9d9e"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-eb90ac46e451ca16dc2fd438"
+        plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+        task_revision: 6
+        work_item_id: "verification-contract-atomicity"
     leases: []
     mutation_receipts:
       compatibility:sha256:3204719e7e5825455f6c79309cda9f40ce68b66e30585314c085b317899965eb:
@@ -831,9 +908,58 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      compatibility:sha256:a23be9b59fa9d915a4767c9ba99b621654e035fce0e5007609e83a08a0fae7cd:
+        aggregate_digest: "sha256:9c5c57c59cb49b9315867f764202a7554ef68d090baed8b1d77a7ae50e4ff1fe"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T23:35:00.416Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1ef6c9ca0f28dc164df95ed3"
+          mutation_id: "compatibility:sha256:a23be9b59fa9d915a4767c9ba99b621654e035fce0e5007609e83a08a0fae7cd"
+          plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 4
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a23be9b59fa9d915a4767c9ba99b621654e035fce0e5007609e83a08a0fae7cd"
+        next_revision: 5
+        previous_revision: 4
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      external-result:work-order-202609032308-F31YXS-executor-eb90ac46e451ca16dc2fd438:
+        aggregate_digest: "sha256:f547a19657592f09d18ff4caf385f7cd6c61b6052e6e32774737e25dd4b58b37"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-03T23:35:09.927Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_4a9a5b096aca0ab6221c9d9e"
+          mutation_id: "external-result:work-order-202609032308-F31YXS-executor-eb90ac46e451ca16dc2fd438"
+          plan_digest: "sha256:a9b3f855f7189e334fded9a196dcf507eccce29986e502cb8fba9391699e5ea0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 6
+          to: "COMPLETED"
+          work_item_id: "verification-contract-atomicity"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-eb90ac46e451ca16dc2fd438"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "099ca9948c77311198a1c3139d91e06647084c26"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"

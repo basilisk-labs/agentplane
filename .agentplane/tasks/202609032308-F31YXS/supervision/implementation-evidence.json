@@ -1,0 +1,136 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check fa693664b5fb4f7884b5c772b456357518732bd4..099ca9948c77311198a1c3139d91e06647084c26",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB fa693664b5fb4f7884b5c772b456357518732bd4..099ca9948c77311198a1c3139d91e06647084c26",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609032308-F31YXS/README.md",
+        "A\t.agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609032308-F31YXS/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609032308-F31YXS/pr/github-body.md",
+        "A\t.agentplane/tasks/202609032308-F31YXS/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609032308-F31YXS/pr/meta.json",
+        "A\t.agentplane/tasks/202609032308-F31YXS/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.types.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "fa693664b5fb4f7884b5c772b456357518732bd4",
+  "implementation_commit": "099ca9948c77311198a1c3139d91e06647084c26",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record.ts",
+      " M packages/agentplane/src/commands/task/verify-record.types.ts",
+      "?? .agentplane/tasks/202609032308-F31YXS/README.md",
+      "?? .agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/github-body.md",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/github-title.txt",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/meta.json",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record-execute.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.types.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609032308-F31YXS/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record.ts",
+      " M packages/agentplane/src/commands/task/verify-record.types.ts",
+      "?? .agentplane/tasks/202609032308-F31YXS/README.md",
+      "?? .agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/github-body.md",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/github-title.txt",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/meta.json",
+      "?? .agentplane/tasks/202609032308-F31YXS/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609032308-F31YXS"
+}
