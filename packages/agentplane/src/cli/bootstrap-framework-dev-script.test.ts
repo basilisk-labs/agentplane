@@ -222,6 +222,64 @@ describe("bootstrap-framework-dev script", () => {
     expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 
+  it("reinstalls a layout whose declared dependency is owned by another task worktree", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    await writeFile(
+      path.join(repoRoot, "package.json"),
+      JSON.stringify({
+        name: "agentplane-repo",
+        private: true,
+        devDependencies: { eslint: "^10.5.0" },
+      }),
+      "utf8",
+    );
+    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
+    const foreignDependency = path.join(
+      repoRoot,
+      ".agentplane",
+      "worktrees",
+      "foreign",
+      "node_modules",
+      "eslint",
+    );
+    await mkdir(foreignDependency, { recursive: true });
+    await writeFile(path.join(foreignDependency, "package.json"), '{"name":"eslint"}\n', "utf8");
+    await fs.promises.symlink(
+      foreignDependency,
+      path.join(repoRoot, "node_modules", "eslint"),
+      "dir",
+    );
+    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun install --ignore-scripts",
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
+    await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "packages", "core", "node_modules"))).rejects.toThrow();
+    await expect(
+      lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
+    ).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "website", "node_modules"))).rejects.toThrow();
+  });
+
   it("reconciles the managed hook set and adds a missing post-merge hook", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
