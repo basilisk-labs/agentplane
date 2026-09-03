@@ -1,6 +1,7 @@
 import {
   aggregateValidation,
   evaluateTaskCompletion,
+  legacyStatusToTaskLifecycle,
   projectTaskLifecycleToLegacyStatus,
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
@@ -132,6 +133,10 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   }
 
   const at = opts.next.doc_updated_at ?? currentAggregate.updated_at;
+  const projectedLifecycle =
+    opts.next.status === projectTaskLifecycleToLegacyStatus(nextAggregate.lifecycle)
+      ? nextAggregate.lifecycle
+      : legacyStatusToTaskLifecycle(opts.next.status);
   const mutationId = `compatibility:${taskCentricDigest({
     task_id: opts.current.id,
     previous_revision: currentRevision,
@@ -148,6 +153,8 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   const candidate: TaskAggregate = Object.freeze({
     ...nextAggregate,
     revision: nextRevision,
+    lifecycle: projectedLifecycle,
+    ...(projectedLifecycle === nextAggregate.lifecycle ? {} : { final_validation: null }),
     event_cursor: Math.max(nextAggregate.event_cursor, currentAggregate.event_cursor + 1),
     updated_at: at,
   });
@@ -156,7 +163,7 @@ export function projectTaskCentricCompatibilityMutation(opts: {
     mutation_id: mutationId,
     entity: "task",
     from: currentAggregate.lifecycle,
-    to: currentAggregate.lifecycle,
+    to: candidate.lifecycle,
     at,
     cause_refs: ["compatibility_projection_mutation"],
   });
@@ -171,6 +178,7 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   return {
     ...opts.next,
     revision: nextRevision,
+    status: projectTaskLifecycleToLegacyStatus(candidate.lifecycle),
     extensions: {
       ...withTaskCentricAggregate(opts.next.extensions, candidate),
       [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: Object.freeze({
