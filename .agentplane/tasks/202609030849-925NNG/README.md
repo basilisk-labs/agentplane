@@ -4,7 +4,7 @@ title: "Repair task-centric plan-rejection projection atomicity and recover task
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-03T13:02:34.078Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "b3ca56abe63fcca08fc766f4cfa489c7546104fb"
+  blueprint_digest: "3f9cbb85cb0292203d03fae3c68553cfc438e2fa23fb065e8446afd2b4683686"
+  evidence_refs:
+    - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/d28c01dbf6528ee568ddc9036213993cb1f19e639614042a550647111d729662.md"
+    - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609030849-925NNG/quality/20260903-130122518-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609030849-925NNG/README.md"
+    - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6691b629df9ee51cc974c7ade2ece06d840e988bba3dec8df77d9d14d530dda0.patch"
+    - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/6e38d236c5aa1cb48bbf32d38f6f3545c0fcea97d2c8666af35ac550f7f0d261.json"
+    - ".agentplane/tasks/202609030849-925NNG/verification/20260903130115573-d16b397210190907.json"
+    - ".agentplane/tasks/202609030849-925NNG/quality/objects/sha256/b12d54abf11d7d544e8decfc5df04b6a42ab53ec400ec17e4191710201f8943d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The rejection path updates legacy plan_approval, canonical plan approval, aggregate lifecycle/revision, event cursor, event journal, mutation receipt, execution grant invalidation, and replan marker through one revision-guarded backend write."
+    - "The historical recovery path requires exact README revision, aggregate revision, rejected plan digest, and current route fingerprint, writes revision 53 rather than copying revision 52, and returns the durable receipt on exact replay."
+    - "The rejected digest cannot pass either replan-marker or rejected-plan approval guards; post-rejection routing is covered through agent.planning regressions."
+    - "The new external plan graph guard prevents unproducible required_inputs from recreating unbound EXECUTOR loops."
+    - "The branch is clean at reviewed head d6385561b700d1ee62b2e473e72c56bed877ce7f, full local CI and focused qualification are recorded, and no manual historical task artifact edit is part of the diff."
+    - "Residual risk: Hosted PR integration and the real 202609021331-5FPZAB recovery are intentionally downstream supervisor operations and were not performed by this read-only EVALUATOR episode."
 execution_route:
   frozen: true
   reason_codes:

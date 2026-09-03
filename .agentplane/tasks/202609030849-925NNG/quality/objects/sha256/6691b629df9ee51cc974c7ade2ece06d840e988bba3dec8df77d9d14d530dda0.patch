@@ -1,0 +1,2224 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+index 145295152..b01bc2e6a 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+@@ -1,9 +1,12 @@
+ import {
+   approveTaskPlan,
++  EXECUTION_GRANT_EXTENSION_KEY,
+   createLegacyTaskAggregate,
+   createRepositorySnapshot,
+   createTaskPlanRevision,
++  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
+   taskCentricDigest,
++  taskCentricAggregateFromExtensions,
+   withTaskCentricAggregate,
+   type DomainEvent,
+   type ExecutionLease,
+@@ -110,6 +113,24 @@ function approvedAggregate(): TaskAggregate {
+   };
+ }
+ 
++function pendingAggregate(revision = 1): TaskAggregate {
++  const approved = approvedAggregate();
++  return {
++    ...approved,
++    revision,
++    current_plan: {
++      ...approved.current_plan!,
++      approval: {
++        state: "pending",
++        approved_by: null,
++        approved_at: null,
++        approved_digest: null,
++        policy_facts: [],
++      },
++    },
++  };
++}
++
+ function taskData(aggregate = approvedAggregate()): TaskData {
+   return {
+     id: TASK_ID,
+@@ -192,6 +213,179 @@ function event(
+ }
+ 
+ describe("TaskCentricBackendAdapter", () => {
++  it("rejects a proposed plan as one atomic event and receipt and replays exactly", async () => {
++    const initial = taskData(pendingAggregate());
++    initial.plan_approval = { state: "pending", updated_at: null, updated_by: null, note: null };
++    initial.extensions = {
++      ...initial.extensions,
++      [EXECUTION_GRANT_EXTENSION_KEY]: { stale: true },
++    };
++    const backend = memoryBackend(initial);
++    const adapter = new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.resolve(repository()),
++    });
++    const plan = pendingAggregate().current_plan!;
++    const input = {
++      task_id: TASK_ID,
++      expected_revision: 1,
++      plan_revision: plan.revision,
++      plan_digest: plan.digest,
++      actor_id: "USER",
++      note: "Revise authority roots",
++      rejected_at: NOW,
++      idempotency_key: "reject-plan-1",
++    } as const;
++
++    const receipt = await adapter.rejectPlan(input);
++    const stored = backend.current();
++    const aggregate = taskCentricAggregateFromExtensions(stored.extensions)!;
++    const runtime = stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as {
++      events: DomainEvent[];
++      mutation_receipts: Record<string, unknown>;
++    };
++    expect(stored.revision).toBe(2);
++    expect(stored.plan_approval).toMatchObject({
++      state: "rejected",
++      updated_by: "USER",
++      note: "Revise authority roots",
++    });
++    expect(aggregate).toMatchObject({ revision: 2, lifecycle: "PLANNING", event_cursor: 1 });
++    expect(aggregate.current_plan?.approval.state).toBe("rejected");
++    expect(runtime.events).toHaveLength(1);
++    expect(runtime.mutation_receipts["reject-plan-1"]).toEqual(receipt);
++    expect(stored.extensions).not.toHaveProperty(EXECUTION_GRANT_EXTENSION_KEY);
++    expect(stored.extensions).toHaveProperty("agentplane.task_centric_replan_required");
++
++    await expect(adapter.rejectPlan(input)).resolves.toEqual(receipt);
++    expect(backend.current()).toEqual(stored);
++  });
++
++  it("recovers the historical rejected README mismatch with a monotonic audited revision", async () => {
++    const aggregate = pendingAggregate(50);
++    const initial = {
++      ...taskData(aggregate),
++      revision: 52,
++      plan_approval: {
++        state: "rejected" as const,
++        updated_at: NOW,
++        updated_by: "USER",
++        note: "Rejected authority-incomplete plan",
++      },
++    };
++    const backend = memoryBackend(initial);
++    const adapter = new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.resolve(repository()),
++    });
++    const fingerprint = taskCentricDigest("historical-corruption");
++    const receipt = await adapter.recoverRejectedPlanProjection({
++      task_id: TASK_ID,
++      expected_readme_revision: 52,
++      expected_aggregate_revision: 50,
++      plan_digest: aggregate.current_plan!.digest,
++      expected_state_fingerprint: fingerprint,
++      observed_state_fingerprint: fingerprint,
++      actor_id: "USER",
++      note: "Repair split plan rejection",
++      recovered_at: NOW,
++      idempotency_key: "recover-rejection-1",
++    });
++    const stored = backend.current();
++    const recovered = taskCentricAggregateFromExtensions(stored.extensions)!;
++    expect(stored.revision).toBe(53);
++    expect(recovered).toMatchObject({ revision: 53, lifecycle: "PLANNING", event_cursor: 1 });
++    expect(recovered.current_plan?.approval.state).toBe("rejected");
++    expect(receipt).toMatchObject({ previous_revision: 50, next_revision: 53 });
++    expect(receipt.event).toMatchObject({
++      entity: "task",
++      from: "AWAITING_PLAN_APPROVAL",
++      to: "PLANNING",
++      work_item_id: null,
++      cause_refs: [
++        "projection-recovery:plan-rejection",
++        "readme-revision:52",
++        "aggregate-revision:50",
++        `state-fingerprint:${fingerprint}`,
++        expect.stringMatching(/^note:sha256:[0-9a-f]{64}$/u),
++      ],
++    });
++    expect(stored.extensions?.[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]).toEqual({
++      schema_version: 1,
++      reason_code: "plan_rejection_projection_recovered",
++    });
++    expect(
++      (
++        stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as {
++          mutation_receipts: Record<string, unknown>;
++        }
++      ).mutation_receipts["recover-rejection-1"],
++    ).toEqual(receipt);
++    expect(
++      (stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as { events: DomainEvent[] }).events,
++    ).toHaveLength(1);
++    await expect(
++      adapter.recoverRejectedPlanProjection({
++        task_id: TASK_ID,
++        expected_readme_revision: 52,
++        expected_aggregate_revision: 50,
++        plan_digest: aggregate.current_plan!.digest,
++        expected_state_fingerprint: fingerprint,
++        observed_state_fingerprint: fingerprint,
++        actor_id: "USER",
++        note: "Repair split plan rejection",
++        recovered_at: NOW,
++        idempotency_key: "recover-rejection-1",
++      }),
++    ).resolves.toEqual(receipt);
++  });
++
++  it("reconciles an interruption after the atomic write from the durable rejection receipt", async () => {
++    const initial = taskData(pendingAggregate());
++    initial.plan_approval = { state: "pending", updated_at: null, updated_by: null, note: null };
++    const durable = memoryBackend(initial);
++    let interrupt = true;
++    const backend: TaskBackend = {
++      ...durable,
++      async writeTask(next, options) {
++        await durable.writeTask(next, options);
++        if (interrupt) {
++          interrupt = false;
++          throw new Error("simulated interruption after durable write");
++        }
++      },
++    };
++    const adapter = new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.resolve(repository()),
++    });
++    const plan = pendingAggregate().current_plan!;
++    const input = {
++      task_id: TASK_ID,
++      expected_revision: 1,
++      plan_revision: plan.revision,
++      plan_digest: plan.digest,
++      actor_id: "USER",
++      note: "Reject once",
++      rejected_at: NOW,
++      idempotency_key: "reject-after-write",
++    } as const;
++
++    await expect(adapter.rejectPlan(input)).rejects.toThrow(/simulated interruption/u);
++    const afterInterruption = durable.current();
++    expect(afterInterruption.plan_approval?.state).toBe("rejected");
++    expect(
++      taskCentricAggregateFromExtensions(afterInterruption.extensions)?.current_plan?.approval
++        .state,
++    ).toBe("rejected");
++    await expect(adapter.rejectPlan(input)).resolves.toMatchObject({
++      mutation_id: "reject-after-write",
++      previous_revision: 1,
++      next_revision: 2,
++    });
++    expect(durable.current()).toEqual(afterInterruption);
++  });
++
+   it("materializes an approved graph atomically and makes duplicate mutation keys idempotent", async () => {
+     const backend = memoryBackend();
+     const adapter = new TaskCentricBackendAdapter({
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+index 19aa65732..9ec7039c7 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+@@ -1,6 +1,7 @@
+ import {
+   aggregateValidation,
+   applyPlanRefinement,
++  EXECUTION_GRANT_EXTENSION_KEY,
+   evaluateTaskCompletion,
+   materializeApprovedWorkItems,
+   projectTaskLifecycleToLegacyStatus,
+@@ -33,6 +34,12 @@ import {
+   transitionReceipt,
+   type TaskCentricRuntimeProjection,
+ } from "./task-centric-backend-runtime.js";
++import {
++  recoverRejectedPlanProjection,
++  rejectTaskCentricPlan,
++  type RecoverRejectedPlanInput,
++  type RejectPlanInput,
++} from "./task-centric-plan-rejection.js";
+ 
+ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+   readonly capabilities = Object.freeze({
+@@ -67,6 +74,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     mutation_id: string;
+     runtime?: TaskCentricRuntimeProjection;
+     replan_required_reason_code?: string | null;
++    plan_approval?: {
++      state: "rejected";
++      updated_at: string;
++      updated_by: string;
++      note: string;
++    };
++    clear_execution_grant?: boolean;
+   }): Promise<TransitionReceipt> {
+     const current = await this.backend.getTask(opts.task_id);
+     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
+@@ -89,6 +103,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     });
+     const nextRuntime: TaskCentricRuntimeProjection = Object.freeze({
+       ...runtime,
++      events: Object.freeze([...runtime.events, opts.event]),
+       mutation_receipts: Object.freeze({
+         ...runtime.mutation_receipts,
+         [opts.mutation_id]: nextReceipt,
+@@ -100,6 +115,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+         (item) => !item.optional && normalizedNext.work_items[item.id]?.state !== "COMPLETED",
+       ) === true;
+     const extensions = withTaskCentricAggregate(current.extensions, normalizedNext);
++    if (opts.clear_execution_grant) delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
+     if (opts.replan_required_reason_code) {
+       extensions[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
+         schema_version: 1,
+@@ -124,6 +140,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+               quality_review: undefined,
+             }
+           : {}),
++        ...(opts.plan_approval ? { plan_approval: opts.plan_approval } : {}),
+         extensions: {
+           ...extensions,
+           [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: nextRuntime,
+@@ -134,6 +151,18 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     return nextReceipt;
+   }
+ 
++  async rejectPlan(opts: RejectPlanInput): Promise<TransitionReceipt> {
++    return await rejectTaskCentricPlan({
++      backend: this.backend,
++      input: opts,
++      persist: async (input) => await this.persist(input),
++    });
++  }
++
++  async recoverRejectedPlanProjection(opts: RecoverRejectedPlanInput): Promise<TransitionReceipt> {
++    return await recoverRejectedPlanProjection({ backend: this.backend, input: opts });
++  }
++
+   async compareAndSwap(opts: {
+     task_id: string;
+     expected_revision: number;
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts
+index f2e6e8018..f869129bf 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts
+@@ -18,6 +18,7 @@ export const TASK_CENTRIC_RUNTIME_EXTENSION_KEY = "agentplane.task_centric_runti
+ 
+ export type TaskCentricRuntimeProjection = Readonly<{
+   schema_version: 1;
++  events: readonly DomainEvent[];
+   leases: readonly ExecutionLease[];
+   pending_effects: readonly PendingEffect[];
+   checkpoints: readonly TaskCheckpoint[];
+@@ -28,6 +29,7 @@ export type TaskCentricRuntimeProjection = Readonly<{
+ function emptyRuntime(): TaskCentricRuntimeProjection {
+   return Object.freeze({
+     schema_version: 1,
++    events: [],
+     leases: [],
+     pending_effects: [],
+     checkpoints: [],
+@@ -59,7 +61,10 @@ export function runtimeFrom(task: TaskData): TaskCentricRuntimeProjection {
+   ) {
+     throw new Error("Task-centric runtime projection is malformed.");
+   }
+-  return runtime as TaskCentricRuntimeProjection;
++  return Object.freeze({
++    ...(runtime as Omit<TaskCentricRuntimeProjection, "events">),
++    events: Array.isArray(runtime.events) ? (runtime.events as readonly DomainEvent[]) : [],
++  });
+ }
+ 
+ function acceptanceDescriptions(task: TaskData): string[] {
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts b/packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts
+new file mode 100644
+index 000000000..d4ccb7ecc
+--- /dev/null
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-plan-rejection.ts
+@@ -0,0 +1,232 @@
++import {
++  EXECUTION_GRANT_EXTENSION_KEY,
++  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
++  taskCentricAggregateFromExtensions,
++  taskCentricDigest,
++  withTaskCentricAggregate,
++  type DomainEvent,
++  type TaskAggregate,
++  type TransitionReceipt,
++} from "@agentplaneorg/core/tasks";
++
++import type { TaskBackend } from "../../backends/task-backend.js";
++import {
++  runtimeFrom,
++  syntheticEvent,
++  TASK_CENTRIC_RUNTIME_EXTENSION_KEY,
++  transitionReceipt,
++  type TaskCentricRuntimeProjection,
++} from "./task-centric-backend-runtime.js";
++
++export type RejectPlanInput = {
++  task_id: string;
++  expected_revision: number;
++  plan_revision: number;
++  plan_digest: `sha256:${string}`;
++  actor_id: string;
++  note: string;
++  rejected_at: string;
++  idempotency_key: string;
++};
++
++type RejectionPersistence = (opts: {
++  task_id: string;
++  expected_revision: number;
++  next: TaskAggregate;
++  event: DomainEvent;
++  mutation_id: string;
++  runtime: TaskCentricRuntimeProjection;
++  replan_required_reason_code: string;
++  clear_execution_grant: true;
++  plan_approval: {
++    state: "rejected";
++    updated_at: string;
++    updated_by: string;
++    note: string;
++  };
++}) => Promise<TransitionReceipt>;
++
++export async function rejectTaskCentricPlan(opts: {
++  backend: TaskBackend;
++  input: RejectPlanInput;
++  persist: RejectionPersistence;
++}): Promise<TransitionReceipt> {
++  const { input } = opts;
++  const raw = await opts.backend.getTask(input.task_id);
++  if (!raw) throw new Error(`Task not found: ${input.task_id}`);
++  const runtime = runtimeFrom(raw);
++  const already = runtime.mutation_receipts[input.idempotency_key];
++  if (already) return already;
++  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
++  if (!aggregate?.current_plan) throw new Error("Task-centric plan is missing.");
++  if ((raw.revision ?? 1) !== aggregate.revision) {
++    throw new Error(
++      `Task-centric mutation revision mismatch: expected ${raw.revision ?? 1}, observed ${aggregate.revision}.`,
++    );
++  }
++  if (
++    aggregate.current_plan.revision !== input.plan_revision ||
++    aggregate.current_plan.digest !== input.plan_digest
++  ) {
++    throw new Error("Task plan rejection request is stale.");
++  }
++  if (aggregate.current_plan.approval.state === "rejected") {
++    throw new Error("Task plan is already rejected with a different mutation identity.");
++  }
++  const event = syntheticEvent({
++    task: aggregate,
++    mutation_id: input.idempotency_key,
++    entity: "task",
++    from: aggregate.lifecycle,
++    to: "PLANNING",
++    at: input.rejected_at,
++    actor_id: input.actor_id,
++    cause_refs: [`plan:${input.plan_digest}`, `note:${taskCentricDigest(input.note)}`],
++  });
++  return await opts.persist({
++    task_id: aggregate.id,
++    expected_revision: input.expected_revision,
++    mutation_id: input.idempotency_key,
++    event,
++    runtime,
++    next: Object.freeze({
++      ...aggregate,
++      lifecycle: "PLANNING",
++      current_plan: Object.freeze({
++        ...aggregate.current_plan,
++        approval: Object.freeze({
++          state: "rejected",
++          approved_by: null,
++          approved_at: null,
++          approved_digest: null,
++          policy_facts: [],
++        }),
++      }),
++      event_cursor: aggregate.event_cursor + 1,
++      updated_at: input.rejected_at,
++    }),
++    replan_required_reason_code: "plan_rejected",
++    clear_execution_grant: true,
++    plan_approval: {
++      state: "rejected",
++      updated_at: input.rejected_at,
++      updated_by: input.actor_id,
++      note: input.note,
++    },
++  });
++}
++
++export type RecoverRejectedPlanInput = {
++  task_id: string;
++  expected_readme_revision: number;
++  expected_aggregate_revision: number;
++  plan_digest: `sha256:${string}`;
++  expected_state_fingerprint: `sha256:${string}`;
++  observed_state_fingerprint: `sha256:${string}`;
++  actor_id: string;
++  note: string;
++  recovered_at: string;
++  idempotency_key: string;
++};
++
++export async function recoverRejectedPlanProjection(opts: {
++  backend: TaskBackend;
++  input: RecoverRejectedPlanInput;
++}): Promise<TransitionReceipt> {
++  const { input } = opts;
++  const raw = await opts.backend.getTask(input.task_id);
++  if (!raw) throw new Error(`Task not found: ${input.task_id}`);
++  const runtime = runtimeFrom(raw);
++  const already = runtime.mutation_receipts[input.idempotency_key];
++  if (already) return already;
++  if (input.expected_state_fingerprint !== input.observed_state_fingerprint) {
++    throw new Error("Task rejection recovery fingerprint is stale.");
++  }
++  const aggregate = taskCentricAggregateFromExtensions(raw.extensions);
++  if (!aggregate?.current_plan) throw new Error("Task-centric plan is missing.");
++  if (
++    (raw.revision ?? 1) !== input.expected_readme_revision ||
++    aggregate.revision !== input.expected_aggregate_revision
++  ) {
++    throw new Error(
++      `Task rejection recovery revisions changed: README ${raw.revision ?? 1}/${input.expected_readme_revision}, aggregate ${aggregate.revision}/${input.expected_aggregate_revision}.`,
++    );
++  }
++  if (raw.plan_approval?.state !== "rejected") {
++    throw new Error("Task rejection recovery requires a rejected README projection.");
++  }
++  if (aggregate.current_plan.digest !== input.plan_digest) {
++    throw new Error("Task rejection recovery plan digest is stale.");
++  }
++  if (aggregate.current_plan.approval.state === "rejected") {
++    throw new Error("Task rejection recovery is unnecessary.");
++  }
++  const nextRevision = input.expected_readme_revision + 1;
++  const event = syntheticEvent({
++    task: aggregate,
++    mutation_id: input.idempotency_key,
++    entity: "task",
++    from: aggregate.lifecycle,
++    to: "PLANNING",
++    at: input.recovered_at,
++    actor_id: input.actor_id,
++    cause_refs: [
++      "projection-recovery:plan-rejection",
++      `readme-revision:${input.expected_readme_revision}`,
++      `aggregate-revision:${input.expected_aggregate_revision}`,
++      `state-fingerprint:${input.expected_state_fingerprint}`,
++      `note:${taskCentricDigest(input.note)}`,
++    ],
++  });
++  const next = Object.freeze({
++    ...aggregate,
++    revision: nextRevision,
++    lifecycle: "PLANNING" as const,
++    current_plan: Object.freeze({
++      ...aggregate.current_plan,
++      approval: Object.freeze({
++        state: "rejected" as const,
++        approved_by: null,
++        approved_at: null,
++        approved_digest: null,
++        policy_facts: [],
++      }),
++    }),
++    event_cursor: aggregate.event_cursor + 1,
++    updated_at: input.recovered_at,
++  });
++  const receipt = transitionReceipt({
++    task_id: input.task_id,
++    previous_revision: aggregate.revision,
++    next,
++    mutation_id: input.idempotency_key,
++    event,
++  });
++  const nextRuntime: TaskCentricRuntimeProjection = Object.freeze({
++    ...runtime,
++    events: Object.freeze([...runtime.events, event]),
++    mutation_receipts: Object.freeze({
++      ...runtime.mutation_receipts,
++      [input.idempotency_key]: receipt,
++    }),
++  });
++  const extensions = withTaskCentricAggregate(raw.extensions, next);
++  delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
++  extensions[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
++    schema_version: 1,
++    reason_code: "plan_rejection_projection_recovered",
++  };
++  await opts.backend.writeTask(
++    {
++      ...raw,
++      revision: nextRevision,
++      status: "TODO",
++      extensions: {
++        ...extensions,
++        [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: nextRuntime,
++      },
++    },
++    { expectedRevision: input.expected_readme_revision },
++  );
++  return receipt;
++}
+diff --git a/packages/agentplane/src/cli/group-command.test.ts b/packages/agentplane/src/cli/group-command.test.ts
+index dd17292be..58dc2452e 100644
+--- a/packages/agentplane/src/cli/group-command.test.ts
++++ b/packages/agentplane/src/cli/group-command.test.ts
+@@ -39,6 +39,7 @@ describe("group-command helper", () => {
+   it("loads direct subcommands from the canonical command graph lazily", async () => {
+     await expect(loadDirectSubcommandNames(["task", "plan"])).resolves.toEqual([
+       "approve",
++      "recover-rejection",
+       "reject",
+       "set",
+     ]);
+diff --git a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+index 152c137ab..9ed9cbe45 100644
+--- a/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.help-contract.test.ts
+@@ -335,8 +335,12 @@ describe("cli help contract", () => {
+     try {
+       const code = await runCli(["task", "plan", "--help"]);
+       expect(code).toBe(0);
+-      expect(io.stdout).toContain("task plan - Task plan commands (set/approve/reject).");
+-      expect(io.stdout).toContain("agentplane task plan <set|approve|reject> [args] [options]");
++      expect(io.stdout).toContain(
++        "task plan - Task plan commands (set/approve/reject/recover-rejection).",
++      );
++      expect(io.stdout).toContain(
++        "agentplane task plan <set|approve|reject|recover-rejection> [args] [options]",
++      );
+       expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
+       expect(io.stdout).not.toContain("Unknown command: task plan");
+     } finally {
+diff --git a/packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts b/packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts
+index 7f050ce1e..743b41633 100644
+--- a/packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts
+@@ -23,6 +23,8 @@ import {
+   parseTaskReadme,
+   readTask,
+   renderTaskReadme,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
+ } from "@agentplaneorg/core/tasks";
+ 
+ import { runCli } from "./run-cli.js";
+@@ -193,6 +195,244 @@ async function prepareHostApproval(root: string, taskId: string): Promise<Record
+ }
+ 
+ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
++  it("atomically rejects a task-centric proposal, invalidates stale approval, and replans", async () => {
++    const root = await mkGitRepoRootWithCommit();
++    await writeDefaultConfig(root);
++    const ioNew = captureStdIO();
++    let taskId = "";
++    try {
++      expect(
++        await runCli([
++          "task",
++          "new",
++          "--title",
++          "Atomic rejection",
++          "--description",
++          "Reject the structured plan atomically",
++          "--priority",
++          "high",
++          "--owner",
++          "CODER",
++          "--tag",
++          "code",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      taskId = ioNew.stdout.trim();
++    } finally {
++      ioNew.restore();
++    }
++    const staleRequest = await prepareHostApproval(root, taskId);
++    const before = parseTaskReadme(
++      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
++    ).frontmatter;
++    const beforeAggregate = taskCentricAggregateFromExtensions(before.extensions)!;
++
++    const rejectIo = captureStdIO();
++    try {
++      expect(
++        await runCli([
++          "task",
++          "plan",
++          "reject",
++          taskId,
++          "--by",
++          "USER",
++          "--note",
++          "Revise authority roots",
++          "--root",
++          root,
++        ]),
++        rejectIo.stderr,
++      ).toBe(0);
++    } finally {
++      rejectIo.restore();
++    }
++    const rejected = parseTaskReadme(
++      await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
++    ).frontmatter;
++    const aggregate = taskCentricAggregateFromExtensions(rejected.extensions)!;
++    const runtime = rejected.extensions?.["agentplane.task_centric_runtime"] as {
++      events: unknown[];
++      mutation_receipts: Record<string, unknown>;
++    };
++    expect(Number(rejected.revision)).toBe(Number(before.revision) + 1);
++    expect(aggregate.revision).toBe(rejected.revision);
++    expect(aggregate).toMatchObject({ lifecycle: "PLANNING" });
++    expect(aggregate.current_plan?.approval.state).toBe("rejected");
++    expect(aggregate.current_plan?.digest).toBe(beforeAggregate.current_plan?.digest);
++    expect(runtime.events).toHaveLength(1);
++    expect(Object.keys(runtime.mutation_receipts)).toHaveLength(1);
++
++    const staleDecision = Buffer.from(
++      JSON.stringify({
++        schema_version: 1,
++        ...staleRequest,
++        host_id: "codex",
++        conversation_id: "stale-rejection",
++        message_id: "stale-approval",
++        decided_at: "2026-09-03T10:00:00.000Z",
++      }),
++      "utf8",
++    ).toString("base64url");
++    const staleIo = captureStdIO();
++    try {
++      expect(
++        await runCli([
++          "task",
++          "plan",
++          "approve",
++          taskId,
++          "--host-user-decision",
++          staleDecision,
++          "--root",
++          root,
++        ]),
++      ).not.toBe(0);
++      expect(staleIo.stderr).toContain("current route no longer requests plan approval");
++    } finally {
++      staleIo.restore();
++    }
++
++    const advanceIo = captureStdIO();
++    try {
++      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
++      const packet = JSON.parse(advanceIo.stdout) as {
++        action: { kind: string };
++        authority: { role: string };
++        state_fingerprint: string;
++      };
++      expect(packet.action.kind).toBe("agent_episode");
++      expect(packet.authority.role).toBe("PLANNER");
++      expect(packet.state_fingerprint).not.toBe(staleRequest.state_fingerprint);
++    } finally {
++      advanceIo.restore();
++    }
++  });
++
++  it("recovers a 52/50 rejected projection fixture and emits a fresh planning packet", async () => {
++    const root = await mkGitRepoRootWithCommit();
++    await writeDefaultConfig(root);
++    const createIo = captureStdIO();
++    let taskId = "";
++    try {
++      expect(
++        await runCli([
++          "task",
++          "new",
++          "--title",
++          "Historical rejection recovery",
++          "--description",
++          "Recover the split projection fixture",
++          "--priority",
++          "high",
++          "--owner",
++          "CODER",
++          "--tag",
++          "code",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      taskId = createIo.stdout.trim();
++    } finally {
++      createIo.restore();
++    }
++    await prepareHostApproval(root, taskId);
++    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
++    const proposed = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
++    const proposedAggregate = taskCentricAggregateFromExtensions(proposed.extensions)!;
++    await writeFile(
++      readmePath,
++      renderTaskReadme(
++        {
++          ...proposed,
++          revision: 52,
++          plan_approval: {
++            state: "rejected",
++            updated_at: "2026-09-02T13:52:00.000Z",
++            updated_by: "USER",
++            note: "Rejected authority-incomplete plan",
++          },
++          extensions: withTaskCentricAggregate(proposed.extensions, {
++            ...proposedAggregate,
++            revision: 50,
++          }),
++        },
++        "",
++      ),
++      "utf8",
++    );
++
++    const staleIo = captureStdIO();
++    let stalePacket: {
++      state_fingerprint: string;
++      action: { kind: string };
++    };
++    try {
++      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
++      stalePacket = JSON.parse(staleIo.stdout) as typeof stalePacket;
++      expect(stalePacket.action.kind).toBe("approval_required");
++    } finally {
++      staleIo.restore();
++    }
++
++    const recoveryIo = captureStdIO();
++    try {
++      expect(
++        await runCli([
++          "task",
++          "plan",
++          "recover-rejection",
++          taskId,
++          "--expected-readme-revision",
++          "52",
++          "--expected-aggregate-revision",
++          "50",
++          "--rejected-plan-digest",
++          proposedAggregate.current_plan!.digest,
++          "--expected-state-fingerprint",
++          stalePacket!.state_fingerprint,
++          "--by",
++          "USER",
++          "--note",
++          "Repair historical split rejection",
++          "--root",
++          root,
++        ]),
++        recoveryIo.stderr,
++      ).toBe(0);
++      const output = JSON.parse(recoveryIo.stdout) as {
++        receipt: { previous_revision: number; next_revision: number };
++      };
++      expect(output.receipt).toMatchObject({ previous_revision: 50, next_revision: 53 });
++    } finally {
++      recoveryIo.restore();
++    }
++
++    const recovered = parseTaskReadme(await readFile(readmePath, "utf8")).frontmatter;
++    const aggregate = taskCentricAggregateFromExtensions(recovered.extensions)!;
++    expect(recovered.revision).toBe(53);
++    expect(aggregate.revision).toBe(53);
++    expect(aggregate.current_plan?.approval.state).toBe("rejected");
++
++    const advanceIo = captureStdIO();
++    try {
++      expect(await runCli(["task", "advance", taskId, "--agent-json", "--root", root])).toBe(0);
++      const packet = JSON.parse(advanceIo.stdout) as {
++        action: { kind: string };
++        authority: { role: string };
++        state_fingerprint: string;
++      };
++      expect(packet.action.kind).toBe("agent_episode");
++      expect(packet.authority.role).toBe("PLANNER");
++      expect(packet.state_fingerprint).not.toBe(stalePacket!.state_fingerprint);
++    } finally {
++      advanceIo.restore();
++    }
++  });
++
+   it("task plan approve rejects verify-required tasks with missing Verify Steps", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 9cdcc635c..60036c05f 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("265commands/182args/867options");
++      expect(compatibility.stdout).toContain("266commands/183args/873options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -224,13 +224,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202608291006-2A6BJC",
+           "202608291006-255K66",
+           "202608301851-5W3XW6",
++          "202609030849-925NNG",
+         ],
+         candidate: {
+-          surface_sha256: "188758d3816d44e2767842ffb416f054acb7fd4bbfca4b4854595d6f03a270be",
++          surface_sha256: "a8722750a913666840ff29a877168819412c90285ec34122992ac517e5c1886e",
+           section_digests: {
+             agent_facing_context_contracts:
+               "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-            cli_topology: "9a1daccdc588e364a76b4ed5f0e3ff6cc34215cacd55fbfcf4d20624a64ba5e7",
++            cli_topology: "88154991bccc8109e7aa05a365b00aa8c2bdd984e8b8296e72cd662bad53ec26",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+index 8911944fe..81c6483cf 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.test.ts
+@@ -101,7 +101,12 @@ describe("command catalog graph", () => {
+   });
+ 
+   it("derives direct child names from the canonical graph", () => {
+-    expect(getDirectChildCommandNames(["task", "plan"])).toEqual(["approve", "reject", "set"]);
++    expect(getDirectChildCommandNames(["task", "plan"])).toEqual([
++      "approve",
++      "recover-rejection",
++      "reject",
++      "set",
++    ]);
+     expect(getDirectChildCommandNames(["codex"])).toEqual(["plugin"]);
+     expect(getDirectChildCommandNames(["codex", "plugin"])).toEqual(["install"]);
+     expect(getDirectChildCommandNames(["missing", "command"])).toEqual([]);
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+index f43f1cc18..cce6ad60c 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task.ts
+@@ -44,6 +44,7 @@ import {
+ import { taskNormalizeSpec } from "../../../commands/task/normalize.command.js";
+ import { taskPlanApproveSpec } from "../../../commands/task/plan-approve.command.js";
+ import { taskPlanRejectSpec } from "../../../commands/task/plan-reject.command.js";
++import { taskPlanRecoverRejectionSpec } from "../../../commands/task/plan-recover-rejection.command.js";
+ import { taskPlanSetSpec } from "../../../commands/task/plan-set.command.js";
+ import { taskPlanSpec } from "../../../commands/task/plan.command.js";
+ import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
+@@ -174,6 +175,7 @@ import {
+   loadTaskPlanSetSpec,
+   loadTaskPlanApproveSpec,
+   loadTaskPlanRejectSpec,
++  loadTaskPlanRecoverRejectionSpec,
+   loadTaskVerifyOkSpec,
+   loadTaskVerifyReworkSpec,
+   loadTaskVerifyShowSpec,
+@@ -552,6 +554,12 @@ export const TASK_COMMANDS = [
+     surface: "advanced",
+     helpGroup: "Advanced",
+   }),
++  declareSessionCommand(taskPlanRecoverRejectionSpec, {
++    load: loadTaskPlanRecoverRejectionSpec,
++    requirements: TASK_PLAN_APPROVAL_REQUIREMENTS,
++    surface: "internal",
++    helpGroup: "Maintenance",
++  }),
+   fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", {
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 642e377ae..08fd1b949 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -376,6 +376,10 @@ export const loadTaskPlanRejectSpec = (session: TaskWriteSession) =>
+   import("../../../commands/task/plan-reject.command.js").then((m) =>
+     m.makeRunTaskPlanRejectHandler(getSessionContext(session, "task.write")),
+   );
++export const loadTaskPlanRecoverRejectionSpec = (session: TaskPlanApprovalSession) =>
++  import("../../../commands/task/plan-recover-rejection.command.js").then((m) =>
++    m.makeRunTaskPlanRecoverRejectionHandler(getSessionContext(session, "task.write")),
++  );
+ export const loadTaskVerifyOkSpec = (session: TaskLifecycleSession) =>
+   import("../../../commands/task/verify-ok.command.js").then((m) =>
+     m.makeRunTaskVerifyOkHandler(getSessionContext(session, "git.mutate")),
+diff --git a/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts b/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+new file mode 100644
+index 000000000..77fdc2b50
+--- /dev/null
++++ b/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+@@ -0,0 +1,62 @@
++import { createLegacyTaskAggregate, withTaskCentricAggregate } from "@agentplaneorg/core/tasks";
++import { describe, expect, it } from "vitest";
++
++import { buildTaskCentricProjectionIntegrityFindings } from "./workspace-task-state.js";
++
++describe("task-centric projection integrity diagnostics", () => {
++  it("detects the historical rejected README and stale aggregate revision", () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "202609021331-5FPZAB",
++      revision: 50,
++      title: "Recover projection",
++      description: "Fixture",
++      status: "TODO",
++      acceptance_criteria: ["recovered"],
++      captured_at: "2026-09-02T13:31:00.000Z",
++      updated_at: "2026-09-02T13:31:00.000Z",
++    });
++    const findings = buildTaskCentricProjectionIntegrityFindings([
++      {
++        id: aggregate.id,
++        status: "TODO",
++        doc_version: 3,
++        revision: 52,
++        plan_approval: { state: "rejected" },
++        extensions: withTaskCentricAggregate({}, aggregate),
++      },
++    ]);
++
++    expect(findings).toHaveLength(1);
++    expect(findings[0]).toContain("[WARN]");
++    expect(findings[0]).toContain("task-centric plan projection mismatch");
++    expect(findings[0]).toContain("README revision/state: 52/rejected");
++    expect(findings[0]).toContain("Aggregate revision/state: 50/missing");
++    expect(findings[0]).toContain("task plan recover-rejection");
++  });
++
++  it("does not treat ordinary README revision drift as a rejected-plan corruption", () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "ordinary-active-task",
++      revision: 11,
++      title: "Ordinary task",
++      description: "Fixture",
++      status: "DOING",
++      acceptance_criteria: ["complete"],
++      captured_at: "2026-09-03T10:00:00.000Z",
++      updated_at: "2026-09-03T10:00:00.000Z",
++    });
++
++    const findings = buildTaskCentricProjectionIntegrityFindings([
++      {
++        id: aggregate.id,
++        status: "DOING",
++        doc_version: 3,
++        revision: 29,
++        plan_approval: { state: "approved" },
++        extensions: withTaskCentricAggregate({}, aggregate),
++      },
++    ]);
++
++    expect(findings).toEqual([]);
++  });
++});
+diff --git a/packages/agentplane/src/commands/doctor/workspace-task-state.ts b/packages/agentplane/src/commands/doctor/workspace-task-state.ts
+index 785b8c2be..b492ea986 100644
+--- a/packages/agentplane/src/commands/doctor/workspace-task-state.ts
++++ b/packages/agentplane/src/commands/doctor/workspace-task-state.ts
+@@ -7,16 +7,20 @@ import {
+   normalizeTaskStatus,
+   parseTaskReadme,
+   renderTaskDocFromSections,
++  taskCentricAggregateFromExtensions,
+ } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskSummary } from "../../backends/task-backend.js";
+ import { renderDiagnosticFinding } from "../shared/diagnostics.js";
+ import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
+ 
+-type TaskDocSnapshot = {
++export type TaskDocSnapshot = {
+   id?: unknown;
+   status?: unknown;
+   doc_version?: unknown;
++  revision?: unknown;
++  plan_approval?: unknown;
++  extensions?: Readonly<Record<string, unknown>>;
+ };
+ 
+ function taskDataToSnapshot(task: TaskSummary): TaskDocSnapshot {
+@@ -24,6 +28,9 @@ function taskDataToSnapshot(task: TaskSummary): TaskDocSnapshot {
+     id: task.id,
+     status: task.status,
+     doc_version: task.doc_version,
++    revision: task.revision,
++    plan_approval: task.plan_approval,
++    extensions: task.extensions,
+   };
+ }
+ 
+@@ -137,6 +144,78 @@ export async function checkTaskReadmeMigrationState(
+   return buildTaskReadmeMigrationFindings(tasks);
+ }
+ 
++function record(value: unknown): Record<string, unknown> | null {
++  return value !== null && typeof value === "object" && !Array.isArray(value)
++    ? (value as Record<string, unknown>)
++    : null;
++}
++
++export function buildTaskCentricProjectionIntegrityFindings(
++  tasks: readonly TaskDocSnapshot[],
++): string[] {
++  const findings: string[] = [];
++  for (const task of tasks) {
++    const taskId = typeof task.id === "string" ? task.id : "unknown-task";
++    const readmeRevision = Number.isInteger(task.revision) ? Number(task.revision) : null;
++    let aggregate;
++    try {
++      aggregate = taskCentricAggregateFromExtensions(task.extensions);
++    } catch (error) {
++      findings.push(
++        renderDiagnosticFinding({
++          severity: "ERROR",
++          state: `task-centric projection is malformed for ${taskId}`,
++          likelyCause: error instanceof Error ? error.message : String(error),
++          details: [`Task: ${taskId}`],
++        }),
++      );
++      continue;
++    }
++    if (!aggregate || readmeRevision === null) continue;
++    const readmePlanStateValue = record(task.plan_approval)?.state;
++    const readmePlanState =
++      typeof readmePlanStateValue === "string" ? readmePlanStateValue : "pending";
++    const aggregatePlanState = aggregate.current_plan?.approval.state ?? "missing";
++    if (readmePlanState !== "rejected" || aggregatePlanState === "rejected") continue;
++    findings.push(
++      renderDiagnosticFinding({
++        severity: "WARN",
++        state: `task-centric plan projection mismatch for ${taskId}`,
++        likelyCause:
++          "the task README and canonical aggregate did not commit the same plan mutation",
++        nextAction: {
++          command:
++            `agentplane task plan recover-rejection ${taskId} ` +
++            `--expected-readme-revision ${readmeRevision} ` +
++            `--expected-aggregate-revision ${aggregate.revision} ` +
++            `--rejected-plan-digest ${aggregate.current_plan?.digest ?? "<sha256>"} ` +
++            "--expected-state-fingerprint <sha256> --by USER --note <reason>",
++          reason:
++            "use the guarded receipt-backed recovery only after confirming the rejected README state",
++        },
++        details: [
++          `Task: ${taskId}`,
++          `README revision/state: ${readmeRevision}/${readmePlanState}`,
++          `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
++        ],
++      }),
++    );
++  }
++  return findings;
++}
++
++export async function checkTaskCentricProjectionIntegrityState(
++  repoRoot: string,
++  ctx?: CommandContext,
++): Promise<string[]> {
++  const projectionTasks = await readTaskDocSnapshotsFromProjection(ctx);
++  const tasks =
++    projectionTasks.length > 0
++      ? projectionTasks
++      : await readTaskDocSnapshotsFromReadmes(repoRoot, ctx);
++  return buildTaskCentricProjectionIntegrityFindings(tasks);
++}
++
+ async function readUntrackedPaths(repoRoot: string, ctx?: CommandContext): Promise<Set<string>> {
+   try {
+     const git = ctx?.git ?? new GitContext({ gitRoot: repoRoot });
+diff --git a/packages/agentplane/src/commands/doctor/workspace.ts b/packages/agentplane/src/commands/doctor/workspace.ts
+index c3c588762..f205e69fb 100644
+--- a/packages/agentplane/src/commands/doctor/workspace.ts
++++ b/packages/agentplane/src/commands/doctor/workspace.ts
+@@ -10,9 +10,13 @@ import {
+   checkDoneTaskReadmeArchiveDrift,
+   checkTaskProjectionDrift,
+   checkTaskReadmeMigrationState,
++  checkTaskCentricProjectionIntegrityState,
+ } from "./workspace-task-state.js";
+ 
+-export { checkTaskReadmeMigrationState } from "./workspace-task-state.js";
++export {
++  checkTaskReadmeMigrationState,
++  checkTaskCentricProjectionIntegrityState,
++} from "./workspace-task-state.js";
+ 
+ async function pathExists(absPath: string): Promise<boolean> {
+   try {
+@@ -231,6 +235,7 @@ export async function checkWorkspace(
+     ...(await checkBackendReadiness(opts?.ctx)),
+     ...(await checkManagedHookShimReadiness(repoRoot)),
+     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
++    ...(await checkTaskCentricProjectionIntegrityState(repoRoot, opts?.ctx)),
+     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
+     ...(opts?.deep ? await checkTaskProjectionDrift(repoRoot, opts?.ctx) : []),
+   );
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
+index 5d6adc638..8412a9ed9 100644
+--- a/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
+@@ -1,11 +1,19 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+-import { TASK_CENTRIC_EXTENSION_KEY } from "@agentplaneorg/core/tasks";
++import {
++  createRepositorySnapshot,
++  taskCentricDigest,
++  TASK_CENTRIC_EXTENSION_KEY,
++  type TaskPlanProposal,
++} from "@agentplaneorg/core/tasks";
+ 
+ const mocks = vi.hoisted(() => ({ loadTask: vi.fn() }));
+ vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
+ 
+-import { isExternalPlanningResultApplied } from "./external-agent-planning-authority.js";
++import {
++  assertExternalPlanningResultApplicable,
++  isExternalPlanningResultApplied,
++} from "./external-agent-planning-authority.js";
+ 
+ const summary = "Preserve exact planning-result recovery.";
+ // These projections isolate comparison after the envelope has already been validated.
+@@ -149,3 +157,156 @@ describe("persisted external planning-result comparison", () => {
+     expect(await applied({ intent })).toBe(false);
+   });
+ });
++
++describe("external TaskPlanProposal graph validation", () => {
++  const repository = createRepositorySnapshot({
++    git: { kind: "commit", sha: "a".repeat(40), ref: null },
++    dirty_paths: [],
++    policy_digest: null,
++    config_digest: null,
++    context_digest: null,
++    task_history_cursor: "task-revision:1",
++    captured_at: "2026-08-19T00:00:00.000Z",
++  });
++  const validation = {
++    schema_version: 1 as const,
++    criteria: [{ id: "done", description: "done", required: true, check_ids: ["test"] }],
++    checks: [
++      {
++        id: "test",
++        kind: "deterministic" as const,
++        required: true,
++        capability: "task.verify",
++        command: "bun test",
++      },
++    ],
++    evidence_fingerprint: taskCentricDigest("validation"),
++  };
++  const item = (opts: {
++    id: string;
++    depends_on?: readonly string[];
++    required_inputs?: readonly string[];
++    expected_outputs: readonly string[];
++  }) => ({
++    id: opts.id,
++    objective: `Implement ${opts.id}`,
++    depends_on: [...(opts.depends_on ?? [])],
++    required_inputs: [...(opts.required_inputs ?? [])],
++    expected_outputs: [...opts.expected_outputs],
++    scope_roots: ["packages/agentplane/src/commands/task"],
++    acceptance_criteria: validation.criteria,
++    validation,
++    context: {
++      required_sources: ["repository"],
++      optional_sources: [],
++      symbol_hints: [],
++      max_bytes: 8192,
++    },
++    risk: "medium" as const,
++    capabilities: ["task.verify"],
++    resource_claims: [
++      {
++        kind: "path" as const,
++        resource: "packages/agentplane/src/commands/task",
++        mode: "write" as const,
++      },
++    ],
++    optional: false,
++    priority: 1,
++  });
++
++  function proposal(workItems: TaskPlanProposal["work_items"]["work_items"]): TaskPlanProposal {
++    return {
++      schema_version: 1,
++      task_id: returnedProposal.task_id,
++      planning_baseline: repository,
++      work_items: { schema_version: 1, work_items: workItems },
++      assumptions: [],
++      unresolved_questions: [],
++      top_level_validation: validation,
++    };
++  }
++
++  async function assertApplicable(plan: TaskPlanProposal) {
++    mocks.loadTask.mockResolvedValue({
++      id: returnedProposal.task_id,
++      title: "Task",
++      description: "Task",
++      status: "DOING",
++      revision: 1,
++      verify: [],
++      mutation_scope: "code",
++      task_kind: "code",
++      extensions: {},
++    });
++    return assertExternalPlanningResultApplicable({
++      command: {} as never,
++      exchange: { task_id: returnedProposal.task_id } as never,
++      envelope: {
++        result: {
++          status: "completed",
++          summary: "Plan",
++          task_plan_proposal: plan,
++        },
++      } as never,
++      work_order: {
++        role: "PLANNER",
++        task: { id: returnedProposal.task_id, work_item_id: null },
++        state_fingerprint: { digest: taskCentricDigest("state"), git_head: null },
++        planning_context: { repository_snapshot: repository },
++      } as never,
++    });
++  }
++
++  it("accepts a required input produced by exactly one predecessor", async () => {
++    await expect(
++      assertApplicable(
++        proposal([
++          item({ id: "first", expected_outputs: ["first-output"] }),
++          item({
++            id: "second",
++            depends_on: ["first"],
++            required_inputs: ["first-output"],
++            expected_outputs: ["second-output"],
++          }),
++        ]),
++      ),
++    ).resolves.toBeUndefined();
++  });
++
++  it.each([
++    [
++      "unproduced",
++      [item({ id: "first", required_inputs: ["missing"], expected_outputs: ["out"] })],
++    ],
++    ["self-produced", [item({ id: "first", required_inputs: ["out"], expected_outputs: ["out"] })]],
++    [
++      "multiply produced",
++      [
++        item({ id: "first", expected_outputs: ["shared"] }),
++        item({ id: "second", expected_outputs: ["shared"] }),
++        item({ id: "consumer", required_inputs: ["shared"], expected_outputs: ["result"] }),
++      ],
++    ],
++    [
++      "input-induced cyclic",
++      [
++        item({
++          id: "first",
++          required_inputs: ["second-output"],
++          expected_outputs: ["first-output"],
++        }),
++        item({
++          id: "second",
++          required_inputs: ["first-output"],
++          expected_outputs: ["second-output"],
++        }),
++      ],
++    ],
++    ["duplicate output", [item({ id: "first", expected_outputs: ["duplicate", "duplicate"] })]],
++  ])("rejects a %s required input before persistence", async (_label, workItems) => {
++    await expect(assertApplicable(proposal(workItems))).rejects.toThrow(
++      "missing_dependency@work_items.required_inputs",
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+index 002e7198c..c1ef90ac1 100644
+--- a/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.ts
+@@ -5,6 +5,7 @@ import {
+   createLegacyTaskAggregate,
+   createTaskPlanRevision,
+   reconcileReplacementPlanWorkItems,
++  taskKernel,
+   taskCentricAggregateFromExtensions,
+   TASK_CENTRIC_EXTENSION_KEY,
+   validateTaskPlanProposal,
+@@ -69,6 +70,37 @@ function planningTaskFields(opts: {
+         supported_capabilities: TASK_CENTRIC_EXECUTION_CAPABILITIES,
+       }),
+     ];
++    const canonicalGraphIssues = taskKernel
++      .validateWorkItemDefinitions(
++        structuredProposal.work_items.work_items.map((item) => ({
++          id: item.id,
++          depends_on: item.depends_on,
++          required_inputs: item.required_inputs,
++          expected_outputs: item.expected_outputs,
++          execution_requirements: {
++            scope_roots: item.scope_roots,
++            repository_effects: [],
++            external_effects: [],
++            capabilities: item.capabilities,
++            resources: item.resource_claims.map((claim) => claim.resource),
++          },
++          optional: item.optional,
++        })),
++      )
++      .filter(
++        (issue) =>
++          issue.startsWith("invalid_input:") ||
++          issue.startsWith("self_input:") ||
++          issue.startsWith("duplicate_output:") ||
++          issue === "dependency_cycle",
++      );
++    for (const issue of canonicalGraphIssues) {
++      issues.push({
++        code: "missing_dependency",
++        path: "work_items.required_inputs",
++        message: `Invalid canonical WorkItem graph: ${issue}.`,
++      });
++    }
+     if (
+       issuedRepository &&
+       structuredProposal.planning_baseline.digest !== issuedRepository.digest
+@@ -119,6 +151,7 @@ function planningTaskFields(opts: {
+     });
+     structuredExtensions = withTaskCentricAggregate(opts.task.extensions, {
+       ...aggregate,
++      revision: (opts.task.revision ?? aggregate.revision) + 1,
+       lifecycle: "AWAITING_PLAN_APPROVAL",
+       current_plan: plan,
+       plan_history: existing?.current_plan
+diff --git a/packages/agentplane/src/commands/task/plan-approval-guard.ts b/packages/agentplane/src/commands/task/plan-approval-guard.ts
+new file mode 100644
+index 000000000..167b50ed9
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/plan-approval-guard.ts
+@@ -0,0 +1,23 @@
++import { taskCentricReplanRequiredFromExtensions } from "@agentplaneorg/core/tasks";
++import type { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
++
++import { CliError } from "../../shared/errors.js";
++
++export function assertCanonicalPlanCanBeApproved(
++  taskCentric: ReturnType<typeof taskCentricAggregateFromExtensions>,
++  extensions: Readonly<Record<string, unknown>> | undefined,
++): void {
++  if (taskCentric?.current_plan && taskCentricReplanRequiredFromExtensions(extensions)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Canonical task plan is stale after the task document changed; complete replanning before approval.",
++    });
++  }
++  if (taskCentric?.current_plan?.approval.state === "rejected") {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Rejected canonical task plans cannot be approved; complete replanning first.",
++    });
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/plan-recover-rejection.command.ts b/packages/agentplane/src/commands/task/plan-recover-rejection.command.ts
+new file mode 100644
+index 000000000..7a8888715
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/plan-recover-rejection.command.ts
+@@ -0,0 +1,126 @@
++import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import { usageError } from "../../cli/spec/errors.js";
++import { createCliEmitter } from "../../cli/output.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import { recoverTaskPlanRejection } from "./plan-rejection-recovery.js";
++
++type Parsed = {
++  taskId: string;
++  expectedReadmeRevision: number;
++  expectedAggregateRevision: number;
++  rejectedPlanDigest: `sha256:${string}`;
++  expectedStateFingerprint: `sha256:${string}`;
++  by: string;
++  note: string;
++};
++
++const digestPattern = /^sha256:[0-9a-f]{64}$/u;
++
++export const taskPlanRecoverRejectionSpec: CommandSpec<Parsed> = {
++  id: ["task", "plan", "recover-rejection"],
++  group: "Task",
++  summary: "Recover a verified split task-centric plan-rejection projection.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "expected-readme-revision",
++      required: true,
++      valueHint: "<n>",
++      description: "Exact rejected README revision.",
++    },
++    {
++      kind: "string",
++      name: "expected-aggregate-revision",
++      required: true,
++      valueHint: "<n>",
++      description: "Exact stale aggregate revision.",
++    },
++    {
++      kind: "string",
++      name: "rejected-plan-digest",
++      required: true,
++      valueHint: "<sha256>",
++      description: "Rejected canonical plan digest.",
++    },
++    {
++      kind: "string",
++      name: "expected-state-fingerprint",
++      required: true,
++      valueHint: "<sha256>",
++      description: "Exact current task route fingerprint.",
++    },
++    {
++      kind: "string",
++      name: "by",
++      required: true,
++      valueHint: "<id>",
++      description: "Recovery operator id.",
++    },
++    {
++      kind: "string",
++      name: "note",
++      required: true,
++      valueHint: "<text>",
++      description: "Auditable recovery reason.",
++    },
++  ],
++  parse: (raw) => {
++    const readme = Number(raw.opts["expected-readme-revision"]);
++    const aggregate = Number(raw.opts["expected-aggregate-revision"]);
++    const plan = String(raw.opts["rejected-plan-digest"]);
++    const fingerprint = String(raw.opts["expected-state-fingerprint"]);
++    if (!Number.isInteger(readme) || readme < 1 || !Number.isInteger(aggregate) || aggregate < 1) {
++      throw usageError({
++        spec: taskPlanRecoverRejectionSpec,
++        message: "Expected revisions must be positive integers.",
++      });
++    }
++    if (!digestPattern.test(plan) || !digestPattern.test(fingerprint)) {
++      throw usageError({
++        spec: taskPlanRecoverRejectionSpec,
++        message: "Plan digest and state fingerprint must be SHA-256 digests.",
++      });
++    }
++    return {
++      taskId: String(raw.args["task-id"]),
++      expectedReadmeRevision: readme,
++      expectedAggregateRevision: aggregate,
++      rejectedPlanDigest: plan as `sha256:${string}`,
++      expectedStateFingerprint: fingerprint as `sha256:${string}`,
++      by: String(raw.opts.by),
++      note: String(raw.opts.note),
++    };
++  },
++};
++
++export function makeRunTaskPlanRecoverRejectionHandler(
++  getCtx: (cmd: string) => Promise<CommandContext>,
++) {
++  return async (ctx: CommandCtx, parsed: Parsed): Promise<number> => {
++    const command = await getCtx("task plan recover-rejection");
++    const decision = await buildTaskRouteDecision({
++      ctx: command,
++      cwd: command.resolvedProject.gitRoot,
++      rootOverride: null,
++      includeRemote: false,
++      taskId: parsed.taskId,
++    });
++    const receipt = await recoverTaskPlanRejection({
++      ctx: command,
++      cwd: ctx.cwd,
++      rootOverride: ctx.rootOverride,
++      ...parsed,
++      observedStateFingerprint: decision.workflowStep.preconditionFingerprint
++        .digest as `sha256:${string}`,
++    });
++    createCliEmitter().json({
++      task_id: parsed.taskId,
++      recovery: "plan_rejection_projection",
++      receipt,
++    });
++    return 0;
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts b/packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts
+new file mode 100644
+index 000000000..9431cef98
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/plan-rejection-recovery.test.ts
+@@ -0,0 +1,95 @@
++import {
++  createLegacyTaskAggregate,
++  TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
++  taskCentricDigest,
++  withTaskCentricAggregate,
++  type TaskAggregate,
++} from "@agentplaneorg/core/tasks";
++import { describe, expect, it } from "vitest";
++
++import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
++
++function aggregate(planState: "pending" | "rejected"): TaskAggregate {
++  const base = createLegacyTaskAggregate({
++    id: "202609021331-5FPZAB",
++    revision: 52,
++    title: "Projection recovery",
++    description: "Fixture",
++    status: "TODO",
++    acceptance_criteria: ["recovered"],
++    captured_at: "2026-09-02T13:31:00.000Z",
++    updated_at: "2026-09-02T13:31:00.000Z",
++  });
++  return {
++    ...base,
++    lifecycle: "PLANNING",
++    current_plan: {
++      schema_version: 1,
++      task_id: base.id,
++      revision: 1,
++      digest: taskCentricDigest("rejected-plan"),
++      proposal: {
++        schema_version: 1,
++        task_id: base.id,
++        planning_baseline: {
++          schema_version: 1,
++          digest: taskCentricDigest("baseline"),
++          git: { kind: "commit", sha: "a".repeat(40), ref: null },
++          dirty_paths: [],
++          policy_digest: null,
++          config_digest: null,
++          context_digest: null,
++          task_history_cursor: null,
++          captured_at: "2026-09-02T13:31:00.000Z",
++        },
++        work_items: { schema_version: 1, work_items: [] },
++        assumptions: [],
++        unresolved_questions: [],
++        top_level_validation: {
++          schema_version: 1,
++          criteria: [],
++          checks: [],
++          evidence_fingerprint: taskCentricDigest("evidence"),
++        },
++      },
++      approval: {
++        state: planState,
++        approved_by: null,
++        approved_at: null,
++        approved_digest: null,
++        policy_facts: [],
++      },
++      created_at: "2026-09-02T13:31:00.000Z",
++    },
++  };
++}
++
++describe("plan rejection approval invalidation", () => {
++  it("rejects the rejected digest and every approval request while replanning is required", () => {
++    const rejected = aggregate("rejected");
++    const extensions = {
++      ...withTaskCentricAggregate({}, rejected),
++      [TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]: {
++        schema_version: 1,
++        reason_code: "plan_rejected",
++      },
++    };
++    expect(() => assertCanonicalPlanCanBeApproved(rejected, extensions)).toThrow(
++      /complete replanning/u,
++    );
++  });
++
++  it("fails closed on a stale approval packet even before the aggregate plan state is projected", () => {
++    const pending = aggregate("pending");
++    const extensions = {
++      ...withTaskCentricAggregate({}, pending),
++      [TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]: {
++        schema_version: 1,
++        reason_code: "plan_rejection_projection_recovered",
++      },
++    };
++    expect(() => assertCanonicalPlanCanBeApproved(pending, extensions)).toThrow(
++      /stale.*replanning/u,
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/plan-rejection-recovery.ts b/packages/agentplane/src/commands/task/plan-rejection-recovery.ts
+new file mode 100644
+index 000000000..96cf022e8
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/plan-rejection-recovery.ts
+@@ -0,0 +1,79 @@
++import { taskCentricDigest } from "@agentplaneorg/core/tasks";
++
++import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
++import { mapBackendError } from "../../cli/error-map.js";
++import { CliError } from "../../shared/errors.js";
++import { assertTaskMutationPolicy } from "../shared/task-mutation.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++
++import { loadPlanBackend } from "./plan-shared.js";
++import { nowIso } from "./shared.js";
++
++export async function recoverTaskPlanRejection(opts: {
++  ctx?: CommandContext;
++  cwd: string;
++  rootOverride?: string;
++  taskId: string;
++  expectedReadmeRevision: number;
++  expectedAggregateRevision: number;
++  rejectedPlanDigest: `sha256:${string}`;
++  expectedStateFingerprint: `sha256:${string}`;
++  observedStateFingerprint: `sha256:${string}`;
++  by: string;
++  note: string;
++}) {
++  try {
++    const { ctx, backend } = await loadPlanBackend({
++      ctx: opts.ctx,
++      cwd: opts.cwd,
++      rootOverride: opts.rootOverride,
++    });
++    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
++    assertTaskMutationPolicy({
++      ctx,
++      taskId: task.id,
++      task,
++      action: "task_plan_reject",
++      phase: "plan",
++    });
++    const by = opts.by.trim();
++    const note = opts.note.trim();
++    if (!by || !note) {
++      throw new CliError({
++        exitCode: 2,
++        code: "E_USAGE",
++        message: "Plan rejection recovery requires non-empty --by and --note values.",
++      });
++    }
++    const idempotencyKey = `plan-rejection-recovery-${taskCentricDigest({
++      task_id: task.id,
++      readme_revision: opts.expectedReadmeRevision,
++      aggregate_revision: opts.expectedAggregateRevision,
++      plan_digest: opts.rejectedPlanDigest,
++      state_fingerprint: opts.expectedStateFingerprint,
++      by,
++      note,
++    }).slice(7, 39)}`;
++    return await new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.reject(new Error("Repository observation not required.")),
++    }).recoverRejectedPlanProjection({
++      task_id: task.id,
++      expected_readme_revision: opts.expectedReadmeRevision,
++      expected_aggregate_revision: opts.expectedAggregateRevision,
++      plan_digest: opts.rejectedPlanDigest,
++      expected_state_fingerprint: opts.expectedStateFingerprint,
++      observed_state_fingerprint: opts.observedStateFingerprint,
++      actor_id: by,
++      note,
++      recovered_at: nowIso(),
++      idempotency_key: idempotencyKey,
++    });
++  } catch (err) {
++    if (err instanceof CliError) throw err;
++    throw mapBackendError(err, {
++      command: "task plan recover-rejection",
++      root: opts.rootOverride ?? null,
++    });
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/plan.command.ts b/packages/agentplane/src/commands/task/plan.command.ts
+index 58f03ee4e..6704fea57 100644
+--- a/packages/agentplane/src/commands/task/plan.command.ts
++++ b/packages/agentplane/src/commands/task/plan.command.ts
+@@ -10,8 +10,8 @@ type TaskPlanGroupParsed = GroupCommandParsed;
+ export const taskPlanSpec: CommandSpec<TaskPlanGroupParsed> = {
+   id: ["task", "plan"],
+   group: "Task",
+-  summary: "Task plan commands (set/approve/reject).",
+-  synopsis: ["agentplane task plan <set|approve|reject> [args] [options]"],
++  summary: "Task plan commands (set/approve/reject/recover-rejection).",
++  synopsis: ["agentplane task plan <set|approve|reject|recover-rejection> [args] [options]"],
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
+   examples: [
+     {
+diff --git a/packages/agentplane/src/commands/task/plan.ts b/packages/agentplane/src/commands/task/plan.ts
+index 7b61055e7..74c64279b 100644
+--- a/packages/agentplane/src/commands/task/plan.ts
++++ b/packages/agentplane/src/commands/task/plan.ts
+@@ -12,7 +12,7 @@ import {
+   taskDocToSectionMap,
+   type PlanApprovalEvidenceKind,
+   taskCentricAggregateFromExtensions,
+-  taskCentricReplanRequiredFromExtensions,
++  taskCentricDigest,
+   withTaskCentricAggregate,
+ } from "@agentplaneorg/core/tasks";
+ 
+@@ -39,6 +39,10 @@ import {
+ } from "./plan-shared.js";
+ import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
+ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
++import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
++import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
++
++export { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
+ 
+ export type TaskPlanSetResult = {
+   taskId: string;
+@@ -297,16 +301,7 @@ export async function cmdTaskPlanApprove(opts: {
+               issued_at: approvedAt,
+             });
+             const taskCentric = taskCentricAggregateFromExtensions(current.extensions);
+-            if (
+-              taskCentric?.current_plan &&
+-              taskCentricReplanRequiredFromExtensions(current.extensions)
+-            ) {
+-              throw new CliError({
+-                code: "E_VALIDATION",
+-                message:
+-                  "Canonical task plan is stale after the task document changed; complete replanning before approval.",
+-              });
+-            }
++            assertCanonicalPlanCanBeApproved(taskCentric, current.extensions);
+             if (
+               opts.expectedPlanDigest !== undefined &&
+               taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
+@@ -381,6 +376,7 @@ export async function cmdTaskPlanApprove(opts: {
+           issued_at: approvedAt,
+         });
+         const taskCentric = taskCentricAggregateFromExtensions(task.extensions);
++        assertCanonicalPlanCanBeApproved(taskCentric, task.extensions);
+         if (
+           opts.expectedPlanDigest !== undefined &&
+           taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
+@@ -467,6 +463,42 @@ export async function cmdTaskPlanReject(opts: {
+     }
+ 
+     const rejectedAt = nowIso();
++    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
++    const taskCentric = taskCentricAggregateFromExtensions(task.extensions);
++    if (taskCentric?.current_plan) {
++      assertTaskMutationPolicy({
++        ctx,
++        taskId: opts.taskId,
++        task,
++        action: "task_plan_reject",
++        phase: "plan",
++      });
++      const existingDoc =
++        (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
++      const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
++      assertPlanSectionPresent(task.id, baseDoc, "reject");
++      const idempotencyKey = `plan-reject-${taskCentricDigest({
++        task_id: task.id,
++        plan_revision: taskCentric.current_plan.revision,
++        plan_digest: taskCentric.current_plan.digest,
++        by,
++        note,
++      }).slice(7, 39)}`;
++      await new TaskCentricBackendAdapter({
++        backend,
++        observeRepository: () => Promise.reject(new Error("Repository observation not required.")),
++      }).rejectPlan({
++        task_id: task.id,
++        expected_revision: task.revision ?? taskCentric.revision,
++        plan_revision: taskCentric.current_plan.revision,
++        plan_digest: taskCentric.current_plan.digest,
++        actor_id: by,
++        note,
++        rejected_at: rejectedAt,
++        idempotency_key: idempotencyKey,
++      });
++      return 0;
++    }
+     await withTaskMutationStorage({
+       ctx,
+       local: async (store) => {
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 0fe4fed7a..0efefbaea 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -8,14 +8,14 @@
+   "candidate": {
+     "section_digests": {
+       "agent_facing_context_contracts": "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
+-      "cli_topology": "9a1daccdc588e364a76b4ed5f0e3ff6cc34215cacd55fbfcf4d20624a64ba5e7",
++      "cli_topology": "88154991bccc8109e7aa05a365b00aa8c2bdd984e8b8296e72cd662bad53ec26",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+     },
+-    "surface_sha256": "188758d3816d44e2767842ffb416f054acb7fd4bbfca4b4854595d6f03a270be"
++    "surface_sha256": "a8722750a913666840ff29a877168819412c90285ec34122992ac517e5c1886e"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -623,6 +623,42 @@
+             ],
+             "visibility": "advanced"
+           },
++          {
++            "args": [
++              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
++            ],
++            "group": "Task",
++            "id": ["task", "plan", "recover-rejection"],
++            "options": [
++              {
++                "kind": "string",
++                "name": "expected-readme-revision",
++                "required": true,
++                "valueHint": "<n>"
++              },
++              {
++                "kind": "string",
++                "name": "expected-aggregate-revision",
++                "required": true,
++                "valueHint": "<n>"
++              },
++              {
++                "kind": "string",
++                "name": "rejected-plan-digest",
++                "required": true,
++                "valueHint": "<sha256>"
++              },
++              {
++                "kind": "string",
++                "name": "expected-state-fingerprint",
++                "required": true,
++                "valueHint": "<sha256>"
++              },
++              { "kind": "string", "name": "by", "required": true, "valueHint": "<id>" },
++              { "kind": "string", "name": "note", "required": true, "valueHint": "<text>" }
++            ],
++            "visibility": "internal"
++          },
+           {
+             "args": [
+               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+@@ -779,6 +815,7 @@
+           "task authority grant",
+           "task create",
+           "task kernel-migrate",
++          "task plan recover-rejection",
+           "task run reconcile",
+           "task run resolve-effect",
+           "task run resume-effect",
+@@ -1265,6 +1302,48 @@
+             "name": "host-user-decision",
+             "valueHint": "<base64url>"
+           },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "string",
++            "name": "by",
++            "required": true,
++            "valueHint": "<id>"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "string",
++            "name": "expected-aggregate-revision",
++            "required": true,
++            "valueHint": "<n>"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "string",
++            "name": "expected-readme-revision",
++            "required": true,
++            "valueHint": "<n>"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "string",
++            "name": "expected-state-fingerprint",
++            "required": true,
++            "valueHint": "<sha256>"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "string",
++            "name": "note",
++            "required": true,
++            "valueHint": "<text>"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "string",
++            "name": "rejected-plan-digest",
++            "required": true,
++            "valueHint": "<sha256>"
++          },
+           {
+             "command": "task run",
+             "default": false,
+@@ -2169,9 +2248,50 @@
+             "kind": "option",
+             "name": "refresh-planning-base",
+             "source_task": "202608301851-5W3XW6"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "command",
++            "source_task": "202609030849-925NNG"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "option",
++            "name": "by",
++            "source_task": "202609030849-925NNG"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "option",
++            "name": "expected-aggregate-revision",
++            "source_task": "202609030849-925NNG"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "option",
++            "name": "expected-readme-revision",
++            "source_task": "202609030849-925NNG"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "option",
++            "name": "expected-state-fingerprint",
++            "source_task": "202609030849-925NNG"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "option",
++            "name": "note",
++            "source_task": "202609030849-925NNG"
++          },
++          {
++            "command": "task plan recover-rejection",
++            "kind": "option",
++            "name": "rejected-plan-digest",
++            "source_task": "202609030849-925NNG"
+           }
+         ],
+-        "command_count": { "from": 243, "to": 265 },
++        "command_count": { "from": 243, "to": 266 },
+         "mutated_command_shells": [
+           {
+             "after": {
+@@ -2368,8 +2488,8 @@
+             "identity": "task plan approve --by"
+           }
+         ],
+-        "option_count": { "from": 767, "to": 867 },
+-        "positional_count": { "from": 165, "to": 182 },
++        "option_count": { "from": 767, "to": 873 },
++        "positional_count": { "from": 165, "to": 183 },
+         "removed_command_descriptors": [],
+         "removed_commands": [],
+         "removed_options": []
+@@ -2411,10 +2531,11 @@
+         "202608212244-6XZAYD",
+         "202608291006-2A6BJC",
+         "202608291006-255K66",
+-        "202608301851-5W3XW6"
++        "202608301851-5W3XW6",
++        "202609030849-925NNG"
+       ],
+       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route.",
+-      "to_sha256": "9a1daccdc588e364a76b4ed5f0e3ff6cc34215cacd55fbfcf4d20624a64ba5e7"
++      "to_sha256": "88154991bccc8109e7aa05a365b00aa8c2bdd984e8b8296e72cd662bad53ec26"
+     },
+     {
+       "classification": "additive",
+@@ -2622,7 +2743,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "0c7f5879576b9179579a573c8fd5668f7ff3b7907489a6a62db8522ff8114103",
++    "surface_sha256": "c7bcd72b37956d2bbc808f5277904846598c2ea4867b9e904e5fbef87b221804",
+     "to_sha256": "d449602b1ca11e75c32b0dbecf50ff0d2729c67ce6ff64a2e4bf1b5f12955ee4",
+     "to_version": "0.7.8-beta.1"
+   },
+@@ -2680,6 +2801,7 @@
+     "202608212244-6XZAYD",
+     "202608291006-2A6BJC",
+     "202608291006-255K66",
+-    "202608301851-5W3XW6"
++    "202608301851-5W3XW6",
++    "202609030849-925NNG"
+   ]
+ }
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 6a0e10915..954e013bd 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -353,6 +353,7 @@ function validateReviewedCandidate({
+     "202608291006-2A6BJC",
+     "202608291006-255K66",
+     "202608301851-5W3XW6",
++    "202609030849-925NNG",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -398,6 +399,7 @@ function validateReviewedCandidate({
+     "202608291006-2A6BJC",
+     "202608291006-255K66",
+     "202608301851-5W3XW6",
++    "202609030849-925NNG",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -1565,6 +1567,40 @@ function validateReviewedCandidate({
+       ],
+       visibility: "advanced",
+     },
++    {
++      id: ["task", "plan", "recover-rejection"],
++      visibility: "internal",
++      group: "Task",
++      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [
++        {
++          name: "expected-readme-revision",
++          kind: "string",
++          valueHint: "<n>",
++          required: true,
++        },
++        {
++          name: "expected-aggregate-revision",
++          kind: "string",
++          valueHint: "<n>",
++          required: true,
++        },
++        {
++          name: "rejected-plan-digest",
++          kind: "string",
++          valueHint: "<sha256>",
++          required: true,
++        },
++        {
++          name: "expected-state-fingerprint",
++          kind: "string",
++          valueHint: "<sha256>",
++          required: true,
++        },
++        { name: "by", kind: "string", valueHint: "<id>", required: true },
++        { name: "note", kind: "string", valueHint: "<text>", required: true },
++      ],
++    },
+     {
+       id: ["task", "run", "reconcile"],
+       visibility: "internal",
+@@ -2106,6 +2142,48 @@ function validateReviewedCandidate({
+       kind: "string",
+       valueHint: "<base64url>",
+     },
++    {
++      command: "task plan recover-rejection",
++      name: "by",
++      kind: "string",
++      valueHint: "<id>",
++      required: true,
++    },
++    {
++      command: "task plan recover-rejection",
++      name: "expected-aggregate-revision",
++      kind: "string",
++      valueHint: "<n>",
++      required: true,
++    },
++    {
++      command: "task plan recover-rejection",
++      name: "expected-readme-revision",
++      kind: "string",
++      valueHint: "<n>",
++      required: true,
++    },
++    {
++      command: "task plan recover-rejection",
++      name: "expected-state-fingerprint",
++      kind: "string",
++      valueHint: "<sha256>",
++      required: true,
++    },
++    {
++      command: "task plan recover-rejection",
++      name: "note",
++      kind: "string",
++      valueHint: "<text>",
++      required: true,
++    },
++    {
++      command: "task plan recover-rejection",
++      name: "rejected-plan-digest",
++      kind: "string",
++      valueHint: "<sha256>",
++      required: true,
++    },
+     {
+       command: "task run",
+       name: "allow-danger-full-access",
+@@ -2750,6 +2828,24 @@ function validateReviewedCandidate({
+       name,
+       source_task: "202608301851-5W3XW6",
+     })),
++    {
++      kind: "command",
++      command: "task plan recover-rejection",
++      source_task: "202609030849-925NNG",
++    },
++    ...[
++      "by",
++      "expected-aggregate-revision",
++      "expected-readme-revision",
++      "expected-state-fingerprint",
++      "note",
++      "rejected-plan-digest",
++    ].map((name) => ({
++      kind: "option",
++      command: "task plan recover-rejection",
++      name,
++      source_task: "202609030849-925NNG",
++    })),
+   ];
+   const expectedVisibilityMutations = [
+     ["task begin", "user", "advanced", "title", "<title>"],
+@@ -2857,6 +2953,7 @@ function validateReviewedCandidate({
+         "task authority grant",
+         "task create",
+         "task kernel-migrate",
++        "task plan recover-rejection",
+         "task run reconcile",
+         "task run resolve-effect",
+         "task run resume-effect",
