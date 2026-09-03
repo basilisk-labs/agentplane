@@ -1,4 +1,4 @@
- .../task-centric-backend-adapter.test.ts           | 169 +++++++++++++++
+ .../task-centric-backend-adapter.test.ts           | 181 ++++++++++++++++
  .../task-backend/task-centric-backend-adapter.ts   |  29 +++
  .../task-backend/task-centric-backend-runtime.ts   |   7 +-
  .../task-backend/task-centric-plan-rejection.ts    | 232 ++++++++++++++++++++
@@ -22,4 +22,4 @@
  packages/agentplane/src/commands/task/plan.ts      |  54 ++++-
  .../baselines/v0.7-compatibility-candidate.json    | 140 +++++++++++-
  .../check-compatibility-contract-baseline.mjs      |  97 +++++++++
- 24 files changed, 1630 insertions(+), 33 deletions(-)
+ 24 files changed, 1642 insertions(+), 33 deletions(-)
