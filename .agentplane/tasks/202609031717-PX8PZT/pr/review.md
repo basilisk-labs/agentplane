@@ -6,7 +6,7 @@ Created: 2026-09-03T17:26:07.913Z
 
 - Task: `202609031717-PX8PZT`
 - Title: Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609031717-PX8PZT/port-the-minimal-missing-clean-core-lifecycle-bo`
 - Canonical task record: `.agentplane/tasks/202609031717-PX8PZT/README.md`
 
