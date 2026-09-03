@@ -41,7 +41,7 @@ Authorized bootstrap recovery only. Reproduce and fix the root cause where task 
  .../commands/doctor/workspace-task-state.test.ts   |  62 ++++++
  .../src/commands/doctor/workspace-task-state.ts    |  81 ++++++-
  .../agentplane/src/commands/doctor/workspace.ts    |   7 +-
- .../task/external-agent-planning-authority.test.ts | 150 ++++++++++++-
+ .../task/external-agent-planning-authority.test.ts | 165 +++++++++++++-
  .../task/external-agent-planning-authority.ts      |  33 +++
  .../src/commands/task/plan-approval-guard.ts       |  23 ++
  .../task/plan-recover-rejection.command.ts         | 126 +++++++++++
@@ -51,7 +51,7 @@ Authorized bootstrap recovery only. Reproduce and fix the root cause where task 
  packages/agentplane/src/commands/task/plan.ts      |  54 ++++-
  .../baselines/v0.7-compatibility-candidate.json    | 140 +++++++++++-
  .../check-compatibility-contract-baseline.mjs      |  97 +++++++++
- 24 files changed, 1655 insertions(+), 33 deletions(-)
+ 24 files changed, 1670 insertions(+), 33 deletions(-)
 ```
 
 </details>

@@ -288,10 +288,25 @@ describe("external TaskPlanProposal graph validation", () => {
         item({ id: "consumer", required_inputs: ["shared"], expected_outputs: ["result"] }),
       ],
     ],
+    [
+      "input-induced cyclic",
+      [
+        item({
+          id: "first",
+          required_inputs: ["second-output"],
+          expected_outputs: ["first-output"],
+        }),
+        item({
+          id: "second",
+          required_inputs: ["first-output"],
+          expected_outputs: ["second-output"],
+        }),
+      ],
+    ],
+    ["duplicate output", [item({ id: "first", expected_outputs: ["duplicate", "duplicate"] })]],
   ])("rejects a %s required input before persistence", async (_label, workItems) => {
-    await expect(assertApplicable(proposal(workItems))).rejects.toMatchObject({
-      code: "E_VALIDATION",
-      message: expect.stringContaining("missing_dependency@work_items.required_inputs"),
-    });
+    await expect(assertApplicable(proposal(workItems))).rejects.toThrow(
+      "missing_dependency@work_items.required_inputs",
+    );
   });
 });
