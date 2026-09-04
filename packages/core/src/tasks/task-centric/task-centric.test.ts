@@ -497,7 +497,7 @@ describe("task-centric domain", () => {
     ],
     ["optionality", (value: WorkItem) => ({ ...value, optional: true })],
     ["priority", (value: WorkItem) => ({ ...value, priority: value.priority + 1 })],
-  ] satisfies ReadonlyArray<readonly [string, (value: WorkItem) => WorkItem]>)(
+  ] satisfies readonly (readonly [string, (value: WorkItem) => WorkItem])[])(
     "resets runtime when the replacement changes %s",
     (_field, mutate) => {
       const definition = item({ id: "candidate" });

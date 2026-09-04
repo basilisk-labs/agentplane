@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609040943-X0G51D/preserve-completed-workitems-across-command-only",
   "created_at": "2026-09-04T10:05:07.800Z",
-  "diffstat_sha256": "sha256:ed0415e6ed235381bdf106e2ad77e250055603cf05624af4e2976af2299c1888",
+  "diffstat_sha256": "sha256:ed7d86edb3836c9d67bef17d00644f02109682e293731739ba9f257667dec783",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
