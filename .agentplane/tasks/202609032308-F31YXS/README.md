@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-04T13:45:48.695Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "96d33c4f65615af65f1b6930453782ab9edefa9a"
+  blueprint_digest: "c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49"
+  evidence_refs:
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/4ed1465ab5e293529771415707781db44b5e80d1084757920e01e6e9e49ec65a.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609032308-F31YXS/README.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/9bc37f8438f1859a08d503602867e9b8e386ca9567694c23509e3a601711e3ef.patch"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/163a6b93e10922d91d7b429560ec7db037f97d7142c6675978f9b8ab36f5da80.json"
+    - ".agentplane/tasks/202609032308-F31YXS/verification/20260904134431710-2602e94ccee8c4db.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/1e4fbeb6d96a35267051d27bebfa2db480b66fefa273d47f8371dc6d290aaf1b.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The diff binds verification persistence to the observed snapshot instead of recomputing a stronger post-observation contract."
+    - "The compatibility mutation projects DONE to DOING rework as COMPLETED to ACTIVE with final validation cleared in the same aggregate mutation."
+    - "Regressions cover successful atomic rework, persistence failure without partial projection, evidence-only rework, semantic reset recovery, active-claim rejection, and replay idempotence."
+    - "Supervisor evidence records ci:local:full, lint:core, typecheck, focused AgentPlane tests, routing validation, clean committed/staged diffs, and a clean final execution status as passing."
+    - "Residual risk: The broader stale Verify Steps projection defect is recorded outside this task and is not required for the scoped repair."
 execution_route:
   frozen: true
   reason_codes:
@@ -1419,7 +1449,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 31
+    event_cursor: 32
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -2950,9 +2980,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 58
+    revision: 59
     schema_version: 1
-    updated_at: "2026-09-04T13:44:32.797Z"
+    updated_at: "2026-09-04T13:44:32.824Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 1
@@ -3436,6 +3466,30 @@ extensions:
         mutation_id: "compatibility:sha256:304c186ed8a908ac964826986948c1d92322717cca565740a571c8113f0ab5ce"
         next_revision: 34
         previous_revision: 33
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:30bf34cd28d41e85a92d24d25a4c16f3ae6269a37093cf4d537fd33f31138e6c:
+        aggregate_digest: "sha256:3311d24022407f71fff25460700d3a502d34e44d1c46e7ba3b7024c70a5ec17a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:44:32.824Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_41e9a2b4bcfd784797232026"
+          mutation_id: "compatibility:sha256:30bf34cd28d41e85a92d24d25a4c16f3ae6269a37093cf4d537fd33f31138e6c"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 58
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:30bf34cd28d41e85a92d24d25a4c16f3ae6269a37093cf4d537fd33f31138e6c"
+        next_revision: 59
+        previous_revision: 58
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:3204719e7e5825455f6c79309cda9f40ce68b66e30585314c085b317899965eb:
