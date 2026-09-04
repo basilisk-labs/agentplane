@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -194,7 +194,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "de5817fb2a6677a271c14ca26f9e2780396c9e02"
+  message: "🚧 F31YXS task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -226,6 +228,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation remains complete at de5817fb2a66 after the approved command-only plan refinement; record the existing implementation commit and continue to TESTER verification."
 events:
   -
     type: "status"
@@ -296,8 +301,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-04T11:41:39.489Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation remains complete at de5817fb2a66 after the approved command-only plan refinement; record the existing implementation commit and continue to TESTER verification."
+    commit: "de5817fb2a6677a271c14ca26f9e2780396c9e02"
 doc_version: 3
-doc_updated_at: "2026-09-04T09:33:21.542Z"
+doc_updated_at: "2026-09-04T11:41:39.489Z"
 doc_updated_by: "CODER"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -817,7 +830,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -1321,9 +1334,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-04T09:33:21.542Z"
+    updated_at: "2026-09-04T11:41:39.489Z"
     work_items:
       integrated-recovery-qualification:
         attempt: 0
@@ -1645,6 +1658,30 @@ extensions:
         mutation_id: "compatibility:sha256:739cb34cc504ee67fd469cb0d770c1aba4cf582937b4dbc3a33f2680a0f1e0b0"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:87d5297e5b06fc9b4467df6653544d27ef688646f1f6add8a6c25a2d6847be84:
+        aggregate_digest: "sha256:3fbfc877b270884b70118ba4c55a461ea1a499012522ecda5b947a45c6897097"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T11:41:39.489Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8dce565899d6584a0ecf8e3c"
+          mutation_id: "compatibility:sha256:87d5297e5b06fc9b4467df6653544d27ef688646f1f6add8a6c25a2d6847be84"
+          plan_digest: "sha256:2831c1fb64c0478cc303c7cb626cd0feb575a776d5e84fec8a49e89bd53778c3"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:87d5297e5b06fc9b4467df6653544d27ef688646f1f6add8a6c25a2d6847be84"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:a23be9b59fa9d915a4767c9ba99b621654e035fce0e5007609e83a08a0fae7cd:
