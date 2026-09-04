@@ -29,9 +29,11 @@ Created: 2026-09-04T10:05:07.800Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  68 ++++++++
+ .../task/external-agent-planning-authority.test.ts | 162 ++++++++++++++++++-
  packages/core/src/tasks/task-centric/graph.ts      |   7 +-
  .../src/tasks/task-centric/task-centric.test.ts    | 179 +++++++++++++++++++--
- 2 files changed, 171 insertions(+), 15 deletions(-)
+ 4 files changed, 400 insertions(+), 16 deletions(-)
 ```
 
 </details>
