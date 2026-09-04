@@ -1,10 +1,11 @@
 ---
 id: "202609041447-YHERVV"
 title: "Unblock verification recovery before provider conflict handling"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - "Supervisor-owned evidence records successful typecheck, policy routing, focused tests, and a complete bun run ci:local:full pass with all verification groups green."
     - "The reviewed diff stays within the approved command, task, and CLI roots and does not include MPXQBK, broad projection cleanup, provider-neutral expansion, or release/version work."
     - "Residual risk: The recovery branch still requires normal provider publication, hosted checks, integration, and cleanup before the original F31YXS task can consume the fix."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:7bd03cccd5c028f0e3b09cd7834ba47a176362b0b1f8d0502872ef5233164c41"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-04T16:01:54.018Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -290,8 +305,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d77ef6cf4b415fe40a8acb542d97669056ccc52b"
-  message: "🚧 YHERVV task: apply external agent result"
+  hash: "c939c070eed6b965bf3de1e4ab3c53c6b1dfc35f"
+  message: "🚧 YHERVV task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -299,6 +314,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d77ef6cf4b41. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -321,9 +339,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-04T16:01:54.018Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c939c070eed6b965bf3de1e4ab3c53c6b1dfc35f"
 doc_version: 3
-doc_updated_at: "2026-09-04T16:00:09.186Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-04T16:01:54.018Z"
+doc_updated_by: "CODER"
 description: "Repair the branch_pr recovery deadlock exposed by task 202609032308-F31YXS. When local verification is missing or needs rework while hosted mergeability context is invalid, route safe local verification or implementation rework before provider conflict handling. Make recordObservedTaskExecutionContract persist legacy and canonical task-centric revisions atomically so successful verification does not fail with Task-centric mutation revision mismatch. Add focused regressions for both exact scenarios, preserve fail-closed provider mutation gates, and integrate this minimal recovery before resuming 202609032308-F31YXS. Exclude MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, release, version, and publication work."
 sections:
   Summary: |-
@@ -704,7 +730,56 @@ extensions:
       schema_version: 1
       task_id: "202609041447-YHERVV"
     event_cursor: 5
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609041447-YHERVV"
+            - "git:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+          check_id: "focused-recovery"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T16:00:08.117Z"
+          repository_snapshot_digest: "sha256:38033d0172c99496fb846ed1af68ce703765024da2fb0fd4b3d09238c91afe42"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041447-YHERVV"
+            - "git:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T16:00:08.117Z"
+          repository_snapshot_digest: "sha256:38033d0172c99496fb846ed1af68ce703765024da2fb0fd4b3d09238c91afe42"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041447-YHERVV"
+            - "git:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+          check_id: "routing-policy"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T16:00:08.117Z"
+          repository_snapshot_digest: "sha256:38033d0172c99496fb846ed1af68ce703765024da2fb0fd4b3d09238c91afe42"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041447-YHERVV"
+            - "git:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T16:00:08.117Z"
+          repository_snapshot_digest: "sha256:38033d0172c99496fb846ed1af68ce703765024da2fb0fd4b3d09238c91afe42"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609041447-YHERVV"
     intent:
       acceptance_criteria:
@@ -735,12 +810,12 @@ extensions:
 
         Repair the branch_pr recovery deadlock exposed by task 202609032308-F31YXS. When local verification is missing or needs rework while hosted mergeability context is invalid, route safe local verification or implementation rework before provider conflict handling. Make recordObservedTaskExecutionContract persist legacy and canonical task-centric revisions atomically so successful verification does not fail with Task-centric mutation revision mismatch. Add focused regressions for both exact scenarios, preserve fail-closed provider mutation gates, and integrate this minimal recovery before resuming 202609032308-F31YXS. Exclude MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, release, version, and publication work.
       task_id: "202609041447-YHERVV"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-04T16:00:09.186Z"
+    updated_at: "2026-09-04T16:01:54.018Z"
     work_items:
       restore-verification-recovery-route:
         attempt: 1
@@ -1005,11 +1080,37 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609041447-YHERVV"
+      legacy-finish:202609041447-YHERVV:2026-09-04T16:00:08.117Z:d77ef6cf4b415fe40a8acb542d97669056ccc52b:
+        aggregate_digest: "sha256:4ad26c595e87e1c9a276d7d9a453337013f3fc18fb919b9643485b1bba2aadc0"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-04T16:01:54.018Z"
+          cause_refs:
+            - "task-verification:202609041447-YHERVV"
+            - "git:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_01184a4275053e7d7358ce1b"
+          mutation_id: "legacy-finish:202609041447-YHERVV:2026-09-04T16:00:08.117Z:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+          plan_digest: "sha256:12ffa3243e28688ae215fc1b626b4c0cf80a6e20228702fe6fd6fe70aa90ccc1"
+          plan_revision: 1
+          repository_fingerprint: "sha256:38033d0172c99496fb846ed1af68ce703765024da2fb0fd4b3d09238c91afe42"
+          schema_version: 1
+          task_id: "202609041447-YHERVV"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609041447-YHERVV:2026-09-04T16:00:08.117Z:d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609041447-YHERVV"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+    message: "🚧 YHERVV task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "195f4f941e18d2498d1e941ba8be46a6730fa8fd"
@@ -1186,3 +1287,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:7bd03cccd5c028f0e3b09cd7834ba47a176362b0b1f8d0502872ef5233164c41`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-04T16:01:54.018Z`
