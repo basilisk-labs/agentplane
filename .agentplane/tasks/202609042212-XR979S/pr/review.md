@@ -12,8 +12,8 @@ Created: 2026-09-04T22:19:44.639Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-04T22:19:44.639Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-04T22:19:44.639Z
+- Updated: 2026-09-04T22:56:14.024Z
 - Branch: task/202609042212-XR979S/repair-pre-merge-done-task-rework-blocker-persis
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

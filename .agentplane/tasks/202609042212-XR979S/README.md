@@ -4,7 +4,7 @@ title: "Repair pre-merge DONE task rework blocker persistence and resume ZVX69C"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:df8773e0d6fd96943f41b0f2c6441031eb3a2a0e51d819d07ece1f19dd4972eb"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-04T23:03:59.940Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -94,7 +94,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -231,8 +243,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 3aef026c8582. CLI accepted one state-bound external-agent semantic result."
     commit: "3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+  -
+    type: "verify"
+    at: "2026-09-04T23:03:59.940Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-04T22:46:38.245Z"
+doc_updated_at: "2026-09-04T23:04:00.963Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion."
 sections:
@@ -270,6 +288,60 @@ sections:
     10. Run `bun run ci:local:full`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-04T23:03:59.940Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6908f2eec1045e86657a6619636e3770b61078753e63429d737cf147cff92d6f, input_digest=sha256:e3133eedd2968a44ccc57201c8506eb1f07fdbb3aecb1f470e113388cf3d42b1
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042212-XR979S Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042212-XR979S Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042212-XR979S Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042212-XR979S Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042212-XR979S-repair-pre-merge-done-task-rework-blocker-persis/.agentplane/tasks/202609042212-XR979S/blueprint/resolved-snapshot.json
+    - old_digest: 49bc416178e307ea155982a530a34878eea9d6ce6488dc7df92d6fb796fa3ffc
+    - current_digest: 49bc416178e307ea155982a530a34878eea9d6ce6488dc7df92d6fb796fa3ffc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609042212-XR979S
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609042212-XR979S
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -577,7 +649,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609042212-XR979S"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609042212-XR979S"
     intent:
@@ -592,9 +664,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-04T22:56:07.273Z"
+    updated_at: "2026-09-04T23:04:00.940Z"
     work_items:
       repair-pre-merge-blocker-replay:
         attempt: 3
@@ -865,6 +937,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609042212-XR979S"
+      compatibility:sha256:7a9181e58fe971aef4060f548228e1d43b23580ca4bf7eb2b855843f464efb38:
+        aggregate_digest: "sha256:288379ebdf466fdc7e282eff7084cbc4c2a3648e31cd6f7e8193172443b87caa"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T23:04:00.940Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5e87f6c2a6e08c2f3e3fed95"
+          mutation_id: "compatibility:sha256:7a9181e58fe971aef4060f548228e1d43b23580ca4bf7eb2b855843f464efb38"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7a9181e58fe971aef4060f548228e1d43b23580ca4bf7eb2b855843f464efb38"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609042212-XR979S"
       compatibility:sha256:8fab9e3ac80e87f948ee12a8b52b9857509e8534d83ea6187981be201050560f:
         aggregate_digest: "sha256:e7695f58b183e2693833a6f8d5e59cabf408c02b26f5e247466d70e36b4d0031"
         event:
@@ -1064,7 +1160,6 @@ extensions:
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
     version: 1
@@ -1113,6 +1208,60 @@ Verify Steps:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-04T23:03:59.940Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6908f2eec1045e86657a6619636e3770b61078753e63429d737cf147cff92d6f, input_digest=sha256:e3133eedd2968a44ccc57201c8506eb1f07fdbb3aecb1f470e113388cf3d42b1
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042212-XR979S Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042212-XR979S Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042212-XR979S Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042212-XR979S Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042212-XR979S-repair-pre-merge-done-task-rework-blocker-persis/.agentplane/tasks/202609042212-XR979S/blueprint/resolved-snapshot.json
+- old_digest: 49bc416178e307ea155982a530a34878eea9d6ce6488dc7df92d6fb796fa3ffc
+- current_digest: 49bc416178e307ea155982a530a34878eea9d6ce6488dc7df92d6fb796fa3ffc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609042212-XR979S
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609042212-XR979S
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
