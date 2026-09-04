@@ -1,8 +1,11 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import {
   ensureDocSections,
+  legacyStatusToTaskLifecycle,
   normalizeTaskStatus,
   setMarkdownSection,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
@@ -131,6 +134,18 @@ function normalizeComments(task: TaskData): TaskComment[] {
 function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStoreTaskPatch {
   const patch: TaskStoreTaskPatch = { status: opts.toStatus };
   if (opts.extraFields) Object.assign(patch, opts.extraFields);
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  if (
+    aggregate &&
+    opts.task.status !== opts.toStatus &&
+    (opts.toStatus === "BLOCKED" || (opts.task.status === "BLOCKED" && opts.toStatus === "DOING"))
+  ) {
+    patch.extensions = withTaskCentricAggregate(patch.extensions ?? opts.task.extensions, {
+      ...aggregate,
+      lifecycle: legacyStatusToTaskLifecycle(opts.toStatus),
+      final_validation: null,
+    });
+  }
   if (opts.commit !== undefined) {
     patch.commit = opts.commit;
   }

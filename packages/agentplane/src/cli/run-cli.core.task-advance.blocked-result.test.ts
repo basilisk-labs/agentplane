@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
 import {
   taskCentricDigest,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
   type RepositorySnapshot,
   type TaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
@@ -386,6 +388,90 @@ async function prepareBlockedResultTask(opts: {
 }
 
 describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
+  it("persists and replays a scope blocker from pre-merge DONE rework", async () => {
+    const { taskId, taskWorktree } = await prepareBlockedResultTask({
+      title: "Pre-merge blocker recovery",
+      plan: "Preserve an accepted blocker when a closed task needs implementation rework.",
+      slug: "pre-merge-blocker-recovery",
+    });
+    const ctx = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
+    const task = await ctx.taskBackend.getTask(taskId);
+    if (!task) throw new Error("expected task fixture");
+    const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+    if (!aggregate) throw new Error("expected canonical task fixture");
+    const extensions = withTaskCentricAggregate(task.extensions, {
+      ...aggregate,
+      revision: (task.revision ?? aggregate.revision) + 1,
+      lifecycle: "COMPLETED",
+      work_items: Object.fromEntries(
+        Object.entries(aggregate.work_items).map(([id, item]) => [
+          id,
+          { ...item, state: "COMPLETED" as const },
+        ]),
+      ),
+    });
+    await ctx.taskBackend.writeTask({
+      ...task,
+      status: "DONE",
+      extensions,
+      quality_review: {
+        state: "rework",
+        updated_at: new Date().toISOString(),
+        updated_by: "EVALUATOR",
+        provenance: "evaluator_supplied",
+        note: "The packaged fixture requires scoped rework.",
+        evaluated_sha: null,
+        blueprint_digest: null,
+        evidence_refs: [],
+        findings: ["Packaged fixture requires additional scope."],
+      },
+      verification: {
+        state: "needs_rework",
+        updated_at: new Date().toISOString(),
+        updated_by: "TESTER",
+        note: "Hosted qualification requires implementation rework before integration.",
+      },
+    });
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: taskWorktree });
+    await execFileAsync("git", ["commit", "-m", "test: seed pre-merge rework"], {
+      cwd: taskWorktree,
+    });
+    const issued = await readAgentPacket(taskWorktree, taskId);
+    expect(issued.exchange).toBeDefined();
+    const exchange = JSON.parse(
+      await readFile(path.join(issued.exchange!.directory, "exchange.json"), "utf8"),
+    ) as ExternalAgentExchange;
+    expect(exchange.purpose).toBe("implementation_rework");
+    const resultPath = await writeBlockedResult(issued, "Packaged fixture needs exact scope.", {
+      scopeRoots: ["docs/fixture.md"],
+      repositoryEffects: ["documentation"],
+    });
+    const envelopeText = await readFile(resultPath, "utf8");
+    const staleEnvelope = JSON.parse(envelopeText) as ExternalAgentResultEnvelope;
+    staleEnvelope.state_fingerprint = `sha256:${"0".repeat(64)}`;
+    await writeFile(resultPath, JSON.stringify(staleEnvelope));
+    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("No issued external-agent exchange matches this result");
+    expect((await ctx.taskBackend.getTask(taskId))?.status).toBe("DONE");
+    await writeFile(resultPath, envelopeText);
+    const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(returned.code, returned.stderr).toBe(0);
+    expect(JSON.parse(returned.stdout).action.kind, returned.stdout).toBe("approval_required");
+    const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain('status: "BLOCKED"');
+    const blockedTask = await ctx.taskBackend.getTask(taskId);
+    expect(taskCentricAggregateFromExtensions(blockedTask?.extensions)?.lifecycle).toBe("BLOCKED");
+    const head = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree });
+    const replay = await returnAgentResult(taskWorktree, taskId, resultPath);
+    expect(replay.code, replay.stderr).toBe(0);
+    expect(await readFile(readmePath, "utf8")).toBe(readme);
+    expect((await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree })).stdout).toBe(
+      head.stdout,
+    );
+  });
+
   it("accepts a scope-extension blocker that preserves the dirty issuance baseline", async () => {
     const { taskId, taskWorktree } = await prepareBlockedResultTask({
       title: "Dirty baseline scope extension",
@@ -418,7 +504,8 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(returned.code, returned.stderr).toBe(0);
     expect(JSON.parse(returned.stdout)).toMatchObject({
-      action: { kind: "approval_required" },
+      action: { kind: "agent_episode" },
+      authority: { role: "EXECUTOR" },
     });
     await expect(readFile(dirtyBaselinePath, "utf8")).resolves.toBe(
       "export const concurrency = 1;\n",

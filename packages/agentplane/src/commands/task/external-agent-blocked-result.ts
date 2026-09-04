@@ -8,6 +8,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import {
   createTaskScopeExtensionRequestState,
   externalBlockerReceipt,
+  requiresImplementationReworkReopen,
   TASK_SCOPE_EXTENSION_REQUEST_KEY,
 } from "../shared/task-scope-extension-request.js";
 
@@ -252,6 +253,13 @@ export async function recordExternalBlockedResult(opts: {
   semantic: ExternalAgentResultEnvelope["result"];
 }): Promise<void> {
   if (!(await isExternalBlockedResultRecorded(opts))) {
+    const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
+    const reopenDone = requiresImplementationReworkReopen({
+      purpose: opts.exchange.purpose,
+      task_status: task.status,
+      work_item_id: null,
+      work_item_is_required: false,
+    });
     await cmdTaskSetStatus({
       ctx: opts.command,
       cwd: opts.exchange.checkout,
@@ -259,8 +267,8 @@ export async function recordExternalBlockedResult(opts: {
       status: "BLOCKED",
       author: "SUPERVISOR",
       body: blockedResultBody({ exchange: opts.exchange, semantic: opts.semantic }),
-      force: false,
-      yes: false,
+      force: reopenDone,
+      yes: reopenDone,
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,
