@@ -27,16 +27,16 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task-centric-backend-projection.ts             |  10 +-
+ .../task-centric-backend-projection.ts             |  13 +-
  ...n-cli.core.task-advance.evidence-rework.test.ts |  18 ++-
  .../src/commands/shared/task-mutation.test.ts      | 143 +++++++++++++++++++++
- .../commands/task/direct-task-verification.test.ts |   9 ++
+ .../commands/task/direct-task-verification.test.ts |   8 ++
  .../src/commands/task/direct-task-verification.ts  |   4 +-
  .../task/external-agent-implementation-recovery.ts |  18 ++-
  .../src/commands/task/verify-record-execute.ts     |  43 ++++---
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
  .../src/commands/task/verify-record.types.ts       |   8 ++
- 9 files changed, 231 insertions(+), 25 deletions(-)
+ 9 files changed, 233 insertions(+), 25 deletions(-)
 ```
 
 </details>

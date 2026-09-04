@@ -176,15 +176,14 @@ describe("direct task verification", () => {
       expect(result.status).toBe("passed");
       expect(result.checks[0]?.check_ids).toContain("docs_contract");
       expect(persist.mock.calls[0]?.[0].details).toContain("Check: docs_contract");
-      expect(persist.mock.calls[0]?.[0].verificationSnapshot).toMatchObject({
+      const snapshot = persist.mock.calls[0]?.[0].verificationSnapshot;
+      expect(snapshot).toMatchObject({
         evaluated_sha: "frozen-head",
         changed_paths: ["docs/contract.md"],
-        execution_contract: {
-          verification: {
-            contract: { selected_checks: expect.arrayContaining(["docs_contract"]) },
-          },
-        },
       });
+      expect(snapshot?.execution_contract.verification.contract?.selected_checks).toContain(
+        "docs_contract",
+      );
       expect(observed).toHaveBeenCalledWith(
         expect.objectContaining({ evaluatedSha: "frozen-head" }),
       );
