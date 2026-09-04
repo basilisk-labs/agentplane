@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 71
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -62,19 +62,19 @@ quality_review:
     - "The frozen diff includes focused regressions for atomic canonical projection mutation and for routing local verification recovery ahead of route-ineligible conflict rework."
     - "All five declared checks passed at evaluated SHA 219141c1aece07e2dc0ce7a5fea562df572a9e89, including focused tests, lint, typecheck, routing validation, and the complete local CI gate."
 token_usage:
-  agent_runs: 34
-  input_tokens: null
-  journal_digest: "sha256:70a0ed70e016cb58a645fcde79e6d39c0d373e7b6254871f9ccc1fb97600ec22"
-  observed_agent_runs: 0
+  agent_runs: 35
+  input_tokens: 253622
+  journal_digest: "sha256:efa098f833c605e231fbad765ee0dc1a162a0e8f7eb4b2094ef32d867b198195"
+  observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-04T17:03:19.608Z"
+  state: "partial"
+  total_tokens: 256772
+  unavailable_reason: "some_agent_runs_lack_provider_token_telemetry"
+  updated_at: "2026-09-04T17:29:07.201Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -598,8 +598,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1df06b051f1e848be711dad6bca3a77c56c536ab"
-  message: "🚧 F31YXS task: record external evaluator result"
+  hash: "309636600663de640e9fd90af9a161b0085dca83"
+  message: "🧭 F31YXS task: record evaluator verdict"
 comments:
   -
     author: "CODER"
@@ -676,6 +676,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -905,8 +908,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-04T17:29:07.201Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "309636600663de640e9fd90af9a161b0085dca83"
 doc_version: 3
-doc_updated_at: "2026-09-04T17:28:13.108Z"
+doc_updated_at: "2026-09-04T17:29:07.233Z"
 doc_updated_by: "CODER"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -2225,7 +2236,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 42
+    event_cursor: 43
     final_validation:
       evidence:
         -
@@ -3871,9 +3882,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 71
+    revision: 72
     schema_version: 1
-    updated_at: "2026-09-04T17:26:39.724Z"
+    updated_at: "2026-09-04T17:29:07.201Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 1
@@ -4621,6 +4632,30 @@ extensions:
         mutation_id: "compatibility:sha256:4ae1be881a5e15fed3b0c17684a716b54e4d063a98ba1eeb45aba2cb4d587c42"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:4fe4b16af8ed5537d71e2987f616292390f323d3380f7b93ea9f8f14ad85a227:
+        aggregate_digest: "sha256:e115ac32c8fc731b498e83b0bf994112cecdab63367cf8055057d34c002899a5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T17:29:07.201Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_d1669a6551dae51aa31a78d7"
+          mutation_id: "compatibility:sha256:4fe4b16af8ed5537d71e2987f616292390f323d3380f7b93ea9f8f14ad85a227"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 71
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4fe4b16af8ed5537d71e2987f616292390f323d3380f7b93ea9f8f14ad85a227"
+        next_revision: 72
+        previous_revision: 71
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:5a0788e8df67c617b7bc1e3bb79e2b41f6cb1b7a382421ae7f999cf7c50ff12a:
@@ -5511,8 +5546,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "cdf1a08eb6011b9ff01d6c2d13bd7ff47a9c3683"
-    message: "🚧 F31YXS task: apply external agent result"
+    hash: "219141c1aece07e2dc0ce7a5fea562df572a9e89"
+    message: "Merge branch 'main' into task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
@@ -6538,13 +6573,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/34` agent runs
-- Input tokens: `unavailable`
+- State: `partial`
+- Completeness: `1/35` agent runs
+- Input tokens: `253622`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
+- Total tokens: `256772`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:70a0ed70e016cb58a645fcde79e6d39c0d373e7b6254871f9ccc1fb97600ec22`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-04T17:03:19.608Z`
+- Journal digest: `sha256:efa098f833c605e231fbad765ee0dc1a162a0e8f7eb4b2094ef32d867b198195`
+- Unavailable reason: `some_agent_runs_lack_provider_token_telemetry`
+- Updated at: `2026-09-04T17:29:07.201Z`
