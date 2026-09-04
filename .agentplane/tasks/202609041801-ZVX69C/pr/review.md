@@ -6,14 +6,14 @@ Created: 2026-09-04T18:17:29.251Z
 
 - Task: `202609041801-ZVX69C`
 - Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re`
 - Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -42,6 +42,9 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../src/commands/shared/workflow-step-factory.ts   |   7 +-
+ .../commands/shared/workflow-step-policy-scope.ts  |   2 +-
+ .../src/commands/shared/workflow-step.test.ts      |  28 +++
  .../src/commands/task/direct-task-verification.ts  |  19 +-
  ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
  .../external-agent-implementation-recovery.test.ts |  28 +++
@@ -59,7 +62,9 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
- 30 files changed, 784 insertions(+), 322 deletions(-)
+ scripts/lib/installed-migration-matrix.mjs         |  16 ++
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  17 ++
+ 35 files changed, 852 insertions(+), 324 deletions(-)
 ```
 
 </details>
