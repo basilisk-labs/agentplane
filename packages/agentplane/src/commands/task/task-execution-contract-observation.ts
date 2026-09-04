@@ -3,6 +3,7 @@ import type { TaskExternalEffect, TaskVerificationObservation } from "@agentplan
 import type { RunnerResult } from "../../runner/types.js";
 import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 export async function recordObservedTaskExecutionContract(opts: {
@@ -17,7 +18,6 @@ export async function recordObservedTaskExecutionContract(opts: {
   if (!opts.execution.task_ids.includes(opts.task.id)) {
     throw new Error(`Execution context does not authorize task ${opts.task.id}.`);
   }
-  const current = opts.task.execution_contract;
   const workflowDir = opts.command.config.paths.workflow_dir
     .replaceAll("\\", "/")
     .replaceAll(/\/+$/gu, "");
@@ -26,91 +26,101 @@ export async function recordObservedTaskExecutionContract(opts: {
     (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
   );
 
-  const episodeReconciliation = current
-    ? reconcileTaskExecutionContract({
-        contract: {
-          ...current,
-          observed: {
-            repository_effects: [],
-            external_effects: [],
-            changed_paths: [],
-            changed_components: [],
-            verification_results: [],
-            authority_violations: [],
-          },
-        },
-        changed_paths: productChangedPaths,
-        ...(opts.observed_external_effects
-          ? { observed_external_effects: opts.observed_external_effects }
-          : {}),
-        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
-      })
-    : null;
-  const episodeAuthorityViolations =
-    episodeReconciliation?.contract.observed.authority_violations ?? [];
-
-  const reconciled = current
-    ? reconcileTaskExecutionContract({
-        contract: current,
-        changed_paths: productChangedPaths,
-        ...(opts.observed_external_effects
-          ? { observed_external_effects: opts.observed_external_effects }
-          : {}),
-        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
-        ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
-      })
-    : null;
-  const recordedImplementationCommit = opts.task.extensions?.implementation_commit;
-  const recordedImplementationHash =
-    typeof recordedImplementationCommit === "object" &&
-    recordedImplementationCommit !== null &&
-    "hash" in recordedImplementationCommit &&
-    typeof recordedImplementationCommit.hash === "string"
-      ? recordedImplementationCommit.hash.trim()
-      : "";
-  const implementationCommitChanged =
-    opts.preserved_commit !== undefined && recordedImplementationHash !== opts.preserved_commit;
-  const contractChanged =
-    reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
-  if (!contractChanged && !implementationCommitChanged) {
-    return {
-      task: opts.task,
-      escalated: reconciled?.escalated ?? false,
-      episodeAuthorityViolations,
-    };
-  }
-  const blueprintRequest =
-    reconciled?.escalated && opts.task.blueprint_request === "code.direct"
-      ? "code.branch_pr"
-      : opts.task.blueprint_request;
-
-  await opts.command.taskBackend.writeTask(
-    {
-      ...opts.task,
-      blueprint_request: blueprintRequest,
-      ...(implementationCommitChanged
-        ? {
-            extensions: {
-              ...opts.task.extensions,
-              implementation_commit: { hash: opts.preserved_commit },
+  let escalated = false;
+  let episodeAuthorityViolations: string[] = [];
+  const mutation = await applyTaskMutation({
+    ctx: opts.command,
+    taskId: opts.task.id,
+    build: (currentTask) => {
+      const current = currentTask.execution_contract;
+      const episodeReconciliation = current
+        ? reconcileTaskExecutionContract({
+            contract: {
+              ...current,
+              observed: {
+                repository_effects: [],
+                external_effects: [],
+                changed_paths: [],
+                changed_components: [],
+                verification_results: [],
+                authority_violations: [],
+              },
             },
-          }
-        : {}),
-      execution_contract: reconciled?.contract ?? current,
-      execution_route:
-        reconciled && opts.task.execution_route
-          ? {
-              ...opts.task.execution_route,
-              selected_mode: reconciled.contract.selected_mode,
-              reason_codes: [...reconciled.contract.reason_codes],
-            }
-          : undefined,
+            changed_paths: productChangedPaths,
+            ...(opts.observed_external_effects
+              ? { observed_external_effects: opts.observed_external_effects }
+              : {}),
+            ...(opts.verification_results
+              ? { verification_results: opts.verification_results }
+              : {}),
+          })
+        : null;
+      episodeAuthorityViolations =
+        episodeReconciliation?.contract.observed.authority_violations ?? [];
+
+      const reconciled = current
+        ? reconcileTaskExecutionContract({
+            contract: current,
+            changed_paths: productChangedPaths,
+            ...(opts.observed_external_effects
+              ? { observed_external_effects: opts.observed_external_effects }
+              : {}),
+            ...(opts.verification_results
+              ? { verification_results: opts.verification_results }
+              : {}),
+            ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
+          })
+        : null;
+      escalated = reconciled?.escalated ?? false;
+      const recordedImplementationCommit = currentTask.extensions?.implementation_commit;
+      const recordedImplementationHash =
+        typeof recordedImplementationCommit === "object" &&
+        recordedImplementationCommit !== null &&
+        "hash" in recordedImplementationCommit &&
+        typeof recordedImplementationCommit.hash === "string"
+          ? recordedImplementationCommit.hash.trim()
+          : "";
+      const implementationCommitChanged =
+        opts.preserved_commit !== undefined && recordedImplementationHash !== opts.preserved_commit;
+      const contractChanged =
+        reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
+      if (!contractChanged && !implementationCommitChanged) return null;
+      const blueprintRequest =
+        reconciled?.escalated && currentTask.blueprint_request === "code.direct"
+          ? "code.branch_pr"
+          : currentTask.blueprint_request;
+
+      return {
+        nextTask: {
+          ...currentTask,
+          blueprint_request: blueprintRequest,
+          ...(implementationCommitChanged
+            ? {
+                extensions: {
+                  ...currentTask.extensions,
+                  implementation_commit: { hash: opts.preserved_commit },
+                },
+              }
+            : {}),
+          execution_contract: reconciled?.contract ?? current,
+          execution_route:
+            reconciled && currentTask.execution_route
+              ? {
+                  ...currentTask.execution_route,
+                  selected_mode: reconciled.contract.selected_mode,
+                  reason_codes: [...reconciled.contract.reason_codes],
+                }
+              : undefined,
+        },
+      };
     },
-    opts.task.revision ? { expectedRevision: opts.task.revision } : undefined,
-  );
+    writeOptions: opts.task.revision ? { expectedRevision: opts.task.revision } : undefined,
+  });
   return {
-    task: await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id }),
-    escalated: reconciled?.escalated ?? false,
+    task: mutation.changed
+      ? await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id })
+      : mutation.task,
+    escalated,
     episodeAuthorityViolations,
   };
 }

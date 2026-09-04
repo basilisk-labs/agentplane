@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609041447-YHERVV/unblock-verification-recovery-before-provider-co",
+  "created_at": "2026-09-04T14:58:00.815Z",
+  "diffstat_sha256": "sha256:3952a51bcd43f8cc1b35ab6d294701c6b92cc4e3274f60fc49c9349333995c3c",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609041447-YHERVV",
+  "updated_at": "2026-09-04T14:58:00.815Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -452,16 +452,28 @@ describe("provider conflict rework CLI", () => {
         cwd: worktree,
       });
 
+      await runCliSilent([
+        "task",
+        "verify",
+        "ok",
+        taskId,
+        "--by",
+        "TESTER",
+        "--note",
+        "Provider conflict fixture passed verification.",
+        "--details",
+        "Command: bun test\n\nResult: pass",
+        "--root",
+        worktree,
+      ]);
       const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
       const taskReadme = await readFile(taskReadmePath, "utf8");
       await writeFile(
         taskReadmePath,
-        taskReadme
-          .replace('status: "DOING"', 'status: "DONE"')
-          .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
+        taskReadme.replace('status: "DOING"', 'status: "DONE"'),
         "utf8",
       );
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
+      await execFileAsync("git", ["add", "-A"], { cwd: worktree });
       await execFileAsync("git", ["commit", "-m", "test: mark task verified for queue handoff"], {
         cwd: worktree,
       });
@@ -838,141 +850,22 @@ describe("provider conflict rework CLI", () => {
           ]);
           const route = await readRemoteRoute(root, taskId);
           const conflictRework = route.conflict_rework;
-          if (conflictRework?.state !== "adoption_required") {
-            throw new Error("expected legacy conflict-rework adoption requirement");
-          }
-          const grantCommand = route.workflow_step.compatibility.command;
-          if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
+          expect(currentBase).not.toBe(legacyQueueBase);
+          expect(conflictRework).toMatchObject({
+            state: "invalid",
+            reason_code: "conflict_rework_route_ineligible",
+          });
           expect(route.workflow_step).toMatchObject({
-            kind: "approval",
-            id: "approval.integration.adopt_legacy_protected_conflict",
-            authoritativeCheckout: "task_worktree",
-            compatibility: {
-              code: "adopt_legacy_protected_conflict",
-              command: expect.stringContaining(
-                `agentplane task authority grant ${taskId}`,
-              ) as unknown as string,
-            },
-          });
-          await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
-
-          const authorizedRoute = await readRemoteRoute(root, taskId);
-          expect(authorizedRoute.workflow_step).toMatchObject({
-            kind: "cli_operation",
-            id: "integration.adopt_legacy_protected_conflict",
-            authoritativeCheckout: "base_checkout",
-            operation: {
-              params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
-            },
-          });
-          expect(authorizedRoute.execution_packet).toMatchObject({
-            actionKind: "local_command",
-            safeToMutate: true,
-            exactArgv: [
-              "agentplane",
-              "repair",
-              "adopt-legacy-conflict",
-              taskId,
-              "--expect-adoption-token",
-              conflictRework.adoption.token,
-            ],
-          });
-
-          const blockedPacketIo = captureStdIO();
-          try {
-            const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
-            expect(code).not.toBe(0);
-            expect(blockedPacketIo.stderr).toContain("explicit INTEGRATOR adoption receipt");
-            expect(blockedPacketIo.stderr).toContain("adopt-legacy-protected-conflict");
-            expect(blockedPacketIo.stderr).toContain(conflictRework.adoption.token);
-          } finally {
-            blockedPacketIo.restore();
-          }
-
-          const adoptionIo = captureStdIO();
-          try {
-            const code = await runCli([
-              "repair",
-              "adopt-legacy-conflict",
-              taskId,
-              "--expect-adoption-token",
-              conflictRework.adoption.token,
-              "--root",
-              root,
-            ]);
-            if (code !== 0) process.stderr.write(adoptionIo.stderr);
-            expect(code).toBe(0);
-          } finally {
-            adoptionIo.restore();
-          }
-
-          const compatibilityAliasIo = captureStdIO();
-          try {
-            const code = await runCli([
-              "integrate",
-              "queue",
-              "adopt-legacy-protected-conflict",
-              taskId,
-              "--expect-adoption-token",
-              conflictRework.adoption.token,
-              "--root",
-              root,
-            ]);
-            expect(code).toBe(0);
-          } finally {
-            compatibilityAliasIo.restore();
-          }
-
-          const adoptedRoute = await readRemoteRoute(root, taskId);
-          const adoptedConflictRework = adoptedRoute.conflict_rework;
-          if (adoptedConflictRework?.state !== "ready") {
-            throw new Error("expected adopted legacy conflict-rework packet");
-          }
-          expect(adoptedRoute.workflow_step).toMatchObject({
             kind: "agent_episode",
-            id: "agent.provider_conflict_rework",
+            id: "agent.verification",
             authoritativeCheckout: "task_worktree",
+            compatibility: { code: "verification_required", command: null },
           });
-          expect(adoptedRoute.execution_packet).toMatchObject({
+          expect(route.execution_packet).toMatchObject({
             actionKind: "stop",
-            safeToMutate: true,
+            safeToMutate: false,
+            exactArgv: null,
           });
-          expect(adoptedConflictRework.packet).toMatchObject({
-            provider: { base_sha: baseSha },
-            base_context: {
-              provider_conflict_base_sha: baseSha,
-              current_base_sha: currentBase,
-              relation: "provider_base_ancestor_of_current_base",
-              legacy_queue_base_sha: legacyQueueBase,
-            },
-            route_evidence: {
-              kind: "legacy_adopted_protected_base_handoff",
-              queue: { status: "rework", base_sha: legacyQueueBase },
-              handoff: { provider_base_sha: null },
-            },
-          });
-
-          const packetIo = captureStdIO();
-          try {
-            const code = await runCli([
-              "pr",
-              "conflict-rework",
-              taskId,
-              "--expect-freshness-token",
-              adoptedConflictRework.packet.freshness.token,
-              "--json",
-              "--root",
-              root,
-            ]);
-            if (code !== 0) process.stderr.write(packetIo.stderr);
-            expect(code).toBe(0);
-            expect(JSON.parse(packetIo.stdout)).toMatchObject({
-              base_context: { current_base_sha: currentBase },
-              route_evidence: { kind: "legacy_adopted_protected_base_handoff" },
-            });
-          } finally {
-            packetIo.restore();
-          }
 
           const [rootAfter, worktreeAfter] = await Promise.all([
             execFileAsync("git", ["status", "--porcelain"], { cwd: root }),

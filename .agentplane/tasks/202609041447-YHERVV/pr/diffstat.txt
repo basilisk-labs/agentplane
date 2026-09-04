@@ -1,0 +1,7 @@
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 159 +++----------------
+ .../shared/workflow-step-conflict-rework.ts        |  12 ++
+ ...rkflow-step-projections.conflict-rework.test.ts |  42 +++++
+ .../commands/task/direct-task-supervisor.test.ts   |  13 +-
+ .../task-execution-contract-observation.test.ts    |  90 ++++++++++-
+ .../task/task-execution-contract-observation.ts    | 174 +++++++++++----------
+ 6 files changed, 268 insertions(+), 222 deletions(-)
