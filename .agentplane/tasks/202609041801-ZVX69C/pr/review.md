@@ -1,0 +1,53 @@
+# PR Review
+
+Created: 2026-09-04T18:17:29.251Z
+
+## Task
+
+- Task: `202609041801-ZVX69C`
+- Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
+- Status: DOING
+- Branch: `task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re`
+- Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-04T18:17:29.251Z
+- Branch: task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../agentplane/src/cli/route-decision.testkit.ts   |  22 +++
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 ++++++++++----
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
+ .../run-cli.core.route-decision.quality.test.ts    | 128 +++++++++-----
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 194 +++++++++------------
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  94 +++++++++-
+ .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
+ ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
+ .../external-agent-implementation-recovery.test.ts |  28 +++
+ .../task/external-agent-implementation-recovery.ts | 101 +----------
+ .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
+ packages/agentplane/src/commands/task/plan.ts      |   9 +
+ .../src/commands/task/shared.unit.test.ts          |   1 +
+ .../src/commands/task/shared.verify-steps.test.ts  |   8 +
+ .../agentplane/src/commands/task/shared/docs.ts    |   2 +
+ .../task/verify-record.durability.unit.test.ts     |  11 +-
+ 17 files changed, 609 insertions(+), 306 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

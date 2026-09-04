@@ -60,17 +60,12 @@ async function createBranchPrTask(root: string): Promise<string> {
   }
 }
 
-async function markTaskDoing(root: string, taskId: string): Promise<void> {
-  const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
-  const readme = await readFile(readmePath, "utf8");
-  await writeFile(readmePath, readme.replace('status: "TODO"', 'status: "DOING"'), "utf8");
-}
-
 async function createVerifiedOpenPrFixture(
   root: string,
   title: string,
 ): Promise<{
   branch: string;
+  checkout: string;
   taskId: string;
 }> {
   const taskId = await createBranchPrTask(root);
@@ -95,17 +90,31 @@ async function createVerifiedOpenPrFixture(
   await writeFile(path.join(root, "impl.txt"), "implementation\n");
   await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
-  await recordRouteVerification(root, taskId, "Verified: route decision behavior.");
-  await markTaskDoing(root, taskId);
-  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["checkout", "main"], { cwd: root });
+  const checkout = path.join(root, ".agentplane", "worktrees", `${taskId}-route-decision`);
+  await mkdir(path.dirname(checkout), { recursive: true });
+  await execFileAsync("git", ["worktree", "add", checkout, branch], { cwd: root });
+
+  await recordRouteVerification(checkout, taskId, "Verified: route decision behavior.");
+  await runCliSilent([
+    "task",
+    "set-status",
+    taskId,
+    "DOING",
+    "--force",
+    "--yes",
+    "--root",
+    checkout,
+  ]);
+  await execFileAsync("git", ["add", "-A"], { cwd: checkout });
   await execFileAsync("git", ["commit", "-m", "task: seed verified lifecycle state"], {
-    cwd: root,
+    cwd: checkout,
   });
   const { stdout: publicationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-    cwd: root,
+    cwd: checkout,
   });
 
-  const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+  const prDir = path.join(checkout, ".agentplane", "tasks", taskId, "pr");
   await mkdir(prDir, { recursive: true });
   await writeFile(
     path.join(prDir, "meta.json"),
@@ -127,7 +136,7 @@ async function createVerifiedOpenPrFixture(
     )}\n`,
   );
 
-  return { branch, taskId };
+  return { branch, checkout, taskId };
 }
 
 async function setupRoot(): Promise<string> {
@@ -143,13 +152,16 @@ async function setupRoot(): Promise<string> {
 describe("runCli quality route decisions", () => {
   it("records quality review before recommending integration for a verified open PR", async () => {
     const root = await setupRoot();
-    const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise quality review routing.");
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "task: verify artifacts"], { cwd: root });
+    const { taskId, checkout } = await createVerifiedOpenPrFixture(
+      root,
+      "Exercise quality review routing.",
+    );
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: checkout });
+    await execFileAsync("git", ["commit", "-m", "task: verify artifacts"], { cwd: checkout });
 
     const nextIo = captureStdIO();
     try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         route_oracle: { phase: string; authoritativeCheckout: string; blocker: { code: string } };
@@ -189,7 +201,15 @@ describe("runCli quality route decisions", () => {
 
     const repairIo = captureStdIO();
     try {
-      const code = await runCli(["flow", "repair", taskId, "--dry-run", "--json", "--root", root]);
+      const code = await runCli([
+        "flow",
+        "repair",
+        taskId,
+        "--dry-run",
+        "--json",
+        "--root",
+        checkout,
+      ]);
       expect(code).toBe(0);
       const parsed = JSON.parse(repairIo.stdout) as {
         repair_plan: { code: string; command: string | null; mutates: boolean }[];
@@ -209,7 +229,10 @@ describe("runCli quality route decisions", () => {
 
   it("re-verifies a semantic advance before replacing its stale quality review", async () => {
     const root = await setupRoot();
-    const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise stale review routing.");
+    const { taskId, checkout } = await createVerifiedOpenPrFixture(
+      root,
+      "Exercise stale review routing.",
+    );
     await runCliExpectOk(
       [
         "evaluator",
@@ -226,34 +249,38 @@ describe("runCli quality route decisions", () => {
         "--evidence",
         `.agentplane/tasks/${taskId}/README.md`,
         "--root",
-        root,
+        checkout,
       ],
-      root,
+      checkout,
     );
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: checkout });
+    await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: checkout });
 
-    await writeFile(path.join(root, "impl.txt"), "implementation changed after review\n");
-    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await writeFile(path.join(checkout, "impl.txt"), "implementation changed after review\n");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: checkout });
     await execFileAsync("git", ["commit", "-m", "feat: change reviewed implementation"], {
-      cwd: root,
+      cwd: checkout,
     });
     const { stdout: changedHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
+      cwd: checkout,
     });
-    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const metaPath = path.join(checkout, ".agentplane", "tasks", taskId, "pr", "meta.json");
     const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
     await writeFile(
       metaPath,
       `${JSON.stringify({ ...meta, head_sha: changedHead.trim() }, null, 2)}\n`,
       "utf8",
     );
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr/meta.json`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "task: refresh PR metadata"], { cwd: root });
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr/meta.json`], {
+      cwd: checkout,
+    });
+    await execFileAsync("git", ["commit", "-m", "task: refresh PR metadata"], {
+      cwd: checkout,
+    });
 
     const nextIo = captureStdIO();
     try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         blockers: { code: string }[];
@@ -276,7 +303,10 @@ describe("runCli quality route decisions", () => {
 
   it("hands fresh evaluator rework findings back to the CODER without a PR command", async () => {
     const root = await setupRoot();
-    const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise rework routing.");
+    const { taskId, checkout } = await createVerifiedOpenPrFixture(
+      root,
+      "Exercise rework routing.",
+    );
     await runCliExpectOk(
       [
         "evaluator",
@@ -293,14 +323,16 @@ describe("runCli quality route decisions", () => {
         "--evidence",
         `.agentplane/tasks/${taskId}/README.md`,
         "--root",
-        root,
+        checkout,
       ],
-      root,
+      checkout,
     );
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "task: evaluator rework artifacts"], { cwd: root });
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: checkout });
+    await execFileAsync("git", ["commit", "-m", "task: evaluator rework artifacts"], {
+      cwd: checkout,
+    });
 
-    const qualityRoot = path.join(root, ".agentplane", "tasks", taskId, "quality");
+    const qualityRoot = path.join(checkout, ".agentplane", "tasks", taskId, "quality");
     const qualityEntries = await readdir(qualityRoot);
     const reviewDir = qualityEntries.find((entry) => entry !== "objects");
     expect(reviewDir).toBeTruthy();
@@ -309,7 +341,7 @@ describe("runCli quality route decisions", () => {
 
     const freshReviewIo = captureStdIO();
     try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
       expect(code).toBe(0);
       const parsed = JSON.parse(freshReviewIo.stdout) as {
         execution_packet: { recommendedRole: string };
@@ -333,16 +365,16 @@ describe("runCli quality route decisions", () => {
       "--note",
       "Implementation rework is required by the persisted evaluator report.",
       "--root",
-      root,
+      checkout,
     ]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: checkout });
     await execFileAsync("git", ["commit", "-m", "task: record implementation rework"], {
-      cwd: root,
+      cwd: checkout,
     });
 
     const nextIo = captureStdIO();
     try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         route_oracle: {
@@ -437,7 +469,7 @@ describe("runCli quality route decisions", () => {
 
   it("requires scoped authority before pre-merge closure for a quality-reviewed open PR", async () => {
     const root = await setupRoot();
-    const { taskId } = await createVerifiedOpenPrFixture(
+    const { taskId, checkout } = await createVerifiedOpenPrFixture(
       root,
       "Exercise pre-merge closure routing.",
     );
@@ -457,16 +489,16 @@ describe("runCli quality route decisions", () => {
         "--evidence",
         `.agentplane/tasks/${taskId}/README.md`,
         "--root",
-        root,
+        checkout,
       ],
-      root,
+      checkout,
     );
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: checkout });
+    await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: checkout });
 
     const nextIo = captureStdIO();
     try {
-      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         route_oracle: { phase: string; authoritativeCheckout: string; blocker: { code: string } };
