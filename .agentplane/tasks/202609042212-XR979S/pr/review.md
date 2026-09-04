@@ -29,10 +29,11 @@ Created: 2026-09-04T22:19:44.639Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...un-cli.core.task-advance.blocked-result.test.ts | 89 +++++++++++++++++++++-
- .../commands/task/external-agent-blocked-result.ts | 12 ++-
- .../task/shared/workflow-transition-service.ts     | 15 ++++
- 3 files changed, 113 insertions(+), 3 deletions(-)
+ ...un-cli.core.task-advance.blocked-result.test.ts |  89 ++++++++++++++++-
+ .../commands/task/external-agent-blocked-result.ts |  12 ++-
+ .../src/commands/task/set-status.unit.test.ts      | 109 ++++++++++++---------
+ .../task/shared/workflow-transition-service.ts     |  15 +++
+ 4 files changed, 177 insertions(+), 48 deletions(-)
 ```
 
 </details>
