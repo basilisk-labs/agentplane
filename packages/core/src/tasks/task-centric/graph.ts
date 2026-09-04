@@ -8,6 +8,7 @@ import type {
   TaskAggregate,
   TaskPlanProposal,
   TaskPlanRevision,
+  TransitionReceipt,
   WorkItem,
   WorkItemGraph,
   WorkItemRuntime,
@@ -32,6 +33,11 @@ export type WorkItemReadiness = Readonly<{
   work_item_id: string;
   ready: boolean;
   reason_codes: readonly string[];
+}>;
+
+export type ReplacementPlanWorkItemRecoveryEvidence = Readonly<{
+  aggregate: TaskAggregate;
+  receipt: TransitionReceipt;
 }>;
 
 function validateDependencies(graph: WorkItemGraph, issues: GraphValidationIssue[]): void {
@@ -247,10 +253,94 @@ function freshWorkItemRuntime(item: WorkItem): WorkItemRuntime {
   });
 }
 
-/** Preserve runtime only when the replacement plan keeps the exact WorkItem contract. */
+function workItemSemanticDigest(item: WorkItem): Sha256Digest {
+  const { evidence_fingerprint: _evidenceFingerprint, ...validation } = item.validation;
+  return taskCentricDigest({ ...item, validation });
+}
+
+function isFreshWorkItemRuntime(runtime: WorkItemRuntime): boolean {
+  return (
+    runtime.state === "PLANNED" &&
+    runtime.revision === 1 &&
+    runtime.attempt === 0 &&
+    runtime.claim_id === null &&
+    runtime.output_manifests.length === 0 &&
+    runtime.validation_result === null &&
+    runtime.last_failure === null
+  );
+}
+
+const RECOVERABLE_WORK_ITEM_STATES = new Set<WorkItemRuntime["state"]>([
+  "COMPLETED",
+  "REWORK_READY",
+]);
+
+function recoverWorkItemRuntime(opts: {
+  task: TaskAggregate;
+  item: WorkItem;
+  evidence: readonly ReplacementPlanWorkItemRecoveryEvidence[];
+}): WorkItemRuntime | null {
+  const relevant = opts.evidence.filter(
+    ({ receipt }) => receipt.event.work_item_id === opts.item.id,
+  );
+  if (relevant.length !== 1) return null;
+
+  const { aggregate, receipt } = relevant[0]!;
+  const sourcePlan = aggregate.current_plan;
+  const sourceRuntime = aggregate.work_items[opts.item.id];
+  const sourceDefinition = sourcePlan?.proposal.work_items.work_items.find(
+    (candidate) => candidate.id === opts.item.id,
+  );
+  if (!sourcePlan || !sourceDefinition || !sourceRuntime) return null;
+  const planIsInTaskLineage = [opts.task.current_plan, ...(opts.task.plan_history ?? [])].some(
+    (plan) =>
+      plan?.revision === sourcePlan.revision &&
+      plan.digest === sourcePlan.digest &&
+      taskCentricDigest(plan.proposal) === taskCentricDigest(sourcePlan.proposal),
+  );
+  const event = receipt.event;
+  const outputsComplete = opts.item.expected_outputs.every((id) =>
+    sourceRuntime.output_manifests.some((output) => output.id === id),
+  );
+  const terminalEvidenceComplete =
+    sourceRuntime.state === "COMPLETED"
+      ? sourceRuntime.validation_result?.status === "passed" && outputsComplete
+      : sourceRuntime.state === "REWORK_READY"
+        ? sourceRuntime.validation_result?.status === "failed" &&
+          sourceRuntime.last_failure !== null
+        : false;
+  if (
+    aggregate.id !== opts.task.id ||
+    receipt.task_id !== opts.task.id ||
+    event.task_id !== opts.task.id ||
+    !planIsInTaskLineage ||
+    sourcePlan.approval.state !== "approved" ||
+    sourcePlan.approval.approved_digest !== sourcePlan.digest ||
+    workItemSemanticDigest(sourceDefinition) !== workItemSemanticDigest(opts.item) ||
+    receipt.aggregate_digest !== taskCentricDigest(aggregate) ||
+    receipt.mutation_id !== event.mutation_id ||
+    receipt.previous_revision + 1 !== receipt.next_revision ||
+    receipt.previous_revision !== event.task_revision ||
+    receipt.next_revision !== aggregate.revision ||
+    event.entity !== "work_item" ||
+    event.work_item_id !== opts.item.id ||
+    event.plan_revision !== sourcePlan.revision ||
+    event.plan_digest !== sourcePlan.digest ||
+    event.to !== sourceRuntime.state ||
+    !RECOVERABLE_WORK_ITEM_STATES.has(sourceRuntime.state) ||
+    !terminalEvidenceComplete ||
+    sourceRuntime.claim_id !== null
+  ) {
+    return null;
+  }
+  return sourceRuntime;
+}
+
+/** Preserve runtime only when the replacement plan keeps the semantic WorkItem contract. */
 export function reconcileReplacementPlanWorkItems(opts: {
   task: TaskAggregate;
   proposal: TaskPlanProposal;
+  recovery_evidence?: readonly ReplacementPlanWorkItemRecoveryEvidence[];
 }): Readonly<Record<string, WorkItemRuntime>> {
   const previous = new Map(
     (opts.task.current_plan?.proposal.work_items.work_items ?? []).map((item) => [item.id, item]),
@@ -260,13 +350,20 @@ export function reconcileReplacementPlanWorkItems(opts: {
       opts.proposal.work_items.work_items.map((item) => {
         const priorDefinition = previous.get(item.id);
         const priorRuntime = opts.task.work_items[item.id];
+        const sameDefinition =
+          priorDefinition &&
+          workItemSemanticDigest(priorDefinition) === workItemSemanticDigest(item);
+        const recovered =
+          (!priorRuntime || isFreshWorkItemRuntime(priorRuntime)) && opts.recovery_evidence?.length
+            ? recoverWorkItemRuntime({
+                task: opts.task,
+                item,
+                evidence: opts.recovery_evidence,
+              })
+            : null;
         return [
           item.id,
-          priorDefinition &&
-          priorRuntime &&
-          taskCentricDigest(priorDefinition) === taskCentricDigest(item)
-            ? priorRuntime
-            : freshWorkItemRuntime(item),
+          recovered ?? (sameDefinition && priorRuntime ? priorRuntime : freshWorkItemRuntime(item)),
         ];
       }),
     ),

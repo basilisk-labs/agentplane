@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-09-04T12:49:05.282Z"
+  state: "needs_rework"
+  updated_at: "2026-09-04T12:52:01.737Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  note: "Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify the new requirement."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -128,7 +128,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/tasks/task-centric"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -210,6 +211,9 @@ execution_contract:
       -
         id: "recorded-check-9"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
@@ -321,9 +325,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "de5817fb2a6677a271c14ca26f9e2780396c9e02"
-  message: "🚧 F31YXS task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -458,8 +461,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "verify"
+    at: "2026-09-04T12:52:01.737Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify the new requirement."
 doc_version: 3
-doc_updated_at: "2026-09-04T12:49:06.588Z"
+doc_updated_at: "2026-09-04T12:52:03.182Z"
 doc_updated_by: "CODER"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -795,6 +804,38 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-04T12:52:01.737Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify the new requirement.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3, input_digest=sha256:23db145aa6cf9807d6d3f1734804ccd952c908848645ce4a1bd67e4844b8665e
+
+    Details:
+
+    Pre-merge closeout failed closed with required_work_item_incomplete:recover-reset-workitem-projection. Return to CODER implementation rework and execute only the approved recovery WorkItem.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/.agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json
+    - old_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+    - current_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609032308-F31YXS
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane finish 202609032308-F31YXS --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 11d4047f5696ceefa22a3b433ba9c52452785426 --pre-merge-closure
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1094,7 +1135,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -2063,9 +2104,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 34
+    revision: 35
     schema_version: 1
-    updated_at: "2026-09-04T12:49:06.565Z"
+    updated_at: "2026-09-04T12:52:03.158Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 0
@@ -2378,6 +2419,30 @@ extensions:
         mutation_id: "compatibility:sha256:5a0788e8df67c617b7bc1e3bb79e2b41f6cb1b7a382421ae7f999cf7c50ff12a"
         next_revision: 29
         previous_revision: 28
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:60ede2ebcb43e1b3076b769a5cc8d1b1fd689eb8b0977efa5c084fb8db9619c8:
+        aggregate_digest: "sha256:ace9c157d6d8045c86a4f0f09fb469d46d3d41992f8fff3d52c72eee7f144bb1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T12:52:03.158Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b5de75f849580990a59c39d9"
+          mutation_id: "compatibility:sha256:60ede2ebcb43e1b3076b769a5cc8d1b1fd689eb8b0977efa5c084fb8db9619c8"
+          plan_digest: "sha256:39eee4082caad7c551bb55a6b5dd866bc2b3ddd4e4716a74e7965380f9fd30f5"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 34
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:60ede2ebcb43e1b3076b769a5cc8d1b1fd689eb8b0977efa5c084fb8db9619c8"
+        next_revision: 35
+        previous_revision: 34
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:689d5533634185727dfad2853eea578499448c4f203f29e612181e7e05d6c04c:
@@ -2762,8 +2827,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "de5817fb2a6677a271c14ca26f9e2780396c9e02"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
@@ -3115,6 +3178,38 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-09-04T12:52:01.737Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify the new requirement.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3, input_digest=sha256:23db145aa6cf9807d6d3f1734804ccd952c908848645ce4a1bd67e4844b8665e
+
+Details:
+
+Pre-merge closeout failed closed with required_work_item_incomplete:recover-reset-workitem-projection. Return to CODER implementation rework and execute only the approved recovery WorkItem.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/.agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json
+- old_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+- current_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609032308-F31YXS
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane finish 202609032308-F31YXS --author CODER --body 'Verified: pre-merge closure packet is ready for the task PR.' --result 'pre-merge closure' --commit 11d4047f5696ceefa22a3b433ba9c52452785426 --pre-merge-closure
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

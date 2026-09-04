@@ -32,10 +32,13 @@ import {
   validateWorkItemGraph,
   withTaskCentricAggregate,
   WorkItemScheduler,
+  type DomainEvent,
   type OutputManifest,
+  type ReplacementPlanWorkItemRecoveryEvidence,
   type RepositorySnapshot,
   type TaskAggregate,
   type TaskPlanProposal,
+  type TransitionReceipt,
   type ValidationPlan,
   type WorkItem,
   type WorkItemState,
@@ -154,6 +157,63 @@ function manifest(opts: {
     repository_snapshot_digest: (opts.repository ?? snapshot()).digest,
     provenance: [],
   };
+}
+
+function completedRecoveryEvidence(task: TaskAggregate): ReplacementPlanWorkItemRecoveryEvidence {
+  const plan = task.current_plan!;
+  const current = task.work_items.a!;
+  const runtime = {
+    ...current,
+    state: "COMPLETED" as const,
+    revision: current.revision + 1,
+    attempt: current.attempt + 1,
+    output_manifests: [manifest({ id: "out-a", work_item_id: "a" })],
+    validation_result: aggregateValidation(validation("a"), [
+      {
+        check_id: "check-a",
+        status: "passed",
+        observed_at: NOW,
+        repository_snapshot_digest: snapshot().digest,
+        command_identity: "test",
+        exit_code: 0,
+        artifact_refs: ["verification.json"],
+        detail: "passed",
+      },
+    ]),
+  };
+  const event: DomainEvent = {
+    schema_version: 1,
+    id: "event_completed_a",
+    mutation_id: "result-a",
+    task_id: task.id,
+    task_revision: task.revision,
+    plan_revision: plan.revision,
+    plan_digest: plan.digest,
+    work_item_id: "a",
+    entity: "work_item",
+    from: current.state,
+    to: runtime.state,
+    cause_refs: [],
+    actor_id: "agentplane",
+    repository_fingerprint: null,
+    at: NOW,
+  };
+  const aggregate: TaskAggregate = {
+    ...task,
+    revision: task.revision + 1,
+    event_cursor: task.event_cursor + 1,
+    work_items: { ...task.work_items, a: runtime },
+  };
+  const receipt: TransitionReceipt = {
+    schema_version: 1,
+    task_id: task.id,
+    previous_revision: task.revision,
+    next_revision: aggregate.revision,
+    mutation_id: event.mutation_id,
+    event,
+    aggregate_digest: taskCentricDigest(aggregate),
+  };
+  return { aggregate, receipt };
 }
 
 describe("task-centric domain", () => {
@@ -349,8 +409,15 @@ describe("task-centric domain", () => {
         changed: { ...original.work_items.changed!, state: "COMPLETED" },
       },
     };
+    const doneDefinition = original.current_plan!.proposal.work_items.work_items[0]!;
     const replacementProposal = proposal([
-      item({ id: "done" }),
+      {
+        ...doneDefinition,
+        validation: {
+          ...doneDefinition.validation,
+          evidence_fingerprint: taskCentricDigest("refreshed-evidence"),
+        },
+      },
       item({ id: "changed", depends_on: ["done"], objective: "Refined objective" }),
     ]);
     const workItems = reconcileReplacementPlanWorkItems({
@@ -392,6 +459,123 @@ describe("task-centric domain", () => {
     expect(materialized.work_items.changed?.state).toBe("READY");
     expect(materialized.current_plan).toBe(approved);
     expect(materialized.lifecycle).toBe("ACTIVE");
+  });
+
+  it("recovers an exactly receipted WorkItem runtime after a semantic-only plan revision", () => {
+    const original = approvedTask([item({ id: "a" })]);
+    const evidence = completedRecoveryEvidence(original);
+    const originalDefinition = original.current_plan!.proposal.work_items.work_items[0]!;
+    const commandOnlyDefinition = {
+      ...originalDefinition,
+      validation: {
+        ...originalDefinition.validation,
+        evidence_fingerprint: taskCentricDigest("command-only-verification-change"),
+      },
+    };
+    const commandOnlyDraft = createTaskPlanRevision({
+      proposal: proposal([commandOnlyDefinition]),
+      revision: 2,
+      created_at: NOW,
+    });
+    const commandOnlyPlan = approveTaskPlan({
+      plan: commandOnlyDraft,
+      expected_digest: commandOnlyDraft.digest,
+      actor: "denis",
+      approved_at: NOW,
+    });
+    const resetRuntime = {
+      id: "a",
+      state: "PLANNED" as const,
+      revision: 1,
+      attempt: 0,
+      claim_id: null,
+      output_manifests: [],
+      validation_result: null,
+      last_failure: null,
+    };
+    const resetTask: TaskAggregate = {
+      ...evidence.aggregate,
+      current_plan: commandOnlyPlan,
+      plan_history: [original.current_plan!],
+      work_items: { a: resetRuntime },
+      final_validation: null,
+    };
+
+    const recovered = reconcileReplacementPlanWorkItems({
+      task: resetTask,
+      proposal: commandOnlyPlan.proposal,
+      recovery_evidence: [evidence],
+    });
+    expect(recovered.a).toBe(evidence.aggregate.work_items.a);
+
+    const replayed = reconcileReplacementPlanWorkItems({
+      task: { ...resetTask, work_items: recovered },
+      proposal: commandOnlyPlan.proposal,
+      recovery_evidence: [evidence],
+    });
+    expect(replayed.a).toBe(recovered.a);
+  });
+
+  it("fails closed for ambiguous, mismatched, cross-task, or incomplete recovery evidence", () => {
+    const original = approvedTask([item({ id: "a" })]);
+    const evidence = completedRecoveryEvidence(original);
+    const resetRuntime = {
+      id: "a",
+      state: "PLANNED" as const,
+      revision: 1,
+      attempt: 0,
+      claim_id: null,
+      output_manifests: [],
+      validation_result: null,
+      last_failure: null,
+    };
+    const resetTask: TaskAggregate = {
+      ...original,
+      plan_history: [original.current_plan!],
+      work_items: { a: resetRuntime },
+    };
+    const crossTaskAggregate = { ...evidence.aggregate, id: "other-task" };
+    const invalidCases: readonly (readonly ReplacementPlanWorkItemRecoveryEvidence[])[] = [
+      [evidence, evidence],
+      [
+        {
+          aggregate: evidence.aggregate,
+          receipt: { ...evidence.receipt, aggregate_digest: taskCentricDigest("incomplete") },
+        },
+      ],
+      [
+        {
+          aggregate: crossTaskAggregate,
+          receipt: {
+            ...evidence.receipt,
+            task_id: "other-task",
+            event: { ...evidence.receipt.event, task_id: "other-task" },
+            aggregate_digest: taskCentricDigest(crossTaskAggregate),
+          },
+        },
+      ],
+    ];
+    const before = taskCentricDigest(resetTask);
+    for (const recovery_evidence of invalidCases) {
+      expect(
+        reconcileReplacementPlanWorkItems({
+          task: resetTask,
+          proposal: original.current_plan!.proposal,
+          recovery_evidence,
+        }).a,
+      ).toBe(resetRuntime);
+      expect(taskCentricDigest(resetTask)).toBe(before);
+    }
+
+    const changed = proposal([item({ id: "a", objective: "Different semantic contract" })]);
+    expect(
+      reconcileReplacementPlanWorkItems({
+        task: resetTask,
+        proposal: changed,
+        recovery_evidence: [evidence],
+      }).a,
+    ).toMatchObject({ state: "PLANNED", revision: 1, attempt: 0 });
+    expect(taskCentricDigest(resetTask)).toBe(before);
   });
 
   it.each(["scope", "acceptance"] as const)(

@@ -15,8 +15,14 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and
+packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify
+the new requirement.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,15 +34,18 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
 
 ```text
  .../task-centric-backend-projection.ts             |  13 +-
- ...n-cli.core.task-advance.evidence-rework.test.ts |  18 ++-
- .../src/commands/shared/task-mutation.test.ts      | 143 +++++++++++++++++++++
- .../commands/task/direct-task-verification.test.ts |   8 ++
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  18 +-
+ .../src/commands/shared/task-mutation.test.ts      | 143 ++++++++++++++++
+ .../commands/task/direct-task-verification.test.ts |   8 +
  .../src/commands/task/direct-task-verification.ts  |   4 +-
- .../task/external-agent-implementation-recovery.ts |  18 ++-
- .../src/commands/task/verify-record-execute.ts     |  43 ++++---
+ .../task/external-agent-implementation-recovery.ts |  18 +-
+ .../src/commands/task/verify-record-execute.ts     |  43 +++--
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
- .../src/commands/task/verify-record.types.ts       |   8 ++
- 9 files changed, 233 insertions(+), 25 deletions(-)
+ .../src/commands/task/verify-record.types.ts       |   8 +
+ packages/core/src/tasks/task-centric/graph.ts      | 109 +++++++++++-
+ packages/core/src/tasks/task-centric/index.ts      |   1 +
+ .../src/tasks/task-centric/task-centric.test.ts    | 186 ++++++++++++++++++++-
+ 12 files changed, 522 insertions(+), 32 deletions(-)
 ```
 
 </details>
