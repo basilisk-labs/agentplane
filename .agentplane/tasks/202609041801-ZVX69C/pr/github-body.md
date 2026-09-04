@@ -15,8 +15,8 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check could not run: agentplane task lint
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,6 +40,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../src/commands/task/direct-task-verification.ts  |  11 +-
  ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
  .../external-agent-implementation-recovery.test.ts |  28 +++
  .../task/external-agent-implementation-recovery.ts | 101 +----------
@@ -56,7 +57,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
- 29 files changed, 770 insertions(+), 317 deletions(-)
+ 30 files changed, 777 insertions(+), 321 deletions(-)
 ```
 
 </details>

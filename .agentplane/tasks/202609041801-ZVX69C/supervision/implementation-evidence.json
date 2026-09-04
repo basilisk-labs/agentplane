@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c1150b246079c1625688ac94afeda55c23391872..53302ccb9941294c5c2a4eaf6cc33b819dee67ee",
+      "command": "git diff --check afcd685ddc8e5a407ded873d91bd9de44f660cf1..b8caa347ec232b1c6b38409557a8a91ec8ca4ee9",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c1150b246079c1625688ac94afeda55c23391872..53302ccb9941294c5c2a4eaf6cc33b819dee67ee",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB afcd685ddc8e5a407ded873d91bd9de44f660cf1..b8caa347ec232b1c6b38409557a8a91ec8ca4ee9",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,8 @@
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/github-body.md",
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/meta.json",
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/review.md",
-        "M\tpackages/agentplane/src/commands/workflow.test.ts",
-        "M\tpackages/agentplane/src/commands/workflow.verify-hooks.test.ts"
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c1150b246079c1625688ac94afeda55c23391872",
-  "implementation_commit": "53302ccb9941294c5c2a4eaf6cc33b819dee67ee",
+  "execution_base_commit": "afcd685ddc8e5a407ded873d91bd9de44f660cf1",
+  "implementation_commit": "b8caa347ec232b1c6b38409557a8a91ec8ca4ee9",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

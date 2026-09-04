@@ -114,8 +114,11 @@ export async function recordDirectTaskVerification(opts: {
   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_order.task.work_item_id,
   );
-  const additionalCommands = selectedWorkItem
-    ? blockingWorkItemCommands(selectedWorkItem.validation)
+  const taskCentricValidation = opts.work_order.task.work_item_id
+    ? selectedWorkItem?.validation
+    : aggregate?.current_plan?.proposal.top_level_validation;
+  const additionalCommands = taskCentricValidation
+    ? blockingWorkItemCommands(taskCentricValidation)
     : [];
   const checks = await runDirectTaskVerification({
     command: opts.command,
@@ -123,8 +126,8 @@ export async function recordDirectTaskVerification(opts: {
     task_id: opts.task.id,
     cwd: opts.checkout,
     additional_commands: additionalCommands,
-    additional_only: selectedWorkItem !== undefined,
-    allow_empty: selectedWorkItem !== undefined,
+    additional_only: taskCentricValidation !== undefined,
+    allow_empty: taskCentricValidation !== undefined,
   });
   if (selectedWorkItem) {
     // WorkItem validation is projected by recordTaskCentricExternalResult.
