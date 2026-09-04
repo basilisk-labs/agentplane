@@ -13,7 +13,7 @@ Created: 2026-09-03T23:29:34.750Z
 ## Verification
 
 - State: needs_rework
-- Note: Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify the new requirement.
+- Note: Current WorkItem authority cannot adopt the complete F31YXS branch commit because four already-approved execution-contract roots are absent from this WorkItem scope and resource claims.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -40,8 +40,8 @@ Created: 2026-09-03T23:29:34.750Z
  .../src/commands/task/verify-record.types.ts       |   8 +
  packages/core/src/tasks/task-centric/graph.ts      | 109 +++++++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
- .../src/tasks/task-centric/task-centric.test.ts    | 186 ++++++++++++++++++++-
- 12 files changed, 522 insertions(+), 32 deletions(-)
+ .../src/tasks/task-centric/task-centric.test.ts    | 187 ++++++++++++++++++++-
+ 12 files changed, 523 insertions(+), 32 deletions(-)
 ```
 
 </details>

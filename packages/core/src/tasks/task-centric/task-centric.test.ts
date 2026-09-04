@@ -507,6 +507,7 @@ describe("task-centric domain", () => {
       recovery_evidence: [evidence],
     });
     expect(recovered.a).toBe(evidence.aggregate.work_items.a);
+    expect(recovered.a?.state).toBe("COMPLETED");
 
     const replayed = reconcileReplacementPlanWorkItems({
       task: { ...resetTask, work_items: recovered },

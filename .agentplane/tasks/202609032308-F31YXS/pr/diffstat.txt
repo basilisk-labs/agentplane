@@ -9,5 +9,5 @@
  .../src/commands/task/verify-record.types.ts       |   8 +
  packages/core/src/tasks/task-centric/graph.ts      | 109 +++++++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
- .../src/tasks/task-centric/task-centric.test.ts    | 186 ++++++++++++++++++++-
- 12 files changed, 522 insertions(+), 32 deletions(-)
+ .../src/tasks/task-centric/task-centric.test.ts    | 187 ++++++++++++++++++++-
+ 12 files changed, 523 insertions(+), 32 deletions(-)
