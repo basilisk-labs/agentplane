@@ -49,12 +49,14 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/commands/task/shared.verify-steps.test.ts  |   8 +
  .../agentplane/src/commands/task/shared/docs.ts    |   2 +
  .../task/verify-record.durability.unit.test.ts     |  11 +-
+ packages/agentplane/src/commands/workflow.test.ts  |  10 ++
+ .../src/commands/workflow.verify-hooks.test.ts     |  12 +-
  .../src/runner/usecases/agent-work-order-build.ts  |  16 +-
  .../src/runner/usecases/agent-work-order.ts        |   1 +
  .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
- 25 files changed, 705 insertions(+), 315 deletions(-)
+ 27 files changed, 726 insertions(+), 316 deletions(-)
 ```
 
 </details>

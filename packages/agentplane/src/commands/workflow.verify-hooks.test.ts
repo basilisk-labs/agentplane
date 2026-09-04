@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   cmdTaskAdd,
+  cmdTaskDocSet,
   cmdTaskVerifyOk,
   cmdTaskVerifyRework,
   cmdFinish,
@@ -50,6 +51,15 @@ async function addTask(root: string, taskId: string): Promise<void> {
     verify: [],
     commentAuthor: null,
     commentBody: null,
+  });
+  await cmdTaskDocSet({
+    cwd: root,
+    rootOverride: root,
+    taskId,
+    section: "Verify Steps",
+    text: "1. Run `bun test`. Expected: the workflow fixture passes.",
+    updatedBy: "TEST",
+    fullDoc: false,
   });
 }
 
@@ -184,7 +194,7 @@ describe("commands/workflow", () => {
       implementation_sha: expect.stringMatching(/^[a-f0-9]{40}$/u) as unknown,
     });
     expect(typeof record.scope).toBe("string");
-    expect(String(record.scope)).toContain("Review the requested outcome");
+    expect(String(record.scope)).toContain("the workflow fixture passes");
     expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
