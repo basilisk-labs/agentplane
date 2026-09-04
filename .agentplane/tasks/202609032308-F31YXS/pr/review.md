@@ -6,7 +6,7 @@ Created: 2026-09-03T23:29:34.750Z
 
 - Task: `202609032308-F31YXS`
 - Title: Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity`
 - Canonical task record: `.agentplane/tasks/202609032308-F31YXS/README.md`
 
