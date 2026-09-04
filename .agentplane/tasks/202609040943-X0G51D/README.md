@@ -1,10 +1,11 @@
 ---
 id: "202609040943-X0G51D"
 title: "Preserve completed WorkItems across command-only material plan refinements"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -66,6 +67,20 @@ quality_review:
     - "Residual risk: Hosted checks, PR integration, and provider-hosted closure remain AgentPlane-owned steps after this local evaluation."
     - "Residual risk: The legacy Verify Steps prose still contains the creation scaffold, while the canonical structured plan and WorkItem validation are task-specific and fully recorded; any general projection cleanup remains outside this task."
     - "Residual risk: Factory task 202609032356-BCJRWK reports a separate recoverable-effect baseline-rebase defect that is not addressed by this plan-rematerialization repair."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:a1ec56e03e5a3db998cc035fd48e7571b9c3739c3f83bc1add4959f669e6acc4"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-04T10:55:03.882Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -319,8 +334,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "374fe1c779160e4f2df99483453fcd7471e45300"
-  message: "🚧 X0G51D task: apply external agent result"
+  hash: "2fc1bfd8b51a95ab7e3ce265e3bdc6bc1aa8ac7a"
+  message: "🚧 X0G51D task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -331,6 +346,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 374fe1c77916. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -361,9 +379,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-04T10:55:03.882Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "2fc1bfd8b51a95ab7e3ce265e3bdc6bc1aa8ac7a"
 doc_version: 3
-doc_updated_at: "2026-09-04T10:52:21.566Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-04T10:55:03.882Z"
+doc_updated_by: "CODER"
 description: "Fix the Clean Core recovery defect reproduced by task 202609032308-F31YXS: after a material plan refinement that changes only a verification command, AgentPlane rematerializes the approved plan with previously COMPLETED WorkItems reset and reissues the first completed implementation episode. Preserve completed WorkItem state, attempts, canonical output manifests, and dependency satisfaction when the revised structured plan keeps the same WorkItem identities and semantics; reopen only the WorkItem whose verification declaration materially changed. Fail closed on incompatible identity, dependency, output, scope, or acceptance changes. Add a focused regression using the F31YXS sequence: completed implementation at unchanged HEAD, command-only refinement from task-specific task lint to repository-wide task lint, reapproval, and continuation at the qualification or verification boundary without requiring a fake source diff. Do not modify F31YXS or PX8PZT task state directly, weaken verification, add compatibility CLI behavior, or include release or provider-neutral scope."
 sections:
   Summary: |-
@@ -888,7 +914,111 @@ extensions:
       schema_version: 1
       task_id: "202609040943-X0G51D"
     event_cursor: 5
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "core-reconciliation-focused"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "planning-authority-focused"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "f31yxs-cli-focused"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "format-touched"
+          command_identity: "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/commands/task/external-agent-planning-authority.ts packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "lint-core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "routing"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T10:52:20.448Z"
+          repository_snapshot_digest: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609040943-X0G51D"
     intent:
       acceptance_criteria:
@@ -924,12 +1054,12 @@ extensions:
 
         Fix the Clean Core recovery defect reproduced by task 202609032308-F31YXS: after a material plan refinement that changes only a verification command, AgentPlane rematerializes the approved plan with previously COMPLETED WorkItems reset and reissues the first completed implementation episode. Preserve completed WorkItem state, attempts, canonical output manifests, and dependency satisfaction when the revised structured plan keeps the same WorkItem identities and semantics; reopen only the WorkItem whose verification declaration materially changed. Fail closed on incompatible identity, dependency, output, scope, or acceptance changes. Add a focused regression using the F31YXS sequence: completed implementation at unchanged HEAD, command-only refinement from task-specific task lint to repository-wide task lint, reapproval, and continuation at the qualification or verification boundary without requiring a fake source diff. Do not modify F31YXS or PX8PZT task state directly, weaken verification, add compatibility CLI behavior, or include release or provider-neutral scope.
       task_id: "202609040943-X0G51D"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-04T10:52:21.566Z"
+    updated_at: "2026-09-04T10:55:03.882Z"
     work_items:
       compatible-workitem-reconciliation:
         attempt: 1
@@ -1282,11 +1412,37 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609040943-X0G51D"
+      legacy-finish:202609040943-X0G51D:2026-09-04T10:52:20.448Z:374fe1c779160e4f2df99483453fcd7471e45300:
+        aggregate_digest: "sha256:3bf90ed36eb2df26e75e387683ee908cdd15a5271a6999438c11aa4db0367eae"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-04T10:55:03.882Z"
+          cause_refs:
+            - "task-verification:202609040943-X0G51D"
+            - "git:374fe1c779160e4f2df99483453fcd7471e45300"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_31d7a042dcbc9f36b6d7f9ea"
+          mutation_id: "legacy-finish:202609040943-X0G51D:2026-09-04T10:52:20.448Z:374fe1c779160e4f2df99483453fcd7471e45300"
+          plan_digest: "sha256:0515fc5b4f4eec4ab51d782c2861f79369cb47808eccf0196503a660f862080e"
+          plan_revision: 1
+          repository_fingerprint: "sha256:a9d50df04f4d8701f1e1bbb6232d3f83183d1dd3c87bbe433671bd423579b306"
+          schema_version: 1
+          task_id: "202609040943-X0G51D"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609040943-X0G51D:2026-09-04T10:52:20.448Z:374fe1c779160e4f2df99483453fcd7471e45300"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609040943-X0G51D"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "374fe1c779160e4f2df99483453fcd7471e45300"
+    message: "🚧 X0G51D task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
@@ -1487,3 +1643,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a1ec56e03e5a3db998cc035fd48e7571b9c3739c3f83bc1add4959f669e6acc4`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-04T10:55:03.882Z`
