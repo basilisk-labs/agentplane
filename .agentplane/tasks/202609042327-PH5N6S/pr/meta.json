@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609042327-PH5N6S/run-supervisor-verification-against-the-committe",
+  "created_at": "2026-09-04T23:32:29.145Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609042327-PH5N6S",
+  "updated_at": "2026-09-04T23:32:29.145Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

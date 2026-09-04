@@ -1,0 +1,1 @@
+🚧 PH5N6S task: Run supervisor verification against the committed implementation without dirtying its checkout [202609042327-PH5N6S]
