@@ -4,7 +4,7 @@ title: "Unblock verification recovery before provider conflict handling"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-04T16:01:47.348Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+  blueprint_digest: "22395aa0a56837151400a711d1a12353b279ba56a32b3e391971c59b57ad15f0"
+  evidence_refs:
+    - ".agentplane/tasks/202609041447-YHERVV/quality/20260904-160015892-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/20260904-160015892-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/9820bb3e0b4213974cab2d5513d04c7e7ceb5fd314b473db5b9b0de193ef0a17.md"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/20260904-160015892-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/20260904-160015892-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/20260904-160015892-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609041447-YHERVV/README.md"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/f007820ce5c5063d1a1cd51767168859cdb142baf140a19498fe30c685724d44.json"
+    - ".agentplane/tasks/202609041447-YHERVV/verification/20260904160008117-f4ca1dae217b71f8.json"
+    - ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/1f9245e4611d47c9cb55f210f11e2c1e004850b7a62411820001f4a5ece9974f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The observation write is built from freshly loaded task state and projected through applyTaskMutation with the supplied revision guard; the task itself subsequently recorded verification without the prior task-centric revision mismatch."
+    - "The route exception is narrowly gated by a local implementation or verification blocker, an invalid conflict-rework state, and reason_code conflict_rework_route_ineligible; missing worktrees and unsettled provider mergeability remain terminal."
+    - "Focused unit and CLI regressions cover atomic revision projection, local verification precedence, provider fail-closed cases, and direct supervisor mock compatibility."
+    - "Supervisor-owned evidence records successful typecheck, policy routing, focused tests, and a complete bun run ci:local:full pass with all verification groups green."
+    - "The reviewed diff stays within the approved command, task, and CLI roots and does not include MPXQBK, broad projection cleanup, provider-neutral expansion, or release/version work."
+    - "Residual risk: The recovery branch still requires normal provider publication, hosted checks, integration, and cleanup before the original F31YXS task can consume the fix."
 execution_route:
   frozen: true
   reason_codes:
@@ -672,7 +703,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609041447-YHERVV"
-    event_cursor: 4
+    event_cursor: 5
     final_validation: null
     id: "202609041447-YHERVV"
     intent:
@@ -707,9 +738,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-04T16:00:09.161Z"
+    updated_at: "2026-09-04T16:00:09.186Z"
     work_items:
       restore-verification-recovery-route:
         attempt: 1
@@ -831,6 +862,30 @@ extensions:
         work_item_id: "restore-verification-recovery-route"
     leases: []
     mutation_receipts:
+      compatibility:sha256:1b48fd8d795d00ec9f7c94c775444ef169a6378308abda0d84b75b1fa1774d31:
+        aggregate_digest: "sha256:3ca92d4463544cbfb91e4258ad111990744ea7258bbee906ec8eb2bd4d889f10"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T16:00:09.186Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e1f3ba067f2323f3a973f77d"
+          mutation_id: "compatibility:sha256:1b48fd8d795d00ec9f7c94c775444ef169a6378308abda0d84b75b1fa1774d31"
+          plan_digest: "sha256:12ffa3243e28688ae215fc1b626b4c0cf80a6e20228702fe6fd6fe70aa90ccc1"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041447-YHERVV"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1b48fd8d795d00ec9f7c94c775444ef169a6378308abda0d84b75b1fa1774d31"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609041447-YHERVV"
       compatibility:sha256:3cf753963b85d4af37b37689a74a21f0c6abdf106284c29ca5273d195fa00041:
         aggregate_digest: "sha256:fb9d206abb27a732fdd85422dc41f77b03a8ce872a4c566a37e3440eac15b4a2"
         event:
