@@ -4,7 +4,7 @@ title: "Repair post-integration Clean Core task-cycle regression and restore fin
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:0c5f62bbce9bd35b857d3f519756656b6aa8a901908bb0a02a409de158961ea7"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-04T20:57:00.677Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check could not run: agentplane task lint"
-  attempts: 2
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -137,6 +137,8 @@ execution_contract:
       - "packages/agentplane/src/commands/task/shared.verify-steps.test.ts"
       - "packages/agentplane/src/commands/task/shared/docs.ts"
       - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+      - "packages/agentplane/src/commands/workflow.test.ts"
+      - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
       - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
       - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
       - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
@@ -205,7 +207,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:9effcc73b88e581af6dbe196e644d1bdcf9514d90deec1da94ce3beae56b5ea2"
+      digest: "sha256:df3c3a63a5be28fbc3dcf47c186c270dba10f16aac3c7df23477fff1375b165b"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
         - "central_path:packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
@@ -248,6 +250,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/shared.verify-steps.test.ts"
           - "packages/agentplane/src/commands/task/shared/docs.ts"
           - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+          - "packages/agentplane/src/commands/workflow.test.ts"
+          - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
           - "packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
           - "packages/agentplane/src/runner/usecases/agent-work-order.ts"
           - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
@@ -305,6 +309,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9ad28bcb18ee. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 53302ccb9941. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -341,8 +348,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check could not run: agentplane task lint"
+  -
+    type: "status"
+    at: "2026-09-04T21:07:21.152Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 53302ccb9941. CLI accepted one state-bound external-agent semantic result."
+    commit: "53302ccb9941294c5c2a4eaf6cc33b819dee67ee"
 doc_version: 3
-doc_updated_at: "2026-09-04T20:57:01.582Z"
+doc_updated_at: "2026-09-04T21:07:21.152Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -855,7 +870,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 9
+    event_cursor: 12
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -908,7 +923,26 @@ extensions:
         On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
       task_id: "202609041801-ZVX69C"
     lifecycle: "ACTIVE"
-    plan_amendments: []
+    plan_amendments:
+      -
+        actor_id: "external:EXECUTOR"
+        created_at: "2026-09-04T21:19:38.448Z"
+        digest: "sha256:b4800ce84f36ad3a94cec16e87dcaa2cff18ef4c535b1b8da8dec8a264924abf"
+        id: "amendment_b4800ce84f36ad3a94cec16e"
+        plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+        plan_revision: 4
+        refinement:
+          acceptance_changed: false
+          architecture_constraints_changed: false
+          dependencies_changed: false
+          description: "Replace only the top-level declared verification command `agentplane task lint` with `node packages/agentplane/bin/agentplane.js task lint`. Preserve the single WorkItem, all acceptance criteria, outputs, scope roots, risks, external effects, remaining checks, and ordering unchanged. Do not add `agentplane` to the allowed executable set and do not introduce a compatibility layer."
+          external_effects_added: []
+          operations:
+            - "clarify"
+          outputs_added: []
+          risk_changed: false
+          scope_roots_added: []
+        schema_version: 1
     plan_history:
       -
         approval:
@@ -1932,19 +1966,194 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 19
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-04T20:57:01.560Z"
+    updated_at: "2026-09-04T21:19:38.585Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-and-qualify-clean-core-task-cycle"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:5d40b56d242a292de1d977cf19083551b49ea6d76d88f964db9c05d6db609261"
+            id: "nine-focused-failures-classified-and-resolved"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609041801-ZVX69C"
+              work_item_id: "repair-and-qualify-clean-core-task-cycle"
+            provenance:
+              - "sha256:ad821adaa0f327c89125726f22ceeff4e5e2a1b03ad30ff40c55b7042ef2309b"
+              - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:54691d76b0c5037dc615c0caae19afbe3acd3550bf50a508d36fa04428377e5c"
+            id: "atomic-fail-closed-task-projection-and-deterministic-route-behavior"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609041801-ZVX69C"
+              work_item_id: "repair-and-qualify-clean-core-task-cycle"
+            provenance:
+              - "sha256:ad821adaa0f327c89125726f22ceeff4e5e2a1b03ad30ff40c55b7042ef2309b"
+              - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:837b798c35e93e748e14b71746a2723779584e48da60989b79d6a9042fa03d63"
+            id: "stale-branch-salvage-classification"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609041801-ZVX69C"
+              work_item_id: "repair-and-qualify-clean-core-task-cycle"
+            provenance:
+              - "sha256:ad821adaa0f327c89125726f22ceeff4e5e2a1b03ad30ff40c55b7042ef2309b"
+              - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:8fd7f15fdb2cb86b4e8741fa6a73fc2176c0b4616b49c83fcd6735e5c962fc51"
+            id: "focused-and-full-local-verification-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 4
+              task_id: "202609041801-ZVX69C"
+              work_item_id: "repair-and-qualify-clean-core-task-cycle"
+            provenance:
+              - "sha256:ad821adaa0f327c89125726f22ceeff4e5e2a1b03ad30ff40c55b7042ef2309b"
+              - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "focused-cli-cycle"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "focused-core-cycle"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "focused-added-regressions"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "format-check"
+              command_identity: "bun run format:check"
+              detail: "Observed by bun run format:check."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "lint-core"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "routing-policy"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "task-lint"
+              command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+              detail: "Observed by node packages/agentplane/bin/agentplane.js task lint."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "doctor"
+              command_identity: "agentplane doctor"
+              detail: "Observed by agentplane doctor."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "diff-check"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json"
+              check_id: "full-local-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-04T21:19:38.571Z"
+              repository_snapshot_digest: "sha256:953c8979ad652bb89cc3397531358cc50c8bb293b6b8e0a2700458cafa4c9218"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2000,8 +2209,64 @@ extensions:
         task_id: "202609041801-ZVX69C"
         task_revision: 15
         work_item_id: null
+      -
+        at: "2026-09-04T21:19:38.448Z"
+        from: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+        to: "sha256:b4800ce84f36ad3a94cec16e87dcaa2cff18ef4c535b1b8da8dec8a264924abf"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_f9ae25b88c852d57dfeb977c"
+        mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c"
+        plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+        task_revision: 21
+        work_item_id: null
+      -
+        at: "2026-09-04T21:19:38.585Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_0e8e18a78990193195eba447"
+        mutation_id: "external-result:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c"
+        plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+        task_revision: 22
+        work_item_id: "repair-and-qualify-clean-core-task-cycle"
     leases: []
     mutation_receipts:
+      compatibility:sha256:277b0e4b731324bb62621d27cc12e3603148787101b7efd68a1f3e5e7ee14f46:
+        aggregate_digest: "sha256:ee837e9579e0c5f7e0520ecb1c3abd84f55f2791be8d7fce42634d5c17742e14"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:07:21.152Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_237fef987446ab455ba2ba88"
+          mutation_id: "compatibility:sha256:277b0e4b731324bb62621d27cc12e3603148787101b7efd68a1f3e5e7ee14f46"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:277b0e4b731324bb62621d27cc12e3603148787101b7efd68a1f3e5e7ee14f46"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       compatibility:sha256:423f09e4eed6274379b83de83c48ded0c60b06c29a7cec6e1ee8026e135e1983:
         aggregate_digest: "sha256:3bba2c7d2cf7ad2450267e550381f981d598754164caeb9d90d69735ce4f0372"
         event:
@@ -2024,6 +2289,30 @@ extensions:
         mutation_id: "compatibility:sha256:423f09e4eed6274379b83de83c48ded0c60b06c29a7cec6e1ee8026e135e1983"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:5b8248c8778c2396b858dc981fa9e21345b86937a93c6ca5c77418515e7f93d6:
+        aggregate_digest: "sha256:3eb18567fee538c6de8d38fb56ac3e02fee92d9fe4ebc00bdcfed667434cb0ec"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:07:21.152Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_805f3e597cbcf6adc626005e"
+          mutation_id: "compatibility:sha256:5b8248c8778c2396b858dc981fa9e21345b86937a93c6ca5c77418515e7f93d6"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5b8248c8778c2396b858dc981fa9e21345b86937a93c6ca5c77418515e7f93d6"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:65400bd5e705ffe65f233e15ddab56ec29ceb744c0ff3cfaa7853ff31d6011f2:
@@ -2194,6 +2483,52 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      external-result:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c:
+        aggregate_digest: "sha256:c3fb8ec069cf68b6ae1bac46cebc87add57dd8c7e832ead314493a43901f585a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:19:38.585Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_0e8e18a78990193195eba447"
+          mutation_id: "external-result:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: "repair-and-qualify-clean-core-task-cycle"
+        mutation_id: "external-result:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      plan-refinement:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c:
+        aggregate_digest: "sha256:6e681a6ccd08dcf9bc696b581d92914487ba854f7f98e789e1e3a7236a3cc61b"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-04T21:19:38.448Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          id: "event_f9ae25b88c852d57dfeb977c"
+          mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 21
+          to: "sha256:b4800ce84f36ad3a94cec16e87dcaa2cff18ef4c535b1b8da8dec8a264924abf"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       plan-refinement:work-order-202609041801-ZVX69C-executor-6353128c8c9cfec2918eec25:
         aggregate_digest: "sha256:74349dead0f9041f88ababa8939b649221c56c51690f68ee6eb8fc252f6babf6"
         event:
@@ -2270,6 +2605,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "53302ccb9941294c5c2a4eaf6cc33b819dee67ee"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
