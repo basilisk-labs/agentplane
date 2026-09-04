@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609042212-XR979S/repair-pre-merge-done-task-rework-blocker-persis",
+  "created_at": "2026-09-04T22:19:44.639Z",
+  "diffstat_sha256": "sha256:71df4f388a6054022b07b53670d06cba0c51e04d1ce739b29186805f87550040",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609042212-XR979S",
+  "updated_at": "2026-09-04T22:19:44.639Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
