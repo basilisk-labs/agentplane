@@ -4,7 +4,7 @@ title: "Repair post-integration Clean Core task-cycle regression and restore fin
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -37,6 +37,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-04T22:02:43.272Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "7860e47440c0be50dcae84f301b94a7465ec685e"
+  blueprint_digest: "1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c"
+  evidence_refs:
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260904-215857293-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260904-215857293-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/48bb3b5da379a24efd2d0b95d900895db06403427c339dbb14b33a545f11f56c.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260904-215857293-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260904-215857293-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260904-215857293-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/README.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/d8e738f6752b9f054c3ce5d0fc60e1e28390e6ad8c7e04bc46750bde49c94e50.patch"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/2fa55ba001874153bc705db0c101bf974af9ec6b577477bf66824cc5392d0290.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260904215850296-5ef66c92a6b68024.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/333290060f7a86dc7ce1735f25e72cc485de331583c73b21b9b15160ac71e63b.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation remains inside the declared components and does not introduce release, publication, dependency, MPXQBK, or provider-expansion changes."
+    - "The task-level verification recovery preserves fail-closed plan semantics while retaining a valid implementation commit across a non-material amendment."
+    - "Prepared evidence records passing focused CLI and core tests, formatting, lint, type checking, routing, task lint, doctor with zero errors, diff checks, and bun run ci:local:full."
+    - "Residual risk: Hosted checks and protected integration remain AgentPlane-owned lifecycle gates after this local evaluator verdict."
 execution_route:
   frozen: true
   reason_codes:
@@ -1431,7 +1460,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 21
+    event_cursor: 22
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -2527,9 +2556,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 32
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-04T21:58:51.193Z"
+    updated_at: "2026-09-04T21:58:51.214Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -2994,6 +3023,30 @@ extensions:
         mutation_id: "compatibility:sha256:65400bd5e705ffe65f233e15ddab56ec29ceb744c0ff3cfaa7853ff31d6011f2"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:684da51d290b6b61736726f6a0bcaf5711dafd3bdf90fadfb73c2d0bd3fb5289:
+        aggregate_digest: "sha256:f50445cda34fe18e84f39be8733d369554b56f49f34c9b42d767ff5f56be17a0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:58:51.214Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6397ca47eec079df16345273"
+          mutation_id: "compatibility:sha256:684da51d290b6b61736726f6a0bcaf5711dafd3bdf90fadfb73c2d0bd3fb5289"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 32
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:684da51d290b6b61736726f6a0bcaf5711dafd3bdf90fadfb73c2d0bd3fb5289"
+        next_revision: 33
+        previous_revision: 32
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:6de983b9eebf76ad82c579dc378f8f21556ffed6004ccc85b3faaed8511d7cb8:
