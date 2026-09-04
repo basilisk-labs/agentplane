@@ -4,7 +4,7 @@ title: "Repair post-integration Clean Core task-cycle regression and restore fin
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:0c5f62bbce9bd35b857d3f519756656b6aa8a901908bb0a02a409de158961ea7"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-04T21:31:22.243Z"
+  state: "ok"
+  updated_at: "2026-09-04T21:58:50.296Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1"
-  attempts: 2
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -112,9 +112,7 @@ execution_contract:
       - "packages/agentplane/src/runner/usecases"
       - "packages/core/src/tasks"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:recorded-check-2:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -156,10 +154,139 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
       -
         id: "recorded-check-2"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-38"
+        result: "pass"
+      -
+        id: "recorded-check-39"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-40"
+        result: "pass"
+      -
+        id: "recorded-check-41"
+        result: "pass"
+      -
+        id: "recorded-check-42"
+        result: "pass"
+      -
+        id: "recorded-check-43"
+        result: "pass"
+      -
+        id: "recorded-check-44"
+        result: "pass"
+      -
+        id: "recorded-check-45"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
@@ -304,9 +431,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:recorded-check-2"
-commit: null
+commit:
+  hash: "7860e47440c0be50dcae84f301b94a7465ec685e"
+  message: "🚧 ZVX69C task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -326,6 +453,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 2a9b25ec8fae. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7860e47440c0. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -398,8 +528,22 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1"
+  -
+    type: "status"
+    at: "2026-09-04T21:46:31.062Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7860e47440c0. CLI accepted one state-bound external-agent semantic result."
+    commit: "7860e47440c0be50dcae84f301b94a7465ec685e"
+  -
+    type: "verify"
+    at: "2026-09-04T21:58:50.296Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-04T21:31:23.315Z"
+doc_updated_at: "2026-09-04T21:58:51.214Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -561,6 +705,306 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202609041801-ZVX69C declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/tasks/202609041801-ZVX69C/blueprint/resolved-snapshot.json
+    - old_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+    - current_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609041801-ZVX69C
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609041801-ZVX69C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-04T21:58:50.296Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b, input_digest=sha256:e01dae3eead825155c4c8b93a1b6b04feea8148397ecfd5930c5d40aaae3c2cb
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (1/11)
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (2/11)
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (3/11)
+
+    Check: affected_unit_integration
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (4/11)
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (5/11)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (6/11)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (7/11)
+
+    Check: affected_unit_integration
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (8/11)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (9/11)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (10/11)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (11/11)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (1/11)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (2/11)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (3/11)
+
+    Check: critical_paths
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (4/11)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (5/11)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (6/11)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (7/11)
+
+    Check: critical_paths
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (8/11)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (9/11)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (10/11)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (11/11)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (1/11)
+
+    Check: real_e2e
+    Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (2/11)
+
+    Check: real_e2e
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (3/11)
+
+    Check: real_e2e
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (4/11)
+
+    Check: real_e2e
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (5/11)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (6/11)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (7/11)
+
+    Check: real_e2e
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (8/11)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (9/11)
+
+    Check: real_e2e
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (10/11)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (11/11)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (1/11)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (2/11)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (3/11)
+
+    Check: task_outcome
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (4/11)
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (5/11)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (6/11)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (7/11)
+
+    Check: task_outcome
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (8/11)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (9/11)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (10/11)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (11/11)
 
     BlueprintSnapshotRef:
     - state: current
@@ -987,7 +1431,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 18
+    event_cursor: 21
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -2083,9 +2527,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 29
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-04T21:31:23.295Z"
+    updated_at: "2026-09-04T21:58:51.193Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -2408,6 +2852,30 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      compatibility:sha256:3f82df2ce34363a1b5c4afea6adbc383545124bb49ef79a170205800611a29ef:
+        aggregate_digest: "sha256:a36a1014e8f6ba2708eb07d94706f37c008cce2ddec39e8b0d1674caf1d0ec4b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:46:31.062Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3ebd2c0badab5578afb4cb0c"
+          mutation_id: "compatibility:sha256:3f82df2ce34363a1b5c4afea6adbc383545124bb49ef79a170205800611a29ef"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 29
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3f82df2ce34363a1b5c4afea6adbc383545124bb49ef79a170205800611a29ef"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       compatibility:sha256:423f09e4eed6274379b83de83c48ded0c60b06c29a7cec6e1ee8026e135e1983:
         aggregate_digest: "sha256:3bba2c7d2cf7ad2450267e550381f981d598754164caeb9d90d69735ce4f0372"
         event:
@@ -2480,6 +2948,30 @@ extensions:
         previous_revision: 24
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      compatibility:sha256:5e99e023d897ded2cf9a44200e6ae1c0cb89eb37fb329be7ce844bde439f8ab4:
+        aggregate_digest: "sha256:daa4ae2fb15f49776f8bf77a5682a3b6bf913c3d095ec0e73424904166df9e0c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:46:31.062Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ea6f7f207e9f3b90c92364c3"
+          mutation_id: "compatibility:sha256:5e99e023d897ded2cf9a44200e6ae1c0cb89eb37fb329be7ce844bde439f8ab4"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5e99e023d897ded2cf9a44200e6ae1c0cb89eb37fb329be7ce844bde439f8ab4"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       compatibility:sha256:65400bd5e705ffe65f233e15ddab56ec29ceb744c0ff3cfaa7853ff31d6011f2:
         aggregate_digest: "sha256:f7122476c989d3d16c9d2c43c8c315d494e2e580f2b9d94e5ab4484443a90e70"
         event:
@@ -2550,6 +3042,30 @@ extensions:
         mutation_id: "compatibility:sha256:744d5692416a14c70bb52504b68e6b1bcc6e9292dd300e3bae47d9ff96b4c616"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:75f3381936cb45b44a49b2be44d55316db8a3fe3c759559673e78faba81a0b17:
+        aggregate_digest: "sha256:817e99067a97e72a3ac328b776b2711e937314f28ba27ce16d3acfe2c0a67632"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T21:58:51.193Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b4ebbbc17906712340e2af14"
+          mutation_id: "compatibility:sha256:75f3381936cb45b44a49b2be44d55316db8a3fe3c759559673e78faba81a0b17"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:75f3381936cb45b44a49b2be44d55316db8a3fe3c759559673e78faba81a0b17"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:887b2e05fd7a9f9e02517a7561ac7fe19aee6c6499f35133b7f42e2b75b45e83:
@@ -2866,6 +3382,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "7860e47440c0be50dcae84f301b94a7465ec685e"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
@@ -3044,6 +3562,306 @@ Command: bun x vitest --config vitest.workspace.ts run --project cli-core packag
 Result: fail
 Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202609041801-ZVX69C declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/tasks/202609041801-ZVX69C/blueprint/resolved-snapshot.json
+- old_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+- current_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609041801-ZVX69C
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609041801-ZVX69C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-04T21:58:50.296Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b, input_digest=sha256:e01dae3eead825155c4c8b93a1b6b04feea8148397ecfd5930c5d40aaae3c2cb
+
+Details:
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (1/11)
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (2/11)
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (3/11)
+
+Check: affected_unit_integration
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (4/11)
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (5/11)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (6/11)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (7/11)
+
+Check: affected_unit_integration
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (8/11)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (9/11)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (10/11)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check affected_unit_integration (11/11)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (1/11)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (2/11)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (3/11)
+
+Check: critical_paths
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (4/11)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (5/11)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (6/11)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (7/11)
+
+Check: critical_paths
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (8/11)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (9/11)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (10/11)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check critical_paths (11/11)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (1/11)
+
+Check: real_e2e
+Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (2/11)
+
+Check: real_e2e
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (3/11)
+
+Check: real_e2e
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (4/11)
+
+Check: real_e2e
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (5/11)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (6/11)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (7/11)
+
+Check: real_e2e
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (8/11)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (9/11)
+
+Check: real_e2e
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (10/11)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check real_e2e (11/11)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (1/11)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (2/11)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (3/11)
+
+Check: task_outcome
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (4/11)
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (5/11)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (6/11)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (7/11)
+
+Check: task_outcome
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (8/11)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (9/11)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (10/11)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (11/11)
 
 BlueprintSnapshotRef:
 - state: current
