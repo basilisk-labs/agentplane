@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609041447-YHERVV/unblock-verification-recovery-before-provider-co",
+  "created_at": "2026-09-04T14:58:00.815Z",
+  "diffstat_sha256": "sha256:3952a51bcd43f8cc1b35ab6d294701c6b92cc4e3274f60fc49c9349333995c3c",
+  "last_verified_at": "2026-09-04T16:00:08.117Z",
+  "last_verified_diffstat_sha256": "sha256:3952a51bcd43f8cc1b35ab6d294701c6b92cc4e3274f60fc49c9349333995c3c",
+  "pr_number": 5896,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5896",
+  "pre_merge_closure": {
+    "basis_commit": "c939c070eed6b965bf3de1e4ab3c53c6b1dfc35f",
+    "branch": "task/202609041447-YHERVV/unblock-verification-recovery-before-provider-co",
+    "pr_number": 5896,
+    "recorded_at": "2026-09-04T16:01:54.079Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609041447-YHERVV",
+  "updated_at": "2026-09-04T15:51:50.693Z",
+  "verify": {
+    "status": "pass"
+  }
+}

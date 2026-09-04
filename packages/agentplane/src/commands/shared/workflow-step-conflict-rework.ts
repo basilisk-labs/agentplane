@@ -121,6 +121,18 @@ export function conflictReworkRouteStep(state: WorkflowRouteState): WorkflowStep
     return legacyProtectedConflictAdoptionStep(state);
   }
   if (state.blockers.some((blocker) => blocker.code === "provider_conflict_context_invalid")) {
+    const localRecoveryRequired = state.blockers.some(
+      (blocker) =>
+        blocker.code === "implementation_rework_required" ||
+        blocker.code === "verification_required",
+    );
+    if (
+      localRecoveryRequired &&
+      state.conflictRework?.state === "invalid" &&
+      state.conflictRework.reason_code === "conflict_rework_route_ineligible"
+    ) {
+      return null;
+    }
     return conflictReworkContextInvalidStep(state);
   }
   if (state.blockers.some((blocker) => blocker.code === "provider_merge_conflict")) {
