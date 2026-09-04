@@ -4,7 +4,7 @@ title: "Preserve completed WorkItems across command-only material plan refinemen
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -96,8 +96,11 @@ execution_contract:
   observed:
     authority_violations: []
     changed_components:
+      - "packages/agentplane"
       - "packages/core"
     changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
       - "packages/core/src/tasks/task-centric/graph.ts"
       - "packages/core/src/tasks/task-centric/task-centric.test.ts"
     external_effects: []
@@ -153,9 +156,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:3cbba96d489d9c67f3cad7cf13f5cf9aea87627463e9a09b2359cd294c82f39f"
+      digest: "sha256:bce4a12d924cc518f26240aab3ac86fbdbbc7979ba090a2730dcb3db8de7fe37"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-centric"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:packages/core/src/tasks/task-centric/graph.ts"
         - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
         - "effect_ci"
@@ -168,8 +172,11 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - "packages/agentplane"
           - "packages/core"
         changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
           - "packages/core/src/tasks/task-centric/graph.ts"
           - "packages/core/src/tasks/task-centric/task-centric.test.ts"
         external_effects: []
@@ -213,7 +220,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "374fe1c779160e4f2df99483453fcd7471e45300"
+  message: "🚧 X0G51D task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -221,6 +230,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d35f85ffc649. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 374fe1c77916. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -237,8 +249,16 @@ events:
     to: "DOING"
     note: "Implementation committed: d35f85ffc649. CLI accepted one state-bound external-agent semantic result."
     commit: "d35f85ffc649927b58023df36363aec4e79a87d0"
+  -
+    type: "status"
+    at: "2026-09-04T10:31:32.870Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 374fe1c77916. CLI accepted one state-bound external-agent semantic result."
+    commit: "374fe1c779160e4f2df99483453fcd7471e45300"
 doc_version: 3
-doc_updated_at: "2026-09-04T10:09:33.369Z"
+doc_updated_at: "2026-09-04T10:31:32.870Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix the Clean Core recovery defect reproduced by task 202609032308-F31YXS: after a material plan refinement that changes only a verification command, AgentPlane rematerializes the approved plan with previously COMPLETED WorkItems reset and reissues the first completed implementation episode. Preserve completed WorkItem state, attempts, canonical output manifests, and dependency satisfaction when the revised structured plan keeps the same WorkItem identities and semantics; reopen only the WorkItem whose verification declaration materially changed. Fail closed on incompatible identity, dependency, output, scope, or acceptance changes. Add a focused regression using the F31YXS sequence: completed implementation at unchanged HEAD, command-only refinement from task-specific task lint to repository-wide task lint, reapproval, and continuation at the qualification or verification boundary without requiring a fake source diff. Do not modify F31YXS or PX8PZT task state directly, weaken verification, add compatibility CLI behavior, or include release or provider-neutral scope."
 sections:
@@ -607,7 +627,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609040943-X0G51D"
-    event_cursor: 2
+    event_cursor: 3
     final_validation: null
     id: "202609040943-X0G51D"
     intent:
@@ -647,9 +667,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-04T10:09:34.720Z"
+    updated_at: "2026-09-04T10:42:49.571Z"
     work_items:
       compatible-workitem-reconciliation:
         attempt: 1
@@ -691,14 +711,114 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       f31yxs-command-only-replan-regression:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "f31yxs-command-only-replan-regression"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:d7853dc24671736526876a381fd53bd02b803bfd2af3064cd3c632ab204e0b62"
+            id: "verified-f31yxs-command-only-replan-continuation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609040943-X0G51D"
+              work_item_id: "f31yxs-command-only-replan-regression"
+            provenance:
+              - "sha256:9e5d2f29c28872ea5a542b1edbb9cfb551603ad4351abebca5239ee46d3d29fc"
+              - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "planning-authority-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "f31yxs-cli-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "format-touched"
+              command_identity: "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/commands/task/external-agent-planning-authority.ts packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+              detail: "Observed by bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/commands/task/external-agent-planning-authority.ts packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "lint-core"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "routing"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "diff-check"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-04T10:42:49.563Z"
+              repository_snapshot_digest: "sha256:4d6d3ac663200e0c565a0636821eb2f82f442b0c1e8ffaf0c4862f439579a0df"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -718,8 +838,48 @@ extensions:
         task_id: "202609040943-X0G51D"
         task_revision: 6
         work_item_id: "compatible-workitem-reconciliation"
+      -
+        at: "2026-09-04T10:42:49.571Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_32aceb8d1465298aceb48099"
+        mutation_id: "external-result:work-order-202609040943-X0G51D-executor-2b2dbc6f146aa8e897ea5282"
+        plan_digest: "sha256:0515fc5b4f4eec4ab51d782c2861f79369cb47808eccf0196503a660f862080e"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609040943-X0G51D"
+        task_revision: 9
+        work_item_id: "f31yxs-command-only-replan-regression"
     leases: []
     mutation_receipts:
+      compatibility:sha256:cf04c6ffaf3390d229b68b017815ba68580d41b5a8adceac41b7bd05428916de:
+        aggregate_digest: "sha256:20a304910119235f51be9a1928865f791aeb0730d006c28deeb8c8be6f0139c5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T10:31:32.870Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_de7af7d7844092a5352db517"
+          mutation_id: "compatibility:sha256:cf04c6ffaf3390d229b68b017815ba68580d41b5a8adceac41b7bd05428916de"
+          plan_digest: "sha256:0515fc5b4f4eec4ab51d782c2861f79369cb47808eccf0196503a660f862080e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609040943-X0G51D"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cf04c6ffaf3390d229b68b017815ba68580d41b5a8adceac41b7bd05428916de"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609040943-X0G51D"
       compatibility:sha256:da795653c443fef449bb36264ed95185bd010b0875d22bf991e267bb17afc568:
         aggregate_digest: "sha256:33e6f797ca102b539787f74fe5a4e4acbba1249404ee883f9dac0830c08788be"
         event:
@@ -768,6 +928,29 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609040943-X0G51D"
+      external-result:work-order-202609040943-X0G51D-executor-2b2dbc6f146aa8e897ea5282:
+        aggregate_digest: "sha256:b81d74a878d0d033edc44f2bee47b3eaeece49d07bfffff9d2149d0764b3cd59"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T10:42:49.571Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_32aceb8d1465298aceb48099"
+          mutation_id: "external-result:work-order-202609040943-X0G51D-executor-2b2dbc6f146aa8e897ea5282"
+          plan_digest: "sha256:0515fc5b4f4eec4ab51d782c2861f79369cb47808eccf0196503a660f862080e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609040943-X0G51D"
+          task_revision: 9
+          to: "COMPLETED"
+          work_item_id: "f31yxs-command-only-replan-regression"
+        mutation_id: "external-result:work-order-202609040943-X0G51D-executor-2b2dbc6f146aa8e897ea5282"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609040943-X0G51D"
       external-result:work-order-202609040943-X0G51D-executor-cfc8c5a01ab863e8911f8309:
         aggregate_digest: "sha256:5a8c58ebbfede0ba1cd96e4efaccf77a9063b4c4311edc125bdb0570ad33eee4"
         event:
@@ -795,7 +978,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d35f85ffc649927b58023df36363aec4e79a87d0"
+    hash: "374fe1c779160e4f2df99483453fcd7471e45300"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
