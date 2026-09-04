@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609041447-YHERVV-8be070ff30f4f1f3eaab3a8d",
+  "prepared_at": "2026-09-04T16:00:15.892Z",
+  "task": {
+    "id": "202609041447-YHERVV",
+    "revision": 8,
+    "objective": "Unblock verification recovery before provider conflict handling\n\nRepair the branch_pr recovery deadlock exposed by task 202609032308-F31YXS. When local verification is missing or needs rework while hosted mergeability context is invalid, route safe local verification or implementation rework before provider conflict handling. Make recordObservedTaskExecutionContract persist legacy and canonical task-centric revisions atomically so successful verification does not fail with Task-centric mutation revision mismatch. Add focused regressions for both exact scenarios, preserve fail-closed provider mutation gates, and integrate this minimal recovery before resuming 202609032308-F31YXS. Exclude MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, release, version, and publication work.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run typecheck",
+      "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts --maxWorkers=1",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Repair the branch_pr recovery deadlock exposed by task 202609032308-F31YXS. When local verification is missing or needs rework while hosted mergeability context is invalid, route safe local verification or implementation rework before provider conflict handling. Make recordObservedTaskExecutionContract persist legacy and canonical task-centric revisions atomically so successful verification does not fail with Task-centric mutation revision mismatch. Add focused regressions for both exact scenarios, preserve fail-closed provider mutation gates, and integrate this minimal recovery before resuming 202609032308-F31YXS. Exclude MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, release, version, and publication work.\n- Out of scope: unrelated refactors not required for \"Unblock verification recovery before provider conflict handling\".",
+      "Prepared one bounded recovery WorkItem that atomically synchronizes task-centric observation writes and routes safe local recovery before provider-conflict handling.",
+      "PLANNER fallback scaffold for \"Unblock verification recovery before provider conflict handling\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Unblock verification recovery before provider conflict handling\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "d77ef6cf4b415fe40a8acb542d97669056ccc52b",
+  "diff_base_sha": "195f4f941e18d2498d1e941ba8be46a6730fa8fd",
+  "blueprint_digest": "22395aa0a56837151400a711d1a12353b279ba56a32b3e391971c59b57ad15f0",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609041447-YHERVV/quality/20260904-160015892-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:bda2952bc4911bbe46114a96a1416910fdc0594b6cb0977447134ffad2b926fb",
+    "prompt_path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/9820bb3e0b4213974cab2d5513d04c7e7ceb5fd314b473db5b9b0de193ef0a17.md",
+    "result_schema_path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609041447-YHERVV/README.md",
+      "sha256": "sha256:483e55c524fc84508c22bb94a489ddb9a531e7d3ae6e8bd51e7d1965c5da7b71",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch",
+      "sha256": "sha256:8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/f007820ce5c5063d1a1cd51767168859cdb142baf140a19498fe30c685724d44.json",
+      "sha256": "sha256:f007820ce5c5063d1a1cd51767168859cdb142baf140a19498fe30c685724d44",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609041447-YHERVV/verification/20260904160008117-f4ca1dae217b71f8.json",
+      "sha256": "sha256:8b112526057382ba7d04438552823228f55faac10af03a3a3e0fc641579ae124",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/1f9245e4611d47c9cb55f210f11e2c1e004850b7a62411820001f4a5ece9974f.json",
+      "sha256": "sha256:1f9245e4611d47c9cb55f210f11e2c1e004850b7a62411820001f4a5ece9974f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
