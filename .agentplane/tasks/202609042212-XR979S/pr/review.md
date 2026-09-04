@@ -6,7 +6,7 @@ Created: 2026-09-04T22:19:44.639Z
 
 - Task: `202609042212-XR979S`
 - Title: Repair pre-merge DONE task rework blocker persistence and resume ZVX69C
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609042212-XR979S/repair-pre-merge-done-task-rework-blocker-persis`
 - Canonical task record: `.agentplane/tasks/202609042212-XR979S/README.md`
 
