@@ -12,8 +12,8 @@ Created: 2026-09-04T10:05:07.800Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-04T10:05:07.800Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-04T10:05:07.800Z
+- Updated: 2026-09-04T10:42:56.596Z
 - Branch: task/202609040943-X0G51D/preserve-completed-workitems-across-command-only
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

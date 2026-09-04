@@ -1,0 +1,141 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609040943-X0G51D Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609040943-X0G51D Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609040943-X0G51D Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609040943-X0G51D Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609040943-X0G51D Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609040943-X0G51D Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609040943-X0G51D Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609040943-X0G51D Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609040943-X0G51D Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609040943-X0G51D Verification Contract check critical_paths (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609040943-X0G51D Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609040943-X0G51D Verification Contract check real_e2e (1/5)\n\nCheck: real_e2e\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609040943-X0G51D Verification Contract check real_e2e (2/5)\n\nCheck: real_e2e\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609040943-X0G51D Verification Contract check real_e2e (3/5)\n\nCheck: real_e2e\nCommand: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609040943-X0G51D Verification Contract check real_e2e (4/5)\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609040943-X0G51D Verification Contract check real_e2e (5/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609040943-X0G51D Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609040943-X0G51D Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609040943-X0G51D Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609040943-X0G51D Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609040943-X0G51D Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:01cf8b041fe7e9a187a3c7d22014ff7a45e72b9f4575a80c7c3fd5d3a27b8787",
+  "implementation_sha": "374fe1c779160e4f2df99483453fcd7471e45300",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:26e4bb3ff582c9694f0e903b5e911eacba9093255046f2fcd05fc8bc6e54547d",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:7980e56f2b7c2286a91978ea7c649159ca39414247af3955b5172334a1b40609",
+      "digest": "sha256:ded619a763e4445f716e64b9018bda5e5e0cb5b3bd6ec2485b3a3c36338091f2",
+      "references": [
+        {
+          "digest": "sha256:767420cfe9b08ff58bfa9f80e6059ea58d7b4308170f60eaf2f8be45b8fbd631",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:767420cfe9b08ff58bfa9f80e6059ea58d7b4308170f60eaf2f8be45b8fbd631",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:767420cfe9b08ff58bfa9f80e6059ea58d7b4308170f60eaf2f8be45b8fbd631",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:767420cfe9b08ff58bfa9f80e6059ea58d7b4308170f60eaf2f8be45b8fbd631",
+          "fragment": "check-4",
+          "path": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-4",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:767420cfe9b08ff58bfa9f80e6059ea58d7b4308170f60eaf2f8be45b8fbd631",
+          "fragment": "check-5",
+          "path": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json#check-5",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "fa693664b5fb4f7884b5c772b456357518732bd4",
+      "digest": "sha256:cafa53bb7bb2b1268a28535c46bce36030e7378d3edd1c7f10f1c6d0e242c5e2",
+      "primary_task_id": "202609040943-X0G51D",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "effect_destructive_git",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609040943-X0G51D"
+      ]
+    },
+    "implementation": {
+      "base_sha": "fa693664b5fb4f7884b5c772b456357518732bd4",
+      "digest": "sha256:d6c96e9e36d833541f35aa43986c342a2649f71114473422ad84e5aa9ec4f0ea",
+      "strategy": "branch_diff",
+      "target_sha": "374fe1c779160e4f2df99483453fcd7471e45300"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:bce4a12d924cc518f26240aab3ac86fbdbbc7979ba090a2730dcb3db8de7fe37",
+    "verify_steps_digest": "sha256:d851a5f58a402c14047932f5ed123bd1ece28c55ee37b147e07430d1ebdc89e5"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-09-04T10:52:20.448Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Preserve completed WorkItems across command-only material plan refinements\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Preserve completed WorkItems across command-only material plan refinements\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:d851a5f58a402c14047932f5ed123bd1ece28c55ee37b147e07430d1ebdc89e5",
+  "task_id": "202609040943-X0G51D",
+  "verification_command": "agentplane verify 202609040943-X0G51D --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
