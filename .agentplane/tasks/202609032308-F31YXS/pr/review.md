@@ -6,14 +6,14 @@ Created: 2026-09-03T23:29:34.750Z
 
 - Task: `202609032308-F31YXS`
 - Title: Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity`
 - Canonical task record: `.agentplane/tasks/202609032308-F31YXS/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -38,10 +38,10 @@ Created: 2026-09-03T23:29:34.750Z
  .../src/commands/task/verify-record-execute.ts     |  43 +++--
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
  .../src/commands/task/verify-record.types.ts       |   8 +
- packages/core/src/tasks/task-centric/graph.ts      | 109 ++++++++++-
+ packages/core/src/tasks/task-centric/graph.ts      | 104 ++++++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
- .../src/tasks/task-centric/task-centric.test.ts    | 203 ++++++++++++++++++++-
- 12 files changed, 539 insertions(+), 32 deletions(-)
+ .../src/tasks/task-centric/task-centric.test.ts    | 194 +++++++++++++++++++++
+ 12 files changed, 526 insertions(+), 31 deletions(-)
 ```
 
 </details>
