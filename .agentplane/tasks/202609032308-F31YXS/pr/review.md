@@ -35,13 +35,15 @@ Created: 2026-09-03T23:29:34.750Z
  .../commands/task/direct-task-verification.test.ts |   8 +
  .../src/commands/task/direct-task-verification.ts  |   4 +-
  .../task/external-agent-implementation-recovery.ts |  18 +-
+ .../task-execution-contract-observation.test.ts    |  90 +++++-
+ .../task/task-execution-contract-observation.ts    | 174 ++++++------
  .../src/commands/task/verify-record-execute.ts     |  43 +--
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
  .../src/commands/task/verify-record.types.ts       |   8 +
  packages/core/src/tasks/task-centric/graph.ts      | 104 ++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
  .../task-centric/replacement-plan-recovery.test.ts | 316 +++++++++++++++++++++
- 12 files changed, 648 insertions(+), 31 deletions(-)
+ 14 files changed, 825 insertions(+), 118 deletions(-)
 ```
 
 </details>
