@@ -1,6 +1,7 @@
 import type * as CoreSchemas from "@agentplaneorg/core/schemas";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 const mocks = vi.hoisted(() => ({
@@ -47,7 +48,10 @@ vi.mock("../shared/supervisor-execution-episode.js", () => ({
   supervisePersistedWorkflowEpisode: mocks.supervise,
   openSupervisorExecutionEpisode: mocks.open,
 }));
-vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
+vi.mock("../shared/task-backend.js", () => ({
+  backendUsesLocalTaskStore: () => false,
+  loadTaskFromContext: mocks.loadTask,
+}));
 vi.mock("./direct-task-supervisor-operation.js", () => ({
   executeDirectOperation: mocks.executeOperation,
 }));
@@ -99,7 +103,12 @@ function superviseDirectTaskRun(
 function commandContext() {
   return {
     resolvedProject: { gitRoot: "/repo" },
-    taskBackend: { writeTask: vi.fn() },
+    taskBackend: {
+      id: "local",
+      writeTask: vi.fn(),
+      getTask: vi.fn(() => Promise.resolve(null)),
+      writeTaskWithResult: vi.fn((task: TaskData) => Promise.resolve({ task, changed: true })),
+    },
     config: { paths: { workflow_dir: ".agentplane/tasks" } },
   } as never;
 }

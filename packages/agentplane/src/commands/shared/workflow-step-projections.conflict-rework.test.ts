@@ -478,6 +478,48 @@ describe("WorkflowStep conflict rework projections", () => {
     expect(packet).toMatchObject({ actionKind: "stop", safeToMutate: false, exactArgv: null });
   });
 
+  it("restores local verification before conflict rework that is only route-ineligible", () => {
+    const state = routeState({
+      task: {
+        ...task,
+        commit: { hash: resume.head_sha, message: "feat: committed implementation" },
+      },
+      blockers: [
+        {
+          code: "provider_conflict_context_invalid",
+          summary: "semantic conflict rework requires a passing verification record",
+        },
+        {
+          code: "verification_required",
+          summary: "the current implementation has no passing verification record",
+        },
+      ],
+      conflictRework: {
+        state: "invalid",
+        reason_code: "conflict_rework_route_ineligible",
+        reason: "semantic conflict rework requires a current passing verification record",
+      },
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      id: "agent.verification",
+      compatibility: { code: "verification_required", command: null },
+    });
+    expect(oracle).toMatchObject({
+      phase: "verification_required",
+      authoritativeCheckout: "task_worktree",
+    });
+    expect(packet).toMatchObject({
+      actionKind: "stop",
+      safeToMutate: false,
+      recommendedRole: "TESTER",
+      exactArgv: null,
+    });
+  });
+
   it("keeps a non-conflicting open PR on the ordinary integration queue route", () => {
     const openPrFlow = {
       task: { id: task.id, status: "DOING", verification: "ok" },
