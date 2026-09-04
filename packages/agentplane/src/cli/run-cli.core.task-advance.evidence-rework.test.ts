@@ -250,6 +250,12 @@ async function completedFixture(initialized = true) {
   expect(reworkOrder.task.work_item_id ?? null).toBeNull();
   const current = await ctx.taskBackend.getTask(taskId);
   if (!current) throw new Error("missing task-level rework fixture");
+  const currentAggregate = taskCentricAggregateFromExtensions(current.extensions);
+  expect(current).toMatchObject({ status: "DOING", verification: { state: "ok" } });
+  expect(currentAggregate).toMatchObject({
+    revision: current.revision,
+    lifecycle: "ACTIVE",
+  });
   return {
     root,
     checkout,
@@ -334,7 +340,11 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
           expect(await readFile(proofPath, "utf8")).toBe(proofBytes);
           const recoveredTask = await f.ctx.taskBackend.getTask(f.taskId);
           expect(recoveredTask?.verification?.state).toBe("ok");
-          expect(recoveredTask?.status).not.toBe("DONE");
+          expect(recoveredTask?.status).toBe("DOING");
+          expect(taskCentricAggregateFromExtensions(recoveredTask?.extensions)).toMatchObject({
+            revision: recoveredTask?.revision,
+            lifecycle: "ACTIVE",
+          });
           expect(taskCentricAggregateFromExtensions(recoveredTask?.extensions)?.work_items).toEqual(
             itemsBefore,
           );
@@ -356,7 +366,11 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
       expect(nextOrder.role).toBe("EVALUATOR");
       const after = await f.ctx.taskBackend.getTask(f.taskId);
       expect(after?.verification?.state).toBe("ok");
-      expect(after?.status).not.toBe("DONE");
+      expect(after?.status).toBe("DOING");
+      expect(taskCentricAggregateFromExtensions(after?.extensions)).toMatchObject({
+        revision: after?.revision,
+        lifecycle: "ACTIVE",
+      });
       expect(recordedTaskImplementationCommitSha(after!)).toBe(source);
       expect(await readFile(proofPath, "utf8")).toBe(proofBytes);
       expect(taskCentricAggregateFromExtensions(after?.extensions)?.work_items).toEqual(

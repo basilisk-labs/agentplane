@@ -108,7 +108,8 @@ export async function recordDirectTaskVerification(opts: {
   work_order: AgentWorkOrderV2;
   workflow: "direct" | "branch_pr";
 }): Promise<DirectTaskVerificationResult> {
-  const verificationTask = await resolveImplementationVerificationTask(opts);
+  const verification = await resolveImplementationVerificationTask(opts);
+  const verificationTask = verification.task;
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_order.task.work_item_id,
@@ -152,6 +153,7 @@ export async function recordDirectTaskVerification(opts: {
     incidentTags: [],
     incidentMatch: [],
     quiet: true,
+    verificationSnapshot: verification.snapshot,
   });
   if (exitCode !== 0) {
     throw new CliError({

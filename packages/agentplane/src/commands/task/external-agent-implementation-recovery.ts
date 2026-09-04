@@ -321,7 +321,14 @@ export async function resolveImplementationVerificationTask(opts: {
   checkout: string;
   task: TaskData;
   workflow: "direct" | "branch_pr";
-}): Promise<TaskData> {
+}): Promise<{
+  task: TaskData;
+  snapshot: {
+    execution_contract: NonNullable<TaskData["execution_contract"]>;
+    evaluated_sha: string | null;
+    changed_paths: string[];
+  };
+}> {
   const execution = await resolveTaskExecutionContext({
     ctx: opts.command,
     tasks: [opts.task],
@@ -364,7 +371,14 @@ export async function resolveImplementationVerificationTask(opts: {
       changed_paths: changedPaths,
     }).contract,
   };
-  return verificationTask;
+  return {
+    task: verificationTask,
+    snapshot: {
+      execution_contract: verificationTask.execution_contract!,
+      evaluated_sha: evaluatedSha,
+      changed_paths: changedPaths,
+    },
+  };
 }
 
 async function directories(directory: string): Promise<string[]> {

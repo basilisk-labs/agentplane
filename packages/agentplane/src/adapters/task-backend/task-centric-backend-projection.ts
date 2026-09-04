@@ -1,6 +1,7 @@
 import {
   aggregateValidation,
   evaluateTaskCompletion,
+  legacyStatusToTaskLifecycle,
   projectTaskLifecycleToLegacyStatus,
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
@@ -132,6 +133,14 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   }
 
   const at = opts.next.doc_updated_at ?? currentAggregate.updated_at;
+  const verificationRework =
+    currentAggregate.lifecycle === "COMPLETED" &&
+    opts.current.verification?.state === "ok" &&
+    opts.next.verification?.state === "needs_rework" &&
+    opts.next.status === "DOING";
+  const projectedLifecycle = verificationRework
+    ? legacyStatusToTaskLifecycle(opts.next.status)
+    : nextAggregate.lifecycle;
   const mutationId = `compatibility:${taskCentricDigest({
     task_id: opts.current.id,
     previous_revision: currentRevision,
@@ -148,6 +157,8 @@ export function projectTaskCentricCompatibilityMutation(opts: {
   const candidate: TaskAggregate = Object.freeze({
     ...nextAggregate,
     revision: nextRevision,
+    lifecycle: projectedLifecycle,
+    ...(projectedLifecycle === nextAggregate.lifecycle ? {} : { final_validation: null }),
     event_cursor: Math.max(nextAggregate.event_cursor, currentAggregate.event_cursor + 1),
     updated_at: at,
   });
@@ -156,7 +167,7 @@ export function projectTaskCentricCompatibilityMutation(opts: {
     mutation_id: mutationId,
     entity: "task",
     from: currentAggregate.lifecycle,
-    to: currentAggregate.lifecycle,
+    to: candidate.lifecycle,
     at,
     cause_refs: ["compatibility_projection_mutation"],
   });

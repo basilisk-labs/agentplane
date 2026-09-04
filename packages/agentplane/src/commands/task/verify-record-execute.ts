@@ -103,6 +103,7 @@ async function recordVerificationResult(opts: {
   collectIncidents?: boolean;
   quiet: boolean;
   command: ExecuteVerifyRecordCommandOptions["command"];
+  verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -136,6 +137,7 @@ async function recordVerificationResult(opts: {
       phase: "verify",
       build: async (current) => {
         const baseExecutionContract =
+          opts.verificationSnapshot?.execution_contract ??
           current.execution_contract ??
           resolveTaskExecutionContract({
             config,
@@ -169,24 +171,28 @@ async function recordVerificationResult(opts: {
           workflowMode === "branch_pr"
             ? await resolveTaskBranchFromContext({ ctx, taskId: current.id })
             : null;
-        const evaluatedSha = await resolveQualityReviewTargetSha({
-          gitRoot: resolved.gitRoot,
-          workflowDir: config.paths.workflow_dir,
-          taskId: current.id,
-          taskIds: qualityReviewTaskIds,
-          lifecycleTaskIds: batchTaskIds,
-          headSha: taskBranch ? await gitRevParse(resolved.gitRoot, [taskBranch]) : undefined,
-          previousEvaluatedSha:
-            current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
-          workflowMode,
-        });
-        const observedChangedPaths = await resolveObservedVerificationChangedPaths({
-          ctx,
-          evaluatedSha,
-          taskId: current.id,
-          artifactTaskIds: qualityReviewTaskIds,
-          execution: taskCommand.execution,
-        });
+        const evaluatedSha =
+          opts.verificationSnapshot?.evaluated_sha ??
+          (await resolveQualityReviewTargetSha({
+            gitRoot: resolved.gitRoot,
+            workflowDir: config.paths.workflow_dir,
+            taskId: current.id,
+            taskIds: qualityReviewTaskIds,
+            lifecycleTaskIds: batchTaskIds,
+            headSha: taskBranch ? await gitRevParse(resolved.gitRoot, [taskBranch]) : undefined,
+            previousEvaluatedSha:
+              current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
+            workflowMode,
+          }));
+        const observedChangedPaths =
+          opts.verificationSnapshot?.changed_paths ??
+          (await resolveObservedVerificationChangedPaths({
+            ctx,
+            evaluatedSha,
+            taskId: current.id,
+            artifactTaskIds: qualityReviewTaskIds,
+            execution: taskCommand.execution,
+          }));
         const observedExecutionContract = reconcileTaskExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
@@ -539,6 +545,7 @@ export async function executeVerifyRecordCommand(
       collectIncidents: opts.collectIncidents,
       quiet: opts.quiet,
       command: opts.command,
+      verificationSnapshot: opts.verificationSnapshot,
     });
     return 0;
   } catch (err) {

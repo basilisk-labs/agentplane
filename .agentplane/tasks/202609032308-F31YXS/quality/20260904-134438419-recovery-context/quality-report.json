@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202609032308-F31YXS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-04T13:45:48.695Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "96d33c4f65615af65f1b6930453782ab9edefa9a",
+  "blueprint_digest": "c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49",
+  "findings": [
+    "The diff binds verification persistence to the observed snapshot instead of recomputing a stronger post-observation contract.",
+    "The compatibility mutation projects DONE to DOING rework as COMPLETED to ACTIVE with final validation cleared in the same aggregate mutation.",
+    "Regressions cover successful atomic rework, persistence failure without partial projection, evidence-only rework, semantic reset recovery, active-claim rejection, and replay idempotence.",
+    "Supervisor evidence records ci:local:full, lint:core, typecheck, focused AgentPlane tests, routing validation, clean committed/staged diffs, and a clean final execution status as passing.",
+    "Residual risk: The broader stale Verify Steps projection defect is recorded outside this task and is not required for the scoped repair."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/9bc37f8438f1859a08d503602867e9b8e386ca9567694c23509e3a601711e3ef.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
