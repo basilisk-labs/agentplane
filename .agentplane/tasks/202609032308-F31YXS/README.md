@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 67
+revision: 68
 origin:
   system: "manual"
 depends_on: []
@@ -36,33 +36,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-04T13:45:48.695Z"
+  updated_at: "2026-09-04T16:59:59.377Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "96d33c4f65615af65f1b6930453782ab9edefa9a"
+  evaluated_sha: "cdf1a08eb6011b9ff01d6c2d13bd7ff47a9c3683"
   blueprint_digest: "c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49"
   evidence_refs:
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/4ed1465ab5e293529771415707781db44b5e80d1084757920e01e6e9e49ec65a.md"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-134438419-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/5fb675074bf51cc3a9e8fab70cd3c1e3a0251835397d656545b58e9842dd42b4.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609032308-F31YXS/README.md"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/9bc37f8438f1859a08d503602867e9b8e386ca9567694c23509e3a601711e3ef.patch"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/163a6b93e10922d91d7b429560ec7db037f97d7142c6675978f9b8ab36f5da80.json"
-    - ".agentplane/tasks/202609032308-F31YXS/verification/20260904134431710-2602e94ccee8c4db.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/add268f8c5d61c47bd2d7879c585f5e01fcb7ea3f68abc41ef06e7c0fd6618c9.patch"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/65c8bf2525832fb18a6405ac39bd84d05efb1410952a0743ee68881d9b4b2586.json"
+    - ".agentplane/tasks/202609032308-F31YXS/verification/20260904165755270-8ef16bad7c3d7645.json"
     - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/1e4fbeb6d96a35267051d27bebfa2db480b66fefa273d47f8371dc6d290aaf1b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The diff binds verification persistence to the observed snapshot instead of recomputing a stronger post-observation contract."
-    - "The compatibility mutation projects DONE to DOING rework as COMPLETED to ACTIVE with final validation cleared in the same aggregate mutation."
-    - "Regressions cover successful atomic rework, persistence failure without partial projection, evidence-only rework, semantic reset recovery, active-claim rejection, and replay idempotence."
-    - "Supervisor evidence records ci:local:full, lint:core, typecheck, focused AgentPlane tests, routing validation, clean committed/staged diffs, and a clean final execution status as passing."
-    - "Residual risk: The broader stale Verify Steps projection defect is recorded outside this task and is not required for the scoped repair."
+    - "The added observation path reads the current task inside applyTaskMutation and updates implementation identity, execution contract, route, legacy revision, and canonical aggregate in one persistence operation."
+    - "The test harness changes model the real backend routing contract and add direct revision-alignment coverage."
+    - "The complete declared verification set is recorded as passing at the current clean implementation head."
+    - "The GitLab reused-branch lookup defect reported by another task remains outside this task's explicit provider-neutral exclusion and does not affect this verdict."
+    - "Residual risk: Historical task-artifact volume remains large but is supervisor-owned and does not change the scoped product behavior."
 token_usage:
   agent_runs: 29
   input_tokens: null
@@ -787,7 +787,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-04T16:57:56.346Z"
+doc_updated_at: "2026-09-04T16:59:59.423Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -1920,7 +1920,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 39
+    event_cursor: 40
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -3451,9 +3451,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 67
+    revision: 68
     schema_version: 1
-    updated_at: "2026-09-04T16:57:56.324Z"
+    updated_at: "2026-09-04T16:57:56.346Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 1
@@ -3865,6 +3865,30 @@ extensions:
         mutation_id: "compatibility:sha256:0344d8ebd85653a38e47fae95f103a93f4165417cb20653cd4d550e7969fa0fd"
         next_revision: 41
         previous_revision: 40
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:23a53dcaab090ffe3bbd46e339668ce94cfa86d92b52e4af825099afee65ab71:
+        aggregate_digest: "sha256:8ed88797a945ab65b487220371cbdadcdd0b8446fb14fb3d8e206e6b7fd61b54"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T16:57:56.346Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_69a7ff0b56454f3c632d6d45"
+          mutation_id: "compatibility:sha256:23a53dcaab090ffe3bbd46e339668ce94cfa86d92b52e4af825099afee65ab71"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 67
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:23a53dcaab090ffe3bbd46e339668ce94cfa86d92b52e4af825099afee65ab71"
+        next_revision: 68
+        previous_revision: 67
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:263d6893184e54d199bb3ecee892e70e0411d657ec5926d40f0d1c0e2b3bee48:
