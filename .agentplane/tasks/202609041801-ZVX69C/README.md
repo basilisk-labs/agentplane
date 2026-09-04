@@ -2,10 +2,10 @@
 id: "202609041801-ZVX69C"
 title: "Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -33,10 +33,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:0c5f62bbce9bd35b857d3f519756656b6aa8a901908bb0a02a409de158961ea7"
 verification:
-  state: "ok"
-  updated_at: "2026-09-04T21:58:50.296Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  state: "pending"
+  updated_at: "2026-09-04T23:24:54.781Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "pass"
@@ -126,6 +126,9 @@ execution_contract:
       - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
       - "packages/agentplane/src/runner/usecases"
       - "packages/core/src/tasks"
+      - "scripts/lib/installed-migration-matrix.mjs"
+      - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+      - "scripts/qualification/release-qualification.test.mjs"
   declaration:
     external_effects:
       - "destructive_git"
@@ -137,6 +140,7 @@ execution_contract:
       - "Branch publication, hosted checks, integration, and CLI-owned cleanup remain separate AgentPlane-owned lifecycle effects."
       - "Release metadata, dependencies, MPXQBK, stale-branch imports, and full GitLab provider expansion remain excluded."
       - "The complete local CI failure is narrowed to two workflow test fixtures that must define task-specific Verify Steps."
+      - "USER-approved blocked-result scope extension: roots=scripts/lib/installed-migration-matrix.mjs,scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs,scripts/qualification/release-qualification.test.mjs; repository_effects=tests"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -155,6 +159,9 @@ execution_contract:
       - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
       - "packages/agentplane/src/runner/usecases"
       - "packages/core/src/tasks"
+      - "scripts/lib/installed-migration-matrix.mjs"
+      - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+      - "scripts/qualification/release-qualification.test.mjs"
   observed:
     authority_violations: []
     changed_components:
@@ -195,142 +202,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-17"
-        result: "pass"
-      -
-        id: "recorded-check-18"
-        result: "pass"
-      -
-        id: "recorded-check-19"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-20"
-        result: "pass"
-      -
-        id: "recorded-check-21"
-        result: "pass"
-      -
-        id: "recorded-check-22"
-        result: "pass"
-      -
-        id: "recorded-check-23"
-        result: "pass"
-      -
-        id: "recorded-check-24"
-        result: "pass"
-      -
-        id: "recorded-check-25"
-        result: "pass"
-      -
-        id: "recorded-check-26"
-        result: "pass"
-      -
-        id: "recorded-check-27"
-        result: "pass"
-      -
-        id: "recorded-check-28"
-        result: "pass"
-      -
-        id: "recorded-check-29"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-30"
-        result: "pass"
-      -
-        id: "recorded-check-31"
-        result: "pass"
-      -
-        id: "recorded-check-32"
-        result: "pass"
-      -
-        id: "recorded-check-33"
-        result: "pass"
-      -
-        id: "recorded-check-34"
-        result: "pass"
-      -
-        id: "recorded-check-35"
-        result: "pass"
-      -
-        id: "recorded-check-36"
-        result: "pass"
-      -
-        id: "recorded-check-37"
-        result: "pass"
-      -
-        id: "recorded-check-38"
-        result: "pass"
-      -
-        id: "recorded-check-39"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-40"
-        result: "pass"
-      -
-        id: "recorded-check-41"
-        result: "pass"
-      -
-        id: "recorded-check-42"
-        result: "pass"
-      -
-        id: "recorded-check-43"
-        result: "pass"
-      -
-        id: "recorded-check-44"
-        result: "pass"
-      -
-        id: "recorded-check-45"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
@@ -361,6 +233,9 @@ execution_contract:
           - "packages/agentplane/src/commands/workflow.verify-hooks.test.ts"
           - "packages/agentplane/src/runner/usecases"
           - "packages/core/src/tasks"
+          - "scripts/lib/installed-migration-matrix.mjs"
+          - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+          - "scripts/qualification/release-qualification.test.mjs"
         evidence_requirements:
           - "external_effect:destructive_git"
           - "external_effect:external_write"
@@ -382,9 +257,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:89a0c83b1562b4be58735fbda54b89d2c0312c5b2921b84ae2597d5255c6dc75"
+      digest: "sha256:81a48dc4120fcd557962d2a1ca75e6844e90863e27c2fcacd5986dd6ef5d5765"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
+        - "central_component:scripts/lib/installed-migration-matrix.mjs"
         - "central_path:packages/agentplane/src/cli/release-critical-lifecycle.test.ts"
         - "central_path:packages/agentplane/src/cli/route-decision.testkit.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts"
@@ -475,9 +351,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "4751c6fb30faa1a08385ad61ad881daec8af0453"
-  message: "🚧 ZVX69C task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -506,6 +380,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted real-e2e qualification exposes two stale packaged lifecycle fixtures outside the current writable roots. Return to PLANNER for a bounded authority revision in this existing task. Recommended action: Revise the existing ZVX69C plan and execution contract consistently to include the two fixture owners and scripts/qualification/release-qualification.test.mjs. Preserve the single existing WorkItem, completed implementation, all exclusions, and existing checks. Add targeted execution of the failing packaged scenarios in audit mode and existing fixture unit tests; no release preparation or publication. Request fresh USER approval if required by the resulting route. Requested scope: roots=scripts/lib/installed-migration-matrix.mjs,scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs,scripts/qualification/release-qualification.test.mjs; repository effects=tests; request digest=sha256:a403bf36d29cfaf0de8fec0f4780b962cf0a321c3747914bb1aa40eb766184ce. Agentplane receipt: external-agent-blocker/tr_4d0c977cab1eafd531b3df073b6e6a2c/sha256:fb5effcf9b044a1b43953069b52797452a4f8609aff13e0459a5e3ca1978e876/sha256:a403bf36d29cfaf0de8fec0f4780b962cf0a321c3747914bb1aa40eb766184ce."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: scripts/lib/installed-migration-matrix.mjs, scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs, scripts/qualification/release-qualification.test.mjs; repository effects: tests."
 events:
   -
     type: "status"
@@ -1120,6 +997,8 @@ extensions:
     status: "active"
     task_id: "202609041801-ZVX69C"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-04T23:24:54.781Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:fb5effcf9b044a1b43953069b52797452a4f8609aff13e0459a5e3ca1978e876"
     kind: "task_scope_extension_request"
     request:
@@ -1133,7 +1012,7 @@ extensions:
         - "scripts/qualification/release-qualification.test.mjs"
     request_digest: "sha256:a403bf36d29cfaf0de8fec0f4780b962cf0a321c3747914bb1aa40eb766184ce"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_4d0c977cab1eafd531b3df073b6e6a2c"
   agentplane.task_centric:
     current_plan:
