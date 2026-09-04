@@ -82,8 +82,10 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
     "preserves the implementation and rejects unrelated dirt: %s",
     async (foreign) => {
       const root = await mkGitRepoRootWithBranch("main");
-      const git = async (...args: string[]) =>
-        (await exec("git", args, { cwd: root })).stdout.trim();
+      const git = async (...args: string[]) => {
+        const output = await exec("git", args, { cwd: root });
+        return output.stdout.trim();
+      };
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -208,8 +210,10 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
       await git("commit", "-m", "test: persist approved plan");
       const implementation = await episode(root, taskId);
       const checkout = implementation.order.state_fingerprint.worktree;
-      const checkoutGit = async (...args: string[]) =>
-        (await exec("git", args, { cwd: checkout })).stdout.trim();
+      const checkoutGit = async (...args: string[]) => {
+        const output = await exec("git", args, { cwd: checkout });
+        return output.stdout.trim();
+      };
       await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
       if (foreign) await writeFile(path.join(checkout, "unrelated.txt"), "must survive\n");
       const result = await returnResult(root, taskId, implementation);
@@ -225,7 +229,7 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
           path.join(checkout, `.agentplane/tasks/${taskId}/supervision/declared-checks.json`),
           "utf8",
         ),
-      );
+      ) as { checks: { command: string; exit_code: number }[] };
       expect(checks.checks).toHaveLength(1);
       expect(checks.checks[0]).toMatchObject({ command: "bun run test:critical", exit_code: 0 });
       const ctx = await loadCommandContext({ cwd: checkout, rootOverride: checkout });

@@ -29,7 +29,9 @@ Created: 2026-09-04T23:32:29.145Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...li.core.task-advance.clean-verification.test.ts | 255 +++++++++++++++++++++
+ .../external-agent-implementation-authority.ts     |  36 ++-
+ 2 files changed, 272 insertions(+), 19 deletions(-)
 ```
 
 </details>
