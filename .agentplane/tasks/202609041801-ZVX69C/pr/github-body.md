@@ -16,7 +16,18 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check could not run: agentplane task lint
+- Note:
+
+```text
+Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core
+packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts
+packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
+packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,7 +51,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
- .../src/commands/task/direct-task-verification.ts  |  11 +-
+ .../src/commands/task/direct-task-verification.ts  |  19 +-
  ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
  .../external-agent-implementation-recovery.test.ts |  28 +++
  .../task/external-agent-implementation-recovery.ts | 101 +----------
@@ -57,7 +68,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
- 30 files changed, 777 insertions(+), 321 deletions(-)
+ 30 files changed, 784 insertions(+), 322 deletions(-)
 ```
 
 </details>

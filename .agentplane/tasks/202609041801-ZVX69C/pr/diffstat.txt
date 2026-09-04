@@ -11,7 +11,7 @@
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
- .../src/commands/task/direct-task-verification.ts  |  11 +-
+ .../src/commands/task/direct-task-verification.ts  |  19 +-
  ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
  .../external-agent-implementation-recovery.test.ts |  28 +++
  .../task/external-agent-implementation-recovery.ts | 101 +----------
@@ -28,4 +28,4 @@
  .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
- 30 files changed, 777 insertions(+), 321 deletions(-)
+ 30 files changed, 784 insertions(+), 322 deletions(-)
