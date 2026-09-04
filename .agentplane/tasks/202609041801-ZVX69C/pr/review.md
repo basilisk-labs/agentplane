@@ -12,8 +12,8 @@ Created: 2026-09-04T18:17:29.251Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check could not run: agentplane task lint
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-04T18:17:29.251Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-04T18:17:29.251Z
+- Updated: 2026-09-04T20:10:20.939Z
 - Branch: task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

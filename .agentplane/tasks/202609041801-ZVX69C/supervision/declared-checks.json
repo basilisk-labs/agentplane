@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 6050,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-04T20:10:25.472Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking project-local blueprints\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=3 info=10\n- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open\nLikely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled\nNext action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)\nDetails: Affected tasks: 24\n  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\n- [INFO] Framework repo root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n- [INFO] Framework agentplane root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\n- [INFO] Framework core root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- [WARN] DONE task is missing implementation commit hash: 202607310026-4V5K9V (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202607311706-5N483Q (finish with --commit <hash>).\n- [INFO] Historical task archive contains 163 DONE tasks with unknown implementation commit hashes across 163 distinct commit hashes. Examples: 029370e80cf37953258bff636c743a58707f1d85 (1 task: 202608020907-FMGM4Z); 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 04ea2e6e3ed8831e79520000b321ddc423c2377f (1 task: 202608020545-Y4HQ7A); +160 more hash groups\n",
+      "stdout_tail": "✅ doctor (OK)\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "agentplane task lint",
+      "duration_ms": 69,
+      "exit_code": null,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:f7ce2b43b8fe9bc2cfd044a0ed3e2cec9df68bf42c479de509a9d78e3a86fcab",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "process command is not in the allowed executable set: agentplane",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check could not run: agentplane task lint",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609041801-ZVX69C"
+}
