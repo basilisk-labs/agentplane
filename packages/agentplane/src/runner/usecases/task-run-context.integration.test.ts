@@ -440,6 +440,9 @@ describe("context task runner integration", () => {
     expect(coder.bundle.framework_explain).toBeDefined();
     expect(coder.bundle.framework_protocol).toBeUndefined();
     expect(coder.bundle.work_order_preparation).toBeUndefined();
+    expect(coder.bundle.work_order.authority.writable_roots).toEqual([
+      coder.bundle.repository.git_root,
+    ]);
     expect(coder.bundle.execution.write_scope?.writable_roots).toEqual(["."]);
     expect(coder.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
       effective: "workspace-write",
@@ -448,7 +451,7 @@ describe("context task runner integration", () => {
 
     expect(evaluator.bundle.execution.sandbox_policy).toMatchObject({
       requested: "read-only",
-      source: "role_default",
+      source: "route_authority",
       role: "EVALUATOR",
     });
     expect(evaluator.bundle.execution.write_scope?.writable_roots).toEqual([]);

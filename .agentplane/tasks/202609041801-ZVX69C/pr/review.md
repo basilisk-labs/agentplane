@@ -29,6 +29,7 @@ Created: 2026-09-04T18:17:29.251Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/release-critical-lifecycle.test.ts     |  14 ++
  .../agentplane/src/cli/route-decision.testkit.ts   |  22 +++
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 ++++++++++----
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
@@ -37,6 +38,8 @@ Created: 2026-09-04T18:17:29.251Z
  ...n-cli.core.task-advance.branch-worktree.test.ts | 194 +++++++++------------
  ...n-cli.core.task-advance.evidence-rework.test.ts |  94 +++++++++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
+ .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
+ .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
  ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
  .../external-agent-implementation-recovery.test.ts |  28 +++
  .../task/external-agent-implementation-recovery.ts | 101 +----------
@@ -46,7 +49,12 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/commands/task/shared.verify-steps.test.ts  |   8 +
  .../agentplane/src/commands/task/shared/docs.ts    |   2 +
  .../task/verify-record.durability.unit.test.ts     |  11 +-
- 17 files changed, 609 insertions(+), 306 deletions(-)
+ .../src/runner/usecases/agent-work-order-build.ts  |  16 +-
+ .../src/runner/usecases/agent-work-order.ts        |   1 +
+ .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
+ .../usecases/task-run-context.integration.test.ts  |   5 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   1 +
+ 25 files changed, 705 insertions(+), 315 deletions(-)
 ```
 
 </details>
