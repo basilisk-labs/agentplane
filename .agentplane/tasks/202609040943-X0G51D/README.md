@@ -4,7 +4,7 @@ title: "Preserve completed WorkItems across command-only material plan refinemen
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,41 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-04T10:54:57.485Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 10 typed finding(s)."
+  evaluated_sha: "374fe1c779160e4f2df99483453fcd7471e45300"
+  blueprint_digest: "7bd44e2fdb077415f61fb5fab9eb76372f8b2d5e71dc2ad670a18ebec83f6540"
+  evidence_refs:
+    - ".agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/9936542cb8176b3ad6a81c7a333887eff082b449377bf0953b6c2c0d050b8bae.md"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609040943-X0G51D/README.md"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/d0c2bd9298b765f8809b5b5b705eb6198d5863bc51f0dc6ba0e4a9d423bd37bf.patch"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/2a2ae3e476274e564b9b0fc110577f3f85995d5f0b9c08230aadbd3810d9c0de.json"
+    - ".agentplane/tasks/202609040943-X0G51D/verification/20260904105220448-01cf8b041fe7e9a1.json"
+    - ".agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/20eab60d01460e3a3a224745ce45db18f60b4781d17f67772c55363af3526e6b.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Implementation 374fe1c779160e4f2df99483453fcd7471e45300 changes one core reconciliation boundary and adds focused domain, command, and CLI regressions within the approved writable roots."
+    - "compatible-workitem-reconciliation is COMPLETED with attempt 1, a canonical compatible-workitem-runtime-projection manifest, and passing core-reconciliation-focused evidence."
+    - "f31yxs-command-only-replan-regression is COMPLETED with attempt 1, a canonical verified-f31yxs-command-only-replan-continuation manifest, and passing evidence for command application, cli-core continuation, formatting, lint, typecheck, routing, diff checks, and full CI."
+    - "The domain matrix resets runtime on identity, objective, dependency, required input, output, scope, acceptance, validation, context, risk, capability, resource, optionality, and priority changes; only evidence_fingerprint drift preserves runtime."
+    - "The command regression preserves the completed upstream attempt and manifest while reopening only the task-lint-changed qualification item; the CLI regression reaches its fresh EXECUTOR packet at unchanged HEAD with no product/source delta."
+    - "Supervisor verification passed at verified head bed08e187572e97ab34e20a007b9984a0fa7192b, including ci:local:full, lint:core, typecheck, routing, and focused tests; the recorded full CI reports ok=true."
+    - "No F31YXS, PX8PZT, MPXQBK, provider-neutral, compatibility CLI, dependency, release, version, or publication implementation was added."
+    - "Residual risk: Hosted checks, PR integration, and provider-hosted closure remain AgentPlane-owned steps after this local evaluation."
+    - "Residual risk: The legacy Verify Steps prose still contains the creation scaffold, while the canonical structured plan and WorkItem validation are task-specific and fully recorded; any general projection cleanup remains outside this task."
+    - "Residual risk: Factory task 202609032356-BCJRWK reports a separate recoverable-effect baseline-rebase defect that is not addressed by this plan-rematerialization repair."
 execution_route:
   frozen: true
   reason_codes:
@@ -852,7 +887,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609040943-X0G51D"
-    event_cursor: 4
+    event_cursor: 5
     final_validation: null
     id: "202609040943-X0G51D"
     intent:
@@ -892,9 +927,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-04T10:52:21.544Z"
+    updated_at: "2026-09-04T10:52:21.566Z"
     work_items:
       compatible-workitem-reconciliation:
         attempt: 1
@@ -1081,6 +1116,30 @@ extensions:
         work_item_id: "f31yxs-command-only-replan-regression"
     leases: []
     mutation_receipts:
+      compatibility:sha256:54513a4d7b9be42e574476c291d262eb2ee5eac8b06b82b124100693f70d47ee:
+        aggregate_digest: "sha256:96bbdfd41d2359b917217b3062321b09c4e7308de0564e15e181f963cd9565f1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T10:52:21.566Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d5451ff6e6e6b2b614411aa6"
+          mutation_id: "compatibility:sha256:54513a4d7b9be42e574476c291d262eb2ee5eac8b06b82b124100693f70d47ee"
+          plan_digest: "sha256:0515fc5b4f4eec4ab51d782c2861f79369cb47808eccf0196503a660f862080e"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609040943-X0G51D"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:54513a4d7b9be42e574476c291d262eb2ee5eac8b06b82b124100693f70d47ee"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609040943-X0G51D"
       compatibility:sha256:cf04c6ffaf3390d229b68b017815ba68580d41b5a8adceac41b7bd05428916de:
         aggregate_digest: "sha256:20a304910119235f51be9a1928865f791aeb0730d006c28deeb8c8be6f0139c5"
         event:
