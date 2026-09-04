@@ -1,0 +1,179 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "bun run lint:core",
+    "bun run typecheck",
+    "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/task/task-centric-external-result.test.ts --maxWorkers=1",
+    "node .agentplane/policy/check-routing.mjs"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "destructive_git",
+        "external_write",
+        "network_read"
+      ],
+      "components": [
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/task",
+        "packages/core/src/tasks/task-centric"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:destructive_git",
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "packages/core"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts",
+        "packages/core/src/tasks/task-centric/graph.ts",
+        "packages/core/src/tasks/task-centric/task-centric.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/src/tasks/task-centric",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+      "central_path:packages/core/src/tasks/task-centric/graph.ts",
+      "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts",
+      "effect_ci",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:bce4a12d924cc518f26240aab3ac86fbdbbc7979ba090a2730dcb3db8de7fe37"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-04T10:52:20.448Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609040943-X0G51D/verification/20260904105220448-01cf8b041fe7e9a1.json",
+      "sha256": "sha256:c592bfdec5dc523e090561797e9be8e0628b2f28a70dd078c981b9d72b53cdef"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 3056b584b9cb9ee72940b285dc5ed3da0e8432de..374fe1c779160e4f2df99483453fcd7471e45300",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 3056b584b9cb9ee72940b285dc5ed3da0e8432de..374fe1c779160e4f2df99483453fcd7471e45300",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609040943-X0G51D/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609040943-X0G51D/pr/github-body.md",
+          "M\t.agentplane/tasks/202609040943-X0G51D/pr/meta.json",
+          "M\t.agentplane/tasks/202609040943-X0G51D/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.test.ts",
+          "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "3056b584b9cb9ee72940b285dc5ed3da0e8432de",
+    "implementation_commit": "374fe1c779160e4f2df99483453fcd7471e45300",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609040943-X0G51D",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609040943-X0G51D/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

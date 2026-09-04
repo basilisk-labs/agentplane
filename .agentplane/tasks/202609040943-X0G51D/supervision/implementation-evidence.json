@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 3056b584b9cb9ee72940b285dc5ed3da0e8432de..374fe1c779160e4f2df99483453fcd7471e45300",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3056b584b9cb9ee72940b285dc5ed3da0e8432de..374fe1c779160e4f2df99483453fcd7471e45300",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609040943-X0G51D/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609040943-X0G51D/pr/github-body.md",
+        "M\t.agentplane/tasks/202609040943-X0G51D/pr/meta.json",
+        "M\t.agentplane/tasks/202609040943-X0G51D/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-planning-authority.test.ts",
+        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "3056b584b9cb9ee72940b285dc5ed3da0e8432de",
+  "implementation_commit": "374fe1c779160e4f2df99483453fcd7471e45300",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609040943-X0G51D"
+}

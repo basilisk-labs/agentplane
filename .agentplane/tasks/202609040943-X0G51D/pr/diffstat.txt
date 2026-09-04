@@ -1,0 +1,5 @@
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  68 ++++++++
+ .../task/external-agent-planning-authority.test.ts | 162 ++++++++++++++++++-
+ packages/core/src/tasks/task-centric/graph.ts      |   7 +-
+ .../src/tasks/task-centric/task-centric.test.ts    | 179 +++++++++++++++++++--
+ 4 files changed, 400 insertions(+), 16 deletions(-)

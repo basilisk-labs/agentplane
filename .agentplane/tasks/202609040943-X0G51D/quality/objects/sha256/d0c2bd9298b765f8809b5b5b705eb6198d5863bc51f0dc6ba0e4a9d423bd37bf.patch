@@ -1,0 +1,516 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index 596ac34f6..13505e105 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -619,6 +619,74 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
+     expect(after.work_items).toEqual(before.work_items);
+     expect(after.work_items["exercise-recovery"]?.state).toBe("COMPLETED");
+   });
++  it("reissues only the command-changed WorkItem after replacement-plan approval", async () => {
++    const f = await completedFixture();
++    const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
++    const headResult = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
++    const headBefore = headResult.stdout.trim();
++    await report(f.rework, "Replace only the unsupported qualification command.", {
++      plan_refinement: planRefinement(true),
++    });
++    const planner = await resume(f.checkout, f.rework);
++    const plannerOrder = await order(planner);
++    expect(plannerOrder.role).toBe("PLANNER");
++    const baseline = plannerOrder.planning_context?.repository_snapshot;
++    if (!baseline) throw new Error("missing replacement planning baseline");
++    const previousProposal = before.current_plan!.proposal;
++    const replacement = {
++      ...previousProposal,
++      planning_baseline: baseline,
++      work_items: {
++        ...previousProposal.work_items,
++        work_items: previousProposal.work_items.work_items.map((workItem) => ({
++          ...workItem,
++          validation: {
++            ...workItem.validation,
++            checks: workItem.validation.checks.map((check) => ({
++              ...check,
++              command: "agentplane task lint",
++            })),
++            evidence_fingerprint: baseline.digest,
++          },
++        })),
++      },
++      top_level_validation: {
++        ...previousProposal.top_level_validation,
++        checks: previousProposal.top_level_validation.checks.map((check) => ({
++          ...check,
++          command: "agentplane task lint",
++        })),
++        evidence_fingerprint: baseline.digest,
++      },
++    };
++    await report(planner, "Use the repository-wide task lint command.", {
++      task_plan_proposal: replacement,
++    });
++    const approval = await resume(f.checkout, planner);
++    expect(approval.action.kind).toBe("approval_required");
++    expect(
++      await runCliSilent([
++        "task",
++        "plan",
++        "approve",
++        f.taskId,
++        "--by",
++        "USER",
++        "--root",
++        f.checkout,
++      ]),
++    ).toBe(0);
++    const next = await packet(f.checkout, f.taskId);
++    const nextOrder = await order(next);
++    expect(nextOrder.role).toBe("EXECUTOR");
++    expect(nextOrder.task.work_item_id).toBe("exercise-recovery");
++    expect(nextOrder.state_fingerprint.git_head).toBe(headBefore);
++    const status = await git("git", ["status", "--porcelain"], { cwd: f.checkout });
++    const nonTaskChanges = status.stdout
++      .split("\n")
++      .filter((line) => line && !line.slice(3).startsWith(".agentplane/"));
++    expect(nonTaskChanges).toEqual([]);
++  });
+   it("rejects agent-created Git history for a pure refinement", async () => {
+     const f = await implementationFixture();
+     await report(f.implementation, "Refinement after forbidden history change.", {
+diff --git a/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts b/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
+index 8412a9ed9..9502ee688 100644
+--- a/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts
+@@ -1,16 +1,24 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ import {
++  approveTaskPlan,
++  createLegacyTaskAggregate,
+   createRepositorySnapshot,
++  createTaskPlanRevision,
++  materializeApprovedWorkItems,
++  taskCentricAggregateFromExtensions,
+   taskCentricDigest,
+   TASK_CENTRIC_EXTENSION_KEY,
+   type TaskPlanProposal,
++  withTaskCentricAggregate,
+ } from "@agentplaneorg/core/tasks";
+ 
+-const mocks = vi.hoisted(() => ({ loadTask: vi.fn() }));
++const mocks = vi.hoisted(() => ({ loadTask: vi.fn(), setTaskPlan: vi.fn() }));
+ vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
++vi.mock("./plan.js", () => ({ setTaskPlan: mocks.setTaskPlan }));
+ 
+ import {
++  applyExternalPlanningResult,
+   assertExternalPlanningResultApplicable,
+   isExternalPlanningResultApplied,
+ } from "./external-agent-planning-authority.js";
+@@ -72,6 +80,7 @@ describe("persisted external planning-result comparison", () => {
+   beforeEach(() => {
+     vi.resetAllMocks();
+     mocks.loadTask.mockResolvedValue(taskRecord());
++    mocks.setTaskPlan.mockResolvedValue(undefined);
+   });
+ 
+   it("recognizes equivalent nested objects regardless of property insertion order", async () => {
+@@ -274,6 +283,157 @@ describe("external TaskPlanProposal graph validation", () => {
+     ).resolves.toBeUndefined();
+   });
+ 
++  it("preserves completed upstream runtime and reopens only changed qualification", async () => {
++    const implementation = item({ id: "implementation", expected_outputs: ["implementation"] });
++    const qualification = {
++      ...item({
++        id: "qualification",
++        depends_on: ["implementation"],
++        required_inputs: ["implementation"],
++        expected_outputs: ["qualification"],
++      }),
++      validation: {
++        ...validation,
++        checks: validation.checks.map((check) => ({
++          ...check,
++          command: "agentplane task lint 202609032308-F31YXS",
++        })),
++      },
++    };
++    const currentProposal = proposal([implementation, qualification]);
++    const draft = createTaskPlanRevision({
++      proposal: currentProposal,
++      revision: 1,
++      created_at: repository.captured_at,
++    });
++    const approved = approveTaskPlan({
++      plan: draft,
++      expected_digest: draft.digest,
++      actor: "USER",
++      approved_at: repository.captured_at,
++    });
++    const initial = materializeApprovedWorkItems({
++      task: createLegacyTaskAggregate({
++        id: returnedProposal.task_id,
++        revision: 1,
++        title: "Task",
++        description: "Task",
++        status: "DOING",
++        acceptance_criteria: ["done"],
++        captured_at: repository.captured_at,
++        updated_at: repository.captured_at,
++      }),
++      plan: approved,
++      now: repository.captured_at,
++    });
++    const completed = {
++      ...initial,
++      work_items: {
++        implementation: {
++          ...initial.work_items.implementation!,
++          state: "COMPLETED" as const,
++          revision: 7,
++          attempt: 2,
++          output_manifests: [
++            {
++              schema_version: 1 as const,
++              id: "implementation",
++              kind: "report",
++              schema: "report.v1",
++              digest: taskCentricDigest("implementation"),
++              producer: {
++                task_id: returnedProposal.task_id,
++                plan_revision: 1,
++                work_item_id: "implementation",
++                attempt: 2,
++              },
++              repository_snapshot_digest: repository.digest,
++              provenance: [],
++            },
++          ],
++        },
++        qualification: {
++          ...initial.work_items.qualification!,
++          state: "COMPLETED" as const,
++          revision: 4,
++          attempt: 1,
++        },
++      },
++    };
++    const replacementFingerprint = taskCentricDigest("replacement baseline");
++    const replacementProposal = proposal([
++      {
++        ...implementation,
++        validation: { ...implementation.validation, evidence_fingerprint: replacementFingerprint },
++      },
++      {
++        ...qualification,
++        validation: {
++          ...qualification.validation,
++          checks: qualification.validation.checks.map((check) => ({
++            ...check,
++            command: "agentplane task lint",
++          })),
++          evidence_fingerprint: replacementFingerprint,
++        },
++      },
++    ]);
++    mocks.loadTask.mockResolvedValue({
++      id: returnedProposal.task_id,
++      title: "Task",
++      description: "Task",
++      status: "DOING",
++      revision: 9,
++      verify: [],
++      mutation_scope: "code",
++      task_kind: "code",
++      extensions: withTaskCentricAggregate({}, completed),
++    });
++
++    await applyExternalPlanningResult({
++      command: {} as never,
++      exchange: { task_id: returnedProposal.task_id, checkout: "/repo" } as never,
++      envelope: {
++        result: {
++          status: "completed",
++          summary: "Use the repository-wide task lint command.",
++          task_plan_proposal: replacementProposal,
++        },
++      } as never,
++      work_order: {
++        role: "PLANNER",
++        task: { id: returnedProposal.task_id, work_item_id: null },
++        state_fingerprint: { digest: taskCentricDigest("state"), git_head: "a".repeat(40) },
++        planning_context: { repository_snapshot: repository },
++      } as never,
++    });
++
++    const planCall = mocks.setTaskPlan.mock.calls[0] as unknown as [
++      { taskFields?: { extensions?: Readonly<Record<string, unknown>> } },
++    ];
++    const pending = taskCentricAggregateFromExtensions(planCall[0].taskFields?.extensions)!;
++    expect(pending.work_items.implementation).toBe(completed.work_items.implementation);
++    expect(pending.work_items.qualification).toMatchObject({
++      state: "PLANNED",
++      revision: 1,
++      attempt: 0,
++      output_manifests: [],
++    });
++    const replacement = approveTaskPlan({
++      plan: pending.current_plan!,
++      expected_digest: pending.current_plan!.digest,
++      actor: "USER",
++      approved_at: repository.captured_at,
++    });
++    const rematerialized = materializeApprovedWorkItems({
++      task: pending,
++      plan: replacement,
++      now: repository.captured_at,
++    });
++    expect(rematerialized.work_items.implementation).toBe(completed.work_items.implementation);
++    expect(rematerialized.work_items.qualification?.state).toBe("READY");
++  });
++
+   it.each([
+     [
+       "unproduced",
+diff --git a/packages/core/src/tasks/task-centric/graph.ts b/packages/core/src/tasks/task-centric/graph.ts
+index 49a8f6620..279eaea67 100644
+--- a/packages/core/src/tasks/task-centric/graph.ts
++++ b/packages/core/src/tasks/task-centric/graph.ts
+@@ -247,6 +247,11 @@ function freshWorkItemRuntime(item: WorkItem): WorkItemRuntime {
+   });
+ }
+ 
++function workItemSemanticDigest(item: WorkItem): Sha256Digest {
++  const { evidence_fingerprint: _evidenceFingerprint, ...validation } = item.validation;
++  return taskCentricDigest({ ...item, validation });
++}
++
+ /** Preserve runtime only when the replacement plan keeps the exact WorkItem contract. */
+ export function reconcileReplacementPlanWorkItems(opts: {
+   task: TaskAggregate;
+@@ -264,7 +269,7 @@ export function reconcileReplacementPlanWorkItems(opts: {
+           item.id,
+           priorDefinition &&
+           priorRuntime &&
+-          taskCentricDigest(priorDefinition) === taskCentricDigest(item)
++          workItemSemanticDigest(priorDefinition) === workItemSemanticDigest(item)
+             ? priorRuntime
+             : freshWorkItemRuntime(item),
+         ];
+diff --git a/packages/core/src/tasks/task-centric/task-centric.test.ts b/packages/core/src/tasks/task-centric/task-centric.test.ts
+index 6d0323741..ef2f04f09 100644
+--- a/packages/core/src/tasks/task-centric/task-centric.test.ts
++++ b/packages/core/src/tasks/task-centric/task-centric.test.ts
+@@ -333,33 +333,83 @@ describe("task-centric domain", () => {
+     ).toBe("READY");
+   });
+ 
+-  it("preserves only unchanged WorkItems across a replacement plan", () => {
+-    const original = approvedTask([
+-      item({ id: "done" }),
+-      item({ id: "changed", depends_on: ["done"] }),
++  it("preserves completed runtime across a baseline-only fingerprint change", () => {
++    const implementation = item({ id: "implementation" });
++    const qualificationValidation = validation("qualification");
++    const qualification = item({
++      id: "qualification",
++      depends_on: ["implementation"],
++      required_inputs: ["out-implementation"],
++      validation: {
++        ...qualificationValidation,
++        checks: qualificationValidation.checks.map((check) => ({
++          ...check,
++          command: "agentplane task lint 202609032308-F31YXS",
++        })),
++      },
++    });
++    const original = approvedTask([implementation, qualification]);
++    const implementationValidationResult = aggregateValidation(implementation.validation, [
++      {
++        check_id: "check-implementation",
++        status: "passed",
++        observed_at: NOW,
++        repository_snapshot_digest: snapshot().digest,
++        command_identity: "bun test implementation",
++        exit_code: 0,
++        artifact_refs: ["implementation-verification.json"],
++        detail: "passed",
++      },
+     ]);
+     const completed: TaskAggregate = {
+       ...original,
+       work_items: {
+-        done: {
+-          ...original.work_items.done!,
++        implementation: {
++          ...original.work_items.implementation!,
++          state: "COMPLETED",
++          revision: 7,
++          attempt: 2,
++          output_manifests: [
++            manifest({ id: "out-implementation", work_item_id: "implementation" }),
++          ],
++          validation_result: implementationValidationResult,
++        },
++        qualification: {
++          ...original.work_items.qualification!,
+           state: "COMPLETED",
+-          output_manifests: [manifest({ id: "out-done", work_item_id: "done" })],
++          revision: 5,
++          attempt: 3,
+         },
+-        changed: { ...original.work_items.changed!, state: "COMPLETED" },
+       },
+     };
+     const replacementProposal = proposal([
+-      item({ id: "done" }),
+-      item({ id: "changed", depends_on: ["done"], objective: "Refined objective" }),
++      {
++        ...implementation,
++        validation: {
++          ...implementation.validation,
++          evidence_fingerprint: taskCentricDigest("replacement baseline"),
++        },
++      },
++      {
++        ...qualification,
++        validation: {
++          ...qualification.validation,
++          checks: qualification.validation.checks.map((check) => ({
++            ...check,
++            command: "agentplane task lint",
++          })),
++          evidence_fingerprint: taskCentricDigest("replacement baseline"),
++        },
++      },
+     ]);
+     const workItems = reconcileReplacementPlanWorkItems({
+       task: completed,
+       proposal: replacementProposal,
+     });
+ 
+-    expect(workItems.done).toBe(completed.work_items.done);
+-    expect(workItems.changed).toMatchObject({
++    expect(workItems.implementation).toBe(completed.work_items.implementation);
++    expect(workItems.implementation?.validation_result).toBe(implementationValidationResult);
++    expect(workItems.qualification).toMatchObject({
+       state: "PLANNED",
+       revision: 1,
+       attempt: 0,
+@@ -388,12 +438,113 @@ describe("task-centric domain", () => {
+     });
+     const materialized = materializeApprovedWorkItems({ task: pending, plan: approved, now: NOW });
+ 
+-    expect(materialized.work_items.done).toBe(completed.work_items.done);
+-    expect(materialized.work_items.changed?.state).toBe("READY");
++    expect(materialized.work_items.implementation).toBe(completed.work_items.implementation);
++    expect(materialized.work_items.qualification?.state).toBe("READY");
+     expect(materialized.current_plan).toBe(approved);
+     expect(materialized.lifecycle).toBe("ACTIVE");
+   });
+ 
++  it.each([
++    ["objective", (value: WorkItem) => ({ ...value, objective: "Changed objective" })],
++    ["dependency", (value: WorkItem) => ({ ...value, depends_on: ["other"] })],
++    ["required input", (value: WorkItem) => ({ ...value, required_inputs: ["other-output"] })],
++    ["expected output", (value: WorkItem) => ({ ...value, expected_outputs: ["other-output"] })],
++    ["scope", (value: WorkItem) => ({ ...value, scope_roots: ["packages/other"] })],
++    [
++      "acceptance",
++      (value: WorkItem) => ({
++        ...value,
++        acceptance_criteria: [
++          { ...value.acceptance_criteria[0]!, description: "Changed acceptance" },
++        ],
++      }),
++    ],
++    [
++      "validation criterion",
++      (value: WorkItem) => ({
++        ...value,
++        validation: {
++          ...value.validation,
++          criteria: [{ ...value.validation.criteria[0]!, description: "Changed criterion" }],
++        },
++      }),
++    ],
++    [
++      "validation command",
++      (value: WorkItem) => ({
++        ...value,
++        validation: {
++          ...value.validation,
++          checks: value.validation.checks.map((check) => ({ ...check, command: "changed" })),
++        },
++      }),
++    ],
++    [
++      "context",
++      (value: WorkItem) => ({
++        ...value,
++        context: { ...value.context, required_sources: ["changed"] },
++      }),
++    ],
++    ["risk", (value: WorkItem) => ({ ...value, risk: "high" as const })],
++    ["capability", (value: WorkItem) => ({ ...value, capabilities: ["changed"] })],
++    [
++      "resource claim",
++      (value: WorkItem) => ({
++        ...value,
++        resource_claims: [{ kind: "path" as const, resource: "changed", mode: "write" as const }],
++      }),
++    ],
++    ["optionality", (value: WorkItem) => ({ ...value, optional: true })],
++    ["priority", (value: WorkItem) => ({ ...value, priority: value.priority + 1 })],
++  ] satisfies readonly (readonly [string, (value: WorkItem) => WorkItem])[])(
++    "resets runtime when the replacement changes %s",
++    (_field, mutate) => {
++      const definition = item({ id: "candidate" });
++      const original = approvedTask([definition]);
++      const completed: TaskAggregate = {
++        ...original,
++        work_items: {
++          candidate: {
++            ...original.work_items.candidate!,
++            state: "COMPLETED",
++            revision: 8,
++            attempt: 4,
++            output_manifests: [manifest({ id: "out-candidate", work_item_id: "candidate" })],
++          },
++        },
++      };
++
++      expect(
++        reconcileReplacementPlanWorkItems({
++          task: completed,
++          proposal: proposal([mutate(definition)]),
++        }).candidate,
++      ).toEqual({
++        id: "candidate",
++        state: "PLANNED",
++        revision: 1,
++        attempt: 0,
++        claim_id: null,
++        output_manifests: [],
++        validation_result: null,
++        last_failure: null,
++      });
++    },
++  );
++
++  it("resets runtime when the replacement changes WorkItem identity", () => {
++    const definition = item({ id: "candidate" });
++    const original = approvedTask([definition]);
++
++    expect(
++      reconcileReplacementPlanWorkItems({
++        task: original,
++        proposal: proposal([{ ...definition, id: "replacement" }]),
++      }).replacement,
++    ).toMatchObject({ id: "replacement", state: "PLANNED", attempt: 0 });
++  });
++
+   it.each(["scope", "acceptance"] as const)(
+     "rejects reapproval after persisted %s changes with a stale digest",
+     (field) => {
