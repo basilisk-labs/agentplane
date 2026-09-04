@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -98,10 +98,14 @@ execution_contract:
       - "packages/core/src/tasks/task-centric"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/core"
+    changed_paths:
+      - "packages/core/src/tasks/task-centric/task-centric.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -149,9 +153,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:14745bfb0d4b228be2a646c185c62b52485f7dd7aafc0e6972ba276fcfbdc3cc"
+      digest: "sha256:16f05251c6a745805c4b6e5650f59e1199a3f038377e24bab5fff4dba7854c96"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-centric"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -160,10 +165,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/core"
+        changed_files:
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -199,7 +208,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "96d33c4f65615af65f1b6930453782ab9edefa9a"
+  message: "🚧 F31YXS task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -261,6 +272,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 96d33c4f6561. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -420,9 +434,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-04T13:26:00.470Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 96d33c4f6561. CLI accepted one state-bound external-agent semantic result."
+    commit: "96d33c4f65615af65f1b6930453782ab9edefa9a"
 doc_version: 3
-doc_updated_at: "2026-09-04T13:24:54.596Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-04T13:26:00.470Z"
+doc_updated_by: "SUPERVISOR"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
   Summary: |-
@@ -1142,7 +1164,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 29
+    event_cursor: 30
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -2673,19 +2695,154 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 54
+    revision: 57
     schema_version: 1
-    updated_at: "2026-09-04T13:24:54.596Z"
+    updated_at: "2026-09-04T13:35:13.326Z"
     work_items:
       recover-reset-workitem-projection:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-reset-workitem-projection"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:2ae6963441ec203ad8a661c9c40eaf46b809e5e2f3ec808522b282af188850d8"
+            id: "deterministically-recovered-workitem-projection"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609032308-F31YXS"
+              work_item_id: "recover-reset-workitem-projection"
+            provenance:
+              - "sha256:d78c328fa705a3fc038c8d9702d7d3866a9af2766ae3f076fe95e6c331b508da"
+              - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:cfe30d82ae24da4c6f90c09a5f079bc7575b09fd37fece300bf794ed9ab4944f"
+            id: "verified-f31yxs-recovery-branch"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 5
+              task_id: "202609032308-F31YXS"
+              work_item_id: "recover-reset-workitem-projection"
+            provenance:
+              - "sha256:d78c328fa705a3fc038c8d9702d7d3866a9af2766ae3f076fe95e6c331b508da"
+              - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "projection-recovery-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "recovery-focused"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "format-touched"
+              command_identity: "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task"
+              detail: "Observed by bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "lint-core"
+              command_identity: "bun run lint:core"
+              detail: "Observed by bun run lint:core."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "routing"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "task-lint"
+              command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+              detail: "Observed by node packages/agentplane/bin/agentplane.js task lint."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "doctor"
+              command_identity: "agentplane doctor"
+              detail: "Observed by agentplane doctor."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "diff-check"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-04T13:35:13.280Z"
+              repository_snapshot_digest: "sha256:887096095e598be70c4c2da5e550e8132687ea2eea03593cc315e3534ea60516"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2888,6 +3045,22 @@ extensions:
         task_id: "202609032308-F31YXS"
         task_revision: 50
         work_item_id: null
+      -
+        at: "2026-09-04T13:35:13.326Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_215d6c002d43de207c3ce32e"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-138004332a78d0f0c4c6d7c3"
+        plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+        task_revision: 56
+        work_item_id: "recover-reset-workitem-projection"
     leases: []
     mutation_receipts:
       compatibility:sha256:006e22756bc5a08db92bf228206a39cfd6b663d86af760e684ce7fc2a34a132a:
@@ -3226,6 +3399,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      compatibility:sha256:6a7aec61d5eefadfcdad30ee4cf460752986e982be5f30ce44b7eee303d88eed:
+        aggregate_digest: "sha256:cf01c602fd57b9766f4995ad3bdf0ee4166a7273144a768162f0f16df69a64cd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:26:00.470Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8e9401ccc173587f62ce2688"
+          mutation_id: "compatibility:sha256:6a7aec61d5eefadfcdad30ee4cf460752986e982be5f30ce44b7eee303d88eed"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 54
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6a7aec61d5eefadfcdad30ee4cf460752986e982be5f30ce44b7eee303d88eed"
+        next_revision: 55
+        previous_revision: 54
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       compatibility:sha256:70aed2acbeb0ba97faddf7423207f4ebf08bae224f37f0d7e35cb9de561e291f:
         aggregate_digest: "sha256:d07e4a0cf69e9542be0d6ebac42c210862e085bc6252b44912cda11cb80dd342"
         event:
@@ -3488,6 +3685,29 @@ extensions:
         mutation_id: "compatibility:sha256:fba84d820cfa23ffa67e0958fdffd530dc0cf912fcef25b490f9357da4f77952"
         next_revision: 26
         previous_revision: 25
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      external-result:work-order-202609032308-F31YXS-executor-138004332a78d0f0c4c6d7c3:
+        aggregate_digest: "sha256:53506b10bc7b9bde1a55cf9a9d43339bcb13444dc43af28b1f01784b018297ad"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:35:13.326Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_215d6c002d43de207c3ce32e"
+          mutation_id: "external-result:work-order-202609032308-F31YXS-executor-138004332a78d0f0c4c6d7c3"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 56
+          to: "COMPLETED"
+          work_item_id: "recover-reset-workitem-projection"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-138004332a78d0f0c4c6d7c3"
+        next_revision: 57
+        previous_revision: 56
         schema_version: 1
         task_id: "202609032308-F31YXS"
       external-result:work-order-202609032308-F31YXS-executor-3170b3906c5beb8b72bfce77:
@@ -3777,7 +3997,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "156e922cdf5d86e617301cd4aac727a11c920b1b"
+    hash: "96d33c4f65615af65f1b6930453782ab9edefa9a"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
