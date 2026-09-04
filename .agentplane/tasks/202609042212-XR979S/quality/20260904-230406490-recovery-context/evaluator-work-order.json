@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609042212-XR979S-ac14a474c550f365b63cdebe",
+  "prepared_at": "2026-09-04T23:04:06.490Z",
+  "task": {
+    "id": "202609042212-XR979S",
+    "revision": 15,
+    "objective": "Repair pre-merge DONE task rework blocker persistence and resume ZVX69C\n\nBlocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion.",
+    "acceptance_criteria": [
+      "- In scope: Blocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion.\n- Out of scope: unrelated refactors not required for \"Repair pre-merge DONE task rework blocker persistence and resume ZVX69C\".",
+      "Repair only the pre-merge DONE hosted-rework blocker persistence contract, then return to 202609041801-ZVX69C. Reproduce before editing; implement at the existing lifecycle owner; test replay, interruption, stale input, and integrated-task rejection. AgentPlane owns integration and cleanup.\n\nVerify Steps:\n1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n2. Run `bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts --maxWorkers=1`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n3. Run `bun run format:check`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n4. Run `bun run lint:core`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n5. Run `bun run typecheck`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n8. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n9. Run `git diff --check`. Expected: the scoped recovery checks pass; doctor reports zero errors.\n10. Run `bun run ci:local:full`. Expected: the scoped recovery checks pass; doctor reports zero errors.",
+      "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n2. Run `bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts --maxWorkers=1`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n3. Run `bun run format:check`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n4. Run `bun run lint:core`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n5. Run `bun run typecheck`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n8. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n9. Run `git diff --check`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n10. Run `bun run ci:local:full`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors."
+    ]
+  },
+  "evaluated_sha": "3aef026c8582adde9d928c38dd17befbe9b7cdeb",
+  "diff_base_sha": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+  "blueprint_digest": "49bc416178e307ea155982a530a34878eea9d6ce6488dc7df92d6fb796fa3ffc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609042212-XR979S/quality/20260904-230406490-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5a42ac827c481bf8afd257bfd1ce368369ee2d5cf497926d595830d5be0a471b",
+    "prompt_path": ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/13e2ca3d1f282e98f34768f051b7f30d21886a7a5dce9d18f22e80e1be6c8e57.md",
+    "result_schema_path": ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609042212-XR979S/README.md",
+      "sha256": "sha256:64e93256c17b367f91a4ca7e442801e02c5ec2b21d83d4a238a2ad5eed20c0d3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/6227a95a92d6bfdd9195b4d852976ddbaa6fea5154e49d8ae949837eeac9698f.patch",
+      "sha256": "sha256:6227a95a92d6bfdd9195b4d852976ddbaa6fea5154e49d8ae949837eeac9698f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/58e254b8d0888cb4486df6b8f71101d87a1781e1cd37d303e0fb470b91ccf4f9.json",
+      "sha256": "sha256:58e254b8d0888cb4486df6b8f71101d87a1781e1cd37d303e0fb470b91ccf4f9",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609042212-XR979S/verification/20260904230359940-04ba9791f9356d93.json",
+      "sha256": "sha256:5b15a22ac16488e074a9c2198978b3e1513e38e84c7ffb31b057f14e34eebf6e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/df2e137084e64a772f4f5715fbdf50524454ee9c40f3bf4d4c0abe60650a9b37.json",
+      "sha256": "sha256:df2e137084e64a772f4f5715fbdf50524454ee9c40f3bf4d4c0abe60650a9b37",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -4,7 +4,7 @@ title: "Repair pre-merge DONE task rework blocker persistence and resume ZVX69C"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-04T23:06:32.859Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+  blueprint_digest: "49bc416178e307ea155982a530a34878eea9d6ce6488dc7df92d6fb796fa3ffc"
+  evidence_refs:
+    - ".agentplane/tasks/202609042212-XR979S/quality/20260904-230406490-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609042212-XR979S/quality/20260904-230406490-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/13e2ca3d1f282e98f34768f051b7f30d21886a7a5dce9d18f22e80e1be6c8e57.md"
+    - ".agentplane/tasks/202609042212-XR979S/quality/20260904-230406490-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609042212-XR979S/quality/20260904-230406490-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609042212-XR979S/quality/20260904-230406490-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609042212-XR979S/README.md"
+    - ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/6227a95a92d6bfdd9195b4d852976ddbaa6fea5154e49d8ae949837eeac9698f.patch"
+    - ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/58e254b8d0888cb4486df6b8f71101d87a1781e1cd37d303e0fb470b91ccf4f9.json"
+    - ".agentplane/tasks/202609042212-XR979S/verification/20260904230359940-04ba9791f9356d93.json"
+    - ".agentplane/tasks/202609042212-XR979S/quality/objects/sha256/df2e137084e64a772f4f5715fbdf50524454ee9c40f3bf4d4c0abe60650a9b37.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The reviewed diff reuses the established implementation-rework reopen predicate only after accepted exchange handling. It preserves replay receipts and guards ordinary DONE transitions. Canonical block/resume lifecycle and legacy status now share one patch. The canonical pre-merge regression, existing interruption/replay tests, negative status tests, and recorded full verification cover the bounded change."
+    - "Residual risk: Hosted integration and the real suspended ZVX69C replay remain subsequent supervisor-owned lifecycle steps. This review does not claim they have completed."
+    - "Residual risk: The unrelated Factory clean-checkout verification ordering report is not addressed by this bounded repair."
 execution_route:
   frozen: true
   reason_codes:
@@ -649,7 +677,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609042212-XR979S"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609042212-XR979S"
     intent:
@@ -664,9 +692,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-04T23:04:00.940Z"
+    updated_at: "2026-09-04T23:04:00.963Z"
     work_items:
       repair-pre-merge-blocker-replay:
         attempt: 3
@@ -887,6 +915,30 @@ extensions:
         mutation_id: "compatibility:sha256:0c7f2fb118a1a74224b598b2803a10e4899756ebd64a49de2a08898f79e6b893"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609042212-XR979S"
+      compatibility:sha256:2e1c399699a3508eb204662cec8cca34544cdc867270524bb31b529c62e22da6:
+        aggregate_digest: "sha256:976f05c9a56a812815f89fc39bd1b300caf0ea82c09b86df96b2bf3f4579b9e8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T23:04:00.963Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9a1e008191b5d477c0101dd1"
+          mutation_id: "compatibility:sha256:2e1c399699a3508eb204662cec8cca34544cdc867270524bb31b529c62e22da6"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2e1c399699a3508eb204662cec8cca34544cdc867270524bb31b529c62e22da6"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609042212-XR979S"
       compatibility:sha256:3425056ca1f9e3b241b70f583c141d9c01ad8c7dd1ba87b098f2dbc42f5cc198:
