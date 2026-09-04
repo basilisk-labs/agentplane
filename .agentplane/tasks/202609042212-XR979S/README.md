@@ -1,10 +1,11 @@
 ---
 id: "202609042212-XR979S"
 title: "Repair pre-merge DONE task rework blocker persistence and resume ZVX69C"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
     - "The reviewed diff reuses the established implementation-rework reopen predicate only after accepted exchange handling. It preserves replay receipts and guards ordinary DONE transitions. Canonical block/resume lifecycle and legacy status now share one patch. The canonical pre-merge regression, existing interruption/replay tests, negative status tests, and recorded full verification cover the bounded change."
     - "Residual risk: Hosted integration and the real suspended ZVX69C replay remain subsequent supervisor-owned lifecycle steps. This review does not claim they have completed."
     - "Residual risk: The unrelated Factory clean-checkout verification ordering report is not addressed by this bounded repair."
+token_usage:
+  agent_runs: 5
+  input_tokens: null
+  journal_digest: "sha256:1c7111246c156a8e3693b566a7b11f31092f4aa85a26e77d77bb4b1517f88a59"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-04T23:06:37.186Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -224,8 +239,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3aef026c8582adde9d928c38dd17befbe9b7cdeb"
-  message: "🚧 XR979S task: apply external agent result"
+  hash: "51528e2c24f99ee95528fc3806f28bf226812815"
+  message: "🚧 XR979S task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -239,6 +254,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3aef026c8582. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -277,9 +295,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-04T23:06:37.186Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "51528e2c24f99ee95528fc3806f28bf226812815"
 doc_version: 3
-doc_updated_at: "2026-09-04T23:04:00.963Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-04T23:06:37.186Z"
+doc_updated_by: "CODER"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion."
 sections:
   Summary: |-
@@ -678,7 +704,122 @@ extensions:
       schema_version: 1
       task_id: "202609042212-XR979S"
     event_cursor: 10
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-1"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-2"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-3"
+          command_identity: "bun run format:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-4"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-5"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-6"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-7"
+          command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-8"
+          command_identity: "node packages/agentplane/bin/agentplane.js doctor"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-9"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          check_id: "check-10"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T23:03:59.940Z"
+          repository_snapshot_digest: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609042212-XR979S"
     intent:
       acceptance_criteria: []
@@ -689,12 +830,12 @@ extensions:
 
         Blocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion.
       task_id: "202609042212-XR979S"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-04T23:04:00.963Z"
+    updated_at: "2026-09-04T23:06:37.186Z"
     work_items:
       repair-pre-merge-blocker-replay:
         attempt: 3
@@ -1202,11 +1343,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609042212-XR979S"
+      legacy-finish:202609042212-XR979S:2026-09-04T23:03:59.940Z:3aef026c8582adde9d928c38dd17befbe9b7cdeb:
+        aggregate_digest: "sha256:9c3b2460085cc55f9a029132c50546286769df1443ba4f45b435acf63032032d"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-04T23:06:37.186Z"
+          cause_refs:
+            - "task-verification:202609042212-XR979S"
+            - "git:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_560552ee9c26971c0366bd7b"
+          mutation_id: "legacy-finish:202609042212-XR979S:2026-09-04T23:03:59.940Z:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: "sha256:6da911b37ba2fc7b995364eee26044f5a082d414a6d1e19acf45941eee66c8b9"
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609042212-XR979S:2026-09-04T23:03:59.940Z:3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609042212-XR979S"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+    message: "🚧 XR979S task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
@@ -1322,3 +1489,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/5` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:1c7111246c156a8e3693b566a7b11f31092f4aa85a26e77d77bb4b1517f88a59`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-04T23:06:37.186Z`
