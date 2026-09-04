@@ -6,7 +6,7 @@ Created: 2026-09-04T14:58:00.815Z
 
 - Task: `202609041447-YHERVV`
 - Title: Unblock verification recovery before provider conflict handling
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609041447-YHERVV/unblock-verification-recovery-before-provider-co`
 - Canonical task record: `.agentplane/tasks/202609041447-YHERVV/README.md`
 
