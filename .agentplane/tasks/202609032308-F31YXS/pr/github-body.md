@@ -30,6 +30,7 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
  .../task-centric-backend-projection.ts             |  13 +-
  ...n-cli.core.task-advance.evidence-rework.test.ts |  18 +-
  .../src/commands/shared/task-mutation.test.ts      | 143 ++++++++++
+ .../commands/task/direct-task-supervisor.test.ts   |  13 +-
  .../commands/task/direct-task-verification.test.ts |   8 +
  .../src/commands/task/direct-task-verification.ts  |   4 +-
  .../task/external-agent-implementation-recovery.ts |  18 +-
@@ -41,7 +42,7 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
  packages/core/src/tasks/task-centric/graph.ts      | 104 ++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
  .../task-centric/replacement-plan-recovery.test.ts | 316 +++++++++++++++++++++
- 14 files changed, 825 insertions(+), 118 deletions(-)
+ 15 files changed, 836 insertions(+), 120 deletions(-)
 ```
 
 </details>

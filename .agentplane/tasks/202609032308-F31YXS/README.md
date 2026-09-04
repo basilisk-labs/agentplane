@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 64
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-04T14:06:33.147Z"
+  updated_at: "2026-09-04T16:47:16.349Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -83,6 +83,26 @@ execution_route:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
     - "effect_external_write"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/README.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/blueprint/resolved-snapshot.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/diffstat.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/github-body.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/github-title.txt"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/meta.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/review.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-evidence-manifest.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-opinion.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-result.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-work-order.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/quality-report.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/20eab60d01460e3a3a224745ce45db18f60b4781d17f67772c55363af3526e6b.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/2a2ae3e476274e564b9b0fc110577f3f85995d5f0b9c08230aadbd3810d9c0de.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/9936542cb8176b3ad6a81c7a333887eff082b449377bf0953b6c2c0d050b8bae.md"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/d0c2bd9298b765f8809b5b5b705eb6198d5863bc51f0dc6ba0e4a9d423bd37bf.patch"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/supervision/implementation-evidence.json"
+    - "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/verification/20260904105220448-01cf8b041fe7e9a1.json"
     - "repository_branch_pr_floor"
     - "reversibility_recovery_required"
   repository_mode: "branch_pr"
@@ -197,11 +217,14 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record.ts"
       - "packages/agentplane/src/commands/task/verify-record.types.ts"
       - "packages/core/src/tasks/task-centric/graph.ts"
       - "packages/core/src/tasks/task-centric/index.ts"
+      - "packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts"
       - "packages/core/src/tasks/task-centric/task-centric.test.ts"
     external_effects: []
     repository_effects:
@@ -340,13 +363,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:9a21d3a2bca63c3f6b93f8982d99faac412236f71689bb72d2ec31f2b82ff305"
+      digest: "sha256:37e287a839ee1bd4b823132dcf37d19802ca35680f05c7acfe881ff688ad2025"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-centric"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts"
         - "central_path:packages/core/src/tasks/task-centric/graph.ts"
         - "central_path:packages/core/src/tasks/task-centric/index.ts"
+        - "central_path:packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts"
         - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -403,11 +427,14 @@ execution_contract:
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+          - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+          - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/commands/task/verify-record.ts"
           - "packages/agentplane/src/commands/task/verify-record.types.ts"
           - "packages/core/src/tasks/task-centric/graph.ts"
           - "packages/core/src/tasks/task-centric/index.ts"
+          - "packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts"
           - "packages/core/src/tasks/task-centric/task-centric.test.ts"
         external_effects: []
         repository_effects:
@@ -521,6 +548,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 2dc4119723a1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -708,9 +738,23 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-04T16:39:44.374Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 2dc4119723a1. CLI accepted one state-bound external-agent semantic result."
+    commit: "2dc4119723a15e72b7ac237660686f0f12d4c650"
+  -
+    type: "verify"
+    at: "2026-09-04T16:47:16.349Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-04T14:06:37.161Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-04T16:47:17.326Z"
+doc_updated_by: "SUPERVISOR"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
   Summary: |-
@@ -1300,6 +1344,41 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-04T16:47:16.349Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3, input_digest=sha256:0b9740a6a2760b68eede8c2aeab427a4e3caad0af1f78bcb69dbc0cc15ebfe1c
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609032308-F31YXS declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/.agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json
+    - old_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+    - current_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609032308-F31YXS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609032308-F31YXS
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1621,7 +1700,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 33
+    event_cursor: 36
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -3152,9 +3231,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 61
+    revision: 64
     schema_version: 1
-    updated_at: "2026-09-04T14:06:37.137Z"
+    updated_at: "2026-09-04T16:47:17.305Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 1
@@ -3832,6 +3911,30 @@ extensions:
         previous_revision: 28
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      compatibility:sha256:5d3a9fbd3db3c56241fd409de0061e6e46d6937ac913d642538fb306c0e6b75e:
+        aggregate_digest: "sha256:4814bb388175df1180e58154ba15e4f755a71f80fbd61110f03eab6e6a77e36c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T16:47:17.305Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9115f213ef311461fa43581d"
+          mutation_id: "compatibility:sha256:5d3a9fbd3db3c56241fd409de0061e6e46d6937ac913d642538fb306c0e6b75e"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 63
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5d3a9fbd3db3c56241fd409de0061e6e46d6937ac913d642538fb306c0e6b75e"
+        next_revision: 64
+        previous_revision: 63
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       compatibility:sha256:5d3d8468be8f244869f5bbfa0c0091145c68486d4ccaea2cd3a8beec31e3a43f:
         aggregate_digest: "sha256:82ace684b7379573230280f547dab7aed93bbfeacfa0f1db1d53544d6c5d3c30"
         event:
@@ -3878,6 +3981,30 @@ extensions:
         mutation_id: "compatibility:sha256:60ede2ebcb43e1b3076b769a5cc8d1b1fd689eb8b0977efa5c084fb8db9619c8"
         next_revision: 35
         previous_revision: 34
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:6490c5f5fd223c7da4a84845223b44dc0abbbed68862f01b10688a6cf2dd02b6:
+        aggregate_digest: "sha256:4393598d3ee665d84dc9888566d7a27bb3503754adb11b84748ac111b843f72b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T16:39:44.431Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f4c842d3b6403444272cb4c9"
+          mutation_id: "compatibility:sha256:6490c5f5fd223c7da4a84845223b44dc0abbbed68862f01b10688a6cf2dd02b6"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 62
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6490c5f5fd223c7da4a84845223b44dc0abbbed68862f01b10688a6cf2dd02b6"
+        next_revision: 63
+        previous_revision: 62
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:689d5533634185727dfad2853eea578499448c4f203f29e612181e7e05d6c04c:
@@ -4190,6 +4317,30 @@ extensions:
         mutation_id: "compatibility:sha256:e6541bb59624c7bc63207191c366bc21762ab06ef77a9fa064b794f724cdc4f1"
         next_revision: 46
         previous_revision: 45
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:f92e257116f1f54cc06071cd80930b088087c624776c1beeff2b805ce6f548dd:
+        aggregate_digest: "sha256:0ac947250e99944a93d0020c667cbf89010b17bc3e9288d1689e92f126097c7f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T16:39:44.374Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9df4ba06a0bfc79b6273c01a"
+          mutation_id: "compatibility:sha256:f92e257116f1f54cc06071cd80930b088087c624776c1beeff2b805ce6f548dd"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 61
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f92e257116f1f54cc06071cd80930b088087c624776c1beeff2b805ce6f548dd"
+        next_revision: 62
+        previous_revision: 61
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:fba84d820cfa23ffa67e0958fdffd530dc0cf912fcef25b490f9357da4f77952:
@@ -5151,6 +5302,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-04T16:47:16.349Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3, input_digest=sha256:0b9740a6a2760b68eede8c2aeab427a4e3caad0af1f78bcb69dbc0cc15ebfe1c
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609032308-F31YXS declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/.agentplane/tasks/202609032308-F31YXS/blueprint/resolved-snapshot.json
+- old_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+- current_digest: c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609032308-F31YXS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609032308-F31YXS
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
