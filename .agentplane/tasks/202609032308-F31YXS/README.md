@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 70
+revision: 71
 origin:
   system: "manual"
 depends_on: []
@@ -36,33 +36,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-04T16:59:59.377Z"
+  updated_at: "2026-09-04T17:28:13.056Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "cdf1a08eb6011b9ff01d6c2d13bd7ff47a9c3683"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "219141c1aece07e2dc0ce7a5fea562df572a9e89"
   blueprint_digest: "c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49"
   evidence_refs:
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/5fb675074bf51cc3a9e8fab70cd3c1e3a0251835397d656545b58e9842dd42b4.md"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-165802506-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-172652777-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-172652777-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/500810a79faa15035f90804fc356115504f671a92c1a060d178e1ea0fd438ee6.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-172652777-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-172652777-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-172652777-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609032308-F31YXS/README.md"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/add268f8c5d61c47bd2d7879c585f5e01fcb7ea3f68abc41ef06e7c0fd6618c9.patch"
-    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/65c8bf2525832fb18a6405ac39bd84d05efb1410952a0743ee68881d9b4b2586.json"
-    - ".agentplane/tasks/202609032308-F31YXS/verification/20260904165755270-8ef16bad7c3d7645.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/93a3a592cce46e8a128a39eaf26beefbe5c6e0d5600682622fd99611645dae17.patch"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/f775b65670d402d857d7551990450b61eabd9414dce9aeccf55f7bd9cd793ac5.json"
+    - ".agentplane/tasks/202609032308-F31YXS/verification/20260904172635379-73914474763f769a.json"
     - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/1e4fbeb6d96a35267051d27bebfa2db480b66fefa273d47f8371dc6d290aaf1b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The added observation path reads the current task inside applyTaskMutation and updates implementation identity, execution contract, route, legacy revision, and canonical aggregate in one persistence operation."
-    - "The test harness changes model the real backend routing contract and add direct revision-alignment coverage."
-    - "The complete declared verification set is recorded as passing at the current clean implementation head."
-    - "The GitLab reused-branch lookup defect reported by another task remains outside this task's explicit provider-neutral exclusion and does not affect this verdict."
-    - "Residual risk: Historical task-artifact volume remains large but is supervisor-owned and does not change the scoped product behavior."
+    - "The frozen diff and current verification record show one observed verification contract carried through execution and persistence, including docs_contract, without the prior post-execution strengthening failure."
+    - "The frozen diff includes focused regressions for atomic canonical projection mutation and for routing local verification recovery ahead of route-ineligible conflict rework."
+    - "All five declared checks passed at evaluated SHA 219141c1aece07e2dc0ce7a5fea562df572a9e89, including focused tests, lint, typecheck, routing validation, and the complete local CI gate."
 token_usage:
   agent_runs: 34
   input_tokens: null
@@ -908,7 +906,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-04T17:26:39.724Z"
+doc_updated_at: "2026-09-04T17:28:13.108Z"
 doc_updated_by: "CODER"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -2227,7 +2225,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 41
+    event_cursor: 42
     final_validation:
       evidence:
         -
@@ -3873,9 +3871,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 70
+    revision: 71
     schema_version: 1
-    updated_at: "2026-09-04T17:26:39.697Z"
+    updated_at: "2026-09-04T17:26:39.724Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 1
@@ -4287,6 +4285,30 @@ extensions:
         mutation_id: "compatibility:sha256:0344d8ebd85653a38e47fae95f103a93f4165417cb20653cd4d550e7969fa0fd"
         next_revision: 41
         previous_revision: 40
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:0c8d73395af771fc8beb9dd11677c90eba11f40726eb6c3a2f2d79ab2e5d86d1:
+        aggregate_digest: "sha256:a8157aed43c5e2606684540309f408b30654d666fc615f00a0a4121615ae4082"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T17:26:39.724Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_3a9aa0e1b1242186f2093c2d"
+          mutation_id: "compatibility:sha256:0c8d73395af771fc8beb9dd11677c90eba11f40726eb6c3a2f2d79ab2e5d86d1"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 70
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0c8d73395af771fc8beb9dd11677c90eba11f40726eb6c3a2f2d79ab2e5d86d1"
+        next_revision: 71
+        previous_revision: 70
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:1af9898c022a2947eb8253392c89eb86a711d575e6686f90583bc482e03dc055:

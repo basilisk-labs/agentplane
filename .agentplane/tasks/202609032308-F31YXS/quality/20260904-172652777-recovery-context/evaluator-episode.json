@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202609032308-F31YXS-458ad069f967f10c25c2cc7a",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/.agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-09-04T17:26:53.214Z",
+  "ended_at": "2026-09-04T17:28:12.621Z",
+  "stdout_bytes": 138628,
+  "stderr_bytes": 536,
+  "provider_usage": {
+    "input_tokens": 253622,
+    "output_tokens": 3150,
+    "total_tokens": 256772,
+    "visible_output_tokens": 2819,
+    "reasoning_tokens": 331
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:dfb3b142664e090d759dc477d6831d491e0de71e08951b3465ecb98645bdd4a7"
+}
