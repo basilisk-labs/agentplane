@@ -15,14 +15,14 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-03T23:29:34.750Z
+- Updated: 2026-09-04T11:42:46.433Z
 - Branch: task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
