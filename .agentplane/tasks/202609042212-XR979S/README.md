@@ -4,7 +4,7 @@ title: "Repair pre-merge DONE task rework blocker persistence and resume ZVX69C"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -189,6 +189,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4cc764f7f53c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6b68e9bbfa4a. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -205,8 +208,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 4cc764f7f53c. CLI accepted one state-bound external-agent semantic result."
     commit: "4cc764f7f53ce701f7faaa5f6b795ef94ba40353"
+  -
+    type: "status"
+    at: "2026-09-04T22:35:17.301Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6b68e9bbfa4a. CLI accepted one state-bound external-agent semantic result."
+    commit: "6b68e9bbfa4a2ecf936890f19699f5dedfa4120a"
 doc_version: 3
-doc_updated_at: "2026-09-04T22:32:18.061Z"
+doc_updated_at: "2026-09-04T22:35:17.301Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion."
 sections:
@@ -551,7 +562,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609042212-XR979S"
-    event_cursor: 4
+    event_cursor: 6
     final_validation: null
     id: "202609042212-XR979S"
     intent:
@@ -566,12 +577,12 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-04T22:33:53.622Z"
+    updated_at: "2026-09-04T22:44:16.024Z"
     work_items:
       repair-pre-merge-blocker-replay:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "repair-pre-merge-blocker-replay"
         last_failure:
@@ -579,40 +590,40 @@ extensions:
             - "recovery"
           code: "validation_failed"
           kind: "validation"
-          message: "Repair accepted pre-merge DONE rework blocker persistence and canonical block/resume projection consistency using existing transition primitives."
+          message: "Correct the three lint violations in the new canonical pre-merge blocker regression without changing its behavior."
           retryable: true
         output_manifests:
           -
-            digest: "sha256:76f5c97b72f7c805aafb40cb5dbae86528e87a87e33767668ec0e64b93b971c7"
+            digest: "sha256:939872ad424dda6ecfbac016e51099bf3f7f92d28f8aae396cbcc0c49f4215f4"
             id: "pre-merge-blocker-recovery"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 1
               task_id: "202609042212-XR979S"
               work_item_id: "repair-pre-merge-blocker-replay"
             provenance:
-              - "sha256:13f0db7c365eb24d0f37e62e9a3a1281f5faafe30fc2a280ceb9d57fec2d433b"
+              - "sha256:e544d26a635311502a273713a9a6d0fba6d956ef8fbd92479d5e26c8599be200"
               - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+            repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:183fbb966c7415db7aa7ad16766675e5f0571059eba8c3dabdca12d62549c989"
+            digest: "sha256:f0b553a2c6df3f3e69dde41aa9a6018771d51a8cff1757c2a09dba51b059a741"
             id: "replay-and-terminal-protection-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 1
               task_id: "202609042212-XR979S"
               work_item_id: "repair-pre-merge-blocker-replay"
             provenance:
-              - "sha256:13f0db7c365eb24d0f37e62e9a3a1281f5faafe30fc2a280ceb9d57fec2d433b"
+              - "sha256:e544d26a635311502a273713a9a6d0fba6d956ef8fbd92479d5e26c8599be200"
               - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+            repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
+        revision: 3
         state: "REWORK_READY"
         validation_result:
           evidence:
@@ -621,104 +632,104 @@ extensions:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-1"
               command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
-              detail: "Declared check failed: bun run lint:core"
+              detail: "Declared check failed: bun run ci:local:full"
               exit_code: 0
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-2"
               command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts --maxWorkers=1"
-              detail: "Declared check failed: bun run lint:core"
+              detail: "Declared check failed: bun run ci:local:full"
               exit_code: 0
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-3"
               command_identity: "bun run format:check"
-              detail: "Declared check failed: bun run lint:core"
+              detail: "Declared check failed: bun run ci:local:full"
               exit_code: 0
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-4"
               command_identity: "bun run lint:core"
-              detail: "Declared check failed: bun run lint:core"
-              exit_code: 1
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "failed"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-5"
               command_identity: "bun run typecheck"
-              detail: "Declared validation command bun run typecheck was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "unsupported"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-6"
               command_identity: "node .agentplane/policy/check-routing.mjs"
-              detail: "Declared validation command node .agentplane/policy/check-routing.mjs was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "unsupported"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-7"
               command_identity: "node packages/agentplane/bin/agentplane.js task lint"
-              detail: "Declared validation command node packages/agentplane/bin/agentplane.js task lint was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "unsupported"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-8"
               command_identity: "node packages/agentplane/bin/agentplane.js doctor"
-              detail: "Declared validation command node packages/agentplane/bin/agentplane.js doctor was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "unsupported"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-9"
               command_identity: "git diff --check"
-              detail: "Declared validation command git diff --check was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "unsupported"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
               check_id: "check-10"
               command_identity: "bun run ci:local:full"
-              detail: "Declared validation command bun run ci:local:full was not observed by AgentPlane."
-              exit_code: null
-              observed_at: "2026-09-04T22:33:53.616Z"
-              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
-              status: "unsupported"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-04T22:44:16.015Z"
+              repository_snapshot_digest: "sha256:2ed68149ad3e4eedecd4dec66a0300b6de28788dd61ad1ccc423396212228f9d"
+              status: "failed"
           schema_version: 1
           stale_evidence: []
-          status: "blocked"
+          status: "failed"
           unsatisfied_criteria:
             - "recovery"
   agentplane.task_centric_runtime:
@@ -740,8 +751,72 @@ extensions:
         task_id: "202609042212-XR979S"
         task_revision: 7
         work_item_id: "repair-pre-merge-blocker-replay"
+      -
+        at: "2026-09-04T22:44:16.024Z"
+        from: "REWORK_READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_6aa585cf578ca69ab653dc40"
+        mutation_id: "external-result:work-order-202609042212-XR979S-executor-537a31351559069c3438d1c3"
+        plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042212-XR979S"
+        task_revision: 10
+        work_item_id: "repair-pre-merge-blocker-replay"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0c7f2fb118a1a74224b598b2803a10e4899756ebd64a49de2a08898f79e6b893:
+        aggregate_digest: "sha256:574e56d705d8f0136ca471ed3200a66361be408e23002240fe8c2207474787bf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T22:35:17.301Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_de50dd215162b5d65bb34d83"
+          mutation_id: "compatibility:sha256:0c7f2fb118a1a74224b598b2803a10e4899756ebd64a49de2a08898f79e6b893"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0c7f2fb118a1a74224b598b2803a10e4899756ebd64a49de2a08898f79e6b893"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609042212-XR979S"
+      compatibility:sha256:3425056ca1f9e3b241b70f583c141d9c01ad8c7dd1ba87b098f2dbc42f5cc198:
+        aggregate_digest: "sha256:379f3f18ebc24909ab877a2782a3980bcd76d3f0eabe506bdf19b6d96f7b1d48"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T22:35:17.301Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f6d82d35af2663bc84d83c55"
+          mutation_id: "compatibility:sha256:3425056ca1f9e3b241b70f583c141d9c01ad8c7dd1ba87b098f2dbc42f5cc198"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3425056ca1f9e3b241b70f583c141d9c01ad8c7dd1ba87b098f2dbc42f5cc198"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609042212-XR979S"
       compatibility:sha256:4f5b7dbcc19dea78335b5e23bde00ca8da59cfecb99cde8d6f254bd845b765e2:
         aggregate_digest: "sha256:87849c4fa44eb4e4e6443d38c5c35b6d3f52681708c1c615a1711c925c03f435"
         event:
@@ -861,11 +936,34 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609042212-XR979S"
+      external-result:work-order-202609042212-XR979S-executor-537a31351559069c3438d1c3:
+        aggregate_digest: "sha256:1bfca57dfee64002b8312e833486581ffc1b1796321086507a4ed25b7d1a961f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T22:44:16.024Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_6aa585cf578ca69ab653dc40"
+          mutation_id: "external-result:work-order-202609042212-XR979S-executor-537a31351559069c3438d1c3"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 10
+          to: "REWORK_READY"
+          work_item_id: "repair-pre-merge-blocker-replay"
+        mutation_id: "external-result:work-order-202609042212-XR979S-executor-537a31351559069c3438d1c3"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609042212-XR979S"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "4cc764f7f53ce701f7faaa5f6b795ef94ba40353"
+    hash: "6b68e9bbfa4a2ecf936890f19699f5dedfa4120a"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
