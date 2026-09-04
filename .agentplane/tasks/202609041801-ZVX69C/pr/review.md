@@ -12,8 +12,8 @@ Created: 2026-09-04T18:17:29.251Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check could not run: agentplane task lint
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,6 +29,8 @@ Created: 2026-09-04T18:17:29.251Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../task-centric-backend-adapter.test.ts           |  39 +++++
+ .../task-backend/task-centric-backend-adapter.ts   |   6 +-
  .../src/cli/release-critical-lifecycle.test.ts     |  14 ++
  .../agentplane/src/cli/route-decision.testkit.ts   |  22 +++
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 ++++++++++----
@@ -56,7 +58,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
- 27 files changed, 726 insertions(+), 316 deletions(-)
+ 29 files changed, 770 insertions(+), 317 deletions(-)
 ```
 
 </details>
