@@ -4,7 +4,7 @@ title: "Unblock verification recovery before provider conflict handling"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -91,10 +91,20 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -136,8 +146,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e2420a1df6f2c0ecb71d15bde5b18816dc20af6b86ae3a578afc148936c1190b"
+      digest: "sha256:ac602f8409e582b9808a4cfd465adbff8a0ce44af14171345b043ae72f634c2b"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -146,10 +159,20 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts"
+          - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+          - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -184,11 +207,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "d77ef6cf4b415fe40a8acb542d97669056ccc52b"
+  message: "🚧 YHERVV task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d77ef6cf4b41. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -197,9 +225,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-04T15:43:20.854Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d77ef6cf4b41. CLI accepted one state-bound external-agent semantic result."
+    commit: "d77ef6cf4b415fe40a8acb542d97669056ccc52b"
 doc_version: 3
-doc_updated_at: "2026-09-04T14:58:00.720Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-04T15:43:20.854Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the branch_pr recovery deadlock exposed by task 202609032308-F31YXS. When local verification is missing or needs rework while hosted mergeability context is invalid, route safe local verification or implementation rework before provider conflict handling. Make recordObservedTaskExecutionContract persist legacy and canonical task-centric revisions atomically so successful verification does not fail with Task-centric mutation revision mismatch. Add focused regressions for both exact scenarios, preserve fail-closed provider mutation gates, and integrate this minimal recovery before resuming 202609032308-F31YXS. Exclude MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, release, version, and publication work."
 sections:
   Summary: |-
@@ -447,7 +483,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609041447-YHERVV"
-    event_cursor: 1
+    event_cursor: 3
     final_validation: null
     id: "202609041447-YHERVV"
     intent:
@@ -482,24 +518,154 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 4
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-04T14:58:00.720Z"
+    updated_at: "2026-09-04T15:51:43.274Z"
     work_items:
       restore-verification-recovery-route:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "restore-verification-recovery-route"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:16bfafcd589daaa61d8eb16b05eeb2162c799da9b084ad086fe3eedcd7b0c404"
+            id: "atomic-observation-projection"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609041447-YHERVV"
+              work_item_id: "restore-verification-recovery-route"
+            provenance:
+              - "sha256:85b442eb34710f925091b14ab969ab4d02f5c54c849093e3c2bd1ecceb4795e9"
+              - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:6c194c16b88ec4ec8fb026832e26e6d0956c0b30a68e2ca45e6a8d72e6feb755"
+            id: "local-recovery-before-provider-conflict"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609041447-YHERVV"
+              work_item_id: "restore-verification-recovery-route"
+            provenance:
+              - "sha256:85b442eb34710f925091b14ab969ab4d02f5c54c849093e3c2bd1ecceb4795e9"
+              - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:41a56f384aa8f1f6d42dc2d60ddcfa8284d24ce68ec5226edb1ba555e4804dd7"
+            id: "focused-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609041447-YHERVV"
+              work_item_id: "restore-verification-recovery-route"
+            provenance:
+              - "sha256:85b442eb34710f925091b14ab969ab4d02f5c54c849093e3c2bd1ecceb4795e9"
+              - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+              check_id: "focused-recovery"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T15:51:43.266Z"
+              repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+              check_id: "routing-policy"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-04T15:51:43.266Z"
+              repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-04T15:51:43.266Z"
+              repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609041447-YHERVV/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-04T15:51:43.266Z"
+              repository_snapshot_digest: "sha256:e68fb00af91495a138a8523e73692fdb4ac1ddd0eba62193880e68ad0d6f5150"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-04T15:51:43.274Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_202755691e0e7b8f73d40c79"
+        mutation_id: "external-result:work-order-202609041447-YHERVV-executor-52a64dead662de90d155a98c"
+        plan_digest: "sha256:12ffa3243e28688ae215fc1b626b4c0cf80a6e20228702fe6fd6fe70aa90ccc1"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609041447-YHERVV"
+        task_revision: 6
+        work_item_id: "restore-verification-recovery-route"
     leases: []
     mutation_receipts:
+      compatibility:sha256:3cf753963b85d4af37b37689a74a21f0c6abdf106284c29ca5273d195fa00041:
+        aggregate_digest: "sha256:fb9d206abb27a732fdd85422dc41f77b03a8ce872a4c566a37e3440eac15b4a2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T15:43:20.854Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_82fe9124f813945459eba4e0"
+          mutation_id: "compatibility:sha256:3cf753963b85d4af37b37689a74a21f0c6abdf106284c29ca5273d195fa00041"
+          plan_digest: "sha256:12ffa3243e28688ae215fc1b626b4c0cf80a6e20228702fe6fd6fe70aa90ccc1"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041447-YHERVV"
+          task_revision: 4
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3cf753963b85d4af37b37689a74a21f0c6abdf106284c29ca5273d195fa00041"
+        next_revision: 5
+        previous_revision: 4
+        schema_version: 1
+        task_id: "202609041447-YHERVV"
       compatibility:sha256:73e416fb95176396ee5d479988dc99ac0b2215dc09f7366bfe9db824a56a2a0b:
         aggregate_digest: "sha256:aeebde7a1926bc8ecadbe0d8d5404c342f19e9db67eeaca598273d7c779cde14"
         event:
@@ -524,9 +690,58 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609041447-YHERVV"
+      compatibility:sha256:de360c421928842756e45ee7e11c4061a56d78ec1fc16430d609c2407b39dfc8:
+        aggregate_digest: "sha256:3b2eab54978b5236352d958c376c7ca1324294407fd5e6815e60a681529d6c81"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T15:43:20.854Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9de77c4ddc0ca67748e50b77"
+          mutation_id: "compatibility:sha256:de360c421928842756e45ee7e11c4061a56d78ec1fc16430d609c2407b39dfc8"
+          plan_digest: "sha256:12ffa3243e28688ae215fc1b626b4c0cf80a6e20228702fe6fd6fe70aa90ccc1"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041447-YHERVV"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:de360c421928842756e45ee7e11c4061a56d78ec1fc16430d609c2407b39dfc8"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609041447-YHERVV"
+      external-result:work-order-202609041447-YHERVV-executor-52a64dead662de90d155a98c:
+        aggregate_digest: "sha256:c15857cb6a6ade3a38ee71e19215ea3d3827e2f7ae2a8610a80ddbbcfaaed948"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T15:51:43.274Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_202755691e0e7b8f73d40c79"
+          mutation_id: "external-result:work-order-202609041447-YHERVV-executor-52a64dead662de90d155a98c"
+          plan_digest: "sha256:12ffa3243e28688ae215fc1b626b4c0cf80a6e20228702fe6fd6fe70aa90ccc1"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041447-YHERVV"
+          task_revision: 6
+          to: "COMPLETED"
+          work_item_id: "restore-verification-recovery-route"
+        mutation_id: "external-result:work-order-202609041447-YHERVV-executor-52a64dead662de90d155a98c"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609041447-YHERVV"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "d77ef6cf4b415fe40a8acb542d97669056ccc52b"
   task_execution_context:
     base_ref: "main"
     base_sha: "195f4f941e18d2498d1e941ba8be46a6730fa8fd"
