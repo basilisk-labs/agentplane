@@ -12,8 +12,8 @@ Created: 2026-09-03T23:29:34.750Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Current WorkItem authority cannot adopt the complete F31YXS branch commit because four already-approved execution-contract roots are absent from this WorkItem scope and resource claims.
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,17 +31,17 @@ Created: 2026-09-03T23:29:34.750Z
 ```text
  .../task-centric-backend-projection.ts             |  13 +-
  ...n-cli.core.task-advance.evidence-rework.test.ts |  18 +-
- .../src/commands/shared/task-mutation.test.ts      | 143 ++++++++++++++++
+ .../src/commands/shared/task-mutation.test.ts      | 143 +++++++++++++++
  .../commands/task/direct-task-verification.test.ts |   8 +
  .../src/commands/task/direct-task-verification.ts  |   4 +-
  .../task/external-agent-implementation-recovery.ts |  18 +-
  .../src/commands/task/verify-record-execute.ts     |  43 +++--
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
  .../src/commands/task/verify-record.types.ts       |   8 +
- packages/core/src/tasks/task-centric/graph.ts      | 109 +++++++++++-
+ packages/core/src/tasks/task-centric/graph.ts      | 109 ++++++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
- .../src/tasks/task-centric/task-centric.test.ts    | 187 ++++++++++++++++++++-
- 12 files changed, 523 insertions(+), 32 deletions(-)
+ .../src/tasks/task-centric/task-centric.test.ts    | 203 ++++++++++++++++++++-
+ 12 files changed, 539 insertions(+), 32 deletions(-)
 ```
 
 </details>

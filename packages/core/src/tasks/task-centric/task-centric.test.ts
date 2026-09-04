@@ -536,6 +536,13 @@ describe("task-centric domain", () => {
       work_items: { a: resetRuntime },
     };
     const crossTaskAggregate = { ...evidence.aggregate, id: "other-task" };
+    const activelyClaimedAggregate = {
+      ...evidence.aggregate,
+      work_items: {
+        ...evidence.aggregate.work_items,
+        a: { ...evidence.aggregate.work_items.a!, claim_id: "claim-a" },
+      },
+    };
     const invalidCases: readonly (readonly ReplacementPlanWorkItemRecoveryEvidence[])[] = [
       [evidence, evidence],
       [
@@ -552,6 +559,15 @@ describe("task-centric domain", () => {
             task_id: "other-task",
             event: { ...evidence.receipt.event, task_id: "other-task" },
             aggregate_digest: taskCentricDigest(crossTaskAggregate),
+          },
+        },
+      ],
+      [
+        {
+          aggregate: activelyClaimedAggregate,
+          receipt: {
+            ...evidence.receipt,
+            aggregate_digest: taskCentricDigest(activelyClaimedAggregate),
           },
         },
       ],

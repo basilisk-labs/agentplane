@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 54
 origin:
   system: "manual"
 depends_on: []
@@ -23,15 +23,15 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-04T13:13:09.465Z"
+  updated_at: "2026-09-04T13:24:47.771Z"
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-04T13:07:13.236Z"
-  updated_by: "SUPERVISOR"
-  note: "Current WorkItem authority cannot adopt the complete F31YXS branch commit because four already-approved execution-contract roots are absent from this WorkItem scope and resource claims."
-  attempts: 1
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -249,6 +249,18 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 156e922cdf5d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The implementation is complete, but supervisor verification cannot execute the approved task-lint command because the declared-check runner rejects `agentplane` as an executable token. Replace that command with the equivalent repository-local Node entrypoint and rerun verification."
+  -
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Implementation rework is not required. The only failing supervisor evidence is the declared-check sandbox rejecting the approved `agentplane` executable token before task lint can run."
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
 events:
   -
     type: "status"
@@ -383,8 +395,33 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-04T13:17:13.413Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 156e922cdf5d. CLI accepted one state-bound external-agent semantic result."
+    commit: "156e922cdf5d86e617301cd4aac727a11c920b1b"
+  -
+    type: "comment"
+    at: "2026-09-04T13:19:44.798Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: The implementation is complete, but supervisor verification cannot execute the approved task-lint command because the declared-check runner rejects `agentplane` as an executable token. Replace that command with the equivalent repository-local Node entrypoint and rerun verification."
+  -
+    type: "comment"
+    at: "2026-09-04T13:20:23.751Z"
+    author: "SUPERVISOR"
+    body: "External EXECUTOR returned failed: Implementation rework is not required. The only failing supervisor evidence is the declared-check sandbox rejecting the approved `agentplane` executable token before task lint can run."
+  -
+    type: "status"
+    at: "2026-09-04T13:24:54.596Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-09-04T13:13:15.882Z"
+doc_updated_at: "2026-09-04T13:24:54.596Z"
 doc_updated_by: "CODER"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
@@ -395,7 +432,7 @@ sections:
   Scope: |-
     - In scope: Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work.
     - Out of scope: unrelated refactors not required for "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete".
-  Plan: "Prepared the smallest authority-closed replacement plan for the completed F31YXS implementation. The single remaining WorkItem now claims every already-approved execution root present in commit 8cc9203c, while its objective, outputs, acceptance, validation, risk, ordering, architecture, and exclusions remain unchanged."
+  Plan: "Prepared the smallest command-only replacement plan. The single remaining WorkItem, authority closure, implementation, outputs, acceptance, risk, ordering, architecture, and exclusions are unchanged; only task-lint now uses the repository-local Node entrypoint accepted by the supervisor runner."
   Verify Steps: |-
     1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
     2. Run `bun x prettier --check packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.
@@ -802,12 +839,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:3376853a2fc002883d0db22293115b286ec91c96e67cca3fb36c32718e5589f2"
-    digest: "sha256:71bb5f8dd8102f9fd3c9b988c213b7a90136256b4b46e89b5f05a0875f94ecfd"
-    grant_id: "11a4b9a3-bca6-4d3c-a907-4d7072e001a4"
-    issued_at: "2026-09-04T13:13:09.465Z"
+    digest: "sha256:770c7c30963387e991c53a4a47d3e6ad22193cc1f0f4fb844bb2d04d4a1d0cee"
+    grant_id: "a502ad50-ffd4-4f8b-8798-dc9a98106811"
+    issued_at: "2026-09-04T13:24:47.771Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:77a69c85d3d4f199a09b749d1297dea0753ad249fdb59d978bbb4931acdb0244"
-    plan_revision: 43
+    plan_digest: "sha256:895320735eb8c96398f49a84ccb19038df601f28e301795139bba6f15cbe90dd"
+    plan_revision: 52
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:c4e5cfac799cb5fee315891fb760ad2d7e3c268570cdb91d8eb37a8213076047"
@@ -816,14 +853,14 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-04T13:13:09.465Z"
+        approved_at: "2026-09-04T13:24:47.771Z"
         approved_by: "USER"
-        approved_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+        approved_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-04T13:11:11.578Z"
-      digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+      created_at: "2026-09-04T13:21:55.851Z"
+      digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
       proposal:
         assumptions:
           - "Commit 8cc9203c is the implementation candidate for the prior F31YXS outputs and the new task-centric recovery."
@@ -832,25 +869,21 @@ extensions:
           - "One authority-closed WorkItem is adopted before provider publication or integration."
           - "MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, dependencies, release, version, and publication work remain excluded."
         planning_baseline:
-          captured_at: "2026-09-04T13:10:09.165Z"
+          captured_at: "2026-09-04T13:20:52.428Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:b807c70f1471f9b76d12f4b7fcf58ffceb240ac3943bb47aa12ff71769ab3ba1"
+          digest: "sha256:ccbe57ae168b991526d681759de31ad05853e6ac95378701a88fde23930c189d"
           dirty_paths:
             - ".agentplane/tasks/202609032308-F31YXS/README.md"
-            - ".agentplane/tasks/202609032308-F31YXS/pr/github-body.md"
-            - ".agentplane/tasks/202609032308-F31YXS/pr/meta.json"
-            - ".agentplane/tasks/202609032308-F31YXS/pr/review.md"
             - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
             - ".agentplane/tasks/202609032308-F31YXS/supervision/implementation-evidence.json"
-            - ".agentplane/tasks/202609032308-F31YXS/verification/20260904130713236-e10309c4802c57bb.json"
           git:
             kind: "commit"
             ref: null
-            sha: "8cc9203c993c37d594550dfffeaa823e6a30b913"
+            sha: "156e922cdf5d86e617301cd4aac727a11c920b1b"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:42"
+          task_history_cursor: "task-revision:51"
         schema_version: 1
         task_id: "202609032308-F31YXS"
         top_level_validation:
@@ -899,7 +932,7 @@ extensions:
               timeout_ms: 300000
             -
               capability: "task.verify"
-              command: "agentplane task lint"
+              command: "node packages/agentplane/bin/agentplane.js task lint"
               id: "task-lint"
               kind: "deterministic"
               required: true
@@ -1062,7 +1095,7 @@ extensions:
                     timeout_ms: 300000
                   -
                     capability: "task.verify"
-                    command: "agentplane task lint"
+                    command: "node packages/agentplane/bin/agentplane.js task lint"
                     id: "task-lint"
                     kind: "deterministic"
                     required: true
@@ -1106,10 +1139,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:b807c70f1471f9b76d12f4b7fcf58ffceb240ac3943bb47aa12ff71769ab3ba1"
                 schema_version: 1
-      revision: 4
+      revision: 5
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 24
+    event_cursor: 29
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -2346,9 +2379,303 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 45
+      -
+        approval:
+          approved_at: null
+          approved_by: null
+          approved_digest: null
+          policy_facts: []
+          state: "rejected"
+        created_at: "2026-09-04T13:11:11.578Z"
+        digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+        proposal:
+          assumptions:
+            - "Commit 8cc9203c is the implementation candidate for the prior F31YXS outputs and the new task-centric recovery."
+            - "The focused checks already passed for 8cc9203c, but complete supervisor verification and independent evaluation must run again."
+            - "Immutable task-centric events, digest-bound aggregate receipts, approved plan lineage, and semantic WorkItem definition equality are the only permitted recovery evidence; ambiguity must fail closed."
+            - "One authority-closed WorkItem is adopted before provider publication or integration."
+            - "MPXQBK, broad projection cleanup, GitLab/provider-neutral expansion, dependencies, release, version, and publication work remain excluded."
+          planning_baseline:
+            captured_at: "2026-09-04T13:10:09.165Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:b807c70f1471f9b76d12f4b7fcf58ffceb240ac3943bb47aa12ff71769ab3ba1"
+            dirty_paths:
+              - ".agentplane/tasks/202609032308-F31YXS/README.md"
+              - ".agentplane/tasks/202609032308-F31YXS/pr/github-body.md"
+              - ".agentplane/tasks/202609032308-F31YXS/pr/meta.json"
+              - ".agentplane/tasks/202609032308-F31YXS/pr/review.md"
+              - ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609032308-F31YXS/supervision/implementation-evidence.json"
+              - ".agentplane/tasks/202609032308-F31YXS/verification/20260904130713236-e10309c4802c57bb.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "8cc9203c993c37d594550dfffeaa823e6a30b913"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:42"
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1"
+                id: "projection-recovery-focused"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1200000
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1"
+                id: "recovery-focused"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task"
+                id: "format-touched"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 600000
+              -
+                capability: "task.verify"
+                command: "bun run lint:core"
+                id: "lint-core"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "routing"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "agentplane task lint"
+                id: "task-lint"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "agentplane doctor"
+                id: "doctor"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "git diff --check"
+                id: "diff-check"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-regression"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+            criteria:
+              -
+                check_ids:
+                  - "projection-recovery-focused"
+                  - "recovery-focused"
+                  - "format-touched"
+                  - "lint-core"
+                  - "typecheck"
+                  - "routing"
+                  - "task-lint"
+                  - "doctor"
+                  - "diff-check"
+                  - "full-regression"
+                description: "Matching immutable completion evidence restores only the intended reset WorkItem runtime, ambiguous or mismatched evidence fails closed, the existing F31YXS repair stays green, and complete local CI passes."
+                id: "projection-recovery-qualified"
+                required: true
+            evidence_fingerprint: "sha256:b807c70f1471f9b76d12f4b7fcf58ffceb240ac3943bb47aa12ff71769ab3ba1"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "projection-recovery-focused"
+                      - "recovery-focused"
+                      - "format-touched"
+                      - "lint-core"
+                      - "typecheck"
+                      - "routing"
+                      - "task-lint"
+                      - "doctor"
+                      - "diff-check"
+                      - "full-regression"
+                    description: "A regression proves exact recovery from matching immutable events and semantic definitions, rejects ambiguous or mismatched evidence without mutation, preserves idempotence, and the complete F31YXS verification set passes."
+                    id: "reset-projection-recovers-fail-closed"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 160000
+                  optional_sources: []
+                  required_sources:
+                    - "repository"
+                    - "task-document"
+                    - "immutable task-centric runtime events"
+                    - "existing F31YXS implementation and verification evidence"
+                  symbol_hints:
+                    - "reconcileReplacementPlanWorkItems"
+                    - "WorkItemRuntime"
+                    - "TaskTransitionEvent"
+                    - "workItemSemanticDigest"
+                depends_on: []
+                expected_outputs:
+                  - "deterministically-recovered-workitem-projection"
+                  - "verified-f31yxs-recovery-branch"
+                id: "recover-reset-workitem-projection"
+                objective: "Add the smallest fail-closed task-centric rule that can recover WorkItem runtime reset by the earlier command-only plan revision only when immutable events and semantic definition identity prove the prior state. Preserve replay idempotence and reject ambiguous, mismatched, cross-task, or incomplete evidence. Requalify the unchanged verification-atomicity implementation together with this recovery."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/src/tasks/task-centric"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/core/src/tasks/task-centric"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1"
+                      id: "projection-recovery-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1200000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1"
+                      id: "recovery-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task"
+                      id: "format-touched"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lint:core"
+                      id: "lint-core"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "routing"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "agentplane task lint"
+                      id: "task-lint"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "agentplane doctor"
+                      id: "doctor"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "diff-check"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                  criteria:
+                    -
+                      check_ids:
+                        - "projection-recovery-focused"
+                        - "recovery-focused"
+                        - "format-touched"
+                        - "lint-core"
+                        - "typecheck"
+                        - "routing"
+                        - "task-lint"
+                        - "doctor"
+                        - "diff-check"
+                        - "full-regression"
+                      description: "A regression proves exact recovery from matching immutable events and semantic definitions, rejects ambiguous or mismatched evidence without mutation, preserves idempotence, and the complete F31YXS verification set passes."
+                      id: "reset-projection-recovers-fail-closed"
+                      required: true
+                  evidence_fingerprint: "sha256:b807c70f1471f9b76d12f4b7fcf58ffceb240ac3943bb47aa12ff71769ab3ba1"
+                  schema_version: 1
+        revision: 4
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+    revision: 54
     schema_version: 1
-    updated_at: "2026-09-04T13:13:15.882Z"
+    updated_at: "2026-09-04T13:24:54.596Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 0
@@ -2526,6 +2853,40 @@ extensions:
         schema_version: 1
         task_id: "202609032308-F31YXS"
         task_revision: 41
+        work_item_id: null
+      -
+        at: "2026-09-04T13:18:20.460Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_0f7785f80e126fc78a9cac54"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-3170b3906c5beb8b72bfce77"
+        plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+        task_revision: 47
+        work_item_id: "recover-reset-workitem-projection"
+      -
+        at: "2026-09-04T13:20:39.360Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "SUPERVISOR"
+        cause_refs:
+          - "plan:sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+          - "note:sha256:75640f5670bdbe9b3c5dedc373aaa0d18f8d8e3cfe11eeed09571ccb3f4b8962"
+        entity: "task"
+        id: "event_d6da26a67d3371df95ddcad9"
+        mutation_id: "plan-reject-8a585f12bd18e257686d28ee1bd0d8d8"
+        plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+        task_revision: 50
         work_item_id: null
     leases: []
     mutation_receipts:
@@ -2865,6 +3226,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      compatibility:sha256:70aed2acbeb0ba97faddf7423207f4ebf08bae224f37f0d7e35cb9de561e291f:
+        aggregate_digest: "sha256:d07e4a0cf69e9542be0d6ebac42c210862e085bc6252b44912cda11cb80dd342"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:24:54.596Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6610b9deb152ba1051a1505d"
+          mutation_id: "compatibility:sha256:70aed2acbeb0ba97faddf7423207f4ebf08bae224f37f0d7e35cb9de561e291f"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 53
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:70aed2acbeb0ba97faddf7423207f4ebf08bae224f37f0d7e35cb9de561e291f"
+        next_revision: 54
+        previous_revision: 53
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       compatibility:sha256:739cb34cc504ee67fd469cb0d770c1aba4cf582937b4dbc3a33f2680a0f1e0b0:
         aggregate_digest: "sha256:9ee729b4343821f6bacfd5240f8be49589280b87d58229c7e60e033db5e50e5e"
         event:
@@ -2887,6 +3272,30 @@ extensions:
         mutation_id: "compatibility:sha256:739cb34cc504ee67fd469cb0d770c1aba4cf582937b4dbc3a33f2680a0f1e0b0"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:7705c4ea9dc8692c47be99295c649624cd7f45a6bdd7568b9b83cb37d63904c8:
+        aggregate_digest: "sha256:f98d3f1bfa8630816de5ff32b966f17b8d101b74cad2c1ffa6ae0e097e8d34c9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:19:44.798Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a9818316acfc935f2d029886"
+          mutation_id: "compatibility:sha256:7705c4ea9dc8692c47be99295c649624cd7f45a6bdd7568b9b83cb37d63904c8"
+          plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 48
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7705c4ea9dc8692c47be99295c649624cd7f45a6bdd7568b9b83cb37d63904c8"
+        next_revision: 49
+        previous_revision: 48
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:87d5297e5b06fc9b4467df6653544d27ef688646f1f6add8a6c25a2d6847be84:
@@ -2961,6 +3370,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      compatibility:sha256:b5ec751430ff1e5a49a6d94085c7b6b086da3adfa18829e31bd97f5f029e1c13:
+        aggregate_digest: "sha256:19342458b881937a1b977ab4997c3d86efab639227a56af9d44d06c6b2bad677"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:20:23.751Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6fb5e926c4d028d9b1118093"
+          mutation_id: "compatibility:sha256:b5ec751430ff1e5a49a6d94085c7b6b086da3adfa18829e31bd97f5f029e1c13"
+          plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 49
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b5ec751430ff1e5a49a6d94085c7b6b086da3adfa18829e31bd97f5f029e1c13"
+        next_revision: 50
+        previous_revision: 49
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       compatibility:sha256:b6fe3f91a3dacf16a5f2a58c38fcb77bb92e0f4ac56a102ad7fdbbdabbf380f6:
         aggregate_digest: "sha256:a160fd86ab43a6b45be09857f5181335740305e5ca92b946b62199f7695dd08b"
         event:
@@ -3009,6 +3442,30 @@ extensions:
         previous_revision: 27
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      compatibility:sha256:e6541bb59624c7bc63207191c366bc21762ab06ef77a9fa064b794f724cdc4f1:
+        aggregate_digest: "sha256:c1db1bc88923875519dbffc06d224f54526890eb9accc2174c80d41fa8419409"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:17:13.413Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_07ef661a9d82acdb51c3f63e"
+          mutation_id: "compatibility:sha256:e6541bb59624c7bc63207191c366bc21762ab06ef77a9fa064b794f724cdc4f1"
+          plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 45
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e6541bb59624c7bc63207191c366bc21762ab06ef77a9fa064b794f724cdc4f1"
+        next_revision: 46
+        previous_revision: 45
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       compatibility:sha256:fba84d820cfa23ffa67e0958fdffd530dc0cf912fcef25b490f9357da4f77952:
         aggregate_digest: "sha256:5b5d2b4b1c8549f7af912119a219cf61d719606e4459492b83a415be52cf721c"
         event:
@@ -3031,6 +3488,29 @@ extensions:
         mutation_id: "compatibility:sha256:fba84d820cfa23ffa67e0958fdffd530dc0cf912fcef25b490f9357da4f77952"
         next_revision: 26
         previous_revision: 25
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      external-result:work-order-202609032308-F31YXS-executor-3170b3906c5beb8b72bfce77:
+        aggregate_digest: "sha256:6bdd27f338727940625617fb0604a138cd25780f159610f8463d7f9e2c2dfaf9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T13:18:20.460Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_0f7785f80e126fc78a9cac54"
+          mutation_id: "external-result:work-order-202609032308-F31YXS-executor-3170b3906c5beb8b72bfce77"
+          plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 47
+          to: "REWORK_READY"
+          work_item_id: "recover-reset-workitem-projection"
+        mutation_id: "external-result:work-order-202609032308-F31YXS-executor-3170b3906c5beb8b72bfce77"
+        next_revision: 48
+        previous_revision: 47
         schema_version: 1
         task_id: "202609032308-F31YXS"
       external-result:work-order-202609032308-F31YXS-executor-5ed4d6e15714ab46240fae27:
@@ -3243,6 +3723,31 @@ extensions:
         previous_revision: 41
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      plan-reject-8a585f12bd18e257686d28ee1bd0d8d8:
+        aggregate_digest: "sha256:8ca8301facfcda3e840c3c9150f766a2cfa8ee0543a270b23436480f6428f284"
+        event:
+          actor_id: "SUPERVISOR"
+          at: "2026-09-04T13:20:39.360Z"
+          cause_refs:
+            - "plan:sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+            - "note:sha256:75640f5670bdbe9b3c5dedc373aaa0d18f8d8e3cfe11eeed09571ccb3f4b8962"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d6da26a67d3371df95ddcad9"
+          mutation_id: "plan-reject-8a585f12bd18e257686d28ee1bd0d8d8"
+          plan_digest: "sha256:05658e5585162313e0313ec4d93e7ea8b42731ccaa0b84cb253344ed83ba0f57"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 50
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-reject-8a585f12bd18e257686d28ee1bd0d8d8"
+        next_revision: 51
+        previous_revision: 50
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       plan-reject-dbed61c39b70d58f65aa697a014066b1:
         aggregate_digest: "sha256:02eb2f9bb7d64623ff342771753d8944270d15d499ad947b44584b5c90339a28"
         event:
@@ -3271,6 +3776,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "156e922cdf5d86e617301cd4aac727a11c920b1b"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
@@ -3294,7 +3801,7 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
 
 ## Plan
 
-Prepared the smallest authority-closed replacement plan for the completed F31YXS implementation. The single remaining WorkItem now claims every already-approved execution root present in commit 8cc9203c, while its objective, outputs, acceptance, validation, risk, ordering, architecture, and exclusions remain unchanged.
+Prepared the smallest command-only replacement plan. The single remaining WorkItem, authority closure, implementation, outputs, acceptance, risk, ordering, architecture, and exclusions are unchanged; only task-lint now uses the repository-local Node entrypoint accepted by the supervisor runner.
 
 ## Verify Steps
 

@@ -5,7 +5,7 @@
         "projection-recovery-focused"
       ],
       "command": "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1",
-      "duration_ms": 485,
+      "duration_ms": 437,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -16,14 +16,14 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n\n\n Test Files  1 passed (1)\n      Tests  27 passed (27)\n   Start at  16:03:59\n   Duration  164ms (transform 47ms, setup 0ms, import 76ms, tests 20ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n\n\n Test Files  1 passed (1)\n      Tests  27 passed (27)\n   Start at  16:17:13\n   Duration  158ms (transform 47ms, setup 0ms, import 77ms, tests 20ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [
         "recovery-focused"
       ],
       "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1",
-      "duration_ms": 10015,
+      "duration_ms": 9663,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -34,14 +34,14 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n\n202602050900-V1F4F\n202602050900-V1F4G\n202602050900-V1F4H\n202602050900-V1F4\n202602050900-V1F4D\n202602050900-V1F4D\n202602050900-V1F4T\n202602050900-V1F4T\n202602050900-V1F4B\n202602050900-V1F5\n\n Test Files  4 passed (4)\n      Tests  50 passed (50)\n   Start at  16:03:59\n   Duration  9.73s (transform 1.38s, setup 0ms, import 2.23s, tests 7.27s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n\n202602050900-V1F4F\n202602050900-V1F4G\n202602050900-V1F4H\n202602050900-V1F4\n202602050900-V1F4D\n202602050900-V1F4D\n202602050900-V1F4T\n202602050900-V1F4T\n202602050900-V1F4B\n202602050900-V1F5\n\n Test Files  4 passed (4)\n      Tests  50 passed (50)\n   Start at  16:17:14\n   Duration  9.37s (transform 1.31s, setup 0ms, import 2.10s, tests 7.04s, environment 0ms)\n\n"
     },
     {
       "check_ids": [
         "format-touched"
       ],
       "command": "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task",
-      "duration_ms": 2235,
+      "duration_ms": 2192,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -59,7 +59,7 @@
         "lint-core"
       ],
       "command": "bun run lint:core",
-      "duration_ms": 57171,
+      "duration_ms": 53846,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -77,7 +77,7 @@
         "typecheck"
       ],
       "command": "bun run typecheck",
-      "duration_ms": 208,
+      "duration_ms": 206,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -95,7 +95,7 @@
         "routing"
       ],
       "command": "node .agentplane/policy/check-routing.mjs",
-      "duration_ms": 114,
+      "duration_ms": 112,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
@@ -113,7 +113,7 @@
         "task-lint"
       ],
       "command": "agentplane task lint",
-      "duration_ms": 70,
+      "duration_ms": 69,
       "exit_code": null,
       "runtime": {
         "environment_digest": "sha256:a6b96d7bae9d482a1e35975e0932ac89304328777f13b98fca753f3884979e65",
