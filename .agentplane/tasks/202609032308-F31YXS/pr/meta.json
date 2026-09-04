@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:7cba185fc560a4a81f8d21b957612c207f10f72598913a24e3b59b7444e60618",
   "pr_number": 5895,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5895",
+  "pre_merge_closure": {
+    "basis_commit": "b8fd2fa8854f8188e215cbc347bda194b0120446",
+    "branch": "task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity",
+    "pr_number": 5895,
+    "recorded_at": "2026-09-04T13:50:29.164Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

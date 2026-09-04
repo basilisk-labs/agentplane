@@ -1,10 +1,11 @@
 ---
 id: "202609032308-F31YXS"
 title: "Repair verification evidence contract atomicity and task-centric rework projection so PX8PZT can complete"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 59
+revision: 60
 origin:
   system: "manual"
 depends_on: []
@@ -62,6 +63,20 @@ quality_review:
     - "Regressions cover successful atomic rework, persistence failure without partial projection, evidence-only rework, semantic reset recovery, active-claim rejection, and replay idempotence."
     - "Supervisor evidence records ci:local:full, lint:core, typecheck, focused AgentPlane tests, routing validation, clean committed/staged diffs, and a clean final execution status as passing."
     - "Residual risk: The broader stale Verify Steps projection defect is recorded outside this task and is not required for the scoped repair."
+token_usage:
+  agent_runs: 29
+  input_tokens: null
+  journal_digest: "sha256:a9ddbcb94110e7c21d5543789efc4b3441028f77a4e493e93d5ed6d4c24e8cd1"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-04T13:50:29.075Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -332,8 +347,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "96d33c4f65615af65f1b6930453782ab9edefa9a"
-  message: "🚧 F31YXS task: apply external agent result"
+  hash: "b8fd2fa8854f8188e215cbc347bda194b0120446"
+  message: "🚧 F31YXS task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -398,6 +413,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 96d33c4f6561. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -571,9 +589,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-04T13:50:29.075Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "b8fd2fa8854f8188e215cbc347bda194b0120446"
 doc_version: 3
-doc_updated_at: "2026-09-04T13:44:32.824Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-04T13:50:29.075Z"
+doc_updated_by: "CODER"
 description: "Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work."
 sections:
   Summary: |-
@@ -1450,7 +1476,122 @@ extensions:
       schema_version: 1
       task_id: "202609032308-F31YXS"
     event_cursor: 32
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "projection-recovery-focused"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "recovery-focused"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "format-touched"
+          command_identity: "bun x prettier --check packages/core/src/tasks/task-centric packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "lint-core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "routing"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "task-lint"
+          command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "doctor"
+          command_identity: "agentplane doctor"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-04T13:44:31.710Z"
+          repository_snapshot_digest: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609032308-F31YXS"
     intent:
       acceptance_criteria:
@@ -1486,7 +1627,7 @@ extensions:
 
         Reproduce and fix the Clean Core control-plane failure exposed by task 202609031717-PX8PZT. Direct task verification currently executes all declared checks successfully, then verification persistence recomputes a stronger contract and rejects the same evidence with missing_checks=docs_contract after AgentPlane-owned task-artifact observation commits. The supported agentplane verify --rework path also fails closed because the legacy projection would become DOING/revision 33 while the canonical task-centric aggregate remains DONE/revision 33. Make verification execution and persistence use one deterministic observed contract and make evidence-based rework mutation atomically update every canonical projection or fail without partial state. Add focused regressions for both defects, preserve supervisor ownership of task artifacts and lifecycle transitions, and prove recovery of PX8PZT through the normal packet/result/resume route. Do not hand-edit task state, weaken verification requirements, absorb unrelated projection cleanup, MPXQBK, GitLab/provider-neutral expansion, dependencies, or release/version/publication work.
       task_id: "202609032308-F31YXS"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -2980,9 +3121,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 59
+    revision: 60
     schema_version: 1
-    updated_at: "2026-09-04T13:44:32.824Z"
+    updated_at: "2026-09-04T13:50:29.075Z"
     work_items:
       recover-reset-workitem-projection:
         attempt: 1
@@ -4204,6 +4345,31 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609032308-F31YXS"
+      legacy-finish:202609032308-F31YXS:2026-09-04T13:44:31.710Z:96d33c4f65615af65f1b6930453782ab9edefa9a:
+        aggregate_digest: "sha256:72560adcc112276d2d1d30787fe8e27110b3438f07453d42fbdb17e1094e5984"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-04T13:50:29.075Z"
+          cause_refs:
+            - "task-verification:202609032308-F31YXS"
+            - "git:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4a15eaf695f336ec35a3451c"
+          mutation_id: "legacy-finish:202609032308-F31YXS:2026-09-04T13:44:31.710Z:96d33c4f65615af65f1b6930453782ab9edefa9a"
+          plan_digest: "sha256:04a715be032dfbe73eaf95e534a68913823354a2cd14573f5930591e541da77d"
+          plan_revision: 5
+          repository_fingerprint: "sha256:4d5f3d922c4dc85dc2f972433a9688ebde2fe22136c20907e4d7be1776c5d223"
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 59
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609032308-F31YXS:2026-09-04T13:44:31.710Z:96d33c4f65615af65f1b6930453782ab9edefa9a"
+        next_revision: 60
+        previous_revision: 59
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
       plan-refinement:work-order-202609032308-F31YXS-executor-60e3ba2d0f49fb0e8c7dfe80:
         aggregate_digest: "sha256:81cced5fc9b7ad4e3f34a02e66326714bd6ba901d82871584a5aab73a2fcf2c2"
         event:
@@ -4331,6 +4497,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "96d33c4f65615af65f1b6930453782ab9edefa9a"
+    message: "🚧 F31YXS task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "fa693664b5fb4f7884b5c772b456357518732bd4"
@@ -4911,3 +5078,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/29` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a9ddbcb94110e7c21d5543789efc4b3441028f77a4e493e93d5ed6d4c24e8cd1`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-04T13:50:29.075Z`
