@@ -4,6 +4,7 @@ import {
   createLegacyTaskAggregate,
   createRepositorySnapshot,
   createTaskPlanRevision,
+  materializeApprovedWorkItems,
   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
   taskCentricDigest,
   taskCentricAggregateFromExtensions,
@@ -283,6 +284,44 @@ describe("TaskCentricBackendAdapter", () => {
     await expect(adapter.recordPlanRefinement(input)).resolves.toEqual(receipt);
     expect(writes).toBe(1);
     expect(durable.current()).toEqual(stored);
+  });
+
+  it("preserves the implementation commit across a non-material plan amendment", async () => {
+    const approved = approvedAggregate();
+    const initial = taskData(
+      materializeApprovedWorkItems({
+        task: approved,
+        plan: approved.current_plan!,
+        now: NOW,
+      }),
+    );
+    initial.commit = { hash: "b".repeat(40), message: "implementation" };
+    const backend = memoryBackend(initial);
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+
+    await adapter.recordPlanRefinement({
+      task_id: TASK_ID,
+      expected_revision: initial.revision,
+      refinement: {
+        description: "Use the repository-local task lint command.",
+        scope_roots_added: [],
+        outputs_added: [],
+        acceptance_changed: false,
+        risk_changed: false,
+        external_effects_added: [],
+        dependencies_changed: false,
+        architecture_constraints_changed: false,
+        operations: ["clarify"],
+      },
+      actor_id: "external:EXECUTOR",
+      at: NOW,
+      idempotency_key: "clarify-task-lint",
+    });
+
+    expect(backend.current().commit).toEqual(initial.commit);
   });
 
   it("rejects a proposed plan as one atomic event and receipt and replays exactly", async () => {

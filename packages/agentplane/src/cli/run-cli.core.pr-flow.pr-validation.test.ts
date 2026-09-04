@@ -278,11 +278,13 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       expect(
         await pathExists(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json")),
       ).toBe(false);
-
+      const taskWorktree = path.join(root, ".agentplane/worktrees", taskId);
+      await mkdir(path.dirname(taskWorktree), { recursive: true });
+      await execFileAsync("git", ["worktree", "add", taskWorktree, branch], { cwd: root });
       const io = captureStdIO();
       try {
         const code = await runCli(["pr", "check", taskId, "--root", root]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("✅ pr check");
         expect(io.stdout).toContain("artifact_source: branch");
       } finally {

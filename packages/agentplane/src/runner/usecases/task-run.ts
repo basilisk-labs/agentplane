@@ -227,6 +227,7 @@ export async function prepareTaskRunnerExecution(
     bundle,
     authoritative_checkout_path: route_decision.executionPacket.authoritativeCheckoutPath,
     mutation_path_hint: route_decision.executionPacket.mutationPathHint,
+    task_execution: opts.task_execution,
   });
   const routeGitSnapshot = readTaskRouteGitSnapshot(route_decision);
   const preparationGitSnapshot =

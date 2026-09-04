@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { cp, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -160,12 +160,64 @@ async function implementationFixture(initialized = true) {
   const approval = await resume(root, planning);
   expect(approval.action.kind).toBe("approval_required");
   expect(
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "1. Run bun run test:critical. Expected: the focused recovery contract passes.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
+  expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);
   if (!initialized) await commitFixture(root, "test: persist approved evidence rework plan");
-  const implementation = await packet(root, taskId);
-  const implementationOrder = await order(implementation);
+  let implementation = await packet(root, taskId);
+  let implementationOrder = await order(implementation);
   const checkout = implementationOrder.state_fingerprint.worktree;
+  const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
+  await mkdir(path.dirname(metaPath), { recursive: true });
+  const branchOutput = await git("git", ["branch", "--show-current"], { cwd: checkout });
+  const headOutput = await git("git", ["rev-parse", "HEAD"], { cwd: checkout });
+  const branch = branchOutput.stdout.trim();
+  const head = headOutput.stdout.trim();
+  const now = new Date().toISOString();
+  await writeFile(
+    metaPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        task_id: taskId,
+        branch,
+        base: "main",
+        created_at: now,
+        updated_at: now,
+        head_sha: head,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const stale = await invoke(checkout, ["task", "advance", taskId, "--agent-json"]);
+  expect(stale.code).not.toBe(0);
+  expect(stale.stderr).toContain("stale");
+  const replacement = await invoke(checkout, [
+    "task",
+    "advance",
+    taskId,
+    "--replacement",
+    "--agent-json",
+  ]);
+  expect(replacement.code, replacement.stderr).toBe(0);
+  implementation = JSON.parse(replacement.stdout) as Packet;
+  implementationOrder = await order(implementation);
   return { root, taskId, creationBase, implementation, implementationOrder, checkout };
 }
 
@@ -512,10 +564,42 @@ const verificationClarification = {
 describe("pure external plan refinement", { timeout: 180_000 }, () => {
   it("projects verification clarification and issues a fresh evaluator packet", async () => {
     const f = await completedFixture();
-    await report(f.rework, "Project the approved verification contract.", {
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        f.taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "PLANNER fallback scaffold. Replace with task-specific acceptance checks.",
+        "--root",
+        f.checkout,
+      ]),
+    ).toBe(0);
+    const retired = await invoke(f.checkout, [
+      "task",
+      "advance",
+      f.taskId,
+      "--replacement",
+      "--agent-json",
+    ]);
+    expect(retired.code).not.toBe(0);
+    expect(retired.stderr).toContain("retired the stale result");
+    const replacement = await invoke(f.checkout, [
+      "task",
+      "advance",
+      f.taskId,
+      "--replacement",
+      "--agent-json",
+    ]);
+    expect(replacement.code, replacement.stderr).toBe(0);
+    const clarification = JSON.parse(replacement.stdout) as Packet;
+    await report(clarification, "Project the approved verification contract.", {
       plan_refinement: verificationClarification,
     });
-    const next = await resume(f.checkout, f.rework);
+    const next = await resume(f.checkout, clarification);
     const current = await f.ctx.taskBackend.getTask(f.taskId);
     expect(current?.sections?.["Verify Steps"]).toContain("bun run test:critical");
     expect(current?.sections?.["Verify Steps"]).not.toContain("PLANNER fallback scaffold");

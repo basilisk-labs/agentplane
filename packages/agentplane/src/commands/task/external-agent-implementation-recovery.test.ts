@@ -250,6 +250,34 @@ describe("recorded implementation recovery contract", () => {
     ).toBe(true);
   });
 
+  it("allows atomic task-centric lifecycle and runtime receipt drift", () => {
+    const before = task();
+    const after = structuredClone(before) as ReturnType<typeof task> & {
+      extensions: Record<string, unknown>;
+    };
+    after.status = "DONE";
+    after.extensions["agentplane.task_centric"] = {
+      ...before.extensions["agentplane.task_centric"],
+      revision: 7,
+      lifecycle: "COMPLETED",
+      final_validation: { status: "passed" },
+      event_cursor: 4,
+      updated_at: "2026-09-04T18:00:00.000Z",
+    };
+    after.extensions["agentplane.task_centric_runtime"] = {
+      schema_version: 1,
+      mutation_receipts: { verification: { next_revision: 7 } },
+    };
+
+    expect(
+      taskReadmesPreserveRecoveryContract(
+        renderTaskReadme(before, "## Summary\nApproved behavior.\n"),
+        renderTaskReadme(after, "## Summary\nApproved behavior.\n"),
+        COMMIT,
+      ),
+    ).toBe(true);
+  });
+
   it.each(["scope", "authority", "effects", "commands", "plan", "work-item", "receipt", "body"])(
     "rejects changed %s",
     (change) => {

@@ -86,6 +86,20 @@ describe("release-critical direct lifecycle", () => {
       const taskId = taskNew.stdout.trim();
       expect(taskId).toMatch(/^\d{12}-[A-Z0-9]+$/);
 
+      const verifySteps = await runCliWithOutput(root, [
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run `echo lifecycle ok`. Expected: the release-critical lifecycle check passes.",
+        "--updated-by",
+        "CODER",
+      ]);
+      expect(verifySteps.code).toBe(0);
+
       const planSet = await runCliWithOutput(root, [
         "task",
         "plan",

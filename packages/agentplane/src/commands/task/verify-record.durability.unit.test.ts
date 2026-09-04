@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as taskBackend from "../../backends/task-backend.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { cmdTaskAdd } from "../workflow.js";
+import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import * as taskMutation from "../shared/task-mutation.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
@@ -49,6 +49,15 @@ async function addTask(root: string, taskId: string): Promise<void> {
     verify: [],
     commentAuthor: null,
     commentBody: null,
+  });
+  await cmdTaskDocSet({
+    cwd: root,
+    rootOverride: root,
+    taskId,
+    section: "Verify Steps",
+    text: "1. Run `bun test`. Expected: the task outcome passes.",
+    updatedBy: "TEST",
+    fullDoc: false,
   });
 }
 

@@ -8,6 +8,7 @@ import {
   createExecutionGrant,
   createPlanProposal,
   materializeApprovedWorkItems,
+  projectTaskLifecycleToLegacyStatus,
   ensureDocSections,
   taskDocToSectionMap,
   type PlanApprovalEvidenceKind,
@@ -325,8 +326,12 @@ export async function cmdTaskPlanApprove(opts: {
                   }),
                 )
               : current.extensions;
+            const approvedTaskCentric = taskCentricAggregateFromExtensions(taskCentricExtensions);
             return {
               task: {
+                ...(approvedTaskCentric
+                  ? { status: projectTaskLifecycleToLegacyStatus(approvedTaskCentric.lifecycle) }
+                  : {}),
                 plan_approval: {
                   state: "approved" as PlanApprovalState,
                   updated_at: approvedAt,
@@ -400,9 +405,13 @@ export async function cmdTaskPlanApprove(opts: {
               }),
             )
           : task.extensions;
+        const approvedTaskCentric = taskCentricAggregateFromExtensions(taskCentricExtensions);
         await backend.writeTask(
           {
             ...task,
+            ...(approvedTaskCentric
+              ? { status: projectTaskLifecycleToLegacyStatus(approvedTaskCentric.lifecycle) }
+              : {}),
             plan_approval: {
               state: "approved" as PlanApprovalState,
               updated_at: approvedAt,

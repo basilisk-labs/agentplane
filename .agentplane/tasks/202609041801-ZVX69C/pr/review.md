@@ -1,0 +1,66 @@
+# PR Review
+
+Created: 2026-09-04T18:17:29.251Z
+
+## Task
+
+- Task: `202609041801-ZVX69C`
+- Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
+- Status: DONE
+- Branch: `task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re`
+- Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
+
+## Verification
+
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-04T20:10:20.939Z
+- Branch: task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../task-centric-backend-adapter.test.ts           |  39 +++++
+ .../task-backend/task-centric-backend-adapter.ts   |   6 +-
+ .../src/cli/release-critical-lifecycle.test.ts     |  14 ++
+ .../agentplane/src/cli/route-decision.testkit.ts   |  22 +++
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 ++++++++++----
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
+ .../run-cli.core.route-decision.quality.test.ts    | 128 +++++++++-----
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 194 +++++++++------------
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  94 +++++++++-
+ .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
+ .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
+ .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../src/commands/task/direct-task-verification.ts  |  19 +-
+ ...xternal-agent-implementation-recovery-readme.ts | 142 +++++++++++++++
+ .../external-agent-implementation-recovery.test.ts |  28 +++
+ .../task/external-agent-implementation-recovery.ts | 101 +----------
+ .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
+ packages/agentplane/src/commands/task/plan.ts      |   9 +
+ .../src/commands/task/shared.unit.test.ts          |   1 +
+ .../src/commands/task/shared.verify-steps.test.ts  |   8 +
+ .../agentplane/src/commands/task/shared/docs.ts    |   2 +
+ .../task/verify-record.durability.unit.test.ts     |  11 +-
+ packages/agentplane/src/commands/workflow.test.ts  |  10 ++
+ .../src/commands/workflow.verify-hooks.test.ts     |  12 +-
+ .../src/runner/usecases/agent-work-order-build.ts  |  16 +-
+ .../src/runner/usecases/agent-work-order.ts        |   1 +
+ .../src/runner/usecases/task-run-authority.ts      |  46 ++++-
+ .../usecases/task-run-context.integration.test.ts  |   5 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   1 +
+ 30 files changed, 784 insertions(+), 322 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

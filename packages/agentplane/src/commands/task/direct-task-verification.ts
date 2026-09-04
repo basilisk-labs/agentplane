@@ -114,17 +114,24 @@ export async function recordDirectTaskVerification(opts: {
   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_order.task.work_item_id,
   );
-  const additionalCommands = selectedWorkItem
-    ? blockingWorkItemCommands(selectedWorkItem.validation)
+  const taskCentricValidation = opts.work_order.task.work_item_id
+    ? selectedWorkItem?.validation
+    : aggregate?.current_plan?.proposal.top_level_validation;
+  const additionalCommands = taskCentricValidation
+    ? blockingWorkItemCommands(taskCentricValidation)
     : [];
+  const usesTaskLevelPlanCommands =
+    !opts.work_order.task.work_item_id && additionalCommands.length > 0;
+  const usesTaskCentricCommands = selectedWorkItem !== undefined || usesTaskLevelPlanCommands;
   const checks = await runDirectTaskVerification({
     command: opts.command,
     task: verificationTask,
     task_id: opts.task.id,
     cwd: opts.checkout,
-    additional_commands: additionalCommands,
-    additional_only: selectedWorkItem !== undefined,
+    additional_commands: usesTaskCentricCommands ? additionalCommands : [],
+    additional_only: usesTaskCentricCommands,
     allow_empty: selectedWorkItem !== undefined,
+    map_selected_checks: usesTaskLevelPlanCommands,
   });
   if (selectedWorkItem) {
     // WorkItem validation is projected by recordTaskCentricExternalResult.
@@ -390,6 +397,7 @@ export async function runDirectTaskVerification(opts: {
   additional_commands?: readonly AdditionalDirectTaskCommand[];
   additional_only?: boolean;
   allow_empty?: boolean;
+  map_selected_checks?: boolean;
   run_process?: typeof runProcess;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
@@ -408,7 +416,8 @@ export async function runDirectTaskVerification(opts: {
       Math.min(additionalTimeouts.get(additional.command) ?? Infinity, additional.timeout_ms),
     );
   }
-  const selectedChecks = opts.additional_only ? [] : selectedLocalChecks(opts.task);
+  const selectedChecks =
+    opts.additional_only && !opts.map_selected_checks ? [] : selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
   const rootPackage =
     hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression

@@ -26,6 +26,7 @@ import type { TaskRouteDecision } from "../../commands/shared/route-decision-typ
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { RunnerPromptBlock } from "../types.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 
@@ -357,6 +358,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     execution_context: ReadOnlyExecutionContext;
     route_decision: TaskRouteDecision;
     semantic_role?: AgentWorkOrderRole;
+    task_execution?: TaskExecutionContext;
   };
   source_manifest: AgentWorkOrderSourceManifest;
   knowledge_retrieval: TaskKnowledgeRetrieval;
@@ -422,7 +424,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
     repository_snapshot: repositorySnapshot,
     retrievals: planningRetrievals,
   };
-  const mutationPath = decision.oracle.mutationPathHint;
+  const mutationPath =
+    opts.prepared.task_execution?.authoritative_task_source === "task_worktree"
+      ? taskEnvelope.repository.git_root
+      : decision.oracle.mutationPathHint;
   const executionContract = task.metadata.execution_contract;
   const taskCentric = taskCentricAggregateFromExtensions(taskEnvelope.source_task.extensions);
   const selectedWorkItem =
@@ -439,8 +444,15 @@ export function buildCanonicalAgentWorkOrder(opts: {
     selectedWorkItem?.scope_roots ?? executionContract?.authority.writable_roots;
   const hasExplicitEmptyScope =
     executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
+  const isolatedWorkItemCanMutate =
+    opts.prepared.task_execution?.authoritative_task_source === "task_worktree" &&
+    opts.prepared.task_execution.selected_mode === "direct" &&
+    role === "EXECUTOR" &&
+    selectedWorkItem !== null;
   const canMutate =
-    decision.executionPacket.safeToMutate && mutationPath !== null && !hasExplicitEmptyScope;
+    (decision.executionPacket.safeToMutate || isolatedWorkItemCanMutate) &&
+    mutationPath !== null &&
+    !hasExplicitEmptyScope;
   const declaredWritableRoots = (() => {
     if (!canMutate || mutationPath === null) return [];
     if (!declaredScopeRoots || declaredScopeRoots.length === 0) return [mutationPath];

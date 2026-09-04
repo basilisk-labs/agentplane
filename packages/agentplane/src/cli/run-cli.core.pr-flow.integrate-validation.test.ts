@@ -391,6 +391,9 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-protected-main`);
+    await mkdir(path.dirname(taskWorktree), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", taskWorktree, branch], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const { stdout: beforeMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
@@ -401,9 +404,11 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
-      expect(code).toBe(9);
+      expect(code, io.stderr).toBe(9);
       expect(io.stderr).toContain("error [E_HANDOFF]");
-      expect(io.stderr).toContain("branch_pr integrates into main through the task GitHub PR");
+      expect(io.stderr).toContain(
+        "branch_pr integrates into main through the hosted change request",
+      );
       expect(io.stderr).toContain("Task Hosted Close");
       expect(io.stderr).toContain(`next_action: agentplane task handoff show ${taskId}`);
       expect(io.stderr).toContain(
