@@ -247,6 +247,11 @@ function freshWorkItemRuntime(item: WorkItem): WorkItemRuntime {
   });
 }
 
+function workItemSemanticDigest(item: WorkItem): Sha256Digest {
+  const { evidence_fingerprint: _evidenceFingerprint, ...validation } = item.validation;
+  return taskCentricDigest({ ...item, validation });
+}
+
 /** Preserve runtime only when the replacement plan keeps the exact WorkItem contract. */
 export function reconcileReplacementPlanWorkItems(opts: {
   task: TaskAggregate;
@@ -264,7 +269,7 @@ export function reconcileReplacementPlanWorkItems(opts: {
           item.id,
           priorDefinition &&
           priorRuntime &&
-          taskCentricDigest(priorDefinition) === taskCentricDigest(item)
+          workItemSemanticDigest(priorDefinition) === workItemSemanticDigest(item)
             ? priorRuntime
             : freshWorkItemRuntime(item),
         ];
