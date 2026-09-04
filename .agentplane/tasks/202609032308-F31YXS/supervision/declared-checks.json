@@ -10,8 +10,8 @@
         "task_outcome"
       ],
       "command": "bun run ci:local:full",
-      "duration_ms": 451066,
-      "exit_code": 1,
+      "duration_ms": 483180,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
         "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
@@ -20,13 +20,101 @@
         "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
       },
       "script": "ci:local:full",
-      "stderr_tail": " \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n\nvi.mock(import(\"../shared/task-backend.js\"), async (importOriginal) => {\n  const actual = await importOriginal()\n  return {\n    ...actual,\n    // your mocked methods\n  }\n})\n\n ❯ applyTaskMutation packages/agentplane/src/commands/shared/task-mutation.ts:208:7\n    206|   const policyAction = opts.policyAction ?? \"task_mutation\";\n    207|\n    208|   if (backendUsesLocalTaskStore(opts.ctx)) {\n       |       ^\n    209|     const store = getTaskStore(opts.ctx);\n    210|     const result = await store.update(\n ❯ recordObservedTaskExecutionContract packages/agentplane/src/commands/task/task-execution-contract-observation.ts:31:26\n ❯ superviseDirectTaskRunWithWorkspace packages/agentplane/src/commands/task/direct-task-supervisor.ts:325:34\n ❯ Module.superviseDirectTaskRun packages/agentplane/src/commands/task/direct-task-supervisor.ts:83:12\n ❯ packages/agentplane/src/commands/task/direct-task-supervisor.test.ts:976:20\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯\n\nnode:internal/errors:985\n  const err = new Error(message);\n              ^\n\nError: Command failed: bunx vitest run --exclude **/cli-smoke.test.ts --exclude **/run-cli*.test.ts --exclude packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --exclude packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts --pool=forks --maxWorkers 6 --testTimeout 60000 --hookTimeout 60000\n    at genericNodeError (node:internal/errors:985:15)\n    at wrappedFn (node:internal/errors:539:14)\n    at checkExecSyncError (node:child_process:925:11)\n    at execFileSync (node:child_process:961:15)\n    at run (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/scripts/checks/run-local-ci-group.mjs:4:32)\n    at Object.core (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/scripts/checks/run-local-ci-group.mjs:29:5)\n    at file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/scripts/checks/run-local-ci-group.mjs:72:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 3513,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.18.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":25148},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16801},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":315646},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":88588}]}\nfile:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/scripts/checks/run-local-ci.mjs:522\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/scripts/checks/run-local-ci.mjs:522:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity/scripts/checks/run-local-ci.mjs:597:7\n\nNode.js v24.18.0\nerror: script \"ci:local:full\" exited with code 1\n",
-      "stdout_tail": "idian-relay-pull-sync.md\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki index: updated 1 index page(s)\n- context/wiki/modules/index.md\ncontext wiki lint: ok (2 page(s))\ncontext wiki new: context/wiki/modules/meridian-relay.md\ncontext wiki index: updated 2 index page(s)\n- context/wiki/index.md\n- context/wiki/modules/index.md\ncontext wiki lint: ok (3 page(s))\ncontext wiki index: updated 0 index page(s)\ncontext verify-task 202605191451-CTXGLO: ok (CURATOR / DOING)\ncontext wiki new: context/wiki/decisions/context-claims.md\ncontext wiki new: context/wiki/modules/payment-api.md\ncontext wiki new: context/wiki/workflows/context-writer.md\ncontext wiki lint: ok (1 page(s))\nevidence bundle: .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:10a8ed3a2a057171c066f32d2bddf28036715621ba3d4f3e44681f9135d0ef01\nfiles: 3\nevidence verify .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json: ok (3 files)\nevidence bundle: .agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:10a8ed3a2a057171c066f32d2bddf28036715621ba3d4f3e44681f9135d0ef01\nfiles: 3\nevidence bundle: .custom-agentplane/tasks/202605031625-886KZ6/evidence/manifest.json\nmanifest_digest: sha256:310d7e0338ee9a8e86e5300323829daf8544a4690871bbb2442bbadef1c1ac5b\nfiles: 1\nevidence verify .custom-agentplane/tasks/202605031625-886KZ6/evidence/manifest.json: ok (1 files)\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-CAwChr/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=5 files=3\nℹ️ projection_metrics source_bytes=227 search_text_bytes=307 preview_text_bytes=307 elapsed_ms=3\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-raw-deletion-CAwChr/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=2 changed=0 removed=0 unchanged=0\nℹ️ rows=3 files=2\nℹ️ projection_metrics source_bytes=204 search_text_bytes=261 preview_text_bytes=261 elapsed_ms=2\nℹ️ reindex prepared at /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-context-fts5-K4dSnz/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=missing-index added=3 changed=0 removed=0 unchanged=0\nℹ️ rows=6 files=3\nℹ️ projection_metrics source_bytes=54 search_text_bytes=108 preview_text_bytes=108 elapsed_ms=4\n{\n  \"summary\": {\n    \"tasks\": 1,\n    \"observations\": 0,\n    \"open\": 0,\n    \"invalid\": 1,\n    \"blocking\": 0,\n    \"byAction\": {}\n  },\n  \"tasks\": [\n    {\n      \"task_id\": \"202605191736-EQBZ4M\",\n      \"title\": \"Observation task\",\n      \"path\": \".agentplane/tasks/202605191736-EQBZ4M/observations.jsonl\",\n      \"observations\": [],\n      \"errors\": [\n        {\n          \"line\": 1,\n          \"message\": \"Expected property name or '}' in JSON at position 1 (line 1 column 2)\",\n          \"raw\": \"{not-json}\"\n        }\n      ],\n      \"blocking\": []\n    }\n  ]\n}\n ❯ packages/agentplane/src/commands/task/direct-task-supervisor.test.ts (13 tests | 8 failed) 11ms\n     × keeps evaluator rework as a typed stop after one started EXECUTOR episode 6ms\n     × keeps evaluator blocked as a typed stop after one started EXECUTOR episode 1ms\n     × keeps evaluator human_review as a typed stop after one started EXECUTOR episode 1ms\n     × classifies an EVALUATOR adapter failure without exposing its message 0ms\n     × verifies before evaluation and finalizes only after an EVALUATOR pass 0ms\n     × stops before verification when a declared check fails 0ms\n     × does not finish from a route changed after evaluator completion 0ms\n     × does not start EVALUATOR when verification changes the route 0ms\n\n Test Files  1 failed | 621 passed (622)\n      Tests  8 failed | 5384 passed | 1 skipped (5393)\n   Start at  19:41:30\n   Duration  256.96s (transform 23.84s, setup 0ms, import 138.28s, tests 1350.22s, environment 32ms)\n\n\n== cli (88588ms) ==\n"
+      "stderr_tail": "failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-04T16:54:24.574Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-PUwnAs/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-PUwnAs/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-04T16:54:24.597Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-BuasEh/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-BuasEh/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-04T16:54:24.604Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-BuasEh/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-BuasEh/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-04T16:54:24.613Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-yswuDt/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-yswuDt/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-04T16:54:24.619Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-04T16:54:29.864Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-04T16:54:29.880Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-04T16:54:29.881Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-04T16:54:29.882Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-04T16:54:29.883Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-04T16:54:29.886Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "NFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  19:56:18\n   Duration  25.96s (transform 10.42s, setup 0ms, import 8.83s, tests 76.41s, environment 0ms)\n\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  19:56:44\n   Duration  3.20s (transform 4.03s, setup 0ms, import 4.63s, tests 2.96s, environment 0ms)\n\nSignificant suite contract OK (17 source targets).\n 1 passed (1); Tests  2 passed (2); Duration  2.61s (transform 1.08s, setup 0ms, import 1.41s, tests 1.14s, environment 0ms))\nVitest suite critical-cli: chunk 8/14 (1 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts\nVitest suite critical-cli: chunk 8/14 passed in 2580ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.41s (transform 1.10s, setup 0ms, import 1.44s, tests 907ms, environment 0ms))\nVitest suite critical-cli: chunk 9/14 (1 files): packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 9/14 passed in 2822ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  2.66s (transform 1.08s, setup 0ms, import 1.41s, tests 1.18s, environment 0ms))\nVitest suite critical-cli: chunk 10/14 (1 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts\nVitest suite critical-cli: chunk 10/14 passed in 3001ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.83s (transform 1.10s, setup 0ms, import 1.43s, tests 1.34s, environment 0ms))\nVitest suite critical-cli: chunk 11/14 (1 files): packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 11/14 passed in 2504ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.34s (transform 1.09s, setup 0ms, import 1.42s, tests 858ms, environment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 17715ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  17.53s (transform 2.10s, setup 0ms, import 1.50s, tests 15.97s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1877ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.70s (transform 1.17s, setup 0ms, import 1.40s, tests 238ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 5084ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.91s (transform 1.19s, setup 0ms, import 1.44s, tests 3.41s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":23067},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":16799},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":312286},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":87864}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":444662,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\n\n== Workflows lint (actionlint) ==\n\n== Windows platform-critical tests ==\n\n== Significant file coverage (guard) ==\n\n== Coverage threshold (significant) ==\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run lint:core",
+      "duration_ms": 56989,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 237,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1",
+      "duration_ms": 9515,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609032308-F31YXS-repair-verification-evidence-contract-atomicity\n\n202602050900-V1F4F\n202602050900-V1F4G\n202602050900-V1F4H\n202602050900-V1F4\n202602050900-V1F4D\n202602050900-V1F4D\n202602050900-V1F4T\n202602050900-V1F4T\n202602050900-V1F4B\n202602050900-V1F5\n\n Test Files  3 passed (3)\n      Tests  39 passed (39)\n   Start at  19:57:45\n   Duration  9.15s (transform 1.33s, setup 0ms, import 2.10s, tests 6.87s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 117,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run ci:local:full",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609032308-F31YXS"
 }
