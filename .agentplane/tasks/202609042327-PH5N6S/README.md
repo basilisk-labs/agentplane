@@ -4,7 +4,7 @@ title: "Run supervisor verification against the committed implementation without
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -443,22 +443,93 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 6
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-04T23:45:59.407Z"
+    updated_at: "2026-09-04T23:54:29.095Z"
     work_items:
       clean-verification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "clean-verification"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:84fc8390b629432394e916d18984c445c7ea4be1ccf539b22f45b11384c7d324"
+            id: "Canonical artifact commit before branch verification"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609042327-PH5N6S"
+              work_item_id: "clean-verification"
+            provenance:
+              - "sha256:da1c6b8b27560827ec626b6870fc2f3d25b21f09b3e05fe198eda8afcec6386d"
+              - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3db529611c50b949e6b7dbfe923f4b7828f73b9b4fcbc6bb66c02a5ebd1da201"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:153034ed015f7b7725f2c422df8a9625d2e0b0285cc6b7decc783f5de4bd7cca"
+            id: "Real Git regression covering clean checks and preservation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609042327-PH5N6S"
+              work_item_id: "clean-verification"
+            provenance:
+              - "sha256:da1c6b8b27560827ec626b6870fc2f3d25b21f09b3e05fe198eda8afcec6386d"
+              - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3db529611c50b949e6b7dbfe923f4b7828f73b9b4fcbc6bb66c02a5ebd1da201"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "regression"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-04T23:54:29.089Z"
+              repository_snapshot_digest: "sha256:3db529611c50b949e6b7dbfe923f4b7828f73b9b4fcbc6bb66c02a5ebd1da201"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-04T23:54:29.089Z"
+              repository_snapshot_digest: "sha256:3db529611c50b949e6b7dbfe923f4b7828f73b9b4fcbc6bb66c02a5ebd1da201"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-04T23:54:29.095Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_b5c182732005181c2593db27"
+        mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-fe66808c6c5a2aa48a01a50b"
+        plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+        task_revision: 6
+        work_item_id: "clean-verification"
     leases: []
     mutation_receipts:
       compatibility:sha256:c04e97e16b156c55ca81f0e6a8f9423c3909aeaa8a8611b64b787949909472bc:
@@ -531,6 +602,29 @@ extensions:
         mutation_id: "compatibility:sha256:e7a767ac3abef08a06ab5887d7e2329873b60b576105d114e640a0de204eae1c"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      external-result:work-order-202609042327-PH5N6S-executor-fe66808c6c5a2aa48a01a50b:
+        aggregate_digest: "sha256:0823aeab510c2ebf4b28ed83a1890a9ca1ffaa810f1d750e0b0303eb862e6995"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T23:54:29.095Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_b5c182732005181c2593db27"
+          mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-fe66808c6c5a2aa48a01a50b"
+          plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 6
+          to: "COMPLETED"
+          work_item_id: "clean-verification"
+        mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-fe66808c6c5a2aa48a01a50b"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609042327-PH5N6S"
     pending_effects: []
