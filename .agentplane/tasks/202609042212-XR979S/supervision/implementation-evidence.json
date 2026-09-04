@@ -1,0 +1,97 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 8e8440da19e95e3264835bcdc8ccf665d18fe26c..4cc764f7f53ce701f7faaa5f6b795ef94ba40353",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8e8440da19e95e3264835bcdc8ccf665d18fe26c..4cc764f7f53ce701f7faaa5f6b795ef94ba40353",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609042212-XR979S/README.md",
+        "A\t.agentplane/tasks/202609042212-XR979S/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609042212-XR979S/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609042212-XR979S/pr/github-body.md",
+        "A\t.agentplane/tasks/202609042212-XR979S/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609042212-XR979S/pr/meta.json",
+        "A\t.agentplane/tasks/202609042212-XR979S/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-blocked-result.ts",
+        "M\tpackages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+  "implementation_commit": "4cc764f7f53ce701f7faaa5f6b795ef94ba40353",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609042212-XR979S/README.md",
+      "?? .agentplane/tasks/202609042212-XR979S/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/github-body.md",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/github-title.txt",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/meta.json",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609042212-XR979S/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609042212-XR979S/README.md",
+      "?? .agentplane/tasks/202609042212-XR979S/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/github-body.md",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/github-title.txt",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/meta.json",
+      "?? .agentplane/tasks/202609042212-XR979S/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609042212-XR979S"
+}

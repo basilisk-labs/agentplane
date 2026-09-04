@@ -4,7 +4,7 @@ title: "Repair pre-merge DONE task rework blocker persistence and resume ZVX69C"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -82,10 +82,17 @@ execution_contract:
       - "packages/core/src/tasks"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+      - "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -121,20 +128,28 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:966a175c6be9337adad52c111605115575577e8dd596be727a466306ba2cdd0a"
+      digest: "sha256:f374fc0299308e42265e426d7e3b3403fd5d77dddcb4ffc268a566db80573d9d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+          - "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -171,6 +186,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4cc764f7f53c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -179,9 +197,17 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-04T22:32:18.061Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4cc764f7f53c. CLI accepted one state-bound external-agent semantic result."
+    commit: "4cc764f7f53ce701f7faaa5f6b795ef94ba40353"
 doc_version: 3
-doc_updated_at: "2026-09-04T22:19:44.547Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-04T22:32:18.061Z"
+doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897. A fresh hosted implementation_rework_required packet accepts a typed blocked result with scope_extension_request but recordExternalBlockedResult fails Refusing status transition DONE -> BLOCKED because pre-merge closure left legacy status DONE. Reproduce the whole accepted-result and resume sequence in existing CLI tests. Fix at the lifecycle contract owner so hosted rework can persist its blocker and reach the normal scope revision route, preserving exact result identity, replay, atomic projections, stale rejection, and protection for truly integrated terminal tasks. Do not manually edit task projections or receipts. Use one bounded WorkItem. Return to ZVX69C afterward; do not repair its packaged fixtures here. Exclude release/version/publication, dependencies, MPXQBK and provider expansion."
 sections:
   Summary: |-
@@ -525,7 +551,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609042212-XR979S"
-    event_cursor: 2
+    event_cursor: 4
     final_validation: null
     id: "202609042212-XR979S"
     intent:
@@ -540,22 +566,180 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-04T22:19:44.547Z"
+    updated_at: "2026-09-04T22:33:53.622Z"
     work_items:
       repair-pre-merge-blocker-replay:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-pre-merge-blocker-replay"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "recovery"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Repair accepted pre-merge DONE rework blocker persistence and canonical block/resume projection consistency using existing transition primitives."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:76f5c97b72f7c805aafb40cb5dbae86528e87a87e33767668ec0e64b93b971c7"
+            id: "pre-merge-blocker-recovery"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609042212-XR979S"
+              work_item_id: "repair-pre-merge-blocker-replay"
+            provenance:
+              - "sha256:13f0db7c365eb24d0f37e62e9a3a1281f5faafe30fc2a280ceb9d57fec2d433b"
+              - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:183fbb966c7415db7aa7ad16766675e5f0571059eba8c3dabdca12d62549c989"
+            id: "replay-and-terminal-protection-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609042212-XR979S"
+              work_item_id: "repair-pre-merge-blocker-replay"
+            provenance:
+              - "sha256:13f0db7c365eb24d0f37e62e9a3a1281f5faafe30fc2a280ceb9d57fec2d433b"
+              - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-1"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
+              detail: "Declared check failed: bun run lint:core"
+              exit_code: 0
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-2"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts --maxWorkers=1"
+              detail: "Declared check failed: bun run lint:core"
+              exit_code: 0
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-3"
+              command_identity: "bun run format:check"
+              detail: "Declared check failed: bun run lint:core"
+              exit_code: 0
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-4"
+              command_identity: "bun run lint:core"
+              detail: "Declared check failed: bun run lint:core"
+              exit_code: 1
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-5"
+              command_identity: "bun run typecheck"
+              detail: "Declared validation command bun run typecheck was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-6"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Declared validation command node .agentplane/policy/check-routing.mjs was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-7"
+              command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+              detail: "Declared validation command node packages/agentplane/bin/agentplane.js task lint was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-8"
+              command_identity: "node packages/agentplane/bin/agentplane.js doctor"
+              detail: "Declared validation command node packages/agentplane/bin/agentplane.js doctor was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-9"
+              command_identity: "git diff --check"
+              detail: "Declared validation command git diff --check was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json"
+              check_id: "check-10"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared validation command bun run ci:local:full was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-04T22:33:53.616Z"
+              repository_snapshot_digest: "sha256:967af6e5b7543146615bdd091aab8dda092be1ce41946ddccee32cef3032cafd"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "recovery"
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-04T22:33:53.622Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_fd81e575547c902dbae7cc18"
+        mutation_id: "external-result:work-order-202609042212-XR979S-executor-0647c742a153415b9a5487fc"
+        plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042212-XR979S"
+        task_revision: 7
+        work_item_id: "repair-pre-merge-blocker-replay"
     leases: []
     mutation_receipts:
       compatibility:sha256:4f5b7dbcc19dea78335b5e23bde00ca8da59cfecb99cde8d6f254bd845b765e2:
@@ -582,6 +766,54 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609042212-XR979S"
+      compatibility:sha256:90e962e4bdf6e7dba911577cd598126abd9623a63b6b6081b5710f80ecd9065a:
+        aggregate_digest: "sha256:ab955163df2e379e0b268818c994377264ce00c1a7fcdd8a90354b538d650c0a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T22:32:18.061Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5f14617a92f3587b77fd1ccc"
+          mutation_id: "compatibility:sha256:90e962e4bdf6e7dba911577cd598126abd9623a63b6b6081b5710f80ecd9065a"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:90e962e4bdf6e7dba911577cd598126abd9623a63b6b6081b5710f80ecd9065a"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609042212-XR979S"
+      compatibility:sha256:ccfee9b4b262fc0fdc714453d812195d6ffe1c01c39d480250cebffb21790108:
+        aggregate_digest: "sha256:a884a83ad9cdaa43ec99ae85a8e41f73a6fbbe8fa43842da0722216da35781ed"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T22:32:18.061Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_356a183dc803df1e203eb8db"
+          mutation_id: "compatibility:sha256:ccfee9b4b262fc0fdc714453d812195d6ffe1c01c39d480250cebffb21790108"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ccfee9b4b262fc0fdc714453d812195d6ffe1c01c39d480250cebffb21790108"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609042212-XR979S"
       compatibility:sha256:ec1ee6ef54e9fc2156b09f57c8d3de89ad7d5c8af5d6d0996527156f1e02b113:
         aggregate_digest: "sha256:30c716f1409e6257e2100db8c42584fa070b7ce29d0a2fae1f77ba05cf5a47ef"
         event:
@@ -606,9 +838,34 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609042212-XR979S"
+      external-result:work-order-202609042212-XR979S-executor-0647c742a153415b9a5487fc:
+        aggregate_digest: "sha256:c4a3c3eb2ec046c1095fa75d41b95a8066368e806d6fb613565c17793f585f84"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T22:33:53.622Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_fd81e575547c902dbae7cc18"
+          mutation_id: "external-result:work-order-202609042212-XR979S-executor-0647c742a153415b9a5487fc"
+          plan_digest: "sha256:13b1722328d4768cc6e998ef4a5694e939b300cd18a024f9886f9f9e68d158a3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042212-XR979S"
+          task_revision: 7
+          to: "REWORK_READY"
+          work_item_id: "repair-pre-merge-blocker-replay"
+        mutation_id: "external-result:work-order-202609042212-XR979S-executor-0647c742a153415b9a5487fc"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609042212-XR979S"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "4cc764f7f53ce701f7faaa5f6b795ef94ba40353"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"

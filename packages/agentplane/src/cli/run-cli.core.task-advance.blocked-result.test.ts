@@ -453,11 +453,12 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(rejected.code).not.toBe(0);
     expect(rejected.stderr).toContain("No issued external-agent exchange matches this result");
-    expect((await ctx.taskBackend.getTask(taskId))?.status).toBe("DONE");
+    const rejectedTask = await ctx.taskBackend.getTask(taskId);
+    expect(rejectedTask?.status).toBe("DONE");
     await writeFile(resultPath, envelopeText);
     const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(returned.code, returned.stderr).toBe(0);
-    expect(JSON.parse(returned.stdout).action.kind, returned.stdout).toBe("approval_required");
+    expect(JSON.parse(returned.stdout)).toMatchObject({ action: { kind: "approval_required" } });
     const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain('status: "BLOCKED"');
@@ -467,9 +468,8 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     const replay = await returnAgentResult(taskWorktree, taskId, resultPath);
     expect(replay.code, replay.stderr).toBe(0);
     expect(await readFile(readmePath, "utf8")).toBe(readme);
-    expect((await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree })).stdout).toBe(
-      head.stdout,
-    );
+    const replayHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree });
+    expect(replayHead.stdout).toBe(head.stdout);
   });
 
   it("accepts a scope-extension blocker that preserves the dirty issuance baseline", async () => {
