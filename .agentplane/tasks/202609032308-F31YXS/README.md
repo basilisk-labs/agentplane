@@ -4,7 +4,7 @@ title: "Repair verification evidence contract atomicity and task-centric rework 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -32,6 +32,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-04T11:53:09.958Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "b17fd50c0e40aab152dc598fc6b36a8a1abdd2ee"
+  blueprint_digest: "c1c8f6a2b4d55c14c5c2d1c23687e98227e3564ca5d88da67e7b61b8e1475e49"
+  evidence_refs:
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-115211861-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-115211861-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/8cb5d1f3683043a171346500e0e518668bc9042e360976dac89e438678ac94c4.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-115211861-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-115211861-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/20260904-115211861-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609032308-F31YXS/README.md"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/b073cdd1a2d47a5dd5fa49128f1a62100d29bd9acb49d5c099ff26ed5977bbfd.json"
+    - ".agentplane/tasks/202609032308-F31YXS/verification/20260904115204577-b4c9a0c51ce08ab7.json"
+    - ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/1e4fbeb6d96a35267051d27bebfa2db480b66fefa273d47f8371dc6d290aaf1b.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "recordDirectTaskVerification obtains one verification task and snapshot before running checks, then passes that exact snapshot into verification persistence."
+    - "verify-record-execute uses the supplied execution contract, evaluated SHA, and changed paths instead of recomputing stronger evidence requirements after AgentPlane-owned artifact writes."
+    - "The task-centric compatibility projection changes COMPLETED to ACTIVE only for the precise ok-to-needs_rework and DONE-to-DOING transition, and clears final_validation for that reopened lifecycle."
+    - "Focused regressions assert projection revision alignment, WorkItem preservation, replay idempotence, and zero externally visible partial mutation after injected persistence failure."
+    - "The supervisor's fresh complete local CI execution passed on the reviewed implementation."
+    - "Residual risk: The implementation branch must still be published and validated by hosted checks before integration."
 execution_route:
   frozen: true
   reason_codes:
@@ -1083,7 +1114,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609032308-F31YXS"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609032308-F31YXS"
     intent:
@@ -1587,9 +1618,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609032308-F31YXS"
-    revision: 28
+    revision: 29
     schema_version: 1
-    updated_at: "2026-09-04T11:52:05.755Z"
+    updated_at: "2026-09-04T11:52:05.782Z"
     work_items:
       integrated-recovery-qualification:
         attempt: 0
@@ -1863,6 +1894,30 @@ extensions:
         mutation_id: "compatibility:sha256:4ae1be881a5e15fed3b0c17684a716b54e4d063a98ba1eeb45aba2cb4d587c42"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609032308-F31YXS"
+      compatibility:sha256:5a0788e8df67c617b7bc1e3bb79e2b41f6cb1b7a382421ae7f999cf7c50ff12a:
+        aggregate_digest: "sha256:46ae264ffd1a5c3cefb505ed45dc6698bdf299642a1781ced5bf7b31c05a564e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T11:52:05.782Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_44f24a4bb866ec1402e7cfb2"
+          mutation_id: "compatibility:sha256:5a0788e8df67c617b7bc1e3bb79e2b41f6cb1b7a382421ae7f999cf7c50ff12a"
+          plan_digest: "sha256:2831c1fb64c0478cc303c7cb626cd0feb575a776d5e84fec8a49e89bd53778c3"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609032308-F31YXS"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5a0788e8df67c617b7bc1e3bb79e2b41f6cb1b7a382421ae7f999cf7c50ff12a"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609032308-F31YXS"
       compatibility:sha256:689d5533634185727dfad2853eea578499448c4f203f29e612181e7e05d6c04c:
