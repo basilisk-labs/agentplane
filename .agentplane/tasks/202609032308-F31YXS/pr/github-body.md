@@ -16,7 +16,7 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,19 +30,16 @@ Reproduce and fix the Clean Core control-plane failure exposed by task 202609031
  .../task-centric-backend-projection.ts             |  13 +-
  ...n-cli.core.task-advance.evidence-rework.test.ts |  18 +-
  .../src/commands/shared/task-mutation.test.ts      | 143 ++++++++++
- .../commands/task/direct-task-supervisor.test.ts   |  13 +-
  .../commands/task/direct-task-verification.test.ts |   8 +
  .../src/commands/task/direct-task-verification.ts  |   4 +-
  .../task/external-agent-implementation-recovery.ts |  18 +-
- .../task-execution-contract-observation.test.ts    |  90 +++++-
- .../task/task-execution-contract-observation.ts    | 174 ++++++------
  .../src/commands/task/verify-record-execute.ts     |  43 +--
  .../agentplane/src/commands/task/verify-record.ts  |   3 +-
  .../src/commands/task/verify-record.types.ts       |   8 +
  packages/core/src/tasks/task-centric/graph.ts      | 104 ++++++-
  packages/core/src/tasks/task-centric/index.ts      |   1 +
  .../task-centric/replacement-plan-recovery.test.ts | 316 +++++++++++++++++++++
- 15 files changed, 836 insertions(+), 120 deletions(-)
+ 12 files changed, 648 insertions(+), 31 deletions(-)
 ```
 
 </details>
