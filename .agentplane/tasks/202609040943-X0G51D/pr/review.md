@@ -6,7 +6,7 @@ Created: 2026-09-04T10:05:07.800Z
 
 - Task: `202609040943-X0G51D`
 - Title: Preserve completed WorkItems across command-only material plan refinements
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609040943-X0G51D/preserve-completed-workitems-across-command-only`
 - Canonical task record: `.agentplane/tasks/202609040943-X0G51D/README.md`
 
