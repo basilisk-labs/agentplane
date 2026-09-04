@@ -12,8 +12,8 @@ Created: 2026-09-04T14:58:00.815Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-04T14:58:00.815Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-04T14:58:00.815Z
+- Updated: 2026-09-04T15:51:50.693Z
 - Branch: task/202609041447-YHERVV/unblock-verification-recovery-before-provider-co
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
