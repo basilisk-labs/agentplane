@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202608272129-DVS5NN/resolve-protected-integration-handoffs-from-thei",
+  "created_at": "2026-08-27T21:37:59.785Z",
+  "diffstat_sha256": "sha256:648f0d6e4342b746a70afd6f042d122ee8b6df0db3c43d264e7888a5bc8eb0d4",
+  "last_verified_at": "2026-08-27T22:49:32.357Z",
+  "last_verified_diffstat_sha256": "sha256:648f0d6e4342b746a70afd6f042d122ee8b6df0db3c43d264e7888a5bc8eb0d4",
+  "pr_number": 5862,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5862",
+  "pre_merge_closure": {
+    "basis_commit": "5d2f48ce48e8bf4538d9859cdd8544a0ef8d073e",
+    "branch": "task/202608272129-DVS5NN/resolve-protected-integration-handoffs-from-thei",
+    "pr_number": 5862,
+    "recorded_at": "2026-08-27T22:56:59.140Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202608272129-DVS5NN",
+  "updated_at": "2026-08-27T22:15:43.364Z",
+  "verify": {
+    "status": "pass"
+  }
+}

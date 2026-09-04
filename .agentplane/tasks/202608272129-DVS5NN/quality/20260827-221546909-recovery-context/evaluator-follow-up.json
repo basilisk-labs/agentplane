@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202608272129-DVS5NN-78db96967bd0402fd897ff6d",
+  "task_id": "202608272129-DVS5NN",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Use the supported operator task-document route to replace only Verify Steps and add concise Findings for 202608272129-DVS5NN. Preserve the existing plan, seven-file implementation, all mandatory checks, exact identities and release boundary. Recompute the route and obtain fresh verification/evaluation; do not edit task files or evidence manually.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "README.md still contains the PLANNER fallback scaffold in Verify Steps even though the approved WorkItem has concrete owner-readback, identity-and-recovery and bounded-verification criteria. The frozen evaluator acceptance explicitly requires replacing this scaffold when planning context is available. Replace it through the supported task-document operator route, retaining full CI and diff checks and naming the focused positive/negative/replay command and expected outcomes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "README.md Findings is empty. Record the proved missing-base-handoff cause, the owner-aware read-only repair, focused test results, independent local verification, and the two deferred diagnostic causes. Do not describe hosted checks, integration or release qualification as completed.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Code review: the new reader uses the registered base checkout without copying artifacts; valid generic local/direct hints remain available; task/owner mismatch, malformed records and conflicting protected identities fail closed. Existing PR/head/base/adoption-token eligibility remains unchanged. Tests cover repeated reads from both checkouts without changing heads, status or bytes, and the existing explicit-adoption test covers the following transition.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Verification wording clarification: the focused run passed all 83 tests with no skips. The broad core run has one pre-existing opt-in network packaging test skipped by its existing environment gate; no skip was introduced or changed by this diff.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: Release prepublish and hosted integration are not covered by the local task checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202608272129-DVS5NN/quality/objects/sha256/c02e0755b019de4aa5dfb3a951ef88f662edaf0f9406228ecfcf7796b35e8926.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202608272129-DVS5NN/quality/20260827-221546909-recovery-context/evaluator-result.json"
+}
