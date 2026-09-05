@@ -12,8 +12,8 @@ Created: 2026-09-04T18:17:29.251Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check could not run: agentplane task lint
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

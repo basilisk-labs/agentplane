@@ -2,50 +2,251 @@
   "checks": [
     {
       "check_ids": [
+        "focused-cli-cycle",
         "affected_unit_integration",
         "critical_paths",
         "real_e2e",
         "task_outcome"
       ],
-      "command": "agentplane doctor",
-      "duration_ms": 14877,
+      "command": "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1",
+      "duration_ms": 259317,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:045458fa5e8c9c86d2f41f76267e18fbbebb9b2958a620e58cec82db916e3070",
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n\n\n Test Files  7 passed (7)\n      Tests  72 passed (72)\n   Start at  14:56:03\n   Duration  258.63s (transform 2.62s, setup 0ms, import 4.98s, tests 253.05s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "focused-core-cycle",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1",
+      "duration_ms": 4219,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "warning: skipped 2 invalid task READMEs; local task state may be incomplete\n- 202601010000-000000: Task README is missing YAML frontmatter\n- BROKEN: Task README is missing YAML frontmatter\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n\n\n Test Files  5 passed (5)\n      Tests  147 passed (147)\n   Start at  15:00:22\n   Duration  3.80s (transform 748ms, setup 0ms, import 1.02s, tests 2.40s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "focused-added-regressions",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1",
+      "duration_ms": 55634,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n\n202607291149-AB13\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-UbegJk/.agentplane/tasks/202607291149-AB13/README.md\n202607290900-AB12\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-LffLiJ/.agentplane/tasks/202607290900-AB12/README.md\n202607290901-AG01\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-LffLiJ/.agentplane/tasks/202607290901-AG01/README.md\n202607290901-CD34\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-LffLiJ/.agentplane/tasks/202607290901-CD34/README.md\n202607290901-EF56\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-LffLiJ/.agentplane/tasks/202607290901-EF56/README.md\n\n Test Files  3 passed (3)\n      Tests  21 passed (21)\n   Start at  15:00:26\n   Duration  54.47s (transform 9.88s, setup 0ms, import 10.32s, tests 43.73s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "format-check",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run format:check",
+      "duration_ms": 22768,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "format:check",
+      "stderr_tail": "$ prettier . --check\n",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [
+        "lint-core",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run lint:core",
+      "duration_ms": 86759,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "typecheck",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 333,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "routing-policy",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 118,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
         "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
       },
       "script": null,
-      "stderr_tail": "ootstrap before command.\ncommand: doctor\ndetected: agentplane:watched_runtime_snapshot_changed(src/commands/pr/conflict-rework-base-context.ts, src/commands/pr/conflict-rework-route-eligibility.ts, src/commands/pr/conflict-rework.ts)\nreason: read_only_diagnostic\n$ node scripts/workflow/bootstrap-framework-dev.mjs\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-05T11:41:05.904Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking project-local blueprints\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=3 info=11\n- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open\nLikely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled\nNext action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)\nDetails: Affected tasks: 24\n  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local-handoff (repo-local binary reached via handoff from a global install)\n- [INFO] Active binary: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane/bin/agentplane.js\n- [INFO] Handoff source binary: /Users/densmirnov/Projects/agentplane/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\n- [INFO] Framework repo root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n- [INFO] Framework agentplane root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\n- [INFO] Framework core root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- [WARN] DONE task is missing implementation commit hash: 202607310026-4V5K9V (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202607311706-5N483Q (finish with --commit <hash>).\n- [INFO] Historical task archive contains 163 DONE tasks with unknown implementation commit hashes across 163 distinct commit hashes. Examples: 029370e80cf37953258bff636c743a58707f1d85 (1 task: 202608020907-FMGM4Z); 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 04ea2e6e3ed8831e79520000b321ddc423c2377f (1 task: 202608020545-Y4HQ7A); +160 more hash groups\n",
-      "stdout_tail": "_BRANCH_PREFIX\", \"clearPinnedBaseBranch\" and \"getPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build: ESM dist/cli.js                       373.80 KB\nagentplane build: ESM dist/command-catalog/task-read.js 233.27 KB\nagentplane build: ESM dist/command-catalog/core-fast.js 169.08 KB\nagentplane build: ESM dist/command-catalog.js           2.25 MB\nagentplane build: ESM dist/deferred-runtime.js          2.28 MB\nagentplane build: ESM dist/cli-bun.js                   3.58 MB\nagentplane build: ESM ⚡️ Build success in 2897ms\nagentplane build: generated dist/command-help.json (265 commands)\nagentplane build: Exited with code 0\n==> Building @agentplane/testkit\n@agentplane/testkit build: Exited with code 0\n==> Verifying repo-local runtime\nMode: repo-local-handoff (repo-local binary reached via handoff from a global install)\nActive binary: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane/bin/agentplane.js\nCurrent cwd: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\nFramework checkout: yes\nFramework repo root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\nFramework agentplane root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\nFramework core root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\nResolved agentplane: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\nResolved @agentplaneorg/core: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\nRepository expected agentplane CLI: 0.7.8-beta.1\nRepository CLI status: Active runtime 0.7.8-beta.1 matches the repository expectation 0.7.8-beta.1.\nHandoff from: /Users/densmirnov/Projects/agentplane/packages/agentplane/bin/agentplane.js\n\nFramework dev workflow:\n1. Canonical bootstrap:\n   - bun run framework:dev:bootstrap\n2. Manual fallback:\n   - bun install\n   - git submodule update --init --recursive agentplane-recipes\n   - bun run --filter=@agentplaneorg/core build\n   - bun run --filter=agentplane build\n   - bun run --filter=@agentplane/testkit build\n3. Verify the repo-local runtime directly:\n   - node packages/agentplane/bin/agentplane.js runtime explain\n4. If the global PATH install should resolve this checkout:\n   - scripts/reinstall-global-agentplane.sh\n5. Re-verify the global wrapper:\n   - agentplane runtime explain\n6. Optional: force the global installed CLI inside this checkout:\n   - AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\nRecommendation: Run the framework bootstrap after fresh clones or dependency drift; use the reinstall helper only when the global PATH command itself should resolve this checkout.\n\nPrompt graph:\n- Artifact: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/generated/prompt-graph.json (not_configured)\n- Active recipes: none\n\nFramework dev runtime is ready.\nRepo-local verify: node packages/agentplane/bin/agentplane.js runtime explain\nGlobal verify: agentplane runtime explain\nIf PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh\nOptional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>\n✅ doctor (OK)\n"
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
     },
     {
       "check_ids": [
+        "task-lint",
         "affected_unit_integration",
         "critical_paths",
         "real_e2e",
         "task_outcome"
       ],
-      "command": "agentplane task lint",
-      "duration_ms": 88,
-      "exit_code": null,
+      "command": "node packages/agentplane/bin/agentplane.js task lint",
+      "duration_ms": 6498,
+      "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:045458fa5e8c9c86d2f41f76267e18fbbebb9b2958a620e58cec82db916e3070",
-        "executable_digest": "sha256:f7ce2b43b8fe9bc2cfd044a0ed3e2cec9df68bf42c479de509a9d78e3a86fcab",
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
         "kind": "local_runtime_resolution",
         "status": "resolved",
         "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
       },
       "script": null,
-      "stderr_tail": "process command is not in the allowed executable set: agentplane",
+      "stderr_tail": "",
+      "stdout_tail": "OK\n"
+    },
+    {
+      "check_ids": [
+        "doctor",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 8383,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-05T12:03:19.386Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking project-local blueprints\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=3 info=10\n- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open\nLikely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled\nNext action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)\nDetails: Affected tasks: 24\n  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.8-beta.1 @ /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\n- [INFO] Framework repo root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n- [INFO] Framework agentplane root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/agentplane\n- [INFO] Framework core root: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/packages/core\n- [INFO] Project blueprint compatibility: compatible; trusted=0\n- [WARN] DONE task is missing implementation commit hash: 202607310026-4V5K9V (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202607311706-5N483Q (finish with --commit <hash>).\n- [INFO] Historical task archive contains 163 DONE tasks with unknown implementation commit hashes across 163 distinct commit hashes. Examples: 029370e80cf37953258bff636c743a58707f1d85 (1 task: 202608020907-FMGM4Z); 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 04ea2e6e3ed8831e79520000b321ddc423c2377f (1 task: 202608020545-Y4HQ7A); +160 more hash groups\n",
+      "stdout_tail": "✅ doctor (OK)\n"
+    },
+    {
+      "check_ids": [
+        "diff-check",
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 118,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "",
       "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "full-local-ci",
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 506539,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-05T12:09:31.510Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-6lpTR0/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-6lpTR0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-05T12:09:31.524Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-zDB1ft/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-zDB1ft/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-05T12:09:31.531Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-zDB1ft/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-zDB1ft/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-05T12:09:31.537Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-RjajV0/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-RjajV0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-05T12:09:31.542Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-05T12:09:35.371Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-05T12:09:35.386Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-05T12:09:35.387Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-05T12:09:35.390Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-05T12:09:35.390Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-05T12:09:35.394Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "ronment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 17678ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  17.50s (transform 1.90s, setup 0ms, import 1.34s, tests 16.09s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 1773ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.61s (transform 1.11s, setup 0ms, import 1.32s, tests 228ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 4848ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.69s (transform 1.10s, setup 0ms, import 1.32s, tests 3.30s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":35481},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":18015},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":319718},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":86094}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":465870,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 232 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  15:11:21\n   Duration  28.81s (transform 10.53s, setup 0ms, import 9.60s, tests 89.63s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  15:11:50\n   Duration  3.08s (transform 3.99s, setup 0ms, import 4.46s, tests 2.86s, environment 1ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check could not run: agentplane task lint",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609041801-ZVX69C"
 }

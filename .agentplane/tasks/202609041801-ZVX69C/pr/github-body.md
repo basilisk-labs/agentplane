@@ -15,8 +15,8 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check could not run: agentplane task lint
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
