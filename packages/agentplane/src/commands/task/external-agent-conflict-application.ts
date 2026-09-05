@@ -112,7 +112,7 @@ export async function recoverExternalConflictEvidence(
           "--verify",
           "--end-of-options",
           conflictContext!.provider.base,
-        ])) !== conflictContext!.provider.base_sha
+        ])) !== conflictContext!.local.base_head_sha
       ) {
         throw new CliError({
           code: "E_VALIDATION",
@@ -124,7 +124,7 @@ export async function recoverExternalConflictEvidence(
         task_id: opts.exchange.task_id,
         baseline: opts.exchange.baseline.head,
         head: parent,
-        base: conflictContext!.provider.base_sha,
+        base: conflictContext!.local.base_head_sha,
         result_digest: opts.exchange.result_digest!,
       });
       const allowed = opts.work_order.authority.writable_roots
@@ -135,7 +135,7 @@ export async function recoverExternalConflictEvidence(
         cwd: opts.exchange.checkout,
         task_head: opts.exchange.baseline.head,
         resolution_snapshot: snapshot,
-        base: conflictContext!.provider.base_sha,
+        base: conflictContext!.local.base_head_sha,
         merge_base: conflictContext!.local.merge_base_sha,
         allowed_path: (file) => pathAllowed(file, allowed) || file.startsWith(prefix),
       });
@@ -143,7 +143,7 @@ export async function recoverExternalConflictEvidence(
       const changed = changedOutput.split("\0").filter(Boolean);
       if (
         (await git(["show", "-s", "--format=%P", parent])) !==
-          `${snapshot} ${conflictContext!.provider.base_sha}` ||
+          `${snapshot} ${conflictContext!.local.base_head_sha}` ||
         (await git(["show", "-s", "--format=%T", parent])) !== prepared.tree ||
         changed.some((file) => !file.startsWith(prefix))
       ) {
@@ -175,7 +175,7 @@ export async function applyExternalConflictResolution(
     task_id: opts.exchange.task_id,
     baseline,
     head: currentHead,
-    base: conflictContext.provider.base_sha,
+    base: conflictContext.local.base_head_sha,
     result_digest: opts.exchange.result_digest,
   });
   const allowed = opts.work_order.authority.writable_roots
@@ -188,7 +188,7 @@ export async function applyExternalConflictResolution(
     base_ref: conflictContext.provider.base,
     task_head: baseline,
     resolution_snapshot: snapshot,
-    base: conflictContext.provider.base_sha,
+    base: conflictContext.local.base_head_sha,
     merge_base: conflictContext.local.merge_base_sha,
     semantic_result_digest: opts.exchange.result_digest,
     allowed_path: (file) =>

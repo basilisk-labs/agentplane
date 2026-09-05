@@ -15,8 +15,19 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Confirmed admitted conflict-base application mismatch: the packet binds current_base_sha
+6e49077db61daed5204b514e7d6e071c190edda6, but external and managed merge application pass
+provider.base_sha 8e8440da19e95e3264835bcdc8ccf665d18fe26c to the current-base equality guard. The
+narrow read-only Node assertion failed before any merge or Task write. Implement the already
+recorded non-material plan amendment
+d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22 in the existing owners and qualify
+both base identities, stale rejection and recovery. Preserve the previously passing focused tests
+and scope exclusions.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,7 +45,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/cli/release-critical-lifecycle.test.ts     |  14 +
  .../agentplane/src/cli/route-decision.testkit.ts   |  22 +
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++--
- .../cli/run-cli.core.pr-conflict-rework.test.ts    | 262 ++++++---
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 325 +++++++----
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
  .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
  .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
@@ -42,15 +53,16 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  ...n-cli.core.task-advance.branch-worktree.test.ts |  83 ++-
  ...n-cli.core.task-advance.evidence-rework.test.ts | 105 +++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
- .../cli/task-advance-effect-recovery.testkit.ts    | 336 +++++++++++-
+ .../cli/task-advance-effect-recovery.testkit.ts    | 393 +++++++++++++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../src/commands/pr/conflict-rework-authority.ts   | 101 ++++
  .../commands/pr/conflict-rework-base-context.ts    |   7 +-
- .../src/commands/pr/conflict-rework-merge.test.ts  | 186 +++++++
+ .../src/commands/pr/conflict-rework-merge.test.ts  | 190 +++++++
  .../src/commands/pr/conflict-rework-merge.ts       | 467 ++++++++++++++++
  .../pr/conflict-rework-route-eligibility.ts        |   6 +-
- .../commands/pr/conflict-rework-semantic-input.ts  | 110 ++++
- .../src/commands/pr/conflict-rework.test.ts        | 136 +++++
+ .../commands/pr/conflict-rework-semantic-input.ts  | 112 ++++
+ .../src/commands/pr/conflict-rework.test.ts        | 142 +++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  23 +-
  .../src/commands/shared/declared-check.test.ts     |   6 +-
  .../src/commands/shared/declared-check.ts          |  12 +-
@@ -63,12 +75,12 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/commands/shared/workflow-step-branch.ts    |   3 +-
  .../shared/workflow-step-conflict-rework.ts        |   6 +-
  .../src/commands/shared/workflow-step-factory.ts   |   6 +-
- .../commands/shared/workflow-step-fingerprint.ts   |  12 +-
- .../commands/shared/workflow-step-policy-scope.ts  |  16 +
+ .../commands/shared/workflow-step-fingerprint.ts   |  14 +-
+ .../commands/shared/workflow-step-policy-scope.ts  |  27 +-
  .../src/commands/shared/workflow-step.test.ts      |  88 +++
- .../branch-task-supervisor-conflict-recovery.ts    | 592 +++++++++++++++++++++
+ .../branch-task-supervisor-conflict-recovery.ts    | 596 +++++++++++++++++++++
  .../task/branch-task-supervisor-episodes.ts        | 279 ++++------
- .../task/branch-task-supervisor-implementation.ts  | 481 +++++++++++++++++
+ .../task/branch-task-supervisor-implementation.ts  | 494 +++++++++++++++++
  .../commands/task/branch-task-supervisor.test.ts   |  30 ++
  .../src/commands/task/branch-task-supervisor.ts    |  17 +-
  .../src/commands/task/direct-task-finalization.ts  |  59 +-
@@ -77,7 +89,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../task/external-agent-conflict-application.ts    | 227 ++++++++
  .../src/commands/task/external-agent-exchange.ts   |   3 +
  .../external-agent-implementation-authority.ts     | 262 ++++-----
- .../external-agent-implementation-checkpoint.ts    | 268 ++++++++++
+ .../external-agent-implementation-checkpoint.ts    | 268 +++++++++
  .../external-agent-implementation-finalization.ts  | 128 +++++
  .../external-agent-implementation-recovery.test.ts |  85 ++-
  .../task/external-agent-implementation-recovery.ts | 120 ++---
@@ -94,7 +106,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../agentplane/src/commands/task/shared/docs.ts    |   2 +
  .../task/shared/workflow-transition-service.ts     |  79 +++
  .../task-execution-contract-observation.test.ts    |  19 +
- .../task/task-execution-contract-observation.ts    | 200 +++----
+ .../task/task-execution-contract-observation.ts    | 200 ++++---
  .../src/commands/task/verify-record-execute.ts     |  54 +-
  .../task/verify-record.durability.unit.test.ts     |  11 +-
  .../agentplane/src/commands/task/verify-record.ts  |   3 +
@@ -108,7 +120,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 81 files changed, 6048 insertions(+), 1011 deletions(-)
+ 82 files changed, 6276 insertions(+), 1046 deletions(-)
 ```
 
 </details>

@@ -8,6 +8,13 @@ import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
 
 const WORKFLOW_ROUTE_BASELINE_KEY = "workflow_route_baseline";
 
+type PolicyScopeState = Pick<
+  WorkflowRouteStateInput,
+  "task" | "workflowMode" | "taskWorktree" | "prFlow"
+> & {
+  resume: Pick<WorkflowRouteStateInput["resume"], "pr_branch" | "base_branch" | "head_sha">;
+};
+
 type WorkflowRouteBaseline = {
   version: 1;
   start_head_sha: string | null;
@@ -88,7 +95,7 @@ function runnerChangedPaths(task: TaskData): string[] {
   );
 }
 
-function taskBranch(state: WorkflowRouteStateInput): string | null {
+function taskBranch(state: PolicyScopeState): string | null {
   const candidates = [
     state.taskWorktree?.branch,
     state.prFlow?.branch.name,
@@ -119,7 +126,7 @@ async function rootCommitChangedPaths(repositoryRoot: string): Promise<string[]>
 
 export async function observeWorkflowPolicyScope(opts: {
   repositoryRoot: string;
-  state: WorkflowRouteStateInput;
+  state: PolicyScopeState;
   preobservedDirtyPaths?: readonly string[];
   excludedRoots?: readonly string[];
 }): Promise<WorkflowPolicyScopeObservation> {

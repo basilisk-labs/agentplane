@@ -431,7 +431,7 @@ export async function applyExternalImplementationResult(opts: {
         cwd: opts.exchange.checkout,
         task_id: opts.exchange.task_id,
         execution_base_commit: conflictContext
-          ? conflictContext.provider.base_sha
+          ? conflictContext.local.base_head_sha
           : reusedRecordedImplementation
             ? recordedExecutionBase
             : opts.exchange.baseline.head,

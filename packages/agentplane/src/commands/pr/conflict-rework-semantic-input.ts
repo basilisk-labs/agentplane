@@ -24,6 +24,8 @@ export function conflictReworkSemanticInput(
     path.resolve(packet.task_worktree.path) !== checkout ||
     packet.local.branch_head_sha !== authority.head ||
     packet.provider.head_sha !== authority.head ||
+    packet.local.base_head_sha !== packet.base_context.current_base_sha ||
+    packet.provider.base_sha !== packet.base_context.provider_conflict_base_sha ||
     packet.task_worktree.branch !== packet.provider.branch ||
     authority.writable_roots.length === 0 ||
     authority.writable_roots.some((root) => {

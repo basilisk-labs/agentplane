@@ -200,6 +200,12 @@ describe("provider conflict rework packet", () => {
       semanticPacket,
     );
     expect(input.description).not.toContain("agentplane pr conflict-rework");
+    for (const changed of [
+      { ...prepared.packet, local: { ...prepared.packet.local, base_head_sha: headSha } },
+      { ...prepared.packet, provider: { ...prepared.packet.provider, base_sha: headSha } },
+    ]) {
+      expect(() => conflictReworkSemanticInput(changed, identity)).toThrow();
+    }
     const bundle = {
       task: {
         metadata: { task_id: taskId, status: "DONE", task_kind: "code", mutation_scope: "code" },

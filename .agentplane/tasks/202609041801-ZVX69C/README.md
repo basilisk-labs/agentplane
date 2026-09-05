@@ -2,10 +2,10 @@
 id: "202609041801-ZVX69C"
 title: "Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 78
+revision: 79
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user decision in this thread: Я разрешаю, confirming plan sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129. Applied through the supported manual operator route."
 verification:
-  state: "ok"
-  updated_at: "2026-09-05T22:54:39.680Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-05T23:16:11.223Z"
+  updated_by: "CODER"
+  note: "Confirmed admitted conflict-base application mismatch: the packet binds current_base_sha 6e49077db61daed5204b514e7d6e071c190edda6, but external and managed merge application pass provider.base_sha 8e8440da19e95e3264835bcdc8ccf665d18fe26c to the current-base equality guard. The narrow read-only Node assertion failed before any merge or Task write. Implement the already recorded non-material plan amendment d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22 in the existing owners and qualify both base identities, stale rejection and recovery. Preserve the previously passing focused tests and scope exclusions."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -168,7 +168,8 @@ execution_contract:
       - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       - "scripts/qualification/release-qualification.test.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
       - "scripts"
@@ -396,6 +397,9 @@ execution_contract:
       -
         id: "recorded-check-9"
         result: "pass"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
@@ -616,9 +620,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "42463c33c80a49eea4445f2aa6a382a6ab6588ac"
-  message: "🚧 ZVX69C task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -948,8 +951,14 @@ events:
     at: "2026-09-05T23:14:33.237Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): The sole dirty file is the native Task README written by acceptance of the preceding non-material plan clarification. Preserve it and let the formal task-artifact commit owner checkpoint it. There are no source changes or foreign changes to resolve."
+  -
+    type: "verify"
+    at: "2026-09-05T23:16:11.223Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Confirmed admitted conflict-base application mismatch: the packet binds current_base_sha 6e49077db61daed5204b514e7d6e071c190edda6, but external and managed merge application pass provider.base_sha 8e8440da19e95e3264835bcdc8ccf665d18fe26c to the current-base equality guard. The narrow read-only Node assertion failed before any merge or Task write. Implement the already recorded non-material plan amendment d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22 in the existing owners and qualify both base identities, stale rejection and recovery. Preserve the previously passing focused tests and scope exclusions."
 doc_version: 3
-doc_updated_at: "2026-09-05T23:14:33.268Z"
+doc_updated_at: "2026-09-05T23:16:15.572Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -2600,6 +2609,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-05T23:16:11.223Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Confirmed admitted conflict-base application mismatch: the packet binds current_base_sha 6e49077db61daed5204b514e7d6e071c190edda6, but external and managed merge application pass provider.base_sha 8e8440da19e95e3264835bcdc8ccf665d18fe26c to the current-base equality guard. The narrow read-only Node assertion failed before any merge or Task write. Implement the already recorded non-material plan amendment d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22 in the existing owners and qualify both base identities, stale rejection and recovery. Preserve the previously passing focused tests and scope exclusions.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b, input_digest=sha256:c3519f00252daef3bd9815c4944fbbd350d2587c5dd8d106d93433834e8420ab
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/tasks/202609041801-ZVX69C/blueprint/resolved-snapshot.json
+    - old_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+    - current_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609041801-ZVX69C
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -3066,134 +3105,8 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 58
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "focused-cli-cycle"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "focused-core-cycle"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "focused-added-regressions"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "format-check"
-          command_identity: "bun run format:check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "lint-core"
-          command_identity: "bun run lint:core"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "typecheck"
-          command_identity: "bun run typecheck"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "routing-policy"
-          command_identity: "node .agentplane/policy/check-routing.mjs"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "task-lint"
-          command_identity: "node packages/agentplane/bin/agentplane.js task lint"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "doctor"
-          command_identity: "agentplane doctor"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "diff-check"
-          command_identity: "git diff --check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609041801-ZVX69C"
-            - "git:8b1594fdbddea370c02760dd835f4f98f9caf160"
-          check_id: "full-local-ci"
-          command_identity: "bun run ci:local:full"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T22:54:39.680Z"
-          repository_snapshot_digest: "sha256:048f44ec9e767c54ace4e6ff897200e9944c7a77567159b83a9d95bd265c9e5d"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 59
+    final_validation: null
     id: "202609041801-ZVX69C"
     intent:
       acceptance_criteria:
@@ -3244,7 +3157,7 @@ extensions:
 
         On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
       task_id: "202609041801-ZVX69C"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -4664,9 +4577,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 78
+    revision: 79
     schema_version: 1
-    updated_at: "2026-09-05T23:14:33.237Z"
+    updated_at: "2026-09-05T23:16:15.565Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -5655,6 +5568,30 @@ extensions:
         previous_revision: 34
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      compatibility:sha256:7a20f451b43dccac9899524d2eed668a4f268b7775ca6e0fecbe5fa170c8ea55:
+        aggregate_digest: "sha256:f075a21f5a966c81e03372981d5ff574a32ffb9391af03529d47b9e39223105e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T23:16:15.565Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_7650c651210ac33fa70dd652"
+          mutation_id: "compatibility:sha256:7a20f451b43dccac9899524d2eed668a4f268b7775ca6e0fecbe5fa170c8ea55"
+          plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 78
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7a20f451b43dccac9899524d2eed668a4f268b7775ca6e0fecbe5fa170c8ea55"
+        next_revision: 79
+        previous_revision: 78
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       compatibility:sha256:7c432a1889636a5dd79880a2f2c2751e06036a48785402c1e3222bf59c8a95d7:
         aggregate_digest: "sha256:b9eb775251251621352259f8d36cb42e1c601c2767c56c72a9af5b1694fa618e"
         event:
@@ -6621,9 +6558,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "8b1594fdbddea370c02760dd835f4f98f9caf160"
-    message: "🚧 ZVX69C task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
@@ -8285,6 +8219,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609041801-ZVX69C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-05T23:16:11.223Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Confirmed admitted conflict-base application mismatch: the packet binds current_base_sha 6e49077db61daed5204b514e7d6e071c190edda6, but external and managed merge application pass provider.base_sha 8e8440da19e95e3264835bcdc8ccf665d18fe26c to the current-base equality guard. The narrow read-only Node assertion failed before any merge or Task write. Implement the already recorded non-material plan amendment d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22 in the existing owners and qualify both base identities, stale rejection and recovery. Preserve the previously passing focused tests and scope exclusions.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b, input_digest=sha256:c3519f00252daef3bd9815c4944fbbd350d2587c5dd8d106d93433834e8420ab
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/tasks/202609041801-ZVX69C/blueprint/resolved-snapshot.json
+- old_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+- current_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609041801-ZVX69C
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

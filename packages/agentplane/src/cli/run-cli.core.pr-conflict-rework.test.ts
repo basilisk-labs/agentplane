@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import {
   exerciseConflictExchange,
+  fakeGithubProviderSource,
   withFakeConflictGh as withFakeGh,
   type ConflictVerificationDrift,
 } from "./task-advance-effect-recovery.testkit.js";
@@ -158,36 +159,6 @@ async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRo
   } finally {
     routeIo.restore();
   }
-}
-
-function fakeGithubProviderSource(detail: Record<string, unknown>): string {
-  return [
-    "const args = process.argv.slice(2);",
-    `const detail = ${JSON.stringify(detail)};`,
-    'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
-    "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
-    "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
-    "  console.log(JSON.stringify(detail));",
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "pr" && args[1] === "checks") {',
-    '  console.log("[]");',
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "api" && args[1] === "graphql") {',
-    "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
-    "  process.exit(0);",
-    "}",
-    "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
-    "process.exit(91);",
-    "",
-  ].join("\n");
 }
 
 describe("provider conflict rework CLI", () => {
@@ -393,6 +364,13 @@ describe("provider conflict rework CLI", () => {
   it.each([
     "read_only",
     "external_exchange",
+    "external_exchange_advanced_base",
+    "after_verification_advanced_base",
+    "managed_interrupted_advanced_base",
+    "managed_status_interrupted_advanced_base",
+    "managed_status_interrupted_policy_drift_advanced_base",
+    "after_verification_base_advanced_base",
+    "after_verification_provider_advanced_base",
     "interrupted_exchange",
     "interrupted_drift",
     "before_checkpoint",
@@ -422,7 +400,9 @@ describe("provider conflict rework CLI", () => {
     "managed_interrupted_policy_drift",
   ] as const)(
     "routes a live GitHub conflict to CODER with a fresh packet (%s)",
-    async (mode) => {
+    async (scenario) => {
+      const advancedBase = scenario.endsWith("_advanced_base");
+      const mode = scenario.replace(/_advanced_base$/u, "");
       const root = await mkGitRepoRootWithBranch("main");
       expect(await runCliSilent(["init", "--yes", "--hooks", "no", "--root", root])).toBe(0);
       const config = defaultConfig();
@@ -565,6 +545,19 @@ describe("provider conflict rework CLI", () => {
       ]);
       const headSha = headRaw.trim();
       const baseSha = baseRaw.trim();
+      let currentBaseSha = baseSha;
+      if (advancedBase) {
+        await writeFile(
+          path.join(root, "docs/base-only.md"),
+          "preserve current base contribution\n",
+        );
+        await execFileAsync("git", ["add", "docs/base-only.md"], { cwd: root });
+        await execFileAsync("git", ["commit", "-m", "test: advance current conflict base"], {
+          cwd: root,
+        });
+        const advanced = await execFileAsync("git", ["rev-parse", "main"], { cwd: root });
+        currentBaseSha = advanced.stdout.trim();
+      }
       await execFileAsync(
         "git",
         ["remote", "add", "origin", "https://github.com/example/repo.git"],
@@ -584,12 +577,12 @@ describe("provider conflict rework CLI", () => {
               branch,
               base: "main",
               head_sha: headSha,
-              base_sha: baseSha,
+              base_sha: currentBaseSha,
               changed_paths: ["docs/conflict.md"],
               pr_number: 4626,
               pr_url: "https://github.example/acme/agentplane/pull/4626",
               priority: 0,
-              status: "handoff",
+              status: advancedBase ? "queued" : "handoff",
               enqueued_at: "2026-07-26T00:00:00.000Z",
               updated_at: "2026-07-26T00:01:00.000Z",
               claimed_by: "integrator",
@@ -698,7 +691,7 @@ describe("provider conflict rework CLI", () => {
             },
             worktree,
             taskId,
-            baseSha,
+            baseSha: currentBaseSha,
             interrupt: mode.startsWith("managed_interrupted"),
             interruptAfterStatus: mode.startsWith("managed_status_interrupted"),
             interruptAfterContract: mode === "managed_contract_interrupted",
@@ -729,7 +722,8 @@ describe("provider conflict rework CLI", () => {
             worktree,
             taskId,
             headSha,
-            baseSha,
+            baseSha: currentBaseSha,
+            providerBaseSha: baseSha,
             interrupt: mode === "interrupted_exchange" || mode === "interrupted_drift",
             driftAfterInterruption:
               mode === "interrupted_drift" || mode === "before_checkpoint_drift",
@@ -741,6 +735,11 @@ describe("provider conflict rework CLI", () => {
               ? (mode.slice("after_verification_".length) as ConflictVerificationDrift)
               : undefined,
           });
+        }
+        if (advancedBase) {
+          expect(await readFile(path.join(worktree, "docs/base-only.md"), "utf8")).toBe(
+            "preserve current base contribution\n",
+          );
         }
       });
 

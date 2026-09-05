@@ -52,7 +52,6 @@ import {
   resolveConflictResolutionSnapshot,
 } from "../pr/conflict-rework-merge.js";
 import {
-  conflictApplicationAuthority,
   hasPendingManagedConflict,
   loadManagedConflictRecovery,
   managedImplementationStatusNote,
@@ -61,6 +60,10 @@ import {
   managedConflictEvidenceCommitMessage,
   type ManagedConflictApplicationContext,
 } from "./branch-task-supervisor-conflict-recovery.js";
+import {
+  conflictApplicationAuthority,
+  conflictRecoveryAuthority,
+} from "../pr/conflict-rework-authority.js";
 
 import { readCommitInfo } from "./shared.js";
 
@@ -208,7 +211,17 @@ export async function applyBranchImplementationResult(
       const provider = current.prFlow?.providerObservation;
       if (
         digestSupervisorEpisodeValue({
-          authority: conflictApplicationAuthority(current),
+          authority:
+            context.recovery && applicationContext
+              ? await conflictRecoveryAuthority({
+                  command,
+                  checkout,
+                  decision: current,
+                  order,
+                  context: applicationContext,
+                  changed_paths: executed.result.evidence?.changed_paths ?? [],
+                })
+              : conflictApplicationAuthority(current),
           implementation: applicationContext,
         }) !== journal.operations.at(-1)?.progress_digest ||
         provider?.state !== "found" ||
@@ -249,7 +262,7 @@ export async function applyBranchImplementationResult(
           task_id: opts.input.task_id,
           baseline: executionBaseCommit,
           head,
-          base: conflict.provider.base_sha,
+          base: conflict.local.base_head_sha,
           result_digest: resultDigest,
         })
       : head;
@@ -263,7 +276,7 @@ export async function applyBranchImplementationResult(
       base_ref: conflict.provider.base,
       task_head: executionBaseCommit,
       resolution_snapshot: snapshot,
-      base: conflict.provider.base_sha,
+      base: conflict.local.base_head_sha,
       merge_base: conflict.local.merge_base_sha,
       semantic_result_digest: resultDigest,
       assert_authority: assertAuthority,
@@ -276,7 +289,7 @@ export async function applyBranchImplementationResult(
     command,
     cwd: checkout,
     task_id: opts.input.task_id,
-    execution_base_commit: conflict?.provider.base_sha ?? executionBaseCommit,
+    execution_base_commit: conflict?.local.base_head_sha ?? executionBaseCommit,
     execution_baseline_status: executionBaselineStatus,
     allowed_paths: lifecycle.lifecycle.work_order_authority?.writable_roots ?? [],
     observed_changed_paths:

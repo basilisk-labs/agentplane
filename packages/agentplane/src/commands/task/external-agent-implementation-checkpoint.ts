@@ -76,7 +76,7 @@ async function observe(opts: {
   ]);
   if (
     branch.stdout.trim() !== conflict.task_worktree.branch ||
-    base.stdout.trim() !== conflict.provider.base_sha
+    base.stdout.trim() !== conflict.local.base_head_sha
   )
     throw new Error("Conflict verification checkpoint branch or base changed.");
   const prefix = `${opts.command.config.paths.workflow_dir}/${taskId}/`;

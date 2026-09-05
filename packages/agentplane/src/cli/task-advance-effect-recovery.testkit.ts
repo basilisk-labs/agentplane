@@ -18,7 +18,14 @@ import type {
   ExternalAgentResultEnvelope,
 } from "../commands/task/external-agent-exchange.js";
 
-export type ConflictVerificationDrift = "workspace" | "task" | "checkpoint" | "result" | "policy";
+export type ConflictVerificationDrift =
+  | "workspace"
+  | "task"
+  | "checkpoint"
+  | "result"
+  | "policy"
+  | "base"
+  | "provider";
 
 export async function withFakeConflictGh<T>(
   root: string,
@@ -41,12 +48,43 @@ export async function withFakeConflictGh<T>(
   }
 }
 
+export function fakeGithubProviderSource(detail: Record<string, unknown>): string {
+  return [
+    "const args = process.argv.slice(2);",
+    `const detail = ${JSON.stringify(detail)};`,
+    'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
+    "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
+    "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
+    "  console.log(JSON.stringify(detail));",
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "pr" && args[1] === "checks") {',
+    '  console.log("[]");',
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "api" && args[1] === "graphql") {',
+    "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
+    "  process.exit(0);",
+    "}",
+    "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
+    "process.exit(91);",
+    "",
+  ].join("\n");
+}
+
 export async function exerciseConflictExchange(opts: {
   root: string;
   worktree: string;
   taskId: string;
   headSha: string;
   baseSha: string;
+  providerBaseSha?: string;
   interrupt?: boolean;
   driftAfterInterruption?: boolean;
   interruptBeforeCheckpoint?: boolean;
@@ -97,7 +135,8 @@ export async function exerciseConflictExchange(opts: {
       }),
     ).toMatchObject({
       task_id: taskId,
-      provider: { head_sha: headSha, base_sha: baseSha },
+      provider: { head_sha: headSha, base_sha: opts.providerBaseSha ?? baseSha },
+      local: { base_head_sha: baseSha },
     });
     await writeFile(path.join(worktree, "docs/conflict.md"), "resolved task and main\n");
     await writeFile(
@@ -170,6 +209,22 @@ export async function exerciseConflictExchange(opts: {
         if (opts.verificationDrift) {
           const mode = opts.verificationDrift;
           switch (mode) {
+            case "base": {
+              await writeFile(path.join(root, "docs/base-only.md"), "subsequent base change\n");
+              await execFileAsync("git", ["add", "docs/base-only.md"], { cwd: root });
+              await execFileAsync(
+                "git",
+                ["commit", "-m", "test: invalidate bound application base"],
+                { cwd: root },
+              );
+              break;
+            }
+            case "provider": {
+              const file = path.join(root, "fake-gh-provider-conflict.mjs");
+              const source = await readFile(file, "utf8");
+              await writeFile(file, source.replaceAll(opts.providerBaseSha ?? baseSha, headSha));
+              break;
+            }
             case "workspace": {
               await writeFile(
                 path.join(worktree, "docs/conflict.md"),
@@ -216,9 +271,11 @@ export async function exerciseConflictExchange(opts: {
               ? "A different result is already recorded"
               : mode === "checkpoint"
                 ? "checkpoint identity changed"
-                : mode === "workspace" || mode === "policy"
-                  ? "foreign workspace changes"
-                  : "checkpoint postcondition changed",
+                : mode === "base"
+                  ? "checkpoint branch or base changed"
+                  : mode === "workspace" || mode === "policy"
+                    ? "foreign workspace changes"
+                    : "checkpoint postcondition changed",
           );
           return;
         }

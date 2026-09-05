@@ -139,6 +139,10 @@ describe("provider conflict merge application", () => {
             base_ref: "task/fixture",
           }),
         ).rejects.toThrow("identity changed");
+        await expect(applyConflictResolution({ ...application, base: mergeBase })).rejects.toThrow(
+          "identity changed",
+        );
+        expect(await git("rev-parse", "HEAD")).toBe(snapshot);
         await expect(
           applyConflictResolution({
             ...application,

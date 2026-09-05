@@ -47,6 +47,10 @@ import type { SupervisorEpisodeStore } from "../shared/supervisor-execution-epis
 import type { BranchEpisodeOutcome } from "./branch-task-supervisor.js";
 import { cmdTaskSetStatus } from "./set-status.js";
 import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
+import {
+  conflictApplicationAuthority,
+  conflictRecoveryAuthority,
+} from "../pr/conflict-rework-authority.js";
 
 export type ManagedConflictApplicationContext = {
   run_id: string;
@@ -59,20 +63,6 @@ export type ManagedConflictApplicationContext = {
   accepted_authority: ReturnType<typeof conflictApplicationAuthority>;
   status_at: string;
 };
-
-export function conflictApplicationAuthority(decision: TaskRouteDecision) {
-  const fingerprint = decision.workflowStep.preconditionFingerprint;
-  return {
-    task_id: fingerprint.task_id,
-    task_revision: fingerprint.task_revision,
-    task: fingerprint.components.task,
-    backend_projection: fingerprint.components.backend_projection,
-    policy: fingerprint.components.policy,
-    blueprint: fingerprint.components.blueprint,
-    knowledge: fingerprint.components.knowledge,
-    provider: decision.prFlow?.providerObservation ?? null,
-  };
-}
 
 export function managedImplementationStatusNote(commit: string): string {
   return (
@@ -170,15 +160,20 @@ export async function proveManagedConflictTaskApplication(opts: {
   executed: ExecutedTaskRunnerExecution;
 }): Promise<ManagedConflictTaskApplication> {
   const { context, executed, checkout, command } = opts;
-  const currentAuthority = conflictApplicationAuthority(opts.decision);
+  const order = executed.bundle.work_order;
+  if (!order) throw new Error("Managed conflict proof has no original WorkOrder.");
+  const currentAuthority = await conflictRecoveryAuthority({
+    ...opts,
+    order,
+    changed_paths: executed.result.evidence?.changed_paths ?? [],
+  });
   if (
     taskCentricDigest({ ...currentAuthority, task: null, task_revision: null }) !==
     taskCentricDigest({ ...context.accepted_authority, task: null, task_revision: null })
   ) {
     throw new Error("Managed conflict recovery non-Task authority changed.");
   }
-  const order = executed.bundle.work_order;
-  if (!order || !context.execution_base_commit || !context.execution_baseline_status) {
+  if (!context.execution_base_commit || !context.execution_baseline_status) {
     throw new Error("Managed conflict application proof has no original semantic context.");
   }
   const conflict = resolveConflictReworkSemanticInput({
@@ -200,7 +195,7 @@ export async function proveManagedConflictTaskApplication(opts: {
   const head = headResult.stdout.trim();
   const branch = branchResult.stdout.trim();
   const base = baseResult.stdout.trim();
-  if (branch !== conflict.task_worktree.branch || base !== conflict.provider.base_sha) {
+  if (branch !== conflict.task_worktree.branch || base !== conflict.local.base_head_sha) {
     throw new Error("Managed conflict application proof branch or base changed.");
   }
   const resultDigest = taskCentricDigest({
@@ -472,6 +467,15 @@ export async function loadManagedConflictRecovery(opts: {
     );
   }
   const applicationContext = input as ManagedConflictApplicationContext;
+  const normalizedProgress = digestSupervisorEpisodeValue({
+    implementation: applicationContext,
+    authority: await conflictRecoveryAuthority({
+      ...opts,
+      order,
+      context: applicationContext,
+      changed_paths: result.evidence?.changed_paths ?? [],
+    }),
+  });
   const executed: ExecutedTaskRunnerExecution = {
     ...loaded,
     result,
@@ -482,7 +486,7 @@ export async function loadManagedConflictRecovery(opts: {
     precondition: state.precondition,
   };
   const taskApplication =
-    currentProgress === operation.progress_digest
+    normalizedProgress === operation.progress_digest
       ? null
       : await proveManagedConflictTaskApplication({
           ...opts,

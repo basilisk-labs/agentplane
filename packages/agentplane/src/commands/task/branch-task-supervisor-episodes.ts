@@ -56,7 +56,7 @@ import {
   resolveSupervisorTaskRunnerPaths,
 } from "../../runner/task-run-paths.js";
 
-import { conflictApplicationAuthority } from "./branch-task-supervisor-conflict-recovery.js";
+import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
 
 async function executeBranchImplementationEpisode(opts: {

@@ -242,7 +242,7 @@ export function workflowTaskFingerprintComponent(
   return presentComponent("workflow_route_task", task);
 }
 
-async function observeWorkflowPolicy(opts: {
+export async function observeWorkflowPolicy(opts: {
   ctx: CommandContext;
   repositoryRoot: string;
   policyPaths: readonly string[];
