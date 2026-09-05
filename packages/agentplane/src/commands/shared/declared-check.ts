@@ -319,12 +319,18 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
 
   if (
     ["agentplane", "ap"].includes(base) &&
-    invocation.args.length === 1 &&
-    invocation.args[0] === "doctor"
+    ((invocation.args.length === 1 && invocation.args[0] === "doctor") ||
+      (invocation.args.length === 2 &&
+        invocation.args[0] === "task" &&
+        invocation.args[1] === "lint"))
   ) {
     return {
       ok: true,
-      check: { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null },
+      check: {
+        executable: process.execPath,
+        args: [AGENTPLANE_BIN, ...invocation.args],
+        script: null,
+      },
     };
   }
   if (base === "bunx") {

@@ -12,8 +12,8 @@ Created: 2026-09-04T18:17:29.251Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check could not run: agentplane task lint
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -42,6 +42,8 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 ++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../src/commands/shared/declared-check.test.ts     |   6 +-
+ .../src/commands/shared/declared-check.ts          |  12 +-
  .../src/commands/shared/workflow-step-factory.ts   |   7 +-
  .../commands/shared/workflow-step-policy-scope.ts  |   2 +-
  .../src/commands/shared/workflow-step.test.ts      |  28 +++
@@ -64,7 +66,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 ++
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 ++
- 35 files changed, 852 insertions(+), 324 deletions(-)
+ 37 files changed, 864 insertions(+), 330 deletions(-)
 ```
 
 </details>

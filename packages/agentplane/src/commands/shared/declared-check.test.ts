@@ -52,12 +52,12 @@ describe("declared task check contract", () => {
     ).toThrow(/command 2.*inline shell evaluation/u);
   });
 
-  it.each(["agentplane doctor", "ap doctor"])(
-    "resolves the supported AgentPlane doctor alias through the repository binary: %s",
+  it.each(["agentplane doctor", "ap doctor", "agentplane task lint", "ap task lint"])(
+    "resolves the supported AgentPlane read-only alias through the repository binary: %s",
     (command) => {
       const parsed = parseDeclaredTaskCheck(command);
       expect(parsed?.executable).toBe(process.execPath);
-      expect(parsed?.args.at(-1)).toBe("doctor");
+      expect(parsed?.args.slice(1)).toEqual(command.split(" ").slice(1));
     },
   );
 });

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:0c5f62bbce9bd35b857d3f519756656b6aa8a901908bb0a02a409de158961ea7"
 verification:
-  state: "pending"
-  updated_at: "2026-09-04T23:24:54.781Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-05T08:53:32.198Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check could not run: agentplane task lint"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -163,9 +163,11 @@ execution_contract:
       - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
       - "scripts/qualification/release-qualification.test.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
     changed_components:
       - "packages/agentplane"
+      - "scripts"
     changed_paths:
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
@@ -180,6 +182,9 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
       - "packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery-readme.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
@@ -197,12 +202,20 @@ execution_contract:
       - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
       - "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run.ts"
+      - "scripts/lib/installed-migration-matrix.mjs"
+      - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_destructive_git"
@@ -257,7 +270,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:81a48dc4120fcd557962d2a1ca75e6844e90863e27c2fcacd5986dd6ef5d5765"
+      digest: "sha256:8101eb3ce0e6ebecc71727f0d769392c8057009478edb5926da7b8ba0ab7900f"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
         - "central_component:scripts/lib/installed-migration-matrix.mjs"
@@ -270,6 +283,10 @@ execution_contract:
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step.test.ts"
+        - "central_path:scripts/lib/installed-migration-matrix.mjs"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
       execution_groups:
@@ -280,6 +297,7 @@ execution_contract:
       observed:
         changed_components:
           - "packages/agentplane"
+          - "scripts"
         changed_files:
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
@@ -294,6 +312,9 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts"
           - "packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery-readme.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
@@ -311,6 +332,8 @@ execution_contract:
           - "packages/agentplane/src/runner/usecases/task-run-authority.ts"
           - "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
           - "packages/agentplane/src/runner/usecases/task-run.ts"
+          - "scripts/lib/installed-migration-matrix.mjs"
+          - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -351,6 +374,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
+      - "verification_recovery:recorded-check-2"
 commit: null
 comments:
   -
@@ -383,6 +407,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/lib/installed-migration-matrix.mjs, scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs, scripts/qualification/release-qualification.test.mjs; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 682089ad39a4. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -484,8 +511,22 @@ events:
     from: "DONE"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted real-e2e qualification exposes two stale packaged lifecycle fixtures outside the current writable roots. Return to PLANNER for a bounded authority revision in this existing task. Recommended action: Revise the existing ZVX69C plan and execution contract consistently to include the two fixture owners and scripts/qualification/release-qualification.test.mjs. Preserve the single existing WorkItem, completed implementation, all exclusions, and existing checks. Add targeted execution of the failing packaged scenarios in audit mode and existing fixture unit tests; no release preparation or publication. Request fresh USER approval if required by the resulting route. Requested scope: roots=scripts/lib/installed-migration-matrix.mjs,scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs,scripts/qualification/release-qualification.test.mjs; repository effects=tests; request digest=sha256:a403bf36d29cfaf0de8fec0f4780b962cf0a321c3747914bb1aa40eb766184ce. Agentplane receipt: external-agent-blocker/tr_4d0c977cab1eafd531b3df073b6e6a2c/sha256:fb5effcf9b044a1b43953069b52797452a4f8609aff13e0459a5e3ca1978e876/sha256:a403bf36d29cfaf0de8fec0f4780b962cf0a321c3747914bb1aa40eb766184ce."
+  -
+    type: "status"
+    at: "2026-09-05T08:53:23.627Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 682089ad39a4. CLI accepted one state-bound external-agent semantic result."
+    commit: "682089ad39a452f0badfe0065574e980d36b32ea"
+  -
+    type: "verify"
+    at: "2026-09-05T08:53:32.198Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check could not run: agentplane task lint"
 doc_version: 3
-doc_updated_at: "2026-09-04T23:24:39.897Z"
+doc_updated_at: "2026-09-05T08:53:33.118Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -967,6 +1008,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-05T08:53:32.198Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check could not run: agentplane task lint
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b, input_digest=sha256:28a8a2b9415606059c827b9b5a914cf202fdd1dc5410881c1ed2c62694d4b85f
+
+    Details:
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609041801-ZVX69C declared verification
+
+    Command: agentplane task lint
+    Result: fail
+    Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609041801-ZVX69C declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/tasks/202609041801-ZVX69C/blueprint/resolved-snapshot.json
+    - old_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+    - current_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609041801-ZVX69C
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609041801-ZVX69C
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1391,7 +1472,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 23
+    event_cursor: 27
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -1443,7 +1524,7 @@ extensions:
 
         On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
       task_id: "202609041801-ZVX69C"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -2487,9 +2568,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 35
+    revision: 41
     schema_version: 1
-    updated_at: "2026-09-04T23:24:39.851Z"
+    updated_at: "2026-09-05T08:53:33.095Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -2812,6 +2893,30 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      compatibility:sha256:3f2b7ae4a5dd000766d6d2b73f219f09e93a161e8a5de22f5a79bf12ae56de22:
+        aggregate_digest: "sha256:bedcbbcc0141393bd95e7f9b4037c837230dfa04772af3ec24d58bc86ef64f61"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T08:53:33.095Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_33fead3e3072f949def037d4"
+          mutation_id: "compatibility:sha256:3f2b7ae4a5dd000766d6d2b73f219f09e93a161e8a5de22f5a79bf12ae56de22"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 40
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3f2b7ae4a5dd000766d6d2b73f219f09e93a161e8a5de22f5a79bf12ae56de22"
+        next_revision: 41
+        previous_revision: 40
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       compatibility:sha256:3f82df2ce34363a1b5c4afea6adbc383545124bb49ef79a170205800611a29ef:
         aggregate_digest: "sha256:a36a1014e8f6ba2708eb07d94706f37c008cce2ddec39e8b0d1674caf1d0ec4b"
         event:
@@ -2858,6 +2963,30 @@ extensions:
         mutation_id: "compatibility:sha256:423f09e4eed6274379b83de83c48ded0c60b06c29a7cec6e1ee8026e135e1983"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:43301b6da7a4f8b8159765079e0e7c7f9394fbce19dc4c74d26031cbfbc46304:
+        aggregate_digest: "sha256:3bbd902c04739725eb3027ed64c2637488590e6b490132f5e7a9dc93c0d64ef3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-04T23:24:39.897Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_a2e562fe78301c8f6598a72b"
+          mutation_id: "compatibility:sha256:43301b6da7a4f8b8159765079e0e7c7f9394fbce19dc4c74d26031cbfbc46304"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 35
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:43301b6da7a4f8b8159765079e0e7c7f9394fbce19dc4c74d26031cbfbc46304"
+        next_revision: 38
+        previous_revision: 37
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:5b8248c8778c2396b858dc981fa9e21345b86937a93c6ca5c77418515e7f93d6:
@@ -2930,6 +3059,30 @@ extensions:
         mutation_id: "compatibility:sha256:5e99e023d897ded2cf9a44200e6ae1c0cb89eb37fb329be7ce844bde439f8ab4"
         next_revision: 31
         previous_revision: 30
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:5fb59c378d1250f811670f8e3fe3e2b3fe4caf5d2cbb274a2dc4a1a544d8f4d5:
+        aggregate_digest: "sha256:82e3051f1dfd1611295daf3e98c44e9356364b61dd83172c8a0b2e694700f99c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T08:53:23.627Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_71d8e5eabe8aafebe2ccbc77"
+          mutation_id: "compatibility:sha256:5fb59c378d1250f811670f8e3fe3e2b3fe4caf5d2cbb274a2dc4a1a544d8f4d5"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 38
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5fb59c378d1250f811670f8e3fe3e2b3fe4caf5d2cbb274a2dc4a1a544d8f4d5"
+        next_revision: 39
+        previous_revision: 38
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:65400bd5e705ffe65f233e15ddab56ec29ceb744c0ff3cfaa7853ff31d6011f2:
@@ -3122,6 +3275,30 @@ extensions:
         mutation_id: "compatibility:sha256:8da570d8680b725ffc7874d6238d89a2e1a1f7f6ec7bee91c616d264884567bb"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:b0e78872cd5b71558fb54e7462ca07256241d325563cda8472ec5e2ddb9cdcb0:
+        aggregate_digest: "sha256:b7e75bcb176fdf668b7012419ba811b6d0c9a52837363d7629833e33f76939de"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T08:53:23.669Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_55b1c1dc3af6962465c0e63e"
+          mutation_id: "compatibility:sha256:b0e78872cd5b71558fb54e7462ca07256241d325563cda8472ec5e2ddb9cdcb0"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 39
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b0e78872cd5b71558fb54e7462ca07256241d325563cda8472ec5e2ddb9cdcb0"
+        next_revision: 40
+        previous_revision: 39
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:b3731b87dbf584cf8c9cb3366dfe806416a6c9290c798435d6ecdab61c24748b:
@@ -3415,9 +3592,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "7860e47440c0be50dcae84f301b94a7465ec685e"
-    message: "🚧 ZVX69C task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
@@ -3896,6 +4070,46 @@ Command: bun run ci:local:full
 Result: pass
 Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-11
 Scope: branch_pr task 202609041801-ZVX69C Verification Contract check task_outcome (11/11)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609041801-ZVX69C-repair-post-integration-clean-core-task-cycle-re/.agentplane/tasks/202609041801-ZVX69C/blueprint/resolved-snapshot.json
+- old_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+- current_digest: 1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609041801-ZVX69C
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609041801-ZVX69C
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-05T08:53:32.198Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check could not run: agentplane task lint
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b, input_digest=sha256:28a8a2b9415606059c827b9b5a914cf202fdd1dc5410881c1ed2c62694d4b85f
+
+Details:
+
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609041801-ZVX69C declared verification
+
+Command: agentplane task lint
+Result: fail
+Evidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609041801-ZVX69C declared verification
 
 BlueprintSnapshotRef:
 - state: current
