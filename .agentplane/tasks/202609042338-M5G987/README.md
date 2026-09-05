@@ -1,10 +1,10 @@
 ---
 id: "202609042338-M5G987"
 title: "Repair atomic scope extension projection and accepted-result recovery"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -31,9 +31,9 @@ plan_approval:
   note: "Explicit user decision in this conversation: да, confirming plan sha256:7f2dc1df72bcd0e3d9d46cde93b8be99c8a4cc3a6f6ba1aa06f96d6a3c6e2c64. Executed by assistant under user authorization."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-05T01:22:30.799Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -71,6 +71,10 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -91,6 +95,7 @@ execution_contract:
       - "Hosted writes and integration remain separate state-bound framework transitions."
       - "Repair the proven lifecycle persistence defect through existing scope-extension and transition/recovery owners."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts,packages/agentplane/src/commands/task/external-agent-blocked-result.ts,packages/agentplane/src/commands/task/plan.ts,packages/agentplane/src/commands/task/plan.unit.test.ts,packages/agentplane/src/commands/task/update.ts,packages/agentplane/src/commands/task/update.unit.test.ts"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/workflow-step-branch.ts,packages/agentplane/src/commands/shared/workflow-step-factory.ts,packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts,packages/agentplane/src/commands/shared/workflow-step.test.ts"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -103,6 +108,10 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
       - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -156,6 +165,10 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
           - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -182,11 +195,15 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:02884244e89bb662da85215fd33706e81b5eeb414940e4712eb77712f8d6af0f"
+      digest: "sha256:4ac657fbfcddf6ec5d96afa0c238edd6b676b6dfc1d4e653706decaaf6cc6031"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
@@ -264,6 +281,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Full CI exposed missing canonical initialization outside current writable roots. Atomic approval projects DOING/ACTIVE, but direct and branch route selection treats that status as proof that start recorded the blueprint snapshot and frozen baseline. Critical task-centric CLI fails at finish with snapshot_state=missing; branch-worktree also lacks its baseline. Reuse the accepted ZVX69C startup predicate and regression as this shared bootstrap prerequisite; do not create another task or absorb unrelated ZVX69C/PH5N6S work. Recommended action: Extend the existing M5G987 WorkItem with the exact requested roots. Preserve outputs, validation and exclusions. Reuse the approved ZVX69C direct bootstrap correction, complete the branch counterpart, then return to ZVX69C after integration. Do not create a duplicate task or touch Factory, MPXQBK or release work. Requested scope: roots=packages/agentplane/src/commands/shared/workflow-step-branch.ts,packages/agentplane/src/commands/shared/workflow-step-factory.ts,packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts,packages/agentplane/src/commands/shared/workflow-step.test.ts; repository effects=unchanged; request digest=sha256:31cd9137259180b03d579a7cf6c9c43e219ca592fc446ca6372cf2ec8dbe0057. Agentplane receipt: external-agent-blocker/tr_e132c80c9a2bc35f2bf4827bd1d90b71/sha256:1c32ce4f3a39fb82eee9301ca4c6193d4565a58db1ecc79ef47649c641fd0cec/sha256:31cd9137259180b03d579a7cf6c9c43e219ca592fc446ca6372cf2ec8dbe0057."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/shared/workflow-step-branch.ts, packages/agentplane/src/commands/shared/workflow-step-factory.ts, packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts, packages/agentplane/src/commands/shared/workflow-step.test.ts; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -365,6 +385,8 @@ extensions:
     status: "active"
     task_id: "202609042338-M5G987"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-05T01:22:30.799Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:1c32ce4f3a39fb82eee9301ca4c6193d4565a58db1ecc79ef47649c641fd0cec"
     kind: "task_scope_extension_request"
     request:
@@ -378,19 +400,19 @@ extensions:
         - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
     request_digest: "sha256:31cd9137259180b03d579a7cf6c9c43e219ca592fc446ca6372cf2ec8dbe0057"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_e132c80c9a2bc35f2bf4827bd1d90b71"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-05T00:37:41.309Z"
+        approved_at: "2026-09-05T01:22:30.799Z"
         approved_by: "USER"
-        approved_digest: "sha256:88e57ccb897cdf26c577fa45b26b2d3e22b6a4e6431d84760f53f7d73ae31f4c"
+        approved_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
         policy_facts:
-          - "state_bound_scope_extension:sha256:e6094c35ab965e5c8abf10b2631a2780bfe4abcb0c3169ba817d1757fa292df6"
+          - "state_bound_scope_extension:sha256:31cd9137259180b03d579a7cf6c9c43e219ca592fc446ca6372cf2ec8dbe0057"
         state: "approved"
-      created_at: "2026-09-05T00:37:41.309Z"
-      digest: "sha256:88e57ccb897cdf26c577fa45b26b2d3e22b6a4e6431d84760f53f7d73ae31f4c"
+      created_at: "2026-09-05T01:22:30.799Z"
+      digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
       proposal:
         assumptions:
           - "ZVX69C remains suspended with its immutable accepted result until this repair is integrated."
@@ -607,12 +629,32 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/commands/task/update.unit.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/workflow-step.test.ts"
               risk: "high"
               scope_roots:
                 - "packages/agentplane/src/adapters/task-backend"
                 - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
                 - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
                 - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
                 - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
                 - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
                 - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -714,10 +756,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:227eecd0558a70d80f98de0e9a111a6d1f980175ffbbc967a4c5c2d75e417ce3"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609042338-M5G987"
     intent:
@@ -729,7 +771,7 @@ extensions:
 
         Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK.
       task_id: "202609042338-M5G987"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1038,7 +1080,343 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 15
+      -
+        approval:
+          approved_at: "2026-09-05T00:37:41.309Z"
+          approved_by: "USER"
+          approved_digest: "sha256:88e57ccb897cdf26c577fa45b26b2d3e22b6a4e6431d84760f53f7d73ae31f4c"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:e6094c35ab965e5c8abf10b2631a2780bfe4abcb0c3169ba817d1757fa292df6"
+          state: "approved"
+        created_at: "2026-09-05T00:37:41.309Z"
+        digest: "sha256:88e57ccb897cdf26c577fa45b26b2d3e22b6a4e6431d84760f53f7d73ae31f4c"
+        proposal:
+          assumptions:
+            - "ZVX69C remains suspended with its immutable accepted result until this repair is integrated."
+            - "Exclude PH5N6S Factory verification ordering and external-agent-implementation-authority.ts, release/version/publication/dependency changes, MPXQBK, provider expansion, and unrelated cleanup. Do not weaken generic revision or stale-result guards. Do not manually edit projections, accepted results, receipts or journals."
+            - "Use existing kernel and projection primitives. Restrict recovery to verifiable scope-extension evidence; do not normalize arbitrary divergence."
+          planning_baseline:
+            captured_at: "2026-09-04T23:38:32.096Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:227eecd0558a70d80f98de0e9a111a6d1f980175ffbbc967a4c5c2d75e417ce3"
+            dirty_paths:
+              - ".agentplane/tasks/202609042338-M5G987/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+                id: "check-1"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
+                id: "check-2"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run format:check"
+                id: "check-3"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run lint:core"
+                id: "check-4"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "check-5"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "check-6"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "node packages/agentplane/bin/agentplane.js task lint"
+                id: "check-7"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "node packages/agentplane/bin/agentplane.js doctor"
+                id: "check-8"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "git diff --check"
+                id: "check-9"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "check-10"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+            criteria:
+              -
+                check_ids:
+                  - "check-1"
+                  - "check-2"
+                  - "check-3"
+                  - "check-4"
+                  - "check-5"
+                  - "check-6"
+                  - "check-7"
+                  - "check-8"
+                  - "check-9"
+                  - "check-10"
+                description: "Make supported scope extension persist the canonical lifecycle, revision, execution authority and compatibility projection atomically, including repository-effect-only changes and all-required-WorkItems-completed rework. Recover the already-applied scope-extension inconsistency only from matching immutable blocker/application receipts and implementation identity through the existing command owner. Preserve completed WorkItems and accepted results. Repeated recovery is idempotent. Reject unrelated or genuinely stale revisions, task/branch/base/plan mismatches, missing or altered receipts and unauthorized scope without partial mutation. Reproduce blocker -> scope extension -> accepted implementation -> interruption -> exact replay through existing CLI tests. Integrate this bounded repair, then resume ZVX69C at its original accepted result."
+                id: "atomic-scope-recovery"
+                required: true
+            evidence_fingerprint: "sha256:227eecd0558a70d80f98de0e9a111a6d1f980175ffbbc967a4c5c2d75e417ce3"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-1"
+                      - "check-2"
+                      - "check-3"
+                      - "check-4"
+                      - "check-5"
+                      - "check-6"
+                      - "check-7"
+                      - "check-8"
+                      - "check-9"
+                      - "check-10"
+                    description: "Make supported scope extension persist the canonical lifecycle, revision, execution authority and compatibility projection atomically, including repository-effect-only changes and all-required-WorkItems-completed rework. Recover the already-applied scope-extension inconsistency only from matching immutable blocker/application receipts and implementation identity through the existing command owner. Preserve completed WorkItems and accepted results. Repeated recovery is idempotent. Reject unrelated or genuinely stale revisions, task/branch/base/plan mismatches, missing or altered receipts and unauthorized scope without partial mutation. Reproduce blocker -> scope extension -> accepted implementation -> interruption -> exact replay through existing CLI tests. Integrate this bounded repair, then resume ZVX69C at its original accepted result."
+                    id: "atomic-scope-recovery"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 128000
+                  optional_sources: []
+                  required_sources:
+                    - "task-document"
+                    - "repository"
+                  symbol_hints:
+                    - "applyApprovedTaskScopeExtension"
+                    - "cmdTaskScopeExtend"
+                    - "projectTaskCentricCompatibilityMutation"
+                    - "applyTaskStatusTransitionCommand"
+                    - "resolveRecordedImplementationRecovery"
+                depends_on: []
+                expected_outputs:
+                  - "atomic-scope-extension-implementation"
+                  - "receipt-bound-replay-regression-evidence"
+                id: "atomic-scope-extension-recovery"
+                objective: "Make supported scope extension persist the canonical lifecycle, revision, execution authority and compatibility projection atomically, including repository-effect-only changes and all-required-WorkItems-completed rework. Recover the already-applied scope-extension inconsistency only from matching immutable blocker/application receipts and implementation identity through the existing command owner. Preserve completed WorkItems and accepted results. Repeated recovery is idempotent. Reject unrelated or genuinely stale revisions, task/branch/base/plan mismatches, missing or altered receipts and unauthorized scope without partial mutation. Reproduce blocker -> scope extension -> accepted implementation -> interruption -> exact replay through existing CLI tests. Integrate this bounded repair, then resume ZVX69C at its original accepted result."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/scope-extend.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/set-status.unit.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/adapters/task-backend"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/plan.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/plan.unit.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/update.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/update.unit.test.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/adapters/task-backend"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+                  - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                  - "packages/agentplane/src/commands/task/plan.ts"
+                  - "packages/agentplane/src/commands/task/plan.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.ts"
+                  - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+                  - "packages/agentplane/src/commands/task/update.ts"
+                  - "packages/agentplane/src/commands/task/update.unit.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+                      id: "check-1"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
+                      id: "check-2"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run format:check"
+                      id: "check-3"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run lint:core"
+                      id: "check-4"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "check-5"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "check-6"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "node packages/agentplane/bin/agentplane.js task lint"
+                      id: "check-7"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "node packages/agentplane/bin/agentplane.js doctor"
+                      id: "check-8"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "git diff --check"
+                      id: "check-9"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "check-10"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-1"
+                        - "check-2"
+                        - "check-3"
+                        - "check-4"
+                        - "check-5"
+                        - "check-6"
+                        - "check-7"
+                        - "check-8"
+                        - "check-9"
+                        - "check-10"
+                      description: "Make supported scope extension persist the canonical lifecycle, revision, execution authority and compatibility projection atomically, including repository-effect-only changes and all-required-WorkItems-completed rework. Recover the already-applied scope-extension inconsistency only from matching immutable blocker/application receipts and implementation identity through the existing command owner. Preserve completed WorkItems and accepted results. Repeated recovery is idempotent. Reject unrelated or genuinely stale revisions, task/branch/base/plan mismatches, missing or altered receipts and unauthorized scope without partial mutation. Reproduce blocker -> scope extension -> accepted implementation -> interruption -> exact replay through existing CLI tests. Integrate this bounded repair, then resume ZVX69C at its original accepted result."
+                      id: "atomic-scope-recovery"
+                      required: true
+                  evidence_fingerprint: "sha256:227eecd0558a70d80f98de0e9a111a6d1f980175ffbbc967a4c5c2d75e417ce3"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+    revision: 16
     schema_version: 1
     updated_at: "2026-09-05T01:22:26.213Z"
     work_items:
@@ -1332,6 +1710,30 @@ extensions:
         mutation_id: "compatibility:sha256:4c32df99e191544e72a1d346c79ff5f01edb278ea2ab326eaa78b4fead666b67"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:5ab1f96c05376dd4b9161282e025f61bb12dbcd145e4ed450621b0ed5512cf37:
+        aggregate_digest: "sha256:015f3f31be6d19c2bdda32287583044864c7f9b1ce4a29e88d0dc4a1a9cd8051"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T01:22:26.213Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_a014a0b319174e8f1f29683a"
+          mutation_id: "compatibility:sha256:5ab1f96c05376dd4b9161282e025f61bb12dbcd145e4ed450621b0ed5512cf37"
+          plan_digest: "sha256:88e57ccb897cdf26c577fa45b26b2d3e22b6a4e6431d84760f53f7d73ae31f4c"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5ab1f96c05376dd4b9161282e025f61bb12dbcd145e4ed450621b0ed5512cf37"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609042338-M5G987"
       compatibility:sha256:876de88bdd5c268acbd49e7e3e522473c30b067b21f0eea17806c2c880163557:
