@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3485437d52f987ffeb2faf763aaf5fb2da789f63..9549212aae66f88dd94a1e67fcdc5dd9c73ba56d",
+      "command": "git diff --check 912a0eea678303c42bf52f81f3087907f703f5e9..7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3485437d52f987ffeb2faf763aaf5fb2da789f63..9549212aae66f88dd94a1e67fcdc5dd9c73ba56d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 912a0eea678303c42bf52f81f3087907f703f5e9..7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\t.agentplane/tasks/202609042338-M5G987/README.md",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/github-body.md",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/meta.json",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/review.md",
-        "M\t.agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202609042338-M5G987/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-policy-scope.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step.test.ts"
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
       ]
     },
     {
@@ -35,36 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3485437d52f987ffeb2faf763aaf5fb2da789f63",
-  "implementation_commit": "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d",
+  "execution_base_commit": "912a0eea678303c42bf52f81f3087907f703f5e9",
+  "implementation_commit": "7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      " M .agentplane/tasks/202609042338-M5G987/README.md",
-      " M .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609042338-M5G987/supervision/implementation-evidence.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609042338-M5G987/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202609042338-M5G987/supervision/implementation-evidence.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609042338-M5G987/README.md",
-      " M .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json",
-      " M .agentplane/tasks/202609042338-M5G987/supervision/implementation-evidence.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
