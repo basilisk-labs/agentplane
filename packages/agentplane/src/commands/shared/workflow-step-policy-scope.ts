@@ -1,6 +1,7 @@
 import { GitContext, gitDiffNames, gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
@@ -44,7 +45,7 @@ function withoutExcludedRoots(
   );
 }
 
-function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
+export function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
   const value = task.extensions?.[WORKFLOW_ROUTE_BASELINE_KEY];
   if (
     !isRecord(value) ||
@@ -60,6 +61,10 @@ function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
     version: 1,
     start_head_sha: typeof value.start_head_sha === "string" ? value.start_head_sha.trim() : null,
   };
+}
+
+export function hasUninitializedTaskBaseline(task: TaskData): boolean {
+  return Boolean(taskCentricAggregateFromExtensions(task.extensions) && !baselineFromTask(task));
 }
 
 function runnerChangedPaths(task: TaskData): string[] {

@@ -8,24 +8,16 @@ import {
   setMarkdownSection,
   taskCentricAggregateFromExtensions,
   isGitObjectId,
-  taskCentricDigest,
-  withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
-import { recoverAppliedTaskScopeExtension } from "../shared/task-scope-extension-request.js";
-import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
-import {
-  syntheticEvent,
-  transitionReceipt,
-} from "../../adapters/task-backend/task-centric-backend-runtime.js";
+import { recoverAppliedScopeProjection } from "../shared/task-scope-extension-request.js";
+export { assertRecoverableImplementationCommit } from "../shared/task-scope-extension-request.js";
+import { preserveReceiptedMetadata } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
-import {
-  readDirectTaskHead,
-  recordDirectImplementationEvidence,
-} from "./direct-task-finalization.js";
+import { recordDirectImplementationEvidence } from "./direct-task-finalization.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
@@ -115,39 +107,6 @@ export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
   });
 }
 
-export async function assertRecoverableImplementationCommit(opts: {
-  cwd: string;
-  baseline: string | null;
-  commit: string;
-  task_id: string;
-}): Promise<void> {
-  const subject = await runProcess({
-    command: "git",
-    args: ["show", "-s", "--format=%s", opts.commit],
-    cwd: opts.cwd,
-    reject: false,
-  });
-  const ancestry = opts.baseline
-    ? await runProcess({
-        command: "git",
-        args: ["merge-base", "--is-ancestor", opts.baseline, opts.commit],
-        cwd: opts.cwd,
-        reject: false,
-      })
-    : null;
-  if (
-    subject.exitCode !== 0 ||
-    subject.stdout.trim() !==
-      `🚧 ${opts.task_id.split("-").at(-1)} task: apply external agent result` ||
-    (ancestry && ancestry.exitCode !== 0)
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Git history changed outside the recoverable Agentplane implementation effect.",
-    });
-  }
-}
-
 export async function refreshRecoveredImplementationEvidence(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
@@ -208,108 +167,6 @@ export async function refreshRecoveredImplementationEvidence(opts: {
   return evidence;
 }
 
-function sameRecoveryIdentity(left: unknown, right: unknown): boolean {
-  return taskCentricDigest(left ?? null) === taskCentricDigest(right ?? null);
-}
-
-async function recoverAppliedScopeProjection(opts: {
-  command: CommandContext;
-  exchange: ExternalAgentExchange;
-  commit: string | null;
-}): Promise<void> {
-  const task = await opts.command.taskBackend.getTask(opts.exchange.task_id);
-  if (!task) return;
-  const recovered = recoverAppliedTaskScopeExtension(task);
-  if (!recovered) return;
-  const root = opts.command.resolvedProject.gitRoot;
-  const commit = opts.commit ?? (await readDirectTaskHead(root));
-  const base = opts.exchange.baseline.head;
-  const issued = await readExternalAgentWorkOrder(opts.exchange.work_order_ref);
-  const accepted = await readExternalAgentExchange(
-    path.join(path.dirname(opts.exchange.work_order_ref), "exchange.json"),
-  );
-  const baseline = base
-    ? await gitShowFile(
-        root,
-        base,
-        `${opts.command.config.paths.workflow_dir}/${task.id}/README.md`,
-      )
-    : null;
-  const fields = baseline ? parseTaskReadme(baseline).frontmatter : null;
-  const extensions = fields?.extensions;
-  if (
-    !commit ||
-    !base ||
-    !accepted?.result ||
-    !accepted.result_digest ||
-    accepted.task_id !== task.id ||
-    issued.task.id !== task.id ||
-    accepted.transition_id !== opts.exchange.transition_id ||
-    accepted.state_fingerprint !== opts.exchange.state_fingerprint ||
-    accepted.work_order_ref !== opts.exchange.work_order_ref ||
-    issued.state_fingerprint.git_head !== base ||
-    path.resolve(issued.state_fingerprint.worktree) !== path.resolve(root) ||
-    !["result_received", "accepted"].includes(accepted.status) ||
-    accepted.purpose !== opts.exchange.purpose ||
-    !["implementation", "implementation_rework", "task_worktree_resolution"].includes(
-      accepted.purpose,
-    ) ||
-    path.resolve(accepted.checkout) !== path.resolve(root) ||
-    path.resolve(opts.exchange.checkout) !== path.resolve(root) ||
-    accepted.baseline.head !== base ||
-    fields?.id !== task.id ||
-    fields.revision !== task.revision ||
-    !isRecord(extensions) ||
-    ![
-      "agentplane.task_centric",
-      "agentplane.scope_extension_request",
-      "task_execution_context",
-    ].every((key) => sameRecoveryIdentity(extensions[key], task.extensions?.[key])) ||
-    !isRecord(fields.execution_contract) ||
-    !sameRecoveryIdentity(
-      fields.execution_contract.declaration,
-      task.execution_contract?.declaration,
-    ) ||
-    !sameRecoveryIdentity(
-      fields.execution_contract.authority,
-      task.execution_contract?.authority,
-    ) ||
-    !(await gitIsAncestor(root, base, commit)) ||
-    !(await gitIsAncestor(root, commit, "HEAD"))
-  )
-    throw new CliError({
-      code: "E_VALIDATION",
-      message:
-        "Scope projection recovery requires the exact accepted implementation and immutable execution baseline.",
-    });
-  const envelope = validateExternalAgentResultEnvelope({
-    raw: accepted.result,
-    exchange: accepted,
-    work_order: issued,
-  });
-  if (
-    envelope.result.status !== "completed" ||
-    externalAgentResultDigest(envelope) !== accepted.result_digest
-  )
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Scope projection recovery rejected an altered accepted result.",
-    });
-  await assertRecoverableImplementationCommit({
-    cwd: root,
-    baseline: base,
-    commit,
-    task_id: task.id,
-  });
-  await opts.command.taskBackend.writeTask(
-    projectTaskCentricCompatibilityMutation({
-      current: task,
-      next: { ...task, extensions: withTaskCentricAggregate(task.extensions, recovered) },
-    }),
-    { expectedRevision: task.revision! },
-  );
-}
-
 function recoveryComparableReadme(
   markdown: string,
   commit: string,
@@ -335,83 +192,6 @@ function recoveryComparableReadme(
     Reflect.deleteProperty(fields.extensions, "implementation_commit");
   }
   return renderTaskReadme(fields, setMarkdownSection(parsed.body, "Token Usage", ""));
-}
-
-function preserveReceiptedMetadata(
-  before: Record<string, unknown>,
-  after: Record<string, unknown>,
-): void {
-  const aggregateKey = "agentplane.task_centric";
-  const runtimeKey = "agentplane.task_centric_runtime";
-  if (
-    taskCentricDigest(before[aggregateKey] ?? null) ===
-      taskCentricDigest(after[aggregateKey] ?? null) &&
-    taskCentricDigest(before[runtimeKey] ?? null) === taskCentricDigest(after[runtimeKey] ?? null)
-  )
-    return;
-  const original = taskCentricAggregateFromExtensions(before);
-  const current = taskCentricAggregateFromExtensions(after);
-  const previousRuntime = before[runtimeKey];
-  const currentRuntime = after[runtimeKey];
-  if (!original || !current || !isRecord(previousRuntime) || !isRecord(currentRuntime)) return;
-  const previousReceipts = previousRuntime.mutation_receipts;
-  const currentReceipts = currentRuntime.mutation_receipts;
-  if (!isRecord(previousReceipts) || !isRecord(currentReceipts)) return;
-  if (
-    taskCentricDigest({ ...previousRuntime, mutation_receipts: null }) !==
-      taskCentricDigest({ ...currentRuntime, mutation_receipts: null }) ||
-    Object.entries(previousReceipts).some(
-      ([key, receipt]) =>
-        !Object.hasOwn(currentReceipts, key) ||
-        taskCentricDigest(receipt) !== taskCentricDigest(currentReceipts[key]),
-    )
-  )
-    return;
-  const added = Object.entries(currentReceipts).filter(
-    ([key]) => !Object.hasOwn(previousReceipts, key),
-  );
-  let candidate = original;
-  // Replay only metadata-only projection receipts. Plan, lifecycle and WorkItem data stay exact.
-  const ordered = added.toSorted(
-    ([, left], [, right]) =>
-      Number(isRecord(left) ? left.previous_revision : -1) -
-      Number(isRecord(right) ? right.previous_revision : -1),
-  );
-  for (const [mutationId, receipt] of ordered) {
-    if (!isRecord(receipt) || !isRecord(receipt.event) || typeof receipt.event.at !== "string")
-      return;
-    const next = {
-      ...candidate,
-      revision: candidate.revision + 1,
-      event_cursor: candidate.event_cursor + 1,
-      updated_at: receipt.event.at,
-    };
-    const expected = transitionReceipt({
-      task_id: candidate.id,
-      previous_revision: candidate.revision,
-      next,
-      mutation_id: mutationId,
-      event: syntheticEvent({
-        task: candidate,
-        mutation_id: mutationId,
-        entity: "task",
-        from: candidate.lifecycle,
-        to: candidate.lifecycle,
-        at: receipt.event.at,
-        cause_refs: ["compatibility_projection_mutation"],
-      }),
-    });
-    if (
-      !mutationId.startsWith("compatibility:sha256:") ||
-      taskCentricDigest(expected) !== taskCentricDigest(receipt)
-    ) {
-      return;
-    }
-    candidate = next;
-  }
-  if (taskCentricDigest(candidate) !== taskCentricDigest(current)) return;
-  before[aggregateKey] = after[aggregateKey];
-  before[runtimeKey] = after[runtimeKey];
 }
 
 /** This comparison does not reuse verification. The fresh route reruns the observed contract. */

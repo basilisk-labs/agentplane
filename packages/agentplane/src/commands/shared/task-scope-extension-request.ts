@@ -1,11 +1,15 @@
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import type { AgentSemanticResultScopeExtensionRequest } from "@agentplaneorg/core/schemas";
 import {
   approveTaskPlan,
   canonicalizeJson,
   createTaskPlanRevision,
+  parseTaskReadme,
+  taskCentricDigest,
   taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
   WorkItemScheduler,
@@ -15,6 +19,14 @@ import {
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import type { CommandContext } from "./task-backend.js";
+import {
+  externalAgentResultDigest,
+  readExternalAgentExchange,
+  readExternalAgentWorkOrder,
+  validateExternalAgentResultEnvelope,
+  type ExternalAgentExchange,
+} from "../task/external-agent-exchange.js";
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
@@ -406,4 +418,139 @@ export function applyApprovedTaskScopeExtension(opts: {
     ],
   };
   return projectTaskCentricCompatibilityMutation({ current: opts.task, next });
+}
+
+export async function assertRecoverableImplementationCommit(opts: {
+  cwd: string;
+  baseline: string | null;
+  commit: string;
+  task_id: string;
+}): Promise<void> {
+  const subject = await runProcess({
+    command: "git",
+    args: ["show", "-s", "--format=%s", opts.commit],
+    cwd: opts.cwd,
+    reject: false,
+  });
+  const ancestry = opts.baseline
+    ? await runProcess({
+        command: "git",
+        args: ["merge-base", "--is-ancestor", opts.baseline, opts.commit],
+        cwd: opts.cwd,
+        reject: false,
+      })
+    : null;
+  if (
+    subject.exitCode !== 0 ||
+    subject.stdout.trim() !==
+      `🚧 ${opts.task_id.split("-").at(-1)} task: apply external agent result` ||
+    (ancestry && ancestry.exitCode !== 0)
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Git history changed outside the recoverable Agentplane implementation effect.",
+    });
+  }
+}
+
+function sameRecoveryIdentity(left: unknown, right: unknown): boolean {
+  return taskCentricDigest(left ?? null) === taskCentricDigest(right ?? null);
+}
+
+export async function recoverAppliedScopeProjection(opts: {
+  command: CommandContext;
+  exchange: ExternalAgentExchange;
+  commit: string | null;
+}): Promise<void> {
+  const task = await opts.command.taskBackend.getTask(opts.exchange.task_id);
+  if (!task) return;
+  const recovered = recoverAppliedTaskScopeExtension(task);
+  if (!recovered) return;
+  const root = opts.command.resolvedProject.gitRoot;
+  const commit = opts.commit ?? (await gitRevParse(root, ["HEAD"]));
+  const base = opts.exchange.baseline.head;
+  const issued = await readExternalAgentWorkOrder(opts.exchange.work_order_ref);
+  const accepted = await readExternalAgentExchange(
+    path.join(path.dirname(opts.exchange.work_order_ref), "exchange.json"),
+  );
+  const baseline = base
+    ? await gitShowFile(
+        root,
+        base,
+        `${opts.command.config.paths.workflow_dir}/${task.id}/README.md`,
+      )
+    : null;
+  const fields = baseline ? parseTaskReadme(baseline).frontmatter : null;
+  const extensions = fields?.extensions;
+  if (
+    !commit ||
+    !base ||
+    !accepted?.result ||
+    !accepted.result_digest ||
+    accepted.task_id !== task.id ||
+    issued.task.id !== task.id ||
+    accepted.transition_id !== opts.exchange.transition_id ||
+    accepted.state_fingerprint !== opts.exchange.state_fingerprint ||
+    accepted.work_order_ref !== opts.exchange.work_order_ref ||
+    issued.state_fingerprint.git_head !== base ||
+    path.resolve(issued.state_fingerprint.worktree) !== path.resolve(root) ||
+    !["result_received", "accepted"].includes(accepted.status) ||
+    accepted.purpose !== opts.exchange.purpose ||
+    !["implementation", "implementation_rework", "task_worktree_resolution"].includes(
+      accepted.purpose,
+    ) ||
+    path.resolve(accepted.checkout) !== path.resolve(root) ||
+    path.resolve(opts.exchange.checkout) !== path.resolve(root) ||
+    accepted.baseline.head !== base ||
+    fields?.id !== task.id ||
+    fields.revision !== task.revision ||
+    !isRecord(extensions) ||
+    ![
+      "agentplane.task_centric",
+      "agentplane.scope_extension_request",
+      "task_execution_context",
+    ].every((key) => sameRecoveryIdentity(extensions[key], task.extensions?.[key])) ||
+    !isRecord(fields.execution_contract) ||
+    !sameRecoveryIdentity(
+      fields.execution_contract.declaration,
+      task.execution_contract?.declaration,
+    ) ||
+    !sameRecoveryIdentity(
+      fields.execution_contract.authority,
+      task.execution_contract?.authority,
+    ) ||
+    !(await gitIsAncestor(root, base, commit)) ||
+    !(await gitIsAncestor(root, commit, "HEAD"))
+  )
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Scope projection recovery requires the exact accepted implementation and immutable execution baseline.",
+    });
+  const envelope = validateExternalAgentResultEnvelope({
+    raw: accepted.result,
+    exchange: accepted,
+    work_order: issued,
+  });
+  if (
+    envelope.result.status !== "completed" ||
+    externalAgentResultDigest(envelope) !== accepted.result_digest
+  )
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Scope projection recovery rejected an altered accepted result.",
+    });
+  await assertRecoverableImplementationCommit({
+    cwd: root,
+    baseline: base,
+    commit,
+    task_id: task.id,
+  });
+  await opts.command.taskBackend.writeTask(
+    projectTaskCentricCompatibilityMutation({
+      current: task,
+      next: { ...task, extensions: withTaskCentricAggregate(task.extensions, recovered) },
+    }),
+    { expectedRevision: task.revision! },
+  );
 }
