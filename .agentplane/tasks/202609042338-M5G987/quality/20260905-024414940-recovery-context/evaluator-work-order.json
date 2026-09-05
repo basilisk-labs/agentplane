@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609042338-M5G987-a1a8e8f6d1e2b7aee1716a18",
+  "prepared_at": "2026-09-05T02:44:14.940Z",
+  "task": {
+    "id": "202609042338-M5G987",
+    "revision": 28,
+    "objective": "Repair atomic scope extension projection and accepted-result recovery\n\nBlocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK.",
+    "acceptance_criteria": [
+      "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1",
+      "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1",
+      "bun run format:check",
+      "bun run lint:core",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "node packages/agentplane/bin/agentplane.js task lint",
+      "node packages/agentplane/bin/agentplane.js doctor",
+      "git diff --check",
+      "bun run ci:local:full",
+      "- In scope: Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK.\n- Out of scope: unrelated refactors not required for \"Repair atomic scope extension projection and accepted-result recovery\".",
+      "Make supported scope extension persist the canonical lifecycle, revision, execution authority and compatibility projection atomically, including repository-effect-only changes and all-required-WorkItems-completed rework. Recover the already-applied scope-extension inconsistency only from matching immutable blocker/application receipts and implementation identity through the existing command owner. Preserve completed WorkItems and accepted results. Repeated recovery is idempotent. Reject unrelated or genuinely stale revisions, task/branch/base/plan mismatches, missing or altered receipts and unauthorized scope without partial mutation. Reproduce blocker -> scope extension -> accepted implementation -> interruption -> exact replay through existing CLI tests. Integrate this bounded repair, then resume ZVX69C at its original accepted result.\n\nExclude PH5N6S Factory verification ordering and external-agent-implementation-authority.ts, release/version/publication/dependency changes, MPXQBK, provider expansion, and unrelated cleanup. Do not weaken generic revision or stale-result guards. Do not manually edit projections, accepted results, receipts or journals.\n\nVerify Steps:\n1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n3. Run `bun run format:check`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n4. Run `bun run lint:core`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n5. Run `bun run typecheck`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n8. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n9. Run `git diff --check`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n10. Run `bun run ci:local:full`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.",
+      "1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n3. Run `bun run format:check`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n4. Run `bun run lint:core`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n5. Run `bun run typecheck`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n8. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n9. Run `git diff --check`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0.\n10. Run `bun run ci:local:full`. Expected: successful exit; regression checks preserve atomicity and stale rejection; doctor reports errors=0."
+    ]
+  },
+  "evaluated_sha": "7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
+  "diff_base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+  "blueprint_digest": "a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609042338-M5G987/quality/20260905-024414940-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f2e4aedf0bc0cd519f9938112a21bff605b44efd35c04abc5bc42c7a1618824f",
+    "prompt_path": ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/aed520dc56d291bf8e4a586a4910a9df81e512ba65e70c7a617fedf2c30b41df.md",
+    "result_schema_path": ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609042338-M5G987/README.md",
+      "sha256": "sha256:a2220474992fe13c5d657168ed3761e77ab6f9d2d522956ca661eda6d0baf2a7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/721556b53661edd886858164263eef58d817fe1a94c44f726489e5afddf9be97.patch",
+      "sha256": "sha256:721556b53661edd886858164263eef58d817fe1a94c44f726489e5afddf9be97",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/dd1bc30d343f3f1473b49e80411cbe91b2a5b8a33f1c317078fe315ac4f86ced.json",
+      "sha256": "sha256:dd1bc30d343f3f1473b49e80411cbe91b2a5b8a33f1c317078fe315ac4f86ced",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609042338-M5G987/verification/20260905023956702-b84d9f077b07bc25.json",
+      "sha256": "sha256:26715654603707d4a893b0b38054a5105a319fc4acfaf9151175d7d7edb25661",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/e5c299478203ab3d66b54b2c5fbf8abeb197d5fc2b028c49aaa03f652a3d5f34.json",
+      "sha256": "sha256:e5c299478203ab3d66b54b2c5fbf8abeb197d5fc2b028c49aaa03f652a3d5f34",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
