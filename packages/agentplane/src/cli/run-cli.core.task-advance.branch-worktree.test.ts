@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
+import { projectTaskCentricCompatibilityMutation } from "../adapters/task-backend/task-centric-backend-projection.js";
 import {
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
@@ -320,7 +321,12 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       const implementation = implementationOutput.stdout.trim();
       if (boundary === "before WorkItem projection") {
         if (!interrupted) throw new Error("missing interrupted WorkItem task");
-        await ctx.taskBackend.writeTask({ ...interrupted, status: "DONE" });
+        await ctx.taskBackend.writeTask(
+          projectTaskCentricCompatibilityMutation({
+            current: interrupted,
+            next: { ...interrupted, status: "DONE" },
+          }),
+        );
         const prematurelyClosed = await ctx.taskBackend.getTask(taskId);
         expect(prematurelyClosed?.status).toBe("DONE");
         expect(

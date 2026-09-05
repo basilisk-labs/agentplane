@@ -1,6 +1,9 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import {
   ensureDocSections,
+  createTaskPlanRevision,
+  executionGrantFromExtensions,
+  isExecutionGrantActive,
   legacyStatusToTaskLifecycle,
   normalizeTaskStatus,
   setMarkdownSection,
@@ -135,6 +138,65 @@ function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStore
   const patch: TaskStoreTaskPatch = { status: opts.toStatus };
   if (opts.extraFields) Object.assign(patch, opts.extraFields);
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  if (
+    opts.task.status === "TODO" &&
+    opts.toStatus === "DOING" &&
+    aggregate?.lifecycle === "ACTIVE"
+  ) {
+    const task = opts.task;
+    const grant = executionGrantFromExtensions(task.extensions);
+    const context = task.extensions?.task_execution_context as
+      | { repository_identity?: string }
+      | undefined;
+    const plan = aggregate.current_plan;
+    // Recover only the first start immediately following the old split approval write.
+    // The existing grant binds the approved document, scope, repository and prior revision.
+    if (
+      grant &&
+      plan &&
+      aggregate.id === task.id &&
+      plan.task_id === task.id &&
+      task.revision === grant.plan_revision + 1 &&
+      aggregate.revision === grant.plan_revision &&
+      task.plan_approval?.state === "approved" &&
+      task.plan_approval.updated_at === grant.issued_at &&
+      task.plan_approval.updated_by === grant.actor &&
+      plan.approval.state === "approved" &&
+      plan.approval.approved_at === grant.issued_at &&
+      plan.approval.approved_by === grant.actor &&
+      plan.approval.approved_digest === plan.digest &&
+      createTaskPlanRevision({
+        proposal: plan.proposal,
+        revision: plan.revision,
+        created_at: plan.created_at,
+      }).digest === plan.digest &&
+      !task.commit &&
+      aggregate.final_validation === null &&
+      Object.values(aggregate.work_items).length > 0 &&
+      Object.values(aggregate.work_items).every(
+        (item) =>
+          (item.state === "READY" || item.state === "PLANNED") &&
+          item.output_manifests.length === 0 &&
+          item.claim_id === null &&
+          item.attempt === 0 &&
+          item.validation_result === null &&
+          item.last_failure === null,
+      ) &&
+      typeof context?.repository_identity === "string" &&
+      isExecutionGrantActive({
+        grant,
+        task_id: task.id,
+        plan: task.sections?.Plan ?? extractDocSection(task.doc ?? "", "Plan") ?? "",
+        execution_contract: task.execution_contract,
+        repository_identity: context.repository_identity,
+      })
+    ) {
+      patch.extensions = withTaskCentricAggregate(patch.extensions ?? task.extensions, {
+        ...aggregate,
+        revision: task.revision,
+      });
+    }
+  }
   if (
     aggregate &&
     opts.task.status !== opts.toStatus &&

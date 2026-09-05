@@ -17,6 +17,7 @@ import {
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
 
 export const TASK_SCOPE_EXTENSION_REQUEST_KEY = "agentplane.scope_extension_request";
 
@@ -203,6 +204,68 @@ export function scopeExtensionReceiptForState(state: TaskScopeExtensionRequestSt
   });
 }
 
+export function recoverAppliedTaskScopeExtension(task: TaskData): TaskAggregate | null {
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  const applied = parseTaskScopeExtensionRequestState(task);
+  const contract = task.execution_contract;
+  const plan = aggregate?.current_plan;
+  if (
+    task.status !== "DOING" ||
+    aggregate?.lifecycle !== "BLOCKED" ||
+    applied?.status !== "applied" ||
+    applied.applied_by !== "USER" ||
+    !applied.applied_at ||
+    !contract ||
+    !plan ||
+    aggregate.id !== task.id ||
+    plan.task_id !== task.id ||
+    task.revision === undefined ||
+    aggregate.revision >= task.revision ||
+    task.commit ||
+    task.verification?.state !== "pending" ||
+    task.verification.updated_at !== applied.applied_at ||
+    task.verification.updated_by !== "USER" ||
+    plan.approval.state !== "approved" ||
+    plan.approval.approved_digest !== plan.digest ||
+    createTaskPlanRevision({
+      proposal: plan.proposal,
+      revision: plan.revision,
+      created_at: plan.created_at,
+    }).digest !== plan.digest ||
+    !applied.request.scope_roots.every(
+      (root) =>
+        contract.declaration.scope_roots.includes(root) &&
+        contract.authority.writable_roots.includes(root),
+    ) ||
+    !applied.request.repository_effects.every(
+      (effect) =>
+        contract.declaration.repository_effects.includes(effect) &&
+        contract.authority.allowed_repository_effects.includes(effect),
+    ) ||
+    !(task.comments ?? []).some(
+      (comment) =>
+        comment.author === "SUPERVISOR" &&
+        comment.body.includes(scopeExtensionReceiptForState(applied)),
+    ) ||
+    !(task.comments ?? []).some(
+      (comment) =>
+        comment.author === "USER" &&
+        comment.body ===
+          `Approved state-bound execution scope extension: ${applied.request.scope_roots.join(", ")}; repository effects: ${applied.request.repository_effects.join(", ") || "unchanged"}.`,
+    )
+  )
+    return null;
+  const allRequiredCompleted = plan.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
+  if (
+    !allRequiredCompleted &&
+    !plan.approval.policy_facts.includes(`state_bound_scope_extension:${applied.request_digest}`)
+  )
+    return null;
+  return { ...aggregate, revision: task.revision, lifecycle: "ACTIVE", final_validation: null };
+}
+
 function extendTaskCentricWorkItemScope(opts: {
   task: TaskData;
   scopeRoots: readonly string[];
@@ -281,6 +344,14 @@ export function applyApprovedTaskScopeExtension(opts: {
   by: string;
   now: string;
 }): TaskData {
+  const original = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const revision = opts.task.revision ?? original?.revision;
+  if (original && original.revision !== revision) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Scope extension requires synchronized task revisions.",
+    });
+  }
   const taskCentric = extendTaskCentricWorkItemScope({
     task: opts.task,
     scopeRoots: opts.scopeRoots,
@@ -288,7 +359,7 @@ export function applyApprovedTaskScopeExtension(opts: {
     now: opts.now,
     requestDigest: opts.pending.request_digest,
   });
-  return {
+  const next: TaskData = {
     ...opts.task,
     status: "DOING",
     commit: null,
@@ -302,7 +373,12 @@ export function applyApprovedTaskScopeExtension(opts: {
     execution_contract: opts.executionContract,
     extensions: {
       ...(taskCentric
-        ? withTaskCentricAggregate(opts.task.extensions, taskCentric)
+        ? withTaskCentricAggregate(opts.task.extensions, {
+            ...taskCentric,
+            revision: revision!,
+            lifecycle: "ACTIVE",
+            final_validation: null,
+          })
         : (opts.task.extensions ?? {})),
       [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
         ...opts.pending,
@@ -329,4 +405,5 @@ export function applyApprovedTaskScopeExtension(opts: {
       },
     ],
   };
+  return projectTaskCentricCompatibilityMutation({ current: opts.task, next });
 }
