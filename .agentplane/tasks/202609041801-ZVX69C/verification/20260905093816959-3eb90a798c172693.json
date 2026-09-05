@@ -1,0 +1,126 @@
+{
+  "details": "Command: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609041801-ZVX69C declared verification\n\nCommand: agentplane task lint\nResult: pass\nEvidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609041801-ZVX69C declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609041801-ZVX69C declared verification",
+  "digest": "sha256:3eb90a798c17269374732c48ab9f68c29db01634591fdb9407476e0653698df0",
+  "implementation_sha": "1550993bbce43b34f2122488efb0c12f52ed164f",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:af60bc4ba2f9154cbe7bb4648cf464f1ada5ba5d1a150e69cc3b2e19330f7759",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:7aee33533e35d2685390129a8d9af4186bec79544953cecc032e681950a8f5c4",
+      "digest": "sha256:e0cc269494c3e54b3c6ea6a527d41f48de204e9edc6452d1ef0c1007caf6742d",
+      "references": [
+        {
+          "digest": "sha256:eea58ad215d9d418f36d4647d3f1b5e06a68b51b9632bebcc513f1fc02f5e405",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:eea58ad215d9d418f36d4647d3f1b5e06a68b51b9632bebcc513f1fc02f5e405",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:eea58ad215d9d418f36d4647d3f1b5e06a68b51b9632bebcc513f1fc02f5e405",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609041801-ZVX69C/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+      "digest": "sha256:6b24a77f339b7de96b1544337c3ebeb85100ccb8f425abc57fcceb77198104ff",
+      "primary_task_id": "202609041801-ZVX69C",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_destructive_git",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609041801-ZVX69C"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+      "digest": "sha256:3b9791f4be435c42858d17b151969fb9f0eebce0ed29aa28e417af0d13364d07",
+      "strategy": "branch_diff",
+      "target_sha": "1550993bbce43b34f2122488efb0c12f52ed164f"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:05f64c90b9d58df1695aa69db893195be5cc13624c6efb955e026dfb4e38cfad",
+    "verify_steps_digest": "sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-05T09:38:16.959Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1`. Expected: lifecycle plan approval, typed transport, evaluator rework, projection atomicity, branch-worktree replay, quality routing, PR artifact hydration, and protected integration handoff regressions pass.\n2. Run `bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1`. Expected: canonical task projections, kernel invariants, replacement-plan recovery, stale-result handling, and task-store atomicity pass.\n3. Run `bun run format:check`. Expected: repository formatting is clean.\n4. Run `bun run lint:core`. Expected: core lint passes.\n5. Run `bun run typecheck`. Expected: TypeScript validation passes.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing and size budgets pass.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: task records and Verify Steps pass lint using the repository-local runtime.\n8. Run `agentplane doctor`. Expected: repository and task diagnostics report no errors.\n9. Run `git diff --check`. Expected: the final patch has no whitespace errors.\n10. Run `bun run ci:local:full`. Expected: the complete local CI gate passes after the focused repairs.\n11. Review QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, and T4RR70 against current main. Expected: each edge is classified as already present, minimally required, independently useful outside scope, or obsolete; no stale branch is merged as-is.\n12. Review the final diff and task outcome. Expected: task projections advance atomically or fail without partial state, and no package version, release note, tag, publication, dependency, MPXQBK, or full GitLab/provider-neutral expansion change is present.",
+  "scope_digest": "sha256:95f29c7308b07d354f55788604c28bcc3994e6cfd1a3ff5be67c41652160301b",
+  "task_id": "202609041801-ZVX69C",
+  "verification_command": "agentplane verify 202609041801-ZVX69C --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

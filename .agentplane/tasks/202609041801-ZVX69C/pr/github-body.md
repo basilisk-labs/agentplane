@@ -15,8 +15,8 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,40 +27,40 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task-centric-backend-adapter.test.ts           |  39 +++
+ .../task-centric-backend-adapter.test.ts           |  39 ++
  .../task-backend/task-centric-backend-adapter.ts   |   6 +-
- .../task-backend/task-centric-backend-runtime.ts   |  78 +++++
+ .../task-backend/task-centric-backend-runtime.ts   |  78 ++++
  .../src/cli/release-critical-lifecycle.test.ts     |  14 +
  .../agentplane/src/cli/route-decision.testkit.ts   |  22 ++
- .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 ++++++--
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++++--
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
  .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
- .../run-cli.core.route-decision.quality.test.ts    | 128 +++++---
- ...n-cli.core.task-advance.branch-worktree.test.ts |  83 ++++-
- ...n-cli.core.task-advance.evidence-rework.test.ts |  52 +++-
+ .../run-cli.core.route-decision.quality.test.ts    | 128 ++++---
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  83 +++-
+ ...n-cli.core.task-advance.evidence-rework.test.ts |  52 ++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
  .../src/commands/shared/declared-check.test.ts     |   6 +-
  .../src/commands/shared/declared-check.ts          |  12 +-
- .../shared/task-scope-extension-request.ts         | 263 +++++++++++++++-
+ .../shared/task-scope-extension-request.ts         | 263 ++++++++++++-
  .../src/commands/shared/workflow-step-branch.ts    |   3 +-
  .../src/commands/shared/workflow-step-factory.ts   |   6 +-
  .../commands/shared/workflow-step-policy-scope.ts  |  16 +
- .../src/commands/shared/workflow-step.test.ts      |  88 ++++++
+ .../src/commands/shared/workflow-step.test.ts      |  88 +++++
  .../src/commands/task/direct-task-verification.ts  |  19 +-
  .../commands/task/evidence-only-rework-commit.ts   |  31 ++
- .../external-agent-implementation-recovery.test.ts |  85 +++++-
- .../task/external-agent-implementation-recovery.ts | 123 ++++----
+ .../external-agent-implementation-recovery.test.ts |  85 ++++-
+ .../task/external-agent-implementation-recovery.ts | 123 +++---
  .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
- packages/agentplane/src/commands/task/plan.ts      |  35 ++-
- .../agentplane/src/commands/task/plan.unit.test.ts |  93 ++++++
- .../src/commands/task/scope-extend.test.ts         | 340 ++++++++++++++++-----
- .../src/commands/task/set-status.unit.test.ts      | 118 ++++---
+ packages/agentplane/src/commands/task/plan.ts      |  35 +-
+ .../agentplane/src/commands/task/plan.unit.test.ts |  93 +++++
+ .../src/commands/task/scope-extend.test.ts         | 424 ++++++++++++++-------
+ .../src/commands/task/set-status.unit.test.ts      | 118 +++---
  .../src/commands/task/shared.unit.test.ts          |   1 +
  .../src/commands/task/shared.verify-steps.test.ts  |   8 +
  .../agentplane/src/commands/task/shared/docs.ts    |   2 +
- .../task/shared/workflow-transition-service.ts     |  79 +++++
+ .../task/shared/workflow-transition-service.ts     |  79 ++++
  .../task/verify-record.durability.unit.test.ts     |  11 +-
  packages/agentplane/src/commands/workflow.test.ts  |  10 +
  .../src/commands/workflow.verify-hooks.test.ts     |  12 +-
@@ -70,8 +70,8 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
- .../check-packaged-mixed-scope-lifecycle.mjs       |  17 ++
- 44 files changed, 1755 insertions(+), 327 deletions(-)
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
+ 44 files changed, 1785 insertions(+), 381 deletions(-)
 ```
 
 </details>
