@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 9795e50dfb4b0abaabe16cbe6f0f066434de45d5..8b1594fdbddea370c02760dd835f4f98f9caf160",
+      "command": "git diff --check 11f06801e10fa00f954bd1d3ed22a5d138d0f46f..1050a0f4856603b998283a05f2caa4cc8ebcca96",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,53 +13,31 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9795e50dfb4b0abaabe16cbe6f0f066434de45d5..8b1594fdbddea370c02760dd835f4f98f9caf160",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 11f06801e10fa00f954bd1d3ed22a5d138d0f46f..1050a0f4856603b998283a05f2caa4cc8ebcca96",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609041801-ZVX69C/README.md",
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/github-body.md",
+        "M\t.agentplane/tasks/202609041801-ZVX69C/pr/github-title.txt",
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/meta.json",
         "M\t.agentplane/tasks/202609041801-ZVX69C/pr/review.md",
-        "A\tpackages/agentplane/src/cli/managed-conflict-recovery.testkit.ts",
+        "A\t.agentplane/tasks/202609041801-ZVX69C/verification/20260905231611223-2892a2d48c790e3c.json",
         "M\tpackages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
         "M\tpackages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
-        "A\tpackages/agentplane/src/commands/pr/conflict-rework-merge.test.ts",
-        "A\tpackages/agentplane/src/commands/pr/conflict-rework-merge.ts",
-        "A\tpackages/agentplane/src/commands/pr/conflict-rework-semantic-input.ts",
+        "A\tpackages/agentplane/src/commands/pr/conflict-rework-authority.ts",
+        "M\tpackages/agentplane/src/commands/pr/conflict-rework-merge.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/conflict-rework-semantic-input.ts",
         "M\tpackages/agentplane/src/commands/pr/conflict-rework.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/conflict-rework.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-mutation.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-mutation.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-store/readme.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-store/store.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-store/types.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts",
         "M\tpackages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
-        "A\tpackages/agentplane/src/commands/task/branch-task-supervisor-conflict-recovery.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-policy-scope.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-conflict-recovery.ts",
         "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
-        "A\tpackages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
-        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-finalization.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-conflict-application.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-conflict-application.ts",
         "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-implementation-checkpoint.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-result-application.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/set-status.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.types.ts",
-        "M\tpackages/agentplane/src/runner/usecases/agent-work-order-build.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-authority.ts"
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-checkpoint.ts"
       ]
     },
     {
@@ -69,23 +47,17 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "9795e50dfb4b0abaabe16cbe6f0f066434de45d5",
-  "implementation_commit": "8b1594fdbddea370c02760dd835f4f98f9caf160",
+  "execution_base_commit": "11f06801e10fa00f954bd1d3ed22a5d138d0f46f",
+  "implementation_commit": "1050a0f4856603b998283a05f2caa4cc8ebcca96",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202609041801-ZVX69C/README.md",
-      " M packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
-      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-      " M packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
-      " M packages/agentplane/src/commands/pr/conflict-rework.test.ts",
-      " M packages/agentplane/src/commands/pr/conflict-rework.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts",
-      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-      " M packages/agentplane/src/commands/task/external-agent-result-application.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor.ts",
-      " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
-      "?? packages/agentplane/src/commands/pr/conflict-rework-merge.ts"
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/github-body.md",
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/github-title.txt",
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/meta.json",
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/review.md",
+      "?? .agentplane/tasks/202609041801-ZVX69C/verification/20260905231611223-2892a2d48c790e3c.json"
     ],
     "classification": [
       {
@@ -94,64 +66,34 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+        "line": " M .agentplane/tasks/202609041801-ZVX69C/pr/github-body.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        "line": " M .agentplane/tasks/202609041801-ZVX69C/pr/github-title.txt"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+        "line": " M .agentplane/tasks/202609041801-ZVX69C/pr/meta.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+        "line": " M .agentplane/tasks/202609041801-ZVX69C/pr/review.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/pr/conflict-rework.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-result-application.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-supervisor.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/pr/conflict-rework-merge.ts"
+        "line": "?? .agentplane/tasks/202609041801-ZVX69C/verification/20260905231611223-2892a2d48c790e3c.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202609041801-ZVX69C/README.md",
-      " M packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
-      " M packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-      " M packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
-      " M packages/agentplane/src/commands/pr/conflict-rework.test.ts",
-      " M packages/agentplane/src/commands/pr/conflict-rework.ts",
-      " M packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts",
-      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-      " M packages/agentplane/src/commands/task/external-agent-result-application.ts",
-      " M packages/agentplane/src/commands/task/external-agent-supervisor.ts",
-      " M packages/agentplane/src/runner/usecases/agent-work-order-build.ts",
-      "?? packages/agentplane/src/commands/pr/conflict-rework-merge.ts"
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/github-body.md",
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/github-title.txt",
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/meta.json",
+      " M .agentplane/tasks/202609041801-ZVX69C/pr/review.md",
+      "?? .agentplane/tasks/202609041801-ZVX69C/verification/20260905231611223-2892a2d48c790e3c.json"
     ],
     "unchanged_from_execution_baseline": []
   },

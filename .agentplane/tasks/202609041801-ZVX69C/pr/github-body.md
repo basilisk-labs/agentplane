@@ -15,19 +15,8 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Confirmed admitted conflict-base application mismatch: the packet binds current_base_sha
-6e49077db61daed5204b514e7d6e071c190edda6, but external and managed merge application pass
-provider.base_sha 8e8440da19e95e3264835bcdc8ccf665d18fe26c to the current-base equality guard. The
-narrow read-only Node assertion failed before any merge or Task write. Implement the already
-recorded non-material plan amendment
-d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22 in the existing owners and qualify
-both base identities, stale rejection and recovery. Preserve the previously passing focused tests
-and scope exclusions.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
