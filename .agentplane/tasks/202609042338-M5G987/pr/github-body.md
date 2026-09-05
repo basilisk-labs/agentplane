@@ -16,7 +16,7 @@ Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A 
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,7 +27,19 @@ Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...un-cli.core.task-advance.blocked-result.test.ts | 179 +++++++++++++------
+ ...n-cli.core.task-advance.branch-worktree.test.ts |   8 +-
+ .../shared/task-scope-extension-request.ts         |  81 ++++++++-
+ .../commands/task/external-agent-blocked-result.ts |  16 +-
+ .../external-agent-implementation-recovery.test.ts |  85 ++++++++-
+ .../task/external-agent-implementation-recovery.ts | 198 ++++++++++++++++++++-
+ packages/agentplane/src/commands/task/plan.ts      |  35 +++-
+ .../agentplane/src/commands/task/plan.unit.test.ts |  93 ++++++++++
+ .../src/commands/task/scope-extend.test.ts         | 185 ++++++++++++++++++-
+ .../task/shared/workflow-transition-service.ts     |  62 +++++++
+ packages/agentplane/src/commands/task/update.ts    |   6 +-
+ .../src/commands/task/update.unit.test.ts          |  49 +++++
+ 12 files changed, 922 insertions(+), 75 deletions(-)
 ```
 
 </details>

@@ -1,6 +1,7 @@
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
@@ -93,13 +94,16 @@ async function persistScopeExtensionRequest(opts: {
   if (!pending) return;
   const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
   await opts.command.taskBackend.writeTask(
-    {
-      ...task,
-      extensions: {
-        ...(task.extensions ?? {}),
-        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    projectTaskCentricCompatibilityMutation({
+      current: task,
+      next: {
+        ...task,
+        extensions: {
+          ...(task.extensions ?? {}),
+          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+        },
       },
-    },
+    }),
     task.revision ? { expectedRevision: task.revision } : undefined,
   );
 }
