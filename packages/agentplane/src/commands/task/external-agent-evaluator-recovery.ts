@@ -3,7 +3,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { gitShowFile, gitProofEnv } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
-import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  parseTaskReadme,
+  renderTaskReadme,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+  taskCentricDigest,
+} from "@agentplaneorg/core/tasks";
 import {
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   validateSupervisorExecutionEpisodeJournal,
@@ -11,6 +17,11 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
+import {
+  preserveReceiptedMetadata,
+  TASK_CENTRIC_RUNTIME_EXTENSION_KEY,
+} from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { readWorkOrder } from "../evaluator/evaluator-work-order.js";
@@ -30,6 +41,80 @@ import {
 
 function digest(bytes: Buffer | string): string {
   return `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+}
+
+const PREPARED_STATE_INPUT = "evaluator-prepared-state";
+
+export function bindPreparedEvaluatorState(opts: {
+  work_order: AgentWorkOrderV2;
+  before: TaskRouteDecision;
+  after: TaskRouteDecision;
+}): AgentWorkOrderV2 {
+  const before = opts.before.workflowStep.preconditionFingerprint;
+  const after = opts.after.workflowStep.preconditionFingerprint;
+  const blockers = (decision: TaskRouteDecision) =>
+    decision.blockers.filter((blocker) => blocker.code !== "task_worktree_dirty");
+  if (
+    opts.work_order.role !== "EVALUATOR" ||
+    opts.before.workflowStep.kind !== "agent_episode" ||
+    opts.before.workflowStep.episode.purpose !== "quality_review" ||
+    opts.after.workflowStep.kind !== "agent_episode" ||
+    !["quality_review", "task_worktree_resolution"].includes(
+      opts.after.workflowStep.episode.purpose,
+    ) ||
+    opts.before.workflowMode !== opts.after.workflowMode ||
+    before.digest !== opts.work_order.state_fingerprint.digest ||
+    before.task_id !== after.task_id ||
+    before.task_revision !== after.task_revision ||
+    before.git_head !== after.git_head ||
+    before.worktree !== after.worktree ||
+    Object.keys(before.components).some(
+      (key) =>
+        key !== "authority" &&
+        before.components[key as keyof typeof before.components].digest !==
+          after.components[key as keyof typeof after.components].digest,
+    ) ||
+    JSON.stringify(opts.before.batchOwnership) !== JSON.stringify(opts.after.batchOwnership) ||
+    JSON.stringify(blockers(opts.before)) !== JSON.stringify(blockers(opts.after))
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evaluator inputs changed while preparing evidence; request a fresh action packet.",
+    });
+  }
+  // The issue digest binds this exact post-preparation snapshot. Returns still
+  // compare every component, including authority, rather than ignoring route drift.
+  return {
+    ...opts.work_order,
+    required_inputs: [
+      ...opts.work_order.required_inputs,
+      {
+        id: PREPARED_STATE_INPUT,
+        kind: "source_artifact",
+        description:
+          "Exact supervisor state fingerprint after frozen evaluator evidence preparation.",
+        digest: after.digest,
+        required: true,
+      },
+    ],
+  };
+}
+
+export function evaluatorReturnFingerprint(opts: {
+  exchange: ExternalAgentExchange;
+  work_order: AgentWorkOrderV2;
+}): string {
+  if (
+    opts.exchange.purpose === "quality_review" &&
+    opts.exchange.role === "EVALUATOR" &&
+    opts.work_order.role === "EVALUATOR"
+  ) {
+    return (
+      opts.work_order.required_inputs.find((input) => input.id === PREPARED_STATE_INPUT)?.digest ??
+      opts.exchange.state_fingerprint
+    );
+  }
+  return opts.exchange.state_fingerprint;
 }
 
 /** Recover only the single review mutation, not a later state carrying its evidence reference. */
@@ -65,6 +150,54 @@ export async function isRecoverableAppliedEvaluatorResult(opts: {
   if (Object.hasOwn(before.frontmatter, "quality_review"))
     after.frontmatter.quality_review = before.frontmatter.quality_review;
   else delete after.frontmatter.quality_review;
+  // Undo the same canonical metadata transition, then prove its receipt by replay.
+  // The frozen whole-document hash below still binds every pre-review field.
+  const extensions = after.frontmatter.extensions;
+  if (isRecord(extensions)) {
+    const aggregate = taskCentricAggregateFromExtensions(extensions);
+    const runtime = extensions[TASK_CENTRIC_RUNTIME_EXTENSION_KEY];
+    if (aggregate && isRecord(runtime) && isRecord(runtime.mutation_receipts)) {
+      const receipts = runtime.mutation_receipts;
+      const added = Object.entries(receipts).filter(
+        ([, receipt]) =>
+          isRecord(receipt) &&
+          receipt.previous_revision === order.task.revision &&
+          receipt.next_revision === aggregate.revision,
+      );
+      if (aggregate.revision !== order.task.revision + 1 || added.length !== 1) return false;
+      const previousReceipt = Object.values(receipts).find(
+        (receipt) => isRecord(receipt) && receipt.next_revision === order.task.revision,
+      );
+      const previousAggregate = taskCentricAggregateFromExtensions(
+        isRecord(before.frontmatter.extensions) ? before.frontmatter.extensions : undefined,
+      );
+      const previousAt =
+        isRecord(previousReceipt) && isRecord(previousReceipt.event)
+          ? previousReceipt.event.at
+          : previousAggregate?.revision === order.task.revision
+            ? previousAggregate.updated_at
+            : null;
+      if (typeof previousAt !== "string") return false;
+      const restoredExtensions = {
+        ...withTaskCentricAggregate(extensions, {
+          ...aggregate,
+          revision: order.task.revision,
+          event_cursor: aggregate.event_cursor - 1,
+          updated_at: previousAt,
+        }),
+        [TASK_CENTRIC_RUNTIME_EXTENSION_KEY]: {
+          ...runtime,
+          mutation_receipts: Object.fromEntries(
+            Object.entries(receipts).filter(([key]) => key !== added[0]![0]),
+          ),
+        },
+      };
+      const replayed = structuredClone(restoredExtensions);
+      preserveReceiptedMetadata(replayed, extensions);
+      if (taskCentricDigest(replayed) !== taskCentricDigest(extensions)) return false;
+      after.frontmatter.extensions = restoredExtensions;
+    }
+  }
   const restored = renderTaskReadme(after.frontmatter, after.body);
   if (digest(restored.endsWith("\n") ? restored : restored + "\n") !== doc.sha256) return false;
   for (const evidence of frozen.evidence) {
@@ -168,6 +301,8 @@ export async function retireStaleEvaluatorExchange(opts: {
       task_id: opts.decision.task.id,
       state_fingerprint: opts.exchange.state_fingerprint,
     });
+    if (evaluatorReturnFingerprint({ exchange, work_order: workOrder }) === currentFingerprint)
+      return;
     // A crash after applying the review must resume its existing idempotent closeout.
     const command = await loadCommandContext({ cwd: exchange.checkout, rootOverride: null });
     if (

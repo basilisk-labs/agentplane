@@ -45,7 +45,11 @@ import {
   finalizeCompletedExternalAgentExchange,
 } from "./external-agent-exchange-authority.js";
 import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
-import { isRecoverableAppliedEvaluatorResult } from "./external-agent-evaluator-recovery.js";
+import {
+  bindPreparedEvaluatorState,
+  evaluatorReturnFingerprint,
+  isRecoverableAppliedEvaluatorResult,
+} from "./external-agent-evaluator-recovery.js";
 import {
   applyAcceptedExternalAgentResult,
   isExternalAgentResultAlreadyApplied,
@@ -212,7 +216,15 @@ async function issueExternalAgentExchangeUnlocked(opts: {
       task_id: opts.decision.task.id,
       work_order: workOrder,
     });
-    workOrder = prepared.work_order;
+    workOrder = bindPreparedEvaluatorState({
+      work_order: prepared.work_order,
+      before: opts.decision,
+      after: await refreshExternalAgentRoute({
+        cwd: checkout,
+        task_id: opts.decision.task.id,
+        include_remote: opts.decision.prFlow?.pr.source === "lookup",
+      }),
+    });
     evaluatorWorkOrderRef = prepared.evaluator_work_order_ref;
   }
   const [head, status] = await Promise.all([
@@ -294,17 +306,36 @@ export async function issueExternalAgentExchange(opts: {
   });
 }
 
-function assertReadOnlyReturnFresh(opts: {
+async function assertReadOnlyReturnFresh(opts: {
   exchange: ExternalAgentExchange;
+  work_order: AgentWorkOrderV2;
   decision: TaskRouteDecision;
-}): void {
+}): Promise<void> {
   if (
-    opts.decision.workflowStep.preconditionFingerprint.digest !== opts.exchange.state_fingerprint
+    opts.decision.workflowStep.preconditionFingerprint.digest !==
+    evaluatorReturnFingerprint({
+      exchange: opts.exchange,
+      work_order: opts.work_order,
+    })
   ) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "External-agent result is stale; request a fresh action packet.",
     });
+  }
+  if (opts.exchange.purpose === "quality_review") {
+    const frozen = opts.work_order.required_inputs.find(
+      (input) => input.id === "evaluator-work-order",
+    );
+    if (
+      !opts.exchange.evaluator_work_order_ref ||
+      digestText(await readFile(opts.exchange.evaluator_work_order_ref, "utf8")) !== frozen?.digest
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Frozen evaluator work order changed after issuance.",
+      });
+    }
   }
 }
 
@@ -480,7 +511,7 @@ export async function acceptExternalAgentResult(opts: {
       !alreadyApplied &&
       !usesExternalImplementationAuthority(exchange.purpose, workOrder.authority.sandbox)
     ) {
-      assertReadOnlyReturnFresh({ exchange, decision: current });
+      await assertReadOnlyReturnFresh({ exchange, work_order: workOrder, decision: current });
     }
     if (!(alreadyApplied && exchange.purpose === "planning")) {
       await applyAcceptedExternalAgentResult({

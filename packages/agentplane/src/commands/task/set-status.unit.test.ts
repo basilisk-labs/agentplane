@@ -279,13 +279,15 @@ describe("task set-status command (unit)", () => {
   });
 
   it.each([
-    { from: "DOING", to: "BLOCKED", consistent: true },
-    { from: "BLOCKED", to: "DOING", consistent: true },
-    { from: "BLOCKED", to: "TODO", consistent: false },
-    { from: "DONE", to: "BLOCKED", consistent: false },
+    { from: "DOING", to: "BLOCKED", consistent: true, force: false },
+    { from: "BLOCKED", to: "DOING", consistent: true, force: false },
+    { from: "BLOCKED", to: "TODO", consistent: false, force: false },
+    { from: "DONE", to: "BLOCKED", consistent: false, force: false },
+    { from: "DONE", to: "DOING", consistent: false, force: false },
+    { from: "DONE", to: "DOING", consistent: true, force: true },
   ] as const)(
     "preserves projection consistency for $from -> $to",
-    async ({ from, to, consistent }) => {
+    async ({ from, to, consistent, force }) => {
       const ctx = mkCtx();
       const aggregate = createLegacyTaskAggregate({
         id: "T-1",
@@ -322,8 +324,8 @@ describe("task set-status command (unit)", () => {
         cwd: "/repo",
         taskId: "T-1",
         status: to,
-        force: false,
-        yes: false,
+        force,
+        yes: force,
         commitFromComment: false,
         commitAllow: [],
         commitAutoAllow: false,
@@ -338,6 +340,9 @@ describe("task set-status command (unit)", () => {
         const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
         expect(persistedAggregate?.lifecycle).toBe(to === "BLOCKED" ? "BLOCKED" : "ACTIVE");
         expect(persistedAggregate?.final_validation).toBeNull();
+        expect(persistedAggregate?.current_plan).toEqual(aggregate.current_plan);
+        expect(persistedAggregate?.work_items).toEqual(aggregate.work_items);
+        expect(persistedAggregate?.revision).toBe(currentTask.revision);
         return;
       }
       await expect(transition).rejects.toMatchObject(

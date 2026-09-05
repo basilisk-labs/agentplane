@@ -200,7 +200,9 @@ function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStore
   if (
     aggregate &&
     opts.task.status !== opts.toStatus &&
-    (opts.toStatus === "BLOCKED" || (opts.task.status === "BLOCKED" && opts.toStatus === "DOING"))
+    (opts.toStatus === "BLOCKED" ||
+      ((opts.task.status === "BLOCKED" || opts.task.status === "DONE") &&
+        opts.toStatus === "DOING"))
   ) {
     patch.extensions = withTaskCentricAggregate(patch.extensions ?? opts.task.extensions, {
       ...aggregate,
