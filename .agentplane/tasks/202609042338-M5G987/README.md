@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -39,34 +39,34 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-05T02:06:46.974Z"
+  updated_at: "2026-09-05T03:23:27.581Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 6 typed finding(s)."
-  evaluated_sha: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+  evaluated_sha: "a53f1733aad427776a46e8c521d7a62daaebaf22"
   blueprint_digest: "a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace"
   evidence_refs:
-    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/6aece39888f3fd931f342b05540eace263e7cb81fa850f6fa9ef95460363ab19.md"
-    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-032144301-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-032144301-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/f5b1200f8319e369eed6ffb8fb412d6089f480637daa486a1edc95901911b0aa.md"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-032144301-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-032144301-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-032144301-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609042338-M5G987/README.md"
-    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/86c1a21ce1a9c48689b8d58ca2b83cf6cd5a54d3b10f42d6f35bd11634fa07d3.patch"
-    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/ed3a3490d23483ce8c83088e906769c35b5b70d43734ff739592bbd9507a0fba.json"
-    - ".agentplane/tasks/202609042338-M5G987/verification/20260905020502946-81ca72776e3a5975.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/21ade8d1924d45d08bb7dd28ade53ecb49a1886fae694a777a51c708dac3291b.patch"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/7c3b30ef33acf3a5ed3163b6927883944c8a37c4f5c6c0f0f5dbcb0b4c869934.json"
+    - ".agentplane/tasks/202609042338-M5G987/verification/20260905032136828-96fd28c42de7d845.json"
     - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/e5c299478203ab3d66b54b2c5fbf8abeb197d5fc2b028c49aaa03f652a3d5f34.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Scope extension now reconciles the canonical lifecycle, revision and authority through the existing compatibility projection owner in the same persisted mutation. Completed required WorkItems and their plan/output data are preserved; effects-only extension follows the same path."
-    - "Historical split recovery is confined to the accepted implementation owner. It checks immutable baseline task/scope/context/authority, accepted result identity and digest, worktree and commit ancestry before a CAS write. The generic status/update mismatch guards are retained."
-    - "Metadata-only recovery accepts only a fully replayable contiguous receipt chain while holding plan, lifecycle, WorkItems and non-receipt runtime state exact. Negative receipt/task/output/runtime cases and interrupted exact-result replay are covered by existing extended suites."
-    - "The approved startup prerequisite is now limited to untouched canonical work. Existing rework and quality-evidence dispatch are preserved, with unchanged quality and evaluator regressions passing."
-    - "All frozen evidence digests match. Task-level verification record 20260905020502946-81ca72776e3a5975.json reports all declared checks passed for the evaluated implementation; full CI, doctor errors=0, policy routing and task lint are recorded. Source changes stay within the declared roots and exclude PH5N6S-owned verification ordering."
-    - "Residual risk: The preserved accepted ZVX69C result still requires live recovery after M5G987 integration; this review does not claim that downstream task has already resumed."
+    - "Reviewed the frozen diff for a53f1733aad427776a46e8c521d7a62daaebaf22 against d345cdb14c53a98a85ece41ab472433f8e1fb32c. Scope extension, plan approval, update, and blocker persistence use the existing canonical projection owner and expected-revision writes. The first-start recovery is restricted to the unchanged approved grant and untouched WorkItems; normal rework and completed outputs are not misclassified as startup."
+    - "The historical scope-projection repair verifies the immutable execution baseline, exact task/checkout, approved request and plan, accepted envelope digest, implementation subject and ancestry before the guarded write. Metadata replay reconstructs receipts and preserves WorkItem state and outputs; it does not accept arbitrary revision drift."
+    - "The DONE-to-DOING change retains the existing force/approval gate and projects ACTIVE with final validation cleared. Evaluator preparation binds an exact post-preparation snapshot to the issued WorkOrder; return verifies the entire expected fingerprint and frozen WorkOrder bytes. Applied-review recovery reverses one canonical metadata receipt in memory, verifies it by replay, and still requires the full frozen README hash."
+    - "All frozen evidence hashes were checked. The verification record 20260905032136828-96fd28c42de7d845.json binds implementation a53f1733aad427776a46e8c521d7a62daaebaf22 and the declared verification contract. Its full CI exited 0 in 493442 ms; all ten declared checks passed and doctor reported errors=0. Separate CLI evaluator, blocked-result, and branch/worktree regressions passed 37 tests, including interruption before/after review commit and negative task, plan, policy, workspace, HEAD, and evidence drift cases."
+    - "Residual risk: M5 publication/integration and resumption of the existing ZVX69C accepted result remain supervisor-owned follow-through, not yet completed by this review."
+    - "Residual risk: Doctor warnings concern historical shipped-task projections and missing historical commit hashes outside the bounded repair; no broad archive normalization was performed."
 token_usage:
   agent_runs: 7
   input_tokens: null
@@ -589,7 +589,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-05T03:21:37.810Z"
+doc_updated_at: "2026-09-05T03:23:27.623Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK."
 sections:
@@ -1680,7 +1680,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 26
+    event_cursor: 27
     final_validation: null
     id: "202609042338-M5G987"
     intent:
@@ -2337,9 +2337,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 35
+    revision: 36
     schema_version: 1
-    updated_at: "2026-09-05T03:21:37.794Z"
+    updated_at: "2026-09-05T03:21:37.810Z"
     work_items:
       atomic-scope-extension-recovery:
         attempt: 3
@@ -3136,6 +3136,30 @@ extensions:
         mutation_id: "compatibility:sha256:db20a34518ea7c9b037b2feaee41b05ea54eb19b7523ebe01970ccd2b3dae188"
         next_revision: 33
         previous_revision: 32
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:f8356460b9ab8e39d0e9993b61af7d4c76b44090788b80d7c59b433c944eefeb:
+        aggregate_digest: "sha256:e3722d36053f5beb68c7211a51403f046288fdbec6c753d5c054636c7a102c69"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T03:21:37.810Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_38ee0fb30760eaa24be1d0d9"
+          mutation_id: "compatibility:sha256:f8356460b9ab8e39d0e9993b61af7d4c76b44090788b80d7c59b433c944eefeb"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 35
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f8356460b9ab8e39d0e9993b61af7d4c76b44090788b80d7c59b433c944eefeb"
+        next_revision: 36
+        previous_revision: 35
         schema_version: 1
         task_id: "202609042338-M5G987"
       external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0:
