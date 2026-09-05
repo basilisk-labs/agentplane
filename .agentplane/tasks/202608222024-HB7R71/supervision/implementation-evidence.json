@@ -1,0 +1,193 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check e3d5a67f9efbbaa6449ae56811adf6bda475f8a9..db52e0329e9e4ff00f6e8bfbd96af638d1e76650",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e3d5a67f9efbbaa6449ae56811adf6bda475f8a9..db52e0329e9e4ff00f6e8bfbd96af638d1e76650",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202608222024-HB7R71/README.md",
+        "M\t.agentplane/tasks/202608222024-HB7R71/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202608222024-HB7R71/pr/github-body.md",
+        "M\t.agentplane/tasks/202608222024-HB7R71/pr/meta.json",
+        "M\t.agentplane/tasks/202608222024-HB7R71/pr/review.md",
+        "A\t.agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202608222024-HB7R71/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202608222024-HB7R71/verification/20260822203427148-636be256b79c80bb.json",
+        "M\tdocs/assets/header.svg",
+        "M\tdocs/assets/readme-headers/adr.svg",
+        "M\tdocs/assets/readme-headers/agentplane-cli.svg",
+        "M\tdocs/assets/readme-headers/agentplane.svg",
+        "M\tdocs/assets/readme-headers/core.svg",
+        "M\tdocs/assets/readme-headers/docs.svg",
+        "M\tdocs/assets/readme-headers/humanizer.svg",
+        "M\tdocs/assets/readme-headers/recipes.svg",
+        "M\tdocs/assets/readme-headers/releases.svg",
+        "M\tdocs/assets/readme-headers/schemas.svg",
+        "M\tdocs/assets/readme-headers/scripts.svg",
+        "M\tdocs/assets/readme-headers/skills.svg",
+        "M\tdocs/assets/readme-headers/spec.svg",
+        "M\tdocs/assets/readme-headers/testkit.svg"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "e3d5a67f9efbbaa6449ae56811adf6bda475f8a9",
+  "implementation_commit": "db52e0329e9e4ff00f6e8bfbd96af638d1e76650",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202608222024-HB7R71/README.md",
+      " M .agentplane/tasks/202608222024-HB7R71/pr/github-body.md",
+      " M .agentplane/tasks/202608222024-HB7R71/pr/meta.json",
+      " M .agentplane/tasks/202608222024-HB7R71/pr/review.md",
+      " M docs/assets/header.svg",
+      " M docs/assets/readme-headers/adr.svg",
+      " M docs/assets/readme-headers/agentplane-cli.svg",
+      " M docs/assets/readme-headers/agentplane.svg",
+      " M docs/assets/readme-headers/core.svg",
+      " M docs/assets/readme-headers/docs.svg",
+      " M docs/assets/readme-headers/humanizer.svg",
+      " M docs/assets/readme-headers/recipes.svg",
+      " M docs/assets/readme-headers/releases.svg",
+      " M docs/assets/readme-headers/schemas.svg",
+      " M docs/assets/readme-headers/scripts.svg",
+      " M docs/assets/readme-headers/skills.svg",
+      " M docs/assets/readme-headers/spec.svg",
+      " M docs/assets/readme-headers/testkit.svg",
+      "?? .agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202608222024-HB7R71/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608222024-HB7R71/verification/20260822203427148-636be256b79c80bb.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608222024-HB7R71/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608222024-HB7R71/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608222024-HB7R71/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202608222024-HB7R71/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/header.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/adr.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/agentplane-cli.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/agentplane.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/core.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/docs.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/humanizer.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/recipes.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/releases.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/schemas.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/scripts.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/skills.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/spec.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/assets/readme-headers/testkit.svg"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222024-HB7R71/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202608222024-HB7R71/verification/20260822203427148-636be256b79c80bb.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202608222024-HB7R71/README.md",
+      " M .agentplane/tasks/202608222024-HB7R71/pr/github-body.md",
+      " M .agentplane/tasks/202608222024-HB7R71/pr/meta.json",
+      " M .agentplane/tasks/202608222024-HB7R71/pr/review.md",
+      " M docs/assets/header.svg",
+      " M docs/assets/readme-headers/adr.svg",
+      " M docs/assets/readme-headers/agentplane-cli.svg",
+      " M docs/assets/readme-headers/agentplane.svg",
+      " M docs/assets/readme-headers/core.svg",
+      " M docs/assets/readme-headers/docs.svg",
+      " M docs/assets/readme-headers/humanizer.svg",
+      " M docs/assets/readme-headers/recipes.svg",
+      " M docs/assets/readme-headers/releases.svg",
+      " M docs/assets/readme-headers/schemas.svg",
+      " M docs/assets/readme-headers/scripts.svg",
+      " M docs/assets/readme-headers/skills.svg",
+      " M docs/assets/readme-headers/spec.svg",
+      " M docs/assets/readme-headers/testkit.svg",
+      "?? .agentplane/tasks/202608222024-HB7R71/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202608222024-HB7R71/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202608222024-HB7R71/verification/20260822203427148-636be256b79c80bb.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202608222024-HB7R71"
+}

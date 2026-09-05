@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202608222024-HB7R71/publish-agentplane-v0-7-8-from-exact-release-rea",
+  "created_at": "2026-08-22T20:29:26.343Z",
+  "diffstat_sha256": "sha256:3db2f46597b32c00f1127cd2dfa616334029297f475c10e707b3b24bc31d62fc",
+  "last_verified_at": "2026-08-22T20:44:36.809Z",
+  "last_verified_diffstat_sha256": "sha256:3db2f46597b32c00f1127cd2dfa616334029297f475c10e707b3b24bc31d62fc",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608222024-HB7R71",
+  "updated_at": "2026-08-22T20:29:26.343Z",
+  "verify": {
+    "status": "fail"
+  }
+}
