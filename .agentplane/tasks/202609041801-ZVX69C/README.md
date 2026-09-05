@@ -2,10 +2,10 @@
 id: "202609041801-ZVX69C"
 title: "Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 63
+revision: 64
 origin:
   system: "manual"
 depends_on: []
@@ -72,9 +72,9 @@ quality_review:
     - "Residual risk: Refresh the remote route after acceptance. Obtain a fresh identity-bound conflict packet before any resolution, publication, or queue transition."
     - "Residual risk: Final main, hosted checks, related task closure, queue convergence, cleanup and final self-hosting qualification are not completed by this review."
 token_usage:
-  agent_runs: 21
+  agent_runs: 24
   input_tokens: null
-  journal_digest: "sha256:441a83bbe0f5b055177133f9a1abb6624e6294baf16d892c69444fc7989b39dd"
+  journal_digest: "sha256:ec02d4cda48ebec2e817eefeecbcc89416d9175ce9d3f551dd2e5eaaa9928487"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -84,7 +84,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-05T10:12:21.780Z"
+  updated_at: "2026-09-05T12:16:34.932Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -539,8 +539,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b74bcc2adf517b184faba2b34e08ac48b076991a"
-  message: "🚧 ZVX69C task: apply external agent result"
+  hash: "0404fde1d75ea09fa94fe3ad26c8049544c42373"
+  message: "🚧 ZVX69C task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -596,6 +596,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b74bcc2adf51. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -803,9 +806,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-05T12:16:34.932Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0404fde1d75ea09fa94fe3ad26c8049544c42373"
 doc_version: 3
-doc_updated_at: "2026-09-05T12:16:29.973Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-05T12:16:34.957Z"
+doc_updated_by: "CODER"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
   Summary: |-
@@ -2652,7 +2663,133 @@ extensions:
       schema_version: 1
       task_id: "202609041801-ZVX69C"
     event_cursor: 48
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "focused-cli-cycle"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "focused-core-cycle"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "focused-added-regressions"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-recipe-write-scope.integration.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "format-check"
+          command_identity: "bun run format:check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "lint-core"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "routing-policy"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "task-lint"
+          command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "doctor"
+          command_identity: "agentplane doctor"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          check_id: "full-local-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-05T12:11:54.033Z"
+          repository_snapshot_digest: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609041801-ZVX69C"
     intent:
       acceptance_criteria:
@@ -2703,7 +2840,7 @@ extensions:
 
         On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
       task_id: "202609041801-ZVX69C"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -3747,9 +3884,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 63
+    revision: 64
     schema_version: 1
-    updated_at: "2026-09-05T12:11:55.035Z"
+    updated_at: "2026-09-05T12:16:34.932Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -5201,6 +5338,31 @@ extensions:
         previous_revision: 55
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      legacy-finish:202609041801-ZVX69C:2026-09-05T12:11:54.033Z:b74bcc2adf517b184faba2b34e08ac48b076991a:
+        aggregate_digest: "sha256:d9a5ce6c44f9bf0ab7918d5ca58eb5998dcd0817caff33eb4ec021d5d5bdf261"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-05T12:16:34.932Z"
+          cause_refs:
+            - "task-verification:202609041801-ZVX69C"
+            - "git:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e998f0109f83478228ee80d0"
+          mutation_id: "legacy-finish:202609041801-ZVX69C:2026-09-05T12:11:54.033Z:b74bcc2adf517b184faba2b34e08ac48b076991a"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: "sha256:ba23a37eef330460f323847e836f9932dcaa2e84dbcbc82e6b2d6f2eb5819928"
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 63
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609041801-ZVX69C:2026-09-05T12:11:54.033Z:b74bcc2adf517b184faba2b34e08ac48b076991a"
+        next_revision: 64
+        previous_revision: 63
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       plan-refinement:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c:
         aggregate_digest: "sha256:6e681a6ccd08dcf9bc696b581d92914487ba854f7f98e789e1e3a7236a3cc61b"
         event:
@@ -5302,6 +5464,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "b74bcc2adf517b184faba2b34e08ac48b076991a"
+    message: "🚧 ZVX69C task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8e8440da19e95e3264835bcdc8ccf665d18fe26c"
@@ -6753,12 +6916,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/21` agent runs
+- Completeness: `0/24` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:441a83bbe0f5b055177133f9a1abb6624e6294baf16d892c69444fc7989b39dd`
+- Journal digest: `sha256:ec02d4cda48ebec2e817eefeecbcc89416d9175ce9d3f551dd2e5eaaa9928487`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-05T10:12:21.780Z`
+- Updated at: `2026-09-05T12:16:34.932Z`
