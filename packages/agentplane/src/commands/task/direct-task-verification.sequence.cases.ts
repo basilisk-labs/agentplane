@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import * as runtimeEnv from "../../shared/runtime-env.js";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 
 const TASK_ID = "202607290000-RF10A1";
@@ -30,6 +31,36 @@ afterEach(async () => {
 });
 
 describe("direct task verification sequences", () => {
+  it("rejects incomplete runtime evidence and succeeds on a fully qualified retry", async () => {
+    const cwd = await root();
+    const check = "bun run first && bun run second";
+    const runtime = runtimeEnv.localRuntimeEvidence("bun", process.env);
+    const observation = vi
+      .spyOn(runtimeEnv, "localRuntimeEvidence")
+      .mockReturnValueOnce({ ...runtime, status: "unavailable", executable_digest: null })
+      .mockReturnValueOnce({ ...runtime, status: "unavailable", executable_digest: null });
+    runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+    const opts = {
+      command: command(cwd),
+      task: { verify: [check], task_kind: "code", mutation_scope: "code" } as TaskData,
+      task_id: TASK_ID,
+      cwd,
+      run_process: runProcess,
+    };
+    try {
+      expect(await runDirectTaskVerification(opts)).toMatchObject({
+        status: "unsupported",
+        checks: [{ exit_code: 0, failure_kind: "infrastructure" }],
+      });
+      expect(runProcess).toHaveBeenCalledOnce();
+      runProcess.mockClear();
+      expect(await runDirectTaskVerification(opts)).toMatchObject({ status: "passed" });
+      expect(runProcess).toHaveBeenCalledTimes(2);
+    } finally {
+      observation.mockRestore();
+    }
+  });
+
   it("runs a safe sequence in order without a shell", async () => {
     const cwd = await root();
     runProcess
