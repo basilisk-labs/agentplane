@@ -4,7 +4,7 @@ title: "Repair atomic scope extension projection and accepted-result recovery"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -278,7 +278,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+  message: "🚧 M5G987 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -301,6 +303,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3485437d52f9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 9549212aae66. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -339,8 +344,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 3485437d52f9. CLI accepted one state-bound external-agent semantic result."
     commit: "3485437d52f987ffeb2faf763aaf5fb2da789f63"
+  -
+    type: "status"
+    at: "2026-09-05T01:44:11.213Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 9549212aae66. CLI accepted one state-bound external-agent semantic result."
+    commit: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
 doc_version: 3
-doc_updated_at: "2026-09-05T01:29:09.782Z"
+doc_updated_at: "2026-09-05T01:44:11.213Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK."
 sections:
@@ -784,7 +797,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 12
+    event_cursor: 14
     final_validation: null
     id: "202609042338-M5G987"
     intent:
@@ -1441,54 +1454,48 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 19
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-05T01:39:03.579Z"
+    updated_at: "2026-09-05T01:54:36.627Z"
     work_items:
       atomic-scope-extension-recovery:
-        attempt: 2
+        attempt: 3
         claim_id: null
         id: "atomic-scope-extension-recovery"
-        last_failure:
-          cause_refs:
-            - "atomic-scope-recovery"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Completed the bounded M5G987 rework. Fixed each narrowly reproduced cause from the first full CI without weakening guards: canonical-approved tasks now perform initial task start in both workflow modes, recovery code is consolidated under existing scope/runtime owners below size limits, and CLI fixtures respect layer boundaries, receipt identity and WorkItem-versus-task verification."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:fd9f938e9818ee1f13a028c50cde32a6db1663c62352ac9acf6e197a9ce4785f"
+            digest: "sha256:67463ae14d0c1510f44ee1d9fb8ba5078f342e671b0dabf0c30f349a24443b22"
             id: "atomic-scope-extension-implementation"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 3
               task_id: "202609042338-M5G987"
               work_item_id: "atomic-scope-extension-recovery"
             provenance:
-              - "sha256:597823a3b2d7f808b263eba9e4834c95877b9bc809cbed85b3e357a5427cee0d"
+              - "sha256:2b569cae628adf37545c783d4ba4313ebffad108b3f132db07ceaded5db4c91a"
               - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+            repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:cc91c325b064059eeb9cb7293f8c1f2c700bf5d1950d2d39580a85ea65528a6a"
+            digest: "sha256:6c04e5fe03b0226864237c8d3b3aad75253913ecad6a0649482fcc7c44dec0b8"
             id: "receipt-bound-replay-regression-evidence"
             kind: "semantic_output"
             producer:
-              attempt: 2
+              attempt: 3
               plan_revision: 3
               task_id: "202609042338-M5G987"
               work_item_id: "atomic-scope-extension-recovery"
             provenance:
-              - "sha256:597823a3b2d7f808b263eba9e4834c95877b9bc809cbed85b3e357a5427cee0d"
+              - "sha256:2b569cae628adf37545c783d4ba4313ebffad108b3f132db07ceaded5db4c91a"
               - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+            repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 3
-        state: "REWORK_READY"
+        revision: 4
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -1496,106 +1503,105 @@ extensions:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-1"
               command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-2"
               command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-3"
               command_identity: "bun run format:check"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run format:check."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-4"
               command_identity: "bun run lint:core"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run lint:core."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-5"
               command_identity: "bun run typecheck"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run typecheck."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-6"
               command_identity: "node .agentplane/policy/check-routing.mjs"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-7"
               command_identity: "node packages/agentplane/bin/agentplane.js task lint"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by node packages/agentplane/bin/agentplane.js task lint."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-8"
               command_identity: "node packages/agentplane/bin/agentplane.js doctor"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by node packages/agentplane/bin/agentplane.js doctor."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-9"
               command_identity: "git diff --check"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by git diff --check."
               exit_code: 0
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json"
               check_id: "check-10"
               command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-09-05T01:39:03.551Z"
-              repository_snapshot_digest: "sha256:110176960c9d50ce3c4fc6f829c3e6b906332874a943836b52f43481673493bc"
-              status: "failed"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-05T01:54:36.611Z"
+              repository_snapshot_digest: "sha256:52c449a018ab262291b763e8903f3b59bb79ed521349f21fa4db9d2ad50e5f3e"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "atomic-scope-recovery"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1630,6 +1636,22 @@ extensions:
         schema_version: 1
         task_id: "202609042338-M5G987"
         task_revision: 18
+        work_item_id: "atomic-scope-extension-recovery"
+      -
+        at: "2026-09-05T01:54:36.627Z"
+        from: "REWORK_READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_a437c054f4895244a3fa0698"
+        mutation_id: "external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0"
+        plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+        task_revision: 21
         work_item_id: "atomic-scope-extension-recovery"
     leases: []
     mutation_receipts:
@@ -1753,6 +1775,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609042338-M5G987"
+      compatibility:sha256:547ce761284d58471a6caf47fb36d54fff1bfe0ecd0e88e8e25e838f52404c25:
+        aggregate_digest: "sha256:a7c1942383d9cf96b697b4d51842436111b3f775ceadccdfa07cd6a2cd0a7ba1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T01:44:11.213Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4d01b3aece48bbfaacea6390"
+          mutation_id: "compatibility:sha256:547ce761284d58471a6caf47fb36d54fff1bfe0ecd0e88e8e25e838f52404c25"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:547ce761284d58471a6caf47fb36d54fff1bfe0ecd0e88e8e25e838f52404c25"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609042338-M5G987"
       compatibility:sha256:5ab1f96c05376dd4b9161282e025f61bb12dbcd145e4ed450621b0ed5512cf37:
         aggregate_digest: "sha256:015f3f31be6d19c2bdda32287583044864c7f9b1ce4a29e88d0dc4a1a9cd8051"
         event:
@@ -1873,6 +1919,30 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609042338-M5G987"
+      compatibility:sha256:a93e1d41ce8d345c7e6437a499f3d5dbc5517d8715ecf4e912e196e166d07147:
+        aggregate_digest: "sha256:c3dd969664e647b8a15c705bf411a1e8d20cca1f96f9f2acca1aa673f4a2e9ea"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T01:44:11.213Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_43a708ef97be05e3d9a1c2a2"
+          mutation_id: "compatibility:sha256:a93e1d41ce8d345c7e6437a499f3d5dbc5517d8715ecf4e912e196e166d07147"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a93e1d41ce8d345c7e6437a499f3d5dbc5517d8715ecf4e912e196e166d07147"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609042338-M5G987"
       compatibility:sha256:ca682eb988e083f332b40449522a7d8b15f4202ec457e98bf19738144090392f:
         aggregate_digest: "sha256:fddaf89ea097913a9a2babffa855562cfd0b9d961037d4f312dbde9086bb64b7"
         event:
@@ -1895,6 +1965,29 @@ extensions:
         mutation_id: "compatibility:sha256:ca682eb988e083f332b40449522a7d8b15f4202ec457e98bf19738144090392f"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0:
+        aggregate_digest: "sha256:74885395af7e5890785ddf0c2852fbbebf4f4933fd2ce521a1af01f4e1d36220"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T01:54:36.627Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_a437c054f4895244a3fa0698"
+          mutation_id: "external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 21
+          to: "COMPLETED"
+          work_item_id: "atomic-scope-extension-recovery"
+        mutation_id: "external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609042338-M5G987"
       external-result:work-order-202609042338-M5G987-executor-376c91855a574a2fd2b5d1d8:
@@ -1947,7 +2040,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "3485437d52f987ffeb2faf763aaf5fb2da789f63"
+    hash: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
