@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -587,6 +587,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The workspace conflict again consists of AgentPlane-generated evaluator context and quality evidence under this task's own quality directory. This read-only episode cannot checkpoint those lifecycle artifacts, and no implementation source or test change is implicated."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): Workspace conflict is limited to three untracked frozen evaluator artifacts. The read-only episode cannot persist or remove framework-owned quality evidence."
 events:
   -
     type: "status"
@@ -701,8 +704,13 @@ events:
     at: "2026-09-04T11:32:30.472Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The workspace conflict again consists of AgentPlane-generated evaluator context and quality evidence under this task's own quality directory. This read-only episode cannot checkpoint those lifecycle artifacts, and no implementation source or test change is implicated."
+  -
+    type: "comment"
+    at: "2026-09-05T10:21:50.533Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): Workspace conflict is limited to three untracked frozen evaluator artifacts. The read-only episode cannot persist or remove framework-owned quality evidence."
 doc_version: 3
-doc_updated_at: "2026-09-04T11:32:30.509Z"
+doc_updated_at: "2026-09-05T10:21:50.566Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -1615,7 +1623,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 22
+    event_cursor: 23
     final_validation:
       evidence:
         -
@@ -1764,9 +1772,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 36
+    revision: 37
     schema_version: 1
-    updated_at: "2026-09-04T11:32:30.472Z"
+    updated_at: "2026-09-05T10:21:50.533Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -2440,6 +2448,30 @@ extensions:
         mutation_id: "compatibility:sha256:a611653d77b9d49cd55422e9b6628d51702900098e8ae848e92e9a76b3808b4e"
         next_revision: 25
         previous_revision: 24
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:acd498b9bca6c5659324df16198596f7bdd1926fcea2b4241d4d7978f20857b8:
+        aggregate_digest: "sha256:f05c889e932d000bdf0c75cb59b74420d515b49bf4fb9f65646ab81e51cd7416"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T10:21:50.533Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_1d67bede32e3525101cbff06"
+          mutation_id: "compatibility:sha256:acd498b9bca6c5659324df16198596f7bdd1926fcea2b4241d4d7978f20857b8"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 36
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:acd498b9bca6c5659324df16198596f7bdd1926fcea2b4241d4d7978f20857b8"
+        next_revision: 37
+        previous_revision: 36
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:b683699e59a42f657fb67dc0ec611e6fa63fa2a5a96d05f4a7bbc82f7fa17b2e:
