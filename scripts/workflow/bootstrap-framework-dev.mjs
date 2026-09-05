@@ -65,7 +65,23 @@ function defaultExec(repoRoot, cmd, args) {
 }
 
 function hasWorkspaceNodeModules(repoRoot) {
-  return pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "node_modules"));
+  const nodeModulesPath = path.join(repoRoot, "node_modules");
+  if (!pathResolvesWithinRepo(repoRoot, nodeModulesPath)) return false;
+  const manifest = readJsonIfPresent(path.join(repoRoot, "package.json"));
+  if (!manifest) return false;
+  const taskWorktreesRoot = path.join(repoRoot, ".agentplane", "worktrees");
+  for (const dependency of declaredDirectDependencies(manifest)) {
+    const dependencyRoot = path.join(nodeModulesPath, ...dependency.split("/"));
+    const resolvedDependency = resolveRealPathIfPresent(dependencyRoot);
+    if (
+      !resolvedDependency ||
+      pathResolvesWithinRepo(taskWorktreesRoot, dependencyRoot) ||
+      !fs.existsSync(path.join(dependencyRoot, "package.json"))
+    ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function resolveRealPathIfPresent(targetPath) {
@@ -74,6 +90,22 @@ function resolveRealPathIfPresent(targetPath) {
   } catch {
     return null;
   }
+}
+
+function readJsonIfPresent(targetPath) {
+  try {
+    return JSON.parse(fs.readFileSync(targetPath, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function declaredDirectDependencies(manifest) {
+  const names = ["dependencies", "devDependencies"].flatMap((field) => {
+    const dependencies = manifest?.[field];
+    return dependencies && typeof dependencies === "object" ? Object.keys(dependencies) : [];
+  });
+  return [...new Set(names)].toSorted();
 }
 
 function pathResolvesWithinRepo(repoRoot, targetPath) {
@@ -91,9 +123,11 @@ function removeForeignInstallLayouts(repoRoot) {
     path.join(repoRoot, "packages", "agentplane", "node_modules"),
     path.join(repoRoot, "website", "node_modules"),
   ];
+  const rebuildInstallLayout =
+    fs.existsSync(path.join(repoRoot, "node_modules")) && !hasWorkspaceNodeModules(repoRoot);
   for (const targetPath of installLayoutPaths) {
     if (!fs.existsSync(targetPath)) continue;
-    if (pathResolvesWithinRepo(repoRoot, targetPath)) continue;
+    if (!rebuildInstallLayout && pathResolvesWithinRepo(repoRoot, targetPath)) continue;
     fs.rmSync(targetPath, { recursive: true, force: true });
   }
 }

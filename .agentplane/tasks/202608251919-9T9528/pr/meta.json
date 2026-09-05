@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608251919-9T9528/make-task-worktree-dependency-preparation-indepe",
+  "created_at": "2026-08-25T19:29:08.475Z",
+  "diffstat_sha256": "sha256:e2474263d0b3e6984d685f41e66f3630cb8a140daf0fdced84361212c97f6988",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608251919-9T9528",
+  "updated_at": "2026-08-25T19:29:08.475Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
