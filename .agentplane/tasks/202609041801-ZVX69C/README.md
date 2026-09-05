@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 76
+revision: 78
 origin:
   system: "manual"
 depends_on: []
@@ -689,6 +689,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole dirty file is the native Task README written by acceptance of the preceding non-material plan clarification. Preserve it and let the formal task-artifact commit owner checkpoint it. There are no source changes or foreign changes to resolve."
 events:
   -
     type: "status"
@@ -940,9 +943,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "42463c33c80a49eea4445f2aa6a382a6ab6588ac"
+  -
+    type: "comment"
+    at: "2026-09-05T23:14:33.237Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): The sole dirty file is the native Task README written by acceptance of the preceding non-material plan clarification. Preserve it and let the formal task-artifact commit owner checkpoint it. There are no source changes or foreign changes to resolve."
 doc_version: 3
-doc_updated_at: "2026-09-05T23:02:32.522Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-05T23:14:33.268Z"
+doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
   Summary: |-
@@ -3058,7 +3066,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 56
+    event_cursor: 58
     final_validation:
       evidence:
         -
@@ -3237,7 +3245,26 @@ extensions:
         On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
       task_id: "202609041801-ZVX69C"
     lifecycle: "COMPLETED"
-    plan_amendments: []
+    plan_amendments:
+      -
+        actor_id: "external:EXECUTOR"
+        created_at: "2026-09-05T23:13:07.145Z"
+        digest: "sha256:d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22"
+        id: "amendment_d713f846632d210befdf3276"
+        plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+        plan_revision: 5
+        refinement:
+          acceptance_changed: false
+          architecture_constraints_changed: false
+          dependencies_changed: false
+          description: "Clarify the existing supervisor-owned-conflict-resolution-with-bound-context-and-interruption-replay requirement: before applying this admitted provider_base_ancestor_of_current_base packet, repair the existing shared conflict application and its external/managed recovery callers to bind merge-parent identity to packet.base_context.current_base_sha (consistent with packet.local.base_head_sha), while independently retaining the exact provider conflict base for provider freshness and ancestry proof. Qualify the different-provider/current-base case, interruption/replay, and rejection after either identity changes. Reuse the current WorkItem and existing authorized pr, task, runner/usecases and CLI test roots. Then return to the original conflict resolution: preserve branch contents for the four actual conflicts and preserve automatic main contributions. No additional task, roots, external effects, architecture, or weakened authority."
+          external_effects_added: []
+          operations:
+            - "clarify"
+          outputs_added: []
+          risk_changed: false
+          scope_roots_added: []
+        schema_version: 1
     plan_history:
       -
         approval:
@@ -4637,9 +4664,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 76
+    revision: 78
     schema_version: 1
-    updated_at: "2026-09-05T23:02:32.510Z"
+    updated_at: "2026-09-05T23:14:33.237Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -4962,6 +4989,22 @@ extensions:
         task_id: "202609041801-ZVX69C"
         task_revision: 72
         work_item_id: "repair-and-qualify-clean-core-task-cycle"
+      -
+        at: "2026-09-05T23:13:07.145Z"
+        from: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+        to: "sha256:d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_9a8784a44f39b2b3ce291c6d"
+        mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-deeaaa4d5c89b1c29b42a34a"
+        plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+        task_revision: 76
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:031f31d2fba64451147426b6ced46bd5ca47267c6112a358fd201c55015a830f:
@@ -5634,6 +5677,30 @@ extensions:
         mutation_id: "compatibility:sha256:7c432a1889636a5dd79880a2f2c2751e06036a48785402c1e3222bf59c8a95d7"
         next_revision: 47
         previous_revision: 46
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:7eddc3caadc631e22bb4abb50f7e6eff13ebbebcb27e3687a45d1428ad8d0cb2:
+        aggregate_digest: "sha256:e65c50ad709cdef58cbdd65a73416262665d8b026c2d7367cc99d77f5c3115fb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T23:14:33.237Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_7103a2d48ec5cc849f28107b"
+          mutation_id: "compatibility:sha256:7eddc3caadc631e22bb4abb50f7e6eff13ebbebcb27e3687a45d1428ad8d0cb2"
+          plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 77
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7eddc3caadc631e22bb4abb50f7e6eff13ebbebcb27e3687a45d1428ad8d0cb2"
+        next_revision: 78
+        previous_revision: 77
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:8738d1e62ee128454a7be6e6b277f982f2385c835e249999efe827c837fbc70d:
@@ -6501,6 +6568,29 @@ extensions:
         mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-d5084b8413e0a275f3766b13"
         next_revision: 16
         previous_revision: 15
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      plan-refinement:work-order-202609041801-ZVX69C-executor-deeaaa4d5c89b1c29b42a34a:
+        aggregate_digest: "sha256:c41079f32c63815c949172954b03b2876991773f7692009947e83120382d1720"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-05T23:13:07.145Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+          id: "event_9a8784a44f39b2b3ce291c6d"
+          mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-deeaaa4d5c89b1c29b42a34a"
+          plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 76
+          to: "sha256:d713f846632d210befdf327669d603fd9d0b2a405240ee78ba71dce7879a6c22"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609041801-ZVX69C-executor-deeaaa4d5c89b1c29b42a34a"
+        next_revision: 77
+        previous_revision: 76
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       plan-reject-cccc54072907ad3149340210ac05fc90:
