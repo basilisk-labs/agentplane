@@ -6,14 +6,14 @@ Created: 2026-09-03T17:26:07.913Z
 
 - Task: `202609031717-PX8PZT`
 - Title: Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609031717-PX8PZT/port-the-minimal-missing-clean-core-lifecycle-bo`
 - Canonical task record: `.agentplane/tasks/202609031717-PX8PZT/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
