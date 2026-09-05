@@ -6,7 +6,7 @@ Created: 2026-09-05T00:35:18.474Z
 
 - Task: `202609042338-M5G987`
 - Title: Repair atomic scope extension projection and accepted-result recovery
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609042338-M5G987/repair-atomic-scope-extension-projection-and-acc`
 - Canonical task record: `.agentplane/tasks/202609042338-M5G987/README.md`
 
