@@ -15,8 +15,8 @@ Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A 
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
