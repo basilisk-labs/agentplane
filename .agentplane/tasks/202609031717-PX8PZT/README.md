@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -36,34 +36,33 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-05T11:09:40.842Z"
+  updated_at: "2026-09-05T11:24:05.395Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "0b00202511638c4b198469c9d2d59738c25d8c4a"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "b5463f7ecf31fce789114107af744e2d61359f91"
   blueprint_digest: "9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b"
   evidence_refs:
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-110600803-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-110600803-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/26afc0483499db294fd35491f255565277e5de160d30c104e5c9dd1fe256bb5a.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-110600803-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-110600803-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-110600803-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-110600803-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/7b014c709e25a2b0a1f769add9b33eb3f5209f4be7d69cde7eaee6aa89aa2726.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609031717-PX8PZT/README.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/509916425d3d051c51e06ebed792b5b4d93282f54489708e49fa5eae603a5e5f.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/verification/20260904112315693-bdcd7a5d9c49a287.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/b6464112c93b2f8f31debfe51b8e90844efc616bdc1d0fd8540b76164f63375c.patch"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/bd4b2a91b94887747a8d8e9d85df20bda17760212a60b4858970b83f90768001.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/verification/20260905112142938-ff7c74d812909864.json"
     - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/f96d2471c24f99ab9127f5b739d35405eeca63442083386a09659c09fc0fc4e6.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch introduces hasWorkspaceNodeModules checks in scripts/workflow/bootstrap-framework-dev.mjs. The root is checked only for containment in repoRoot. The .agentplane/worktrees exclusion is inside the per-dependency loop, so an empty declared dependency set accepts a root symlink into another task worktree. A dependency symlink back into the owning base can similarly conceal ownership of the containing layout."
-    - "Read-only reproduction executed the actual hasWorkspaceNodeModules and its helpers in a VM with filesystem observations representing /repo/node_modules -> /repo/.agentplane/worktrees/other/node_modules and a valid empty-dependency package manifest. Expected false; actual true. All frozen evidence hashes matched before evaluation."
-    - "The nearest bootstrap regression checks a declared dependency owned by another task, not ownership of the node_modules root. isReusableWorkspaceInstallLayout in work-start.materialize.ts already validates root ownership independently, demonstrating the intended existing contract."
-    - "This is an acceptance defect in the fourth approved boundary contract, not a request to broaden access policy or add a new lifecycle task. Existing passing branch verification does not cover this negative case."
-    - "Residual risk: Hosted integration, current-main reconciliation, and final goal qualification remain incomplete."
+    - "The frozen actual diff b6464112c93b2f8f31debfe51b8e90844efc616bdc1d0fd8540b76164f63375c.patch changes runDirectTaskVerification to break a sequence on infrastructureFailure, but its result guard only checks exitCode and zeroTests. If runtime identity is unavailable and the process exits zero, the remaining required segments are skipped and the method returns passed with failure_kind infrastructure."
+    - "Read-only reproduction transpiled the actual runDirectTaskVerification function and used in-memory artifact persistence with an unavailable runtime observation and successful process outcome. Result: status passed, executedSegments 1, requiredSegments 2, failureKind infrastructure. Runtime digest availability is independent of process success (for example executable content unreadable or resolver mismatch)."
+    - "The bootstrap root-ownership correction is coherent and covered by both negative cases plus convergence. Current full CI passed, but existing sequence tests do not cover infrastructure observations with zero exit status."
+    - "Residual risk: Current-main reconciliation, hosted integration and full goal qualification remain pending."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -775,7 +774,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-05T11:21:44.248Z"
+doc_updated_at: "2026-09-05T11:24:05.430Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -1874,7 +1873,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 27
+    event_cursor: 28
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -1952,9 +1951,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 41
+    revision: 42
     schema_version: 1
-    updated_at: "2026-09-05T11:21:44.224Z"
+    updated_at: "2026-09-05T11:21:44.248Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -2796,6 +2795,30 @@ extensions:
         mutation_id: "compatibility:sha256:be3d770f90dcb587356d691cf6e1a047de1c90b72dcd94e68aa0150ee5cc7d13"
         next_revision: 32
         previous_revision: 31
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:c0052581343fdbbc41cca17d97d306b2e6bc898b2cdc9156d5d142d3a9025da6:
+        aggregate_digest: "sha256:fd13afd0730c0680935250ff16db4e2c1c46bd8fb536601ba99de01727de9cb3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T11:21:44.248Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a13a89d4a92ad12e78fe9069"
+          mutation_id: "compatibility:sha256:c0052581343fdbbc41cca17d97d306b2e6bc898b2cdc9156d5d142d3a9025da6"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 41
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c0052581343fdbbc41cca17d97d306b2e6bc898b2cdc9156d5d142d3a9025da6"
+        next_revision: 42
+        previous_revision: 41
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:c83670a33c8a6796e2c10ccb905d89959188c778b3188ba5e104ad2531be6fbf:
