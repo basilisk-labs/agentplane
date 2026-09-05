@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -34,35 +34,37 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-05T11:24:05.395Z"
+  updated_at: "2026-09-05T12:10:02.997Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "b5463f7ecf31fce789114107af744e2d61359f91"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "0b172381011f9ac31de566ae748b26a6dddd2c30"
   blueprint_digest: "9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b"
   evidence_refs:
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/7b014c709e25a2b0a1f769add9b33eb3f5209f4be7d69cde7eaee6aa89aa2726.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-112155493-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-120720651-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-120720651-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/580b6300a0ae2a17d13869d90b09049e46e3f6078a37ef61046697f6b22990df.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-120720651-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-120720651-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/20260905-120720651-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609031717-PX8PZT/README.md"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/b6464112c93b2f8f31debfe51b8e90844efc616bdc1d0fd8540b76164f63375c.patch"
-    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/bd4b2a91b94887747a8d8e9d85df20bda17760212a60b4858970b83f90768001.json"
-    - ".agentplane/tasks/202609031717-PX8PZT/verification/20260905112142938-ff7c74d812909864.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/52d842e1d420f7419346aa48c5e57a4dbc2ad9a71bae46309c78f998dd6ae7ab.patch"
+    - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/edf58d3f839e2442c8bfd8c4f5455782595bd3e3f00d201b5a5214f8ee2223be.json"
+    - ".agentplane/tasks/202609031717-PX8PZT/verification/20260905120706643-3354575d8ebd4c54.json"
     - ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/f96d2471c24f99ab9127f5b739d35405eeca63442083386a09659c09fc0fc4e6.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen actual diff b6464112c93b2f8f31debfe51b8e90844efc616bdc1d0fd8540b76164f63375c.patch changes runDirectTaskVerification to break a sequence on infrastructureFailure, but its result guard only checks exitCode and zeroTests. If runtime identity is unavailable and the process exits zero, the remaining required segments are skipped and the method returns passed with failure_kind infrastructure."
-    - "Read-only reproduction transpiled the actual runDirectTaskVerification function and used in-memory artifact persistence with an unavailable runtime observation and successful process outcome. Result: status passed, executedSegments 1, requiredSegments 2, failureKind infrastructure. Runtime digest availability is independent of process success (for example executable content unreadable or resolver mismatch)."
-    - "The bootstrap root-ownership correction is coherent and covered by both negative cases plus convergence. Current full CI passed, but existing sequence tests do not cover infrastructure observations with zero exit status."
-    - "Residual risk: Current-main reconciliation, hosted integration and full goal qualification remain pending."
+    - "The sequence runner now returns unsupported when runtime infrastructure evidence terminates a sequence, including a zero process exit. The nearest regression asserts that the second segment does not run and that a qualified retry executes both segments."
+    - "Reviewed the four scoped production boundaries: owning-base protected handoff identity, exact task-artifact-only no-PR publication with unique absence and observed lease, fully parsed argv sequences with shared timeout and first-failure stopping, and reusable dependency layout ownership/completeness. Existing fail-closed negative cases remain covered."
+    - "Every required frozen evidence digest matched before this result. Supervisor verification records target 0b172381011f9ac31de566ae748b26a6dddd2c30, with exact recovery effect base 1de82e87b0648d7cae8fbbda040116a16accc2c4. Full local CI passed in 572784 ms; lint, formatting, typecheck and routing passed."
+    - "The declared agentplane-project focused command selected five files (83 tests). Independently ran the named task-handoff suite under cli-core; all 5 tests passed. No implementation or task evidence was edited during evaluation."
+    - "Historical 8SH7ZM prerequisite changes appear in the frozen original-base diff. The current-main comparison separates those already integrated changes from the 17-file PX8PZT source delta; they are not newly adopted implementation changes."
+    - "Residual risk: Final-main reconciliation and qualification are still required; the frozen diff base is historical, not current main."
+    - "Residual risk: The task Verify Steps focused command names a cli-core suite under project agentplane. This review supplied the missing focused execution; future final-main qualification must retain it explicitly."
 token_usage:
   agent_runs: 14
   input_tokens: null
@@ -823,7 +825,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-05T12:07:08.108Z"
+doc_updated_at: "2026-09-05T12:10:03.051Z"
 doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
@@ -2173,7 +2175,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 34
+    event_cursor: 35
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -2251,9 +2253,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 48
+    revision: 49
     schema_version: 1
-    updated_at: "2026-09-05T12:07:08.070Z"
+    updated_at: "2026-09-05T12:07:08.108Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -2783,6 +2785,30 @@ extensions:
         mutation_id: "compatibility:sha256:37e6e7c3bddbb300b778de266dc2634ff58ab1bf55301b151c0db6d8b83eae6f"
         next_revision: 31
         previous_revision: 30
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:388728c4060f17e415f9bf0042ff924a50f46598a7a0d3c15c77b01fc03bc879:
+        aggregate_digest: "sha256:1e2737ae46313741d2a9b9f0cae53ad3e0885868323fd577566643da40847042"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T12:07:08.108Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d1688529d005dd1abc3a1907"
+          mutation_id: "compatibility:sha256:388728c4060f17e415f9bf0042ff924a50f46598a7a0d3c15c77b01fc03bc879"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 48
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:388728c4060f17e415f9bf0042ff924a50f46598a7a0d3c15c77b01fc03bc879"
+        next_revision: 49
+        previous_revision: 48
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:41ebc68813069e3f99d749bd4eb5db05a4b67e0fb6207a7859a5354994c37f61:
