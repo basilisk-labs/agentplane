@@ -172,6 +172,50 @@ function prepare(
 }
 
 describe("provider conflict rework packet", () => {
+  it.each(["current", "stale", "foreign-head", "unrelated-base"] as const)(
+    "qualifies a refreshed queue against the current base: %s",
+    async (scenario) => {
+      const currentBase = "3333333333333333333333333333333333333333";
+      const conflicting = report({ handoff: { present: false } });
+      if (!conflicting.queue.present) throw new Error("fixture error");
+      conflicting.queue = {
+        ...conflicting.queue,
+        status: "queued",
+        baseSha: scenario === "stale" ? mergeBase : currentBase,
+        headSha: scenario === "foreign-head" ? mergeBase : headSha,
+      };
+      const run = () => {
+        const git = primeGit({ localBase: currentBase });
+        git.gitOps.mergeBase = (_root, left, right) =>
+          Promise.resolve(
+            left === baseSha && right === currentBase && scenario !== "unrelated-base"
+              ? baseSha
+              : mergeBase,
+          );
+        return prepare({ git, report: conflicting, now: new Date("2026-07-26T00:00:00Z") });
+      };
+      const first = await run();
+      expect(await run()).toEqual(first);
+      if (scenario === "current") {
+        expect(first).toMatchObject({
+          state: "ready",
+          packet: {
+            local: { base_head_sha: currentBase },
+            base_context: {
+              provider_conflict_base_sha: baseSha,
+              current_base_sha: currentBase,
+              relation: "provider_base_ancestor_of_current_base",
+            },
+            route_evidence: { kind: "current_queue", queue: { base_sha: currentBase } },
+            safety: { preparation_mutations: [] },
+          },
+        });
+      } else {
+        expect(first).toMatchObject({ state: "invalid" });
+      }
+    },
+  );
+
   it("prepares a bounded THDN-shaped packet without selecting conflict semantics", async () => {
     const git = primeGit();
     const conflicting = report();

@@ -397,8 +397,18 @@ export async function prepareConflictReworkPacket(opts: {
     };
   }
 
+  const localBase = await resolveLocalRef({
+    gitRoot: opts.gitRoot,
+    gitOps,
+    ref: base,
+    reasonCode: "provider_base_unavailable",
+    label: `base ${base}`,
+  });
+  if (!localBase.ok) return localBase.preparation;
+
   const routeEligibility = resolveConflictRouteEligibility({
     report: opts.report,
+    localBase: localBase.value,
     identity: {
       taskId: opts.taskId,
       taskBranch,
@@ -412,15 +422,6 @@ export async function prepareConflictReworkPacket(opts: {
   if (routeEligibility.state === "ineligible") {
     return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
   }
-
-  const localBase = await resolveLocalRef({
-    gitRoot: opts.gitRoot,
-    gitOps,
-    ref: base,
-    reasonCode: "provider_base_unavailable",
-    label: `base ${base}`,
-  });
-  if (!localBase.ok) return localBase.preparation;
 
   const routeEvidence = routeEligibility.evidence;
   const baseContextResolution = await resolveConflictReworkBaseContext({

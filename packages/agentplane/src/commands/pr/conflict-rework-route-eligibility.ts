@@ -232,6 +232,7 @@ function receiptMatchesLegacyRoute(opts: {
 export function resolveConflictRouteEligibility(opts: {
   report: PrFlowStatusReport;
   identity: ConflictRouteIdentity;
+  localBase: string;
   now: Date;
 }): ConflictRouteEligibility {
   const taskStatus = opts.report.task.status.trim().toUpperCase();
@@ -272,7 +273,10 @@ export function resolveConflictRouteEligibility(opts: {
     queue &&
     (queue.status === "queued" || queue.status === "claimed" || queue.status === "handoff") &&
     !(queue.status === "claimed" && !hasCurrentClaimLease(queue.leaseExpiresAt, opts.now)) &&
-    queue.baseSha === opts.identity.providerBase
+    (queue.baseSha === opts.identity.providerBase ||
+      (queue.status === "queued" &&
+        !opts.report.handoff.present &&
+        queue.baseSha === opts.localBase))
   ) {
     const evidence = queueEvidence({ queue, status: queue.status });
     if (evidence) {

@@ -41,6 +41,10 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../commands/pr/conflict-rework-base-context.ts    |   7 +-
+ .../pr/conflict-rework-route-eligibility.ts        |   6 +-
+ .../src/commands/pr/conflict-rework.test.ts        |  44 +++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  19 +-
  .../src/commands/shared/declared-check.test.ts     |   6 +-
  .../src/commands/shared/declared-check.ts          |  12 +-
  .../shared/task-scope-extension-request.ts         | 263 ++++++++++++-
@@ -71,7 +75,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 44 files changed, 1787 insertions(+), 383 deletions(-)
+ 48 files changed, 1852 insertions(+), 394 deletions(-)
 ```
 
 </details>
