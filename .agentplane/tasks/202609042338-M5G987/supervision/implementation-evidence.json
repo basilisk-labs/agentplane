@@ -1,0 +1,107 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check e35296a349ec04a3473e55b9c92a72331adb6132..9375fbffeed052ba08f46f8fc6d9c0e4a76ac38c",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e35296a349ec04a3473e55b9c92a72331adb6132..9375fbffeed052ba08f46f8fc6d9c0e4a76ac38c",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609042338-M5G987/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609042338-M5G987/pr/github-body.md",
+        "M\t.agentplane/tasks/202609042338-M5G987/pr/meta.json",
+        "M\t.agentplane/tasks/202609042338-M5G987/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-scope-extension-request.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-blocked-result.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
+        "M\tpackages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
+        "M\tpackages/agentplane/src/commands/task/update.ts",
+        "M\tpackages/agentplane/src/commands/task/update.unit.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": [
+        " M .agentplane/tasks/202609042338-M5G987/README.md"
+      ]
+    }
+  ],
+  "execution_base_commit": "e35296a349ec04a3473e55b9c92a72331adb6132",
+  "implementation_commit": "9375fbffeed052ba08f46f8fc6d9c0e4a76ac38c",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/task/plan.ts",
+      " M packages/agentplane/src/commands/task/plan.unit.test.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.test.ts",
+      " M packages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
+      " M packages/agentplane/src/commands/task/update.ts",
+      " M packages/agentplane/src/commands/task/update.unit.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202609042338-M5G987/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/plan.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/plan.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/scope-extend.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/update.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/update.unit.test.ts"
+      }
+    ],
+    "final": [
+      " M .agentplane/tasks/202609042338-M5G987/README.md"
+    ],
+    "introduced_after_execution_baseline": [
+      " M .agentplane/tasks/202609042338-M5G987/README.md"
+    ],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/plan.ts",
+      " M packages/agentplane/src/commands/task/plan.unit.test.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.test.ts",
+      " M packages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
+      " M packages/agentplane/src/commands/task/update.ts",
+      " M packages/agentplane/src/commands/task/update.unit.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609042338-M5G987"
+}
