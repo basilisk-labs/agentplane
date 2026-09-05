@@ -2,10 +2,10 @@
 id: "202609041801-ZVX69C"
 title: "Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 65
+revision: 67
 origin:
   system: "manual"
 depends_on: []
@@ -39,20 +39,21 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-05T12:16:29.926Z"
+  updated_at: "2026-09-05T12:32:59.264Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "b74bcc2adf517b184faba2b34e08ac48b076991a"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "3248b9f88616e33230bfdcbde1db8560e4887c75"
   blueprint_digest: "1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c"
   evidence_refs:
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-121358076-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-121358076-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/21ee351c871dc7a65f9abec8f51222e3e3d7a96394c3fc53a1333c428a4d3a39.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-121358076-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-121358076-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-121358076-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-123137543-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-123137543-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/288faaca1b1add1c1fe23cab2c9356827a0d42c56e201da404a0349d6dcea758.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-123137543-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-123137543-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-123137543-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-123137543-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609041801-ZVX69C/README.md"
     - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/79e023de088c43ecb0ca25a1197d2c44f595f936b2ff034ae04751e841dbf41e.patch"
     - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/652220c5f8329ef2c97e22a7b349c59b836b15b0bdcb5a2ba40698d6befba9aa.json"
@@ -63,14 +64,8 @@ quality_review:
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The refreshed queue context accepts a new local base only for an unclaimed queued entry without a handoff, with exact task, branch, PR and head identity. The existing ancestry proof verifies the provider conflict base is an ancestor of that independently resolved base. Stale bases, foreign heads and unrelated ancestry remain invalid; repeated preparation is stable and read-only."
-    - "Recorded implementation recovery skips comparison only when a current README snapshot is byte-identical to the immutable implementation snapshot. Changed README metadata still requires the existing receipted-preservation proof. Original exchange identity, result digest, approved plan, exact execution base, scope and ancestry guards remain required."
-    - "The real-Git second-implementation regression reproduces failure after commit, recovers the exact recorded effect and reaches EVALUATOR after a no-change retry without adopting earlier history. The same corrected runtime recovered the existing PX8PZT result and preserved its exact 1de82e87b0648d7cae8fbbda040116a16accc2c4..0b172381011f9ac31de566ae748b26a6dddd2c30 effect."
-    - "All required frozen evidence hashes matched before this result. Supervisor recorded all 11 declared checks passing, including lifecycle CLI, canonical kernel/store, runner/evaluator suites, formatting, lint, typecheck, routing, task lint, doctor and full local CI (506539 ms). The doctor and task-lint aliases use the already scoped repo-local normalization, without extending executable authority."
-    - "The task keeps canonical receipt-backed projection and scope recovery at their existing owners. The new changes do not alter approvals, task-store data manually, policy, dependencies, package versions or release metadata. The known base bootstrap duplicates were retained as recoverable patches and removed only after exact task-commit comparison."
-    - "Salvage classification remains bounded: QWP8S8, 9T9528, HBSZ4F and DVS5NN raw branches must not be imported; their minimal missing contracts are owned by existing PX8PZT. The exact-head/protected-base behavior is already present. 9RCWZQ release work, MPXQBK and full T4RR70/GitLab expansion remain excluded."
-    - "Residual risk: Refresh the remote route after acceptance. Obtain a fresh identity-bound conflict packet before any resolution, publication, or queue transition."
-    - "Residual risk: Final main, hosted checks, related task closure, queue convergence, cleanup and final self-hosting qualification are not completed by this review."
+    - "The frozen task document records the accepted blocked provider-conflict episode. The conflict WorkOrder did not include the canonical provider/head/base/token context and retained the generic task objective. The route instead instructed CODER to commit and refresh verification, while the frozen branch_pr policy prohibits these lifecycle effects during a semantic episode. A conforming executor cannot resolve and return this episode. Repair the existing WorkOrder context and supervisor-owned conflict effect contract without weakening identity, scope, replay, or authority checks."
+    - "Residual risk: The provider conflict remains unresolved. Do not publish, queue or integrate a purported resolution before fresh verification."
 token_usage:
   agent_runs: 24
   input_tokens: null
@@ -602,6 +597,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The conflict-rework episode is missing its authoritative conflict-resolution input and cannot select semantic changes from this generic task work order. Recommended action: Return to the existing operator recovery route. Inspect the supported conflict preparation and external work-order construction, then repair the narrow missing context/transition contract under the existing ZVX69C owner. Do not create another recovery task, select hunks automatically, replace accepted evidence, or rerun unchanged full CI. Agentplane receipt: external-agent-blocker/tr_2fee2d0e50834d7509149a1383fa0155/sha256:221c0d659d523b1a2850f7fc6f1f505d7a6bedf04b360c1f10288f03f9feb6e6."
+  -
+    author: "CODER"
+    body: "Start: Resume the existing task-cycle owner for the confirmed external conflict WorkOrder and supervisor-effect protocol defect under the user-authorized operator recovery. The blocker is classified as local implementation rework, not an external authority request. Preserve all accepted evidence; do not attempt provider conflict resolution until the protocol contract is repaired."
 events:
   -
     type: "status"
@@ -824,9 +822,16 @@ events:
     from: "DONE"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The conflict-rework episode is missing its authoritative conflict-resolution input and cannot select semantic changes from this generic task work order. Recommended action: Return to the existing operator recovery route. Inspect the supported conflict preparation and external work-order construction, then repair the narrow missing context/transition contract under the existing ZVX69C owner. Do not create another recovery task, select hunks automatically, replace accepted evidence, or rerun unchanged full CI. Agentplane receipt: external-agent-blocker/tr_2fee2d0e50834d7509149a1383fa0155/sha256:221c0d659d523b1a2850f7fc6f1f505d7a6bedf04b360c1f10288f03f9feb6e6."
+  -
+    type: "status"
+    at: "2026-09-05T12:31:21.402Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: Resume the existing task-cycle owner for the confirmed external conflict WorkOrder and supervisor-effect protocol defect under the user-authorized operator recovery. The blocker is classified as local implementation rework, not an external authority request. Preserve all accepted evidence; do not attempt provider conflict resolution until the protocol contract is repaired."
 doc_version: 3
-doc_updated_at: "2026-09-05T12:23:50.768Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-05T12:32:59.310Z"
+doc_updated_by: "CODER"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
   Summary: |-
@@ -2672,7 +2677,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 49
+    event_cursor: 51
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -2724,7 +2729,7 @@ extensions:
 
         On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
       task_id: "202609041801-ZVX69C"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -3768,9 +3773,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 65
+    revision: 67
     schema_version: 1
-    updated_at: "2026-09-05T12:23:50.717Z"
+    updated_at: "2026-09-05T12:31:21.453Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -4501,6 +4506,30 @@ extensions:
         previous_revision: 32
         schema_version: 1
         task_id: "202609041801-ZVX69C"
+      compatibility:sha256:698cf05a840ab1f2f40644a1e5ebc022fd1636ca0d645cd21ab0a5f18113ac29:
+        aggregate_digest: "sha256:39c9b16a65bd221d35de08e72f5c963b12ecc89956985df6934ffd86986af992"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T12:31:21.402Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_e572f1b6ca4bd4aea964296c"
+          mutation_id: "compatibility:sha256:698cf05a840ab1f2f40644a1e5ebc022fd1636ca0d645cd21ab0a5f18113ac29"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 65
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:698cf05a840ab1f2f40644a1e5ebc022fd1636ca0d645cd21ab0a5f18113ac29"
+        next_revision: 66
+        previous_revision: 65
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
       compatibility:sha256:6de983b9eebf76ad82c579dc378f8f21556ffed6004ccc85b3faaed8511d7cb8:
         aggregate_digest: "sha256:994ecfa23a5196d3263c63ee99a5e29aea358f7dce0411d491acc1c517f2679d"
         event:
@@ -5123,6 +5152,30 @@ extensions:
         mutation_id: "compatibility:sha256:eb79e785d2ce2ec5c51d7a6bc99ebc4dea4c33f153859e6e44a717a3103ca9e0"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:f00d2e22ef0fa0d17c5059acad7ed18918101b2b6e6e2d609c0fc5758965db53:
+        aggregate_digest: "sha256:291342a01dd95c101a362b0a532f222229e2588d95421bd827a40c0f044f633b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T12:31:21.453Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c534ddd0b1d3edc12f230836"
+          mutation_id: "compatibility:sha256:f00d2e22ef0fa0d17c5059acad7ed18918101b2b6e6e2d609c0fc5758965db53"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 66
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f00d2e22ef0fa0d17c5059acad7ed18918101b2b6e6e2d609c0fc5758965db53"
+        next_revision: 67
+        previous_revision: 66
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:f54f320db90c2e30e7aeee02dc54b9aa049d73b26f80f77e348e96761089d883:
