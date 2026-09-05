@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -451,6 +451,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The only dirty path is supervisor-owned implementation-evidence.json produced after committing accepted rework 7c6c8cee5. No user workspace conflict exists. Result application failed because the DONE-to-DOING status transition leaves canonical lifecycle DONE; the projection guard correctly rejects the partial write. This read-only episode cannot repair that existing transition owner or persist supervisor artifacts."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Completed read-only workspace classification: all untracked paths are AgentPlane-created frozen evaluator inputs for the retired 20260905-024054914-recovery-context episode. No implementation or user-owned changes are present. Preserve and persist these task artifacts through the supervisor owner before fresh quality review."
 events:
   -
     type: "status"
@@ -522,8 +525,13 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "comment"
+    at: "2026-09-05T02:43:43.732Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (completed): Completed read-only workspace classification: all untracked paths are AgentPlane-created frozen evaluator inputs for the retired 20260905-024054914-recovery-context episode. No implementation or user-owned changes are present. Preserve and persist these task artifacts through the supervisor owner before fresh quality review."
 doc_version: 3
-doc_updated_at: "2026-09-05T02:40:00.848Z"
+doc_updated_at: "2026-09-05T02:43:43.771Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK."
 sections:
@@ -1399,7 +1407,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 18
+    event_cursor: 19
     final_validation:
       evidence:
         -
@@ -2171,9 +2179,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 27
+    revision: 28
     schema_version: 1
-    updated_at: "2026-09-05T02:40:00.814Z"
+    updated_at: "2026-09-05T02:43:43.732Z"
     work_items:
       atomic-scope-extension-recovery:
         attempt: 3
@@ -2586,6 +2594,30 @@ extensions:
         mutation_id: "compatibility:sha256:754bf3c3a62c031931039f225352a9822fc57af1eef989c8a05768044bc7c54c"
         next_revision: 26
         previous_revision: 25
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:83b01ce2fff03e4c1e77df2f876966f9d29787fd0616d83a81d6a2491721384a:
+        aggregate_digest: "sha256:fbea2de56a124e3f3f73c6b20b1b5e77dd987283957dde010bea5340f82d2661"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T02:43:43.732Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_d3715c0c8dd2e69ba5d755fb"
+          mutation_id: "compatibility:sha256:83b01ce2fff03e4c1e77df2f876966f9d29787fd0616d83a81d6a2491721384a"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 27
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:83b01ce2fff03e4c1e77df2f876966f9d29787fd0616d83a81d6a2491721384a"
+        next_revision: 28
+        previous_revision: 27
         schema_version: 1
         task_id: "202609042338-M5G987"
       compatibility:sha256:876de88bdd5c268acbd49e7e3e522473c30b067b21f0eea17806c2c880163557:
