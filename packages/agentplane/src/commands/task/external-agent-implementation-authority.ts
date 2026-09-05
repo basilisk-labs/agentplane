@@ -5,6 +5,7 @@ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
 import { cmdCommit } from "../guard/impl/commit.js";
+import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -500,6 +501,19 @@ export async function applyExternalImplementationResult(opts: {
         authorityViolations.join(", "),
     });
   }
+  if (opts.decision.workflowMode === "branch_pr") {
+    const status = await readDirectRepositoryStatus(opts.exchange.checkout);
+    if (hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) {
+      // Keep the implementation SHA in its evidence; commit only the supervisor's
+      // task artifacts so declared checks can require a clean repository.
+      await commitBranchSupervisorTaskArtifacts({
+        command: opts.command,
+        cwd: opts.exchange.checkout,
+        task_id: opts.exchange.task_id,
+        message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record implementation before verification`,
+      });
+    }
+  }
   const verification = await recordDirectTaskVerification({
     command: opts.command,
     checkout: opts.exchange.checkout,
@@ -538,27 +552,11 @@ export async function applyExternalImplementationResult(opts: {
     opts.command.git.invalidateStatus();
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
     if (!hasChangedTaskArtifacts(currentStatus?.lines ?? [], opts.exchange.task_id)) return;
-    const evidenceExitCode = await cmdCommit({
-      ctx: opts.command,
+    await commitBranchSupervisorTaskArtifacts({
+      command: opts.command,
       cwd: opts.exchange.checkout,
-      taskId: opts.exchange.task_id,
+      task_id: opts.exchange.task_id,
       message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external implementation evidence`,
-      close: false,
-      allow: [],
-      autoAllow: false,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-      closeUnstageOthers: false,
-      closeCheckOnly: false,
     });
-    if (evidenceExitCode !== 0) {
-      throw new Error(`External-agent implementation evidence commit exited ${evidenceExitCode}.`);
-    }
   }
 }
