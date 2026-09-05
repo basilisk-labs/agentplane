@@ -2,10 +2,10 @@
 id: "202609042338-M5G987"
 title: "Repair atomic scope extension projection and accepted-result recovery"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -454,6 +454,12 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Completed read-only workspace classification: all untracked paths are AgentPlane-created frozen evaluator inputs for the retired 20260905-024054914-recovery-context episode. No implementation or user-owned changes are present. Preserve and persist these task artifacts through the supervisor owner before fresh quality review."
+  -
+    author: "USER"
+    body: "USER authorized bounded operator/bootstrap recovery of the existing M5 task. Resume pre-merge rework to repair atomic DONE-to-DOING projection and evaluator self-invalidation. Preserve completed WorkItems and accepted results; no manual state edits or new recovery task."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Workspace changes are intentional bounded USER-authorized bootstrap recovery; evaluator freshness repair requires the approved additional owner paths. Recommended action: Apply the bounded scope extension authorized by USER, preserve existing worktree changes, and issue a fresh EXECUTOR episode in this task. Do not create another recovery task. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts,packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts,packages/agentplane/src/commands/task/external-agent-supervisor.ts; repository effects=unchanged; request digest=sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a. Agentplane receipt: external-agent-blocker/tr_2de8d7873e68e452c59d6c8821fc0366/sha256:a50c56b845a4600f9ef7942806528da42bc310a261d0eb512409327be2e65ec1/sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a."
 events:
   -
     type: "status"
@@ -530,8 +536,22 @@ events:
     at: "2026-09-05T02:43:43.732Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (completed): Completed read-only workspace classification: all untracked paths are AgentPlane-created frozen evaluator inputs for the retired 20260905-024054914-recovery-context episode. No implementation or user-owned changes are present. Preserve and persist these task artifacts through the supervisor owner before fresh quality review."
+  -
+    type: "status"
+    at: "2026-09-05T02:54:20.127Z"
+    author: "USER"
+    from: "DONE"
+    to: "DOING"
+    note: "USER authorized bounded operator/bootstrap recovery of the existing M5 task. Resume pre-merge rework to repair atomic DONE-to-DOING projection and evaluator self-invalidation. Preserve completed WorkItems and accepted results; no manual state edits or new recovery task."
+  -
+    type: "status"
+    at: "2026-09-05T02:55:55.202Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Workspace changes are intentional bounded USER-authorized bootstrap recovery; evaluator freshness repair requires the approved additional owner paths. Recommended action: Apply the bounded scope extension authorized by USER, preserve existing worktree changes, and issue a fresh EXECUTOR episode in this task. Do not create another recovery task. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts,packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts,packages/agentplane/src/commands/task/external-agent-supervisor.ts; repository effects=unchanged; request digest=sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a. Agentplane receipt: external-agent-blocker/tr_2de8d7873e68e452c59d6c8821fc0366/sha256:a50c56b845a4600f9ef7942806528da42bc310a261d0eb512409327be2e65ec1/sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a."
 doc_version: 3
-doc_updated_at: "2026-09-05T02:43:43.771Z"
+doc_updated_at: "2026-09-05T02:55:55.240Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK."
 sections:
@@ -1033,23 +1053,20 @@ extensions:
     status: "active"
     task_id: "202609042338-M5G987"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-05T01:22:30.799Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:1c32ce4f3a39fb82eee9301ca4c6193d4565a58db1ecc79ef47649c641fd0cec"
+    blocker_state_fingerprint: "sha256:a50c56b845a4600f9ef7942806528da42bc310a261d0eb512409327be2e65ec1"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Critical CLI and branch-worktree failures require task initialization independently of the canonical ACTIVE/legacy DOING approval projection. Reuse baselineFromTask and the accepted ZVX69C direct startup predicate, extend branch startup and nearest workflow-step regressions. No new effects or speculative files."
+      rationale: "Complete USER-authorized bounded operator/bootstrap recovery of M5G987 by repairing evaluator self-invalidation at existing owners and adding nearby negative and replay regressions. No acceptance relaxation, manual state edits, Factory ownership changes, release work, or new tasks."
       repository_effects: []
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
-        - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
-        - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
-        - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
-    request_digest: "sha256:31cd9137259180b03d579a7cf6c9c43e219ca592fc446ca6372cf2ec8dbe0057"
+        - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+        - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
+        - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+    request_digest: "sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_e132c80c9a2bc35f2bf4827bd1d90b71"
+    status: "pending"
+    transition_id: "tr_2de8d7873e68e452c59d6c8821fc0366"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1407,123 +1424,8 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 19
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-1"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-2"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-3"
-          command_identity: "bun run format:check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-4"
-          command_identity: "bun run lint:core"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-5"
-          command_identity: "bun run typecheck"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-6"
-          command_identity: "node .agentplane/policy/check-routing.mjs"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-7"
-          command_identity: "node packages/agentplane/bin/agentplane.js task lint"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-8"
-          command_identity: "node packages/agentplane/bin/agentplane.js doctor"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-9"
-          command_identity: "git diff --check"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042338-M5G987"
-            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-          check_id: "check-10"
-          command_identity: "bun run ci:local:full"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-05T02:05:02.946Z"
-          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 22
+    final_validation: null
     id: "202609042338-M5G987"
     intent:
       acceptance_criteria: []
@@ -1534,7 +1436,7 @@ extensions:
 
         Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK.
       task_id: "202609042338-M5G987"
-    lifecycle: "COMPLETED"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -2179,9 +2081,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 28
+    revision: 31
     schema_version: 1
-    updated_at: "2026-09-05T02:43:43.732Z"
+    updated_at: "2026-09-05T02:55:55.240Z"
     work_items:
       atomic-scope-extension-recovery:
         attempt: 3
@@ -2452,6 +2354,30 @@ extensions:
         previous_revision: 22
         schema_version: 1
         task_id: "202609042338-M5G987"
+      compatibility:sha256:0ef7ed0cf445711fe855ffa88c02c29ab89395cb9c6c60189ce80e669bd54b9e:
+        aggregate_digest: "sha256:04f141fd77ca592da14b2101e1ddbfa3a8c8d449a52c64f8d17bd098cda3e176"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T02:55:55.240Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_80f0047f778ab73634f085a4"
+          mutation_id: "compatibility:sha256:0ef7ed0cf445711fe855ffa88c02c29ab89395cb9c6c60189ce80e669bd54b9e"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 30
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0ef7ed0cf445711fe855ffa88c02c29ab89395cb9c6c60189ce80e669bd54b9e"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609042338-M5G987"
       compatibility:sha256:18cfa311418a9ed698f63246e3e7a760686991bac1ee89690c447b3c53729bce:
         aggregate_digest: "sha256:35e2c2c324c705344d337642dd99050a96f3a2c27a491155198c83391d298afb"
         event:
@@ -2474,6 +2400,54 @@ extensions:
         mutation_id: "compatibility:sha256:18cfa311418a9ed698f63246e3e7a760686991bac1ee89690c447b3c53729bce"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:1985644ec64e8442ec390a35b907b42cb7cfb48d9cb3c179d40d27ce08555311:
+        aggregate_digest: "sha256:bcc8cda10c078ec1ff8a9d99d60ea7e57df4123cee29cc9d5e077933d9146f95"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T02:55:55.202Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f8264bab06a97a4ab1581c42"
+          mutation_id: "compatibility:sha256:1985644ec64e8442ec390a35b907b42cb7cfb48d9cb3c179d40d27ce08555311"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 29
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1985644ec64e8442ec390a35b907b42cb7cfb48d9cb3c179d40d27ce08555311"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:19fbfa87459c18450e71217c2a2afaa98fa6a95844880c6e47b485b333ed805c:
+        aggregate_digest: "sha256:06ffb8c3eb8b645f1d5fdd49519086e53acac9c1b18cfd5225164c724dcbf460"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T02:54:20.127Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_c0873bea019ab3b133f4c9bf"
+          mutation_id: "compatibility:sha256:19fbfa87459c18450e71217c2a2afaa98fa6a95844880c6e47b485b333ed805c"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:19fbfa87459c18450e71217c2a2afaa98fa6a95844880c6e47b485b333ed805c"
+        next_revision: 29
+        previous_revision: 28
         schema_version: 1
         task_id: "202609042338-M5G987"
       compatibility:sha256:388c140cbee4bf03873e43e44b389874463ca228f1bc8cbaa9f4dd3fff6a68cc:
