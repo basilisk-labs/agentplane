@@ -4,7 +4,7 @@ title: "Repair atomic scope extension projection and accepted-result recovery"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -35,6 +35,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-05T02:06:46.974Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+  blueprint_digest: "a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace"
+  evidence_refs:
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/6aece39888f3fd931f342b05540eace263e7cb81fa850f6fa9ef95460363ab19.md"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/20260905-020509281-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609042338-M5G987/README.md"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/86c1a21ce1a9c48689b8d58ca2b83cf6cd5a54d3b10f42d6f35bd11634fa07d3.patch"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/ed3a3490d23483ce8c83088e906769c35b5b70d43734ff739592bbd9507a0fba.json"
+    - ".agentplane/tasks/202609042338-M5G987/verification/20260905020502946-81ca72776e3a5975.json"
+    - ".agentplane/tasks/202609042338-M5G987/quality/objects/sha256/e5c299478203ab3d66b54b2c5fbf8abeb197d5fc2b028c49aaa03f652a3d5f34.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Scope extension now reconciles the canonical lifecycle, revision and authority through the existing compatibility projection owner in the same persisted mutation. Completed required WorkItems and their plan/output data are preserved; effects-only extension follows the same path."
+    - "Historical split recovery is confined to the accepted implementation owner. It checks immutable baseline task/scope/context/authority, accepted result identity and digest, worktree and commit ancestry before a CAS write. The generic status/update mismatch guards are retained."
+    - "Metadata-only recovery accepts only a fully replayable contiguous receipt chain while holding plan, lifecycle, WorkItems and non-receipt runtime state exact. Negative receipt/task/output/runtime cases and interrupted exact-result replay are covered by existing extended suites."
+    - "The approved startup prerequisite is now limited to untouched canonical work. Existing rework and quality-evidence dispatch are preserved, with unchanged quality and evaluator regressions passing."
+    - "All frozen evidence digests match. Task-level verification record 20260905020502946-81ca72776e3a5975.json reports all declared checks passed for the evaluated implementation; full CI, doctor errors=0, policy routing and task lint are recorded. Source changes stay within the declared roots and exclude PH5N6S-owned verification ordering."
+    - "Residual risk: The preserved accepted ZVX69C result still requires live recovery after M5G987 integration; this review does not claim that downstream task has already resumed."
 execution_route:
   frozen: true
   reason_codes:
@@ -1112,7 +1143,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 15
+    event_cursor: 16
     final_validation: null
     id: "202609042338-M5G987"
     intent:
@@ -1769,9 +1800,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 23
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-05T02:05:04.064Z"
+    updated_at: "2026-09-05T02:05:04.092Z"
     work_items:
       atomic-scope-extension-recovery:
         attempt: 3
@@ -2280,6 +2311,30 @@ extensions:
         mutation_id: "compatibility:sha256:a93e1d41ce8d345c7e6437a499f3d5dbc5517d8715ecf4e912e196e166d07147"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:c5e92312960ac0577fc8f7584fa2cf7fee38f8a298c65430aa9ef66e8c9b95d7:
+        aggregate_digest: "sha256:317fbbcda497958a569458b17cf93532a8fd0d27c1e6f726db05a6661514f59c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T02:05:04.092Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fd07ae33d8dbe80b0c4dcabe"
+          mutation_id: "compatibility:sha256:c5e92312960ac0577fc8f7584fa2cf7fee38f8a298c65430aa9ef66e8c9b95d7"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c5e92312960ac0577fc8f7584fa2cf7fee38f8a298c65430aa9ef66e8c9b95d7"
+        next_revision: 24
+        previous_revision: 23
         schema_version: 1
         task_id: "202609042338-M5G987"
       compatibility:sha256:ca682eb988e083f332b40449522a7d8b15f4202ec457e98bf19738144090392f:
