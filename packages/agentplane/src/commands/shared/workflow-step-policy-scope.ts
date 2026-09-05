@@ -64,7 +64,18 @@ export function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
 }
 
 export function hasUninitializedTaskBaseline(task: TaskData): boolean {
-  return Boolean(taskCentricAggregateFromExtensions(task.extensions) && !baselineFromTask(task));
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  return Boolean(
+    aggregate &&
+    !baselineFromTask(task) &&
+    !task.commit &&
+    Object.values(aggregate.work_items).every(
+      (item) =>
+        (item.state === "READY" || item.state === "PLANNED") &&
+        item.attempt === 0 &&
+        item.output_manifests.length === 0,
+    ),
+  );
 }
 
 function runnerChangedPaths(task: TaskData): string[] {
