@@ -1,10 +1,11 @@
 ---
 id: "202609042338-M5G987"
 title: "Repair atomic scope extension projection and accepted-result recovery"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -66,6 +67,20 @@ quality_review:
     - "The approved startup prerequisite is now limited to untouched canonical work. Existing rework and quality-evidence dispatch are preserved, with unchanged quality and evaluator regressions passing."
     - "All frozen evidence digests match. Task-level verification record 20260905020502946-81ca72776e3a5975.json reports all declared checks passed for the evaluated implementation; full CI, doctor errors=0, policy routing and task lint are recorded. Source changes stay within the declared roots and exclude PH5N6S-owned verification ordering."
     - "Residual risk: The preserved accepted ZVX69C result still requires live recovery after M5G987 integration; this review does not claim that downstream task has already resumed."
+token_usage:
+  agent_runs: 7
+  input_tokens: null
+  journal_digest: "sha256:b1325d624c4aea749ffabf4d3c4f737b4d3230697745380a4cdf4319467b257b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-05T02:06:52.062Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -403,8 +418,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-  message: "🚧 M5G987 task: apply external agent result"
+  hash: "f98a889661e125984a34e0324b0379cdd6064eaf"
+  message: "🚧 M5G987 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -430,6 +445,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9549212aae66. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -482,9 +500,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-05T02:06:52.062Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f98a889661e125984a34e0324b0379cdd6064eaf"
 doc_version: 3
-doc_updated_at: "2026-09-05T02:05:04.092Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-05T02:06:52.062Z"
+doc_updated_by: "CODER"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK."
 sections:
   Summary: |-
@@ -1144,7 +1170,122 @@ extensions:
       schema_version: 1
       task_id: "202609042338-M5G987"
     event_cursor: 16
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-1"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-2"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-3"
+          command_identity: "bun run format:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-4"
+          command_identity: "bun run lint:core"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-5"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-6"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-7"
+          command_identity: "node packages/agentplane/bin/agentplane.js task lint"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-8"
+          command_identity: "node packages/agentplane/bin/agentplane.js doctor"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-9"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          check_id: "check-10"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-05T02:05:02.946Z"
+          repository_snapshot_digest: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609042338-M5G987"
     intent:
       acceptance_criteria: []
@@ -1155,7 +1296,7 @@ extensions:
 
         Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK.
       task_id: "202609042338-M5G987"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1800,9 +1941,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 24
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-05T02:05:04.092Z"
+    updated_at: "2026-09-05T02:06:52.062Z"
     work_items:
       atomic-scope-extension-recovery:
         attempt: 3
@@ -2430,11 +2571,37 @@ extensions:
         previous_revision: 18
         schema_version: 1
         task_id: "202609042338-M5G987"
+      legacy-finish:202609042338-M5G987:2026-09-05T02:05:02.946Z:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d:
+        aggregate_digest: "sha256:9b55e6b12c1769a3c447931b0a2d3725211912e5067474d6f0ca09e1271f3904"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-05T02:06:52.062Z"
+          cause_refs:
+            - "task-verification:202609042338-M5G987"
+            - "git:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ee24f642e00fa0908dfc03c9"
+          mutation_id: "legacy-finish:202609042338-M5G987:2026-09-05T02:05:02.946Z:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: "sha256:239885243eff3e491ee6f3d7c3159fbc72fe36099b02e2e3b6f38bc64a4febd5"
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 24
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609042338-M5G987:2026-09-05T02:05:02.946Z:9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609042338-M5G987"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
+    message: "🚧 M5G987 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
@@ -2714,3 +2881,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b1325d624c4aea749ffabf4d3c4f737b4d3230697745380a4cdf4319467b257b`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-05T02:06:52.062Z`
