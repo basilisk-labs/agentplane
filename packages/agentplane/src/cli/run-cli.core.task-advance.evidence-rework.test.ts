@@ -3,6 +3,7 @@ import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
+import * as processRunner from "@agentplaneorg/core/process";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import {
@@ -287,6 +288,58 @@ async function completedFixture(initialized = true) {
 }
 
 describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+  it("recovers a second implementation after failed verification without adopting older history", async () => {
+    const f = await completedFixture();
+    await writeFile(path.join(f.checkout, "feature.ts"), "export const feature = false;\n");
+    await report(f.rework, "Apply the reviewed correction.");
+    const run = processRunner.runProcess;
+    let failed = false;
+    const processSpy = vi.spyOn(processRunner, "runProcess").mockImplementation(async (options) => {
+      const result = await run(options);
+      if (!failed && options.command === "bun" && options.args?.includes("test:critical")) {
+        failed = true;
+        return { ...result, exitCode: 1, stderr: "injected transient check failure" };
+      }
+      return result;
+    });
+    try {
+      await resume(f.checkout, f.rework);
+    } finally {
+      processSpy.mockRestore();
+    }
+    expect(failed).toBe(true);
+    const retry = await packet(f.checkout, f.taskId);
+    const retryOrder = await order(retry);
+    const proofPath = path.join(
+      f.checkout,
+      `.agentplane/tasks/${f.taskId}/supervision/implementation-evidence.json`,
+    );
+    const proof = JSON.parse(await readFile(proofPath, "utf8")) as {
+      implementation_commit: string;
+      execution_base_commit: string;
+    };
+    expect(retryOrder.state_fingerprint.git_head).toBe(proof.implementation_commit);
+    const task = await f.ctx.taskBackend.getTask(f.taskId);
+    expect(task?.verification?.state).toBe("needs_rework");
+    expect(
+      await resolveRecordedImplementationRecovery({
+        command: f.ctx,
+        task: task!,
+        work_order: retryOrder,
+        head: retryOrder.state_fingerprint.git_head,
+        recorded_commit: recordedTaskImplementationCommitSha(task!),
+        purpose: "implementation_rework",
+      }),
+    ).toMatchObject({
+      commit: proof.implementation_commit,
+      execution_base: proof.execution_base_commit,
+    });
+    await report(retry, "The transient failure is resolved. Recheck unchanged source.");
+    await resume(f.checkout, retry);
+    const evaluatorOrder = await order(await packet(f.checkout, f.taskId));
+    expect(evaluatorOrder.role).toBe("EVALUATOR");
+  });
+
   it.each(
     [true, false].flatMap((initialized) =>
       ["normal return", "interrupted proof refresh", "interrupted verification"].map(

@@ -2,18 +2,11 @@
   "base": "main",
   "branch": "task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re",
   "created_at": "2026-09-04T18:17:29.251Z",
-  "diffstat_sha256": "sha256:d6a13192d54088ac94b65fccc69c64b5047329e0f663ba146e2104173dbc4ee2",
-  "last_verified_at": "2026-09-05T10:09:17.499Z",
-  "last_verified_diffstat_sha256": "sha256:d8f9038580b6e639be81bb7fbcddd44100354f0d0a2c4825b89cd7ceccafc381",
+  "diffstat_sha256": "sha256:6f6bb0c6beaba8045a33962eb591c512be7b8e5f3f3136d9a1c11a53c307be8d",
+  "last_verified_at": "2026-09-05T11:41:14.224Z",
+  "last_verified_diffstat_sha256": "sha256:d6a13192d54088ac94b65fccc69c64b5047329e0f663ba146e2104173dbc4ee2",
   "pr_number": 5897,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5897",
-  "pre_merge_closure": {
-    "basis_commit": "93211cb20b8e7a48b64f8ca48919919cb8bba9b5",
-    "branch": "task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re",
-    "pr_number": 5897,
-    "recorded_at": "2026-09-05T10:12:21.864Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202609041801-ZVX69C",
   "updated_at": "2026-09-04T20:10:20.939Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

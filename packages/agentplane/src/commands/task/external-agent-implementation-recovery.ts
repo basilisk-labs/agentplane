@@ -491,14 +491,15 @@ export async function resolveRecordedImplementationRecovery(opts: {
     readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
   ]);
   if (
-    currentReadmes.some((readme) =>
-      scopeRecovery
-        ? readme !== committedReadme
-        : !taskReadmesPreserveRecoveryContract(
+    currentReadmes.some(
+      (readme) =>
+        readme !== committedReadme &&
+        (scopeRecovery ||
+          !taskReadmesPreserveRecoveryContract(
             taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
             taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
             commit,
-          ),
+          )),
     )
   )
     return null;

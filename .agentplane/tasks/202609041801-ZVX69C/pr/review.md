@@ -6,14 +6,14 @@ Created: 2026-09-04T18:17:29.251Z
 
 - Task: `202609041801-ZVX69C`
 - Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re`
 - Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check could not run: agentplane task lint
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -39,7 +39,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
  .../run-cli.core.route-decision.quality.test.ts    | 132 ++++---
  ...n-cli.core.task-advance.branch-worktree.test.ts |  83 +++-
- ...n-cli.core.task-advance.evidence-rework.test.ts |  52 ++-
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 105 ++++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
@@ -57,7 +57,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/commands/task/direct-task-verification.ts  |  19 +-
  .../commands/task/evidence-only-rework-commit.ts   |  31 ++
  .../external-agent-implementation-recovery.test.ts |  85 ++++-
- .../task/external-agent-implementation-recovery.ts | 123 +++---
+ .../task/external-agent-implementation-recovery.ts | 120 +++---
  .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
  packages/agentplane/src/commands/task/plan.ts      |  35 +-
  .../agentplane/src/commands/task/plan.unit.test.ts |  93 +++++
@@ -77,7 +77,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 48 files changed, 1852 insertions(+), 394 deletions(-)
+ 48 files changed, 1904 insertions(+), 392 deletions(-)
 ```
 
 </details>
