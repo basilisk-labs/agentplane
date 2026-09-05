@@ -9,10 +9,10 @@
  .../commands/shared/task-handoff-reader.test.ts    | 163 +++++++++++
  .../src/commands/shared/task-handoff-reader.ts     |  78 +++++
  .../agentplane/src/commands/shared/task-handoff.ts |  14 -
- .../direct-task-verification.sequence.cases.ts     | 130 +++++++++
- .../commands/task/direct-task-verification.test.ts |   1 +
+ .../direct-task-verification.sequence.cases.ts     | 161 ++++++++++
+ .../commands/task/direct-task-verification.test.ts |  11 +-
  .../src/commands/task/direct-task-verification.ts  | 183 ++++++++----
  .../src/commands/task/handoff-show.command.ts      |  37 ++-
  .../agentplane/src/commands/task/handoff.shared.ts |  27 +-
  scripts/workflow/bootstrap-framework-dev.mjs       |  41 ++-
- 17 files changed, 1460 insertions(+), 114 deletions(-)
+ 17 files changed, 1500 insertions(+), 115 deletions(-)

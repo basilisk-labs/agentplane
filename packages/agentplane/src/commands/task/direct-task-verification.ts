@@ -562,7 +562,7 @@ export async function runDirectTaskVerification(opts: {
         }
       }
       checks.push(completedCheck());
-      if (exitCode !== 0 || zeroTests) {
+      if (infrastructureFailure || exitCode !== 0 || zeroTests) {
         const result = {
           status: infrastructureFailure ? ("unsupported" as const) : ("failed" as const),
           checks,

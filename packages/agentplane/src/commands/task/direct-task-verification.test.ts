@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+import * as runtimeEnv from "../../shared/runtime-env.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import * as executionContext from "../../runtime/task-execution-context/index.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
@@ -803,6 +804,13 @@ describe("direct task verification", () => {
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "42 passed", stderr: "" });
     const contract = executionContract(["repository_write", "source_code"]);
     contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+    const observation = vi.spyOn(runtimeEnv, "localRuntimeEvidence").mockReturnValue({
+      kind: "local_runtime_resolution",
+      status: "resolved",
+      executable_digest: "sha256:" + "1".repeat(64),
+      toolchain_digest: "sha256:" + "2".repeat(64),
+      environment_digest: "sha256:" + "3".repeat(64),
+    });
 
     const result = await runDirectTaskVerification({
       command: command(cwd),
@@ -810,7 +818,7 @@ describe("direct task verification", () => {
       task_id: TASK_ID,
       cwd,
       run_process: mocks.runProcess,
-    });
+    }).finally(() => observation.mockRestore());
 
     expect(result).toMatchObject({
       status: "passed",
