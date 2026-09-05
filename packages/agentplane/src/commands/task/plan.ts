@@ -42,6 +42,31 @@ import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
+
+function projectApprovedTask(current: TaskData, next: TaskData): TaskData {
+  const aggregate = taskCentricAggregateFromExtensions(next.extensions);
+  if (!aggregate?.current_plan) return next;
+  const previous = taskCentricAggregateFromExtensions(current.extensions);
+  const revision = current.revision ?? previous?.revision;
+  if (revision === undefined || previous?.revision !== revision) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Plan approval requires synchronized task revisions.",
+    });
+  }
+  return projectTaskCentricCompatibilityMutation({
+    current,
+    next: {
+      ...next,
+      status: projectTaskLifecycleToLegacyStatus(aggregate.lifecycle),
+      extensions: withTaskCentricAggregate(next.extensions, {
+        ...aggregate,
+        revision,
+      }),
+    },
+  });
+}
 
 export type TaskPlanSetResult = {
   taskId: string;
@@ -326,12 +351,9 @@ export async function cmdTaskPlanApprove(opts: {
                   }),
                 )
               : current.extensions;
-            const approvedTaskCentric = taskCentricAggregateFromExtensions(taskCentricExtensions);
             return {
-              task: {
-                ...(approvedTaskCentric
-                  ? { status: projectTaskLifecycleToLegacyStatus(approvedTaskCentric.lifecycle) }
-                  : {}),
+              task: projectApprovedTask(current, {
+                ...current,
                 plan_approval: {
                   state: "approved" as PlanApprovalState,
                   updated_at: approvedAt,
@@ -342,7 +364,7 @@ export async function cmdTaskPlanApprove(opts: {
                   ...(taskCentricExtensions ?? {}),
                   [EXECUTION_GRANT_EXTENSION_KEY]: grant,
                 },
-              },
+              }),
             };
           },
           opts.expectedTaskRevision === undefined
@@ -405,13 +427,9 @@ export async function cmdTaskPlanApprove(opts: {
               }),
             )
           : task.extensions;
-        const approvedTaskCentric = taskCentricAggregateFromExtensions(taskCentricExtensions);
         await backend.writeTask(
-          {
+          projectApprovedTask(task, {
             ...task,
-            ...(approvedTaskCentric
-              ? { status: projectTaskLifecycleToLegacyStatus(approvedTaskCentric.lifecycle) }
-              : {}),
             plan_approval: {
               state: "approved" as PlanApprovalState,
               updated_at: approvedAt,
@@ -422,7 +440,7 @@ export async function cmdTaskPlanApprove(opts: {
               ...(taskCentricExtensions ?? {}),
               [EXECUTION_GRANT_EXTENSION_KEY]: grant,
             },
-          },
+          }),
           opts.expectedTaskRevision === undefined
             ? undefined
             : { expectedRevision: opts.expectedTaskRevision },

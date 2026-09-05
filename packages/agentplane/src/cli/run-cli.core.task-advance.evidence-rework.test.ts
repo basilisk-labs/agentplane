@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -179,45 +179,9 @@ async function implementationFixture(initialized = true) {
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);
   if (!initialized) await commitFixture(root, "test: persist approved evidence rework plan");
-  let implementation = await packet(root, taskId);
-  let implementationOrder = await order(implementation);
+  const implementation = await packet(root, taskId);
+  const implementationOrder = await order(implementation);
   const checkout = implementationOrder.state_fingerprint.worktree;
-  const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
-  await mkdir(path.dirname(metaPath), { recursive: true });
-  const branchOutput = await git("git", ["branch", "--show-current"], { cwd: checkout });
-  const headOutput = await git("git", ["rev-parse", "HEAD"], { cwd: checkout });
-  const branch = branchOutput.stdout.trim();
-  const head = headOutput.stdout.trim();
-  const now = new Date().toISOString();
-  await writeFile(
-    metaPath,
-    `${JSON.stringify(
-      {
-        schema_version: 1,
-        task_id: taskId,
-        branch,
-        base: "main",
-        created_at: now,
-        updated_at: now,
-        head_sha: head,
-      },
-      null,
-      2,
-    )}\n`,
-  );
-  const stale = await invoke(checkout, ["task", "advance", taskId, "--agent-json"]);
-  expect(stale.code).not.toBe(0);
-  expect(stale.stderr).toContain("stale");
-  const replacement = await invoke(checkout, [
-    "task",
-    "advance",
-    taskId,
-    "--replacement",
-    "--agent-json",
-  ]);
-  expect(replacement.code, replacement.stderr).toBe(0);
-  implementation = JSON.parse(replacement.stdout) as Packet;
-  implementationOrder = await order(implementation);
   return { root, taskId, creationBase, implementation, implementationOrder, checkout };
 }
 

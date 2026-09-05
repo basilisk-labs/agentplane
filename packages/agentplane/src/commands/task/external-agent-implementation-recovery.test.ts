@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createLegacyTaskAggregate,
+  renderTaskReadme,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
+import type { TaskData } from "../../backends/task-backend.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
+import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import {
   resolveEvidenceOnlyReworkCommit,
   selectRecordedImplementationRecoveryCommit,
@@ -44,6 +51,82 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it.each(["valid", "missing", "changed", "prior", "gap", "task", "output", "runtime"])(
+    "replays only an intact metadata receipt chain (%s)",
+    (change) => {
+      const aggregate = createLegacyTaskAggregate({
+        id: "T-1",
+        revision: 1,
+        title: "Recovery",
+        description: "Recovery",
+        status: "DOING",
+        acceptance_criteria: [],
+        captured_at: "2026-09-01T00:00:00.000Z",
+        updated_at: "2026-09-01T00:00:00.000Z",
+      });
+      const seed: TaskData = {
+        id: "T-1",
+        title: "Recovery",
+        description: "Recovery",
+        status: "DOING",
+        owner: "CODER",
+        priority: "med",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        revision: 1,
+        extensions: withTaskCentricAggregate({}, aggregate),
+      };
+      const advance = (current: TaskData, note: string) =>
+        projectTaskCentricCompatibilityMutation({
+          current,
+          next: {
+            ...current,
+            comments: [...(current.comments ?? []), { author: "SUPERVISOR", body: note }],
+          },
+        });
+      const before = advance(seed, "Initial receipt");
+      let after = advance(advance(before, "Implementation recorded"), "Verification observed");
+      const runtime = runtimeFrom(after);
+      const receipts = { ...runtime.mutation_receipts };
+      const keys = Object.keys(receipts);
+      const last = keys.at(-1)!;
+      if (change === "missing") delete receipts[last];
+      if (change === "changed")
+        receipts[last] = {
+          ...receipts[last]!,
+          aggregate_digest: ("sha256:" + "0".repeat(64)) as `sha256:${string}`,
+        };
+      if (change === "prior") delete receipts[keys[0]!];
+      if (change === "gap") receipts[last] = { ...receipts[last]!, previous_revision: 99 };
+      if (change === "task") receipts[last] = { ...receipts[last]!, task_id: "T-2" };
+      after = {
+        ...after,
+        extensions: {
+          ...after.extensions,
+          "agentplane.task_centric_runtime": {
+            ...runtime,
+            mutation_receipts: receipts,
+            ...(change === "runtime" ? { pending_effects: [{ id: "unrelated" }] } : {}),
+          },
+        },
+      };
+      if (change === "output")
+        after.extensions = withTaskCentricAggregate(after.extensions, {
+          ...aggregate,
+          revision: after.revision!,
+          event_cursor: 3,
+          final_validation: { status: "passed" } as NonNullable<typeof aggregate.final_validation>,
+        });
+      const markdown = (value: TaskData) => renderTaskReadme(value, "## Summary\nRecovery\n");
+      expect(taskReadmesPreserveRecoveryContract(markdown(before), markdown(after), COMMIT)).toBe(
+        change === "valid",
+      );
+      expect(taskReadmesPreserveRecoveryContract(markdown(before), markdown(before), COMMIT)).toBe(
+        true,
+      );
+    },
+  );
   it("prefers fresh supervisor evidence for task-level verification rework", () => {
     expect(
       selectRecordedImplementationRecoveryCommit({
@@ -245,34 +328,6 @@ describe("recorded implementation recovery contract", () => {
           after,
           "## Summary\nApproved behavior.\n\n## Token Usage\nUpdated counters.\n",
         ),
-        COMMIT,
-      ),
-    ).toBe(true);
-  });
-
-  it("allows atomic task-centric lifecycle and runtime receipt drift", () => {
-    const before = task();
-    const after = structuredClone(before) as ReturnType<typeof task> & {
-      extensions: Record<string, unknown>;
-    };
-    after.status = "DONE";
-    after.extensions["agentplane.task_centric"] = {
-      ...before.extensions["agentplane.task_centric"],
-      revision: 7,
-      lifecycle: "COMPLETED",
-      final_validation: { status: "passed" },
-      event_cursor: 4,
-      updated_at: "2026-09-04T18:00:00.000Z",
-    };
-    after.extensions["agentplane.task_centric_runtime"] = {
-      schema_version: 1,
-      mutation_receipts: { verification: { next_revision: 7 } },
-    };
-
-    expect(
-      taskReadmesPreserveRecoveryContract(
-        renderTaskReadme(before, "## Summary\nApproved behavior.\n"),
-        renderTaskReadme(after, "## Summary\nApproved behavior.\n"),
         COMMIT,
       ),
     ).toBe(true);

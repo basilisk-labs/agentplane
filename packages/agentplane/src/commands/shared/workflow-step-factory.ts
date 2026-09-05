@@ -1,6 +1,5 @@
 import type { TaskData } from "../../backends/task-backend.js";
-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-import { baselineFromTask } from "./workflow-step-policy-scope.js";
+import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import { isRecord } from "../../shared/guards.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import {
@@ -323,7 +322,7 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
   }
   if (
     String(state.task.status).toUpperCase() !== "DOING" ||
-    (taskCentricAggregateFromExtensions(state.task.extensions) && !baselineFromTask(state.task))
+    hasUninitializedTaskBaseline(state.task)
   ) {
     const body = "Start: continue direct-mode task in current checkout.";
     return cliOperationStep({

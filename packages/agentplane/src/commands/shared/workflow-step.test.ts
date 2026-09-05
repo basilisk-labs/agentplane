@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
 import { createLegacyTaskAggregate, withTaskCentricAggregate } from "@agentplaneorg/core/tasks";
-import { withWorkflowRouteBaseline } from "./workflow-step-policy-scope.js";
+import {
+  hasUninitializedTaskBaseline,
+  withWorkflowRouteBaseline,
+} from "./workflow-step-policy-scope.js";
 import { directStep } from "./workflow-step-factory.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { deriveRouteAmbiguities } from "./route-decision-repair.js";
@@ -37,6 +40,64 @@ describe("typed WorkflowStep reducer", () => {
     const canonicalTask = { ...task, extensions: withTaskCentricAggregate({}, aggregate) };
     const state = routeState({ workflowMode: "direct", task: canonicalTask });
     expect(directStep(state)).toMatchObject({ id: "task.start", kind: "cli_operation" });
+    expect(reduceRouteState(routeState({ task: canonicalTask }))).toMatchObject({
+      id: "task.branch.start",
+      kind: "cli_operation",
+    });
+    expect(
+      hasUninitializedTaskBaseline({
+        ...canonicalTask,
+        commit: { hash: resume.head_sha, message: "Existing implementation" },
+      }),
+    ).toBe(false);
+    for (const [itemState, attempt, hasOutput] of [
+      ["REWORK_READY", 1, false],
+      ["COMPLETED", 1, false],
+      ["READY", 1, false],
+      ["READY", 0, true],
+    ] as const) {
+      expect(
+        hasUninitializedTaskBaseline({
+          ...canonicalTask,
+          extensions: withTaskCentricAggregate(
+            {},
+            {
+              ...aggregate,
+              work_items: {
+                implementation: {
+                  id: "implementation",
+                  state: itemState,
+                  revision: 1,
+                  attempt,
+                  claim_id: null,
+                  output_manifests: hasOutput
+                    ? [
+                        {
+                          schema_version: 1,
+                          id: "existing-output",
+                          kind: "implementation",
+                          schema: "implementation.v1",
+                          digest: `sha256:${"a".repeat(64)}`,
+                          producer: {
+                            task_id: task.id,
+                            plan_revision: 1,
+                            work_item_id: "implementation",
+                            attempt: 1,
+                          },
+                          repository_snapshot_digest: `sha256:${"b".repeat(64)}`,
+                          provenance: [],
+                        },
+                      ]
+                    : [],
+                  validation_result: null,
+                  last_failure: null,
+                },
+              },
+            },
+          ),
+        }),
+      ).toBe(false);
+    }
     expect(
       directStep({
         ...state,
@@ -47,7 +108,6 @@ describe("typed WorkflowStep reducer", () => {
       }),
     ).toMatchObject({ id: "runner.follow", kind: "cli_operation" });
   });
-
   it("keeps every registered CLI operation idempotent and postcondition-bound", () => {
     for (const [operationId, spec] of Object.entries(WORKFLOW_OPERATION_REGISTRY)) {
       expect(operationId).not.toContain(" ");
