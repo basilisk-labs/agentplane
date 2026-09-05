@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "contract-atomicity-covered",
+      "severity": "low",
+      "summary": "The frozen diff and current verification record show one observed verification contract carried through execution and persistence, including docs_contract, without the prior post-execution strengthening failure.",
+      "broken_invariant": "Verification execution and persistence must use one deterministic observed contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/93a3a592cce46e8a128a39eaf26beefbe5c6e0d5600682622fd99611645dae17.patch",
+          "sha256": "sha256:93a3a592cce46e8a128a39eaf26beefbe5c6e0d5600682622fd99611645dae17"
+        },
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/verification/20260904172635379-73914474763f769a.json",
+          "sha256": "sha256:3286afe2e288a5f3a15f9a225f35c202385d988f04e273f0091ee86f0fb4e32f",
+          "section": "details"
+        }
+      ]
+    },
+    {
+      "id": "projection-recovery-covered",
+      "severity": "low",
+      "summary": "The frozen diff includes focused regressions for atomic canonical projection mutation and for routing local verification recovery ahead of route-ineligible conflict rework.",
+      "broken_invariant": "Evidence-based rework must update every canonical projection atomically or leave all projections unchanged, and recovery must remain on the normal task route.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/93a3a592cce46e8a128a39eaf26beefbe5c6e0d5600682622fd99611645dae17.patch",
+          "sha256": "sha256:93a3a592cce46e8a128a39eaf26beefbe5c6e0d5600682622fd99611645dae17"
+        },
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/f775b65670d402d857d7551990450b61eabd9414dce9aeccf55f7bd9cd793ac5.json",
+          "sha256": "sha256:f775b65670d402d857d7551990450b61eabd9414dce9aeccf55f7bd9cd793ac5",
+          "section": "verification_contract"
+        }
+      ]
+    },
+    {
+      "id": "declared-verification-passed",
+      "severity": "low",
+      "summary": "All five declared checks passed at evaluated SHA 219141c1aece07e2dc0ce7a5fea562df572a9e89, including focused tests, lint, typecheck, routing validation, and the complete local CI gate.",
+      "broken_invariant": "The implementation must satisfy every declared acceptance check at the evaluated implementation identity.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/verification/20260904172635379-73914474763f769a.json",
+          "sha256": "sha256:3286afe2e288a5f3a15f9a225f35c202385d988f04e273f0091ee86f0fb4e32f",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/README.md",
+          "sha256": "sha256:b9ed031c03b98dbed8b7068dbac60d4c9849b54b59d2d7d619586ed7c6c0000d",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The unrelated task artifacts present in the branch diff are AgentPlane-owned concurrent or accumulated control-plane evidence, not executor-authored scope expansion; this classification is consistent with the task contract but is not independently attributable from the frozen patch alone.",
+    "Hosted integration, external writes, and destructive Git effects remain AgentPlane-owned post-evaluation lifecycle work and are not treated as locally executed evaluator evidence."
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The observation write is built from freshly loaded task state and projected through applyTaskMutation with the supplied revision guard; the task itself subsequently recorded verification without the prior task-centric revision mismatch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The route exception is narrowly gated by a local implementation or verification blocker, an invalid conflict-rework state, and reason_code conflict_rework_route_ineligible; missing worktrees and unsettled provider mergeability remain terminal.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Focused unit and CLI regressions cover atomic revision projection, local verification precedence, provider fail-closed cases, and direct supervisor mock compatibility.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor-owned evidence records successful typecheck, policy routing, focused tests, and a complete bun run ci:local:full pass with all verification groups green.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The reviewed diff stays within the approved command, task, and CLI roots and does not include MPXQBK, broad projection cleanup, provider-neutral expansion, or release/version work.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The recovery branch still requires normal provider publication, hosted checks, integration, and cleanup before the original F31YXS task can consume the fix.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041447-YHERVV/quality/objects/sha256/8a1d23382b7b0c7cc3dcd781cb8c3c9566517d2929afd272869bec5e19c07d00.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "applyTaskMutation remains the canonical compatibility projection boundary for both local task storage and non-local backend fallbacks."
+  ]
+}

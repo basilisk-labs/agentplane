@@ -7,9 +7,29 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 import {
+  createLegacyTaskAggregate,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
+import {
   observedExternalEffectsFromRunnerResult,
   recordObservedTaskExecutionContract,
 } from "./task-execution-contract-observation.js";
+
+const remoteBackendCapabilities = {
+  canonical_source: "remote",
+  projection: "cache",
+  projection_read_mode: "native",
+  reads_from_projection_by_default: true,
+  writes_task_readmes: false,
+  supports_task_revisions: true,
+  supports_revision_guarded_writes: true,
+  may_access_network_on_read: false,
+  may_access_network_on_write: false,
+  supports_projection_refresh: false,
+  supports_push_sync: false,
+  supports_snapshot_export: false,
+} as const;
 
 function executionFor(task: TaskData): TaskExecutionContext {
   return {
@@ -76,7 +96,7 @@ describe("task execution contract observation", () => {
       config,
       backendId: "local",
       resolvedProject: { gitRoot: "/repo" },
-      taskBackend: { writeTask, getTask },
+      taskBackend: { capabilities: remoteBackendCapabilities, writeTask, getTask },
     } as unknown as CommandContext;
 
     const result = await recordObservedTaskExecutionContract({
@@ -152,7 +172,8 @@ describe("task execution contract observation", () => {
           persistedTask = nextTask;
           return Promise.resolve();
         },
-        getTask: () => Promise.resolve(persistedTask),
+        capabilities: remoteBackendCapabilities,
+        getTask: () => Promise.resolve(persistedTask ?? task),
       },
     } as unknown as CommandContext;
 
@@ -195,7 +216,8 @@ describe("task execution contract observation", () => {
           persistedTask = nextTask;
           return Promise.resolve();
         },
-        getTask: () => Promise.resolve(persistedTask),
+        capabilities: remoteBackendCapabilities,
+        getTask: () => Promise.resolve(persistedTask ?? task),
       },
     } as unknown as CommandContext;
 
@@ -231,7 +253,11 @@ describe("task execution contract observation", () => {
       config,
       backendId: "local",
       resolvedProject: { gitRoot: "/repo" },
-      taskBackend: { writeTask, getTask: () => Promise.resolve(task) },
+      taskBackend: {
+        capabilities: remoteBackendCapabilities,
+        writeTask,
+        getTask: () => Promise.resolve(task),
+      },
     } as unknown as CommandContext;
 
     const result = await recordObservedTaskExecutionContract({
@@ -293,7 +319,8 @@ describe("task execution contract observation", () => {
           persistedTask = nextTask;
           return Promise.resolve();
         },
-        getTask: () => Promise.resolve(persistedTask),
+        capabilities: remoteBackendCapabilities,
+        getTask: () => Promise.resolve(persistedTask ?? task),
       },
     } as unknown as CommandContext;
 
@@ -319,5 +346,58 @@ describe("task execution contract observation", () => {
     expect(forbidden.episodeAuthorityViolations).toContain(
       "writable_scope:packages/outside/new.ts",
     );
+  });
+
+  it("projects an observation and its task-centric revision atomically", async () => {
+    const config = defaultConfig();
+    const aggregate = createLegacyTaskAggregate({
+      id: "202609040000-ATOMIC",
+      revision: 4,
+      title: "Atomic observation fixture",
+      description: "Keep compatibility and canonical revisions synchronized.",
+      status: "DOING",
+      acceptance_criteria: ["observation persisted"],
+      captured_at: "2026-09-04T00:00:00.000Z",
+      updated_at: "2026-09-04T00:00:00.000Z",
+    });
+    const task = {
+      id: aggregate.id,
+      title: "Atomic observation fixture",
+      description: "Keep compatibility and canonical revisions synchronized.",
+      status: "DOING",
+      priority: "med",
+      owner: "CODER",
+      revision: 4,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      extensions: withTaskCentricAggregate({}, aggregate),
+    } satisfies TaskData;
+    let persistedTask = task as TaskData;
+    const command = {
+      config,
+      backendId: "remote",
+      resolvedProject: { gitRoot: "/repo" },
+      taskBackend: {
+        capabilities: remoteBackendCapabilities,
+        writeTask: (nextTask: TaskData) => {
+          persistedTask = nextTask;
+          return Promise.resolve();
+        },
+        getTask: () => Promise.resolve(persistedTask),
+      },
+    } as unknown as CommandContext;
+
+    const result = await recordObservedTaskExecutionContract({
+      command,
+      execution: executionFor(task),
+      task,
+      changed_paths: [],
+      preserved_commit: "new-sha",
+    });
+
+    expect(result.task.revision).toBe(5);
+    expect(taskCentricAggregateFromExtensions(result.task.extensions)?.revision).toBe(5);
+    expect(result.task.extensions?.implementation_commit).toEqual({ hash: "new-sha" });
   });
 });

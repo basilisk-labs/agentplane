@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609042212-XR979S/repair-pre-merge-done-task-rework-blocker-persis",
+  "created_at": "2026-09-04T22:19:44.639Z",
+  "diffstat_sha256": "sha256:efdc46e4d7c10c7d74fe467dff6cc246b1dbb89f15f3337f4008785d68836bb1",
+  "last_verified_at": "2026-09-04T23:03:59.940Z",
+  "last_verified_diffstat_sha256": "sha256:efdc46e4d7c10c7d74fe467dff6cc246b1dbb89f15f3337f4008785d68836bb1",
+  "pr_number": 5898,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5898",
+  "pre_merge_closure": {
+    "basis_commit": "51528e2c24f99ee95528fc3806f28bf226812815",
+    "branch": "task/202609042212-XR979S/repair-pre-merge-done-task-rework-blocker-persis",
+    "pr_number": 5898,
+    "recorded_at": "2026-09-04T23:06:37.242Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609042212-XR979S",
+  "updated_at": "2026-09-04T22:56:14.024Z",
+  "verify": {
+    "status": "pass"
+  }
+}

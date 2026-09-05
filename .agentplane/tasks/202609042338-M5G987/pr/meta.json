@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609042338-M5G987/repair-atomic-scope-extension-projection-and-acc",
+  "created_at": "2026-09-05T00:35:18.474Z",
+  "diffstat_sha256": "sha256:52d93d64779cb8501b821081b55bb34400ee12b2832d2870575d3b8b6960e4f9",
+  "last_verified_at": "2026-09-05T03:21:36.828Z",
+  "last_verified_diffstat_sha256": "sha256:52d93d64779cb8501b821081b55bb34400ee12b2832d2870575d3b8b6960e4f9",
+  "pr_number": 5900,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5900",
+  "pre_merge_closure": {
+    "basis_commit": "6872f7fe034dc69b11a9e110f5fbee24c0b5d131",
+    "branch": "task/202609042338-M5G987/repair-atomic-scope-extension-projection-and-acc",
+    "pr_number": 5900,
+    "recorded_at": "2026-09-05T03:23:32.487Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609042338-M5G987",
+  "updated_at": "2026-09-05T01:54:44.088Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -333,33 +333,83 @@ describe("task-centric domain", () => {
     ).toBe("READY");
   });
 
-  it("preserves only unchanged WorkItems across a replacement plan", () => {
-    const original = approvedTask([
-      item({ id: "done" }),
-      item({ id: "changed", depends_on: ["done"] }),
+  it("preserves completed runtime across a baseline-only fingerprint change", () => {
+    const implementation = item({ id: "implementation" });
+    const qualificationValidation = validation("qualification");
+    const qualification = item({
+      id: "qualification",
+      depends_on: ["implementation"],
+      required_inputs: ["out-implementation"],
+      validation: {
+        ...qualificationValidation,
+        checks: qualificationValidation.checks.map((check) => ({
+          ...check,
+          command: "agentplane task lint 202609032308-F31YXS",
+        })),
+      },
+    });
+    const original = approvedTask([implementation, qualification]);
+    const implementationValidationResult = aggregateValidation(implementation.validation, [
+      {
+        check_id: "check-implementation",
+        status: "passed",
+        observed_at: NOW,
+        repository_snapshot_digest: snapshot().digest,
+        command_identity: "bun test implementation",
+        exit_code: 0,
+        artifact_refs: ["implementation-verification.json"],
+        detail: "passed",
+      },
     ]);
     const completed: TaskAggregate = {
       ...original,
       work_items: {
-        done: {
-          ...original.work_items.done!,
+        implementation: {
+          ...original.work_items.implementation!,
           state: "COMPLETED",
-          output_manifests: [manifest({ id: "out-done", work_item_id: "done" })],
+          revision: 7,
+          attempt: 2,
+          output_manifests: [
+            manifest({ id: "out-implementation", work_item_id: "implementation" }),
+          ],
+          validation_result: implementationValidationResult,
         },
-        changed: { ...original.work_items.changed!, state: "COMPLETED" },
+        qualification: {
+          ...original.work_items.qualification!,
+          state: "COMPLETED",
+          revision: 5,
+          attempt: 3,
+        },
       },
     };
     const replacementProposal = proposal([
-      item({ id: "done" }),
-      item({ id: "changed", depends_on: ["done"], objective: "Refined objective" }),
+      {
+        ...implementation,
+        validation: {
+          ...implementation.validation,
+          evidence_fingerprint: taskCentricDigest("replacement baseline"),
+        },
+      },
+      {
+        ...qualification,
+        validation: {
+          ...qualification.validation,
+          checks: qualification.validation.checks.map((check) => ({
+            ...check,
+            command: "agentplane task lint",
+          })),
+          evidence_fingerprint: taskCentricDigest("replacement baseline"),
+        },
+      },
     ]);
     const workItems = reconcileReplacementPlanWorkItems({
       task: completed,
       proposal: replacementProposal,
     });
 
-    expect(workItems.done).toBe(completed.work_items.done);
-    expect(workItems.changed).toMatchObject({
+    expect(workItems.implementation).toBe(completed.work_items.implementation);
+    expect(workItems.implementation?.validation_result).toBe(implementationValidationResult);
+    expect(workItems.qualification).toMatchObject({
       state: "PLANNED",
       revision: 1,
       attempt: 0,
@@ -388,10 +438,111 @@ describe("task-centric domain", () => {
     });
     const materialized = materializeApprovedWorkItems({ task: pending, plan: approved, now: NOW });
 
-    expect(materialized.work_items.done).toBe(completed.work_items.done);
-    expect(materialized.work_items.changed?.state).toBe("READY");
+    expect(materialized.work_items.implementation).toBe(completed.work_items.implementation);
+    expect(materialized.work_items.qualification?.state).toBe("READY");
     expect(materialized.current_plan).toBe(approved);
     expect(materialized.lifecycle).toBe("ACTIVE");
+  });
+
+  it.each([
+    ["objective", (value: WorkItem) => ({ ...value, objective: "Changed objective" })],
+    ["dependency", (value: WorkItem) => ({ ...value, depends_on: ["other"] })],
+    ["required input", (value: WorkItem) => ({ ...value, required_inputs: ["other-output"] })],
+    ["expected output", (value: WorkItem) => ({ ...value, expected_outputs: ["other-output"] })],
+    ["scope", (value: WorkItem) => ({ ...value, scope_roots: ["packages/other"] })],
+    [
+      "acceptance",
+      (value: WorkItem) => ({
+        ...value,
+        acceptance_criteria: [
+          { ...value.acceptance_criteria[0]!, description: "Changed acceptance" },
+        ],
+      }),
+    ],
+    [
+      "validation criterion",
+      (value: WorkItem) => ({
+        ...value,
+        validation: {
+          ...value.validation,
+          criteria: [{ ...value.validation.criteria[0]!, description: "Changed criterion" }],
+        },
+      }),
+    ],
+    [
+      "validation command",
+      (value: WorkItem) => ({
+        ...value,
+        validation: {
+          ...value.validation,
+          checks: value.validation.checks.map((check) => ({ ...check, command: "changed" })),
+        },
+      }),
+    ],
+    [
+      "context",
+      (value: WorkItem) => ({
+        ...value,
+        context: { ...value.context, required_sources: ["changed"] },
+      }),
+    ],
+    ["risk", (value: WorkItem) => ({ ...value, risk: "high" as const })],
+    ["capability", (value: WorkItem) => ({ ...value, capabilities: ["changed"] })],
+    [
+      "resource claim",
+      (value: WorkItem) => ({
+        ...value,
+        resource_claims: [{ kind: "path" as const, resource: "changed", mode: "write" as const }],
+      }),
+    ],
+    ["optionality", (value: WorkItem) => ({ ...value, optional: true })],
+    ["priority", (value: WorkItem) => ({ ...value, priority: value.priority + 1 })],
+  ] satisfies readonly (readonly [string, (value: WorkItem) => WorkItem])[])(
+    "resets runtime when the replacement changes %s",
+    (_field, mutate) => {
+      const definition = item({ id: "candidate" });
+      const original = approvedTask([definition]);
+      const completed: TaskAggregate = {
+        ...original,
+        work_items: {
+          candidate: {
+            ...original.work_items.candidate!,
+            state: "COMPLETED",
+            revision: 8,
+            attempt: 4,
+            output_manifests: [manifest({ id: "out-candidate", work_item_id: "candidate" })],
+          },
+        },
+      };
+
+      expect(
+        reconcileReplacementPlanWorkItems({
+          task: completed,
+          proposal: proposal([mutate(definition)]),
+        }).candidate,
+      ).toEqual({
+        id: "candidate",
+        state: "PLANNED",
+        revision: 1,
+        attempt: 0,
+        claim_id: null,
+        output_manifests: [],
+        validation_result: null,
+        last_failure: null,
+      });
+    },
+  );
+
+  it("resets runtime when the replacement changes WorkItem identity", () => {
+    const definition = item({ id: "candidate" });
+    const original = approvedTask([definition]);
+
+    expect(
+      reconcileReplacementPlanWorkItems({
+        task: original,
+        proposal: proposal([{ ...definition, id: "replacement" }]),
+      }).replacement,
+    ).toMatchObject({ id: "replacement", state: "PLANNED", attempt: 0 });
   });
 
   it.each(["scope", "acceptance"] as const)(

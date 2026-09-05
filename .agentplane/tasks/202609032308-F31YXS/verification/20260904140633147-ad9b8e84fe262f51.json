@@ -1,0 +1,132 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609032308-F31YXS declared verification",
+  "digest": "sha256:ad9b8e84fe262f5120eff4ff074a94d377727335c4d6455b1b25ec4fb7ef26a0",
+  "implementation_sha": "2d6dd4f54a076398d517173f7bbd0a42dfee44ab",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:331da134fd021997a94b9cb98111dbf90dbb6b8760a2355e8f0ad9e60a05d47a",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:13ca17b1a59c10f17d63f099fb23d5442105f2c608df5ae17ee8f0bed9b44c07",
+      "digest": "sha256:e3ee91311ec70056b322959aafd963e8caae91e7331b65178407a3eccf3cf454",
+      "references": [
+        {
+          "digest": "sha256:e5a37b024071fd87553414a89f543ba80dc7bfe224ef40eb6f011ae197f093ad",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609032308-F31YXS/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "fa693664b5fb4f7884b5c772b456357518732bd4",
+      "digest": "sha256:8ab53683bd36cbb9331c1f25cfb1ffd6a2815eda908bcc7ec13d57f7e2d0dab8",
+      "primary_task_id": "202609032308-F31YXS",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_destructive_git",
+        "effect_external_write",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/README.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/blueprint/resolved-snapshot.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/diffstat.txt",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/github-body.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/github-title.txt",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/meta.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/pr/review.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-evidence-manifest.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-opinion.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-result.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/evaluator-work-order.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/20260904-105227698-recovery-context/quality-report.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/20eab60d01460e3a3a224745ce45db18f60b4781d17f67772c55363af3526e6b.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/2a2ae3e476274e564b9b0fc110577f3f85995d5f0b9c08230aadbd3810d9c0de.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/9936542cb8176b3ad6a81c7a333887eff082b449377bf0953b6c2c0d050b8bae.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/quality/objects/sha256/d0c2bd9298b765f8809b5b5b705eb6198d5863bc51f0dc6ba0e4a9d423bd37bf.patch",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/supervision/declared-checks.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/supervision/implementation-evidence.json",
+        "observed_path_outside_scope:.agentplane/tasks/202609040943-X0G51D/verification/20260904105220448-01cf8b041fe7e9a1.json",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609032308-F31YXS"
+      ]
+    },
+    "implementation": {
+      "base_sha": "fa693664b5fb4f7884b5c772b456357518732bd4",
+      "digest": "sha256:af5feb96e941cf68161a5b74a7e315baa8944c9e2de9d0a9527752ddb9a86e4b",
+      "strategy": "branch_diff",
+      "target_sha": "2d6dd4f54a076398d517173f7bbd0a42dfee44ab"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:9a21d3a2bca63c3f6b93f8982d99faac412236f71689bb72d2ec31f2b82ff305",
+    "verify_steps_digest": "sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-04T14:06:33.147Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n2. Run `bun x prettier --check packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n3. Run `bun run lint:core`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n4. Run `bun run typecheck`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n5. Run `node .agentplane/policy/check-routing.mjs`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n6. Run `agentplane task lint 202609032308-F31YXS`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n7. Run `agentplane doctor`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n8. Run `git diff --check`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n9. Run `bun run ci:local:full`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.",
+  "scope_digest": "sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3",
+  "task_id": "202609032308-F31YXS",
+  "verification_command": "agentplane verify 202609032308-F31YXS --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

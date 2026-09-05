@@ -1,0 +1,104 @@
+{
+  "details": "Pre-merge closeout failed closed with required_work_item_incomplete:recover-reset-workitem-projection. Return to CODER implementation rework and execute only the approved recovery WorkItem.",
+  "digest": "sha256:49b3ccc5b600ba68d5f7f462c4d662bd0bc3165fa2f66bf1d84825d92f6f25e0",
+  "implementation_sha": "b17fd50c0e40aab152dc598fc6b36a8a1abdd2ee",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:23db145aa6cf9807d6d3f1734804ccd952c908848645ce4a1bd67e4844b8665e",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:af29dd22c2f02d4756bf26bc5f7890ccd980a154adb63382c66aa4a2ba324681",
+      "digest": "sha256:8215c9672117bc5861ced50a01403966408da15472d40b4af6e1e12ff3be6586",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "fa693664b5fb4f7884b5c772b456357518732bd4",
+      "digest": "sha256:a048f2d3bfc39fea05f44cf048e704954ae9d0c8482af2dc447b3cc8b06ad4fe",
+      "primary_task_id": "202609032308-F31YXS",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_destructive_git",
+        "effect_external_write",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609032308-F31YXS"
+      ]
+    },
+    "implementation": {
+      "base_sha": "fa693664b5fb4f7884b5c772b456357518732bd4",
+      "digest": "sha256:539dca7921fff38e196287cfe474430ff7e4d0fb86d8742965504aad5b8d9a17",
+      "strategy": "branch_diff",
+      "target_sha": "b17fd50c0e40aab152dc598fc6b36a8a1abdd2ee"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:a75314834c1270ec68050392488317cc7436224fe9f3850a0db8c2e75cb6480a",
+    "verify_steps_digest": "sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3"
+  },
+  "kind": "task_verification_record",
+  "note": "Approved plan revision adds required WorkItem recover-reset-workitem-projection, but it is READY and packages/core/src/tasks/task-centric has no implementation change; prior verification cannot qualify the new requirement.",
+  "recorded_at": "2026-09-04T12:52:01.737Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts --maxWorkers=1`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n2. Run `bun x prettier --check packages/agentplane/src/adapters/task-backend packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n3. Run `bun run lint:core`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n4. Run `bun run typecheck`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n5. Run `node .agentplane/policy/check-routing.mjs`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n6. Run `agentplane task lint 202609032308-F31YXS`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n7. Run `agentplane doctor`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n8. Run `git diff --check`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.\n9. Run `bun run ci:local:full`. Expected: Verification execution and persistence use one deterministic contract, task-centric rework changes every canonical projection atomically or changes none, the PX8PZT scenario is covered, formatting/lint/typecheck/routing/task diagnostics pass, and the complete local CI gate succeeds without weakening verification or widening excluded scope.",
+  "scope_digest": "sha256:d84d596196bb9afbf2f647acf91235d381d8f98e48da7738c68fada90a99e8d3",
+  "task_id": "202609032308-F31YXS",
+  "verification_command": "agentplane task verify rework 202609032308-F31YXS --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

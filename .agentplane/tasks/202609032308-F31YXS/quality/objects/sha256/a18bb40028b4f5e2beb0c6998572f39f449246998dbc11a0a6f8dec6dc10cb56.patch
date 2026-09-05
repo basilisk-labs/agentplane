@@ -1,0 +1,441 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts
+index 6ee4bb8e9..3fbe22784 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-projection.ts
+@@ -1,6 +1,7 @@
+ import {
+   aggregateValidation,
+   evaluateTaskCompletion,
++  legacyStatusToTaskLifecycle,
+   projectTaskLifecycleToLegacyStatus,
+   taskCentricAggregateFromExtensions,
+   taskCentricDigest,
+@@ -132,6 +133,14 @@ export function projectTaskCentricCompatibilityMutation(opts: {
+   }
+ 
+   const at = opts.next.doc_updated_at ?? currentAggregate.updated_at;
++  const verificationRework =
++    currentAggregate.lifecycle === "COMPLETED" &&
++    opts.current.verification?.state === "ok" &&
++    opts.next.verification?.state === "needs_rework" &&
++    opts.next.status === "DOING";
++  const projectedLifecycle = verificationRework
++    ? legacyStatusToTaskLifecycle(opts.next.status)
++    : nextAggregate.lifecycle;
+   const mutationId = `compatibility:${taskCentricDigest({
+     task_id: opts.current.id,
+     previous_revision: currentRevision,
+@@ -148,6 +157,8 @@ export function projectTaskCentricCompatibilityMutation(opts: {
+   const candidate: TaskAggregate = Object.freeze({
+     ...nextAggregate,
+     revision: nextRevision,
++    lifecycle: projectedLifecycle,
++    ...(projectedLifecycle === nextAggregate.lifecycle ? {} : { final_validation: null }),
+     event_cursor: Math.max(nextAggregate.event_cursor, currentAggregate.event_cursor + 1),
+     updated_at: at,
+   });
+@@ -156,7 +167,7 @@ export function projectTaskCentricCompatibilityMutation(opts: {
+     mutation_id: mutationId,
+     entity: "task",
+     from: currentAggregate.lifecycle,
+-    to: currentAggregate.lifecycle,
++    to: candidate.lifecycle,
+     at,
+     cause_refs: ["compatibility_projection_mutation"],
+   });
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index 596ac34f6..f91234710 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -250,6 +250,12 @@ async function completedFixture(initialized = true) {
+   expect(reworkOrder.task.work_item_id ?? null).toBeNull();
+   const current = await ctx.taskBackend.getTask(taskId);
+   if (!current) throw new Error("missing task-level rework fixture");
++  const currentAggregate = taskCentricAggregateFromExtensions(current.extensions);
++  expect(current).toMatchObject({ status: "DOING", verification: { state: "ok" } });
++  expect(currentAggregate).toMatchObject({
++    revision: current.revision,
++    lifecycle: "ACTIVE",
++  });
+   return {
+     root,
+     checkout,
+@@ -334,7 +340,11 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+           expect(await readFile(proofPath, "utf8")).toBe(proofBytes);
+           const recoveredTask = await f.ctx.taskBackend.getTask(f.taskId);
+           expect(recoveredTask?.verification?.state).toBe("ok");
+-          expect(recoveredTask?.status).not.toBe("DONE");
++          expect(recoveredTask?.status).toBe("DOING");
++          expect(taskCentricAggregateFromExtensions(recoveredTask?.extensions)).toMatchObject({
++            revision: recoveredTask?.revision,
++            lifecycle: "ACTIVE",
++          });
+           expect(taskCentricAggregateFromExtensions(recoveredTask?.extensions)?.work_items).toEqual(
+             itemsBefore,
+           );
+@@ -356,7 +366,11 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+       expect(nextOrder.role).toBe("EVALUATOR");
+       const after = await f.ctx.taskBackend.getTask(f.taskId);
+       expect(after?.verification?.state).toBe("ok");
+-      expect(after?.status).not.toBe("DONE");
++      expect(after?.status).toBe("DOING");
++      expect(taskCentricAggregateFromExtensions(after?.extensions)).toMatchObject({
++        revision: after?.revision,
++        lifecycle: "ACTIVE",
++      });
+       expect(recordedTaskImplementationCommitSha(after!)).toBe(source);
+       expect(await readFile(proofPath, "utf8")).toBe(proofBytes);
+       expect(taskCentricAggregateFromExtensions(after?.extensions)?.work_items).toEqual(
+diff --git a/packages/agentplane/src/commands/shared/task-mutation.test.ts b/packages/agentplane/src/commands/shared/task-mutation.test.ts
+index 6e17adcde..a2f6bc526 100644
+--- a/packages/agentplane/src/commands/shared/task-mutation.test.ts
++++ b/packages/agentplane/src/commands/shared/task-mutation.test.ts
+@@ -248,6 +248,149 @@ describe("applyTaskMutation", () => {
+     expect(Object.keys(replayRuntime.mutation_receipts)).toEqual(receiptIds);
+   });
+ 
++  it("atomically reopens a completed task-centric projection for verification rework", async () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 4,
++      title: "Task",
++      description: "Verification rework",
++      status: "DONE",
++      acceptance_criteria: ["done"],
++      captured_at: "2026-03-31T00:00:00.000Z",
++      updated_at: "2026-03-31T00:00:00.000Z",
++    });
++    let currentTask = mkTask({
++      id: "T-1",
++      revision: 4,
++      status: "DONE",
++      verification: { state: "ok", attempts: 1 },
++      extensions: withTaskCentricAggregate({}, aggregate),
++    });
++    const store = {
++      update: vi.fn((_taskId: string, updater: (task: TaskData) => Promise<TaskData> | TaskData) =>
++        Promise.resolve(updater(cloneTask(currentTask))).then((nextTask) => {
++          const changed = JSON.stringify(currentTask) !== JSON.stringify(nextTask);
++          currentTask = cloneTask(nextTask);
++          return { changed, task: cloneTask(currentTask) };
++        }),
++      ),
++    };
++    const ctx = mkCtx(mkBackend());
++    vi.doMock("./task-store.js", async () => ({
++      ...(await vi.importActual("./task-store.js")),
++      getTaskStore: () => store,
++    }));
++    vi.doMock("./task-backend.js", async () => ({
++      ...(await vi.importActual("./task-backend.js")),
++      backendUsesLocalTaskStore: () => true,
++    }));
++
++    const { applyTaskMutation } = await import("./task-mutation.js");
++    const first = await applyTaskMutation({
++      ctx,
++      taskId: "T-1",
++      build: (current) => ({
++        nextTask: {
++          ...current,
++          status: "DOING",
++          verification: { ...current.verification!, state: "needs_rework" },
++        },
++      }),
++    });
++    const projected = taskCentricAggregateFromExtensions(first.task.extensions)!;
++    const runtime = first.task.extensions?.["agentplane.task_centric_runtime"] as {
++      mutation_receipts: Record<string, { next_revision: number }>;
++    };
++
++    expect(first.task).toMatchObject({
++      revision: 5,
++      status: "DOING",
++      verification: { state: "needs_rework" },
++    });
++    expect(projected).toMatchObject({ revision: 5, lifecycle: "ACTIVE", final_validation: null });
++    expect(Object.values(runtime.mutation_receipts)).toEqual([
++      expect.objectContaining({ next_revision: 5 }),
++    ]);
++
++    const replay = await applyTaskMutation({
++      ctx,
++      taskId: "T-1",
++      build: (current) => ({ nextTask: cloneTask(current) }),
++    });
++    expect(replay.changed).toBe(false);
++    expect(replay.task.revision).toBe(5);
++    expect(
++      Object.keys(
++        (
++          replay.task.extensions?.["agentplane.task_centric_runtime"] as {
++            mutation_receipts: Record<string, unknown>;
++          }
++        ).mutation_receipts,
++      ),
++    ).toHaveLength(1);
++  });
++
++  it("exposes no partial rework projection when persistence fails", async () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 4,
++      title: "Task",
++      description: "Failed verification rework",
++      status: "DONE",
++      acceptance_criteria: ["done"],
++      captured_at: "2026-03-31T00:00:00.000Z",
++      updated_at: "2026-03-31T00:00:00.000Z",
++    });
++    const currentTask = mkTask({
++      id: "T-1",
++      revision: 4,
++      status: "DONE",
++      verification: { state: "ok", attempts: 1 },
++      extensions: withTaskCentricAggregate({}, aggregate),
++    });
++    const store = {
++      update: vi.fn(async (_taskId: string, updater: (task: TaskData) => Promise<TaskData>) => {
++        await updater(cloneTask(currentTask));
++        throw new Error("injected persistence failure");
++      }),
++    };
++    const ctx = mkCtx(mkBackend());
++    vi.doMock("./task-store.js", async () => ({
++      ...(await vi.importActual("./task-store.js")),
++      getTaskStore: () => store,
++    }));
++    vi.doMock("./task-backend.js", async () => ({
++      ...(await vi.importActual("./task-backend.js")),
++      backendUsesLocalTaskStore: () => true,
++    }));
++
++    const { applyTaskMutation } = await import("./task-mutation.js");
++    await expect(
++      applyTaskMutation({
++        ctx,
++        taskId: "T-1",
++        build: (current) => ({
++          nextTask: {
++            ...current,
++            status: "DOING",
++            verification: { ...current.verification!, state: "needs_rework" },
++          },
++        }),
++      }),
++    ).rejects.toThrow("injected persistence failure");
++
++    expect(currentTask).toMatchObject({
++      revision: 4,
++      status: "DONE",
++      verification: { state: "ok" },
++    });
++    expect(taskCentricAggregateFromExtensions(currentTask.extensions)).toMatchObject({
++      revision: 4,
++      lifecycle: "COMPLETED",
++    });
++    expect(currentTask.extensions).not.toHaveProperty("agentplane.task_centric_runtime");
++  });
++
+   it("applies intents and writes through the backend when the backend is not local", async () => {
+     const currentTask = mkTask();
+     let persistedTask = cloneTask(currentTask);
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 2183012bc..6ac03ad4b 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -176,6 +176,14 @@ describe("direct task verification", () => {
+       expect(result.status).toBe("passed");
+       expect(result.checks[0]?.check_ids).toContain("docs_contract");
+       expect(persist.mock.calls[0]?.[0].details).toContain("Check: docs_contract");
++      const snapshot = persist.mock.calls[0]?.[0].verificationSnapshot;
++      expect(snapshot).toMatchObject({
++        evaluated_sha: "frozen-head",
++        changed_paths: ["docs/contract.md"],
++      });
++      expect(snapshot?.execution_contract.verification.contract?.selected_checks).toContain(
++        "docs_contract",
++      );
+       expect(observed).toHaveBeenCalledWith(
+         expect.objectContaining({ evaluatedSha: "frozen-head" }),
+       );
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 29e130798..347881303 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -108,7 +108,8 @@ export async function recordDirectTaskVerification(opts: {
+   work_order: AgentWorkOrderV2;
+   workflow: "direct" | "branch_pr";
+ }): Promise<DirectTaskVerificationResult> {
+-  const verificationTask = await resolveImplementationVerificationTask(opts);
++  const verification = await resolveImplementationVerificationTask(opts);
++  const verificationTask = verification.task;
+   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
+     (item) => item.id === opts.work_order.task.work_item_id,
+@@ -152,6 +153,7 @@ export async function recordDirectTaskVerification(opts: {
+     incidentTags: [],
+     incidentMatch: [],
+     quiet: true,
++    verificationSnapshot: verification.snapshot,
+   });
+   if (exitCode !== 0) {
+     throw new CliError({
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+index 4afbcad97..72de3284a 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+@@ -321,7 +321,14 @@ export async function resolveImplementationVerificationTask(opts: {
+   checkout: string;
+   task: TaskData;
+   workflow: "direct" | "branch_pr";
+-}): Promise<TaskData> {
++}): Promise<{
++  task: TaskData;
++  snapshot: {
++    execution_contract: NonNullable<TaskData["execution_contract"]>;
++    evaluated_sha: string | null;
++    changed_paths: string[];
++  };
++}> {
+   const execution = await resolveTaskExecutionContext({
+     ctx: opts.command,
+     tasks: [opts.task],
+@@ -364,7 +371,14 @@ export async function resolveImplementationVerificationTask(opts: {
+       changed_paths: changedPaths,
+     }).contract,
+   };
+-  return verificationTask;
++  return {
++    task: verificationTask,
++    snapshot: {
++      execution_contract: verificationTask.execution_contract!,
++      evaluated_sha: evaluatedSha,
++      changed_paths: changedPaths,
++    },
++  };
+ }
+ 
+ async function directories(directory: string): Promise<string[]> {
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index 306a48e37..1d27871b2 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -103,6 +103,7 @@ async function recordVerificationResult(opts: {
+   collectIncidents?: boolean;
+   quiet: boolean;
+   command: ExecuteVerifyRecordCommandOptions["command"];
++  verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
+ }): Promise<void> {
+   const initialCtx =
+     opts.ctx ??
+@@ -136,6 +137,7 @@ async function recordVerificationResult(opts: {
+       phase: "verify",
+       build: async (current) => {
+         const baseExecutionContract =
++          opts.verificationSnapshot?.execution_contract ??
+           current.execution_contract ??
+           resolveTaskExecutionContract({
+             config,
+@@ -169,24 +171,28 @@ async function recordVerificationResult(opts: {
+           workflowMode === "branch_pr"
+             ? await resolveTaskBranchFromContext({ ctx, taskId: current.id })
+             : null;
+-        const evaluatedSha = await resolveQualityReviewTargetSha({
+-          gitRoot: resolved.gitRoot,
+-          workflowDir: config.paths.workflow_dir,
+-          taskId: current.id,
+-          taskIds: qualityReviewTaskIds,
+-          lifecycleTaskIds: batchTaskIds,
+-          headSha: taskBranch ? await gitRevParse(resolved.gitRoot, [taskBranch]) : undefined,
+-          previousEvaluatedSha:
+-            current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
+-          workflowMode,
+-        });
+-        const observedChangedPaths = await resolveObservedVerificationChangedPaths({
+-          ctx,
+-          evaluatedSha,
+-          taskId: current.id,
+-          artifactTaskIds: qualityReviewTaskIds,
+-          execution: taskCommand.execution,
+-        });
++        const evaluatedSha =
++          opts.verificationSnapshot?.evaluated_sha ??
++          (await resolveQualityReviewTargetSha({
++            gitRoot: resolved.gitRoot,
++            workflowDir: config.paths.workflow_dir,
++            taskId: current.id,
++            taskIds: qualityReviewTaskIds,
++            lifecycleTaskIds: batchTaskIds,
++            headSha: taskBranch ? await gitRevParse(resolved.gitRoot, [taskBranch]) : undefined,
++            previousEvaluatedSha:
++              current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
++            workflowMode,
++          }));
++        const observedChangedPaths =
++          opts.verificationSnapshot?.changed_paths ??
++          (await resolveObservedVerificationChangedPaths({
++            ctx,
++            evaluatedSha,
++            taskId: current.id,
++            artifactTaskIds: qualityReviewTaskIds,
++            execution: taskCommand.execution,
++          }));
+         const observedExecutionContract = reconcileTaskExecutionContract({
+           contract: baseExecutionContract,
+           changed_paths: observedChangedPaths,
+@@ -539,6 +545,7 @@ export async function executeVerifyRecordCommand(
+       collectIncidents: opts.collectIncidents,
+       quiet: opts.quiet,
+       command: opts.command,
++      verificationSnapshot: opts.verificationSnapshot,
+     });
+     return 0;
+   } catch (err) {
+diff --git a/packages/agentplane/src/commands/task/verify-record.ts b/packages/agentplane/src/commands/task/verify-record.ts
+index 8f20fc34b..9fe018f09 100644
+--- a/packages/agentplane/src/commands/task/verify-record.ts
++++ b/packages/agentplane/src/commands/task/verify-record.ts
+@@ -1,7 +1,7 @@
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import { executeVerifyRecordCommand } from "./verify-record-execute.js";
+-import type { VerifyStructuredFindingInput } from "./verify-record.types.js";
++import type { VerificationSnapshot, VerifyStructuredFindingInput } from "./verify-record.types.js";
+ 
+ type VerifyFindingOptions = {
+   observation?: string;
+@@ -135,6 +135,7 @@ export async function cmdVerifyParsed(opts: {
+   incidentAdvice?: string;
+   incidentRule?: string;
+   quiet: boolean;
++  verificationSnapshot?: VerificationSnapshot;
+ }): Promise<number> {
+   return await executeVerifyRecordCommand({
+     ...opts,
+diff --git a/packages/agentplane/src/commands/task/verify-record.types.ts b/packages/agentplane/src/commands/task/verify-record.types.ts
+index 67b21a96f..ec34d019f 100644
+--- a/packages/agentplane/src/commands/task/verify-record.types.ts
++++ b/packages/agentplane/src/commands/task/verify-record.types.ts
+@@ -1,8 +1,15 @@
+ import type { CommandContext } from "../shared/task-backend.js";
++import type { TaskData } from "../../backends/task-backend.js";
+ 
+ export type VerifyState = "ok" | "needs_rework";
+ export type VerifyCommandName = "task verify ok" | "task verify rework" | "verify";
+ 
++export type VerificationSnapshot = {
++  execution_contract: NonNullable<TaskData["execution_contract"]>;
++  evaluated_sha: string | null;
++  changed_paths: string[];
++};
++
+ export type VerifyStructuredFindingInput = {
+   observation: string;
+   impact: string;
+@@ -39,4 +46,5 @@ export type ExecuteVerifyRecordCommandOptions = {
+   collectIncidents?: boolean;
+   quiet: boolean;
+   command: VerifyCommandName;
++  verificationSnapshot?: VerificationSnapshot;
+ };

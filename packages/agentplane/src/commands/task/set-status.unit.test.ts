@@ -278,46 +278,54 @@ describe("task set-status command (unit)", () => {
     stderrWrite.mockRestore();
   });
 
-  it("rejects a status write that would diverge from the task-centric aggregate", async () => {
-    const ctx = mkCtx();
-    const aggregate = createLegacyTaskAggregate({
-      id: "T-1",
-      revision: 4,
-      title: "Task",
-      description: "Task-centric projection guard",
-      status: "DOING",
-      acceptance_criteria: ["done"],
-      captured_at: "2026-03-13T00:00:00.000Z",
-      updated_at: "2026-03-13T00:00:00.000Z",
-    });
-    let currentTask = mkTask({
-      id: "T-1",
-      revision: 4,
-      status: "DOING",
-      extensions: withTaskCentricAggregate({}, aggregate),
-    });
-    const store = {
-      update: vi
-        .fn()
-        .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
-            currentTask = await builder(currentTask);
-            return { changed: true, task: currentTask };
-          },
-        ),
-    };
-    mocks.backendIsLocalFileBackend.mockReturnValue(true);
-    mocks.getTaskStore.mockReturnValue(store);
+  it.each([
+    { from: "DOING", to: "BLOCKED", consistent: true, force: false },
+    { from: "BLOCKED", to: "DOING", consistent: true, force: false },
+    { from: "BLOCKED", to: "TODO", consistent: false, force: false },
+    { from: "DONE", to: "BLOCKED", consistent: false, force: false },
+    { from: "DONE", to: "DOING", consistent: false, force: false },
+    { from: "DONE", to: "DOING", consistent: true, force: true },
+  ] as const)(
+    "preserves projection consistency for $from -> $to",
+    async ({ from, to, consistent, force }) => {
+      const ctx = mkCtx();
+      const aggregate = createLegacyTaskAggregate({
+        id: "T-1",
+        revision: 4,
+        title: "Task",
+        description: "Task-centric projection guard",
+        status: from,
+        acceptance_criteria: ["done"],
+        captured_at: "2026-03-13T00:00:00.000Z",
+        updated_at: "2026-03-13T00:00:00.000Z",
+      });
+      let currentTask = mkTask({
+        id: "T-1",
+        revision: 4,
+        status: from,
+        extensions: withTaskCentricAggregate({}, aggregate),
+      });
+      const store = {
+        update: vi
+          .fn()
+          .mockImplementation(
+            async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+              currentTask = await builder(currentTask);
+              return { changed: true, task: currentTask };
+            },
+          ),
+      };
+      mocks.backendIsLocalFileBackend.mockReturnValue(true);
+      mocks.getTaskStore.mockReturnValue(store);
 
-    const { cmdTaskSetStatus } = await import("./set-status.js");
-    await expect(
-      cmdTaskSetStatus({
+      const { cmdTaskSetStatus } = await import("./set-status.js");
+      const transition = cmdTaskSetStatus({
         ctx,
         cwd: "/repo",
         taskId: "T-1",
-        status: "BLOCKED",
-        force: false,
-        yes: false,
+        status: to,
+        force,
+        yes: force,
         commitFromComment: false,
         commitAllow: [],
         commitAutoAllow: false,
@@ -325,15 +333,31 @@ describe("task set-status command (unit)", () => {
         commitRequireClean: false,
         confirmStatusCommit: false,
         quiet: true,
-      }),
-    ).rejects.toMatchObject({
-      code: "E_VALIDATION",
-      context: { reason_code: "task_centric_projection_mismatch" },
-    });
-    expect(currentTask.status).toBe("DOING");
-    expect(currentTask.revision).toBe(4);
-    const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
-    expect(persistedAggregate?.revision).toBe(4);
-    expect(persistedAggregate?.events).toEqual(aggregate.events);
-  });
+      });
+      if (consistent) {
+        await expect(transition).resolves.toBe(0);
+        expect(currentTask.status).toBe(to);
+        const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
+        expect(persistedAggregate?.lifecycle).toBe(to === "BLOCKED" ? "BLOCKED" : "ACTIVE");
+        expect(persistedAggregate?.final_validation).toBeNull();
+        expect(persistedAggregate?.current_plan).toEqual(aggregate.current_plan);
+        expect(persistedAggregate?.work_items).toEqual(aggregate.work_items);
+        expect(persistedAggregate?.revision).toBe(currentTask.revision);
+        return;
+      }
+      await expect(transition).rejects.toMatchObject(
+        from === "DONE"
+          ? { code: "E_USAGE" }
+          : {
+              code: "E_VALIDATION",
+              context: { reason_code: "task_centric_projection_mismatch" },
+            },
+      );
+      expect(currentTask.status).toBe(from);
+      expect(currentTask.revision).toBe(4);
+      const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
+      expect(persistedAggregate?.revision).toBe(4);
+      expect(persistedAggregate?.events).toEqual(aggregate.events);
+    },
+  );
 });

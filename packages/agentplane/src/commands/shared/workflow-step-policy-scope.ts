@@ -1,6 +1,7 @@
 import { GitContext, gitDiffNames, gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
@@ -60,6 +61,21 @@ function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
     version: 1,
     start_head_sha: typeof value.start_head_sha === "string" ? value.start_head_sha.trim() : null,
   };
+}
+
+export function hasUninitializedTaskBaseline(task: TaskData): boolean {
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  return Boolean(
+    aggregate &&
+    !baselineFromTask(task) &&
+    !task.commit &&
+    Object.values(aggregate.work_items).every(
+      (item) =>
+        (item.state === "READY" || item.state === "PLANNED") &&
+        item.attempt === 0 &&
+        item.output_manifests.length === 0,
+    ),
+  );
 }
 
 function runnerChangedPaths(task: TaskData): string[] {

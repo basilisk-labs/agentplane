@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
+import { createLegacyTaskAggregate, withTaskCentricAggregate } from "@agentplaneorg/core/tasks";
+import {
+  hasUninitializedTaskBaseline,
+  withWorkflowRouteBaseline,
+} from "./workflow-step-policy-scope.js";
+import { directStep } from "./workflow-step-factory.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { deriveRouteAmbiguities } from "./route-decision-repair.js";
 import { projectWorkflowOperationArgv, renderCliArgv } from "./workflow-operation-projection.js";
@@ -20,6 +26,65 @@ import {
 } from "./workflow-step.testkit.js";
 
 describe("typed WorkflowStep reducer", () => {
+  it("starts canonical ACTIVE direct tasks before dispatch and preserves a recorded baseline", () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: task.id,
+      revision: task.revision,
+      title: task.title,
+      description: task.description,
+      status: "DOING",
+      acceptance_criteria: ["Finish the direct lifecycle"],
+      captured_at: "2026-09-04T00:00:00.000Z",
+      updated_at: "2026-09-04T00:00:00.000Z",
+    });
+    const canonicalTask = { ...task, extensions: withTaskCentricAggregate({}, aggregate) };
+    const state = routeState({ workflowMode: "direct", task: canonicalTask });
+    expect(directStep(state)).toMatchObject({ id: "task.start", kind: "cli_operation" });
+    expect(reduceRouteState(routeState({ task: canonicalTask }))).toMatchObject({
+      id: "task.branch.start",
+      kind: "cli_operation",
+    });
+    expect(
+      hasUninitializedTaskBaseline({
+        ...canonicalTask,
+        commit: { hash: resume.head_sha, message: "Existing implementation" },
+      }),
+    ).toBe(false);
+    for (const itemState of ["REWORK_READY", "COMPLETED"] as const) {
+      expect(
+        hasUninitializedTaskBaseline({
+          ...canonicalTask,
+          extensions: withTaskCentricAggregate(
+            {},
+            {
+              ...aggregate,
+              work_items: {
+                implementation: {
+                  id: "implementation",
+                  state: itemState,
+                  revision: 1,
+                  attempt: 1,
+                  claim_id: null,
+                  output_manifests: [],
+                  validation_result: null,
+                  last_failure: null,
+                },
+              },
+            },
+          ),
+        }),
+      ).toBe(false);
+    }
+    expect(
+      directStep({
+        ...state,
+        task: {
+          ...canonicalTask,
+          extensions: withWorkflowRouteBaseline(canonicalTask, resume.head_sha),
+        },
+      }),
+    ).toMatchObject({ id: "runner.follow", kind: "cli_operation" });
+  });
   it("keeps every registered CLI operation idempotent and postcondition-bound", () => {
     for (const [operationId, spec] of Object.entries(WORKFLOW_OPERATION_REGISTRY)) {
       expect(operationId).not.toContain(" ");

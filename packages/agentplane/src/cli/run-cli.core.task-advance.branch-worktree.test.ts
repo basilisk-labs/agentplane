@@ -2,8 +2,12 @@ import { execFile } from "node:child_process";
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it, vi } from "vitest";
-import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  taskCentricAggregateFromExtensions,
+  taskCentricDigest,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import {
   createSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
@@ -45,6 +49,7 @@ import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 
 installRunCliIntegrationHarness();
+afterEach(() => vi.useRealTimers());
 
 const execFileAsync = promisify(execFile);
 
@@ -320,7 +325,15 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       const implementation = implementationOutput.stdout.trim();
       if (boundary === "before WorkItem projection") {
         if (!interrupted) throw new Error("missing interrupted WorkItem task");
-        await ctx.taskBackend.writeTask({ ...interrupted, status: "DONE" });
+        const aggregate = taskCentricAggregateFromExtensions(interrupted.extensions)!;
+        const revision = interrupted.revision! + 1;
+        // Seed premature DONE without also introducing an unrelated revision split.
+        await ctx.taskBackend.writeTask({
+          ...interrupted,
+          status: "DONE",
+          revision,
+          extensions: withTaskCentricAggregate(interrupted.extensions, { ...aggregate, revision }),
+        });
         const prematurelyClosed = await ctx.taskBackend.getTask(taskId);
         expect(prematurelyClosed?.status).toBe("DONE");
         expect(
@@ -346,7 +359,11 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
         }
         const recovered = await ctx.taskBackend.getTask(taskId);
         expect(recovered?.status).toBe("DOING");
-        expect(recovered?.verification?.state).toBe("ok");
+        expect(recovered?.verification?.state).toBe("pending");
+        expect(
+          taskCentricAggregateFromExtensions(recovered?.extensions)?.work_items["exercise-worktree"]
+            ?.validation_result?.status,
+        ).toBe("passed");
         expect(
           taskCentricAggregateFromExtensions(recovered?.extensions)?.work_items["exercise-worktree"]
             ?.state,
@@ -533,9 +550,44 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       ).toBe(after);
       if (boundary === "before verification") {
         if (!completed) throw new Error("missing completed WorkItem task");
+        const verifyIo = captureStdIO();
+        try {
+          expect(
+            await runCli([
+              "verify",
+              taskId,
+              "--ok",
+              "--by",
+              "TESTER",
+              "--note",
+              "Verified: completed WorkItem checks passed; record the task-level verification before review.",
+              "--details",
+              ["affected_unit_integration", "critical_paths", "task_outcome"]
+                .map(
+                  (check) =>
+                    `Check: ${check}\nCommand: bun run test:critical\nResult: pass\nEvidence: fixture verification stub exited 0 during the accepted recovery\nScope: fixture feature implementation`,
+                )
+                .join("\n\n"),
+              "--root",
+              checkout,
+            ]),
+            verifyIo.stderr,
+          ).toBe(0);
+        } finally {
+          verifyIo.restore();
+        }
+        const verified = await ctx.taskBackend.getTask(taskId);
+        if (!verified) throw new Error("missing verified task");
+        const verifiedAggregate = taskCentricAggregateFromExtensions(verified.extensions)!;
+        const revision = verified.revision! + 1;
         // Seed a task-level review outcome. No hosted PR is needed by this fixture.
         await ctx.taskBackend.writeTask({
-          ...completed,
+          ...verified,
+          revision,
+          extensions: withTaskCentricAggregate(verified.extensions, {
+            ...verifiedAggregate,
+            revision,
+          }),
           quality_review: {
             state: "rework",
             updated_at: new Date().toISOString(),
@@ -653,6 +705,8 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
   });
 
   it("advances once from the base checkout into one worktree-bound semantic episode", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-09-05T00:00:00.000Z"));
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -832,7 +886,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       purpose: "implementation",
       checkout: taskWorktree,
     });
-    expect(stablePacket.transition_id).not.toBe(jsonPacket.transition_id);
+    expect(stablePacket.transition_id).toBe(jsonPacket.transition_id);
     expect(stablePacket.action).toEqual(jsonPacket.action);
     expect(humanOutput).toContain(stablePacket.state_fingerprint);
     expect(await readFile(readmePath, "utf8")).toBe(beforeRenderOnly);

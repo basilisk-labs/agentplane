@@ -13,6 +13,9 @@ import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
+import { recoverAppliedScopeProjection } from "../shared/task-scope-extension-request.js";
+export { assertRecoverableImplementationCommit } from "../shared/task-scope-extension-request.js";
+import { preserveReceiptedMetadata } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { recordDirectImplementationEvidence } from "./direct-task-finalization.js";
 import { CliError } from "../../shared/errors.js";
@@ -104,39 +107,6 @@ export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
   });
 }
 
-export async function assertRecoverableImplementationCommit(opts: {
-  cwd: string;
-  baseline: string | null;
-  commit: string;
-  task_id: string;
-}): Promise<void> {
-  const subject = await runProcess({
-    command: "git",
-    args: ["show", "-s", "--format=%s", opts.commit],
-    cwd: opts.cwd,
-    reject: false,
-  });
-  const ancestry = opts.baseline
-    ? await runProcess({
-        command: "git",
-        args: ["merge-base", "--is-ancestor", opts.baseline, opts.commit],
-        cwd: opts.cwd,
-        reject: false,
-      })
-    : null;
-  if (
-    subject.exitCode !== 0 ||
-    subject.stdout.trim() !==
-      `🚧 ${opts.task_id.split("-").at(-1)} task: apply external agent result` ||
-    (ancestry && ancestry.exitCode !== 0)
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Git history changed outside the recoverable Agentplane implementation effect.",
-    });
-  }
-}
-
 export async function refreshRecoveredImplementationEvidence(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
@@ -144,6 +114,7 @@ export async function refreshRecoveredImplementationEvidence(opts: {
   commit: string | null;
   preserve_recorded_evidence?: boolean;
 }) {
+  await recoverAppliedScopeProjection(opts);
   if (!opts.execution_base || !opts.commit) return null;
   if (opts.preserve_recorded_evidence) {
     // Reobserve Git without rewriting the historical effect with a new episode baseline.
@@ -234,6 +205,11 @@ export function taskReadmesPreserveRecoveryContract(
   const previousExtensions = original.frontmatter.extensions;
   const nextExtensions = next.frontmatter.extensions;
   if (isRecord(previousExtensions) && isRecord(nextExtensions)) {
+    try {
+      preserveReceiptedMetadata(previousExtensions, nextExtensions);
+    } catch {
+      return false;
+    }
     const previous = previousExtensions.task_execution_context;
     const current = nextExtensions.task_execution_context;
     const identityKeys = ["schema_version", "base_ref", "base_sha", "repository_identity"];
@@ -321,7 +297,14 @@ export async function resolveImplementationVerificationTask(opts: {
   checkout: string;
   task: TaskData;
   workflow: "direct" | "branch_pr";
-}): Promise<TaskData> {
+}): Promise<{
+  task: TaskData;
+  snapshot: {
+    execution_contract: NonNullable<TaskData["execution_contract"]>;
+    evaluated_sha: string | null;
+    changed_paths: string[];
+  };
+}> {
   const execution = await resolveTaskExecutionContext({
     ctx: opts.command,
     tasks: [opts.task],
@@ -364,7 +347,14 @@ export async function resolveImplementationVerificationTask(opts: {
       changed_paths: changedPaths,
     }).contract,
   };
-  return verificationTask;
+  return {
+    task: verificationTask,
+    snapshot: {
+      execution_contract: verificationTask.execution_contract!,
+      evaluated_sha: evaluatedSha,
+      changed_paths: changedPaths,
+    },
+  };
 }
 
 async function directories(directory: string): Promise<string[]> {

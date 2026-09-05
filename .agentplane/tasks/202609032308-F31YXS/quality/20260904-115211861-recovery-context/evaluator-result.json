@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "recordDirectTaskVerification obtains one verification task and snapshot before running checks, then passes that exact snapshot into verification persistence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "verify-record-execute uses the supplied execution contract, evaluated SHA, and changed paths instead of recomputing stronger evidence requirements after AgentPlane-owned artifact writes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The task-centric compatibility projection changes COMPLETED to ACTIVE only for the precise ok-to-needs_rework and DONE-to-DOING transition, and clears final_validation for that reopened lifecycle.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Focused regressions assert projection revision alignment, WorkItem preservation, replay idempotence, and zero externally visible partial mutation after injected persistence failure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The supervisor's fresh complete local CI execution passed on the reviewed implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The implementation branch must still be published and validated by hosted checks before integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609032308-F31YXS/quality/objects/sha256/a18bb40028b4f5e2beb0c6998572f39f449246998dbc11a0a6f8dec6dc10cb56.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Task store update remains the atomic persistence boundary for the legacy fields, canonical aggregate, event, revision, and mutation receipt."
+  ]
+}

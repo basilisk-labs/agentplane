@@ -1,0 +1,653 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+index f3d6a0221..b6375ec63 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts
+@@ -452,16 +452,28 @@ describe("provider conflict rework CLI", () => {
+         cwd: worktree,
+       });
+ 
++      await runCliSilent([
++        "task",
++        "verify",
++        "ok",
++        taskId,
++        "--by",
++        "TESTER",
++        "--note",
++        "Provider conflict fixture passed verification.",
++        "--details",
++        "Command: bun test\n\nResult: pass",
++        "--root",
++        worktree,
++      ]);
+       const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
+       const taskReadme = await readFile(taskReadmePath, "utf8");
+       await writeFile(
+         taskReadmePath,
+-        taskReadme
+-          .replace('status: "DOING"', 'status: "DONE"')
+-          .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
++        taskReadme.replace('status: "DOING"', 'status: "DONE"'),
+         "utf8",
+       );
+-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
++      await execFileAsync("git", ["add", "-A"], { cwd: worktree });
+       await execFileAsync("git", ["commit", "-m", "test: mark task verified for queue handoff"], {
+         cwd: worktree,
+       });
+@@ -838,142 +850,23 @@ describe("provider conflict rework CLI", () => {
+           ]);
+           const route = await readRemoteRoute(root, taskId);
+           const conflictRework = route.conflict_rework;
+-          if (conflictRework?.state !== "adoption_required") {
+-            throw new Error("expected legacy conflict-rework adoption requirement");
+-          }
+-          const grantCommand = route.workflow_step.compatibility.command;
+-          if (typeof grantCommand !== "string") throw new Error("expected authority grant command");
+-          expect(route.workflow_step).toMatchObject({
+-            kind: "approval",
+-            id: "approval.integration.adopt_legacy_protected_conflict",
+-            authoritativeCheckout: "task_worktree",
+-            compatibility: {
+-              code: "adopt_legacy_protected_conflict",
+-              command: expect.stringContaining(
+-                `agentplane task authority grant ${taskId}`,
+-              ) as unknown as string,
+-            },
+-          });
+-          await runCliSilent([...grantCommand.split(" ").slice(1), "--root", root]);
+-
+-          const authorizedRoute = await readRemoteRoute(root, taskId);
+-          expect(authorizedRoute.workflow_step).toMatchObject({
+-            kind: "cli_operation",
+-            id: "integration.adopt_legacy_protected_conflict",
+-            authoritativeCheckout: "base_checkout",
+-            operation: {
+-              params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
+-            },
+-          });
+-          expect(authorizedRoute.execution_packet).toMatchObject({
+-            actionKind: "local_command",
+-            safeToMutate: true,
+-            exactArgv: [
+-              "agentplane",
+-              "repair",
+-              "adopt-legacy-conflict",
+-              taskId,
+-              "--expect-adoption-token",
+-              conflictRework.adoption.token,
+-            ],
++          expect(currentBase).not.toBe(legacyQueueBase);
++          expect(conflictRework).toMatchObject({
++            state: "invalid",
++            reason_code: "conflict_rework_route_ineligible",
+           });
+-
+-          const blockedPacketIo = captureStdIO();
+-          try {
+-            const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
+-            expect(code).not.toBe(0);
+-            expect(blockedPacketIo.stderr).toContain("explicit INTEGRATOR adoption receipt");
+-            expect(blockedPacketIo.stderr).toContain("adopt-legacy-protected-conflict");
+-            expect(blockedPacketIo.stderr).toContain(conflictRework.adoption.token);
+-          } finally {
+-            blockedPacketIo.restore();
+-          }
+-
+-          const adoptionIo = captureStdIO();
+-          try {
+-            const code = await runCli([
+-              "repair",
+-              "adopt-legacy-conflict",
+-              taskId,
+-              "--expect-adoption-token",
+-              conflictRework.adoption.token,
+-              "--root",
+-              root,
+-            ]);
+-            if (code !== 0) process.stderr.write(adoptionIo.stderr);
+-            expect(code).toBe(0);
+-          } finally {
+-            adoptionIo.restore();
+-          }
+-
+-          const compatibilityAliasIo = captureStdIO();
+-          try {
+-            const code = await runCli([
+-              "integrate",
+-              "queue",
+-              "adopt-legacy-protected-conflict",
+-              taskId,
+-              "--expect-adoption-token",
+-              conflictRework.adoption.token,
+-              "--root",
+-              root,
+-            ]);
+-            expect(code).toBe(0);
+-          } finally {
+-            compatibilityAliasIo.restore();
+-          }
+-
+-          const adoptedRoute = await readRemoteRoute(root, taskId);
+-          const adoptedConflictRework = adoptedRoute.conflict_rework;
+-          if (adoptedConflictRework?.state !== "ready") {
+-            throw new Error("expected adopted legacy conflict-rework packet");
+-          }
+-          expect(adoptedRoute.workflow_step).toMatchObject({
++          expect(route.workflow_step).toMatchObject({
+             kind: "agent_episode",
+-            id: "agent.provider_conflict_rework",
++            id: "agent.verification",
+             authoritativeCheckout: "task_worktree",
++            compatibility: { code: "verification_required", command: null },
+           });
+-          expect(adoptedRoute.execution_packet).toMatchObject({
++          expect(route.execution_packet).toMatchObject({
+             actionKind: "stop",
+-            safeToMutate: true,
+-          });
+-          expect(adoptedConflictRework.packet).toMatchObject({
+-            provider: { base_sha: baseSha },
+-            base_context: {
+-              provider_conflict_base_sha: baseSha,
+-              current_base_sha: currentBase,
+-              relation: "provider_base_ancestor_of_current_base",
+-              legacy_queue_base_sha: legacyQueueBase,
+-            },
+-            route_evidence: {
+-              kind: "legacy_adopted_protected_base_handoff",
+-              queue: { status: "rework", base_sha: legacyQueueBase },
+-              handoff: { provider_base_sha: null },
+-            },
++            safeToMutate: false,
++            exactArgv: null,
+           });
+ 
+-          const packetIo = captureStdIO();
+-          try {
+-            const code = await runCli([
+-              "pr",
+-              "conflict-rework",
+-              taskId,
+-              "--expect-freshness-token",
+-              adoptedConflictRework.packet.freshness.token,
+-              "--json",
+-              "--root",
+-              root,
+-            ]);
+-            if (code !== 0) process.stderr.write(packetIo.stderr);
+-            expect(code).toBe(0);
+-            expect(JSON.parse(packetIo.stdout)).toMatchObject({
+-              base_context: { current_base_sha: currentBase },
+-              route_evidence: { kind: "legacy_adopted_protected_base_handoff" },
+-            });
+-          } finally {
+-            packetIo.restore();
+-          }
+-
+           const [rootAfter, worktreeAfter] = await Promise.all([
+             execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+             execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts b/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts
+index 4256144cb..9b8cefa6b 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts
+@@ -121,6 +121,18 @@ export function conflictReworkRouteStep(state: WorkflowRouteState): WorkflowStep
+     return legacyProtectedConflictAdoptionStep(state);
+   }
+   if (state.blockers.some((blocker) => blocker.code === "provider_conflict_context_invalid")) {
++    const localRecoveryRequired = state.blockers.some(
++      (blocker) =>
++        blocker.code === "implementation_rework_required" ||
++        blocker.code === "verification_required",
++    );
++    if (
++      localRecoveryRequired &&
++      state.conflictRework?.state === "invalid" &&
++      state.conflictRework.reason_code === "conflict_rework_route_ineligible"
++    ) {
++      return null;
++    }
+     return conflictReworkContextInvalidStep(state);
+   }
+   if (state.blockers.some((blocker) => blocker.code === "provider_merge_conflict")) {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+index 68c614ae4..a4ca76a7d 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts
+@@ -478,6 +478,48 @@ describe("WorkflowStep conflict rework projections", () => {
+     expect(packet).toMatchObject({ actionKind: "stop", safeToMutate: false, exactArgv: null });
+   });
+ 
++  it("restores local verification before conflict rework that is only route-ineligible", () => {
++    const state = routeState({
++      task: {
++        ...task,
++        commit: { hash: resume.head_sha, message: "feat: committed implementation" },
++      },
++      blockers: [
++        {
++          code: "provider_conflict_context_invalid",
++          summary: "semantic conflict rework requires a passing verification record",
++        },
++        {
++          code: "verification_required",
++          summary: "the current implementation has no passing verification record",
++        },
++      ],
++      conflictRework: {
++        state: "invalid",
++        reason_code: "conflict_rework_route_ineligible",
++        reason: "semantic conflict rework requires a current passing verification record",
++      },
++    });
++    const step = reduceRouteState(state);
++    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
++
++    expect(step).toMatchObject({
++      kind: "agent_episode",
++      id: "agent.verification",
++      compatibility: { code: "verification_required", command: null },
++    });
++    expect(oracle).toMatchObject({
++      phase: "verification_required",
++      authoritativeCheckout: "task_worktree",
++    });
++    expect(packet).toMatchObject({
++      actionKind: "stop",
++      safeToMutate: false,
++      recommendedRole: "TESTER",
++      exactArgv: null,
++    });
++  });
++
+   it("keeps a non-conflicting open PR on the ordinary integration queue route", () => {
+     const openPrFlow = {
+       task: { id: task.id, status: "DOING", verification: "ok" },
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+index 3cce6f0fa..f0c8ecc26 100644
+--- a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+@@ -1,6 +1,7 @@
+ import type * as CoreSchemas from "@agentplaneorg/core/schemas";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
++import type { TaskData } from "../../backends/task-backend.js";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ 
+ const mocks = vi.hoisted(() => ({
+@@ -47,7 +48,10 @@ vi.mock("../shared/supervisor-execution-episode.js", () => ({
+   supervisePersistedWorkflowEpisode: mocks.supervise,
+   openSupervisorExecutionEpisode: mocks.open,
+ }));
+-vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
++vi.mock("../shared/task-backend.js", () => ({
++  backendUsesLocalTaskStore: () => false,
++  loadTaskFromContext: mocks.loadTask,
++}));
+ vi.mock("./direct-task-supervisor-operation.js", () => ({
+   executeDirectOperation: mocks.executeOperation,
+ }));
+@@ -99,7 +103,12 @@ function superviseDirectTaskRun(
+ function commandContext() {
+   return {
+     resolvedProject: { gitRoot: "/repo" },
+-    taskBackend: { writeTask: vi.fn() },
++    taskBackend: {
++      id: "local",
++      writeTask: vi.fn(),
++      getTask: vi.fn(() => Promise.resolve(null)),
++      writeTaskWithResult: vi.fn((task: TaskData) => Promise.resolve({ task, changed: true })),
++    },
+     config: { paths: { workflow_dir: ".agentplane/tasks" } },
+   } as never;
+ }
+diff --git a/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts b/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts
+index 1a6cc160d..d5ffef99c 100644
+--- a/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts
++++ b/packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts
+@@ -6,11 +6,31 @@ import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.j
+ import { defaultConfig } from "@agentplaneorg/core/config";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ 
++import {
++  createLegacyTaskAggregate,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
++} from "@agentplaneorg/core/tasks";
+ import {
+   observedExternalEffectsFromRunnerResult,
+   recordObservedTaskExecutionContract,
+ } from "./task-execution-contract-observation.js";
+ 
++const remoteBackendCapabilities = {
++  canonical_source: "remote",
++  projection: "cache",
++  projection_read_mode: "native",
++  reads_from_projection_by_default: true,
++  writes_task_readmes: false,
++  supports_task_revisions: true,
++  supports_revision_guarded_writes: true,
++  may_access_network_on_read: false,
++  may_access_network_on_write: false,
++  supports_projection_refresh: false,
++  supports_push_sync: false,
++  supports_snapshot_export: false,
++} as const;
++
+ function executionFor(task: TaskData): TaskExecutionContext {
+   return {
+     schema_version: 1,
+@@ -76,7 +96,7 @@ describe("task execution contract observation", () => {
+       config,
+       backendId: "local",
+       resolvedProject: { gitRoot: "/repo" },
+-      taskBackend: { writeTask, getTask },
++      taskBackend: { capabilities: remoteBackendCapabilities, writeTask, getTask },
+     } as unknown as CommandContext;
+ 
+     const result = await recordObservedTaskExecutionContract({
+@@ -152,7 +172,8 @@ describe("task execution contract observation", () => {
+           persistedTask = nextTask;
+           return Promise.resolve();
+         },
+-        getTask: () => Promise.resolve(persistedTask),
++        capabilities: remoteBackendCapabilities,
++        getTask: () => Promise.resolve(persistedTask ?? task),
+       },
+     } as unknown as CommandContext;
+ 
+@@ -195,7 +216,8 @@ describe("task execution contract observation", () => {
+           persistedTask = nextTask;
+           return Promise.resolve();
+         },
+-        getTask: () => Promise.resolve(persistedTask),
++        capabilities: remoteBackendCapabilities,
++        getTask: () => Promise.resolve(persistedTask ?? task),
+       },
+     } as unknown as CommandContext;
+ 
+@@ -231,7 +253,11 @@ describe("task execution contract observation", () => {
+       config,
+       backendId: "local",
+       resolvedProject: { gitRoot: "/repo" },
+-      taskBackend: { writeTask, getTask: () => Promise.resolve(task) },
++      taskBackend: {
++        capabilities: remoteBackendCapabilities,
++        writeTask,
++        getTask: () => Promise.resolve(task),
++      },
+     } as unknown as CommandContext;
+ 
+     const result = await recordObservedTaskExecutionContract({
+@@ -293,7 +319,8 @@ describe("task execution contract observation", () => {
+           persistedTask = nextTask;
+           return Promise.resolve();
+         },
+-        getTask: () => Promise.resolve(persistedTask),
++        capabilities: remoteBackendCapabilities,
++        getTask: () => Promise.resolve(persistedTask ?? task),
+       },
+     } as unknown as CommandContext;
+ 
+@@ -320,4 +347,57 @@ describe("task execution contract observation", () => {
+       "writable_scope:packages/outside/new.ts",
+     );
+   });
++
++  it("projects an observation and its task-centric revision atomically", async () => {
++    const config = defaultConfig();
++    const aggregate = createLegacyTaskAggregate({
++      id: "202609040000-ATOMIC",
++      revision: 4,
++      title: "Atomic observation fixture",
++      description: "Keep compatibility and canonical revisions synchronized.",
++      status: "DOING",
++      acceptance_criteria: ["observation persisted"],
++      captured_at: "2026-09-04T00:00:00.000Z",
++      updated_at: "2026-09-04T00:00:00.000Z",
++    });
++    const task = {
++      id: aggregate.id,
++      title: "Atomic observation fixture",
++      description: "Keep compatibility and canonical revisions synchronized.",
++      status: "DOING",
++      priority: "med",
++      owner: "CODER",
++      revision: 4,
++      depends_on: [],
++      tags: [],
++      verify: [],
++      extensions: withTaskCentricAggregate({}, aggregate),
++    } satisfies TaskData;
++    let persistedTask = task as TaskData;
++    const command = {
++      config,
++      backendId: "remote",
++      resolvedProject: { gitRoot: "/repo" },
++      taskBackend: {
++        capabilities: remoteBackendCapabilities,
++        writeTask: (nextTask: TaskData) => {
++          persistedTask = nextTask;
++          return Promise.resolve();
++        },
++        getTask: () => Promise.resolve(persistedTask),
++      },
++    } as unknown as CommandContext;
++
++    const result = await recordObservedTaskExecutionContract({
++      command,
++      execution: executionFor(task),
++      task,
++      changed_paths: [],
++      preserved_commit: "new-sha",
++    });
++
++    expect(result.task.revision).toBe(5);
++    expect(taskCentricAggregateFromExtensions(result.task.extensions)?.revision).toBe(5);
++    expect(result.task.extensions?.implementation_commit).toEqual({ hash: "new-sha" });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/task-execution-contract-observation.ts b/packages/agentplane/src/commands/task/task-execution-contract-observation.ts
+index e89e59fa0..38175a1d0 100644
+--- a/packages/agentplane/src/commands/task/task-execution-contract-observation.ts
++++ b/packages/agentplane/src/commands/task/task-execution-contract-observation.ts
+@@ -3,6 +3,7 @@ import type { TaskExternalEffect, TaskVerificationObservation } from "@agentplan
+ import type { RunnerResult } from "../../runner/types.js";
+ import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
+ import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ 
+ export async function recordObservedTaskExecutionContract(opts: {
+@@ -17,7 +18,6 @@ export async function recordObservedTaskExecutionContract(opts: {
+   if (!opts.execution.task_ids.includes(opts.task.id)) {
+     throw new Error(`Execution context does not authorize task ${opts.task.id}.`);
+   }
+-  const current = opts.task.execution_contract;
+   const workflowDir = opts.command.config.paths.workflow_dir
+     .replaceAll("\\", "/")
+     .replaceAll(/\/+$/gu, "");
+@@ -26,91 +26,101 @@ export async function recordObservedTaskExecutionContract(opts: {
+     (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
+   );
+ 
+-  const episodeReconciliation = current
+-    ? reconcileTaskExecutionContract({
+-        contract: {
+-          ...current,
+-          observed: {
+-            repository_effects: [],
+-            external_effects: [],
+-            changed_paths: [],
+-            changed_components: [],
+-            verification_results: [],
+-            authority_violations: [],
+-          },
+-        },
+-        changed_paths: productChangedPaths,
+-        ...(opts.observed_external_effects
+-          ? { observed_external_effects: opts.observed_external_effects }
+-          : {}),
+-        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
+-      })
+-    : null;
+-  const episodeAuthorityViolations =
+-    episodeReconciliation?.contract.observed.authority_violations ?? [];
++  let escalated = false;
++  let episodeAuthorityViolations: string[] = [];
++  const mutation = await applyTaskMutation({
++    ctx: opts.command,
++    taskId: opts.task.id,
++    build: (currentTask) => {
++      const current = currentTask.execution_contract;
++      const episodeReconciliation = current
++        ? reconcileTaskExecutionContract({
++            contract: {
++              ...current,
++              observed: {
++                repository_effects: [],
++                external_effects: [],
++                changed_paths: [],
++                changed_components: [],
++                verification_results: [],
++                authority_violations: [],
++              },
++            },
++            changed_paths: productChangedPaths,
++            ...(opts.observed_external_effects
++              ? { observed_external_effects: opts.observed_external_effects }
++              : {}),
++            ...(opts.verification_results
++              ? { verification_results: opts.verification_results }
++              : {}),
++          })
++        : null;
++      episodeAuthorityViolations =
++        episodeReconciliation?.contract.observed.authority_violations ?? [];
+ 
+-  const reconciled = current
+-    ? reconcileTaskExecutionContract({
+-        contract: current,
+-        changed_paths: productChangedPaths,
+-        ...(opts.observed_external_effects
+-          ? { observed_external_effects: opts.observed_external_effects }
+-          : {}),
+-        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
+-        ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
+-      })
+-    : null;
+-  const recordedImplementationCommit = opts.task.extensions?.implementation_commit;
+-  const recordedImplementationHash =
+-    typeof recordedImplementationCommit === "object" &&
+-    recordedImplementationCommit !== null &&
+-    "hash" in recordedImplementationCommit &&
+-    typeof recordedImplementationCommit.hash === "string"
+-      ? recordedImplementationCommit.hash.trim()
+-      : "";
+-  const implementationCommitChanged =
+-    opts.preserved_commit !== undefined && recordedImplementationHash !== opts.preserved_commit;
+-  const contractChanged =
+-    reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
+-  if (!contractChanged && !implementationCommitChanged) {
+-    return {
+-      task: opts.task,
+-      escalated: reconciled?.escalated ?? false,
+-      episodeAuthorityViolations,
+-    };
+-  }
+-  const blueprintRequest =
+-    reconciled?.escalated && opts.task.blueprint_request === "code.direct"
+-      ? "code.branch_pr"
+-      : opts.task.blueprint_request;
++      const reconciled = current
++        ? reconcileTaskExecutionContract({
++            contract: current,
++            changed_paths: productChangedPaths,
++            ...(opts.observed_external_effects
++              ? { observed_external_effects: opts.observed_external_effects }
++              : {}),
++            ...(opts.verification_results
++              ? { verification_results: opts.verification_results }
++              : {}),
++            ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
++          })
++        : null;
++      escalated = reconciled?.escalated ?? false;
++      const recordedImplementationCommit = currentTask.extensions?.implementation_commit;
++      const recordedImplementationHash =
++        typeof recordedImplementationCommit === "object" &&
++        recordedImplementationCommit !== null &&
++        "hash" in recordedImplementationCommit &&
++        typeof recordedImplementationCommit.hash === "string"
++          ? recordedImplementationCommit.hash.trim()
++          : "";
++      const implementationCommitChanged =
++        opts.preserved_commit !== undefined && recordedImplementationHash !== opts.preserved_commit;
++      const contractChanged =
++        reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
++      if (!contractChanged && !implementationCommitChanged) return null;
++      const blueprintRequest =
++        reconciled?.escalated && currentTask.blueprint_request === "code.direct"
++          ? "code.branch_pr"
++          : currentTask.blueprint_request;
+ 
+-  await opts.command.taskBackend.writeTask(
+-    {
+-      ...opts.task,
+-      blueprint_request: blueprintRequest,
+-      ...(implementationCommitChanged
+-        ? {
+-            extensions: {
+-              ...opts.task.extensions,
+-              implementation_commit: { hash: opts.preserved_commit },
+-            },
+-          }
+-        : {}),
+-      execution_contract: reconciled?.contract ?? current,
+-      execution_route:
+-        reconciled && opts.task.execution_route
+-          ? {
+-              ...opts.task.execution_route,
+-              selected_mode: reconciled.contract.selected_mode,
+-              reason_codes: [...reconciled.contract.reason_codes],
+-            }
+-          : undefined,
++      return {
++        nextTask: {
++          ...currentTask,
++          blueprint_request: blueprintRequest,
++          ...(implementationCommitChanged
++            ? {
++                extensions: {
++                  ...currentTask.extensions,
++                  implementation_commit: { hash: opts.preserved_commit },
++                },
++              }
++            : {}),
++          execution_contract: reconciled?.contract ?? current,
++          execution_route:
++            reconciled && currentTask.execution_route
++              ? {
++                  ...currentTask.execution_route,
++                  selected_mode: reconciled.contract.selected_mode,
++                  reason_codes: [...reconciled.contract.reason_codes],
++                }
++              : undefined,
++        },
++      };
+     },
+-    opts.task.revision ? { expectedRevision: opts.task.revision } : undefined,
+-  );
++    writeOptions: opts.task.revision ? { expectedRevision: opts.task.revision } : undefined,
++  });
+   return {
+-    task: await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id }),
+-    escalated: reconciled?.escalated ?? false,
++    task: mutation.changed
++      ? await loadTaskFromContext({ ctx: opts.command, taskId: opts.task.id })
++      : mutation.task,
++    escalated,
+     episodeAuthorityViolations,
+   };
+ }

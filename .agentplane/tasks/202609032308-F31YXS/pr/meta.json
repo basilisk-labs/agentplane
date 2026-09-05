@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity",
+  "created_at": "2026-09-03T23:29:34.750Z",
+  "diffstat_sha256": "sha256:e8b250893a2efbfb93f68f10a1c0371cbaefae0c61405e4b6ef8be168d4373e0",
+  "last_verified_at": "2026-09-04T17:26:35.379Z",
+  "last_verified_diffstat_sha256": "sha256:e8b250893a2efbfb93f68f10a1c0371cbaefae0c61405e4b6ef8be168d4373e0",
+  "pr_number": 5895,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5895",
+  "pre_merge_closure": {
+    "basis_commit": "309636600663de640e9fd90af9a161b0085dca83",
+    "branch": "task/202609032308-F31YXS/repair-verification-evidence-contract-atomicity",
+    "pr_number": 5895,
+    "recorded_at": "2026-09-04T17:29:07.296Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609032308-F31YXS",
+  "updated_at": "2026-09-04T11:42:46.433Z",
+  "verify": {
+    "status": "pass"
+  }
+}

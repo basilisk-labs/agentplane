@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609040943-X0G51D/preserve-completed-workitems-across-command-only",
+  "created_at": "2026-09-04T10:05:07.800Z",
+  "diffstat_sha256": "sha256:ed7d86edb3836c9d67bef17d00644f02109682e293731739ba9f257667dec783",
+  "last_verified_at": "2026-09-04T10:52:20.448Z",
+  "last_verified_diffstat_sha256": "sha256:ed7d86edb3836c9d67bef17d00644f02109682e293731739ba9f257667dec783",
+  "pr_number": 5894,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5894",
+  "pre_merge_closure": {
+    "basis_commit": "2fc1bfd8b51a95ab7e3ce265e3bdc6bc1aa8ac7a",
+    "branch": "task/202609040943-X0G51D/preserve-completed-workitems-across-command-only",
+    "pr_number": 5894,
+    "recorded_at": "2026-09-04T10:55:03.941Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609040943-X0G51D",
+  "updated_at": "2026-09-04T10:42:56.596Z",
+  "verify": {
+    "status": "pass"
+  }
+}

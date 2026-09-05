@@ -31,6 +31,7 @@ export {
   validateWorkItemGraph,
   WorkItemScheduler,
   type GraphValidationIssue,
+  type ReplacementPlanWorkItemRecoveryEvidence,
   type WorkItemReadiness,
 } from "./graph.js";
 export {

@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 195f4f941e18d2498d1e941ba8be46a6730fa8fd..d77ef6cf4b415fe40a8acb542d97669056ccc52b",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 195f4f941e18d2498d1e941ba8be46a6730fa8fd..d77ef6cf4b415fe40a8acb542d97669056ccc52b",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609041447-YHERVV/README.md",
+        "A\t.agentplane/tasks/202609041447-YHERVV/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609041447-YHERVV/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609041447-YHERVV/pr/github-body.md",
+        "A\t.agentplane/tasks/202609041447-YHERVV/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609041447-YHERVV/pr/meta.json",
+        "A\t.agentplane/tasks/202609041447-YHERVV/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-conflict-rework.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.conflict-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "195f4f941e18d2498d1e941ba8be46a6730fa8fd",
+  "implementation_commit": "d77ef6cf4b415fe40a8acb542d97669056ccc52b",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609041447-YHERVV/README.md",
+      "?? .agentplane/tasks/202609041447-YHERVV/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/github-body.md",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/github-title.txt",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/meta.json",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609041447-YHERVV/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609041447-YHERVV/README.md",
+      "?? .agentplane/tasks/202609041447-YHERVV/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/github-body.md",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/github-title.txt",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/meta.json",
+      "?? .agentplane/tasks/202609041447-YHERVV/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609041447-YHERVV"
+}

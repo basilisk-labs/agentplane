@@ -13,6 +13,7 @@ import {
 
 import { BackendError, type TaskData } from "../../backends/task-backend.js";
 import { TASK_KERNEL_EXTENSION } from "./kernel-record.js";
+import { isRecord } from "../../shared/guards.js";
 
 export const TASK_CENTRIC_RUNTIME_EXTENSION_KEY = "agentplane.task_centric_runtime";
 
@@ -176,4 +177,81 @@ export function syntheticEvent(opts: {
     repository_fingerprint: opts.repository_fingerprint ?? null,
     at: opts.at ?? new Date().toISOString(),
   });
+}
+
+export function preserveReceiptedMetadata(
+  before: Record<string, unknown>,
+  after: Record<string, unknown>,
+): void {
+  const aggregateKey = "agentplane.task_centric";
+  const runtimeKey = "agentplane.task_centric_runtime";
+  if (
+    taskCentricDigest(before[aggregateKey] ?? null) ===
+      taskCentricDigest(after[aggregateKey] ?? null) &&
+    taskCentricDigest(before[runtimeKey] ?? null) === taskCentricDigest(after[runtimeKey] ?? null)
+  )
+    return;
+  const original = taskCentricAggregateFromExtensions(before);
+  const current = taskCentricAggregateFromExtensions(after);
+  const previousRuntime = before[runtimeKey];
+  const currentRuntime = after[runtimeKey];
+  if (!original || !current || !isRecord(previousRuntime) || !isRecord(currentRuntime)) return;
+  const previousReceipts = previousRuntime.mutation_receipts;
+  const currentReceipts = currentRuntime.mutation_receipts;
+  if (!isRecord(previousReceipts) || !isRecord(currentReceipts)) return;
+  if (
+    taskCentricDigest({ ...previousRuntime, mutation_receipts: null }) !==
+      taskCentricDigest({ ...currentRuntime, mutation_receipts: null }) ||
+    Object.entries(previousReceipts).some(
+      ([key, receipt]) =>
+        !Object.hasOwn(currentReceipts, key) ||
+        taskCentricDigest(receipt) !== taskCentricDigest(currentReceipts[key]),
+    )
+  )
+    return;
+  const added = Object.entries(currentReceipts).filter(
+    ([key]) => !Object.hasOwn(previousReceipts, key),
+  );
+  let candidate = original;
+  // Replay only metadata-only projection receipts. Plan, lifecycle and WorkItem data stay exact.
+  const ordered = added.toSorted(
+    ([, left], [, right]) =>
+      Number(isRecord(left) ? left.previous_revision : -1) -
+      Number(isRecord(right) ? right.previous_revision : -1),
+  );
+  for (const [mutationId, receipt] of ordered) {
+    if (!isRecord(receipt) || !isRecord(receipt.event) || typeof receipt.event.at !== "string")
+      return;
+    const next = {
+      ...candidate,
+      revision: candidate.revision + 1,
+      event_cursor: candidate.event_cursor + 1,
+      updated_at: receipt.event.at,
+    };
+    const expected = transitionReceipt({
+      task_id: candidate.id,
+      previous_revision: candidate.revision,
+      next,
+      mutation_id: mutationId,
+      event: syntheticEvent({
+        task: candidate,
+        mutation_id: mutationId,
+        entity: "task",
+        from: candidate.lifecycle,
+        to: candidate.lifecycle,
+        at: receipt.event.at,
+        cause_refs: ["compatibility_projection_mutation"],
+      }),
+    });
+    if (
+      !mutationId.startsWith("compatibility:sha256:") ||
+      taskCentricDigest(expected) !== taskCentricDigest(receipt)
+    ) {
+      return;
+    }
+    candidate = next;
+  }
+  if (taskCentricDigest(candidate) !== taskCentricDigest(current)) return;
+  before[aggregateKey] = after[aggregateKey];
+  before[runtimeKey] = after[runtimeKey];
 }

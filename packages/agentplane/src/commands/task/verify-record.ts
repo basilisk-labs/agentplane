@@ -1,7 +1,7 @@
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { executeVerifyRecordCommand } from "./verify-record-execute.js";
-import type { VerifyStructuredFindingInput } from "./verify-record.types.js";
+import type { VerificationSnapshot, VerifyStructuredFindingInput } from "./verify-record.types.js";
 
 type VerifyFindingOptions = {
   observation?: string;
@@ -135,6 +135,7 @@ export async function cmdVerifyParsed(opts: {
   incidentAdvice?: string;
   incidentRule?: string;
   quiet: boolean;
+  verificationSnapshot?: VerificationSnapshot;
 }): Promise<number> {
   return await executeVerifyRecordCommand({
     ...opts,

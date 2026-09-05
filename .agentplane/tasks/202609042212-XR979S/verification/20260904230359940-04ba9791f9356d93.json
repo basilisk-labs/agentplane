@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042212-XR979S Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042212-XR979S Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042212-XR979S Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042212-XR979S Verification Contract check task_outcome",
+  "digest": "sha256:04ba9791f9356d93097631e8a7c7b4cbb0360ed78b3a50186f98f121d2b40996",
+  "implementation_sha": "3aef026c8582adde9d928c38dd17befbe9b7cdeb",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e3133eedd2968a44ccc57201c8506eb1f07fdbb3aecb1f470e113388cf3d42b1",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:a33f62bfa7a6bbc8b40ffd7f194d6edc03e2633b277c0b3686faa7899482767b",
+      "digest": "sha256:194c2a8c62a8c0246adc56df7fb92a5ba9b3d66793e21df6ad29ff7555238640",
+      "references": [
+        {
+          "digest": "sha256:7b2386b2dd24342ac99eb6d67d944ec455db44a50fbf88473d22b513952151b7",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609042212-XR979S/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+      "digest": "sha256:8fa1aa988d83c90bdb85e5cc5d52b277e77691de4f15d2fe3938ae609891945f",
+      "primary_task_id": "202609042212-XR979S",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609042212-XR979S"
+      ]
+    },
+    "implementation": {
+      "base_sha": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+      "digest": "sha256:09737d4bbbbad391d8485f0a076d3b256d2959462267ce8adb83bf2f3da3682e",
+      "strategy": "branch_diff",
+      "target_sha": "3aef026c8582adde9d928c38dd17befbe9b7cdeb"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:e2a676a5a55238ee5e2b62a24d1288576ea9da7849dee72cef25e1791b97d8b7",
+    "verify_steps_digest": "sha256:6908f2eec1045e86657a6619636e3770b61078753e63429d737cf147cff92d6f"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-09-04T23:03:59.940Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n2. Run `bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts --maxWorkers=1`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n3. Run `bun run format:check`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n4. Run `bun run lint:core`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n5. Run `bun run typecheck`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n8. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n9. Run `git diff --check`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.\n10. Run `bun run ci:local:full`. Expected: the scoped recovery and repository checks pass; doctor reports zero errors.",
+  "scope_digest": "sha256:6908f2eec1045e86657a6619636e3770b61078753e63429d737cf147cff92d6f",
+  "task_id": "202609042212-XR979S",
+  "verification_command": "agentplane verify 202609042212-XR979S --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -248,6 +248,149 @@ describe("applyTaskMutation", () => {
     expect(Object.keys(replayRuntime.mutation_receipts)).toEqual(receiptIds);
   });
 
+  it("atomically reopens a completed task-centric projection for verification rework", async () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 4,
+      title: "Task",
+      description: "Verification rework",
+      status: "DONE",
+      acceptance_criteria: ["done"],
+      captured_at: "2026-03-31T00:00:00.000Z",
+      updated_at: "2026-03-31T00:00:00.000Z",
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      revision: 4,
+      status: "DONE",
+      verification: { state: "ok", attempts: 1 },
+      extensions: withTaskCentricAggregate({}, aggregate),
+    });
+    const store = {
+      update: vi.fn((_taskId: string, updater: (task: TaskData) => Promise<TaskData> | TaskData) =>
+        Promise.resolve(updater(cloneTask(currentTask))).then((nextTask) => {
+          const changed = JSON.stringify(currentTask) !== JSON.stringify(nextTask);
+          currentTask = cloneTask(nextTask);
+          return { changed, task: cloneTask(currentTask) };
+        }),
+      ),
+    };
+    const ctx = mkCtx(mkBackend());
+    vi.doMock("./task-store.js", async () => ({
+      ...(await vi.importActual("./task-store.js")),
+      getTaskStore: () => store,
+    }));
+    vi.doMock("./task-backend.js", async () => ({
+      ...(await vi.importActual("./task-backend.js")),
+      backendUsesLocalTaskStore: () => true,
+    }));
+
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    const first = await applyTaskMutation({
+      ctx,
+      taskId: "T-1",
+      build: (current) => ({
+        nextTask: {
+          ...current,
+          status: "DOING",
+          verification: { ...current.verification!, state: "needs_rework" },
+        },
+      }),
+    });
+    const projected = taskCentricAggregateFromExtensions(first.task.extensions)!;
+    const runtime = first.task.extensions?.["agentplane.task_centric_runtime"] as {
+      mutation_receipts: Record<string, { next_revision: number }>;
+    };
+
+    expect(first.task).toMatchObject({
+      revision: 5,
+      status: "DOING",
+      verification: { state: "needs_rework" },
+    });
+    expect(projected).toMatchObject({ revision: 5, lifecycle: "ACTIVE", final_validation: null });
+    expect(Object.values(runtime.mutation_receipts)).toEqual([
+      expect.objectContaining({ next_revision: 5 }),
+    ]);
+
+    const replay = await applyTaskMutation({
+      ctx,
+      taskId: "T-1",
+      build: (current) => ({ nextTask: cloneTask(current) }),
+    });
+    expect(replay.changed).toBe(false);
+    expect(replay.task.revision).toBe(5);
+    expect(
+      Object.keys(
+        (
+          replay.task.extensions?.["agentplane.task_centric_runtime"] as {
+            mutation_receipts: Record<string, unknown>;
+          }
+        ).mutation_receipts,
+      ),
+    ).toHaveLength(1);
+  });
+
+  it("exposes no partial rework projection when persistence fails", async () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 4,
+      title: "Task",
+      description: "Failed verification rework",
+      status: "DONE",
+      acceptance_criteria: ["done"],
+      captured_at: "2026-03-31T00:00:00.000Z",
+      updated_at: "2026-03-31T00:00:00.000Z",
+    });
+    const currentTask = mkTask({
+      id: "T-1",
+      revision: 4,
+      status: "DONE",
+      verification: { state: "ok", attempts: 1 },
+      extensions: withTaskCentricAggregate({}, aggregate),
+    });
+    const store = {
+      update: vi.fn(async (_taskId: string, updater: (task: TaskData) => Promise<TaskData>) => {
+        await updater(cloneTask(currentTask));
+        throw new Error("injected persistence failure");
+      }),
+    };
+    const ctx = mkCtx(mkBackend());
+    vi.doMock("./task-store.js", async () => ({
+      ...(await vi.importActual("./task-store.js")),
+      getTaskStore: () => store,
+    }));
+    vi.doMock("./task-backend.js", async () => ({
+      ...(await vi.importActual("./task-backend.js")),
+      backendUsesLocalTaskStore: () => true,
+    }));
+
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    await expect(
+      applyTaskMutation({
+        ctx,
+        taskId: "T-1",
+        build: (current) => ({
+          nextTask: {
+            ...current,
+            status: "DOING",
+            verification: { ...current.verification!, state: "needs_rework" },
+          },
+        }),
+      }),
+    ).rejects.toThrow("injected persistence failure");
+
+    expect(currentTask).toMatchObject({
+      revision: 4,
+      status: "DONE",
+      verification: { state: "ok" },
+    });
+    expect(taskCentricAggregateFromExtensions(currentTask.extensions)).toMatchObject({
+      revision: 4,
+      lifecycle: "COMPLETED",
+    });
+    expect(currentTask.extensions).not.toHaveProperty("agentplane.task_centric_runtime");
+  });
+
   it("applies intents and writes through the backend when the backend is not local", async () => {
     const currentTask = mkTask();
     let persistedTask = cloneTask(currentTask);
