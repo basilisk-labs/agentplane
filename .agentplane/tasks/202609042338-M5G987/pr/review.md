@@ -35,7 +35,7 @@ Created: 2026-09-05T00:35:18.474Z
  .../shared/task-scope-extension-request.ts         | 228 +++++++++++++++-
  .../src/commands/shared/workflow-step-branch.ts    |   3 +-
  .../src/commands/shared/workflow-step-factory.ts   |   6 +-
- .../commands/shared/workflow-step-policy-scope.ts  |  18 +-
+ .../commands/shared/workflow-step-policy-scope.ts  |  16 ++
  .../src/commands/shared/workflow-step.test.ts      |  65 +++++
  .../commands/task/external-agent-blocked-result.ts |  16 +-
  .../external-agent-implementation-recovery.test.ts |  85 +++++-
@@ -46,7 +46,7 @@ Created: 2026-09-05T00:35:18.474Z
  .../task/shared/workflow-transition-service.ts     |  62 +++++
  packages/agentplane/src/commands/task/update.ts    |   6 +-
  .../src/commands/task/update.unit.test.ts          |  49 ++++
- 17 files changed, 1139 insertions(+), 193 deletions(-)
+ 17 files changed, 1138 insertions(+), 192 deletions(-)
 ```
 
 </details>

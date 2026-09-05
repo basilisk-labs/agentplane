@@ -45,7 +45,7 @@ function withoutExcludedRoots(
   );
 }
 
-export function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
+function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
   const value = task.extensions?.[WORKFLOW_ROUTE_BASELINE_KEY];
   if (
     !isRecord(value) ||
