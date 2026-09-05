@@ -896,7 +896,14 @@ describe("direct task verification", () => {
     );
   });
 
-  it("adds the fixed docs policy checks to a docs task without trusting agent claims", async () => {
+  it.each([
+    { task_kind: "docs", mutation_scope: "docs" },
+    {
+      task_kind: "code",
+      mutation_scope: "code",
+      execution_contract: executionContract(["repository_write", "documentation"]),
+    },
+  ])("adds docs policy checks from the task contract: $task_kind", async (task) => {
     const cwd = await root();
     mocks.runProcess
       .mockResolvedValueOnce({ exitCode: 0, stdout: "routing ok", stderr: "" })
@@ -904,13 +911,14 @@ describe("direct task verification", () => {
 
     const result = await runDirectTaskVerification({
       command: command(cwd),
-      task: { verify: [], task_kind: "docs", mutation_scope: "docs" },
+      task: { verify: [], ...task },
       task_id: TASK_ID,
       cwd,
       run_process: mocks.runProcess,
     });
 
     expect(result).toMatchObject({ status: "passed" });
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -927,29 +935,6 @@ describe("direct task verification", () => {
         cwd,
       }),
     );
-  });
-
-  it("uses declared effects instead of a misleading task kind to select docs policy checks", async () => {
-    const cwd = await root();
-    mocks.runProcess
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "routing ok", stderr: "" })
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "doctor ok", stderr: "" });
-
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: {
-        verify: [],
-        task_kind: "code",
-        mutation_scope: "code",
-        execution_contract: executionContract(["repository_write", "documentation"]),
-      },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
-    });
-
-    expect(result).toMatchObject({ status: "passed" });
-    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
   });
 
   it("does not treat an empty code-task check contract as successful verification", async () => {

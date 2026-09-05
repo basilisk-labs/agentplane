@@ -3,6 +3,43 @@ import { describe, expect, it } from "vitest";
 import { parsePromptMarkdownFragments, renderPromptMarkdownFragments } from "./index.js";
 
 describe("prompt markdown fragments", () => {
+  it.each([
+    [
+      'id="policy.one" id="policy.two" slot="body" mutability="replaceable"',
+      "Duplicate ap:fragment attribute",
+    ],
+    [
+      'garbage id="policy.one" slot="body" mutability="replaceable"',
+      "Invalid ap:fragment attributes",
+    ],
+    [
+      'id="policy.one" garbage slot="body" mutability="replaceable"',
+      "Invalid ap:fragment attributes",
+    ],
+    [
+      'id="policy.one" slot="body" mutability="replaceable" garbage',
+      "Invalid ap:fragment attributes",
+    ],
+    [
+      'id="policy.one" slot="body" mutability="replaceable" extra="value"',
+      "Unsupported ap:fragment attribute",
+    ],
+    ['id="policy.one" slot="body"', "Invalid ap:fragment mutability"],
+  ])("rejects invalid attributes without leaking parser state: %s", (attributes, message) => {
+    const valid =
+      '<!-- ap:fragment id="policy.valid" slot="body" mutability="replaceable" -->body<!-- /ap:fragment -->';
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      expect(() =>
+        parsePromptMarkdownFragments(`<!-- ap:fragment ${attributes} -->body<!-- /ap:fragment -->`),
+      ).toThrow(message);
+      expect(parsePromptMarkdownFragments(valid).fragments[0]).toMatchObject({
+        id: "policy.valid",
+        slot: "body",
+        mutability: "replaceable",
+      });
+    }
+  });
+
   it("parses named markdown markers and renders installed text without marker comments", () => {
     const source = [
       "# Policy",
