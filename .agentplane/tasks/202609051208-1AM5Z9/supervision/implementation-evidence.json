@@ -1,0 +1,115 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d345cdb14c53a98a85ece41ab472433f8e1fb32c..03e5929471822ba96b077cdbd3e0848ef7946daa",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d345cdb14c53a98a85ece41ab472433f8e1fb32c..03e5929471822ba96b077cdbd3e0848ef7946daa",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/README.md",
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/pr/github-body.md",
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/pr/meta.json",
+        "A\t.agentplane/tasks/202609051208-1AM5Z9/pr/review.md",
+        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.unit.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+  "implementation_commit": "03e5929471822ba96b077cdbd3e0848ef7946daa",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "A  .agentplane/tasks/202609051208-1AM5Z9/README.md",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/blueprint/resolved-snapshot.json",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/diffstat.txt",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/github-body.md",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/github-title.txt",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/meta.json",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/review.md",
+      "M  packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+      "M  packages/agentplane/src/commands/task/plan.ts",
+      "M  packages/agentplane/src/commands/task/plan.unit.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202609051208-1AM5Z9/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/plan.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/plan.unit.test.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "A  .agentplane/tasks/202609051208-1AM5Z9/README.md",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/blueprint/resolved-snapshot.json",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/diffstat.txt",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/github-body.md",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/github-title.txt",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/meta.json",
+      "A  .agentplane/tasks/202609051208-1AM5Z9/pr/review.md",
+      "M  packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+      "M  packages/agentplane/src/commands/task/plan.ts",
+      "M  packages/agentplane/src/commands/task/plan.unit.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609051208-1AM5Z9"
+}

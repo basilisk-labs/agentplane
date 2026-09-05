@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "projection-cas"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/backends/task-backend.revision-cas.test.ts",
+      "duration_ms": 1537,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e3f1c365a1ea03bea93b22ab66a926cd35983242d4e893ba0f74906678b93ade",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:291167c34a65f8d48ba977f0882cab96919f80af508e8938fde983cb899a9729"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/backends/task-backend.revision-cas.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609051208-1AM5Z9-repair-factory-9f9rdq-task-revision-projection-a\n\n\n Test Files  2 passed (2)\n      Tests  22 passed (22)\n   Start at  15:34:04\n   Duration  1.25s (transform 796ms, setup 0ms, import 1.14s, tests 779ms, environment 0ms)\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609051208-1AM5Z9"
+}
