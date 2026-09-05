@@ -2,10 +2,10 @@
 id: "202609031717-PX8PZT"
 title: "Port the minimal missing Clean Core lifecycle boundary contracts from audited unfinished branches"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 53
 origin:
   system: "manual"
 depends_on: []
@@ -1489,6 +1489,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The post-provider-update CI failure is narrowed. The scoped oversized verification-test defect is repaired and verified. Compiled Bun CLI initialization still fails in the prompt-fragment parser outside this packet's writable roots. Recommended action: Extend this existing task only to the prompt-fragment parser and its nearest existing tests. Diagnose and repair the compiled init behavior without changing release configuration, compiler flags, dependencies, package versions, access controls or accepted evidence. Keep the verified test consolidation. Re-run the narrow smoke, parser regressions, and only then the required broad checks. Requested scope: roots=packages/agentplane/src/runtime/prompt-fragments; repository effects=unchanged; request digest=sha256:c2b3fe9d45248c3db06f31efff3c2895b77f7f75d69ccc87e16dd2a8519d0fad. Agentplane receipt: external-agent-blocker/tr_afb4f8a018014cfec082ff0fafeb7f1c/sha256:d900fc8c2be605bd99411b36303f530018e71da6317b30acfaa2effa1bea4f0a/sha256:c2b3fe9d45248c3db06f31efff3c2895b77f7f75d69ccc87e16dd2a8519d0fad."
 events:
   -
     type: "status"
@@ -1664,9 +1667,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-05T12:54:48.630Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The post-provider-update CI failure is narrowed. The scoped oversized verification-test defect is repaired and verified. Compiled Bun CLI initialization still fails in the prompt-fragment parser outside this packet's writable roots. Recommended action: Extend this existing task only to the prompt-fragment parser and its nearest existing tests. Diagnose and repair the compiled init behavior without changing release configuration, compiler flags, dependencies, package versions, access controls or accepted evidence. Keep the verified test consolidation. Re-run the narrow smoke, parser regressions, and only then the required broad checks. Requested scope: roots=packages/agentplane/src/runtime/prompt-fragments; repository effects=unchanged; request digest=sha256:c2b3fe9d45248c3db06f31efff3c2895b77f7f75d69ccc87e16dd2a8519d0fad. Agentplane receipt: external-agent-blocker/tr_afb4f8a018014cfec082ff0fafeb7f1c/sha256:d900fc8c2be605bd99411b36303f530018e71da6317b30acfaa2effa1bea4f0a/sha256:c2b3fe9d45248c3db06f31efff3c2895b77f7f75d69ccc87e16dd2a8519d0fad."
 doc_version: 3
-doc_updated_at: "2026-09-05T12:46:44.636Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-05T12:54:48.678Z"
+doc_updated_by: "SUPERVISOR"
 description: "Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full."
 sections:
   Summary: |-
@@ -2565,6 +2575,19 @@ extensions:
     scope_digest: "sha256:5f8e2f526ef444a7cd606905e2353e8596a86e0a2440a0dc008e6a8d9de84fa4"
     status: "active"
     task_id: "202609031717-PX8PZT"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:d900fc8c2be605bd99411b36303f530018e71da6317b30acfaa2effa1bea4f0a"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The mandatory full CI on the actual provider-updated head exposes a deterministic compiled CLI init failure in the existing prompt-fragment parser. Narrow reproduction fails after a clean canonical bootstrap and passes in main. Repair requires the parser and nearest tests; all current writable roots, four WorkItems, required gates and exclusions remain unchanged."
+      repository_effects: []
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/runtime/prompt-fragments"
+    request_digest: "sha256:c2b3fe9d45248c3db06f31efff3c2895b77f7f75d69ccc87e16dd2a8519d0fad"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_afb4f8a018014cfec082ff0fafeb7f1c"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -3050,7 +3073,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609031717-PX8PZT"
-    event_cursor: 36
+    event_cursor: 38
     final_validation: null
     id: "202609031717-PX8PZT"
     intent:
@@ -3087,7 +3110,7 @@ extensions:
 
         Complete the Clean Core salvage boundary on current main without merging stale branches. Preserve four narrowly scoped behaviors with current-architecture adaptations and regressions: (1) resolve protected integration handoffs from the owning base checkout while validating task and protected-route identity; source DVS5NN. (2) recover no-PR branch publication only for exact task-artifact-only advances with same-repository, unique-not-found PR, exact local/remote heads, and force-with-lease guards; source HBSZ4F. (3) safely parse and execute top-level whitespace-delimited literal && declared-check sequences as structured argv, validate all segments before execution, share one timeout budget, and stop on first failure or zero-test result; source QWP8S8. (4) reject reuse of missing, incomplete, or task-worktree-owned node_modules layouts during worktree dependency preparation and framework bootstrap; source 9T9528. Keep WorkItems sequential and one active at a time. Reuse current code and tests, adapt rather than cherry-pick, and do not expand into MPXQBK, full T4RR70/GitLab, release/version/publication metadata, dependencies, or unrelated product work. Verify exact-head/protected-base behavior already present rather than importing 9RCWZQ release logic. Final verification must include focused regressions, formatting, lint, typecheck, routing, task diagnostics where applicable, and bun run ci:local:full.
       task_id: "202609031717-PX8PZT"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -3128,9 +3151,9 @@ extensions:
           scope_roots_added: []
         schema_version: 1
     plan_history: []
-    revision: 51
+    revision: 53
     schema_version: 1
-    updated_at: "2026-09-05T12:46:44.600Z"
+    updated_at: "2026-09-05T12:54:48.678Z"
     work_items:
       clean-core-salvage-qualification:
         attempt: 1
@@ -3588,6 +3611,30 @@ extensions:
         mutation_id: "compatibility:sha256:146ab24b4f85475ec5ffe83781f1da8e4eadee43ad885544ef7630af34341a10"
         next_revision: 41
         previous_revision: 40
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:16e1330e3ff78ac1501c91f2c94514d2ba60b5adf2aaa670dcb7dddbccbb5ab8:
+        aggregate_digest: "sha256:4f3dfd204cfc708db7d06e6d072523dfe1ddcdd99b7ba1a544263fa8573912cd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T12:54:48.678Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_9f75c70ac87590f20361c303"
+          mutation_id: "compatibility:sha256:16e1330e3ff78ac1501c91f2c94514d2ba60b5adf2aaa670dcb7dddbccbb5ab8"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 52
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:16e1330e3ff78ac1501c91f2c94514d2ba60b5adf2aaa670dcb7dddbccbb5ab8"
+        next_revision: 53
+        previous_revision: 52
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:2c65a39d7b0c7425773debd54d5b1b7293075d9e606e74277ccd87904efdbbaf:
@@ -4092,6 +4139,30 @@ extensions:
         mutation_id: "compatibility:sha256:b85630dfaadbb818836b38f2634ef35bd010da9b957db236bef90273af8cf805"
         next_revision: 36
         previous_revision: 35
+        schema_version: 1
+        task_id: "202609031717-PX8PZT"
+      compatibility:sha256:b9e41b977ca3b9637bd4518adc85fdf87ba0de2c5cba2b2303fde6b638324182:
+        aggregate_digest: "sha256:5dfef427fdfa97a45a00b0de04e27c6996b4794e18659ac63270ba13bca5b64e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T12:54:48.630Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e26f015ba223e35789120d56"
+          mutation_id: "compatibility:sha256:b9e41b977ca3b9637bd4518adc85fdf87ba0de2c5cba2b2303fde6b638324182"
+          plan_digest: "sha256:5e65578b8dfe4f0a9b1eaf327c18db0b345448fdc7b95fa0fdd7213fd4e4bfdc"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609031717-PX8PZT"
+          task_revision: 51
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b9e41b977ca3b9637bd4518adc85fdf87ba0de2c5cba2b2303fde6b638324182"
+        next_revision: 52
+        previous_revision: 51
         schema_version: 1
         task_id: "202609031717-PX8PZT"
       compatibility:sha256:be3d770f90dcb587356d691cf6e1a047de1c90b72dcd94e68aa0150ee5cc7d13:
