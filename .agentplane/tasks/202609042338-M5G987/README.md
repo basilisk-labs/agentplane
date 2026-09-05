@@ -2,10 +2,10 @@
 id: "202609042338-M5G987"
 title: "Repair atomic scope extension projection and accepted-result recovery"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -31,10 +31,10 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user decision in this conversation: да, confirming plan sha256:7f2dc1df72bcd0e3d9d46cde93b8be99c8a4cc3a6f6ba1aa06f96d6a3c6e2c64. Executed by assistant under user authorization."
 verification:
-  state: "ok"
-  updated_at: "2026-09-05T02:39:56.702Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  state: "pending"
+  updated_at: "2026-09-05T02:56:01.070Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 quality_review:
   state: "pass"
@@ -122,8 +122,11 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
       - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
       - "packages/agentplane/src/commands/task/plan.ts"
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -142,6 +145,7 @@ execution_contract:
       - "Repair the proven lifecycle persistence defect through existing scope-extension and transition/recovery owners."
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts,packages/agentplane/src/commands/task/external-agent-blocked-result.ts,packages/agentplane/src/commands/task/plan.ts,packages/agentplane/src/commands/task/plan.unit.test.ts,packages/agentplane/src/commands/task/update.ts,packages/agentplane/src/commands/task/update.unit.test.ts"
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/shared/workflow-step-branch.ts,packages/agentplane/src/commands/shared/workflow-step-factory.ts,packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts,packages/agentplane/src/commands/shared/workflow-step.test.ts"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts,packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts,packages/agentplane/src/commands/task/external-agent-supervisor.ts"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -159,8 +163,11 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
       - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
       - "packages/agentplane/src/commands/task/plan.ts"
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -196,100 +203,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-17"
-        result: "pass"
-      -
-        id: "recorded-check-18"
-        result: "pass"
-      -
-        id: "recorded-check-19"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-20"
-        result: "pass"
-      -
-        id: "recorded-check-21"
-        result: "pass"
-      -
-        id: "recorded-check-22"
-        result: "pass"
-      -
-        id: "recorded-check-23"
-        result: "pass"
-      -
-        id: "recorded-check-24"
-        result: "pass"
-      -
-        id: "recorded-check-25"
-        result: "pass"
-      -
-        id: "recorded-check-26"
-        result: "pass"
-      -
-        id: "recorded-check-27"
-        result: "pass"
-      -
-        id: "recorded-check-28"
-        result: "pass"
-      -
-        id: "recorded-check-29"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-30"
-        result: "pass"
-      -
-        id: "recorded-check-31"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -314,8 +228,11 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
           - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
           - "packages/agentplane/src/commands/task/plan.ts"
           - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
@@ -339,7 +256,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:72a64f1c3979ada746c4e052df32b7ffaa5a10080b5e10c919950c564060ace9"
+      digest: "sha256:630732cd380aa2248bfa447c022e3a0ca4d6f504eb78b3ad6e84e8b9832b6315"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
@@ -417,9 +334,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f98a889661e125984a34e0324b0379cdd6064eaf"
-  message: "🚧 M5G987 task: record external evaluator result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -460,6 +375,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Workspace changes are intentional bounded USER-authorized bootstrap recovery; evaluator freshness repair requires the approved additional owner paths. Recommended action: Apply the bounded scope extension authorized by USER, preserve existing worktree changes, and issue a fresh EXECUTOR episode in this task. Do not create another recovery task. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts,packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts,packages/agentplane/src/commands/task/external-agent-supervisor.ts; repository effects=unchanged; request digest=sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a. Agentplane receipt: external-agent-blocker/tr_2de8d7873e68e452c59d6c8821fc0366/sha256:a50c56b845a4600f9ef7942806528da42bc310a261d0eb512409327be2e65ec1/sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts, packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts, packages/agentplane/src/commands/task/external-agent-supervisor.ts; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -1053,6 +971,8 @@ extensions:
     status: "active"
     task_id: "202609042338-M5G987"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-05T02:56:01.070Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:a50c56b845a4600f9ef7942806528da42bc310a261d0eb512409327be2e65ec1"
     kind: "task_scope_extension_request"
     request:
@@ -1065,7 +985,7 @@ extensions:
         - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
     request_digest: "sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_2de8d7873e68e452c59d6c8821fc0366"
   agentplane.task_centric:
     current_plan:
@@ -1424,7 +1344,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 22
+    event_cursor: 23
     final_validation: null
     id: "202609042338-M5G987"
     intent:
@@ -1436,7 +1356,7 @@ extensions:
 
         Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK.
       task_id: "202609042338-M5G987"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -2081,7 +2001,7 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 31
+    revision: 32
     schema_version: 1
     updated_at: "2026-09-05T02:55:55.240Z"
     work_items:
@@ -2784,6 +2704,30 @@ extensions:
         mutation_id: "compatibility:sha256:ca682eb988e083f332b40449522a7d8b15f4202ec457e98bf19738144090392f"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:d7dbf86d018e47c897c0a4ed573cc6123ae0d58bcaacf4d22cdad39a2991fa76:
+        aggregate_digest: "sha256:67bca73dd573cf98f5e2ff74aac3c3a6fb211643d3a9799d08d1188ec4c34f19"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T02:55:55.240Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_d0b94a2168d6b6c66831671e"
+          mutation_id: "compatibility:sha256:d7dbf86d018e47c897c0a4ed573cc6123ae0d58bcaacf4d22cdad39a2991fa76"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d7dbf86d018e47c897c0a4ed573cc6123ae0d58bcaacf4d22cdad39a2991fa76"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609042338-M5G987"
       external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0:
