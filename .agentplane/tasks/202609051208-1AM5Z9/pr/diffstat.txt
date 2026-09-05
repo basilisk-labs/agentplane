@@ -1,0 +1,4 @@
+ .../task-centric-backend-adapter.test.ts           | 131 ++++++++++++++++-
+ packages/agentplane/src/commands/task/plan.ts      | 160 +++++----------------
+ .../agentplane/src/commands/task/plan.unit.test.ts |  64 +++------
+ 3 files changed, 191 insertions(+), 164 deletions(-)

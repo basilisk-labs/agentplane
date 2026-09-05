@@ -1,8 +1,4 @@
-import {
-  createLegacyTaskAggregate,
-  ensureDocSections,
-  setMarkdownSection,
-} from "@agentplaneorg/core/tasks";
+import { createLegacyTaskAggregate } from "@agentplaneorg/core/tasks";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
@@ -13,7 +9,6 @@ import {
   makeTaskFixture,
 } from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
-import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mockLoadTaskFromContext =
   vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>();
@@ -59,28 +54,6 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
       config.tasks.verify.enforce_on_plan_approve = true;
     },
   });
-}
-
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return current;
-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-  if (patch.doc) {
-    if (patch.doc.kind === "replace-doc") {
-      next.doc = patch.doc.doc;
-    } else {
-      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
-      next.doc = ensureDocSections(
-        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
-        patch.doc.requiredSections,
-      );
-    }
-  }
-  if (patch.doc || patch.docMeta?.touch === true) {
-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
-  }
-  return next;
 }
 
 describe("task plan commands (unit)", () => {
@@ -290,16 +263,16 @@ describe("task plan commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(staleTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await builder(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
     };
+    mockLoadTaskFromContext.mockResolvedValue(staleTask);
     mockBackendIsLocalFileBackend.mockReturnValue(true);
     mockGetTaskStore.mockReturnValue(store);
 
@@ -307,8 +280,8 @@ describe("task plan commands (unit)", () => {
     const rc = await cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "A" });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(mockLoadTaskFromContext).not.toHaveBeenCalled();
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.plan_approval?.state).toBe("approved");
     expect(currentTask.plan_approval?.updated_by).toBe("A");
   });
@@ -364,11 +337,10 @@ describe("task plan commands (unit)", () => {
       },
     });
     const store = {
-      get: vi.fn().mockResolvedValue(currentTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) =>
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) =>
             await builder(currentTask),
         ),
     };
@@ -383,7 +355,7 @@ describe("task plan commands (unit)", () => {
       code: "E_VALIDATION",
       message: expect.stringMatching(/stale.*replanning/iu) as unknown,
     });
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
   });
 
   it("cmdTaskPlanApprove enforces Notes for spike tasks", async () => {
@@ -404,11 +376,15 @@ describe("task plan commands (unit)", () => {
   });
 
   it("cmdTaskPlanApprove accepts Findings for doc_version=3 spike tasks", async () => {
-    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
+    let persisted: TaskData | null = null;
+    const writeTask = vi.fn<(task: TaskData) => Promise<void>>((task) => {
+      persisted = structuredClone(task);
+      return Promise.resolve();
+    });
     const backend: TaskBackend = {
       id: "mock",
       listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+      getTask: () => Promise.resolve(persisted && structuredClone(persisted)),
       writeTask,
       getTaskDoc: () => Promise.resolve(""),
     };
@@ -441,11 +417,15 @@ describe("task plan commands (unit)", () => {
   });
 
   it("cmdTaskPlanApprove writes approved state with timestamps and optional note", async () => {
-    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
+    let persisted: TaskData | null = null;
+    const writeTask = vi.fn<(task: TaskData) => Promise<void>>((task) => {
+      persisted = structuredClone(task);
+      return Promise.resolve();
+    });
     const backend: TaskBackend = {
       id: "mock",
       listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+      getTask: () => Promise.resolve(persisted && structuredClone(persisted)),
       writeTask,
       getTaskDoc: () => Promise.resolve(""),
     };

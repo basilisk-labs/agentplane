@@ -8,6 +8,7 @@ import {
   createExecutionGrant,
   createPlanProposal,
   materializeApprovedWorkItems,
+  projectTaskLifecycleToLegacyStatus,
   ensureDocSections,
   taskDocToSectionMap,
   type PlanApprovalEvidenceKind,
@@ -239,7 +240,7 @@ export async function cmdTaskPlanApprove(opts: {
   };
 }): Promise<number> {
   try {
-    const { ctx, backend } = await loadPlanBackend({
+    const { ctx } = await loadPlanBackend({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -257,113 +258,24 @@ export async function cmdTaskPlanApprove(opts: {
     const note = typeof opts.note === "string" ? opts.note.trim() : "";
 
     const approvedAt = nowIso();
-    const repositoryIdentityFor = async (task: Pick<TaskData, "extensions">) =>
-      await resolveLogicalRepositoryIdentity({
-        git_root: ctx.resolvedProject.gitRoot,
-        task,
-      });
-    await withTaskMutationStorage({
+    await applyTaskMutation({
       ctx,
-      local: async (store) => {
-        const task = await store.get(opts.taskId);
-        const repositoryIdentity = await repositoryIdentityFor(task);
-        await store.patch(
-          opts.taskId,
-          (current) => {
-            assertTaskMutationPolicy({
-              ctx,
-              taskId: opts.taskId,
-              task: current,
-              action: "task_plan_approve",
-              phase: "plan",
-            });
-            const currentDoc = ensureDocSections(
-              String(current.doc ?? ""),
-              config.tasks.doc.required_sections,
-            );
-            assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
-            const plan = taskDocToSectionMap(currentDoc).Plan ?? "";
-            const proposal = createPlanProposal({
-              task_id: current.id,
-              task_revision: current.revision ?? 1,
-              plan,
-              execution_contract: current.execution_contract,
-              repository_identity: repositoryIdentity,
-            });
-            const grant = createExecutionGrant({
-              proposal,
-              execution_contract: current.execution_contract,
-              actor: by,
-              approval_kind: opts.approvalEvidence?.kind ?? "manual_operator",
-              approval_evidence_digest: opts.approvalEvidence?.digest ?? null,
-              issued_at: approvedAt,
-            });
-            const taskCentric = taskCentricAggregateFromExtensions(current.extensions);
-            assertCanonicalPlanCanBeApproved(taskCentric, current.extensions);
-            if (
-              opts.expectedPlanDigest !== undefined &&
-              taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
-            ) {
-              throw new CliError({
-                code: "E_VALIDATION",
-                message: "Canonical task plan digest changed before approval.",
-              });
-            }
-            const taskCentricExtensions = taskCentric?.current_plan
-              ? withTaskCentricAggregate(
-                  current.extensions,
-                  materializeApprovedWorkItems({
-                    task: taskCentric,
-                    plan: approveTaskPlan({
-                      plan: taskCentric.current_plan,
-                      expected_digest: taskCentric.current_plan.digest,
-                      actor: by,
-                      approved_at: approvedAt,
-                      policy_facts: [opts.approvalEvidence?.kind ?? "manual_operator"],
-                    }),
-                    now: approvedAt,
-                  }),
-                )
-              : current.extensions;
-            return {
-              task: {
-                plan_approval: {
-                  state: "approved" as PlanApprovalState,
-                  updated_at: approvedAt,
-                  updated_by: by,
-                  note: note || null,
-                },
-                extensions: {
-                  ...(taskCentricExtensions ?? {}),
-                  [EXECUTION_GRANT_EXTENSION_KEY]: grant,
-                },
-              },
-            };
-          },
-          opts.expectedTaskRevision === undefined
-            ? undefined
-            : { expectedRevision: opts.expectedTaskRevision },
-        );
-      },
-      remote: async () => {
-        const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
-        assertTaskMutationPolicy({
-          ctx,
-          taskId: opts.taskId,
-          task,
-          action: "task_plan_approve",
-          phase: "plan",
-        });
-        const existingDoc =
-          (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-        const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+      taskId: opts.taskId,
+      policyAction: "task_plan_approve",
+      phase: "plan",
+      writeOptions: { expectedRevision: opts.expectedTaskRevision },
+      build: async (task) => {
+        const baseDoc = ensureDocSections(task.doc ?? "", config.tasks.doc.required_sections);
         assertPlanCanBeApproved({ task, config, doc: baseDoc });
         const proposal = createPlanProposal({
           task_id: task.id,
           task_revision: task.revision ?? 1,
           plan: taskDocToSectionMap(baseDoc).Plan ?? "",
           execution_contract: task.execution_contract,
-          repository_identity: await repositoryIdentityFor(task),
+          repository_identity: await resolveLogicalRepositoryIdentity({
+            git_root: ctx.resolvedProject.gitRoot,
+            task,
+          }),
         });
         const grant = createExecutionGrant({
           proposal,
@@ -375,6 +287,12 @@ export async function cmdTaskPlanApprove(opts: {
         });
         const taskCentric = taskCentricAggregateFromExtensions(task.extensions);
         assertCanonicalPlanCanBeApproved(taskCentric, task.extensions);
+        if (taskCentric && task.revision !== undefined && taskCentric.revision > task.revision) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message: "Canonical task revision is ahead of the stored record; approval refused.",
+          });
+        }
         if (
           opts.expectedPlanDigest !== undefined &&
           taskCentric?.current_plan?.digest !== opts.expectedPlanDigest
@@ -384,25 +302,27 @@ export async function cmdTaskPlanApprove(opts: {
             message: "Canonical task plan digest changed before approval.",
           });
         }
-        const taskCentricExtensions = taskCentric?.current_plan
-          ? withTaskCentricAggregate(
-              task.extensions,
-              materializeApprovedWorkItems({
-                task: taskCentric,
-                plan: approveTaskPlan({
-                  plan: taskCentric.current_plan,
-                  expected_digest: taskCentric.current_plan.digest,
-                  actor: by,
-                  approved_at: approvedAt,
-                  policy_facts: [opts.approvalEvidence?.kind ?? "manual_operator"],
-                }),
-                now: approvedAt,
+        const approved = taskCentric?.current_plan
+          ? materializeApprovedWorkItems({
+              // Reapproval can repair an older partial projection using the guarded record.
+              task: { ...taskCentric, revision: task.revision ?? taskCentric.revision },
+              plan: approveTaskPlan({
+                plan: taskCentric.current_plan,
+                expected_digest: taskCentric.current_plan.digest,
+                actor: by,
+                approved_at: approvedAt,
+                policy_facts: [opts.approvalEvidence?.kind ?? "manual_operator"],
               }),
-            )
+              now: approvedAt,
+            })
+          : null;
+        const taskCentricExtensions = approved
+          ? withTaskCentricAggregate(task.extensions, approved)
           : task.extensions;
-        await backend.writeTask(
-          {
+        return {
+          nextTask: {
             ...task,
+            status: approved ? projectTaskLifecycleToLegacyStatus(approved.lifecycle) : task.status,
             plan_approval: {
               state: "approved" as PlanApprovalState,
               updated_at: approvedAt,
@@ -414,10 +334,8 @@ export async function cmdTaskPlanApprove(opts: {
               [EXECUTION_GRANT_EXTENSION_KEY]: grant,
             },
           },
-          opts.expectedTaskRevision === undefined
-            ? undefined
-            : { expectedRevision: opts.expectedTaskRevision },
-        );
+          writeOptions: { expectedRevision: opts.expectedTaskRevision ?? task.revision },
+        };
       },
     });
     return 0;

@@ -4,6 +4,7 @@ import {
   createLegacyTaskAggregate,
   createRepositorySnapshot,
   createTaskPlanRevision,
+  materializeApprovedWorkItems,
   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
   taskCentricDigest,
   taskCentricAggregateFromExtensions,
@@ -14,13 +15,20 @@ import {
   type TaskAggregate,
   type TaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
-import { describe, expect, it } from "vitest";
+import { makeTaskCommandContext } from "@agentplane/testkit/task";
+import { describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { applyTaskMutation } from "../../commands/shared/task-mutation.js";
+import { cmdTaskPlanApprove } from "../../commands/task/plan.js";
 import {
   TaskCentricBackendAdapter,
   TASK_CENTRIC_RUNTIME_EXTENSION_KEY,
 } from "./task-centric-backend-adapter.js";
+
+vi.mock("../../commands/task/execution-authority-context.js", () => ({
+  resolveLogicalRepositoryIdentity: () => Promise.resolve(`sha256:${"f".repeat(64)}`),
+}));
 
 const NOW = "2026-08-22T00:00:00.000Z";
 const TASK_ID = "202608220000-TASK01";
@@ -211,6 +219,127 @@ function event(
     at: NOW,
   };
 }
+
+function approvalContext(initial = taskData(pendingAggregate())) {
+  const durable = memoryBackend({
+    ...initial,
+    doc: "## Summary\n\nDescription\n\n## Plan\n\nImplement\n\n## Verify Steps\n\nRun tests\n",
+  });
+  const backend: TaskBackend = {
+    ...durable,
+    getTaskDoc: () => Promise.resolve(durable.current().doc ?? ""),
+    writeTask: async (next, opts) =>
+      await durable.writeTask({ ...next, revision: durable.current().revision! + 1 }, opts),
+  };
+  return {
+    durable,
+    backend,
+    ctx: makeTaskCommandContext({
+      taskBackend: backend,
+      configureConfig: (config) => {
+        config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps"];
+      },
+    }),
+  };
+}
+
+describe("task plan approval projection", () => {
+  it("projects lifecycle and revision together on first and repeated approval", async () => {
+    const { ctx, durable } = approvalContext();
+    for (const revision of [2, 3]) {
+      await cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: TASK_ID, by: "USER" });
+      const stored = durable.current();
+      const aggregate = taskCentricAggregateFromExtensions(stored.extensions)!;
+      expect(stored.status).toBe("DOING");
+      expect(stored.revision).toBe(revision);
+      expect(aggregate.revision).toBe(revision);
+      expect(aggregate.lifecycle).toBe("ACTIVE");
+      expect(aggregate.current_plan!.approval.state).toBe("approved");
+      expect(aggregate.work_items.implementation!.state).toBe("READY");
+    }
+  });
+
+  it("recovers an approved split revision without resetting runtime or verification", async () => {
+    const initial = approvedAggregate();
+    const active = materializeApprovedWorkItems({
+      task: initial,
+      plan: initial.current_plan!,
+      now: NOW,
+    });
+    const runtime = {
+      ...active.work_items.implementation!,
+      state: "COMPLETED" as const,
+      attempt: 2,
+    };
+    const aggregate = { ...active, revision: 14, work_items: { implementation: runtime } };
+    const { ctx, durable } = approvalContext({
+      ...taskData(aggregate),
+      revision: 15,
+      verification: { state: "pending", updated_at: NOW, updated_by: "TESTER", note: null },
+    });
+    const before = durable.current();
+    await cmdTaskPlanApprove({
+      ctx,
+      cwd: "/repo",
+      taskId: TASK_ID,
+      by: "USER",
+      expectedTaskRevision: 15,
+      expectedPlanDigest: active.current_plan!.digest,
+    });
+    const stored = durable.current();
+    const recovered = taskCentricAggregateFromExtensions(stored.extensions)!;
+    expect(stored.status).toBe("DOING");
+    expect(stored.revision).toBe(16);
+    expect(recovered.revision).toBe(16);
+    expect(recovered.current_plan).toEqual(aggregate.current_plan);
+    expect(recovered.work_items).toEqual(aggregate.work_items);
+    expect(stored.verification).toEqual(before.verification);
+    await applyTaskMutation({
+      ctx,
+      taskId: TASK_ID,
+      build: (current) => ({ nextTask: { ...current, title: "Resumed task" } }),
+    });
+    expect(durable.current().revision).toBe(17);
+    expect(taskCentricAggregateFromExtensions(durable.current().extensions)!.revision).toBe(17);
+  });
+
+  it.each([{ expectedTaskRevision: 0 }, { expectedPlanDigest: `sha256:${"0".repeat(64)}` }])(
+    "rejects stale approval authority without writing: %j",
+    async (guard) => {
+      const { ctx, durable } = approvalContext();
+      const before = durable.current();
+      await expect(
+        cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: TASK_ID, by: "USER", ...guard }),
+      ).rejects.toThrow();
+      expect(durable.current()).toEqual(before);
+    },
+  );
+
+  it("refuses to rewind a canonical revision ahead of the stored record", async () => {
+    const { ctx, durable } = approvalContext({ ...taskData(pendingAggregate(3)), revision: 1 });
+    const before = durable.current();
+    await expect(
+      cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: TASK_ID, by: "USER" }),
+    ).rejects.toThrow(/revision is ahead/);
+    expect(durable.current()).toEqual(before);
+  });
+
+  it("guards the revision read for approval against a concurrent writer", async () => {
+    const { ctx, backend, durable } = approvalContext();
+    backend.writeTask = async (next, opts) => {
+      await durable.writeTask({ ...durable.current(), revision: 2, title: "Concurrent update" });
+      await durable.writeTask(next, opts);
+    };
+    await expect(
+      cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: TASK_ID, by: "USER" }),
+    ).rejects.toThrow(/revision changed concurrently/);
+    expect(durable.current().title).toBe("Concurrent update");
+    expect(
+      taskCentricAggregateFromExtensions(durable.current().extensions)!.current_plan!.approval
+        .state,
+    ).toBe("pending");
+  });
+});
 
 describe("TaskCentricBackendAdapter", () => {
   it("atomically projects an accepted verification clarification and replays idempotently", async () => {
