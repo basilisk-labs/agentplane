@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c8d8ee2ac65d87a06c225c6f51b0dd134de07c45..b5463f7ecf31fce789114107af744e2d61359f91",
+      "command": "git diff --check 1de82e87b0648d7cae8fbbda040116a16accc2c4..0b172381011f9ac31de566ae748b26a6dddd2c30",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c8d8ee2ac65d87a06c225c6f51b0dd134de07c45..b5463f7ecf31fce789114107af744e2d61359f91",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1de82e87b0648d7cae8fbbda040116a16accc2c4..0b172381011f9ac31de566ae748b26a6dddd2c30",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,9 @@
         "M\t.agentplane/tasks/202609031717-PX8PZT/pr/github-body.md",
         "M\t.agentplane/tasks/202609031717-PX8PZT/pr/meta.json",
         "M\t.agentplane/tasks/202609031717-PX8PZT/pr/review.md",
-        "M\tpackages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts",
-        "M\tscripts/workflow/bootstrap-framework-dev.mjs"
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
       ]
     },
     {
@@ -32,8 +33,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c8d8ee2ac65d87a06c225c6f51b0dd134de07c45",
-  "implementation_commit": "b5463f7ecf31fce789114107af744e2d61359f91",
+  "execution_base_commit": "1de82e87b0648d7cae8fbbda040116a16accc2c4",
+  "implementation_commit": "0b172381011f9ac31de566ae748b26a6dddd2c30",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
