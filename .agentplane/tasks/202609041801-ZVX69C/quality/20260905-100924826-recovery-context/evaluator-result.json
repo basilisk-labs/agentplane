@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Reviewed the frozen actual diff .agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch: 27 previously reviewed sections remain unchanged, 17 sections contain the inspected bounded rework, and the permissive recovery-readme module is removed. Receipt-aware metadata replay now retains task, plan, runtime, prior receipts and output identities; the negative tests reject the seven previously accepted corruptions.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Historical scope recovery retains exact task/worktree/baseline identity, scope and plan approval checks, accepted envelope digest, commit subject and ancestry. Retired exchanges additionally require the original supervisor issue digest. The applied projection is persisted atomically with expectedRevision, and original accepted envelopes are neither replaced nor unretired.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Direct and branch startup reuse the same bounded initial-baseline predicate. Existing commits, attempts and output manifests prevent initial-start classification. Regression coverage retains premature DONE recovery, immutable effect_in_doubt replay, stale authority/plan/source rejection, and synchronized plan/status projection writes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Strict task-specific Verify Steps remain enforced. Fixture repairs assert successful startup and remove obsolete setup assumptions rather than weakening production guards. The parser consolidation preserves all 44 scope tests and keeps the existing oversized-test limits unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Frozen observed checks and verification records match their hashes and evaluated SHA. All eight required checks passed: full local CI, 71/71 explicit lifecycle tests, 147/147 explicit core tests, doctor errors=0, task lint, lint, typecheck and policy routing. The separately reproduced negative failures and reviewed guard logic support the verdict; it is not inferred solely from green tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "The approved salvage classification remains recorded in the historical semantic result: QWP8S8, 9T9528, HBSZ4F, DVS5NN and MPXQBK are obsolete for this task; 9RCWZQ is separate release work and T4RR70 is excluded GitLab expansion. The reviewed diff contains no stale branch import, release/version/publication/dependency changes, or PH5N6S-owned implementation-authority edits.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: This verdict covers the scoped implementation, not hosted integration or overall Clean Core completion. Provider publication, current-main reconciliation, cleanup, and final-main verification remain required workflow steps. The authorized base-checkout bootstrap copies must be reconciled after a durable task checkpoint; they are not additional uncommitted task-worktree code.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

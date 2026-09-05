@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 55
 origin:
   system: "manual"
 depends_on: []
@@ -39,34 +39,37 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-05T09:17:17.503Z"
+  updated_at: "2026-09-05T10:12:16.434Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "d7bbd71571d6abe27fedb205e87d8402f49ff1d1"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "d189723a7dd1b90979cea303fc85d81feed591d0"
   blueprint_digest: "1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c"
   evidence_refs:
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/14460a88db0f15c7b66369bcd6556ce44fe9b21cca6492e1f9b768027f997800.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-100924826-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-100924826-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/95fbd4f982e7b2b57ce87964db33eb564552ad885a2ba200113d7d984c8cc155.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-100924826-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-100924826-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-100924826-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609041801-ZVX69C/README.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/398981cd799871261ec37ecaf44403f19a648e2c681cb6d6d10ab0bcf338f8b6.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260905091001067-9516b9297b6632c7.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/465ad051e66e0b9fe06d9c3b961c004789446315957fb59203db8b2de6c40a5e.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260905100917499-c9be82f61424123a.json"
     - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/333290060f7a86dc7ce1735f25e72cc485de331583c73b21b9b15160ac71e63b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Frozen actual diff .agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch adds recoveryComparableReadme deletion of task-centric revision, lifecycle, final_validation, event_cursor, updated_at and the entire task-centric runtime. Its positive test accepts a fabricated mutation receipt with only next_revision. This accepts unproven canonical mutation drift. Current main already has receipt-aware preservation; reuse that contract and retain negative receipt/projection checks instead of this permissive historical normalization."
-    - "The same frozen diff changes direct startup to restart any task-centric DOING task without a workflow baseline. A missing baseline does not prove an untouched initial task: tasks with attempts, outputs, or a recorded commit must not restart. Reuse the narrower current-main hasUninitializedTaskBaseline contract and its direct/branch regression coverage."
-    - "The observed-check manifest and verification evidence match their frozen hashes and record all eight required gates passing on d7bbd71571d6abe27fedb205e87d8402f49ff1d1, including full local CI. These results do not prove the missing negative recovery and historical-startup contracts."
+    - "Reviewed the frozen actual diff .agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9bc7064a3ab91fafddda872e166c0d843ef32f4c70810e5e8886604b66ae6f76.patch: 27 previously reviewed sections remain unchanged, 17 sections contain the inspected bounded rework, and the permissive recovery-readme module is removed. Receipt-aware metadata replay now retains task, plan, runtime, prior receipts and output identities; the negative tests reject the seven previously accepted corruptions."
+    - "Historical scope recovery retains exact task/worktree/baseline identity, scope and plan approval checks, accepted envelope digest, commit subject and ancestry. Retired exchanges additionally require the original supervisor issue digest. The applied projection is persisted atomically with expectedRevision, and original accepted envelopes are neither replaced nor unretired."
+    - "Direct and branch startup reuse the same bounded initial-baseline predicate. Existing commits, attempts and output manifests prevent initial-start classification. Regression coverage retains premature DONE recovery, immutable effect_in_doubt replay, stale authority/plan/source rejection, and synchronized plan/status projection writes."
+    - "Strict task-specific Verify Steps remain enforced. Fixture repairs assert successful startup and remove obsolete setup assumptions rather than weakening production guards. The parser consolidation preserves all 44 scope tests and keeps the existing oversized-test limits unchanged."
+    - "Frozen observed checks and verification records match their hashes and evaluated SHA. All eight required checks passed: full local CI, 71/71 explicit lifecycle tests, 147/147 explicit core tests, doctor errors=0, task lint, lint, typecheck and policy routing. The separately reproduced negative failures and reviewed guard logic support the verdict; it is not inferred solely from green tests."
+    - "The approved salvage classification remains recorded in the historical semantic result: QWP8S8, 9T9528, HBSZ4F, DVS5NN and MPXQBK are obsolete for this task; 9RCWZQ is separate release work and T4RR70 is excluded GitLab expansion. The reviewed diff contains no stale branch import, release/version/publication/dependency changes, or PH5N6S-owned implementation-authority edits."
+    - "Residual risk: This verdict covers the scoped implementation, not hosted integration or overall Clean Core completion. Provider publication, current-main reconciliation, cleanup, and final-main verification remain required workflow steps. The authorized base-checkout bootstrap copies must be reconciled after a durable task checkpoint; they are not additional uncommitted task-worktree code."
 token_usage:
   agent_runs: 11
   input_tokens: null
@@ -711,7 +714,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-05T10:09:18.742Z"
+doc_updated_at: "2026-09-05T10:12:16.480Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -2218,7 +2221,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 40
+    event_cursor: 41
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -3314,9 +3317,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 54
+    revision: 55
     schema_version: 1
-    updated_at: "2026-09-05T10:09:18.713Z"
+    updated_at: "2026-09-05T10:09:18.742Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -4501,6 +4504,30 @@ extensions:
         mutation_id: "compatibility:sha256:eb79e785d2ce2ec5c51d7a6bc99ebc4dea4c33f153859e6e44a717a3103ca9e0"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:fd41035b8bc150f387a2af2842b151719f9ee467184712bba9999ccde3b81cdd:
+        aggregate_digest: "sha256:87245fbf63db6b06157a9ef85a3ba2727d6ff46d68c7461f269a7a15e0b0f4f3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T10:09:18.742Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0fcc5fe471a786eef0f5adcb"
+          mutation_id: "compatibility:sha256:fd41035b8bc150f387a2af2842b151719f9ee467184712bba9999ccde3b81cdd"
+          plan_digest: "sha256:09d9cb71cccfe955dd1fa0f9f81ba57be71072ee07d2b395e408998a7d042cee"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 54
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fd41035b8bc150f387a2af2842b151719f9ee467184712bba9999ccde3b81cdd"
+        next_revision: 55
+        previous_revision: 54
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       external-result:work-order-202609041801-ZVX69C-executor-4e3304c80d6fe2e0a1a5ca0c:
