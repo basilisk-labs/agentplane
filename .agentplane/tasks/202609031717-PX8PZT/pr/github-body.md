@@ -16,7 +16,7 @@ Complete the Clean Core salvage boundary on current main without merging stale b
 ## Verification
 
 - State: ok
-- Note: Fresh verification passed for current implementation head 14f754f86cd844ea7df093314240481d7482c25a.
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
