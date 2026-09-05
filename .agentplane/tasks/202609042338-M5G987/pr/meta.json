@@ -8,10 +8,10 @@
   "pr_number": 5900,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5900",
   "pre_merge_closure": {
-    "basis_commit": "f98a889661e125984a34e0324b0379cdd6064eaf",
+    "basis_commit": "6872f7fe034dc69b11a9e110f5fbee24c0b5d131",
     "branch": "task/202609042338-M5G987/repair-atomic-scope-extension-projection-and-acc",
     "pr_number": 5900,
-    "recorded_at": "2026-09-05T02:06:52.136Z",
+    "recorded_at": "2026-09-05T03:23:32.487Z",
     "state": "closed_before_merge"
   },
   "provider": {
