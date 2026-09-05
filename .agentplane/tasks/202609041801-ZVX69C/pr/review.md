@@ -6,7 +6,7 @@ Created: 2026-09-04T18:17:29.251Z
 
 - Task: `202609041801-ZVX69C`
 - Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re`
 - Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
 
