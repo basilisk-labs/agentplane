@@ -73,14 +73,14 @@ async function createVerifiedOpenPrFixture(
 
   const branch = `task/${taskId}/route-decision`;
   await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
-  await runCliSilent([
+  await runCliExpectOk([
     "task",
     "start-ready",
     taskId,
     "--author",
     "CODER",
     "--body",
-    `Start: ${title}`,
+    `Start: prepare the verified quality-route fixture. ${title}`,
     "--root",
     root,
   ]);

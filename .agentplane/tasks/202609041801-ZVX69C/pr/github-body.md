@@ -16,7 +16,18 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
 ## Verification
 
 - State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- Note:
+
+```text
+Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core
+packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts
+packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
+packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts
+packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts
+packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -35,7 +46,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++++--
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
  .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
- .../run-cli.core.route-decision.quality.test.ts    | 128 ++++---
+ .../run-cli.core.route-decision.quality.test.ts    | 132 ++++---
  ...n-cli.core.task-advance.branch-worktree.test.ts |  83 +++-
  ...n-cli.core.task-advance.evidence-rework.test.ts |  52 ++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
@@ -71,7 +82,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 44 files changed, 1785 insertions(+), 381 deletions(-)
+ 44 files changed, 1787 insertions(+), 383 deletions(-)
 ```
 
 </details>
