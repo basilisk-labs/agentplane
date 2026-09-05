@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -31,10 +31,10 @@ plan_approval:
   updated_by: "USER"
   note: "Explicit user decision in this conversation: да, confirming plan sha256:7f2dc1df72bcd0e3d9d46cde93b8be99c8a4cc3a6f6ba1aa06f96d6a3c6e2c64. Executed by assistant under user authorization."
 verification:
-  state: "pending"
-  updated_at: "2026-09-05T02:56:01.070Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
+  state: "ok"
+  updated_at: "2026-09-05T03:21:36.828Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -190,11 +190,15 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
       - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
       - "packages/agentplane/src/commands/task/plan.ts"
       - "packages/agentplane/src/commands/task/plan.unit.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
       - "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
       - "packages/agentplane/src/commands/task/update.ts"
       - "packages/agentplane/src/commands/task/update.unit.test.ts"
@@ -203,7 +207,100 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -256,7 +353,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:630732cd380aa2248bfa447c022e3a0ca4d6f504eb78b3ad6e84e8b9832b6315"
+      digest: "sha256:34bb89e82a4c4491e1d8aae55bdac6233f1dbd6f8bb16f48ae450ea6ee9e5500"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
@@ -290,11 +387,15 @@ execution_contract:
           - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
           - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-blocked-result.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
           - "packages/agentplane/src/commands/task/plan.ts"
           - "packages/agentplane/src/commands/task/plan.unit.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+          - "packages/agentplane/src/commands/task/set-status.unit.test.ts"
           - "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
           - "packages/agentplane/src/commands/task/update.ts"
           - "packages/agentplane/src/commands/task/update.unit.test.ts"
@@ -334,7 +435,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a53f1733aad427776a46e8c521d7a62daaebaf22"
+  message: "🚧 M5G987 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -378,6 +481,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts, packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts, packages/agentplane/src/commands/task/external-agent-supervisor.ts; repository effects: unchanged."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a53f1733aad4. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -468,8 +574,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Workspace changes are intentional bounded USER-authorized bootstrap recovery; evaluator freshness repair requires the approved additional owner paths. Recommended action: Apply the bounded scope extension authorized by USER, preserve existing worktree changes, and issue a fresh EXECUTOR episode in this task. Do not create another recovery task. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts,packages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts,packages/agentplane/src/commands/task/external-agent-supervisor.ts; repository effects=unchanged; request digest=sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a. Agentplane receipt: external-agent-blocker/tr_2de8d7873e68e452c59d6c8821fc0366/sha256:a50c56b845a4600f9ef7942806528da42bc310a261d0eb512409327be2e65ec1/sha256:7e46888593fbc592bbf47937fc9195e55b15871b286d169273a2d3a1e817455a."
+  -
+    type: "status"
+    at: "2026-09-05T03:11:24.354Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a53f1733aad4. CLI accepted one state-bound external-agent semantic result."
+    commit: "a53f1733aad427776a46e8c521d7a62daaebaf22"
+  -
+    type: "verify"
+    at: "2026-09-05T03:21:36.828Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-05T02:55:55.240Z"
+doc_updated_at: "2026-09-05T03:21:37.810Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking dependency of 202609041801-ZVX69C / PR 5897 after integrated XR979S. A supported task scope extend on pre-merge DONE rework with all required WorkItems completed persisted legacy DOING revision 37 but retained canonical BLOCKED revision 35. The next accepted EXECUTOR result was committed as 682089ad3 and remains result_received; task set-status refuses expected 38 observed 35. Repair scope extension at its canonical persistence owner so lifecycle, revision, plan authority and projections advance atomically. Provide narrow idempotent recovery for the already-applied scope-extension receipt and accepted implementation, without replacing results, weakening mismatch checks, fabricating product diffs, or manually editing task state. Reproduce the complete blocker, scope extension, implementation result and retry sequence; preserve unrelated and truly stale rejection. Return to ZVX69C after integration. Exclude Factory clean-check ordering/worktree recovery owned by PH5N6S, releases, versions, publication, dependencies and MPXQBK."
 sections:
@@ -941,6 +1061,222 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-05T03:21:36.828Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4cc02094fa06a3e7ad8285cf6a1b0b300a34792a43524ddce6fc71eed80b04e2, input_digest=sha256:d0e0a4c9033d90379f5af874e7304223df4564e3a79386392060110c9a082cb3
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (1/10)
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (2/10)
+
+    Check: affected_unit_integration
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (3/10)
+
+    Check: affected_unit_integration
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (4/10)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (5/10)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (6/10)
+
+    Check: affected_unit_integration
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (7/10)
+
+    Check: affected_unit_integration
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (8/10)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (9/10)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (10/10)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (1/10)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (2/10)
+
+    Check: critical_paths
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (3/10)
+
+    Check: critical_paths
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (4/10)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (5/10)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (6/10)
+
+    Check: critical_paths
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (7/10)
+
+    Check: critical_paths
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (8/10)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (9/10)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (10/10)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (1/10)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (2/10)
+
+    Check: task_outcome
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (3/10)
+
+    Check: task_outcome
+    Command: bun run lint:core
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (4/10)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (5/10)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (6/10)
+
+    Check: task_outcome
+    Command: node packages/agentplane/bin/agentplane.js task lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (7/10)
+
+    Check: task_outcome
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (8/10)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (9/10)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (10/10)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042338-M5G987-repair-atomic-scope-extension-projection-and-acc/.agentplane/tasks/202609042338-M5G987/blueprint/resolved-snapshot.json
+    - old_digest: a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace
+    - current_digest: a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609042338-M5G987
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609042338-M5G987
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1344,7 +1680,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042338-M5G987"
-    event_cursor: 23
+    event_cursor: 26
     final_validation: null
     id: "202609042338-M5G987"
     intent:
@@ -2001,9 +2337,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042338-M5G987"
-    revision: 32
+    revision: 35
     schema_version: 1
-    updated_at: "2026-09-05T02:55:55.240Z"
+    updated_at: "2026-09-05T03:21:37.794Z"
     work_items:
       atomic-scope-extension-recovery:
         attempt: 3
@@ -2370,6 +2706,30 @@ extensions:
         previous_revision: 28
         schema_version: 1
         task_id: "202609042338-M5G987"
+      compatibility:sha256:22e0b03da007d1126a1c2a8ca18ac30cf4a1f14ba522f2cae278399d26e537b8:
+        aggregate_digest: "sha256:5c06567bf1adf7dcbc2ca27ce1f3af852687819ada895da2ea3719c20daf1cdc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T03:11:24.405Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c5e478b4cede7540487b0bfa"
+          mutation_id: "compatibility:sha256:22e0b03da007d1126a1c2a8ca18ac30cf4a1f14ba522f2cae278399d26e537b8"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 33
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:22e0b03da007d1126a1c2a8ca18ac30cf4a1f14ba522f2cae278399d26e537b8"
+        next_revision: 34
+        previous_revision: 33
+        schema_version: 1
+        task_id: "202609042338-M5G987"
       compatibility:sha256:388c140cbee4bf03873e43e44b389874463ca228f1bc8cbaa9f4dd3fff6a68cc:
         aggregate_digest: "sha256:f07444377b6afff2b173591c6a7c8d5b0eaea6c7189cfa520b7821797b9e07f4"
         event:
@@ -2658,6 +3018,30 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609042338-M5G987"
+      compatibility:sha256:ae8939de705a0fa244d2398938ddc437c91ee9e2eee88df0d392d893b88e76dd:
+        aggregate_digest: "sha256:752a6a88a550e5345633cd5b7c3f6f18df8752a770c7b22bfbc117f36c690cf4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T03:21:37.794Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1ae5a680a957dbae35832c7e"
+          mutation_id: "compatibility:sha256:ae8939de705a0fa244d2398938ddc437c91ee9e2eee88df0d392d893b88e76dd"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 34
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ae8939de705a0fa244d2398938ddc437c91ee9e2eee88df0d392d893b88e76dd"
+        next_revision: 35
+        previous_revision: 34
+        schema_version: 1
+        task_id: "202609042338-M5G987"
       compatibility:sha256:c5e92312960ac0577fc8f7584fa2cf7fee38f8a298c65430aa9ef66e8c9b95d7:
         aggregate_digest: "sha256:317fbbcda497958a569458b17cf93532a8fd0d27c1e6f726db05a6661514f59c"
         event:
@@ -2728,6 +3112,30 @@ extensions:
         mutation_id: "compatibility:sha256:d7dbf86d018e47c897c0a4ed573cc6123ae0d58bcaacf4d22cdad39a2991fa76"
         next_revision: 32
         previous_revision: 31
+        schema_version: 1
+        task_id: "202609042338-M5G987"
+      compatibility:sha256:db20a34518ea7c9b037b2feaee41b05ea54eb19b7523ebe01970ccd2b3dae188:
+        aggregate_digest: "sha256:896eb5231785a82ed443b473eca27c7163c83a3730accf5a96d38b64d9ae00c5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-05T03:11:24.354Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_be0978e336325e4a36f836de"
+          mutation_id: "compatibility:sha256:db20a34518ea7c9b037b2feaee41b05ea54eb19b7523ebe01970ccd2b3dae188"
+          plan_digest: "sha256:8d2777fede4c764ba6c2eb04dbe66b83d090a5a5fae6753baf8d7b4419c29098"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042338-M5G987"
+          task_revision: 32
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:db20a34518ea7c9b037b2feaee41b05ea54eb19b7523ebe01970ccd2b3dae188"
+        next_revision: 33
+        previous_revision: 32
         schema_version: 1
         task_id: "202609042338-M5G987"
       external-result:work-order-202609042338-M5G987-executor-32c44f504e0d593ca3d78ba0:
@@ -2828,8 +3236,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "9549212aae66f88dd94a1e67fcdc5dd9c73ba56d"
-    message: "🚧 M5G987 task: apply external agent result"
+    hash: "a53f1733aad427776a46e8c521d7a62daaebaf22"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
@@ -3311,6 +3718,222 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-05T03:21:36.828Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4cc02094fa06a3e7ad8285cf6a1b0b300a34792a43524ddce6fc71eed80b04e2, input_digest=sha256:d0e0a4c9033d90379f5af874e7304223df4564e3a79386392060110c9a082cb3
+
+Details:
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (1/10)
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (2/10)
+
+Check: affected_unit_integration
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (3/10)
+
+Check: affected_unit_integration
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (4/10)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (5/10)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (6/10)
+
+Check: affected_unit_integration
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (7/10)
+
+Check: affected_unit_integration
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (8/10)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (9/10)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check affected_unit_integration (10/10)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (1/10)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (2/10)
+
+Check: critical_paths
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (3/10)
+
+Check: critical_paths
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (4/10)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (5/10)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (6/10)
+
+Check: critical_paths
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (7/10)
+
+Check: critical_paths
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (8/10)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (9/10)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check critical_paths (10/10)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (1/10)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (2/10)
+
+Check: task_outcome
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (3/10)
+
+Check: task_outcome
+Command: bun run lint:core
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (4/10)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (5/10)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (6/10)
+
+Check: task_outcome
+Command: node packages/agentplane/bin/agentplane.js task lint
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (7/10)
+
+Check: task_outcome
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (8/10)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (9/10)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042338-M5G987/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202609042338-M5G987 Verification Contract check task_outcome (10/10)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042338-M5G987-repair-atomic-scope-extension-projection-and-acc/.agentplane/tasks/202609042338-M5G987/blueprint/resolved-snapshot.json
+- old_digest: a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace
+- current_digest: a72141fb0cd1d9d341eba27ff9718d16f113476d9bf91a1d09c69607a8ec0ace
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609042338-M5G987
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609042338-M5G987
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

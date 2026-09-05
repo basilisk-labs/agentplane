@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 912a0eea678303c42bf52f81f3087907f703f5e9..7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
+      "command": "git diff --check 0b661bf036c11f4c937743ecd7acda95bb326d05..a53f1733aad427776a46e8c521d7a62daaebaf22",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,20 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 912a0eea678303c42bf52f81f3087907f703f5e9..7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0b661bf036c11f4c937743ecd7acda95bb326d05..a53f1733aad427776a46e8c521d7a62daaebaf22",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609042338-M5G987/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/github-body.md",
+        "M\t.agentplane/tasks/202609042338-M5G987/pr/github-title.txt",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/meta.json",
         "M\t.agentplane/tasks/202609042338-M5G987/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-policy-scope.ts"
+        "M\tpackages/agentplane/src/commands/task/external-agent-evaluator-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-evaluator-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/set-status.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
       ]
     },
     {
@@ -31,15 +36,30 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "912a0eea678303c42bf52f81f3087907f703f5e9",
-  "implementation_commit": "7c6c8cee55b1ccc94e2ba6e5f611bf65349ab26e",
+  "execution_base_commit": "0b661bf036c11f4c937743ecd7acda95bb326d05",
+  "implementation_commit": "a53f1733aad427776a46e8c521d7a62daaebaf22",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M packages/agentplane/src/commands/task/set-status.unit.test.ts",
+      " M packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/set-status.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/set-status.unit.test.ts",
+      " M packages/agentplane/src/commands/task/shared/workflow-transition-service.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
