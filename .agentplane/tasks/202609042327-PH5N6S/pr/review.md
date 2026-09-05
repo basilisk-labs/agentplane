@@ -12,8 +12,8 @@ Created: 2026-09-04T23:32:29.145Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-04T23:32:29.145Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-04T23:32:29.145Z
+- Updated: 2026-09-05T11:33:16.267Z
 - Branch: task/202609042327-PH5N6S/run-supervisor-verification-against-the-committe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
