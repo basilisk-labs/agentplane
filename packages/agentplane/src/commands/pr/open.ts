@@ -109,6 +109,9 @@ export async function cmdPrOpen(opts: {
           branch: initialSync.meta.branch,
           baseBranch: initialSync.meta.base ?? null,
           prNumber: initialSync.meta.pr_number ?? null,
+          taskId: opts.taskId,
+          workflowDir: commandCtx.config.paths.workflow_dir,
+          tasksPath: commandCtx.config.paths.tasks_path,
         });
       } catch (err) {
         const reason = `task branch push failed: ${summarizePrOpenFailure(err)}`;

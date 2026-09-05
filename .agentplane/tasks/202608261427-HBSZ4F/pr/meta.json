@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202608261427-HBSZ4F/recover-no-pr-task-branch-publication-after-task",
+  "created_at": "2026-08-26T14:34:34.419Z",
+  "diffstat_sha256": "sha256:be8d52dc55de77708563fe6c97de813bf9ea17d2cc4a96a9ff3faec4b8eb338a",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202608261427-HBSZ4F",
+  "updated_at": "2026-08-26T14:34:34.419Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
