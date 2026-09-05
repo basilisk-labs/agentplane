@@ -70,6 +70,7 @@ function hasWorkspaceNodeModules(repoRoot) {
   const manifest = readJsonIfPresent(path.join(repoRoot, "package.json"));
   if (!manifest) return false;
   const taskWorktreesRoot = path.join(repoRoot, ".agentplane", "worktrees");
+  if (pathResolvesWithinRepo(taskWorktreesRoot, nodeModulesPath)) return false;
   for (const dependency of declaredDirectDependencies(manifest)) {
     const dependencyRoot = path.join(nodeModulesPath, ...dependency.split("/"));
     const resolvedDependency = resolveRealPathIfPresent(dependencyRoot);
