@@ -12,7 +12,6 @@ import {
 } from "./validation.js";
 
 const MARKER_RE = /<!--\s*(\/?ap:fragment)([^>]*)-->/g;
-const ATTR_RE = /([A-Za-z_][A-Za-z0-9_-]*)="([^"]*)"/g;
 
 export type ParsePromptMarkdownFragmentsOptions = {
   source_ref?: string;
@@ -33,24 +32,23 @@ type ParsedMarkerAttrs = {
 
 function parseMarkerAttrs(raw: string, offset: number): ParsedMarkerAttrs {
   const attrs = new Map<string, string>();
-  let consumed = "";
-  ATTR_RE.lastIndex = 0;
+  const attributes = /([A-Za-z_][A-Za-z0-9_-]*)="([^"]*)"/g;
+  let cursor = 0;
+  let match: RegExpExecArray | null;
 
-  for (const match of raw.matchAll(ATTR_RE)) {
-    const [source, key, value] = match;
+  while ((match = attributes.exec(raw)) !== null) {
+    if (raw.slice(cursor, match.index).trim()) {
+      throw new Error(`Invalid ap:fragment attributes at offset ${offset}`);
+    }
+    const [, key, value] = match;
     if (attrs.has(key)) {
       throw new Error(`Duplicate ap:fragment attribute "${key}" at offset ${offset}`);
     }
     attrs.set(key, value);
-    consumed += source;
+    cursor = attributes.lastIndex;
   }
 
-  const withoutAttrs = raw.replaceAll(ATTR_RE, "").trim();
-  if (withoutAttrs) {
-    throw new Error(`Invalid ap:fragment attributes at offset ${offset}`);
-  }
-
-  if (!consumed && raw.trim()) {
+  if (raw.slice(cursor).trim()) {
     throw new Error(`Invalid ap:fragment attributes at offset ${offset}`);
   }
 

@@ -15,8 +15,8 @@ Complete the Clean Core salvage boundary on current main without merging stale b
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -39,12 +39,14 @@ Complete the Clean Core salvage boundary on current main without merging stale b
  .../src/commands/shared/task-handoff-reader.ts     |  78 +++++
  .../agentplane/src/commands/shared/task-handoff.ts |  14 -
  .../direct-task-verification.sequence.cases.ts     | 161 ++++++++++
- .../commands/task/direct-task-verification.test.ts |  11 +-
+ .../commands/task/direct-task-verification.test.ts |  46 ++-
  .../src/commands/task/direct-task-verification.ts  | 183 ++++++++----
  .../src/commands/task/handoff-show.command.ts      |  37 ++-
  .../agentplane/src/commands/task/handoff.shared.ts |  27 +-
+ .../src/runtime/prompt-fragments/markdown.test.ts  |  37 +++
+ .../src/runtime/prompt-fragments/markdown.ts       |  22 +-
  scripts/workflow/bootstrap-framework-dev.mjs       |  41 ++-
- 17 files changed, 1500 insertions(+), 115 deletions(-)
+ 19 files changed, 1557 insertions(+), 152 deletions(-)
 ```
 
 </details>
