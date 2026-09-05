@@ -28,6 +28,8 @@ export async function cmdTaskSetStatus(opts: {
   status: string;
   author?: string;
   body?: string;
+  /** The supervisor persists this timestamp before applying a recoverable transition. */
+  at?: string;
   commit?: string;
   force: boolean;
   yes: boolean;
@@ -89,7 +91,13 @@ export async function cmdTaskSetStatus(opts: {
         : null;
     const commentBody = preparedComment?.commentBody;
 
-    const at = nowIso();
+    const at = opts.at ?? nowIso();
+    if (!Number.isFinite(Date.parse(at)) || new Date(at).toISOString() !== at) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Task transition timestamp must be canonical UTC.",
+      });
+    }
     const commitInfo = opts.commit ? await readCommitInfo(resolved.gitRoot, opts.commit) : null;
     const nextCommit = opts.commit
       ? { hash: commitInfo!.hash, message: commitInfo!.message }

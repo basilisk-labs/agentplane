@@ -1,3 +1,8 @@
+import { mkdtemp, readFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { LocalBackend } from "../../backends/task-backend.js";
+import { TaskStore } from "./task-store.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createLegacyTaskAggregate,
@@ -546,4 +551,50 @@ describe("applyTaskCollectionMutation", () => {
     expect(writeTasks).not.toHaveBeenCalled();
     expect(writeTask).not.toHaveBeenCalled();
   });
+});
+
+describe("prepared native task mutation", () => {
+  it.each([false, true])(
+    "observes the exact prepared afterimage before persistence (interrupt=%s)",
+    async (interrupt) => {
+      const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+      const taskId = "202602070000-PREP";
+      const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+      const backend = new LocalBackend({ dir: path.join(root, ".agentplane", "tasks") });
+      await backend.writeTask(mkTask({ id: taskId, title: "before", doc: "## Summary\n\nx\n" }));
+      const initial = await readFile(readmePath, "utf8");
+      const ctx = mkCtx(backend);
+      ctx.resolvedProject = { ...ctx.resolvedProject, gitRoot: root };
+      const store = new TaskStore(ctx);
+      let prepared: Awaited<ReturnType<TaskStore["get"]>> | null = null;
+      let calls = 0;
+      const operation = store.update(
+        taskId,
+        (task) => ({ ...task, doc: "## Summary\n\nUpdated\n" }),
+        {
+          beforePersist: async ({ current, next }) => {
+            calls++;
+            expect(await readFile(readmePath, "utf8")).toBe(initial);
+            expect(current.title).toBe("before");
+            prepared = structuredClone(next);
+            if (interrupt) throw new Error("checkpoint unavailable");
+          },
+        },
+      );
+      if (interrupt) {
+        await expect(operation).rejects.toThrow("checkpoint unavailable");
+        expect(await readFile(readmePath, "utf8")).toBe(initial);
+      } else {
+        const result = await operation;
+        expect(result.task).toEqual(prepared);
+        await store.update(taskId, (task) => task, {
+          beforePersist: () => {
+            calls++;
+            return Promise.resolve();
+          },
+        });
+      }
+      expect(calls).toBe(1);
+    },
+  );
 });

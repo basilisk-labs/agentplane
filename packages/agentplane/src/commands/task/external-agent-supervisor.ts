@@ -58,6 +58,7 @@ import {
   refreshExternalAgentRoute,
 } from "./external-agent-result-routing.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 
 export type IssuedExternalAgentExchange = {
   exchange: ExternalAgentExchange;
@@ -366,6 +367,14 @@ export async function acceptExternalAgentResult(opts: {
   try {
     let exchange = (await readExternalAgentExchange(paths.exchange)) ?? initial;
     const workOrder = await readExternalAgentWorkOrder(paths.work_order);
+    const conflictContext = resolveConflictReworkSemanticInput({
+      task_id: workOrder.task.id,
+      checkout: exchange.checkout,
+      head: workOrder.state_fingerprint.git_head,
+      writable_roots: workOrder.authority.writable_roots,
+      required_inputs: workOrder.required_inputs,
+    });
+    const includeRemote = opts.include_remote || conflictContext !== null;
     const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
     const resultDigest = externalAgentResultDigest(envelope);
     if (exchange.status === "consumed") {
@@ -378,7 +387,7 @@ export async function acceptExternalAgentResult(opts: {
       return await refreshExternalAgentRoute({
         cwd: exchange.checkout,
         task_id: opts.task_id,
-        include_remote: opts.include_remote,
+        include_remote: includeRemote,
       });
     }
     const store = createSupervisorEpisodeStore(journalPath);
@@ -434,7 +443,7 @@ export async function acceptExternalAgentResult(opts: {
     const current = await refreshExternalAgentRoute({
       cwd: exchange.checkout,
       task_id: opts.task_id,
-      include_remote: opts.include_remote,
+      include_remote: includeRemote,
     });
     if (
       await finalizeCompletedExternalAgentExchange({
@@ -452,14 +461,26 @@ export async function acceptExternalAgentResult(opts: {
     ) {
       return current;
     }
+    const acceptedApplication = exchange.status === "accepted" && conflictContext !== null;
+    if (
+      acceptedApplication &&
+      exchange.postcondition_fingerprint !== current.workflowStep.preconditionFingerprint.digest
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message:
+          "Accepted conflict result postcondition changed; application must not be replayed.",
+      });
+    }
     const alreadyApplied =
-      (exchange.status === "result_received" || exchange.status === "accepted") &&
-      (await isExternalAgentResultAlreadyApplied({
-        command: checkoutCommand,
-        exchange,
-        decision: current,
-        envelope,
-      }));
+      acceptedApplication ||
+      ((exchange.status === "result_received" || exchange.status === "accepted") &&
+        (await isExternalAgentResultAlreadyApplied({
+          command: checkoutCommand,
+          exchange,
+          decision: current,
+          envelope,
+        })));
     if (
       alreadyApplied &&
       exchange.purpose === "quality_review" &&
@@ -482,7 +503,7 @@ export async function acceptExternalAgentResult(opts: {
     ) {
       assertReadOnlyReturnFresh({ exchange, decision: current });
     }
-    if (!(alreadyApplied && exchange.purpose === "planning")) {
+    if (!acceptedApplication && !(alreadyApplied && exchange.purpose === "planning")) {
       await applyAcceptedExternalAgentResult({
         command: checkoutCommand,
         decision: current,
@@ -494,7 +515,7 @@ export async function acceptExternalAgentResult(opts: {
     const after = await refreshExternalAgentRoute({
       cwd: exchange.checkout,
       task_id: opts.task_id,
-      include_remote: opts.include_remote,
+      include_remote: includeRemote,
     });
     let journal = completeSupervisorExecutionEpisode({
       journal: issuedJournal,

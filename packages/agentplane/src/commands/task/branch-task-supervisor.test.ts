@@ -440,6 +440,36 @@ function sequencePorts(
 }
 
 describe("branch_pr task supervisor", () => {
+  it.each(["approval", "publish"] as const)(
+    "recovers an accepted application before %s dispatch",
+    async (boundary) => {
+      const root = await mkGitRepoRoot();
+      const pending =
+        boundary === "approval"
+          ? stopDecision(1, "approval")
+          : cliDecision(1, "pr.head.publish", { taskId, author: "CODER", includeTaskIds: [] });
+      const recovered = stopDecision(2, "wait");
+      const calls: string[] = [];
+      const ports = sequencePorts(root, [pending], calls);
+      ports.recover_episode = ({ decision }) =>
+        Promise.resolve(
+          decision === pending
+            ? {
+                status: "completed",
+                decision: recovered,
+                journal: null,
+                provider_episodes: 0,
+                lifecycle_calls: 1,
+              }
+            : null,
+        );
+      const result = await superviseBranchTaskRunWithPorts(ports);
+      expect(result.stop?.code).toBe("wait_required");
+      expect(result.metrics).toMatchObject({ provider_episodes: 0, lifecycle_calls: 1 });
+      expect(calls).toEqual([]);
+    },
+  );
+
   it("generates policy-valid task artifact commit subjects", () => {
     for (const artifact of [
       "verification_pass",

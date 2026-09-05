@@ -46,16 +46,16 @@ function providerConflictReworkStep(state: WorkflowRouteState): WorkflowStep {
     summary:
       "provider reports a current PR merge conflict; validate the bounded context packet, then let CODER make the semantic resolution in the dedicated task worktree",
     objective:
-      "Revalidate the provider conflict packet, make the semantic resolution without CLI-selected hunks, commit it, then refresh provider truth and repeat normal verification before publication.",
+      "Read the bound provider-conflict-context input. Resolve the scoped workspace content using the exact task head, base and merge-base in that input. Return the typed semantic result without changing Git history or provider state. AgentPlane owns validated merge-parent application, verification and recovery.",
     semanticMutationAllowed: true,
     compatibilityCommand: packet.resolution_contract.revalidate_command,
     mustNot: [
       "do not treat candidate conflict paths as selected hunks or a semantic resolution",
-      "do not auto-rebase, auto-merge, force-push, or rewrite the task branch through AgentPlane",
+      "do not run Git commit, merge, auto-rebase, auto-merge, force-push, or other history mutations in the semantic episode",
       "do not publish, queue, clean up, or integrate before a new resolution commit has fresh provider truth and verification",
     ],
     returnControlWhen:
-      "after CODER records a semantic resolution commit, refreshes provider truth, and records fresh verification; recompute task next-action with remote truth before PR publication or queue handoff",
+      "after CODER returns the scoped workspace resolution and typed semantic result; AgentPlane must validate and apply the resolution before verification, publication or queue handoff",
     evidenceMissing: [
       "fresh_conflict_rework_packet",
       "semantic_conflict_resolution_commit",

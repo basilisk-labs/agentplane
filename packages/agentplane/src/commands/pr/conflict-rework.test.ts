@@ -9,7 +9,13 @@ import {
   prepareConflictReworkPacket,
   type ConflictReworkGitOps,
 } from "./conflict-rework.js";
+import {
+  conflictReworkSemanticInput,
+  resolveConflictReworkSemanticInput,
+} from "./conflict-rework-semantic-input.js";
 import type { PrFlowStatusReport } from "./flow-status.js";
+import { assertRunnerTaskExecutable } from "../../runner/usecases/task-run-authority.js";
+import type { RunnerContextBundle } from "../../runner/types.js";
 
 const taskId = "202607252223-THDN0G";
 const branch = `task/${taskId}/bound-branch-snapshot-probes`;
@@ -172,6 +178,92 @@ function prepare(
 }
 
 describe("provider conflict rework packet", () => {
+  it("binds semantic context to the exact task, checkout, head and writable scope", async () => {
+    const prepared = await prepare();
+    if (prepared.state !== "ready") throw new Error("fixture did not prepare");
+    const identity = {
+      task_id: taskId,
+      checkout: cleanWorktree.worktreePath,
+      head: headSha,
+      writable_roots: [`${cleanWorktree.worktreePath}/shared.ts`],
+    };
+    const input = conflictReworkSemanticInput(prepared.packet, identity);
+    const semanticPacket = structuredClone(prepared.packet);
+    Reflect.deleteProperty(semanticPacket.resolution_contract, "revalidate_command");
+    expect(input.required).toBe(true);
+    expect(JSON.parse(input.description)).toEqual({
+      packet: semanticPacket,
+      authority: { ...identity, writable_roots: ["shared.ts"] },
+    });
+    expect(conflictReworkSemanticInput(prepared.packet, identity)).toEqual(input);
+    expect(resolveConflictReworkSemanticInput({ ...identity, required_inputs: [input] })).toEqual(
+      semanticPacket,
+    );
+    expect(input.description).not.toContain("agentplane pr conflict-rework");
+    const bundle = {
+      task: {
+        metadata: { task_id: taskId, status: "DONE", task_kind: "code", mutation_scope: "code" },
+      },
+      repository: { git_root: identity.checkout },
+      work_order: {
+        role: "EXECUTOR",
+        task: { id: taskId },
+        required_inputs: [input],
+        authority: { writable_roots: identity.writable_roots },
+        state_fingerprint: { digest: "bound-route", git_head: headSha },
+      },
+      route_decision: {
+        task: { id: taskId },
+        workflowStep: {
+          kind: "agent_episode",
+          id: "agent.provider_conflict_rework",
+          episode: { purpose: "implementation_rework" },
+          preconditionFingerprint: { digest: "bound-route" },
+        },
+      },
+    } as unknown as RunnerContextBundle;
+    expect(() => assertRunnerTaskExecutable(bundle)).not.toThrow();
+    for (const changed of [
+      {
+        ...bundle,
+        task: { ...bundle.task!, metadata: { ...bundle.task!.metadata, status: "TODO" } },
+      },
+      { ...bundle, route_decision: undefined },
+      { ...bundle, work_order: { ...bundle.work_order!, required_inputs: [] } },
+      {
+        ...bundle,
+        work_order: { ...bundle.work_order!, task: { ...bundle.work_order!.task, id: "foreign" } },
+      },
+      {
+        ...bundle,
+        work_order: {
+          ...bundle.work_order!,
+          state_fingerprint: { ...bundle.work_order!.state_fingerprint, digest: "stale-route" },
+        },
+      },
+    ]) {
+      expect(() => assertRunnerTaskExecutable(changed as RunnerContextBundle)).toThrow();
+    }
+    expect(resolveConflictReworkSemanticInput({ ...identity, required_inputs: [] })).toBeNull();
+    for (const required_inputs of [
+      [input, input],
+      [{ ...input, digest: `sha256:${"0".repeat(64)}` }],
+      [{ ...input, required: false }],
+    ]) {
+      expect(() => resolveConflictReworkSemanticInput({ ...identity, required_inputs })).toThrow();
+    }
+    for (const changed of [
+      { task_id: "foreign-task" },
+      { checkout: "/foreign/worktree" },
+      { head: baseSha },
+      { writable_roots: ["/foreign/source"] },
+    ]) {
+      expect(() =>
+        conflictReworkSemanticInput(prepared.packet, { ...identity, ...changed }),
+      ).toThrow();
+    }
+  });
+
   it.each(["current", "stale", "foreign-head", "unrelated-base"] as const)(
     "qualifies a refreshed queue against the current base: %s",
     async (scenario) => {

@@ -2,6 +2,7 @@ import path from "node:path";
 import { realpath } from "node:fs/promises";
 
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { resolveConflictReworkSemanticInput } from "../../commands/pr/conflict-rework-semantic-input.js";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
@@ -223,7 +224,25 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   const task = bundle.task;
   if (!task) return;
   const status = normalizeTaskStatus(task.metadata.status);
-  if (status !== "DOING") {
+  const step = bundle.route_decision?.workflowStep;
+  const order = bundle.work_order;
+  const conflictRework =
+    status === "DONE" &&
+    step?.kind === "agent_episode" &&
+    step.id === "agent.provider_conflict_rework" &&
+    step.episode.purpose === "implementation_rework" &&
+    order?.role === "EXECUTOR" &&
+    order.task.id === task.metadata.task_id &&
+    bundle.route_decision?.task.id === task.metadata.task_id &&
+    order.state_fingerprint.digest === step.preconditionFingerprint.digest &&
+    resolveConflictReworkSemanticInput({
+      task_id: order.task.id,
+      checkout: bundle.repository.git_root,
+      head: order.state_fingerprint.git_head,
+      writable_roots: order.authority.writable_roots,
+      required_inputs: order.required_inputs,
+    }) !== null;
+  if (status !== "DOING" && !conflictRework) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",

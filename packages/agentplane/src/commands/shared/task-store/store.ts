@@ -16,6 +16,7 @@ import {
   readTaskReadmeCached,
   throwTaskRevisionConflict,
   writeTaskReadme,
+  prepareTaskReadmeWrite,
 } from "./readme.js";
 import type {
   CachedTask,
@@ -128,9 +129,14 @@ export class TaskStore implements TaskStoreContract {
         throw err;
       }
 
+      const unchanged = next === entry.task || JSON.stringify(next) === JSON.stringify(entry.task);
+      const prepared = unchanged ? null : prepareTaskReadmeWrite({ entry, next });
+      if (opts.beforePersist && prepared && prepared.text !== entry.rawText) {
+        await opts.beforePersist({ current: entry.task, next: prepared.task });
+      }
       try {
         return await withTaskReadmeTransaction(entry.readmePath, async () => {
-          if (next === entry.task || JSON.stringify(next) === JSON.stringify(entry.task)) {
+          if (!prepared) {
             await ensureUnchangedOnDisk({
               readmePath: entry.readmePath,
               expectedMtimeMs: entry.mtimeMs,
@@ -138,7 +144,7 @@ export class TaskStore implements TaskStoreContract {
             });
             return { changed: false, task: entry.task };
           }
-          return await this.writeNextTask(taskId, entry, next);
+          return await this.writeNextTask(taskId, entry, next, prepared);
         });
       } catch (err) {
         if (attempt === 0 && isConcurrentReadmeChangeError(err)) {
@@ -157,8 +163,9 @@ export class TaskStore implements TaskStoreContract {
     taskId: string,
     entry: CachedTask,
     next: TaskData,
+    prepared: ReturnType<typeof prepareTaskReadmeWrite>,
   ): Promise<{ changed: boolean; task: TaskData }> {
-    const changed = await writeTaskReadme({ entry, next });
+    const changed = await writeTaskReadme({ entry, next, prepared });
     this.cache.set(
       taskId,
       (async () => {

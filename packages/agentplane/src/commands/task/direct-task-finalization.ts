@@ -279,6 +279,43 @@ export async function recordDirectImplementationEvidence(opts: {
   ) {
     return null;
   }
+  const relative = path.join(
+    opts.command.config.paths.workflow_dir,
+    opts.task_id,
+    "supervision",
+    "implementation-evidence.json",
+  );
+  const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
+  await mkdir(path.dirname(absolute), { recursive: true });
+  await writeJsonStableIfChanged(
+    absolute,
+    buildDirectImplementationEvidenceArtifact({
+      ...opts,
+      execution_baseline_status: opts.execution_baseline_status,
+      committed_diff_stdout: commitDiffCheck.stdout,
+      staged_diff_stdout: stagedDiffCheck.stdout,
+      commit_paths_stdout: commitPaths.stdout,
+      final_status: finalStatus,
+    }),
+  );
+  return {
+    artifact_path: relative,
+    implementation_commit: opts.implementation_commit,
+    changed_paths: pathsFromNameStatus(commitPaths.stdout),
+  };
+}
+
+export function buildDirectImplementationEvidenceArtifact(opts: {
+  task_id: string;
+  execution_base_commit: string;
+  implementation_commit: string;
+  execution_baseline_status: DirectRepositoryStatus;
+  committed_diff_stdout: string;
+  staged_diff_stdout: string;
+  commit_paths_stdout: string;
+  final_status: DirectRepositoryStatus;
+}) {
+  const finalStatus = opts.final_status;
   const baseline = new Set(opts.execution_baseline_status.lines);
   const final = new Set(finalStatus.lines);
   const classification = [
@@ -292,15 +329,8 @@ export async function recordDirectImplementationEvidence(opts: {
       .filter((line) => !final.has(line))
       .map((line) => ({ line, classification: "removed_during_execution" })),
   ];
-  const relative = path.join(
-    opts.command.config.paths.workflow_dir,
-    opts.task_id,
-    "supervision",
-    "implementation-evidence.json",
-  );
-  const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
-  await mkdir(path.dirname(absolute), { recursive: true });
-  await writeJsonStableIfChanged(absolute, {
+
+  return {
     schema_version: 1,
     kind: "direct_task_implementation_evidence",
     task_id: opts.task_id,
@@ -311,19 +341,19 @@ export async function recordDirectImplementationEvidence(opts: {
         id: "committed-diff-check",
         command: `git diff --check ${opts.execution_base_commit}..${opts.implementation_commit}`,
         result: "pass",
-        stdout: outputLines(commitDiffCheck.stdout),
+        stdout: outputLines(opts.committed_diff_stdout),
       },
       {
         id: "staged-diff-check",
         command: "git diff --cached --check",
         result: "pass",
-        stdout: outputLines(stagedDiffCheck.stdout),
+        stdout: outputLines(opts.staged_diff_stdout),
       },
       {
         id: "commit-paths",
         command: `git diff --name-status --diff-filter=ACDMRTUXB ${opts.execution_base_commit}..${opts.implementation_commit}`,
         result: "pass",
-        stdout: outputLines(commitPaths.stdout),
+        stdout: outputLines(opts.commit_paths_stdout),
       },
       {
         id: "final-repository-status",
@@ -342,11 +372,6 @@ export async function recordDirectImplementationEvidence(opts: {
       ),
       classification,
     },
-  });
-  return {
-    artifact_path: relative,
-    implementation_commit: opts.implementation_commit,
-    changed_paths: pathsFromNameStatus(commitPaths.stdout),
   };
 }
 

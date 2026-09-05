@@ -31,53 +31,86 @@ Created: 2026-09-04T18:17:29.251Z
 ```text
  .../task-centric-backend-adapter.test.ts           |  39 ++
  .../task-backend/task-centric-backend-adapter.ts   |   6 +-
- .../task-backend/task-centric-backend-runtime.ts   |  78 ++++
+ .../task-backend/task-centric-backend-runtime.ts   |  78 +++
+ .../src/cli/managed-conflict-recovery.testkit.ts   | 332 ++++++++++++
  .../src/cli/release-critical-lifecycle.test.ts     |  14 +
- .../agentplane/src/cli/route-decision.testkit.ts   |  22 ++
- .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++++--
+ .../agentplane/src/cli/route-decision.testkit.ts   |  22 +
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++--
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 262 ++++++---
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
  .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
- .../run-cli.core.route-decision.quality.test.ts    | 132 ++++---
- ...n-cli.core.task-advance.branch-worktree.test.ts |  83 +++-
- ...n-cli.core.task-advance.evidence-rework.test.ts | 105 ++++-
+ .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  83 ++-
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 105 +++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
+ .../cli/task-advance-effect-recovery.testkit.ts    | 336 +++++++++++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
  .../commands/pr/conflict-rework-base-context.ts    |   7 +-
+ .../src/commands/pr/conflict-rework-merge.test.ts  | 186 +++++++
+ .../src/commands/pr/conflict-rework-merge.ts       | 467 ++++++++++++++++
  .../pr/conflict-rework-route-eligibility.ts        |   6 +-
- .../src/commands/pr/conflict-rework.test.ts        |  44 +++
- .../agentplane/src/commands/pr/conflict-rework.ts  |  19 +-
+ .../commands/pr/conflict-rework-semantic-input.ts  | 110 ++++
+ .../src/commands/pr/conflict-rework.test.ts        | 136 +++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  23 +-
  .../src/commands/shared/declared-check.test.ts     |   6 +-
  .../src/commands/shared/declared-check.ts          |  12 +-
- .../shared/task-scope-extension-request.ts         | 263 ++++++++++++-
+ .../src/commands/shared/task-mutation.test.ts      |  51 ++
+ .../src/commands/shared/task-mutation.ts           |  12 +
+ .../shared/task-scope-extension-request.ts         | 263 ++++++++-
+ .../src/commands/shared/task-store/readme.ts       |  34 +-
+ .../src/commands/shared/task-store/store.ts        |  13 +-
+ .../src/commands/shared/task-store/types.ts        |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |   3 +-
+ .../shared/workflow-step-conflict-rework.ts        |   6 +-
  .../src/commands/shared/workflow-step-factory.ts   |   6 +-
+ .../commands/shared/workflow-step-fingerprint.ts   |  12 +-
  .../commands/shared/workflow-step-policy-scope.ts  |  16 +
- .../src/commands/shared/workflow-step.test.ts      |  88 +++++
- .../src/commands/task/direct-task-verification.ts  |  19 +-
+ .../src/commands/shared/workflow-step.test.ts      |  88 +++
+ .../branch-task-supervisor-conflict-recovery.ts    | 592 +++++++++++++++++++++
+ .../task/branch-task-supervisor-episodes.ts        | 279 ++++------
+ .../task/branch-task-supervisor-implementation.ts  | 481 +++++++++++++++++
+ .../commands/task/branch-task-supervisor.test.ts   |  30 ++
+ .../src/commands/task/branch-task-supervisor.ts    |  17 +-
+ .../src/commands/task/direct-task-finalization.ts  |  59 +-
+ .../src/commands/task/direct-task-verification.ts  |  29 +-
  .../commands/task/evidence-only-rework-commit.ts   |  31 ++
- .../external-agent-implementation-recovery.test.ts |  85 ++++-
- .../task/external-agent-implementation-recovery.ts | 120 +++---
+ .../task/external-agent-conflict-application.ts    | 227 ++++++++
+ .../src/commands/task/external-agent-exchange.ts   |   3 +
+ .../external-agent-implementation-authority.ts     | 262 ++++-----
+ .../external-agent-implementation-checkpoint.ts    | 268 ++++++++++
+ .../external-agent-implementation-finalization.ts  | 128 +++++
+ .../external-agent-implementation-recovery.test.ts |  85 ++-
+ .../task/external-agent-implementation-recovery.ts | 120 ++---
+ .../task/external-agent-result-application.ts      |  22 +
+ .../src/commands/task/external-agent-supervisor.ts |  43 +-
  .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
  packages/agentplane/src/commands/task/plan.ts      |  35 +-
- .../agentplane/src/commands/task/plan.unit.test.ts |  93 +++++
- .../src/commands/task/scope-extend.test.ts         | 424 ++++++++++++++-------
- .../src/commands/task/set-status.unit.test.ts      | 118 +++---
+ .../agentplane/src/commands/task/plan.unit.test.ts |  93 ++++
+ .../src/commands/task/scope-extend.test.ts         | 424 ++++++++++-----
+ .../agentplane/src/commands/task/set-status.ts     |  10 +-
+ .../src/commands/task/set-status.unit.test.ts      | 118 ++--
  .../src/commands/task/shared.unit.test.ts          |   1 +
  .../src/commands/task/shared.verify-steps.test.ts  |   8 +
  .../agentplane/src/commands/task/shared/docs.ts    |   2 +
- .../task/shared/workflow-transition-service.ts     |  79 ++++
+ .../task/shared/workflow-transition-service.ts     |  79 +++
+ .../task-execution-contract-observation.test.ts    |  19 +
+ .../task/task-execution-contract-observation.ts    | 200 +++----
+ .../src/commands/task/verify-record-execute.ts     |  54 +-
  .../task/verify-record.durability.unit.test.ts     |  11 +-
+ .../agentplane/src/commands/task/verify-record.ts  |   3 +
+ .../src/commands/task/verify-record.types.ts       |   2 +
  packages/agentplane/src/commands/workflow.test.ts  |  10 +
  .../src/commands/workflow.verify-hooks.test.ts     |  12 +-
- .../src/runner/usecases/agent-work-order-build.ts  |  16 +-
+ .../src/runner/usecases/agent-work-order-build.ts  |  46 +-
  .../src/runner/usecases/agent-work-order.ts        |   1 +
- .../src/runner/usecases/task-run-authority.ts      |  46 ++-
+ .../src/runner/usecases/task-run-authority.ts      |  67 ++-
  .../usecases/task-run-context.integration.test.ts  |   5 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 48 files changed, 1904 insertions(+), 392 deletions(-)
+ 81 files changed, 6048 insertions(+), 1011 deletions(-)
 ```
 
 </details>

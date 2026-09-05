@@ -6,6 +6,109 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
+type ObservedTaskExecutionContractInput = {
+  task: TaskData;
+  workflow_dir: string;
+  changed_paths: readonly string[];
+  observed_external_effects?: readonly TaskExternalEffect[];
+  verification_results?: readonly TaskVerificationObservation[];
+  preserved_commit?: string;
+};
+
+export function projectObservedTaskExecutionContract(opts: ObservedTaskExecutionContractInput): {
+  nextTask: TaskData | null;
+  escalated: boolean;
+  episodeAuthorityViolations: string[];
+} {
+  const currentTask = opts.task;
+  const workflowDir = opts.workflow_dir.replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
+  const taskArtifactPrefix = `${workflowDir}/${opts.task.id}/`;
+  const productChangedPaths = opts.changed_paths.filter(
+    (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
+  );
+
+  const current = currentTask.execution_contract;
+  const episodeReconciliation = current
+    ? reconcileTaskExecutionContract({
+        contract: {
+          ...current,
+          observed: {
+            repository_effects: [],
+            external_effects: [],
+            changed_paths: [],
+            changed_components: [],
+            verification_results: [],
+            authority_violations: [],
+          },
+        },
+        changed_paths: productChangedPaths,
+        ...(opts.observed_external_effects
+          ? { observed_external_effects: opts.observed_external_effects }
+          : {}),
+        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
+      })
+    : null;
+  const episodeAuthorityViolations =
+    episodeReconciliation?.contract.observed.authority_violations ?? [];
+
+  const reconciled = current
+    ? reconcileTaskExecutionContract({
+        contract: current,
+        changed_paths: productChangedPaths,
+        ...(opts.observed_external_effects
+          ? { observed_external_effects: opts.observed_external_effects }
+          : {}),
+        ...(opts.verification_results ? { verification_results: opts.verification_results } : {}),
+        ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
+      })
+    : null;
+  const escalated = reconciled?.escalated ?? false;
+  const recordedImplementationCommit = currentTask.extensions?.implementation_commit;
+  const recordedImplementationHash =
+    typeof recordedImplementationCommit === "object" &&
+    recordedImplementationCommit !== null &&
+    "hash" in recordedImplementationCommit &&
+    typeof recordedImplementationCommit.hash === "string"
+      ? recordedImplementationCommit.hash.trim()
+      : "";
+  const implementationCommitChanged =
+    opts.preserved_commit !== undefined && recordedImplementationHash !== opts.preserved_commit;
+  const contractChanged =
+    reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
+  if (!contractChanged && !implementationCommitChanged)
+    return { nextTask: null, escalated, episodeAuthorityViolations };
+  const blueprintRequest =
+    reconciled?.escalated && currentTask.blueprint_request === "code.direct"
+      ? "code.branch_pr"
+      : currentTask.blueprint_request;
+
+  return {
+    escalated,
+    episodeAuthorityViolations,
+    nextTask: {
+      ...currentTask,
+      blueprint_request: blueprintRequest,
+      ...(implementationCommitChanged
+        ? {
+            extensions: {
+              ...currentTask.extensions,
+              implementation_commit: { hash: opts.preserved_commit },
+            },
+          }
+        : {}),
+      execution_contract: reconciled?.contract ?? current,
+      execution_route:
+        reconciled && currentTask.execution_route
+          ? {
+              ...currentTask.execution_route,
+              selected_mode: reconciled.contract.selected_mode,
+              reason_codes: [...reconciled.contract.reason_codes],
+            }
+          : undefined,
+    },
+  };
+}
+
 export async function recordObservedTaskExecutionContract(opts: {
   command: CommandContext;
   execution: TaskExecutionContext;
@@ -18,101 +121,20 @@ export async function recordObservedTaskExecutionContract(opts: {
   if (!opts.execution.task_ids.includes(opts.task.id)) {
     throw new Error(`Execution context does not authorize task ${opts.task.id}.`);
   }
-  const workflowDir = opts.command.config.paths.workflow_dir
-    .replaceAll("\\", "/")
-    .replaceAll(/\/+$/gu, "");
-  const taskArtifactPrefix = `${workflowDir}/${opts.task.id}/`;
-  const productChangedPaths = opts.changed_paths.filter(
-    (changedPath) => !changedPath.replaceAll("\\", "/").startsWith(taskArtifactPrefix),
-  );
-
   let escalated = false;
   let episodeAuthorityViolations: string[] = [];
   const mutation = await applyTaskMutation({
     ctx: opts.command,
     taskId: opts.task.id,
     build: (currentTask) => {
-      const current = currentTask.execution_contract;
-      const episodeReconciliation = current
-        ? reconcileTaskExecutionContract({
-            contract: {
-              ...current,
-              observed: {
-                repository_effects: [],
-                external_effects: [],
-                changed_paths: [],
-                changed_components: [],
-                verification_results: [],
-                authority_violations: [],
-              },
-            },
-            changed_paths: productChangedPaths,
-            ...(opts.observed_external_effects
-              ? { observed_external_effects: opts.observed_external_effects }
-              : {}),
-            ...(opts.verification_results
-              ? { verification_results: opts.verification_results }
-              : {}),
-          })
-        : null;
-      episodeAuthorityViolations =
-        episodeReconciliation?.contract.observed.authority_violations ?? [];
-
-      const reconciled = current
-        ? reconcileTaskExecutionContract({
-            contract: current,
-            changed_paths: productChangedPaths,
-            ...(opts.observed_external_effects
-              ? { observed_external_effects: opts.observed_external_effects }
-              : {}),
-            ...(opts.verification_results
-              ? { verification_results: opts.verification_results }
-              : {}),
-            ...(opts.preserved_commit ? { preserved_commit: opts.preserved_commit } : {}),
-          })
-        : null;
-      escalated = reconciled?.escalated ?? false;
-      const recordedImplementationCommit = currentTask.extensions?.implementation_commit;
-      const recordedImplementationHash =
-        typeof recordedImplementationCommit === "object" &&
-        recordedImplementationCommit !== null &&
-        "hash" in recordedImplementationCommit &&
-        typeof recordedImplementationCommit.hash === "string"
-          ? recordedImplementationCommit.hash.trim()
-          : "";
-      const implementationCommitChanged =
-        opts.preserved_commit !== undefined && recordedImplementationHash !== opts.preserved_commit;
-      const contractChanged =
-        reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
-      if (!contractChanged && !implementationCommitChanged) return null;
-      const blueprintRequest =
-        reconciled?.escalated && currentTask.blueprint_request === "code.direct"
-          ? "code.branch_pr"
-          : currentTask.blueprint_request;
-
-      return {
-        nextTask: {
-          ...currentTask,
-          blueprint_request: blueprintRequest,
-          ...(implementationCommitChanged
-            ? {
-                extensions: {
-                  ...currentTask.extensions,
-                  implementation_commit: { hash: opts.preserved_commit },
-                },
-              }
-            : {}),
-          execution_contract: reconciled?.contract ?? current,
-          execution_route:
-            reconciled && currentTask.execution_route
-              ? {
-                  ...currentTask.execution_route,
-                  selected_mode: reconciled.contract.selected_mode,
-                  reason_codes: [...reconciled.contract.reason_codes],
-                }
-              : undefined,
-        },
-      };
+      const projection = projectObservedTaskExecutionContract({
+        ...opts,
+        task: currentTask,
+        workflow_dir: opts.command.config.paths.workflow_dir,
+      });
+      escalated = projection.escalated;
+      episodeAuthorityViolations = projection.episodeAuthorityViolations;
+      return projection.nextTask ? { nextTask: projection.nextTask } : null;
     },
     writeOptions: opts.task.revision ? { expectedRevision: opts.task.revision } : undefined,
   });

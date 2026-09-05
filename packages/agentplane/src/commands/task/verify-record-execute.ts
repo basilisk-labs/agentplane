@@ -104,6 +104,7 @@ async function recordVerificationResult(opts: {
   quiet: boolean;
   command: ExecuteVerifyRecordCommandOptions["command"];
   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
+  beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -135,6 +136,7 @@ async function recordVerificationResult(opts: {
       taskId: opts.taskId,
       policyAction: "task_verify",
       phase: "verify",
+      beforePersist: opts.beforePersist,
       build: async (current) => {
         const baseExecutionContract =
           opts.verificationSnapshot?.execution_contract ??
@@ -440,33 +442,7 @@ async function recordVerificationResult(opts: {
     throw error;
   }
 
-  if (workflowMode === "branch_pr") {
-    const syncResult = await ensurePrArtifactsSynced({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-      author: opts.by,
-      workflowMode,
-    });
-    if (syncResult) {
-      const { metaPath } = await resolvePrPaths({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        taskId: opts.taskId,
-      });
-      const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
-      await writeJsonStableIfChanged(
-        metaPath,
-        buildVerifiedPrMeta({
-          meta,
-          at,
-          state: opts.state === "ok" ? "pass" : "fail",
-        }),
-      );
-    }
-  }
+  if (workflowMode === "branch_pr") await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
 
   let incidentSummary: string | null = null;
   if (opts.collectIncidents === true) {
@@ -521,6 +497,29 @@ async function recordVerificationResult(opts: {
   }
 }
 
+export async function syncRecordedVerificationArtifacts(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  by: string;
+  at: string;
+  state: VerifyState;
+}): Promise<void> {
+  const syncResult = await ensurePrArtifactsSynced({
+    ...opts,
+    author: opts.by,
+    workflowMode: "branch_pr",
+  });
+  if (!syncResult) return;
+  const { metaPath } = await resolvePrPaths(opts);
+  const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+  await writeJsonStableIfChanged(
+    metaPath,
+    buildVerifiedPrMeta({ meta, at: opts.at, state: opts.state === "ok" ? "pass" : "fail" }),
+  );
+}
+
 export async function executeVerifyRecordCommand(
   opts: ExecuteVerifyRecordCommandOptions,
 ): Promise<number> {
@@ -546,6 +545,7 @@ export async function executeVerifyRecordCommand(
       quiet: opts.quiet,
       command: opts.command,
       verificationSnapshot: opts.verificationSnapshot,
+      beforePersist: opts.beforePersist,
     });
     return 0;
   } catch (err) {

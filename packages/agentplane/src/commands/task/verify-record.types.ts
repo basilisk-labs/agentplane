@@ -1,5 +1,6 @@
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import type { PreparedTaskMutationObserver } from "../shared/task-mutation.js";
 
 export type VerifyState = "ok" | "needs_rework";
 export type VerifyCommandName = "task verify ok" | "task verify rework" | "verify";
@@ -47,4 +48,5 @@ export type ExecuteVerifyRecordCommandOptions = {
   quiet: boolean;
   command: VerifyCommandName;
   verificationSnapshot?: VerificationSnapshot;
+  beforePersist?: PreparedTaskMutationObserver;
 };

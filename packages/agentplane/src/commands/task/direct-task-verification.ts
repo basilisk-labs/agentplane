@@ -18,6 +18,7 @@ import type { CommandContext, loadTaskFromContext } from "../shared/task-backend
 import { CliError } from "../../shared/errors.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
+import type { PreparedTaskMutationObserver } from "../shared/task-mutation.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
@@ -107,6 +108,11 @@ export async function recordDirectTaskVerification(opts: {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   work_order: AgentWorkOrderV2;
   workflow: "direct" | "branch_pr";
+  beforePersist?: (
+    mutation: Parameters<PreparedTaskMutationObserver>[0],
+    verification: DirectTaskVerificationResult,
+  ) => Promise<void>;
+  afterPersist?: () => Promise<void>;
 }): Promise<DirectTaskVerificationResult> {
   const verification = await resolveImplementationVerificationTask(opts);
   const verificationTask = verification.task;
@@ -161,6 +167,9 @@ export async function recordDirectTaskVerification(opts: {
     incidentMatch: [],
     quiet: true,
     verificationSnapshot: verification.snapshot,
+    beforePersist: opts.beforePersist
+      ? (mutation) => opts.beforePersist!(mutation, checks)
+      : undefined,
   });
   if (exitCode !== 0) {
     throw new CliError({
@@ -168,6 +177,7 @@ export async function recordDirectTaskVerification(opts: {
       message: `External-agent implementation verification exited with ${exitCode}.`,
     });
   }
+  await opts.afterPersist?.();
   return checks;
 }
 
