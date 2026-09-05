@@ -504,98 +504,58 @@ describe("blocked task execution scope extension", () => {
     },
   );
 
-  it("extends task-level rework without revising a completed task-centric plan", () => {
-    const { command, pending, task } = fixture();
-    const aggregate = taskCentricAggregate(task.id);
-    const completed = {
-      ...aggregate,
-      lifecycle: "BLOCKED" as const,
-      work_items: Object.fromEntries(
-        Object.entries(aggregate.work_items).map(([id, item]) => [
-          id,
-          { ...item, state: "COMPLETED" as const },
-        ]),
-      ),
-    };
-    task.extensions = {
-      ...withTaskCentricAggregate(task.extensions, completed),
-      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
-    };
-    const executionContract = extendBlockedTaskExecutionContract({
-      command,
-      task,
-      scope_roots: ["website"],
-      repository_effects: ["release_metadata"],
-      request_digest: pending.request_digest,
-      by: "USER",
-    });
+  it.each([false, true])(
+    "preserves the completed required plan (optional remaining=%s)",
+    (optionalRemaining) => {
+      const { command, pending, task } = fixture();
+      const aggregate = taskCentricAggregate(task.id, optionalRemaining, optionalRemaining);
+      const completed = {
+        ...aggregate,
+        lifecycle: "BLOCKED" as const,
+        work_items: Object.fromEntries(
+          Object.entries(aggregate.work_items).map(([id, item]) => [
+            id,
+            optionalRemaining && id !== "active" ? item : { ...item, state: "COMPLETED" as const },
+          ]),
+        ),
+      };
+      task.extensions = {
+        ...withTaskCentricAggregate(task.extensions, completed),
+        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+      };
+      const executionContract = extendBlockedTaskExecutionContract({
+        command,
+        task,
+        scope_roots: ["website"],
+        repository_effects: ["release_metadata"],
+        request_digest: pending.request_digest,
+        by: "USER",
+      });
 
-    const updated = applyApprovedTaskScopeExtension({
-      task,
-      executionContract,
-      pending,
-      scopeRoots: ["website"],
-      repositoryEffects: ["release_metadata"],
-      by: "USER",
-      now: NOW,
-    });
-    const next = taskCentricAggregateFromExtensions(updated.extensions);
+      const updated = applyApprovedTaskScopeExtension({
+        task,
+        executionContract,
+        pending,
+        scopeRoots: ["website"],
+        repositoryEffects: ["release_metadata"],
+        by: "USER",
+        now: NOW,
+      });
+      const next = taskCentricAggregateFromExtensions(updated.extensions);
 
-    expect(next?.current_plan).toEqual(completed.current_plan);
-    expect(next?.work_items).toEqual(completed.work_items);
-    expect(next?.lifecycle).toBe("ACTIVE");
-    expect(next?.revision).toBe(completed.revision + 1);
-    expect(updated.revision).toBe(next?.revision);
-    expect(updated.execution_contract).toEqual(executionContract);
-    expect(updated.status).toBe("DOING");
-    expect(updated.extensions?.[TASK_SCOPE_EXTENSION_REQUEST_KEY]).toMatchObject({
-      status: "applied",
-      applied_by: "USER",
-    });
-  });
-
-  it("extends task-level rework without revising a plan that has only optional work remaining", () => {
-    const { command, pending, task } = fixture();
-    const aggregate = taskCentricAggregate(task.id, true, true);
-    const requiredComplete = {
-      ...aggregate,
-      lifecycle: "BLOCKED" as const,
-      work_items: {
-        ...aggregate.work_items,
-        active: { ...aggregate.work_items.active!, state: "COMPLETED" as const },
-      },
-    };
-    task.extensions = {
-      ...withTaskCentricAggregate(task.extensions, requiredComplete),
-      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
-    };
-    const executionContract = extendBlockedTaskExecutionContract({
-      command,
-      task,
-      scope_roots: ["website"],
-      repository_effects: ["release_metadata"],
-      request_digest: pending.request_digest,
-      by: "USER",
-    });
-
-    const updated = applyApprovedTaskScopeExtension({
-      task,
-      executionContract,
-      pending,
-      scopeRoots: ["website"],
-      repositoryEffects: ["release_metadata"],
-      by: "USER",
-      now: NOW,
-    });
-
-    const next = taskCentricAggregateFromExtensions(updated.extensions);
-    expect(next?.current_plan).toEqual(requiredComplete.current_plan);
-    expect(next?.work_items).toEqual(requiredComplete.work_items);
-    expect(next?.lifecycle).toBe("ACTIVE");
-    expect(next?.revision).toBe(requiredComplete.revision + 1);
-    expect(updated.revision).toBe(next?.revision);
-    expect(updated.status).toBe("DOING");
-  });
+      expect(next?.current_plan).toEqual(completed.current_plan);
+      expect(next?.work_items).toEqual(completed.work_items);
+      expect(next?.lifecycle).toBe("ACTIVE");
+      expect(next?.revision).toBe(completed.revision + 1);
+      expect(updated.revision).toBe(next?.revision);
+      expect(updated.execution_contract).toEqual(executionContract);
+      expect(updated.status).toBe("DOING");
+      expect(updated.extensions?.[TASK_SCOPE_EXTENSION_REQUEST_KEY]).toMatchObject({
+        status: "applied",
+        applied_by: "USER",
+      });
+    },
+  );
 
   it("fails closed when unfinished required WorkItems are not schedulable", () => {
     const { command, pending, task } = fixture();

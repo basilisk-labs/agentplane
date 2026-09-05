@@ -1,13 +1,18 @@
- ...un-cli.core.task-advance.blocked-result.test.ts | 179 +++++++++++++------
- ...n-cli.core.task-advance.branch-worktree.test.ts |   8 +-
- .../shared/task-scope-extension-request.ts         |  81 ++++++++-
+ .../task-backend/task-centric-backend-runtime.ts   |  78 ++++++
+ ...un-cli.core.task-advance.blocked-result.test.ts | 179 ++++++++----
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  66 ++++-
+ .../shared/task-scope-extension-request.ts         | 228 +++++++++++++++-
+ .../src/commands/shared/workflow-step-branch.ts    |   3 +-
+ .../src/commands/shared/workflow-step-factory.ts   |   6 +-
+ .../commands/shared/workflow-step-policy-scope.ts  |   7 +-
+ .../src/commands/shared/workflow-step.test.ts      |  27 ++
  .../commands/task/external-agent-blocked-result.ts |  16 +-
- .../external-agent-implementation-recovery.test.ts |  85 ++++++++-
- .../task/external-agent-implementation-recovery.ts | 198 ++++++++++++++++++++-
- packages/agentplane/src/commands/task/plan.ts      |  35 +++-
- .../agentplane/src/commands/task/plan.unit.test.ts |  93 ++++++++++
- .../src/commands/task/scope-extend.test.ts         | 185 ++++++++++++++++++-
- .../task/shared/workflow-transition-service.ts     |  62 +++++++
+ .../external-agent-implementation-recovery.test.ts |  85 +++++-
+ .../task/external-agent-implementation-recovery.ts |  42 +--
+ packages/agentplane/src/commands/task/plan.ts      |  35 ++-
+ .../agentplane/src/commands/task/plan.unit.test.ts |  93 +++++++
+ .../src/commands/task/scope-extend.test.ts         | 301 +++++++++++++++------
+ .../task/shared/workflow-transition-service.ts     |  62 +++++
  packages/agentplane/src/commands/task/update.ts    |   6 +-
- .../src/commands/task/update.unit.test.ts          |  49 +++++
- 12 files changed, 922 insertions(+), 75 deletions(-)
+ .../src/commands/task/update.unit.test.ts          |  49 ++++
+ 17 files changed, 1090 insertions(+), 193 deletions(-)
