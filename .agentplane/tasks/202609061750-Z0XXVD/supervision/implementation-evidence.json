@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 469e4c3fa011eea9686e460136b15fc641dc14ff..e197ace38dacbaef55154c7947657a3e2ad62ecb",
+      "command": "git diff --check b7d06ffe4cdce990df62aa244ea6a8bce7bd1ff0..7e4ff9a77ff52dc72f14e2001966e5e91cf815f1",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,13 +13,48 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 469e4c3fa011eea9686e460136b15fc641dc14ff..e197ace38dacbaef55154c7947657a3e2ad62ecb",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b7d06ffe4cdce990df62aa244ea6a8bce7bd1ff0..7e4ff9a77ff52dc72f14e2001966e5e91cf815f1",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609061750-Z0XXVD/README.md",
+        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/github-body.md",
+        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/meta.json",
+        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/review.md",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
-        "M\tpackages/agentplane/src/cli/route-decision.testkit.ts"
+        "M\tdocs/releases/v0.7.8-evidence/preparation.md",
+        "M\tdocs/releases/v0.7.8.md",
+        "M\tpackages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+        "M\tpackages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.command-session.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-run.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-resume-planning-base.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "M\tpackages/agentplane/src/runtime/task-execution-context/resolve.ts",
+        "M\tpackages/testkit/src/cli-harness.ts"
       ]
     },
     {
@@ -29,8 +64,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "469e4c3fa011eea9686e460136b15fc641dc14ff",
-  "implementation_commit": "e197ace38dacbaef55154c7947657a3e2ad62ecb",
+  "execution_base_commit": "b7d06ffe4cdce990df62aa244ea6a8bce7bd1ff0",
+  "implementation_commit": "7e4ff9a77ff52dc72f14e2001966e5e91cf815f1",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
