@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "P1: external-agent-implementation-authority.ts only invokes bound recorded recovery after HEAD advances when purpose is implementation_rework. For an original implementation interrupted after the newly added pre-verification artifact commit, the selected recorded implementationCommit still reaches prepareDirectImplementationEvidence with recoveredExecutionBase=null; that helper observes current HEAD and can rebind provenance to the task-artifact commit. Add a direct replay regression for the first implementation and retain its original SHA and execution base through the same proven recovery owner. Evidence: .agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/42b69a9452a501af93217121d25f278df44ff056b94131e0829d7a04bd671bf4.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/42b69a9452a501af93217121d25f278df44ff056b94131e0829d7a04bd671bf4.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "P2: run-cli.core.task-advance.branch-worktree.test.ts captures implementation from git rev-parse HEAD after the injected pre-verification interruption. With the new task-artifact commit, this is not the implementation SHA. The targeted existing test now fails at its recovery assertion near line 465, while the before-WorkItem-projection case passes. Bind the assertion to the recorded original implementation and explicitly distinguish the artifact HEAD. Evidence: .agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/42b69a9452a501af93217121d25f278df44ff056b94131e0829d7a04bd671bf4.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/42b69a9452a501af93217121d25f278df44ff056b94131e0829d7a04bd671bf4.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Direct same-result replay after the first implementation is interrupted after its pre-verification task-artifact commit, including implementation SHA, execution base, original semantic claims and no duplicated source commit.",
+    "Correct original implementation identity in the existing branch-worktree interruption regression, and rerun that full test file in addition to the declared checks."
+  ],
+  "hidden_assumptions": [
+    "The added advanced-HEAD recovery condition assumes only implementation_rework needs provenance recovery after the supervisor task-artifact commit, although the same commit is made for ordinary implementation."
+  ],
+  "recovery_context": "Use a fresh bounded implementation packet. Add only run-cli.core.task-advance.branch-worktree.test.ts through a narrow plan refinement before editing it; preserve completed WorkItems. Reuse resolveRecordedImplementationRecovery and its exact exchange, plan, scope, ancestry and metadata-tail checks. Do not replace the fix with a raw recorded SHA override. Preserve the now-passing rework replay and foreign-tail controls. The supplementary failure log is retained outside tracked state as initial-recovery-audit.log under the task external-agent directory."
+}
