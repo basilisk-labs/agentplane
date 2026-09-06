@@ -43,7 +43,7 @@ Finalize the explicitly approved stable version 0.7.8 from verified main 262da31
  docs/assets/readme-headers/spec.svg                |    4 +-
  docs/assets/readme-headers/testkit.svg             |    4 +-
  docs/reference/generated-reference.mdx             |   14 +-
- docs/releases/v0.7.8-evidence/preparation.md       |   31 +
+ docs/releases/v0.7.8-evidence/preparation.md       |   33 +
  .../v0.7.8-evidence/qualify-upgrade-0.7.7.mjs      |  283 +
  .../v0.7.8-evidence/release-plan-changes.json      | 7087 ++++++++++++++++++++
  .../v0.7.8-evidence/release-plan-version.json      |    8 +
@@ -70,7 +70,7 @@ Finalize the explicitly approved stable version 0.7.8 from verified main 262da31
  .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
  website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
  website/static/img/social/manifest.json            |   16 +
- 43 files changed, 9468 insertions(+), 489 deletions(-)
+ 43 files changed, 9470 insertions(+), 489 deletions(-)
 ```
 
 </details>
