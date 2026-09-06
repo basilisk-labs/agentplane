@@ -12,8 +12,8 @@ Created: 2026-09-04T18:17:29.251Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -93,8 +93,8 @@ Created: 2026-09-04T18:17:29.251Z
  .../task-execution-contract-observation.test.ts    |  19 +
  .../task/task-execution-contract-observation.ts    | 200 ++++---
  .../src/commands/task/verify-record-execute.ts     | 106 ++--
- .../task/verify-record-observed-changes.ts         |  81 +++
- .../task/verify-record.durability.unit.test.ts     | 193 ++++++-
+ .../task/verify-record-observed-changes.ts         |  89 +++
+ .../task/verify-record.durability.unit.test.ts     | 214 +++++++-
  .../agentplane/src/commands/task/verify-record.ts  |   3 +
  .../src/commands/task/verify-record.types.ts       |   3 +
  packages/agentplane/src/commands/workflow.test.ts  |  10 +
@@ -106,7 +106,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 77 files changed, 5797 insertions(+), 968 deletions(-)
+ 77 files changed, 5826 insertions(+), 968 deletions(-)
 ```
 
 </details>

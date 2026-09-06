@@ -69,7 +69,15 @@ export async function resolveInheritedVerificationPaths(
     changed_paths: readonly string[];
   },
 ): Promise<string[]> {
-  if (opts.execution.selected_mode !== "branch_pr" || !opts.evaluatedSha) return [];
+  // An empty verification range cannot remove any write observation. Legacy lifecycle-only
+  // descendants can resolve their execution base after the semantic implementation commit.
+  if (
+    opts.execution.selected_mode !== "branch_pr" ||
+    !opts.evaluatedSha ||
+    opts.changed_paths.length === 0
+  ) {
+    return [];
+  }
   const root = opts.ctx.resolvedProject.gitRoot;
   const base = await resolveEvaluatorDiffBase({
     gitRoot: root,

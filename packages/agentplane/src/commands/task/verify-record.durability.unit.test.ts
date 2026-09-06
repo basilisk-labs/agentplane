@@ -16,6 +16,7 @@ import { cmdVerifyParsed } from "./verify-record.js";
 import {
   resolveObservedVerificationChangedPaths,
   resolveInheritedVerificationPaths,
+  reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
 import { resolveEvaluatorReviewTarget } from "../evaluator/evaluator-qualification-review.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
@@ -505,6 +506,26 @@ describe("task verification durability", () => {
           tasks: [task!],
           primaryTaskId: taskId,
         });
+        const inherited = await resolveInheritedVerificationPaths({
+          ctx: authoritativeCtx,
+          taskId,
+          evaluatedSha: implementationSha,
+          artifactTaskIds: [taskId],
+          execution: { ...execution, base_sha: implementationSha },
+          changed_paths: [],
+        });
+        expect(inherited).toEqual([]);
+        const unchanged = reconcileVerificationExecutionContract({
+          contract: task!.execution_contract!,
+          changed_paths: [],
+          inherited_paths: inherited,
+        });
+        expect(unchanged.observed.authority_violations).toEqual(
+          task!.execution_contract!.observed.authority_violations,
+        );
+        expect(unchanged.observed.changed_paths).toEqual(
+          task!.execution_contract!.observed.changed_paths,
+        );
         await expect(
           resolveInheritedVerificationPaths({
             ctx: authoritativeCtx,
