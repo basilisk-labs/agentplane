@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 62
+revision: 64
 origin:
   system: "manual"
 depends_on: []
@@ -212,10 +212,50 @@ execution_contract:
       - "website/static/llms-full.txt"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/testkit"
+    changed_paths:
+      - "docs/releases/v0.7.8-evidence/preparation.md"
+      - "docs/releases/v0.7.8.md"
+      - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+      - "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
+      - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+      - "packages/testkit/src/cli-harness.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -321,7 +361,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:6f54768468ab9676bddbe42054673d6621be4ad1edaaf26bb9eb372549ae20fb"
+      digest: "sha256:b2eda46cb76937e62febb79ea39c1366c7b0f88ca43c803c703fe3960d0dee64"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
         - "central_component:packages/agentplane/src/cli/route-decision.testkit.ts"
@@ -362,19 +402,85 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
         - "central_component:packages/core/package.json"
+        - "central_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
+        - "unknown_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/testkit"
+        changed_files:
+          - "docs/releases/v0.7.8-evidence/preparation.md"
+          - "docs/releases/v0.7.8.md"
+          - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+          - "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
+          - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+          - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+          - "packages/testkit/src/cli-harness.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -413,7 +519,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "7e4ff9a77ff52dc72f14e2001966e5e91cf815f1"
+  message: "🚧 Z0XXVD task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -439,6 +547,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: e197ace38dac. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7e4ff9a77ff5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -509,8 +620,16 @@ events:
     to: "DOING"
     note: "Implementation committed: e197ace38dac. CLI accepted one state-bound external-agent semantic result."
     commit: "e197ace38dacbaef55154c7947657a3e2ad62ecb"
+  -
+    type: "status"
+    at: "2026-09-06T21:04:15.170Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7e4ff9a77ff5. CLI accepted one state-bound external-agent semantic result."
+    commit: "7e4ff9a77ff52dc72f14e2001966e5e91cf815f1"
 doc_version: 3
-doc_updated_at: "2026-09-06T20:51:10.158Z"
+doc_updated_at: "2026-09-06T21:04:15.170Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -1151,7 +1270,7 @@ extensions:
       revision: 11
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 37
+    event_cursor: 39
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -4707,9 +4826,9 @@ extensions:
         revision: 10
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 62
+    revision: 64
     schema_version: 1
-    updated_at: "2026-09-06T20:51:10.158Z"
+    updated_at: "2026-09-06T21:04:15.170Z"
     work_items:
       prepare-qualified-078-candidate:
         attempt: 0
@@ -5170,6 +5289,30 @@ extensions:
         previous_revision: 47
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:2f5b32ac9b779c53b20f163acb61c38257e413ca2ccdee778d0912ed4ddae8c8:
+        aggregate_digest: "sha256:d5965f4d5fa95ef367b5977cfab55091930bc5c547bdee6a36a5df0d938b6663"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T21:04:15.170Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f09d33f5548161c13cce79e3"
+          mutation_id: "compatibility:sha256:2f5b32ac9b779c53b20f163acb61c38257e413ca2ccdee778d0912ed4ddae8c8"
+          plan_digest: "sha256:01d3d9dd6e984d40a6728c7f79fab07e6589f03f503c57d78a783cfff1e24dd8"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 63
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2f5b32ac9b779c53b20f163acb61c38257e413ca2ccdee778d0912ed4ddae8c8"
+        next_revision: 64
+        previous_revision: 63
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       compatibility:sha256:38c1a368b397f18797dcfd4a0c15c09b1e8d686f22df7266d2bdbac12edc33f0:
         aggregate_digest: "sha256:581d5094b401d85b66d996cc84a74adac9699dd795eff3bd90f6c90b6a4a92ea"
         event:
@@ -5480,6 +5623,30 @@ extensions:
         mutation_id: "compatibility:sha256:a6d7e4c9e442ea5fe493b9b59461a6760f210c674f4aab6c4649f6f61c053b3c"
         next_revision: 23
         previous_revision: 22
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:a84e0ea99577d1eb1b4fd048f8bc25e466a7835581d6915a63d91052b3ada38e:
+        aggregate_digest: "sha256:34b5d671782511a424d46af41f206aba29fa103e9f7aa9e24d7c75f8994fe572"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T21:04:15.170Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_92870518c7de14c73a0b43bf"
+          mutation_id: "compatibility:sha256:a84e0ea99577d1eb1b4fd048f8bc25e466a7835581d6915a63d91052b3ada38e"
+          plan_digest: "sha256:01d3d9dd6e984d40a6728c7f79fab07e6589f03f503c57d78a783cfff1e24dd8"
+          plan_revision: 11
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 62
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a84e0ea99577d1eb1b4fd048f8bc25e466a7835581d6915a63d91052b3ada38e"
+        next_revision: 63
+        previous_revision: 62
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       compatibility:sha256:b7e389e2a3a4fb34ece00c7e2716efa2957fbd321a8dd8adf7d1867bbf20a8e9:
@@ -6187,7 +6354,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "e197ace38dacbaef55154c7947657a3e2ad62ecb"
+    hash: "7e4ff9a77ff52dc72f14e2001966e5e91cf815f1"
   task_execution_context:
     base_ref: "main"
     base_sha: "262da3130bc5628a7641c400c74368ae355000bf"
