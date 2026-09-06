@@ -12,8 +12,8 @@ Created: 2026-09-06T17:54:49.525Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run release:prepublish
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-06T17:54:49.525Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-06T17:54:49.525Z
+- Updated: 2026-09-06T18:16:20.873Z
 - Branch: task/202609061750-Z0XXVD/prepare-and-qualify-agentplane-0-7-8-for-exact-s
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

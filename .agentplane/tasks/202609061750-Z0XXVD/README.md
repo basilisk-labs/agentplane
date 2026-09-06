@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "Relay of existing user authorization for all required 0.7.8 release actions. Fresh plan 908993cb declares the observed public_api effect of the already approved exported RECIPES_VERSION value. It preserves candidate commit 529e290f, scope, checks, release notes and external publication boundaries."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-06T18:16:28.303Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run release:prepublish"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -111,12 +111,46 @@ execution_contract:
       - "packages/testkit/package.json"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations: []
-    changed_components: []
-    changed_paths: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
+    changed_components:
+      - ".agentplane"
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "packages/spec"
+      - "packages/testkit"
+    changed_paths:
+      - ".agentplane/WORKFLOW.md"
+      - "docs/reference/generated-reference.mdx"
+      - "docs/releases/v0.7.8-evidence/preparation.md"
+      - "docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+      - "docs/releases/v0.7.8-evidence/release-plan-changes.json"
+      - "docs/releases/v0.7.8-evidence/release-plan-version.json"
+      - "docs/releases/v0.7.8.md"
+      - "packages/agentplane/package.json"
+      - "packages/core/package.json"
+      - "packages/recipes/package.json"
+      - "packages/recipes/src/index.ts"
+      - "packages/spec/examples/acr.json"
+      - "packages/testkit/package.json"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -171,22 +205,50 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:30fbedfca7c0225e0a73883ca5b503930c27583d3e5dee360cc93395e97da1cb"
+      digest: "sha256:1305b1d9f0ecf38a26058333cce1d73f63119770ca4659348ac93a5e41625719"
       escalation_reasons:
         - "central_component:packages/core/package.json"
+        - "central_path:packages/core/package.json"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
+        - "unknown_path:packages/spec/examples/acr.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".agentplane"
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "packages/spec"
+          - "packages/testkit"
+        changed_files:
+          - ".agentplane/WORKFLOW.md"
+          - "docs/reference/generated-reference.mdx"
+          - "docs/releases/v0.7.8-evidence/preparation.md"
+          - "docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+          - "docs/releases/v0.7.8-evidence/release-plan-changes.json"
+          - "docs/releases/v0.7.8-evidence/release-plan-version.json"
+          - "docs/releases/v0.7.8.md"
+          - "packages/agentplane/package.json"
+          - "packages/core/package.json"
+          - "packages/recipes/package.json"
+          - "packages/recipes/src/index.ts"
+          - "packages/spec/examples/acr.json"
+          - "packages/testkit/package.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -225,9 +287,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "529e290f25392071470a7f6f5b1a1d9646688504"
-  message: "🚧 Z0XXVD task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -251,8 +313,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 529e290f2539. CLI accepted one state-bound external-agent semantic result."
     commit: "529e290f25392071470a7f6f5b1a1d9646688504"
+  -
+    type: "verify"
+    at: "2026-09-06T18:16:28.303Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run release:prepublish"
 doc_version: 3
-doc_updated_at: "2026-09-06T18:15:57.181Z"
+doc_updated_at: "2026-09-06T18:16:29.071Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -272,6 +340,41 @@ sections:
     5. Review the final diff and observed evidence. Expected: only approved release metadata, notes, generated references and qualification artifacts changed; publication remains explicitly pending until exact-SHA hosted release-ready and canonical publish-result evidence exist.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-06T18:16:28.303Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run release:prepublish
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:860a8441b86236b4176982b3b7cc53b92a7cc2d7a60ae35921ca43cf99931621, input_digest=sha256:5db480110194b3a749db12713701ab37ef4728721168a51473e08b55e832c317
+
+    Details:
+
+    Command: bun run release:prepublish
+    Result: fail
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061750-Z0XXVD declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609061750-Z0XXVD-prepare-and-qualify-agentplane-0-7-8-for-exact-s/.agentplane/tasks/202609061750-Z0XXVD/blueprint/resolved-snapshot.json
+    - old_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+    - current_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609061750-Z0XXVD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609061750-Z0XXVD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -566,7 +669,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -1130,9 +1233,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-06T18:15:57.181Z"
+    updated_at: "2026-09-06T18:16:29.069Z"
     work_items:
       prepare-qualified-078-candidate:
         attempt: 0
@@ -1302,6 +1405,30 @@ extensions:
         mutation_id: "compatibility:sha256:5a3a6c5e45f3bb85d6ae8f44300701014a86a20911b100533285f921128a94db"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:799e3b7339d08d6b19b67cc357c43ae214094bdfcaf70d7f18d191b187dfa2bb:
+        aggregate_digest: "sha256:c478ef3611f79c6c58b41df5820211fc99e6c06dac840bd310b7eca26dd6ae2a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T18:16:29.069Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f04f60838b96bd1524d1abb8"
+          mutation_id: "compatibility:sha256:799e3b7339d08d6b19b67cc357c43ae214094bdfcaf70d7f18d191b187dfa2bb"
+          plan_digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:799e3b7339d08d6b19b67cc357c43ae214094bdfcaf70d7f18d191b187dfa2bb"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       compatibility:sha256:8be6b8ca800a1de129a9b4f2b61dcfab99999bd7f846e3c9913b108f327eb5c8:
@@ -1501,8 +1628,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "529e290f25392071470a7f6f5b1a1d9646688504"
   task_execution_context:
     base_ref: "main"
     base_sha: "262da3130bc5628a7641c400c74368ae355000bf"
@@ -1540,6 +1665,41 @@ Preserve committed release candidate 529e290f and declare the observed public_ap
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-06T18:16:28.303Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run release:prepublish
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:860a8441b86236b4176982b3b7cc53b92a7cc2d7a60ae35921ca43cf99931621, input_digest=sha256:5db480110194b3a749db12713701ab37ef4728721168a51473e08b55e832c317
+
+Details:
+
+Command: bun run release:prepublish
+Result: fail
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061750-Z0XXVD declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609061750-Z0XXVD-prepare-and-qualify-agentplane-0-7-8-for-exact-s/.agentplane/tasks/202609061750-Z0XXVD/blueprint/resolved-snapshot.json
+- old_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+- current_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609061750-Z0XXVD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609061750-Z0XXVD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
