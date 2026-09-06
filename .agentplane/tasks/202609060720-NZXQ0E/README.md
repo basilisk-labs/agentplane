@@ -4,7 +4,7 @@ title: "Recover an interrupted integration queue supervisor intent before semant
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "USER"
   note: "Apply the user-authorized permission override for required release repair actions. This narrow refinement adds only the generated llms-full documentation artifact required by the existing check. It does not attest a historical integration outcome."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-06T14:19:46.186Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -124,14 +124,102 @@ execution_contract:
   observed:
     authority_violations: []
     changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "scripts"
       - "website"
     changed_paths:
+      - "docs/user/cli-reference.generated.mdx"
+      - "docs/user/task-lifecycle.mdx"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/advance.spec.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      - "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts"
+      - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+      - "packages/core/src/runner/supervisor-execution-episode.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "website/static/llms-full.txt"
     external_effects: []
     repository_effects:
       - "documentation"
       - "repository_write"
-    verification_results: []
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -193,7 +281,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e0d597f89139fcf74bec157fc92993a79f1dccff16aa9d658d153c9219610c70"
+      digest: "sha256:eb2c306c60ce3713e8288b71a46f3c46c54867f7bf3931b8f23379a3c2a629a1"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
@@ -205,11 +293,21 @@ execution_contract:
         - "central_component:packages/core/src/runner/supervisor-execution-episode.test.ts"
         - "central_component:packages/core/src/runner/supervisor-execution-episode.ts"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts"
+        - "central_path:packages/core/src/runner/supervisor-execution-episode.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -217,13 +315,35 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "scripts"
           - "website"
         changed_files:
+          - "docs/user/cli-reference.generated.mdx"
+          - "docs/user/task-lifecycle.mdx"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+          - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/advance.spec.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+          - "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts"
+          - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+          - "packages/core/src/runner/supervisor-execution-episode.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
           - "website/static/llms-full.txt"
         external_effects: []
         repository_effects:
           - "documentation"
           - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -341,8 +461,14 @@ events:
     to: "DOING"
     note: "Implementation committed: a53a518d7f7d. CLI accepted one state-bound external-agent semantic result."
     commit: "a53a518d7f7dc7386b30a2587764659625ea7512"
+  -
+    type: "verify"
+    at: "2026-09-06T14:19:46.186Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-06T14:02:27.401Z"
+doc_updated_at: "2026-09-06T14:19:47.117Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
@@ -359,6 +485,162 @@ sections:
     2. Run `bun run ci:local:full` after focused regressions pass and the native supervisor commits the implementation. Expected: all required full regression gates pass for the actual repair SHA without manual state edits, weakened authority or a second state store.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-06T14:19:46.186Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786, input_digest=sha256:a831be082f04115fea1ded937946a5b32c57258e567e58c2f10da282bdd28612
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (4/4)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (1/4)
+
+    Check: docs_contract
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (2/4)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (3/4)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (1/4)
+
+    Check: real_e2e
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (2/4)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (3/4)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (4/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609060720-NZXQ0E-recover-an-interrupted-integration-queue-supervi/.agentplane/tasks/202609060720-NZXQ0E/blueprint/resolved-snapshot.json
+    - old_digest: 1456e6da476bb267b9a31eca037b5a297b30d62b58662bb1303d12990a3ee38a
+    - current_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+    - route_changed: yes
+    - safe_command: agentplane blueprint snapshot 202609060720-NZXQ0E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609060720-NZXQ0E
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -762,7 +1044,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 21
+    event_cursor: 22
     final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
@@ -2719,9 +3001,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 39
+    revision: 40
     schema_version: 1
-    updated_at: "2026-09-06T14:10:56.321Z"
+    updated_at: "2026-09-06T14:19:47.113Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -3538,6 +3820,30 @@ extensions:
         previous_revision: 35
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:e749b4c039ae1a9db8bb298a4c7b5845d368a9db81cf2af4e7c66fb8f6de5b7c:
+        aggregate_digest: "sha256:60b78490ace9f11befaf8143af620ead6ad273ae21da5f0eb76f1edc3e134ed3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T14:19:47.113Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_41dcc4d5635fd14950139258"
+          mutation_id: "compatibility:sha256:e749b4c039ae1a9db8bb298a4c7b5845d368a9db81cf2af4e7c66fb8f6de5b7c"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 39
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e749b4c039ae1a9db8bb298a4c7b5845d368a9db81cf2af4e7c66fb8f6de5b7c"
+        next_revision: 40
+        previous_revision: 39
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       external-result:work-order-202609060720-NZXQ0E-executor-40485d7d7e62a7406dee3327:
         aggregate_digest: "sha256:9d8354a18fed16dd1e73550aede17703d232fd34203e1a0dfa51bcdcebda662c"
         event:
@@ -3808,7 +4114,6 @@ extensions:
     base_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
-    source: "creation_checkout"
   workflow_route_baseline:
     start_head_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
     version: 1
@@ -3837,6 +4142,162 @@ Refine only the qualification documentation scope to include website/static/llms
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-06T14:19:46.186Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786, input_digest=sha256:a831be082f04115fea1ded937946a5b32c57258e567e58c2f10da282bdd28612
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (4/4)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (1/4)
+
+Check: docs_contract
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (2/4)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (3/4)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (1/4)
+
+Check: real_e2e
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (2/4)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (3/4)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (4/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609060720-NZXQ0E-recover-an-interrupted-integration-queue-supervi/.agentplane/tasks/202609060720-NZXQ0E/blueprint/resolved-snapshot.json
+- old_digest: 1456e6da476bb267b9a31eca037b5a297b30d62b58662bb1303d12990a3ee38a
+- current_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+- route_changed: yes
+- safe_command: agentplane blueprint snapshot 202609060720-NZXQ0E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609060720-NZXQ0E
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
