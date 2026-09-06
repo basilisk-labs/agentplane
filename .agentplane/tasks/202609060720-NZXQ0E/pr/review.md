@@ -6,7 +6,7 @@ Created: 2026-09-06T11:45:32.878Z
 
 - Task: `202609060720-NZXQ0E`
 - Title: Recover an interrupted integration queue supervisor intent before semantic rework
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609060720-NZXQ0E/recover-an-interrupted-integration-queue-supervi`
 - Canonical task record: `.agentplane/tasks/202609060720-NZXQ0E/README.md`
 
