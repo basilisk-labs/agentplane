@@ -1,0 +1,36 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index f34f81ab5..3499a0898 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260829-01 | date: 2026-08-29 | scope: task-centric planning | tags: work-item-inputs, task-centric, review-blocker | match: required_work_item_incomplete, work-item-inputs, task-centric, review-blocker, task, centric, planning, allow, state, bound, workitem, implementation, results, reopen, done, tasks | failure: The required WorkItem remains READY but WorkItemScheduler reports no schedulable item because every required_inputs label is absent from output manifests. | advice: Refine the current plan so the independent WorkItem has no produced-output dependencies; retain its required evidence as context and acceptance criteria. | rule: Analogous task-centric planning work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608290844-7JCQPF; commit 94b57b253f6a | enforcement: manual | fixability: repo-fixable | state: open
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index ec6135608..1775667e7 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,13 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-09-06 WorkItem input planning
++
++- id: INC-20260829-01 | date: 2026-08-29 | scope: task-centric planning | tags: work-item-inputs, task-centric, review-blocker | match: required_work_item_incomplete, work-item-inputs, task-centric, review-blocker, task, centric, planning, allow, state, bound, workitem, implementation, results, reopen, done, tasks | failure: The required WorkItem remains READY but WorkItemScheduler reports no schedulable item because every required_inputs label is absent from output manifests. | advice: Refine the current plan so the independent WorkItem has no produced-output dependencies; retain its required evidence as context and acceptance criteria. | rule: Analogous task-centric planning work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608290844-7JCQPF; commit 94b57b253f6a | enforcement: manual | fixability: repo-fixable | state: archived | archived_by: task `202609061636-BW11J6` | archive_reason: canonical planning admission now rejects invalid required input producers before persisting the plan; independent evidence belongs in context and acceptance criteria, not in produced-output dependencies.
++
++- Current enforcement: `packages/agentplane/src/commands/task/external-agent-planning-authority.ts` delegates WorkItem graph validation to the canonical Task kernel before persistence. The integrated source commit is `9229665252533541348c1225310ea6dcf3d71276`, confirmed as an ancestor of reviewed main `be1a24bce6129e5e1cb3b18432b87fc83113e8e1`.
++- Verification: `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1` passed all 19 tests on that main snapshot. The suite rejects unproduced, self-produced, multiply produced, input-induced cyclic, and duplicate output definitions before persistence.
++
+ ## 2026-08-22 Task-centric external result routing
+ 
+ - id: INC-20260822-01 | date: 2026-08-22 | scope: task-centric external result routing | tags: task-centric, idempotency, core, regression | match: task-centric, idempotency, core, regression, task, centric, external, result, routing, fix, idempotent, null, workitem, acceptance, the, proven | failure: Multiple CLAIMED items could fall through to WorkItemScheduler, which could select an unrelated READY item. | advice: Reject ambiguous claimed targets and prove scheduler fallback is used only when no WorkItem is claimed. | rule: Analogous task-centric external result routing work MUST review and apply the recorded external incident advice before retrying. | evidence: source and fix task `202608221335-6DSF3R`; implementation commits `84d99a134` and `59dc61a27`; independent evaluator evidence commit `fdbbd71ca81e`; focused command `bun test packages/agentplane/src/commands/task/task-centric-external-result.test.ts` passed; merged main commit `1d68d8f8aa4d3edc9c350a65cdc056fd38a0990a`; incident-closeout branch verification commit `5aa9c76e13210696a6d8d4a524ee9da8b752ba4c`; hosted integration and hosted close passed before cleanup. | enforcement: `packages/agentplane/src/commands/task/task-centric-external-result.test.ts`, task-centric external result selection, hosted CI, and release incident gate | fixability: repo-fixable | state: archived | source_task: `202608221335-6DSF3R` | archived_by: task `202608221939-911DRN` | archive_reason: null-ID acceptance now resolves exactly one claimed WorkItem, fails closed for ambiguous claimed targets, uses scheduler fallback only when none is claimed, and replays persisted receipts before selection; the identifier collides with an earlier archived incident of a different scope, so scope and source_task are the disambiguating provenance and the older record remains unchanged.
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index f34f81ab5..3499a0898 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,4 +1,3 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260829-01 | date: 2026-08-29 | scope: task-centric planning | tags: work-item-inputs, task-centric, review-blocker | match: required_work_item_incomplete, work-item-inputs, task-centric, review-blocker, task, centric, planning, allow, state, bound, workitem, implementation, results, reopen, done, tasks | failure: The required WorkItem remains READY but WorkItemScheduler reports no schedulable item because every required_inputs label is absent from output manifests. | advice: Refine the current plan so the independent WorkItem has no produced-output dependencies; retain its required evidence as context and acceptance criteria. | rule: Analogous task-centric planning work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608290844-7JCQPF; commit 94b57b253f6a | enforcement: manual | fixability: repo-fixable | state: open

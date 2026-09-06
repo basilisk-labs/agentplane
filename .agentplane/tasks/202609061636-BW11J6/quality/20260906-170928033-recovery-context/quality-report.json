@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609061636-BW11J6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-06T17:11:02.245Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "c56f52a07026c93f81d06a9d31b14db21db47429",
+  "blueprint_digest": "6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae",
+  "findings": [
+    "The frozen diff preserves every original incident field in the historical archive, removes only its active entry from both matching registries, and leaves canonical input-plan admission unchanged. All required verification is bound to the reviewed implementation SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/d39708ca94683bf731fb209cf612d9c8cd15ee0afb3ad6292b23f4f3ce327dc5.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

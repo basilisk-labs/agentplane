@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609061636-BW11J6-8d49e45bc464f3774fe46a74",
+  "prepared_at": "2026-09-06T17:09:28.033Z",
+  "task": {
+    "id": "202609061636-BW11J6",
+    "revision": 16,
+    "objective": "Archive the resolved WorkItem input planning incident before AgentPlane 0.7.8\n\nPerform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task.",
+    "acceptance_criteria": [
+      "bun run docs:site:generate:check",
+      "bun run release:incidents:check",
+      "bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx",
+      "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task.\n- Out of scope: unrelated refactors not required for \"Archive the resolved WorkItem input planning incident before AgentPlane 0.7.8\".",
+      "Complete incident archiving by synchronizing its canonical bundled policy, preserving the existing archive and all native verification guards.",
+      "1. Run `node .agentplane/policy/check-routing.mjs`. Expected: The policy gateway and module budgets remain valid.\n2. Run `bun run release:incidents:check`. Expected: The active incident registry is empty only after the original incident and current evidence are preserved in the archive.\n3. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1`. Expected: Canonical planning admission rejects invalid required input producers before persistence.\n4. Run `bun run docs:site:generate:check`. Expected: Generated website documentation remains fresh.\n5. Run `bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx`. Expected: Both scoped documentation files retain repository formatting."
+    ]
+  },
+  "evaluated_sha": "c56f52a07026c93f81d06a9d31b14db21db47429",
+  "diff_base_sha": "be1a24bce6129e5e1cb3b18432b87fc83113e8e1",
+  "blueprint_digest": "6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609061636-BW11J6/quality/20260906-170928033-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:0db78f57dfe56454b23c3f7c0954c6fa7db1f3ca75ae6990df9baa086190b5cc",
+    "prompt_path": ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/ba5b6103f54f240b581ab412b6ff8e7f1ec6303a5751c5106d4bba911b459928.md",
+    "result_schema_path": ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609061636-BW11J6/README.md",
+      "sha256": "sha256:b5dbd9e4b9b1155bf7e4c6cb7b0d78804555e2251f10a84a9d51373972cabc45",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/d39708ca94683bf731fb209cf612d9c8cd15ee0afb3ad6292b23f4f3ce327dc5.patch",
+      "sha256": "sha256:d39708ca94683bf731fb209cf612d9c8cd15ee0afb3ad6292b23f4f3ce327dc5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/cd0ba55b71455bea62020ee6f2a9b8d32cb6396d77fb0f5bc30047aabb4508f0.json",
+      "sha256": "sha256:cd0ba55b71455bea62020ee6f2a9b8d32cb6396d77fb0f5bc30047aabb4508f0",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609061636-BW11J6/verification/20260906170922113-b45f6477b827e254.json",
+      "sha256": "sha256:8eeed6a3c01f76f109b0e80622f0bba145ce80927fe985b73a0c4f38d2bdd493",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/d6ffb795495f4a9c8f797b32cd5b93cd79a319eecb3efd81958add83dbd58902.json",
+      "sha256": "sha256:d6ffb795495f4a9c8f797b32cd5b93cd79a319eecb3efd81958add83dbd58902",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:67cf60d5b18640db0c0141b9a6fea266f6cf89aecc8e7bda542e43ab7b4ef0ea",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

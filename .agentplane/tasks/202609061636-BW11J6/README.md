@@ -4,7 +4,7 @@ title: "Archive the resolved WorkItem input planning incident before AgentPlane 
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -31,6 +31,31 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-06T17:11:02.245Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "c56f52a07026c93f81d06a9d31b14db21db47429"
+  blueprint_digest: "6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae"
+  evidence_refs:
+    - ".agentplane/tasks/202609061636-BW11J6/quality/20260906-170928033-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/20260906-170928033-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/ba5b6103f54f240b581ab412b6ff8e7f1ec6303a5751c5106d4bba911b459928.md"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/20260906-170928033-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/20260906-170928033-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/20260906-170928033-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609061636-BW11J6/README.md"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/d39708ca94683bf731fb209cf612d9c8cd15ee0afb3ad6292b23f4f3ce327dc5.patch"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/cd0ba55b71455bea62020ee6f2a9b8d32cb6396d77fb0f5bc30047aabb4508f0.json"
+    - ".agentplane/tasks/202609061636-BW11J6/verification/20260906170922113-b45f6477b827e254.json"
+    - ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/d6ffb795495f4a9c8f797b32cd5b93cd79a319eecb3efd81958add83dbd58902.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/dod.docs.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The frozen diff preserves every original incident field in the historical archive, removes only its active entry from both matching registries, and leaves canonical input-plan admission unchanged. All required verification is bound to the reviewed implementation SHA."
 execution_route:
   frozen: true
   reason_codes:
@@ -715,7 +740,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609061636-BW11J6"
-    event_cursor: 10
+    event_cursor: 11
     final_validation: null
     id: "202609061636-BW11J6"
     intent:
@@ -942,9 +967,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609061636-BW11J6"
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-06T17:09:23.120Z"
+    updated_at: "2026-09-06T17:09:23.122Z"
     work_items:
       synchronize-archived-incident-policy:
         attempt: 1
@@ -1079,6 +1104,30 @@ extensions:
         work_item_id: "synchronize-archived-incident-policy"
     leases: []
     mutation_receipts:
+      compatibility:sha256:1caad529563d6159c8585760c906edcb457262050d38b501f09b2a96b0d498fe:
+        aggregate_digest: "sha256:deac445801a73bc6dcd0ff7b93dbe4c2303fae90ad3b35ed4b66bc895db45c89"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T17:09:23.122Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_046d2f637f4dd841e69b713d"
+          mutation_id: "compatibility:sha256:1caad529563d6159c8585760c906edcb457262050d38b501f09b2a96b0d498fe"
+          plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1caad529563d6159c8585760c906edcb457262050d38b501f09b2a96b0d498fe"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
       compatibility:sha256:3107280ef874dde882a402da8170c32944eee975ce2cd734c28b5227985a3017:
         aggregate_digest: "sha256:4695ba72db74fcbffcf56cddf607e8027bac1d6d08c8d1ff7b56cfb98e923959"
         event:
