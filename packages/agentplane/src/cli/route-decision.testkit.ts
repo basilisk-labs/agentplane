@@ -1,5 +1,5 @@
-import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
-import { TaskCentricBackendAdapter } from "../adapters/task-backend/task-centric-backend-adapter.js";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
 import { expect } from "vitest";
 import { captureStdIO, runCliSilent } from "@agentplane/testkit";
 import { runCli } from "./run-cli.js";
@@ -12,6 +12,7 @@ import {
   resolveQualityReviewTargetSha,
 } from "../commands/shared/quality-review-target.js";
 import { resolveObservedVerificationChangedPaths } from "../commands/task/verify-record-observed-changes.js";
+import { recordTaskCentricExternalResult } from "../commands/task/task-centric-external-result.js";
 
 export async function approveRouteTaskPlan(
   root: string,
@@ -137,55 +138,54 @@ export async function completeRouteWorkItem(root: string, taskId: string): Promi
     throw new Error("Route fixture requires exactly one WorkItem.");
   }
   const repository = plan.proposal.planning_baseline;
-  const adapter = new TaskCentricBackendAdapter({
-    backend: ctx.taskBackend,
-    observeRepository: () => Promise.resolve(repository),
-  });
-  await adapter.recordWorkItemResult({
-    task_id: taskId,
-    expected_revision: task.revision ?? 1,
+  const workOrder = buildAgentWorkOrderV2ValidFixture();
+  workOrder.work_order_id = `route-fixture-result:${taskId}`;
+  workOrder.task = {
+    id: taskId,
+    revision: task.revision ?? 1,
     work_item_id: item.id,
-    semantic_result: {
-      schema_version: 1,
-      kind: "execute",
-      task_id: taskId,
-      plan_revision: plan.revision,
-      plan_digest: plan.digest,
-      work_item_id: item.id,
-      context_digest: repository.digest,
+    objective: item.objective,
+    acceptance_criteria: item.acceptance_criteria,
+    unresolved_questions: [],
+  };
+  workOrder.planning_context = {
+    schema_version: 1,
+    repository_snapshot: repository,
+    retrievals: [],
+    digest: repository.digest,
+  };
+  const result = await recordTaskCentricExternalResult({
+    command: ctx,
+    work_order: workOrder,
+    head: await ctx.git.headCommit(),
+    dirty_paths: [],
+    semantic: {
+      schema_version: 2,
+      kind: "agent_semantic_result",
+      work_order_id: workOrder.work_order_id,
       status: "completed",
       summary: "Completed the isolated route fixture implementation.",
-      claims: [],
-      questions: [],
-      artifacts: item.expected_outputs,
+      findings: [],
+      uncertainty: [],
     },
-    outputs: item.expected_outputs.map((id) => ({
-      schema_version: 1,
-      id,
-      kind: "test_fixture",
-      schema: "agentplane.route-fixture.v1",
-      digest: taskCentricDigest({ taskId, id }),
-      producer: {
-        task_id: taskId,
-        plan_revision: plan.revision,
-        work_item_id: item.id,
-        attempt: 1,
-      },
-      repository_snapshot_digest: repository.digest,
-      provenance: ["isolated route test fixture"],
-    })),
-    validation: item.validation.checks.map((check) => ({
-      check_id: check.id,
+    verification: {
       status: "passed",
-      observed_at: new Date().toISOString(),
-      repository_snapshot_digest: repository.digest,
-      command_identity: "isolated route fixture verification",
-      exit_code: 0,
-      artifact_refs: [],
-      detail: "The test fixture implementation is ready for closeout routing.",
-    })),
-    idempotency_key: `route-fixture-result:${taskId}`,
+      artifact_path: "isolated route test fixture",
+      reason: null,
+      checks: item.validation.checks.map((check) => ({
+        command: check.command ?? "isolated route fixture verification",
+        script: null,
+        check_ids: [check.id],
+        exit_code: 0,
+        duration_ms: 0,
+        stdout_tail: "The test fixture implementation is ready for closeout routing.",
+        stderr_tail: "",
+      })),
+    },
   });
-  const completed = await adapter.readTask(taskId);
-  expect(completed?.work_items[item.id]?.state).toBe("COMPLETED");
+  expect(result).toEqual({
+    state: "work_item_completed",
+    work_item_id: item.id,
+    remaining_required_work_items: 0,
+  });
 }
