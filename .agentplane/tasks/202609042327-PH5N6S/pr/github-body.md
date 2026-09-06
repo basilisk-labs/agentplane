@@ -15,8 +15,13 @@ User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes imp
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core
+packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,12 +32,12 @@ User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes imp
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...li.core.task-advance.clean-verification.test.ts | 255 ++++++++++++++++++
- .../external-agent-implementation-authority.ts     | 279 ++++++++++----------
- .../external-agent-implementation-finalization.ts  | 112 ++++++++
- .../src/commands/task/verify-record-execute.ts     | 118 +++++----
- .../task/verify-record.durability.unit.test.ts     | 286 +++++++++++++++++++--
- 5 files changed, 841 insertions(+), 209 deletions(-)
+ ...li.core.task-advance.clean-verification.test.ts | 265 +++++++++++++++++++++
+ .../external-agent-implementation-authority.ts     |  14 ++
+ .../external-agent-implementation-finalization.ts  |  24 +-
+ .../src/commands/task/verify-record-execute.ts     |  12 +-
+ .../task/verify-record.durability.unit.test.ts     |  72 ++++++
+ 5 files changed, 365 insertions(+), 22 deletions(-)
 ```
 
 </details>

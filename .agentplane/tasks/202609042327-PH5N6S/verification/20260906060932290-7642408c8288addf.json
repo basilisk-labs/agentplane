@@ -1,0 +1,116 @@
+{
+  "details": "Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042327-PH5N6S declared verification\n\nCommand: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1\nResult: fail\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609042327-PH5N6S declared verification",
+  "digest": "sha256:7642408c8288addf5f79a483cdeb0cec586a8b09744e4ac46c4495b0edec2908",
+  "implementation_sha": "198465d8420ff4e13f81d3f09a47fd2e30c577e4",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:7283df06976a911b23808781e2cd25219db099e9b9b507a8f46f6695d7ab1280",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:50ed9170547139fcb0d3cdf4f9c7a7a58c95ec67a4e7c2759be27463ef49f71b",
+      "digest": "sha256:47a97c9e052a5fb850fec4c4914e5429ddfb09aaaff0546a0073f0c452ee8c17",
+      "references": [
+        {
+          "digest": "sha256:98444abe6abbe083a70055b20b597b9d65c3b153c062bcdd9a1e011dff1201d7",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:98444abe6abbe083a70055b20b597b9d65c3b153c062bcdd9a1e011dff1201d7",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+      "digest": "sha256:59cea23734c98b7e5f555281aa5e80486a3b683ea69f115b14577451a4775200",
+      "primary_task_id": "202609042327-PH5N6S",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609042327-PH5N6S"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+      "digest": "sha256:25259d3d293a18593a5fa0a774fda22898bb1e3c30042cad2825a045b1114684",
+      "strategy": "branch_diff",
+      "target_sha": "198465d8420ff4e13f81d3f09a47fd2e30c577e4"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:309c38fe724713a42aee0b59442e1480f1f2813c2dd2ac39e6ffa06a676cb6d5",
+    "verify_steps_digest": "sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1",
+  "recorded_at": "2026-09-06T06:09:32.290Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: Verification preserves valid execution provenance only for the same identity; negative, repeated and interrupted persistence remains fail-closed. Recovery must still reject missing original exchange evidence, foreign identity, unproved provenance and stale results.\n2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.\n3. Run `bun run ci:local:full`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.",
+  "scope_digest": "sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7",
+  "task_id": "202609042327-PH5N6S",
+  "verification_command": "agentplane verify 202609042327-PH5N6S --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -203,9 +203,19 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
         },
       });
       expect(planned.code, planned.stderr).toBe(0);
-      expect(
-        await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
-      ).toBe(0);
+      const verifySteps = await invoke(root, [
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "Run `bun run test:critical`. Expected: verification sees a clean committed checkout and preserves the implementation identity.",
+      ]);
+      expect(verifySteps.code, verifySteps.stderr).toBe(0);
+      const approval = await invoke(root, ["task", "plan", "approve", taskId, "--by", "USER"]);
+      expect(approval.code, approval.stderr).toBe(0);
       await git("add", ".agentplane");
       await git("commit", "-m", "test: persist approved plan");
       const implementation = await episode(root, taskId);

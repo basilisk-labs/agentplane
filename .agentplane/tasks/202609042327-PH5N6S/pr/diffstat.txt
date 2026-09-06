@@ -1,6 +1,6 @@
- ...li.core.task-advance.clean-verification.test.ts | 255 ++++++++++++++++++
- .../external-agent-implementation-authority.ts     | 279 ++++++++++----------
- .../external-agent-implementation-finalization.ts  | 112 ++++++++
- .../src/commands/task/verify-record-execute.ts     | 118 +++++----
- .../task/verify-record.durability.unit.test.ts     | 286 +++++++++++++++++++--
- 5 files changed, 841 insertions(+), 209 deletions(-)
+ ...li.core.task-advance.clean-verification.test.ts | 265 +++++++++++++++++++++
+ .../external-agent-implementation-authority.ts     |  14 ++
+ .../external-agent-implementation-finalization.ts  |  24 +-
+ .../src/commands/task/verify-record-execute.ts     |  12 +-
+ .../task/verify-record.durability.unit.test.ts     |  72 ++++++
+ 5 files changed, 365 insertions(+), 22 deletions(-)
