@@ -140,6 +140,13 @@ const SUPERVISOR_EPISODE_CURSOR_ZOD_SCHEMA = z
   })
   .strict();
 
+const SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA = z
+  .object({
+    operation_identity: z.unknown().refine((value) => value !== undefined),
+    context: z.unknown().refine((value) => value !== undefined),
+  })
+  .strict();
+
 const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
   .object({
     sequence: POSITIVE_INTEGER,
@@ -152,6 +159,7 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
     authority_digest: SHA256_DIGEST_SCHEMA.nullable(),
     work_order_ref: NON_EMPTY_STRING.nullable(),
     effect_ref: NON_EMPTY_STRING.nullable(),
+    recovery: SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA.optional(),
     replacement_of_operation_key: SHA256_DIGEST_SCHEMA.nullable().optional(),
     status: z.enum(SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES),
     result_digest: SHA256_DIGEST_SCHEMA.nullable(),
@@ -398,6 +406,28 @@ export function validateSupervisorExecutionEpisodeJournal(
   if (new Set(sequences).size !== sequences.length) {
     throw new Error("Supervisor episode journal operation sequences must be unique.");
   }
+  for (const operation of parsed.operations) {
+    if (!operation.recovery) continue;
+    const key = digestSupervisorEpisodeValue({
+      task_id: parsed.task_id,
+      episode: operation.episode,
+      role: operation.role,
+      kind: operation.kind,
+      operation_identity: operation.recovery.operation_identity,
+      precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+      authority_ref: operation.authority_ref,
+      authority_digest: operation.authority_digest,
+      work_order_ref: operation.work_order_ref,
+      effect_ref: operation.effect_ref,
+      ...(operation.replacement_of_operation_key
+        ? { replacement_of_operation_key: operation.replacement_of_operation_key }
+        : {}),
+      recovery: operation.recovery,
+    });
+    if (operation.operation_key !== key) {
+      throw new Error("Supervisor episode recovery evidence does not match its operation key.");
+    }
+  }
   const pendingReplacement = parsed.cursor.replacement_of_operation_key;
   if (pendingReplacement !== undefined) {
     const last = parsed.operations.at(-1);
@@ -561,6 +591,7 @@ export function startSupervisorExecutionEpisode(opts: {
   role: SupervisorEpisodeRole;
   kind: SupervisorEpisodeOperationKind;
   operation_identity: unknown;
+  recovery_context?: unknown;
   precondition_fingerprint_digest: string;
   authority_ref?: string | null;
   authority_digest?: string | null;
@@ -627,6 +658,17 @@ export function startSupervisorExecutionEpisode(opts: {
       stop: { reason: "budget_exhausted", exhausted_dimensions: exhausted },
     };
   }
+  const recoveryBinding =
+    opts.recovery_context === undefined
+      ? {}
+      : {
+          recovery: structuredClone(
+            SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA.parse({
+              operation_identity: opts.operation_identity,
+              context: opts.recovery_context,
+            }),
+          ),
+        };
   const operation_key = digestSupervisorEpisodeValue({
     task_id: journal.task_id,
     episode: journal.usage.episodes + 1,
@@ -639,6 +681,7 @@ export function startSupervisorExecutionEpisode(opts: {
     work_order_ref: opts.work_order_ref?.trim() ?? null,
     effect_ref: opts.effect_ref?.trim() ?? null,
     ...replacementBinding,
+    ...recoveryBinding,
   });
   const operation = {
     sequence: journal.operations.length + 1,
@@ -652,6 +695,7 @@ export function startSupervisorExecutionEpisode(opts: {
     work_order_ref: opts.work_order_ref?.trim() ?? null,
     effect_ref: opts.effect_ref?.trim() ?? null,
     ...replacementBinding,
+    ...recoveryBinding,
     status: "intent" as const,
     result_digest: null,
     postcondition_fingerprint_digest: null,
