@@ -298,11 +298,13 @@ export async function applyExternalImplementationResult(opts: {
       require_changes: false,
     });
   }
-  // Rework replay can follow a supervisor task-artifact commit before verification.
+  // Implementation replay can follow a supervisor task-artifact commit before verification.
   if (
     !conflictContext &&
     (observedChangedPaths?.length === 0 ||
-      (opts.exchange.purpose === "implementation_rework" && head !== opts.exchange.baseline.head))
+      ((recoversRecordedImplementationCommit(opts.exchange.purpose) ||
+        opts.exchange.purpose === "implementation_rework") &&
+        head !== opts.exchange.baseline.head))
   ) {
     const recovery = await resolveRecordedImplementationRecovery({
       purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,

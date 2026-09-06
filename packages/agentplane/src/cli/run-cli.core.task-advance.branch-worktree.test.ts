@@ -338,7 +338,9 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       const implementationOutput = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: checkout,
       });
-      const implementation = implementationOutput.stdout.trim();
+      const implementation = interrupted?.commit?.hash;
+      if (!implementation) throw new Error("missing recorded implementation commit");
+      expect(implementationOutput.stdout.trim()).not.toBe(implementation);
       if (boundary === "before WorkItem projection") {
         if (!interrupted) throw new Error("missing interrupted WorkItem task");
         const aggregate = taskCentricAggregateFromExtensions(interrupted.extensions)!;
@@ -566,69 +568,29 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
         await readFile(path.join(checkout, ".agentplane/tasks", taskId, "README.md"), "utf8"),
       ).toBe(after);
       if (boundary === "before verification") {
-        if (!completed) throw new Error("missing completed WorkItem task");
-        const verifyIo = captureStdIO();
-        try {
-          expect(
-            await runCli([
-              "verify",
-              taskId,
-              "--ok",
-              "--by",
-              "TESTER",
-              "--note",
-              "Verified: completed WorkItem checks passed; record the task-level verification before review.",
-              "--details",
-              ["affected_unit_integration", "critical_paths", "task_outcome"]
-                .map(
-                  (check) =>
-                    `Check: ${check}\nCommand: bun run test:critical\nResult: pass\nEvidence: fixture verification stub exited 0 during the accepted recovery\nScope: fixture feature implementation`,
-                )
-                .join("\n\n"),
-              "--root",
-              checkout,
-            ]),
-            verifyIo.stderr,
-          ).toBe(0);
-        } finally {
-          verifyIo.restore();
-        }
-        const verified = await ctx.taskBackend.getTask(taskId);
-        if (!verified) throw new Error("missing verified task");
-        const verifiedAggregate = taskCentricAggregateFromExtensions(verified.extensions)!;
-        const revision = verified.revision! + 1;
-        // Seed a task-level review outcome. No hosted PR is needed by this fixture.
-        await ctx.taskBackend.writeTask({
-          ...verified,
-          revision,
-          extensions: withTaskCentricAggregate(verified.extensions, {
-            ...verifiedAggregate,
-            revision,
-          }),
-          quality_review: {
-            state: "rework",
-            updated_at: new Date().toISOString(),
-            updated_by: "EVALUATOR",
-            provenance: "evaluator_supplied",
-            evaluated_sha: implementation,
-            blueprint_digest: null,
-            note: "Change the feature result to false.",
-            evidence_refs: [`.agentplane/tasks/${taskId}/quality/fixture/quality-report.json`],
-            findings: ["The task-level feature needs correction after all WorkItems completed."],
-          },
-        });
-        await execFileAsync("git", ["add", ".agentplane"], { cwd: checkout });
-        await execFileAsync("git", ["commit", "-m", "test: seed task-level review rework"], {
-          cwd: checkout,
-        });
+        // Request task-level rework through the local verification route.
+        expect(
+          await runCliSilent([
+            "verify",
+            taskId,
+            "--rework",
+            "--by",
+            "TESTER",
+            "--note",
+            "Rework: change the feature after all WorkItems completed.",
+            "--root",
+            checkout,
+          ]),
+        ).toBe(0);
         const taskRework = await readAgentPacket(checkout, taskId);
-        if (!taskRework.exchange) throw new Error("missing task-level rework exchange");
+        if (!taskRework.exchange)
+          throw new Error(`missing task-level rework exchange: ${JSON.stringify(taskRework)}`);
         const reworkOrder = JSON.parse(
           await readFile(path.join(taskRework.exchange.directory, "work-order.json"), "utf8"),
         ) as AgentWorkOrderV2;
         expect(reworkOrder.task.work_item_id ?? null).toBeNull();
         const beforeRework = await ctx.taskBackend.getTask(taskId);
-        expect(beforeRework?.verification?.state).toBe("ok");
+        expect(beforeRework?.verification?.state).toBe("needs_rework");
         const itemsBefore = taskCentricAggregateFromExtensions(
           beforeRework?.extensions,
         )?.work_items;
