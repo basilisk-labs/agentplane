@@ -45,7 +45,8 @@ Created: 2026-09-06T11:45:32.878Z
  .../src/runner/supervisor-execution-episode.ts     |  44 ++
  .../baselines/v0.7-compatibility-candidate.json    |  31 +-
  .../check-compatibility-contract-baseline.mjs      |  15 +
- 16 files changed, 1460 insertions(+), 13 deletions(-)
+ website/static/llms-full.txt                       |  56 ++
+ 17 files changed, 1516 insertions(+), 13 deletions(-)
 ```
 
 </details>
