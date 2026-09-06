@@ -4,7 +4,7 @@ title: "Archive the resolved WorkItem input planning incident before AgentPlane 
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 9
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ verify:
   - "node .agentplane/policy/check-routing.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-06T16:42:56.743Z"
+  updated_at: "2026-09-06T16:59:01.680Z"
   updated_by: "USER"
-  note: "Relay of the explicit user authorization for all required release repairs and the dedicated incident review, including the protected incidents registry and its archive. The approved two-file policy change preserves evidence and does not weaken guards."
+  note: "Relay the explicit user instruction to fix all required release blockers and treat all necessary permissions as granted, including AGENTS.md permission overrides. This revised plan adds only the canonical bundled incident policy required by existing parity enforcement; it preserves the archive and all guards."
 verification:
   state: "needs_rework"
   updated_at: "2026-09-06T16:55:17.682Z"
@@ -66,13 +66,14 @@ execution_contract:
     writable_roots:
       - ".agentplane/policy/incidents.md"
       - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
+      - "Archive the resolved incident consistently in the repository and its canonical bundled policy while retaining complete historical evidence."
       - "Declare the protected policy surface explicitly; do not change implementation behavior or weaken admission."
-      - "The dedicated user-approved policy task changes only the active incident registry and its historical archive."
     repository_effects:
       - "documentation"
       - "repository_write"
@@ -83,45 +84,14 @@ execution_contract:
     scope_roots:
       - ".agentplane/policy/incidents.md"
       - "docs/developer/incident-archive.mdx"
+      - "packages/agentplane/assets/policy/incidents.md"
   observed:
-    authority_violations:
-      - "verification:recorded-check-7:fail"
-      - "verification:verification-record:fail"
-    changed_components:
-      - ".agentplane"
-      - "docs"
-    changed_paths:
-      - ".agentplane/policy/incidents.md"
-      - "docs/developer/incident-archive.mdx"
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "documentation"
-      - "repository_write"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "fail"
-      -
-        id: "verification-record"
-        result: "fail"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -140,6 +110,7 @@ execution_contract:
         components:
           - ".agentplane/policy/incidents.md"
           - "docs/developer/incident-archive.mdx"
+          - "packages/agentplane/assets/policy/incidents.md"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:documentation"
@@ -155,7 +126,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:821a8914659c57310a950ad9b036aecfc6426d6e422e0887bef0eca85eb50bca"
+      digest: "sha256:4f046a0c25d77b068eae0fd7a83f7fc9129c0d69171e8f09dec552eda707fe6f"
       escalation_reasons:
         - "effect_security_boundary"
       execution_groups:
@@ -164,16 +135,10 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - ".agentplane"
-          - "docs"
-        changed_files:
-          - ".agentplane/policy/incidents.md"
-          - "docs/developer/incident-archive.mdx"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "documentation"
-          - "repository_write"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -204,8 +169,6 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
       - "task_outcome"
-      - "verification_recovery:recorded-check-7"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -237,7 +200,7 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-06T16:55:18.642Z"
+doc_updated_at: "2026-09-06T16:58:45.146Z"
 doc_updated_by: "SUPERVISOR"
 description: "Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task."
 sections:
@@ -248,7 +211,7 @@ sections:
   Scope: |-
     - In scope: Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task.
     - Out of scope: unrelated refactors not required for "Archive the resolved WorkItem input planning incident before AgentPlane 0.7.8".
-  Plan: "Validate the already integrated canonical input-plan guard, preserve incident provenance in the existing archive, and remove only the resolved active entry. Use one docs/policy WorkItem and the five declared checks."
+  Plan: "Complete incident archiving by synchronizing its canonical bundled policy, preserving the existing archive and all native verification guards."
   Verify Steps: |-
     1. Run `node .agentplane/policy/check-routing.mjs`. Expected: The policy gateway and module budgets remain valid.
     2. Run `bun run release:incidents:check`. Expected: The active incident registry is empty only after the original incident and current evidence are preserved in the archive.
@@ -340,12 +303,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:83567de72e8d7ff8e1d9ed5fcb793977e22d54d9fa5ab599a29e5b0cc9ce3aaf"
-    digest: "sha256:5cff00b4041f0dc1384d4e89af30ecc7b858b214c2985e95da5201db1cd50d37"
-    grant_id: "14e5c127-8b83-4a14-bb40-3ee943ab7fb5"
-    issued_at: "2026-09-06T16:42:56.743Z"
+    digest: "sha256:923cc5e64ee80475adaaa4ff8ae14998ed7188f30a2a1ebdc3abe2f9585c637a"
+    grant_id: "b445745a-5a8e-4c19-a3f7-2b83b22f4892"
+    issued_at: "2026-09-06T16:59:01.680Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:84fe81af0b3bbfddaa964d9145197d8c404470896548ceffcec797c147638773"
-    plan_revision: 3
+    plan_digest: "sha256:2f77a2074f08daa13af666cf660db7337da53febff663680b0bbd8ff9d9cfe7e"
+    plan_revision: 11
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:0bee9c8ad4b8bd90ec3e5f60ccef2a96774452ff11b7cbfab0f5a2b3910b3e55"
@@ -354,14 +317,14 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-06T16:42:56.743Z"
+        approved_at: "2026-09-06T16:59:01.680Z"
         approved_by: "USER"
-        approved_digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+        approved_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-06T16:41:42.633Z"
-      digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+      created_at: "2026-09-06T16:58:45.139Z"
+      digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
       proposal:
         assumptions:
           - "The existing fix in commit 9229665252533541348c1225310ea6dcf3d71276 is an ancestor of the current reviewed main; verify that ancestry and rerun its current tests before archiving."
@@ -369,20 +332,22 @@ extensions:
           - "Do not edit generated documentation unless its assigned freshness check proves a required change; return a scope refinement first if it does."
           - "This is the dedicated incident review authorized in the release plan. User approval already covers necessary policy changes; native protected-policy override remains an operator boundary if requested."
           - "Keep all source fixes, legacy milestone gates, release planning and package publication outside this WorkItem."
+          - "Before returning the implementation result, run bun run agents:check and the existing agents-template.test.ts. The native supervisor retains its unchanged ci:local:full policy floor."
+          - "The previous archive implementation is committed; preserve it rather than creating another historical incident entry. The only required new product edit is the bundled policy counterpart."
         planning_baseline:
-          captured_at: "2026-09-06T16:36:40.479Z"
+          captured_at: "2026-09-06T16:57:48.082Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:426c29bc301d774a3f99070f5afa2f439b6816f9dda87ac40465d7b5244a6962"
+          digest: "sha256:03eeb90ec21301b4732ff111d10a9da180f7f867fe6f01cb133053f448fab5c2"
           dirty_paths:
             - ".agentplane/tasks/202609061636-BW11J6/README.md"
           git:
             kind: "commit"
             ref: null
-            sha: "be1a24bce6129e5e1cb3b18432b87fc83113e8e1"
+            sha: "eff0d3d84ab4db2a34b2fe25f26dbe00b9f522ee"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:10"
         schema_version: 1
         task_id: "202609061636-BW11J6"
         top_level_validation:
@@ -433,7 +398,7 @@ extensions:
               description: "Preserve the complete INC-20260829-01 history and current canonical admission evidence in the archive before removing its active entry. Unproduced, self-produced, ambiguous and cyclic input plans remain rejected before persistence; the active incident gate and policy/documentation checks pass."
               id: "resolved-incident"
               required: true
-          evidence_fingerprint: "sha256:426c29bc301d774a3f99070f5afa2f439b6816f9dda87ac40465d7b5244a6962"
+          evidence_fingerprint: "sha256:03eeb90ec21301b4732ff111d10a9da180f7f867fe6f01cb133053f448fab5c2"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -462,14 +427,17 @@ extensions:
                   - ".agentplane/policy/governance.md"
                   - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
                   - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+                  - "packages/agentplane/assets/policy/incidents.md"
+                  - "packages/agentplane/src/agents/agents-template.test.ts"
+                  - "scripts/generate/sync-agent-templates.mjs"
                 symbol_hints:
                   - "assertApplicable"
                   - "validateWorkItemDefinitions"
               depends_on: []
               expected_outputs:
-                - "Archived INC-20260829-01 with current planning admission evidence and an empty active registry"
-              id: "archive-input-incident"
-              objective: "Verify the existing planning admission guard and archive the resolved WorkItem input incident with exact source and test evidence. Preserve the old incident record and every other archived entry. Remove only the resolved active entry after the archive is complete."
+                - "Archived INC-20260829-01 with preserved source evidence and matching empty repository and bundled registries"
+              id: "synchronize-archived-incident-policy"
+              objective: "Preserve the completed incident archive and synchronize the bundled policy by removing only the same archived INC-20260829-01 entry. Verify exact template parity and rerun the existing acceptance checks and native full CI."
               optional: false
               priority: 1
               required_inputs: []
@@ -482,10 +450,15 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "docs/developer/incident-archive.mdx"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/assets/policy/incidents.md"
               risk: "low"
               scope_roots:
                 - ".agentplane/policy/incidents.md"
                 - "docs/developer/incident-archive.mdx"
+                - "packages/agentplane/assets/policy/incidents.md"
               validation:
                 checks:
                   -
@@ -534,12 +507,12 @@ extensions:
                     description: "Preserve the complete INC-20260829-01 history and current canonical admission evidence in the archive before removing its active entry. Unproduced, self-produced, ambiguous and cyclic input plans remain rejected before persistence; the active incident gate and policy/documentation checks pass."
                     id: "resolved-incident"
                     required: true
-                evidence_fingerprint: "sha256:426c29bc301d774a3f99070f5afa2f439b6816f9dda87ac40465d7b5244a6962"
+                evidence_fingerprint: "sha256:03eeb90ec21301b4732ff111d10a9da180f7f867fe6f01cb133053f448fab5c2"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609061636-BW11J6"
-    event_cursor: 6
+    event_cursor: 7
     final_validation: null
     id: "202609061636-BW11J6"
     intent:
@@ -578,90 +551,207 @@ extensions:
       task_id: "202609061636-BW11J6"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 9
-    schema_version: 1
-    updated_at: "2026-09-06T16:55:18.641Z"
-    work_items:
-      archive-input-incident:
-        attempt: 1
-        claim_id: null
-        id: "archive-input-incident"
-        last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:6512bdd72761cb2c12a74aa56babcfc40b377a02f21fae72f84e0c1d0a2df28f"
-            id: "Archived INC-20260829-01 with current planning admission evidence and an empty active registry"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609061636-BW11J6"
-              work_item_id: "archive-input-incident"
-            provenance:
-              - "sha256:53994b73e6850c7efc98ad7947b380907959f0bf4bdea1bc1c4283f245ebb16c"
-              - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:a1656453e8293f68cbb8f5b9f2ac63accea98e7da43363cda103a032d5101f09"
-            schema: "agentplane.semantic-output.v1"
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-06T16:42:56.743Z"
+          approved_by: "USER"
+          approved_digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-06T16:41:42.633Z"
+        digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+        proposal:
+          assumptions:
+            - "The existing fix in commit 9229665252533541348c1225310ea6dcf3d71276 is an ancestor of the current reviewed main; verify that ancestry and rerun its current tests before archiving."
+            - "Preserve every original incident field; change its state to archived only in the archive and add this task identity, evidence and a concise reason."
+            - "Do not edit generated documentation unless its assigned freshness check proves a required change; return a scope refinement first if it does."
+            - "This is the dedicated incident review authorized in the release plan. User approval already covers necessary policy changes; native protected-policy override remains an operator boundary if requested."
+            - "Keep all source fixes, legacy milestone gates, release planning and package publication outside this WorkItem."
+          planning_baseline:
+            captured_at: "2026-09-06T16:36:40.479Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:426c29bc301d774a3f99070f5afa2f439b6816f9dda87ac40465d7b5244a6962"
+            dirty_paths:
+              - ".agentplane/tasks/202609061636-BW11J6/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "be1a24bce6129e5e1cb3b18432b87fc83113e8e1"
+            policy_digest: null
             schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
-              check_id: "routing"
-              command_identity: "node .agentplane/policy/check-routing.mjs"
-              detail: "Observed by node .agentplane/policy/check-routing.mjs."
-              exit_code: 0
-              observed_at: "2026-09-06T16:47:35.154Z"
-              repository_snapshot_digest: "sha256:a1656453e8293f68cbb8f5b9f2ac63accea98e7da43363cda103a032d5101f09"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
-              check_id: "incidents"
-              command_identity: "bun run release:incidents:check"
-              detail: "Observed by bun run release:incidents:check."
-              exit_code: 0
-              observed_at: "2026-09-06T16:47:35.154Z"
-              repository_snapshot_digest: "sha256:a1656453e8293f68cbb8f5b9f2ac63accea98e7da43363cda103a032d5101f09"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
-              check_id: "planning"
-              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
-              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1."
-              exit_code: 0
-              observed_at: "2026-09-06T16:47:35.154Z"
-              repository_snapshot_digest: "sha256:a1656453e8293f68cbb8f5b9f2ac63accea98e7da43363cda103a032d5101f09"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
-              check_id: "docs"
-              command_identity: "bun run docs:site:generate:check"
-              detail: "Observed by bun run docs:site:generate:check."
-              exit_code: 0
-              observed_at: "2026-09-06T16:47:35.154Z"
-              repository_snapshot_digest: "sha256:a1656453e8293f68cbb8f5b9f2ac63accea98e7da43363cda103a032d5101f09"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
-              check_id: "format"
-              command_identity: "bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx"
-              detail: "Observed by bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx."
-              exit_code: 0
-              observed_at: "2026-09-06T16:47:35.154Z"
-              repository_snapshot_digest: "sha256:a1656453e8293f68cbb8f5b9f2ac63accea98e7da43363cda103a032d5101f09"
-              status: "passed"
+            task_history_cursor: "task-revision:1"
           schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+          task_id: "202609061636-BW11J6"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "node .agentplane/policy/check-routing.mjs"
+                id: "routing"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run release:incidents:check"
+                id: "incidents"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
+                id: "planning"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run docs:site:generate:check"
+                id: "docs"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx"
+                id: "format"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "routing"
+                  - "incidents"
+                  - "planning"
+                  - "docs"
+                  - "format"
+                description: "Preserve the complete INC-20260829-01 history and current canonical admission evidence in the archive before removing its active entry. Unproduced, self-produced, ambiguous and cyclic input plans remain rejected before persistence; the active incident gate and policy/documentation checks pass."
+                id: "resolved-incident"
+                required: true
+            evidence_fingerprint: "sha256:426c29bc301d774a3f99070f5afa2f439b6816f9dda87ac40465d7b5244a6962"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "routing"
+                      - "incidents"
+                      - "planning"
+                      - "docs"
+                      - "format"
+                    description: "Preserve the complete INC-20260829-01 history and current canonical admission evidence in the archive before removing its active entry. Unproduced, self-produced, ambiguous and cyclic input plans remain rejected before persistence; the active incident gate and policy/documentation checks pass."
+                    id: "resolved-incident"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 150000
+                  optional_sources:
+                    - "docs/developer/incident-archive.mdx"
+                  required_sources:
+                    - ".agentplane/policy/incidents.md"
+                    - ".agentplane/policy/governance.md"
+                    - "packages/agentplane/src/commands/task/external-agent-planning-authority.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts"
+                  symbol_hints:
+                    - "assertApplicable"
+                    - "validateWorkItemDefinitions"
+                depends_on: []
+                expected_outputs:
+                  - "Archived INC-20260829-01 with current planning admission evidence and an empty active registry"
+                id: "archive-input-incident"
+                objective: "Verify the existing planning admission guard and archive the resolved WorkItem input incident with exact source and test evidence. Preserve the old incident record and every other archived entry. Remove only the resolved active entry after the archive is complete."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/policy/incidents.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/developer/incident-archive.mdx"
+                risk: "low"
+                scope_roots:
+                  - ".agentplane/policy/incidents.md"
+                  - "docs/developer/incident-archive.mdx"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node .agentplane/policy/check-routing.mjs"
+                      id: "routing"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:incidents:check"
+                      id: "incidents"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
+                      id: "planning"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run docs:site:generate:check"
+                      id: "docs"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx"
+                      id: "format"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "routing"
+                        - "incidents"
+                        - "planning"
+                        - "docs"
+                        - "format"
+                      description: "Preserve the complete INC-20260829-01 history and current canonical admission evidence in the archive before removing its active entry. Unproduced, self-produced, ambiguous and cyclic input plans remain rejected before persistence; the active incident gate and policy/documentation checks pass."
+                      id: "resolved-incident"
+                      required: true
+                  evidence_fingerprint: "sha256:426c29bc301d774a3f99070f5afa2f439b6816f9dda87ac40465d7b5244a6962"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
+    revision: 12
+    schema_version: 1
+    updated_at: "2026-09-06T16:58:45.146Z"
+    work_items:
+      synchronize-archived-incident-policy:
+        attempt: 0
+        claim_id: null
+        id: "synchronize-archived-incident-policy"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -681,8 +771,49 @@ extensions:
         task_id: "202609061636-BW11J6"
         task_revision: 7
         work_item_id: "archive-input-incident"
+      -
+        at: "2026-09-06T16:57:46.623Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+        entity: "task"
+        id: "event_14c80423dbc7adb28abc18f0"
+        mutation_id: "plan-refinement:work-order-202609061636-BW11J6-executor-1f0d4b3754d4a5903ad04f29"
+        plan_digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
+        task_revision: 9
+        work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:3107280ef874dde882a402da8170c32944eee975ce2cd734c28b5227985a3017:
+        aggregate_digest: "sha256:4695ba72db74fcbffcf56cddf607e8027bac1d6d08c8d1ff7b56cfb98e923959"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T16:58:45.146Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_f20a42ee74eadddd23d1b103"
+          mutation_id: "compatibility:sha256:3107280ef874dde882a402da8170c32944eee975ce2cd734c28b5227985a3017"
+          plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3107280ef874dde882a402da8170c32944eee975ce2cd734c28b5227985a3017"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
       compatibility:sha256:46751a10a0be644071d0edf830e61b0107b3b80ed68d99b2f97afa31ee883cb0:
         aggregate_digest: "sha256:2e3d29f4627b4daa093000f878fd53ca718e945962f54ea2fbc287a8aea6782a"
         event:
@@ -850,6 +981,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609061636-BW11J6"
+      plan-refinement:work-order-202609061636-BW11J6-executor-1f0d4b3754d4a5903ad04f29:
+        aggregate_digest: "sha256:c60edbb0b89c465712091088b8921d56af7461f39874fc6ab0948c445a619b71"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-06T16:57:46.623Z"
+          cause_refs:
+            - "scope_expanded"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_14c80423dbc7adb28abc18f0"
+          mutation_id: "plan-refinement:work-order-202609061636-BW11J6-executor-1f0d4b3754d4a5903ad04f29"
+          plan_digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 9
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609061636-BW11J6-executor-1f0d4b3754d4a5903ad04f29"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -877,7 +1032,7 @@ Perform the user-approved dedicated incident review before release planning. Con
 
 ## Plan
 
-Validate the already integrated canonical input-plan guard, preserve incident provenance in the existing archive, and remove only the resolved active entry. Use one docs/policy WorkItem and the five declared checks.
+Complete incident archiving by synchronizing its canonical bundled policy, preserving the existing archive and all native verification guards.
 
 ## Verify Steps
 
