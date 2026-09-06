@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check a5425459b7d369c4987a798241017d4210e60058..7a92cb5a661e7a0ab446a2000059d485b9cc83a1",
+      "command": "git diff --check 72494f26912167513f011d365e061f7eda557431..e840615d6fdcbfb4bb6344b155b13c53e5b01597",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB a5425459b7d369c4987a798241017d4210e60058..7a92cb5a661e7a0ab446a2000059d485b9cc83a1",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 72494f26912167513f011d365e061f7eda557431..e840615d6fdcbfb4bb6344b155b13c53e5b01597",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,11 +24,9 @@
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/review.md",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
         "M\tdocs/releases/v0.7.8-evidence/preparation.md",
-        "M\tpackages/agentplane/src/cli/cli-smoke.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.state.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+        "M\tdocs/releases/v0.7.8.md",
+        "M\tpackages/agentplane/src/commands/task/execution-authority-context.test.ts",
+        "M\tpackages/agentplane/src/commands/task/execution-authority-context.ts"
       ]
     },
     {
@@ -38,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "a5425459b7d369c4987a798241017d4210e60058",
-  "implementation_commit": "7a92cb5a661e7a0ab446a2000059d485b9cc83a1",
+  "execution_base_commit": "72494f26912167513f011d365e061f7eda557431",
+  "implementation_commit": "e840615d6fdcbfb4bb6344b155b13c53e5b01597",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
