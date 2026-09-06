@@ -186,5 +186,6 @@ export async function completeRouteWorkItem(root: string, taskId: string): Promi
     })),
     idempotency_key: `route-fixture-result:${taskId}`,
   });
-  expect((await adapter.readTask(taskId))?.work_items[item.id]?.state).toBe("COMPLETED");
+  const completed = await adapter.readTask(taskId);
+  expect(completed?.work_items[item.id]?.state).toBe("COMPLETED");
 }
