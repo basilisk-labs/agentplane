@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -129,10 +129,17 @@ execution_contract:
       - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -170,20 +177,29 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a427ee26f0d579aa99d790096ef7827dd4ab2c1a2ae4fe4be780c6ba71f74133"
+      digest: "sha256:7bc8406a6aa0189d1fc4376c82967e440c806d426e06944e2a131a2d1689f49d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -216,7 +232,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "572353c8ad3dffbbf455bfcb82ce24d40574ae28"
+  hash: "a25edd68b3639f22fe74be7476df9397c588b304"
   message: "🚧 PH5N6S task: apply external agent result"
 comments:
   -
@@ -246,6 +262,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 572353c8ad3d. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a25edd68b363. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -360,8 +379,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-06T15:57:13.290Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a25edd68b363. CLI accepted one state-bound external-agent semantic result."
+    commit: "a25edd68b3639f22fe74be7476df9397c588b304"
 doc_version: 3
-doc_updated_at: "2026-09-06T15:49:47.855Z"
+doc_updated_at: "2026-09-06T15:57:13.379Z"
 doc_updated_by: "SUPERVISOR"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
@@ -1266,7 +1293,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609042327-PH5N6S"
-    event_cursor: 30
+    event_cursor: 32
     final_validation: null
     id: "202609042327-PH5N6S"
     intent:
@@ -1736,9 +1763,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 40
+    revision: 43
     schema_version: 1
-    updated_at: "2026-09-06T15:49:29.233Z"
+    updated_at: "2026-09-06T16:06:28.348Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -1805,14 +1832,64 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       qualify-interruption-replay:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "qualify-interruption-replay"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:e3cf306b8130f8636affaebee713e4da607f50c844b2ef1f286041dedd2a566a"
+            id: "Qualified original and rework interruption replay"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609042327-PH5N6S"
+              work_item_id: "qualify-interruption-replay"
+            provenance:
+              - "sha256:788d59ae5a1a53ad6c7f84cb0f37d1be88ce518dcdc5c7314c8f76105fef2d80"
+              - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0fb18bde9ef8f48714f904eeff4d3e4a5068efec602ee2d790329708987689be"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "provenance"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-06T16:06:28.316Z"
+              repository_snapshot_digest: "sha256:0fb18bde9ef8f48714f904eeff4d3e4a5068efec602ee2d790329708987689be"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "regression"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-06T16:06:28.316Z"
+              repository_snapshot_digest: "sha256:0fb18bde9ef8f48714f904eeff4d3e4a5068efec602ee2d790329708987689be"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-06T16:06:28.316Z"
+              repository_snapshot_digest: "sha256:0fb18bde9ef8f48714f904eeff4d3e4a5068efec602ee2d790329708987689be"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       verification-provenance-convergence:
         attempt: 1
         claim_id: null
@@ -1974,6 +2051,22 @@ extensions:
         task_id: "202609042327-PH5N6S"
         task_revision: 37
         work_item_id: null
+      -
+        at: "2026-09-06T16:06:28.348Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_75afa0548c2bc2240536ba6f"
+        mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-29ae9f1a851935a5cbd6631a"
+        plan_digest: "sha256:6fd4ac1281de4ce09bb69a487dde6258f736576b37b8d966fee973d16f88a15b"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+        task_revision: 42
+        work_item_id: "qualify-interruption-replay"
     leases: []
     mutation_receipts:
       compatibility:sha256:0daf3d959e8242b4c6778cb277dfe1a77cf3b49d0a1ef8150716dea5c07ba636:
@@ -2118,6 +2211,30 @@ extensions:
         mutation_id: "compatibility:sha256:493bbf166cca89bcd301a7f004b19529981706fa3f2fd87d340938377cac7550"
         next_revision: 28
         previous_revision: 27
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      compatibility:sha256:4f79459f1971f5a895cfe7f9fdb36e91f7b7424ae7c1ea8b8a56e46198c21459:
+        aggregate_digest: "sha256:6a065b999e9e262e02c8604accd9f2b0e2e163ecba69aa7dc06845c56106d7fb"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:57:13.310Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a6de2d7b9445bbb4e5fd6d15"
+          mutation_id: "compatibility:sha256:4f79459f1971f5a895cfe7f9fdb36e91f7b7424ae7c1ea8b8a56e46198c21459"
+          plan_digest: "sha256:6fd4ac1281de4ce09bb69a487dde6258f736576b37b8d966fee973d16f88a15b"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 41
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4f79459f1971f5a895cfe7f9fdb36e91f7b7424ae7c1ea8b8a56e46198c21459"
+        next_revision: 42
+        previous_revision: 41
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       compatibility:sha256:5f23b6a4e28724cf0bd378aa536f65d715f47ea54824401db3e6bcd7cf1fda46:
@@ -2504,6 +2621,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609042327-PH5N6S"
+      compatibility:sha256:dcd1b393822247af52cfba78b30aed378993b16fc69cd742a4bcb6fa4e021c67:
+        aggregate_digest: "sha256:adad3c83a794091e2d1d1b7284afbb49988a99545b7410bf9ca060f9d9a8158b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:57:13.290Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cfe5e6bd13e0a806d7027322"
+          mutation_id: "compatibility:sha256:dcd1b393822247af52cfba78b30aed378993b16fc69cd742a4bcb6fa4e021c67"
+          plan_digest: "sha256:6fd4ac1281de4ce09bb69a487dde6258f736576b37b8d966fee973d16f88a15b"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 40
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dcd1b393822247af52cfba78b30aed378993b16fc69cd742a4bcb6fa4e021c67"
+        next_revision: 41
+        previous_revision: 40
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
       compatibility:sha256:e7a767ac3abef08a06ab5887d7e2329873b60b576105d114e640a0de204eae1c:
         aggregate_digest: "sha256:f59c6d41dffe63624a6ba07959f0a93d5a3c2d3dd7fa5e4484b562a0f16c2307"
         event:
@@ -2646,6 +2787,29 @@ extensions:
         mutation_id: "compatibility:sha256:fddc8930b24ebdda10a9c5ccf239d5978eae89c691d30e99f80cb4270b4f14d5"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      external-result:work-order-202609042327-PH5N6S-executor-29ae9f1a851935a5cbd6631a:
+        aggregate_digest: "sha256:697672da594bd3a52d8a1dfe7e68e0700c31436615981b2e9930cda13d706fef"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T16:06:28.348Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_75afa0548c2bc2240536ba6f"
+          mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-29ae9f1a851935a5cbd6631a"
+          plan_digest: "sha256:6fd4ac1281de4ce09bb69a487dde6258f736576b37b8d966fee973d16f88a15b"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 42
+          to: "COMPLETED"
+          work_item_id: "qualify-interruption-replay"
+        mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-29ae9f1a851935a5cbd6631a"
+        next_revision: 43
+        previous_revision: 42
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       external-result:work-order-202609042327-PH5N6S-executor-4049c5273ede8b97b5245169:
@@ -2821,7 +2985,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "572353c8ad3dffbbf455bfcb82ce24d40574ae28"
+    hash: "a25edd68b3639f22fe74be7476df9397c588b304"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
