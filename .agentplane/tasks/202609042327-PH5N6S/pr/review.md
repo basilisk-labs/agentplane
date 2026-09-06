@@ -6,7 +6,7 @@ Created: 2026-09-04T23:32:29.145Z
 
 - Task: `202609042327-PH5N6S`
 - Title: Run supervisor verification against the committed implementation without dirtying its checkout
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609042327-PH5N6S/run-supervisor-verification-against-the-committe`
 - Canonical task record: `.agentplane/tasks/202609042327-PH5N6S/README.md`
 
