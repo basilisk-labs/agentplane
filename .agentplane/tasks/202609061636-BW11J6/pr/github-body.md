@@ -15,14 +15,14 @@ Perform the user-approved dedicated incident review before release planning. Con
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-06T16:43:14.836Z
+- Updated: 2026-09-06T16:47:41.474Z
 - Branch: task/202609061636-BW11J6/archive-the-resolved-workitem-input-planning-inc
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

@@ -1,0 +1,152 @@
+{
+  "details": "Command: bun run docs:site:generate:check\nResult: pass\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609061636-BW11J6 declared verification\n\nCommand: bun run release:incidents:check\nResult: pass\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609061636-BW11J6 declared verification\n\nCommand: bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx\nResult: pass\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609061636-BW11J6 declared verification\n\nCommand: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609061636-BW11J6 declared verification\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061636-BW11J6 declared verification\n\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609061636-BW11J6 declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-7\nScope: branch_pr task 202609061636-BW11J6 declared verification",
+  "digest": "sha256:e5643a0e2533e046e50f0d1d572f47603925f9587d60dff6e79361a39c191c62",
+  "implementation_sha": "88c9d73a907ac466bf1e616c3f2b938ae14021f1",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:5df896584da3cfaacdd20a05bdc6f186a00a8631159d8318dc4f7b838db5f694",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:4d1801b82534f5f8015b9b94d9334d188bfd00e4a757ceb05a11f265c7f6d06d",
+      "digest": "sha256:4ebc9635ab06ffbc71804bbd08c0948926c2bef759bd4520b10562ee85991cf6",
+      "references": [
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-4",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-4",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-5",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-5",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-6",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-6",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:ba5897ac0891bc78bcee30758c9994a54dc4c786966e93061598347fe60e71b3",
+          "fragment": "check-7",
+          "path": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-7",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "be1a24bce6129e5e1cb3b18432b87fc83113e8e1",
+      "digest": "sha256:a2d78aeec852fb8e14ff66ba014f5500d97a3295a883197b6fbc7b1d8b6bf932",
+      "primary_task_id": "202609061636-BW11J6",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609061636-BW11J6"
+      ]
+    },
+    "implementation": {
+      "base_sha": "be1a24bce6129e5e1cb3b18432b87fc83113e8e1",
+      "digest": "sha256:7576b8a8d256da4ee51636e410b7f6d361d42a725c7efec6262cad9f26a5b712",
+      "strategy": "branch_diff",
+      "target_sha": "88c9d73a907ac466bf1e616c3f2b938ae14021f1"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:821a8914659c57310a950ad9b036aecfc6426d6e422e0887bef0eca85eb50bca",
+    "verify_steps_digest": "sha256:4594b600353f796da30f3405071f24ccc262937a547daba6ccd4c3a6746d7b67"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-06T16:55:17.682Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `node .agentplane/policy/check-routing.mjs`. Expected: The policy gateway and module budgets remain valid.\n2. Run `bun run release:incidents:check`. Expected: The active incident registry is empty only after the original incident and current evidence are preserved in the archive.\n3. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1`. Expected: Canonical planning admission rejects invalid required input producers before persistence.\n4. Run `bun run docs:site:generate:check`. Expected: Generated website documentation remains fresh.\n5. Run `bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx`. Expected: Both scoped documentation files retain repository formatting.",
+  "scope_digest": "sha256:4594b600353f796da30f3405071f24ccc262937a547daba6ccd4c3a6746d7b67",
+  "task_id": "202609061636-BW11J6",
+  "verification_command": "agentplane verify 202609061636-BW11J6 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

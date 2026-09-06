@@ -4,7 +4,7 @@ title: "Archive the resolved WorkItem input planning incident before AgentPlane 
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,11 @@ plan_approval:
   updated_by: "USER"
   note: "Relay of the explicit user authorization for all required release repairs and the dedicated incident review, including the protected incidents registry and its archive. The approved two-file policy change preserves evidence and does not weaken guards."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-06T16:55:17.682Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -84,7 +84,9 @@ execution_contract:
       - ".agentplane/policy/incidents.md"
       - "docs/developer/incident-archive.mdx"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-7:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - ".agentplane"
       - "docs"
@@ -95,7 +97,31 @@ execution_contract:
     repository_effects:
       - "documentation"
       - "repository_write"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -178,9 +204,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
       - "task_outcome"
-commit:
-  hash: "88c9d73a907ac466bf1e616c3f2b938ae14021f1"
-  message: "🚧 BW11J6 task: apply external agent result"
+      - "verification_recovery:recorded-check-7"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "DOCS"
@@ -204,8 +230,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 88c9d73a907a. CLI accepted one state-bound external-agent semantic result."
     commit: "88c9d73a907ac466bf1e616c3f2b938ae14021f1"
+  -
+    type: "verify"
+    at: "2026-09-06T16:55:17.682Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-06T16:47:29.467Z"
+doc_updated_at: "2026-09-06T16:55:18.642Z"
 doc_updated_by: "SUPERVISOR"
 description: "Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task."
 sections:
@@ -225,6 +257,71 @@ sections:
     5. Run `bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx`. Expected: Both scoped documentation files retain repository formatting.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-06T16:55:17.682Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4594b600353f796da30f3405071f24ccc262937a547daba6ccd4c3a6746d7b67, input_digest=sha256:5df896584da3cfaacdd20a05bdc6f186a00a8631159d8318dc4f7b838db5f694
+
+    Details:
+
+    Command: bun run docs:site:generate:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    Command: bun run release:incidents:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    Command: bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx
+    Result: pass
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609061636-BW11J6-archive-the-resolved-workitem-input-planning-inc/.agentplane/tasks/202609061636-BW11J6/blueprint/resolved-snapshot.json
+    - old_digest: 6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae
+    - current_digest: 6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609061636-BW11J6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609061636-BW11J6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -442,7 +539,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609061636-BW11J6"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609061636-BW11J6"
     intent:
@@ -482,9 +579,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-06T16:47:35.158Z"
+    updated_at: "2026-09-06T16:55:18.641Z"
     work_items:
       archive-input-incident:
         attempt: 1
@@ -634,6 +731,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609061636-BW11J6"
+      compatibility:sha256:7fb284da11b6535dd6f0061c800c5d99f168613a85628049b21b7dcedc1a5dcb:
+        aggregate_digest: "sha256:5b3d89ad0b648496cb68f16586e0e3a11b58fc6891b1a32da3dc50450eab5ce8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T16:55:18.641Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_79b62e9049e83d9bcd5599d3"
+          mutation_id: "compatibility:sha256:7fb284da11b6535dd6f0061c800c5d99f168613a85628049b21b7dcedc1a5dcb"
+          plan_digest: "sha256:614bbe08c72c18905c44ce800b5489d6f676254f14a6efb22eb73e1a8392a602"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7fb284da11b6535dd6f0061c800c5d99f168613a85628049b21b7dcedc1a5dcb"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
       compatibility:sha256:7ff0f6762c30c88522365c25388808b4b54b89dfbe50acbf8d573135fad006f2:
         aggregate_digest: "sha256:ad8b89c6ef8d05f8847a5ff7484d9be70cb6f8bfe4712ce890f240a45dabc815"
         event:
@@ -732,8 +853,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "88c9d73a907ac466bf1e616c3f2b938ae14021f1"
   task_execution_context:
     base_ref: "main"
     base_sha: "be1a24bce6129e5e1cb3b18432b87fc83113e8e1"
@@ -771,6 +890,71 @@ Validate the already integrated canonical input-plan guard, preserve incident pr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-06T16:55:17.682Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4594b600353f796da30f3405071f24ccc262937a547daba6ccd4c3a6746d7b67, input_digest=sha256:5df896584da3cfaacdd20a05bdc6f186a00a8631159d8318dc4f7b838db5f694
+
+Details:
+
+Command: bun run docs:site:generate:check
+Result: pass
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+Command: bun run release:incidents:check
+Result: pass
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+Command: bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx
+Result: pass
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+Command: bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609061636-BW11J6 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609061636-BW11J6-archive-the-resolved-workitem-input-planning-inc/.agentplane/tasks/202609061636-BW11J6/blueprint/resolved-snapshot.json
+- old_digest: 6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae
+- current_digest: 6d6b98e6ab03ea3e72d4e73eef991ae39ec2ab3de3a08496243aa18f936961ae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609061636-BW11J6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609061636-BW11J6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
