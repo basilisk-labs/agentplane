@@ -1,3 +1,8 @@
+import {
+  exerciseIntegrationEffectRecovery,
+  exerciseNativeIntegrationEffectRecovery,
+  nativeIntegrationRecoveryScenarios,
+} from "./workflow-effect-recovery.testkit.js";
 import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -40,7 +45,11 @@ import { blockingImplementationAuthorityViolations } from "../commands/task/exte
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
-import { writePlanningResult, type AgentPacket } from "./task-advance-effect-recovery.testkit.js";
+import {
+  captureRecoveryCli,
+  writePlanningResult,
+  type AgentPacket,
+} from "./task-advance-effect-recovery.testkit.js";
 import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 
@@ -77,17 +86,48 @@ async function createTask(root: string): Promise<string> {
 }
 
 async function readAgentPacket(root: string, taskId: string): Promise<AgentPacket> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli(["task", "advance", taskId, "--agent-json", "--root", root]);
-    expect(code, io.stderr).toBe(0);
-    return JSON.parse(io.stdout) as AgentPacket;
-  } finally {
-    io.restore();
-  }
+  const io = await captureRecoveryCli(["task", "advance", taskId, "--agent-json", "--root", root]);
+  expect(io.code, io.stderr).toBe(0);
+  return JSON.parse(io.stdout) as AgentPacket;
 }
 
 describe("task advance effect recovery", () => {
+  it.each(nativeIntegrationRecoveryScenarios)(
+    "recovers through the native operator command: %s",
+    exerciseNativeIntegrationEffectRecovery,
+    180_000,
+  );
+  it.each([
+    "legacy",
+    "snapshot",
+    "stopped",
+    "applied",
+    "missing_evidence",
+    "agent_verdict",
+    "digest",
+    "task",
+    "journal",
+    "operation",
+    "authority",
+    "route",
+    "provider_head",
+    "provider_base",
+    "provider_pr",
+    "provider_identity",
+    "queue",
+    "active_claim",
+    "wrong_route",
+    "contradictory_merge",
+    "provider_unavailable",
+    "live_supervisor",
+    "live_queue",
+    "route_race",
+    "cas_race",
+    "snapshot_mismatch",
+  ])("reconciles integration only with exact operator evidence: %s", (scenario) =>
+    exerciseIntegrationEffectRecovery(scenario),
+  );
+
   it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
     const stateFingerprint = `sha256:${"a".repeat(64)}`;
     const planningFingerprint = `sha256:${"b".repeat(64)}`;
@@ -119,6 +159,7 @@ describe("task advance effect recovery", () => {
       components: {
         task: { digest: taskDigest },
         backend_projection: { digest: backendDigest },
+        provider: { digest: `sha256:${"0".repeat(64)}` },
         authority: { digest: authorityDigest },
       },
     };

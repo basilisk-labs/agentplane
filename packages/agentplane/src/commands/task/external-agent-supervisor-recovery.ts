@@ -1,3 +1,4 @@
+import { requireIntegrationEffectResolution } from "./external-agent-workflow-recovery.js";
 import { isExternalPlanRefinementApplied } from "./external-agent-plan-refinement.js";
 import { access } from "node:fs/promises";
 import path from "node:path";
@@ -294,6 +295,7 @@ export async function recoverPendingExternalAgentResult(opts: {
   const rawJournal = await createSupervisorEpisodeStore(journalPath).read();
   if (!rawJournal) return null;
   const journal = validateSupervisorExecutionEpisodeJournal(rawJournal);
+  requireIntegrationEffectResolution({ journal, decision: opts.current_decision });
   const operation = journal.operations.at(-1);
   if (
     operation?.status === "intent" &&

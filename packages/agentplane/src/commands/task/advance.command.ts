@@ -32,6 +32,7 @@ import {
   acceptExternalAgentResult,
   issueExternalAgentExchange,
 } from "./external-agent-supervisor.js";
+import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
 import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
 import { activeExecutionGrantForTask, resolveConfiguredAuthority } from "./configured-authority.js";
@@ -47,6 +48,16 @@ export function makeRunTaskAdvanceHandler(deps: {
         message: "task advance --replacement cannot be combined with --result.",
       });
     }
+    if (
+      parsed.workflowRecovery !== undefined &&
+      (!parsed.workflowRecovery || !parsed.remote || parsed.result || parsed.replacement)
+    ) {
+      throw new CliError({
+        code: "E_USAGE",
+        message:
+          "--workflow-recovery requires --remote and cannot be combined with --result or --replacement.",
+      });
+    }
     const initialCommand = await deps.getContext("task advance", { includeRemote: parsed.remote });
     const command = await resolveTaskOwnerCommandContext({
       ctx: initialCommand,
@@ -54,6 +65,11 @@ export function makeRunTaskAdvanceHandler(deps: {
     });
     const source = await command.taskBackend.getTask(parsed.taskId);
     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
+      if (parsed.workflowRecovery)
+        throw new CliError({
+          code: "E_USAGE",
+          message: "Canonical tasks do not use integration supervisor effect recovery.",
+        });
       if (parsed.replacement)
         throw new Error("Canonical replacement requires an explicit recovery episode");
       const packet = await advanceCanonicalTask({
@@ -81,6 +97,16 @@ export function makeRunTaskAdvanceHandler(deps: {
         taskId: parsed.taskId,
       });
     };
+    if (parsed.workflowRecovery) {
+      const resolution = await reconcileIntegrationEffect({
+        command,
+        task_id: parsed.taskId,
+        input_path: parsed.workflowRecovery,
+        decide: () => decide(true),
+      });
+      createCliEmitter().json(resolution);
+      return 0;
+    }
     let current: TaskRouteDecision;
     if (parsed.result) {
       const accepted = await acceptExternalAgentResult({

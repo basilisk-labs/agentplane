@@ -354,6 +354,7 @@ function validateReviewedCandidate({
     "202608291006-255K66",
     "202608301851-5W3XW6",
     "202609030849-925NNG",
+    "202609060720-NZXQ0E",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -400,6 +401,7 @@ function validateReviewedCandidate({
     "202608291006-255K66",
     "202608301851-5W3XW6",
     "202609030849-925NNG",
+    "202609060720-NZXQ0E",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1429,6 +1431,7 @@ function validateReviewedCandidate({
         { name: "agent-json", kind: "boolean", valueHint: null, default: false },
         { name: "remote", kind: "boolean", valueHint: null, default: false },
         { name: "result", kind: "string", valueHint: "<path>" },
+        { name: "workflow-recovery", kind: "string", valueHint: "<path>" },
         { name: "replacement", kind: "boolean", valueHint: null, default: false },
       ],
     },
@@ -1930,6 +1933,12 @@ function validateReviewedCandidate({
     {
       command: "task advance",
       name: "result",
+      kind: "string",
+      valueHint: "<path>",
+    },
+    {
+      command: "task advance",
+      name: "workflow-recovery",
       kind: "string",
       valueHint: "<path>",
     },
@@ -2846,6 +2855,12 @@ function validateReviewedCandidate({
       name,
       source_task: "202609030849-925NNG",
     })),
+    {
+      kind: "option",
+      command: "task advance",
+      name: "workflow-recovery",
+      source_task: "202609060720-NZXQ0E",
+    },
   ];
   const expectedVisibilityMutations = [
     ["task begin", "user", "advanced", "title", "<title>"],

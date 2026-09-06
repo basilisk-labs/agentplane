@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Confirmed: the GitHub test-merge false rejection is fixed in the existing recovery owner without changing other providers or weakening completed-merge rejection. The native snapshot test covers a non-null test merge SHA and preserves one rework successor and idempotent replay. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d826199b0298eb9790fe2487020c70eba78127ab357c33dfc45b212839a1ed9e.patch; .agentplane/tasks/202609060720-NZXQ0E/verification/20260906151902116-3f232ba044be9b99.json.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d826199b0298eb9790fe2487020c70eba78127ab357c33dfc45b212839a1ed9e.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -472,6 +472,19 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       role: operationRole({ decision: opts.decision, kind }),
       kind,
       operation_identity: operation,
+      ...(operation.id === "integration.run_next"
+        ? {
+            recovery_context: {
+              schema_version: 1,
+              kind: "integration_run_next",
+              task_id: opts.decision.task.id,
+              repository_root: opts.git_root,
+              queue: opts.decision.prFlow?.queue ?? null,
+              provider: opts.decision.prFlow?.providerObservation ?? null,
+              branch: opts.decision.prFlow?.branch ?? null,
+            },
+          }
+        : {}),
       precondition_fingerprint_digest: currentFingerprint,
       authority_ref: `workflow-operation:${operation.id}`,
       authority_digest: operation.preconditionFingerprint.digest,

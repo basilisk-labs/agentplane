@@ -1,6 +1,7 @@
 import { type AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { captureStdIO } from "@agentplane/testkit";
+import { captureStdIO, mkGitRepoRootWithBranch, writeConfig } from "@agentplane/testkit";
+import { defaultConfig } from "./core-imports.js";
 import { expect, vi } from "vitest";
 import * as resultApplication from "../commands/task/external-agent-result-application.js";
 import * as implementationAuthority from "../commands/task/external-agent-implementation-authority.js";
@@ -355,7 +356,7 @@ export async function exerciseConflictExchange(opts: {
     issuedIo.restore();
   }
 }
-import { writeFile, readFile } from "node:fs/promises";
+import { writeFile, readFile, cp, mkdir, realpath } from "node:fs/promises";
 import path from "node:path";
 
 export type AgentPacket = {
@@ -467,4 +468,125 @@ export function recoveryPlanningProposal(
     unresolved_questions: [],
     top_level_validation: validation,
   };
+}
+
+export async function captureRecoveryCli(args: string[]) {
+  const io = captureStdIO();
+  try {
+    const code = await runCli(args);
+    return { code, stdout: io.stdout, stderr: io.stderr };
+  } finally {
+    io.restore();
+  }
+}
+
+export async function prepareNativeIntegrationRecovery() {
+  const root = await realpath(await mkGitRepoRootWithBranch("main"));
+  await cp(path.join(process.cwd(), ".agentplane/policy"), path.join(root, ".agentplane/policy"), {
+    recursive: true,
+  });
+  const config = defaultConfig();
+  config.workflow_mode = "branch_pr";
+  config.authority.mode = "all";
+  await writeConfig(root, config);
+  const run = async (...args: string[]) => {
+    const result = await captureRecoveryCli([...args, "--root", root]);
+    expect(result.code, result.stderr).toBe(0);
+    return result;
+  };
+  await run("branch", "base", "set", "main");
+  const created = await run(
+    "task",
+    "new",
+    "--title",
+    "Native integration recovery",
+    "--description",
+    "Qualify the operator recovery command.",
+    "--priority",
+    "med",
+    "--owner",
+    "CODER",
+    "--tag",
+    "code",
+    "--verify",
+    "bun run test:critical",
+  );
+  const taskId = created.stdout.trim();
+  await run(
+    "task",
+    "doc",
+    "set",
+    taskId,
+    "--section",
+    "Verify Steps",
+    "--text",
+    "1. Run bun run test:critical. Expected: recovery preserves one exact outcome and one rework successor.",
+    "--updated-by",
+    "PLANNER",
+  );
+  const git = async (...args: string[]) => await execFileAsync("git", args, { cwd: root });
+  await git("add", ".");
+  await git("commit", "-m", "test: create native recovery task");
+  const planning = await run("task", "advance", taskId, "--agent-json");
+  const resultPath = await writePlanningResult(
+    JSON.parse(planning.stdout) as AgentPacket,
+    "Recover the exact interrupted integration before semantic rework.",
+  );
+  const envelope = JSON.parse(await readFile(resultPath, "utf8")) as ExternalAgentResultEnvelope;
+  envelope.result.task_intent = {
+    task_kind: "code",
+    mutation_scope: "code",
+    risk_flags: [],
+    tags: ["code"],
+    execution: {
+      schema_version: 2,
+      preferred_mode: "branch_pr",
+      scope_roots: ["."],
+      repository_effects: ["repository_write", "source_code", "tests"],
+      external_effects: [],
+      requirements_uncertainty: "bounded",
+      implementation_uncertainty: "bounded",
+      reversibility: "reversible",
+      rationale: ["Qualify native recovery in a real task worktree."],
+    },
+  };
+  await writeFile(resultPath, JSON.stringify(envelope));
+  await run("task", "advance", taskId, "--result", resultPath, "--agent-json");
+  await run("task", "plan", "approve", taskId, "--by", "USER");
+  await git("add", ".agentplane");
+  await git("commit", "-m", "test: seed native recovery plan");
+  const branch = `task/${taskId}/native-recovery`;
+  const worktree = path.join(root, ".agentplane/worktrees", `${taskId}-native-recovery`);
+  await mkdir(path.dirname(worktree), { recursive: true });
+  await git("worktree", "add", "-b", branch, worktree);
+  const started = await captureRecoveryCli([
+    "task",
+    "start-ready",
+    taskId,
+    "--author",
+    "CODER",
+    "--body",
+    "Start: qualify native recovery from the dedicated task worktree.",
+    "--root",
+    worktree,
+  ]);
+  expect(started.code, started.stderr).toBe(0);
+  const command = await loadCommandContext({ cwd: worktree, rootOverride: worktree });
+  const task = await command.taskBackend.getTask(taskId);
+  if (!task) throw new Error("Missing native recovery task");
+  await command.taskBackend.writeTask({
+    ...task,
+    verification: {
+      state: "needs_rework",
+      updated_at: new Date().toISOString(),
+      updated_by: "TESTER",
+      note: "Integration review requires semantic implementation rework.",
+    },
+  });
+  await execFileAsync("git", ["add", ".agentplane"], { cwd: worktree });
+  await execFileAsync("git", ["commit", "-m", "test: seed native recovery rework"], {
+    cwd: worktree,
+  });
+  await git("remote", "add", "origin", "https://github.com/example/repo.git");
+  return { root, taskId, worktree, branch };
 }

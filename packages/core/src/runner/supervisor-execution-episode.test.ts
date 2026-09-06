@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   completeSupervisorExecutionEpisode,
+  digestSupervisorEpisodeValue,
   continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
@@ -68,6 +69,61 @@ function start(opts: {
 }
 
 describe("SupervisorExecutionEpisodeJournal", () => {
+  it("binds durable recovery context without filling legacy evidence gaps", () => {
+    const original = journal();
+    const identity = { id: "integration.run_next", params: { taskId: original.task_id } };
+    const context = { head_sha: "original-head", base_sha: "original-base" };
+    const input = {
+      journal: original,
+      role: "EXECUTOR" as const,
+      kind: "cli_operation" as const,
+      operation_identity: identity,
+      precondition_fingerprint_digest: FINGERPRINT,
+      now: NOW,
+    };
+    const legacy = startSupervisorExecutionEpisode(input);
+    const current = startSupervisorExecutionEpisode({ ...input, recovery_context: context });
+    if (legacy.status !== "started" || current.status !== "started")
+      throw new Error("expected both intents to start");
+    expect(legacy.journal.operations[0]).not.toHaveProperty("recovery");
+    expect(current.operation_key).not.toBe(legacy.operation_key);
+    expect(current.journal.operations[0]?.recovery).toEqual({
+      operation_identity: identity,
+      context,
+    });
+    const migrated = migrateSupervisorExecutionEpisodeJournal({
+      input: legacy.journal,
+      create: {
+        task_id: original.task_id,
+        task_revision: 7,
+        state_fingerprint_digest: FINGERPRINT,
+        budget: budget(),
+      },
+    });
+    expect(migrated.journal).toEqual(legacy.journal);
+    expect(migrated.migrated).toBe(false);
+    context.head_sha = "changed-after-start";
+    identity.params.taskId = "foreign-task";
+    expect(validateSupervisorExecutionEpisodeJournal(current.journal)).toEqual(current.journal);
+    const serialized = JSON.stringify(current.journal);
+    const restored = JSON.parse(serialized) as typeof current.journal;
+    expect(validateSupervisorExecutionEpisodeJournal(restored)).toEqual(current.journal);
+    const operation = restored.operations[0]!;
+    const { digest: _digest, ...payload } = restored;
+    for (const recovery of [
+      { ...operation.recovery!, context: { head_sha: "foreign-head" } },
+      { ...operation.recovery!, operation_identity: { id: "integration.enqueue" } },
+    ]) {
+      const forged = { ...payload, operations: [{ ...operation, recovery }] };
+      expect(() =>
+        validateSupervisorExecutionEpisodeJournal({
+          ...forged,
+          digest: digestSupervisorEpisodeValue(forged),
+        }),
+      ).toThrow("recovery evidence does not match its operation key");
+    }
+  });
+
   it("continues only an episode-count budget stop with a larger explicit cap", () => {
     let current = journal({ max_episodes: 1, max_agent_runs: 1 });
     const started = startSupervisorExecutionEpisode({

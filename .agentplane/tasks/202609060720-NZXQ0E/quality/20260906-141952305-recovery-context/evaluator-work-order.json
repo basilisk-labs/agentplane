@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609060720-NZXQ0E-411b7bf65e463ed36bbb6abc",
+  "prepared_at": "2026-09-06T14:19:52.305Z",
+  "task": {
+    "id": "202609060720-NZXQ0E",
+    "revision": 40,
+    "objective": "Recover an interrupted integration queue supervisor intent before semantic rework\n\nBlocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1",
+      "- In scope: Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery.\n- Out of scope: unrelated refactors not required for \"Recover an interrupted integration queue supervisor intent before semantic rework\".",
+      "Refine only the qualification documentation scope to include website/static/llms-full.txt, required by the existing docs-site generation gate. Preserve the two completed WorkItems, all acceptance, risk, effects, dependencies and validation commands.",
+      "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1`. Expected: an interrupted integration.run_next can return to semantic rework only with exact durable queue/provider identity and exclusive ownership; missing, foreign, live-owner and uncertain effects remain fail-closed; interruption and repeat do not duplicate effects.\n2. Run `bun run ci:local:full` after focused regressions pass and the native supervisor commits the implementation. Expected: all required full regression gates pass for the actual repair SHA without manual state edits, weakened authority or a second state store."
+    ]
+  },
+  "evaluated_sha": "a53a518d7f7dc7386b30a2587764659625ea7512",
+  "diff_base_sha": "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd",
+  "blueprint_digest": "dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f4fb1079c3723a9e092d8357fe5d6b7d1d9b304a793fc4494132d43b0acf55f0",
+    "prompt_path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/e9f7059d43bb9cc9dc5278ca971510313a02712ad8a2b3822349b1bb3e9eca32.md",
+    "result_schema_path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609060720-NZXQ0E/README.md",
+      "sha256": "sha256:d1b82b5aee23003c1846b373f78857664a4a8971eb83b7c88f97540eb99cf34b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b.patch",
+      "sha256": "sha256:62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/8b0fe656a7fc5d6cf4ee916d61646de065a3031a6e1d3db5c0ad9d8deee35951.json",
+      "sha256": "sha256:8b0fe656a7fc5d6cf4ee916d61646de065a3031a6e1d3db5c0ad9d8deee35951",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609060720-NZXQ0E/verification/20260906141946186-b42f7ef4f123d1d7.json",
+      "sha256": "sha256:c5713092d415517cc7711f8fc8671aa8f89aa24dd485cde1f23362a74caf258b",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/c5d8a66b2ba0f481170312cb7d6ce94c6776b2f749321906d9c7e3faa908be7e.json",
+      "sha256": "sha256:c5d8a66b2ba0f481170312cb7d6ce94c6776b2f749321906d9c7e3faa908be7e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

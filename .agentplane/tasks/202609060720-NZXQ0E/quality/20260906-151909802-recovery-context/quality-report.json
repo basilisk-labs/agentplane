@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609060720-NZXQ0E",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-06T15:20:08.973Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "918d414d99ae0b453d929f4b2017e2d06b71accb",
+  "blueprint_digest": "dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08",
+  "findings": [
+    "Confirmed: the GitHub test-merge false rejection is fixed in the existing recovery owner without changing other providers or weakening completed-merge rejection. The native snapshot test covers a non-null test merge SHA and preserves one rework successor and idempotent replay. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d826199b0298eb9790fe2487020c70eba78127ab357c33dfc45b212839a1ed9e.patch; .agentplane/tasks/202609060720-NZXQ0E/verification/20260906151902116-3f232ba044be9b99.json."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d826199b0298eb9790fe2487020c70eba78127ab357c33dfc45b212839a1ed9e.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

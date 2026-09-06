@@ -1,0 +1,120 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (2/2)\n\nCheck: docs_contract\nCommand: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (1/2)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (1/2)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (2/2)\n\nCheck: task_outcome\nCommand: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:3f232ba044be9b99fabef963eff2f5b8e0abc7d4f7d78470ad9195c332322d7c",
+  "implementation_sha": "918d414d99ae0b453d929f4b2017e2d06b71accb",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:c38347ac131dd0540f0dc5e84a866947c318c3e4376bbecc7ccc44148c725ff7",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:18a21c32240ebcaa577381b3a6a3823e53abb0165b36ab015a3e8fe3b0ea692e",
+      "digest": "sha256:58bbb7c21424e1a12e72fb4c1c1815ac2671cfd1ce931b2400601db68b38bd08",
+      "references": [
+        {
+          "digest": "sha256:4858a245b0a1308ecf3bd598c8a87641c8077da95d81ff8be364003ff48abbd2",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:4858a245b0a1308ecf3bd598c8a87641c8077da95d81ff8be364003ff48abbd2",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd",
+      "digest": "sha256:d5570ad48ee1c338ac2de8726d31833dd7b3c18c1b191e495a7d1c21d799e386",
+      "primary_task_id": "202609060720-NZXQ0E",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "effect_schema",
+        "effect_security_boundary",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609060720-NZXQ0E"
+      ]
+    },
+    "implementation": {
+      "base_sha": "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd",
+      "digest": "sha256:d5958691db8945fe80a89ee38c8e8ec578e9396d9237e16ffaea713714f0cb59",
+      "strategy": "branch_diff",
+      "target_sha": "918d414d99ae0b453d929f4b2017e2d06b71accb"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:eb2c306c60ce3713e8288b71a46f3c46c54867f7bf3931b8f23379a3c2a629a1",
+    "verify_steps_digest": "sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-06T15:19:02.116Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1`. Expected: an interrupted integration.run_next can return to semantic rework only with exact durable queue/provider identity and exclusive ownership; missing, foreign, live-owner and uncertain effects remain fail-closed; interruption and repeat do not duplicate effects.\n2. Run `bun run ci:local:full` after focused regressions pass and the native supervisor commits the implementation. Expected: all required full regression gates pass for the actual repair SHA without manual state edits, weakened authority or a second state store.",
+  "scope_digest": "sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786",
+  "task_id": "202609060720-NZXQ0E",
+  "verification_command": "agentplane verify 202609060720-NZXQ0E --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

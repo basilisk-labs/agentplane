@@ -6,6 +6,7 @@ export type TaskAdvanceParsed = {
   remote: boolean;
   replacement: boolean;
   result?: string;
+  workflowRecovery?: string;
 };
 
 export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
@@ -31,6 +32,13 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
       name: "result",
       valueHint: "<path>",
       description: "Accept one state-bound external-agent result and return the next action.",
+    },
+    {
+      kind: "string",
+      name: "workflow-recovery",
+      valueHint: "<path>",
+      description:
+        "Reconcile an exact interrupted integration with operator evidence; requires --remote and runs no lifecycle operation.",
     },
     {
       kind: "boolean",
@@ -62,6 +70,10 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
     agentJson: raw.opts["agent-json"] === true,
     remote: raw.opts.remote === true,
     replacement: raw.opts.replacement === true,
+    workflowRecovery:
+      typeof raw.opts["workflow-recovery"] === "string"
+        ? raw.opts["workflow-recovery"].trim()
+        : undefined,
     result: typeof raw.opts.result === "string" ? raw.opts.result.trim() : undefined,
   }),
 };
