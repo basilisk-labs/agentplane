@@ -1,9 +1,10 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, mkdir, rename, rm, writeFile, stat } from "node:fs/promises";
+import { mkdtemp, mkdir, rename, rm, writeFile, stat, readFile, readdir } from "node:fs/promises";
+import type * as FsPromises from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { createTaskExecutionBaseIdentity } from "@agentplaneorg/core/tasks";
 
@@ -11,7 +12,53 @@ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.
 
 const execFileAsync = promisify(execFile);
 
+vi.mock("node:fs/promises", async (importOriginal) => {
+  const actual = await importOriginal<typeof FsPromises>();
+  return { ...actual, writeFile: vi.fn(actual.writeFile) };
+});
+
 describe("logical repository authority identity", () => {
+  it("publishes one complete identity while another initializer is still writing", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-concurrent-id-"));
+    let markWriting!: () => void;
+    let releaseWriter!: () => void;
+    const writing = new Promise<void>((resolve) => {
+      markWriting = resolve;
+    });
+    const release = new Promise<void>((resolve) => {
+      releaseWriter = resolve;
+    });
+    let first: Promise<string> | undefined;
+    try {
+      await execFileAsync("git", ["init", "-b", "main"], { cwd: root });
+      const actual = await vi.importActual<typeof FsPromises>("node:fs/promises");
+      vi.mocked(writeFile).mockImplementationOnce(async (file, data, options) => {
+        const handle = await actual.open(file, "wx", 0o600);
+        try {
+          markWriting();
+          await release;
+          await handle.writeFile(data, options);
+        } finally {
+          await handle.close();
+        }
+      });
+      first = resolveLogicalRepositoryIdentity({ git_root: root, task: {} });
+      await writing;
+      const winner = await resolveLogicalRepositoryIdentity({ git_root: root, task: {} });
+      releaseWriter();
+      expect(await first).toBe(winner);
+      const directory = path.join(root, ".git", "agentplane");
+      expect(
+        JSON.parse(await readFile(path.join(directory, "repository-identity.json"), "utf8")),
+      ).toEqual({ schema_version: 1, repository_identity: winner });
+      expect(await readdir(directory)).toEqual(["repository-identity.json"]);
+    } finally {
+      releaseWriter();
+      await first?.catch(() => null);
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("does not create an unborn identity during read-only inspection", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-read-only-id-"));
     try {
