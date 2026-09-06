@@ -1,3 +1,4 @@
+import { exerciseIntegrationEffectRecovery } from "./workflow-effect-recovery.testkit.js";
 import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -88,6 +89,38 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
 }
 
 describe("task advance effect recovery", () => {
+  it.each([
+    "legacy",
+    "snapshot",
+    "stopped",
+    "applied",
+    "missing_evidence",
+    "agent_verdict",
+    "digest",
+    "task",
+    "journal",
+    "operation",
+    "authority",
+    "route",
+    "provider_head",
+    "provider_base",
+    "provider_pr",
+    "provider_identity",
+    "queue",
+    "active_claim",
+    "wrong_route",
+    "contradictory_merge",
+    "provider_unavailable",
+    "live_supervisor",
+    "live_queue",
+    "route_race",
+    "cas_race",
+    "snapshot_mismatch",
+  ])(
+    "reconciles integration only with exact operator evidence: %s",
+    exerciseIntegrationEffectRecovery,
+  );
+
   it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
     const stateFingerprint = `sha256:${"a".repeat(64)}`;
     const planningFingerprint = `sha256:${"b".repeat(64)}`;
