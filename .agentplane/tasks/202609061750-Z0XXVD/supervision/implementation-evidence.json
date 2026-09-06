@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 91b1096d1e098660107b11b97f603baf032c7547..dd7d450751cbf3750d7629c116f3c6473ed25a66",
+      "command": "git diff --check 469e4c3fa011eea9686e460136b15fc641dc14ff..e197ace38dacbaef55154c7947657a3e2ad62ecb",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,17 +13,13 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 91b1096d1e098660107b11b97f603baf032c7547..dd7d450751cbf3750d7629c116f3c6473ed25a66",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 469e4c3fa011eea9686e460136b15fc641dc14ff..e197ace38dacbaef55154c7947657a3e2ad62ecb",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202609061750-Z0XXVD/README.md",
-        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/diffstat.txt",
-        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/github-body.md",
-        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/meta.json",
-        "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/review.md",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
-        "M\tdocs/releases/v0.7.8-evidence/preparation.md"
+        "M\tpackages/agentplane/src/cli/route-decision.testkit.ts"
       ]
     },
     {
@@ -33,8 +29,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "91b1096d1e098660107b11b97f603baf032c7547",
-  "implementation_commit": "dd7d450751cbf3750d7629c116f3c6473ed25a66",
+  "execution_base_commit": "469e4c3fa011eea9686e460136b15fc641dc14ff",
+  "implementation_commit": "e197ace38dacbaef55154c7947657a3e2ad62ecb",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
