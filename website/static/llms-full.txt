@@ -885,6 +885,62 @@ path.
 Never execute a raw route string as shell. Use typed action fields and exact argv returned by the
 CLI.
 
+### Interrupted integration effects
+
+If an `integration.run_next` intent has no recorded outcome, `task advance` stops before issuing
+semantic rework. The diagnostic includes the task, journal digest, operation key, original
+precondition fingerprint, authority reference and digest, effect reference, and current route
+fingerprint. New intents also retain their original typed operation and queue/provider snapshot.
+Older intents remain unchanged; missing history is never reconstructed from the current route.
+
+An operator can reconcile one exact intent with:
+
+```bash
+agentplane task advance <task-id> --workflow-recovery <operator-resolution.json> --remote --agent-json
+```
+
+This command requires an explicit operator decision about the historical effect. A currently open
+PR does not establish that the interrupted worker never applied an effect. An agent must not invent
+a verdict, operator identity, decision reference, or missing snapshot. If the outcome is unknown,
+keep the intent unresolved and obtain the worker outcome or another authoritative observation.
+
+The input is a strict JSON object with these fields:
+
+| Field                                             | Required value                                                                       |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `schema_version`, `kind`                          | `1`, `"integration_effect_resolution"`                                               |
+| `task_id`, `repository_root`                      | Exact task ID and canonical absolute path of its base checkout                       |
+| `journal_digest`, `operation_key`                 | The unresolved journal digest and original operation key                             |
+| `precondition_fingerprint_digest`                 | The original intent fingerprint, never the current route fingerprint                 |
+| `authority_ref`, `authority_digest`, `effect_ref` | Exact values from the original journal operation                                     |
+| `current_state_fingerprint`                       | Fresh remote-aware route fingerprint for this task                                   |
+| `identity`                                        | Exact branch, head/base SHAs, PR, and provider identity described below              |
+| `verdict`                                         | `"not_applied"` or `"applied"`, supplied by the operator                             |
+| `operator`                                        | `kind: "operator_decision"`, `actor`, `decision_ref`, and ISO `observed_at`          |
+| `evidence`                                        | A nonempty array of objects containing `ref`, exact text `content`, and its `digest` |
+
+`identity` contains `branch`, `head_sha`, `base`, `base_sha`, `pr_number`, `pr_url`, and `provider`.
+The provider object contains `provider` (`github` or `gitlab`), `hostname`, `remote`, `sourceProject`,
+`targetProject`, `sourceUrl`, and `targetUrl`. Preserve the provider's exact normalized values.
+All digest fields use `sha256:<64 lowercase hex characters>`. For each evidence string, compute
+`sha256:` plus the SHA-256 hash of UTF-8 `JSON.stringify(content)`; this binds the exact text,
+including whitespace. The observation time must be at or after the intent start and not in the future.
+
+Recovery holds the supervisor lease and integration queue mutex. It checks the journal identity,
+the fresh route, queue ownership, provider identity, PR head/base, and local Git references. It
+rejects stale or contradictory evidence and any active queue owner. For `not_applied`, the PR must
+remain open, the queue entry must be queued or awaiting rework, and the fresh route must authorize
+`implementation_rework`. For `applied`, the provider and queue must record a completed merge that
+is present on the local base. A verdict cannot replace these independent checks.
+
+The command records the outcome with compare-and-swap and returns `task_id`, `operation_key`,
+`verdict`, and `replay`. It does not merge, enqueue, retry the integration worker, or issue a semantic
+episode. After `not_applied`, request a fresh `task advance --remote --agent-json` packet; the
+supervisor can issue one distinct rework successor. An identical recovery input returns
+`replay: true` after the outcome is persisted, including after a lost response or after the successor
+has started. Keep the original input unchanged when retrying after an interruption. A different
+outcome for the same operation is rejected.
+
 ## Lifecycle model
 
 ```mermaid
