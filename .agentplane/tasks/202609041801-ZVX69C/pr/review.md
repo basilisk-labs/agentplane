@@ -12,8 +12,8 @@ Created: 2026-09-04T18:17:29.251Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework required after accepted conflict merge 68c87697a8750c535a4d258f7bd8eb6ff0b5bf1b. The merge owner correctly applied current base 6e49077db61daed5204b514e7d6e071c190edda6, but direct finalization falsely rejects two supervisor-observed test paths already committed in snapshot 99fdb3c4cc9123982becb3edebb5bd030885fd0e because their merged bytes equal the integration base. Read-only owner reproduction returns missing on the clean merged checkout. Preserve semantic observation provenance separately from integration-base evidence; qualify external and managed base-identical files, interruption replay and stale rejection. Normal replacement then ran all required commands but failed verification persistence because docs_contract was required and absent from its structured evidence. Reconcile the actual task-owned implementation base, contract and truthful check mapping in existing owners; do not widen scope to automatic main-only changes or fabricate evidence. Do not repeat unchanged broad verification before a narrow repair. Preserve the completed merge, original retired exchange/result, approved single WorkItem, MPXQBK and release exclusions.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
