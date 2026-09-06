@@ -4,7 +4,7 @@ title: "Recover an interrupted integration queue supervisor intent before semant
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -123,10 +123,14 @@ execution_contract:
       - "website/static/llms-full.txt"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "website"
+    changed_paths:
+      - "website/static/llms-full.txt"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -189,7 +193,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:a7ae36e6e75d60fd7f13fb2382aa23c237ee9c889b4d70c44c83f5f9bffb46c7"
+      digest: "sha256:e0d597f89139fcf74bec157fc92993a79f1dccff16aa9d658d153c9219610c70"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
@@ -212,10 +216,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "website"
+        changed_files:
+          - "website/static/llms-full.txt"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -253,7 +261,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a53a518d7f7dc7386b30a2587764659625ea7512"
+  message: "🚧 NZXQ0E task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -273,6 +283,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0c1f01d687f9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a53a518d7f7d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -320,8 +333,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 0c1f01d687f9. CLI accepted one state-bound external-agent semantic result."
     commit: "0c1f01d687f989d78f896b61d8f682f6249db37f"
+  -
+    type: "status"
+    at: "2026-09-06T14:02:27.401Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a53a518d7f7d. CLI accepted one state-bound external-agent semantic result."
+    commit: "a53a518d7f7dc7386b30a2587764659625ea7512"
 doc_version: 3
-doc_updated_at: "2026-09-06T14:00:26.869Z"
+doc_updated_at: "2026-09-06T14:02:27.401Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
@@ -741,7 +762,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 19
+    event_cursor: 21
     final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
@@ -2698,9 +2719,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 36
+    revision: 39
     schema_version: 1
-    updated_at: "2026-09-06T14:00:26.869Z"
+    updated_at: "2026-09-06T14:10:56.321Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -2801,14 +2822,54 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       qualify-recovery-handoff:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "qualify-recovery-handoff"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:37d35b709d82b048b107e1b5e8e3a252d7f933d4a6ed40ee6692301ccde628a9"
+            id: "Native recovery qualification and PH5N6S handoff"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 7
+              task_id: "202609060720-NZXQ0E"
+              work_item_id: "qualify-recovery-handoff"
+            provenance:
+              - "sha256:9cb594823feaa2ca1851c24d47a9ae81ad0e153271c4dded68a93863879ec494"
+              - ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:a385b54ffc7148b037ee4ab8d6f9e2e4bcb30077292286d1b9c10a499c453b9b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json"
+              check_id: "focused-recovery"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-06T14:10:56.272Z"
+              repository_snapshot_digest: "sha256:a385b54ffc7148b037ee4ab8d6f9e2e4bcb30077292286d1b9c10a499c453b9b"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-06T14:10:56.272Z"
+              repository_snapshot_digest: "sha256:a385b54ffc7148b037ee4ab8d6f9e2e4bcb30077292286d1b9c10a499c453b9b"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2979,6 +3040,22 @@ extensions:
         task_id: "202609060720-NZXQ0E"
         task_revision: 33
         work_item_id: null
+      -
+        at: "2026-09-06T14:10:56.321Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_0f3dcadef7753e8449ca5690"
+        mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-4383520c2ae5f1fd6e4e0174"
+        plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+        plan_revision: 7
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+        task_revision: 38
+        work_item_id: "qualify-recovery-handoff"
     leases: []
     mutation_receipts:
       compatibility:sha256:04e233ccf4f75eeae00e344792ced3e384f15c8c88b9f22f9e55e32de7db7601:
@@ -3123,6 +3200,30 @@ extensions:
         mutation_id: "compatibility:sha256:2cd28a0557e87b4cf83c44ef29f81807b9efc32da8808b72499514bd672f7ef9"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:321435fe8b78f09aef22f18b732d54fc9d637006601984b087080c7f5e169de0:
+        aggregate_digest: "sha256:66cb0e0f778b3b53f2008323384de12c2ced3ae68449fbbc05560d9905f65a6c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T14:02:27.401Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4f3ba0a9a2ad1bfa0644e0fa"
+          mutation_id: "compatibility:sha256:321435fe8b78f09aef22f18b732d54fc9d637006601984b087080c7f5e169de0"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 37
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:321435fe8b78f09aef22f18b732d54fc9d637006601984b087080c7f5e169de0"
+        next_revision: 38
+        previous_revision: 37
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       compatibility:sha256:3d4511f25df91accd6a7ac13d84daee61a8df0adfc7dee80e1b724d890107ce9:
@@ -3341,6 +3442,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:d54a98e0f62d9900edc8ddee72945e807b9dcf4315cd9cfdcf3d37f3439ff55c:
+        aggregate_digest: "sha256:83eae286077d4dbfd303b004a494e983c40b65dd9de4c532c795f7a9e857babc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T14:02:27.401Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_23e37d7f4e315ce264e572c6"
+          mutation_id: "compatibility:sha256:d54a98e0f62d9900edc8ddee72945e807b9dcf4315cd9cfdcf3d37f3439ff55c"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 36
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d54a98e0f62d9900edc8ddee72945e807b9dcf4315cd9cfdcf3d37f3439ff55c"
+        next_revision: 37
+        previous_revision: 36
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       compatibility:sha256:d86ba4c0775e62850119b1b34800913c59db62b52e95a1ad2c77a539e0368da2:
         aggregate_digest: "sha256:d5308ee56bb381660f39f26b611e717c9e424f0377249cf62fc66f81036df69c"
         event:
@@ -3434,6 +3559,29 @@ extensions:
         mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-40485d7d7e62a7406dee3327"
         next_revision: 30
         previous_revision: 29
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      external-result:work-order-202609060720-NZXQ0E-executor-4383520c2ae5f1fd6e4e0174:
+        aggregate_digest: "sha256:d4a1361515f2ba76cc701ddc22cbab8bd3d32be17dc2b05186c17bbf9ac70aa3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T14:10:56.321Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_0f3dcadef7753e8449ca5690"
+          mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-4383520c2ae5f1fd6e4e0174"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 38
+          to: "COMPLETED"
+          work_item_id: "qualify-recovery-handoff"
+        mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-4383520c2ae5f1fd6e4e0174"
+        next_revision: 39
+        previous_revision: 38
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       external-result:work-order-202609060720-NZXQ0E-executor-91d9b48e05e27c6d5c35e8c9:
@@ -3654,7 +3802,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "0c1f01d687f989d78f896b61d8f682f6249db37f"
+    hash: "a53a518d7f7dc7386b30a2587764659625ea7512"
   task_execution_context:
     base_ref: "main"
     base_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
