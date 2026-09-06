@@ -1,0 +1,14 @@
+ .agentplane/WORKFLOW.md                            |    2 +-
+ docs/reference/generated-reference.mdx             |   14 +-
+ docs/releases/v0.7.8-evidence/preparation.md       |   31 +
+ .../v0.7.8-evidence/qualify-upgrade-0.7.7.mjs      |  283 +
+ .../v0.7.8-evidence/release-plan-changes.json      | 7087 ++++++++++++++++++++
+ .../v0.7.8-evidence/release-plan-version.json      |    8 +
+ docs/releases/v0.7.8.md                            | 1689 +++++
+ packages/agentplane/package.json                   |    6 +-
+ packages/core/package.json                         |    2 +-
+ packages/recipes/package.json                      |    2 +-
+ packages/recipes/src/index.ts                      |    2 +-
+ packages/spec/examples/acr.json                    |    4 +-
+ packages/testkit/package.json                      |    2 +-
+ 13 files changed, 9115 insertions(+), 17 deletions(-)
