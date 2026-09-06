@@ -54,7 +54,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../src/commands/pr/conflict-rework.test.ts        | 142 +++++
  .../agentplane/src/commands/pr/conflict-rework.ts  |  23 +-
  .../src/commands/shared/declared-check.test.ts     |   6 +-
- .../src/commands/shared/declared-check.ts          |  12 +-
+ .../src/commands/shared/declared-check.ts          |  45 +-
  .../src/commands/shared/task-mutation.test.ts      |  51 ++
  .../src/commands/shared/task-mutation.ts           |  12 +
  .../shared/task-scope-extension-request.ts         | 263 ++++++++-
@@ -73,7 +73,9 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../commands/task/branch-task-supervisor.test.ts   |  30 ++
  .../src/commands/task/branch-task-supervisor.ts    |  17 +-
  .../src/commands/task/direct-task-finalization.ts  |  59 +-
- .../src/commands/task/direct-task-verification.ts  |  29 +-
+ .../direct-task-verification.sequence.cases.ts     | 161 ++++++
+ .../commands/task/direct-task-verification.test.ts |  46 +-
+ .../src/commands/task/direct-task-verification.ts  | 185 ++++---
  .../commands/task/evidence-only-rework-commit.ts   |  31 ++
  .../task/external-agent-conflict-application.ts    | 227 ++++++++
  .../src/commands/task/external-agent-exchange.ts   |   3 +
@@ -109,7 +111,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 82 files changed, 6276 insertions(+), 1046 deletions(-)
+ 84 files changed, 6581 insertions(+), 1137 deletions(-)
 ```
 
 </details>

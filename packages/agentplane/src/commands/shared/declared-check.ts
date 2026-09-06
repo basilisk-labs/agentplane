@@ -367,3 +367,36 @@ export function assertSupportedDeclaredTaskChecks(commands: readonly string[]): 
     });
   }
 }
+
+export function parseDeclaredTaskCheckSequence(command: string): ParsedDeclaredTaskCheck[] | null {
+  const parsed: ParsedDeclaredTaskCheck[] = [];
+  let segmentStart = 0;
+  let quote: "'" | '"' | null = null;
+  for (let index = 0; index < command.length; index += 1) {
+    const char = command[index] ?? "";
+    if (quote) {
+      if (char === quote) quote = null;
+      else if (char === "\\" && quote === '"' && index + 1 < command.length) index += 1;
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+    if (char === "\\" && index + 1 < command.length) {
+      index += 1;
+      continue;
+    }
+    if (char !== "&" || command[index + 1] !== "&") continue;
+    const before = command[index - 1] ?? "";
+    const after = command[index + 2] ?? "";
+    if (!/\s/u.test(before) || !/\s/u.test(after)) return null;
+    const check = parseDeclaredTaskCheck(command.slice(segmentStart, index).trim());
+    if (!check) return null;
+    parsed.push(check);
+    index += 1;
+    segmentStart = index + 1;
+  }
+  const finalCheck = parseDeclaredTaskCheck(command.slice(segmentStart).trim());
+  return finalCheck ? [...parsed, finalCheck] : null;
+}
