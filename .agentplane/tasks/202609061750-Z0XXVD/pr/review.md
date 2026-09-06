@@ -45,13 +45,14 @@ Created: 2026-09-06T17:54:49.525Z
  docs/assets/readme-headers/spec.svg                |    4 +-
  docs/assets/readme-headers/testkit.svg             |    4 +-
  docs/reference/generated-reference.mdx             |   14 +-
- docs/releases/v0.7.8-evidence/preparation.md       |   35 +
+ docs/releases/v0.7.8-evidence/preparation.md       |   37 +
  .../v0.7.8-evidence/qualify-upgrade-0.7.7.mjs      |  283 +
  .../v0.7.8-evidence/release-plan-changes.json      | 7087 ++++++++++++++++++++
  .../v0.7.8-evidence/release-plan-version.json      |    8 +
  docs/releases/v0.7.8.md                            | 1691 +++++
  packages/agentplane/package.json                   |    6 +-
  .../run-cli.core.help-snap.test.ts.snap            |    5 +-
+ packages/agentplane/src/cli/cli-smoke.test.ts      |    5 +-
  .../agentplane/src/cli/route-decision.testkit.ts   |  223 +-
  .../cli/run-cli.core.branch-meta.readiness.test.ts |   17 +-
  .../src/cli/run-cli.core.command-session.test.ts   |    5 +-
@@ -65,6 +66,7 @@ Created: 2026-09-06T17:54:49.525Z
  ...run-cli.core.pr-flow.integrate-failures.test.ts |   44 +-
  ...-cli.core.pr-flow.integrate-rebase-race.test.ts |    9 +-
  ...n-cli.core.pr-flow.integrate-strategies.test.ts |    7 +-
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |    5 +-
  .../src/cli/run-cli.core.pr-flow.status.test.ts    |    7 +-
  .../src/cli/run-cli.core.pr-flow.test.ts           |   27 +-
  .../run-cli.core.pr-flow.worktree-runtime.test.ts  |    3 +-
@@ -89,6 +91,9 @@ Created: 2026-09-06T17:54:49.525Z
  .../commands/branch/work-start.materialize.test.ts |   46 +-
  .../src/commands/branch/work-start.materialize.ts  |   10 +-
  .../src/commands/shared/route-decision-blockers.ts |    6 +-
+ .../commands/task/finish.close-tail.unit.test.ts   |    3 +
+ .../src/commands/task/finish.state.unit.test.ts    |    5 +-
+ .../commands/task/finish.validation.unit.test.ts   |   13 +-
  .../src/runtime/task-execution-context/resolve.ts  |   10 +-
  packages/core/package.json                         |    2 +-
  packages/recipes/package.json                      |    2 +-
@@ -102,7 +107,7 @@ Created: 2026-09-06T17:54:49.525Z
  .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
  website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
  website/static/img/social/manifest.json            |   16 +
- 73 files changed, 9880 insertions(+), 682 deletions(-)
+ 78 files changed, 9900 insertions(+), 695 deletions(-)
 ```
 
 </details>
