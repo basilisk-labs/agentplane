@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff preserves every original incident field in the historical archive, removes only its active entry from both matching registries, and leaves canonical input-plan admission unchanged. All required verification is bound to the reviewed implementation SHA.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609061636-BW11J6/quality/objects/sha256/d39708ca94683bf731fb209cf612d9c8cd15ee0afb3ad6292b23f4f3ce327dc5.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
