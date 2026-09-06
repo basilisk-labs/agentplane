@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The prior F1 defect is resolved in the existing verification owner. Exact committed differences against an ancestry-validated base distinguish inherited content from task-owned writes. Both check preparation and persistence use the same frozen inherited-path snapshot, while the original full verification range remains intact. Foreign writes remain observed and non-ancestor classification remains rejected. An empty range performs no inherited-path removal and preserves existing observations and violations.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The prior F2 defect is resolved through the existing guarded verification mutation. Complete successful verification supersedes only this owner's current verification-record and recorded-check-N entries, preserves independent-owner failures and durable history, rejects incomplete replacement without revision change, and converges on repetition. The actual revision-95 Task now has verification.state=ok, authority_violations=[], and no failed current verification observations.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The conflict/recovery implementation retains the original protected operation identities, accepted merge and executor result. Existing checkpoint owners cover completed Git merge, status/verification interruption, exact diffstat postconditions and repeat recovery. The separately executed advanced-base matrix passed all eight selected scenarios on 5e35370d, including altered provider/base/diffstat and policy drift rejection; 30 unrelated scenarios were not rerun.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All nine frozen evidence digests match. The verification record 20260906013919068-f956473699a3c4cc.json binds the actual implementation SHA, full original branch range, Verify Steps, runtime/context and evidence inputs. All 11 supervisor checks passed: CLI cycle 72 tests, core cycle 147, evaluator/runner 21, formatting, lint, typecheck, routing, task lint, doctor, diff check and full CI. Full CI also passed documentation, workflow checks, Windows-critical 98 tests and significant coverage 101 tests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The approved salvage classification remains unchanged. The actual delta against integrated base 6e49077 remains within the scoped existing owners, with no package version, release notes, dependency, tag, publication or excluded branch import. No new plan, state store, compatibility layer or task graph expansion was introduced by the latest rework.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted PR state must be freshly reconciled after publication; old provider and queue observations are not valid integration evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The separate PH5N6S artifact-ordering change still needs its existing lifecycle completed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c8c870f444a507cf8a5704f7fea84cca2a8ce76fcb93b61eb403f33de3fee54d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
