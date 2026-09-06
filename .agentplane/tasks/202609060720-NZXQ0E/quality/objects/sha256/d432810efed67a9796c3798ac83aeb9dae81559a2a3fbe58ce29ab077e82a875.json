@@ -1,0 +1,227 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full",
+    "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "documentation",
+        "public_api",
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "docs/user/cli-reference.generated.mdx",
+        "docs/user/task-lifecycle.mdx",
+        "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+        "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/task/advance.command.ts",
+        "packages/agentplane/src/commands/task/advance.spec.ts",
+        "packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts",
+        "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts",
+        "packages/core/src/runner/supervisor-execution-episode-migration.ts",
+        "packages/core/src/runner/supervisor-execution-episode.test.ts",
+        "packages/core/src/runner/supervisor-execution-episode.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "website/static/llms-full.txt"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "docs",
+        "packages/agentplane",
+        "packages/core",
+        "scripts",
+        "website"
+      ],
+      "changed_files": [
+        "docs/user/cli-reference.generated.mdx",
+        "docs/user/task-lifecycle.mdx",
+        "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+        "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/task/advance.command.ts",
+        "packages/agentplane/src/commands/task/advance.spec.ts",
+        "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts",
+        "packages/core/src/runner/supervisor-execution-episode.test.ts",
+        "packages/core/src/runner/supervisor-execution-episode.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "website/static/llms-full.txt"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+      "central_component:packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+      "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "central_component:packages/core/src/runner/supervisor-execution-episode-migration.ts",
+      "central_component:packages/core/src/runner/supervisor-execution-episode.test.ts",
+      "central_component:packages/core/src/runner/supervisor-execution-episode.ts",
+      "central_component:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
+      "central_path:packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "central_path:packages/core/src/runner/supervisor-execution-episode.test.ts",
+      "central_path:packages/core/src/runner/supervisor-execution-episode.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "effect_public_api",
+      "effect_schema",
+      "effect_security_boundary",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:eb2c306c60ce3713e8288b71a46f3c46c54867f7bf3931b8f23379a3c2a629a1"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-06T14:35:33.585Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609060720-NZXQ0E/verification/20260906143533585-999dcc3471096a87.json",
+      "sha256": "sha256:c084a77c514b9cf4e210ffda75b4499f79873f845608c26939abfa4a346544b5"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 5313d25d8fe30ac06a979a6cc5e4e7975c4a9c53..08115f327915f9873ef8b1273b10c23da97885b8",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 5313d25d8fe30ac06a979a6cc5e4e7975c4a9c53..08115f327915f9873ef8b1273b10c23da97885b8",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609060720-NZXQ0E/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609060720-NZXQ0E/pr/github-body.md",
+          "M\t.agentplane/tasks/202609060720-NZXQ0E/pr/meta.json",
+          "M\t.agentplane/tasks/202609060720-NZXQ0E/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+          "M\tpackages/agentplane/src/cli/workflow-effect-recovery.testkit.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-workflow-recovery.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "5313d25d8fe30ac06a979a6cc5e4e7975c4a9c53",
+    "implementation_commit": "08115f327915f9873ef8b1273b10c23da97885b8",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609060720-NZXQ0E",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609060720-NZXQ0E/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

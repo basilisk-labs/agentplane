@@ -4,7 +4,7 @@ title: "Recover an interrupted integration queue supervisor intent before semant
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -28,31 +28,29 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-06T14:21:07.881Z"
+  updated_at: "2026-09-06T14:37:38.789Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "a53a518d7f7dc7386b30a2587764659625ea7512"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "08115f327915f9873ef8b1273b10c23da97885b8"
   blueprint_digest: "dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08"
   evidence_refs:
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/e9f7059d43bb9cc9dc5278ca971510313a02712ad8a2b3822349b1bb3e9eca32.md"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/b07de64967259c28a61ea2d98111ac6a3d271515a7d23b5f8b99f96fa23a265d.md"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b.patch"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/8b0fe656a7fc5d6cf4ee916d61646de065a3031a6e1d3db5c0ad9d8deee35951.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/verification/20260906141946186-b42f7ef4f123d1d7.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d432810efed67a9796c3798ac83aeb9dae81559a2a3fbe58ce29ab077e82a875.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/verification/20260906143533585-999dcc3471096a87.json"
     - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/c5d8a66b2ba0f481170312cb7d6ce94c6776b2f749321906d9c7e3faa908be7e.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "P1: packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts:219 compares typed.authorityRef to resolution.authority_ref, but the native workflow operation uses route:<task>:<fingerprint> while the supervisor journal uses workflow-operation:integration.run_next (shared/supervisor-execution-episode.ts:489). A legitimately captured new snapshot therefore always fails assertOriginalIdentity. The synthetic snapshot fixture masks this by assigning the journal authority string to both namespaces. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b.patch"
-    - "Residual risk: The PH5N6S operator decision remains separate from code qualification; its journal must stay unchanged until the exact supported operator recovery is available."
+    - "Confirmed: the prior snapshot authority mismatch is resolved without relaxing journal authority, effect or operation-key identity. Native snapshot and legacy recovery preserve exact replay and a single rework successor; stale, foreign, live-owner and contradictory effects are rejected. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch."
 execution_route:
   frozen: true
   reason_codes:
@@ -1153,7 +1151,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 26
+    event_cursor: 27
     final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
@@ -3110,9 +3108,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 44
+    revision: 45
     schema_version: 1
-    updated_at: "2026-09-06T14:35:34.819Z"
+    updated_at: "2026-09-06T14:35:34.824Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -3831,6 +3829,30 @@ extensions:
         mutation_id: "compatibility:sha256:783f7432497617d3f4fef79e648d6def96152beb2518d3c4f099be5f58c962f7"
         next_revision: 43
         previous_revision: 42
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:7bc8823434e54870df314661afe1d2520c5c75cd1ceb274e0daa408b29186ec3:
+        aggregate_digest: "sha256:5acb6964fb6a78ec01bc02f985dd99a7305acebc65f48c22d70691e4f5dbed4a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T14:35:34.824Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bb40a8a7216e1537942d0e30"
+          mutation_id: "compatibility:sha256:7bc8823434e54870df314661afe1d2520c5c75cd1ceb274e0daa408b29186ec3"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 44
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7bc8823434e54870df314661afe1d2520c5c75cd1ceb274e0daa408b29186ec3"
+        next_revision: 45
+        previous_revision: 44
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       compatibility:sha256:8a505d9494e0a0b5d5ba1777b9ebad5d31614d49fc3c9aa5bcafeddd1fa7e793:

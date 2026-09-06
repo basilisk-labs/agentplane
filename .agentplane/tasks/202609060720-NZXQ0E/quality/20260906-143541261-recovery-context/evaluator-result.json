@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Confirmed: the prior snapshot authority mismatch is resolved without relaxing journal authority, effect or operation-key identity. Native snapshot and legacy recovery preserve exact replay and a single rework successor; stale, foreign, live-owner and contradictory effects are rejected. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
