@@ -1,4 +1,18 @@
  .agentplane/WORKFLOW.md                            |    2 +-
+ docs/assets/header.svg                             |    4 +-
+ docs/assets/readme-headers/adr.svg                 |    4 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |    4 +-
+ docs/assets/readme-headers/agentplane.svg          |    4 +-
+ docs/assets/readme-headers/core.svg                |    4 +-
+ docs/assets/readme-headers/docs.svg                |    4 +-
+ docs/assets/readme-headers/humanizer.svg           |    4 +-
+ docs/assets/readme-headers/recipes.svg             |    4 +-
+ docs/assets/readme-headers/releases.svg            |    4 +-
+ docs/assets/readme-headers/schemas.svg             |    4 +-
+ docs/assets/readme-headers/scripts.svg             |    4 +-
+ docs/assets/readme-headers/skills.svg              |    4 +-
+ docs/assets/readme-headers/spec.svg                |    4 +-
+ docs/assets/readme-headers/testkit.svg             |    4 +-
  docs/reference/generated-reference.mdx             |   14 +-
  docs/releases/v0.7.8-evidence/preparation.md       |   31 +
  .../v0.7.8-evidence/qualify-upgrade-0.7.7.mjs      |  283 +
@@ -11,4 +25,7 @@
  packages/recipes/src/index.ts                      |    2 +-
  packages/spec/examples/acr.json                    |    4 +-
  packages/testkit/package.json                      |    2 +-
- 13 files changed, 9115 insertions(+), 17 deletions(-)
+ .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
+ website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
+ website/static/img/social/manifest.json            |   16 +
+ 30 files changed, 9159 insertions(+), 45 deletions(-)

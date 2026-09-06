@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ verify:
   - "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-06T18:16:14.692Z"
+  updated_at: "2026-09-06T18:20:14.031Z"
   updated_by: "USER"
-  note: "Relay of existing user authorization for all required 0.7.8 release actions. Fresh plan 908993cb declares the observed public_api effect of the already approved exported RECIPES_VERSION value. It preserves candidate commit 529e290f, scope, checks, release notes and external publication boundaries."
+  note: "Relay of the user authorization to fix all required 0.7.8 release preparation. Fresh plan 3265ee89 adds only the generated version headers, two release social images and their manifest demanded by the existing prepublish gate. Preserve the approved version, two opening paragraphs, all checks and publication boundaries."
 verification:
   state: "needs_rework"
   updated_at: "2026-09-06T18:16:28.303Z"
@@ -69,6 +69,8 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - ".agentplane/WORKFLOW.md"
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers"
       - "docs/reference/generated-reference.mdx"
       - "docs/releases/v0.7.8-evidence"
       - "docs/releases/v0.7.8.md"
@@ -78,6 +80,8 @@ execution_contract:
       - "packages/recipes/src/index.ts"
       - "packages/spec/examples/acr.json"
       - "packages/testkit/package.json"
+      - "website/static/img/social/docs/releases"
+      - "website/static/img/social/manifest.json"
       - "website/static/llms-full.txt"
   declaration:
     external_effects:
@@ -100,6 +104,8 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - ".agentplane/WORKFLOW.md"
+      - "docs/assets/header.svg"
+      - "docs/assets/readme-headers"
       - "docs/reference/generated-reference.mdx"
       - "docs/releases/v0.7.8-evidence"
       - "docs/releases/v0.7.8.md"
@@ -109,48 +115,16 @@ execution_contract:
       - "packages/recipes/src/index.ts"
       - "packages/spec/examples/acr.json"
       - "packages/testkit/package.json"
+      - "website/static/img/social/docs/releases"
+      - "website/static/img/social/manifest.json"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
-    changed_components:
-      - ".agentplane"
-      - "docs"
-      - "packages/agentplane"
-      - "packages/core"
-      - "packages/recipes"
-      - "packages/spec"
-      - "packages/testkit"
-    changed_paths:
-      - ".agentplane/WORKFLOW.md"
-      - "docs/reference/generated-reference.mdx"
-      - "docs/releases/v0.7.8-evidence/preparation.md"
-      - "docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
-      - "docs/releases/v0.7.8-evidence/release-plan-changes.json"
-      - "docs/releases/v0.7.8-evidence/release-plan-version.json"
-      - "docs/releases/v0.7.8.md"
-      - "packages/agentplane/package.json"
-      - "packages/core/package.json"
-      - "packages/recipes/package.json"
-      - "packages/recipes/src/index.ts"
-      - "packages/spec/examples/acr.json"
-      - "packages/testkit/package.json"
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "dependencies"
-      - "documentation"
-      - "public_api"
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
-      -
-        id: "verification-record"
-        result: "fail"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -170,6 +144,8 @@ execution_contract:
       declared:
         components:
           - ".agentplane/WORKFLOW.md"
+          - "docs/assets/header.svg"
+          - "docs/assets/readme-headers"
           - "docs/reference/generated-reference.mdx"
           - "docs/releases/v0.7.8-evidence"
           - "docs/releases/v0.7.8.md"
@@ -179,6 +155,8 @@ execution_contract:
           - "packages/recipes/src/index.ts"
           - "packages/spec/examples/acr.json"
           - "packages/testkit/package.json"
+          - "website/static/img/social/docs/releases"
+          - "website/static/img/social/manifest.json"
           - "website/static/llms-full.txt"
         evidence_requirements:
           - "external_effect:network_read"
@@ -205,50 +183,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1305b1d9f0ecf38a26058333cce1d73f63119770ca4659348ac93a5e41625719"
+      digest: "sha256:63b5421c6c8b2da4f91b63c0e8cdae567786312c52477086fe094790bf7eda80"
       escalation_reasons:
         - "central_component:packages/core/package.json"
-        - "central_path:packages/core/package.json"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
-        - "unknown_path:packages/spec/examples/acr.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - ".agentplane"
-          - "docs"
-          - "packages/agentplane"
-          - "packages/core"
-          - "packages/recipes"
-          - "packages/spec"
-          - "packages/testkit"
-        changed_files:
-          - ".agentplane/WORKFLOW.md"
-          - "docs/reference/generated-reference.mdx"
-          - "docs/releases/v0.7.8-evidence/preparation.md"
-          - "docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
-          - "docs/releases/v0.7.8-evidence/release-plan-changes.json"
-          - "docs/releases/v0.7.8-evidence/release-plan-version.json"
-          - "docs/releases/v0.7.8.md"
-          - "packages/agentplane/package.json"
-          - "packages/core/package.json"
-          - "packages/recipes/package.json"
-          - "packages/recipes/src/index.ts"
-          - "packages/spec/examples/acr.json"
-          - "packages/testkit/package.json"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "dependencies"
-          - "documentation"
-          - "public_api"
-          - "release_metadata"
-          - "repository_write"
-          - "source_code"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -287,8 +237,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -320,7 +268,7 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run release:prepublish"
 doc_version: 3
-doc_updated_at: "2026-09-06T18:16:29.071Z"
+doc_updated_at: "2026-09-06T18:19:59.982Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -331,7 +279,7 @@ sections:
   Scope: |-
     - In scope: Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope.
     - Out of scope: unrelated refactors not required for "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication".
-  Plan: "Preserve committed release candidate 529e290f and declare the observed public_api effect of its approved exported version constant before qualification."
+  Plan: "Complete stable 0.7.8 release preparation with the required generated README headers and release-page social artifacts."
   Verify Steps: |-
     1. Run `bun run release:prepublish`. Expected: the committed 0.7.8 candidate passes canonical release CI, package checks, active-incident cleanup, version parity and generated-document freshness.
     2. Run `bun run qualification:mixed-scope-lifecycle`. Expected: the installed packed candidate completes the mixed source, test and documentation lifecycle with correct replay, stale-result, projection and cleanup behavior.
@@ -393,12 +341,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:3dd28e0ddacc64658f92645f9f978f02cf04e445bdaf3e4c80fd698719700d88"
-    digest: "sha256:697907a3999b42d55ad8e971714bd5caf55d364e04916972d7219ff6eba36097"
-    grant_id: "9b51a171-f017-4071-8dd2-b90265feaa11"
-    issued_at: "2026-09-06T18:16:14.692Z"
+    digest: "sha256:d1b3aee111f5fa619deae26af54f85fa12291097bc8e8c64f57c7c0d90fe486d"
+    grant_id: "03416d41-d763-45d9-ad20-bf0893dbc9f0"
+    issued_at: "2026-09-06T18:20:14.031Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:3d9c100a70a52e513a7925e1a06ea6e49c1dd44c549315cd49d019cb551212a2"
-    plan_revision: 17
+    plan_digest: "sha256:73adedfd6902dadbc03677a4ac51add4a617533e1b16349067e7e451c977f31a"
+    plan_revision: 21
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:dfcf17c2402a7a7ef380f235ab372b7fc8d1cf85896e338299ea8ab45655a3fc"
@@ -407,14 +355,14 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-06T18:16:14.692Z"
+        approved_at: "2026-09-06T18:20:14.031Z"
         approved_by: "USER"
-        approved_digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+        approved_digest: "sha256:3265ee89d510c5fed575e40417e8b6d2a11821ad9f5ea982c3dc115ecaa22526"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-06T18:15:57.172Z"
-      digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+      created_at: "2026-09-06T18:19:59.972Z"
+      digest: "sha256:3265ee89d510c5fed575e40417e8b6d2a11821ad9f5ea982c3dc115ecaa22526"
       proposal:
         assumptions:
           - "The operator already approved the exact stable version 0.7.8 and all necessary release actions. Native release plan .agentplane/.release/plan/2026-09-06T17-50-45-857Z fixes base 262da3130bc5628a7641c400c74368ae355000bf and v0.7.7..HEAD, with 1417 changes. Read the original plan from the primary checkout and preserve its exact inputs in task evidence. Do not change the native plan range or its version."
@@ -427,22 +375,22 @@ extensions:
           - "The main 262da313 baseline already passed ci:local:full. Preserve the native full-regression policy floor for the release candidate; do not skip or weaken it."
           - "Store authored qualification scripts and immutable source evidence only under the allowed task evidence directory. The framework continues to own task README, verification, PR and closure artifacts. Do not hand-edit those artifacts."
           - "Existing unrelated legacy beta tasks, T4RR70 worktree, provider expansion and new framework refactors remain outside this WorkItem. Any new implementation defect requires an emitted rework/refinement route."
-          - "The complete candidate is already committed as 529e290f25392071470a7f6f5b1a1d9646688504. Preserve it and the immutable previous result. No additional product mutation is needed if focused checks still pass. The new semantic result must describe the existing implementation honestly; AgentPlane retains responsibility for recording its identity and verification."
+          - "Native prepublish failed on fourteen stale generated version SVGs, and docs:social:check reports only two missing release images and a stale manifest. Run bun run docs:readme-header:generate and bun run docs:social:generate. Preserve all unrelated existing images and unchanged README content. The generators may rewrite byte-identical README headers; only the named generated artifact roots should appear in the final product diff."
+          - "The native supervisor may amend its implementation evidence commit during recovery. Use current Git and native verification records for exact identity; do not revive the earlier 529e290f identity as the current head."
         planning_baseline:
-          captured_at: "2026-09-06T18:15:00.786Z"
+          captured_at: "2026-09-06T18:18:54.996Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:26d3d64472fa8d1cfc95efa4b541dd5a78b6a77b34e443d58e1b7949d69cfd20"
+          digest: "sha256:2d335069aa846a4832467d166fa7f69e1330dc622c6e3aa839583b8f3aebb55a"
           dirty_paths:
             - ".agentplane/tasks/202609061750-Z0XXVD/README.md"
-            - ".agentplane/tasks/202609061750-Z0XXVD/supervision/implementation-evidence.json"
           git:
             kind: "commit"
             ref: null
-            sha: "529e290f25392071470a7f6f5b1a1d9646688504"
+            sha: "010f7598eefd21ee5f19b9893485ed88cf0a7d3d"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:16"
+          task_history_cursor: "task-revision:20"
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
         top_level_validation:
@@ -496,7 +444,7 @@ extensions:
               description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
               id: "installed-reliability"
               required: true
-          evidence_fingerprint: "sha256:26d3d64472fa8d1cfc95efa4b541dd5a78b6a77b34e443d58e1b7949d69cfd20"
+          evidence_fingerprint: "sha256:2d335069aa846a4832467d166fa7f69e1330dc622c6e3aa839583b8f3aebb55a"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -541,6 +489,8 @@ extensions:
                   - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
                   - ".agentplane/policy/workflow.release.md"
                   - ".agentplane/policy/workflow.upgrade.md"
+                  - "scripts/generate/generate-readme-header.mjs"
+                  - "website/scripts/generate-social-images.mjs"
                 symbol_hints:
                   - "installPublishedAgentplane"
                   - "installPackedWorkspace"
@@ -550,8 +500,9 @@ extensions:
                 - "Stable 0.7.8 release metadata and generated references"
                 - "English release notes with two accessible opening paragraphs and all planned changes"
                 - "Reproducible published 0.7.7 upgrade verification script and source-backed qualification evidence"
+                - "Fresh 0.7.8 README header SVGs and generated release-page social images with their manifest"
               id: "prepare-qualified-078-candidate"
-              objective: "Preserve and qualify the already committed 0.7.8 candidate 529e290f25392071470a7f6f5b1a1d9646688504. Its existing exported recipes version is an explicitly declared public_api effect. Check release notes and qualification artifacts, then return the semantic result for native verification without inventing another product edit."
+              objective: "Preserve the committed 0.7.8 metadata, readable complete release notes and installed upgrade script. Complete release preparation by refreshing the fourteen versioned README SVG headers, two required release-page social images and their manifest with existing generators. Run focused freshness checks and return the result for unchanged native release qualification."
               optional: false
               priority: 1
               required_inputs: []
@@ -600,6 +551,22 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "docs/releases/v0.7.8-evidence"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/assets/header.svg"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/assets/readme-headers"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "website/static/img/social/docs/releases"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "website/static/img/social/manifest.json"
               risk: "medium"
               scope_roots:
                 - ".agentplane/WORKFLOW.md"
@@ -613,6 +580,10 @@ extensions:
                 - "docs/reference/generated-reference.mdx"
                 - "website/static/llms-full.txt"
                 - "docs/releases/v0.7.8-evidence"
+                - "docs/assets/header.svg"
+                - "docs/assets/readme-headers"
+                - "website/static/img/social/docs/releases"
+                - "website/static/img/social/manifest.json"
               validation:
                 checks:
                   -
@@ -664,12 +635,12 @@ extensions:
                     description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
                     id: "installed-reliability"
                     required: true
-                evidence_fingerprint: "sha256:26d3d64472fa8d1cfc95efa4b541dd5a78b6a77b34e443d58e1b7949d69cfd20"
+                evidence_fingerprint: "sha256:2d335069aa846a4832467d166fa7f69e1330dc622c6e3aa839583b8f3aebb55a"
                 schema_version: 1
-      revision: 3
+      revision: 4
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 14
+    event_cursor: 15
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -1233,9 +1204,273 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 19
+      -
+        approval:
+          approved_at: "2026-09-06T18:16:14.692Z"
+          approved_by: "USER"
+          approved_digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-06T18:15:57.172Z"
+        digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+        proposal:
+          assumptions:
+            - "The operator already approved the exact stable version 0.7.8 and all necessary release actions. Native release plan .agentplane/.release/plan/2026-09-06T17-50-45-857Z fixes base 262da3130bc5628a7641c400c74368ae355000bf and v0.7.7..HEAD, with 1417 changes. Read the original plan from the primary checkout and preserve its exact inputs in task evidence. Do not change the native plan range or its version."
+            - "Use the existing local version-surface utility for the approved metadata values and current documentation generators. Do not invoke formal release candidate/apply, Git commits, tags, PRs, publication or lifecycle commands inside the semantic episode."
+            - "The semantic WorkItem prepares a reversible local candidate. GitHub publication is a subsequent explicit operator action after native integration and exact-SHA hosted release-ready evidence. Never represent local qualification as a completed publication."
+            - "The user specifically requested two human-readable opening paragraphs above the detailed Release Notes. Explain practical user outcomes without internal task identifiers or implementation jargon in those paragraphs. Keep the artifact in English under repository policy."
+            - "The complete planned change record includes framework evidence commits. Describe their actual recorded evidence or lifecycle purpose; do not inflate them into product features. Keep concise user-facing highlights before the detailed record."
+            - "Use existing qualification helpers and a task-specific script instead of new shared testing infrastructure. Install published 0.7.7 from npm and all three current packed packages into isolated temporary prefixes. Temporary fixture repositories are explicitly authorized test data; do not change global git configuration or real consumer repositories."
+            - "Build packages and run focused version, formatting, notes and generation checks before returning the result. AgentPlane must commit the implementation before running declared full prepublish and installed checks, so a dirty product tree never substitutes for an exact committed candidate."
+            - "The main 262da313 baseline already passed ci:local:full. Preserve the native full-regression policy floor for the release candidate; do not skip or weaken it."
+            - "Store authored qualification scripts and immutable source evidence only under the allowed task evidence directory. The framework continues to own task README, verification, PR and closure artifacts. Do not hand-edit those artifacts."
+            - "Existing unrelated legacy beta tasks, T4RR70 worktree, provider expansion and new framework refactors remain outside this WorkItem. Any new implementation defect requires an emitted rework/refinement route."
+            - "The complete candidate is already committed as 529e290f25392071470a7f6f5b1a1d9646688504. Preserve it and the immutable previous result. No additional product mutation is needed if focused checks still pass. The new semantic result must describe the existing implementation honestly; AgentPlane retains responsibility for recording its identity and verification."
+          planning_baseline:
+            captured_at: "2026-09-06T18:15:00.786Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:26d3d64472fa8d1cfc95efa4b541dd5a78b6a77b34e443d58e1b7949d69cfd20"
+            dirty_paths:
+              - ".agentplane/tasks/202609061750-Z0XXVD/README.md"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/implementation-evidence.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "529e290f25392071470a7f6f5b1a1d9646688504"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:16"
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+              -
+                capability: "task.verify"
+                command: "bun run qualification:mixed-scope-lifecycle"
+                id: "installed-lifecycle"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+                id: "published-upgrade"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
+                id: "release-notes"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "prepublish"
+                description: "All three release packages and exact internal pins are 0.7.8. Existing version surfaces and generated references agree. Frozen dependency graph is preserved. The canonical prepublish gate passes on the committed candidate."
+                id: "stable-candidate"
+                required: true
+              -
+                check_ids:
+                  - "release-notes"
+                  - "prepublish"
+                description: "The release notes start with two ordinary, accessible English prose paragraphs explaining the practical meaning of the entire release. Required template sections and a curated change record cover every one of the 1417 planned commits without claiming publication or unobserved test success."
+                id: "readable-complete-notes"
+                required: true
+              -
+                check_ids:
+                  - "installed-lifecycle"
+                  - "published-upgrade"
+                description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
+                id: "installed-reliability"
+                required: true
+            evidence_fingerprint: "sha256:26d3d64472fa8d1cfc95efa4b541dd5a78b6a77b34e443d58e1b7949d69cfd20"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "prepublish"
+                    description: "All three release packages and exact internal pins are 0.7.8. Existing version surfaces and generated references agree. Frozen dependency graph is preserved. The canonical prepublish gate passes on the committed candidate."
+                    id: "stable-candidate"
+                    required: true
+                  -
+                    check_ids:
+                      - "release-notes"
+                      - "prepublish"
+                    description: "The release notes start with two ordinary, accessible English prose paragraphs explaining the practical meaning of the entire release. Required template sections and a curated change record cover every one of the 1417 planned commits without claiming publication or unobserved test success."
+                    id: "readable-complete-notes"
+                    required: true
+                  -
+                    check_ids:
+                      - "installed-lifecycle"
+                      - "published-upgrade"
+                    description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
+                    id: "installed-reliability"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 200000
+                  optional_sources:
+                    - "docs/releases/v0.7.7.md"
+                    - "scripts/lib/installed-migration-matrix.mjs"
+                    - "scripts/generate/generate-website-docs.mjs"
+                  required_sources:
+                    - "docs/developer/release-and-publishing.mdx"
+                    - "docs/releases/TEMPLATE.md"
+                    - "scripts/release/version-surfaces.json"
+                    - "scripts/release/version-bump.mjs"
+                    - "scripts/lib/qualification-packed-runtime.mjs"
+                    - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/policy/workflow.upgrade.md"
+                  symbol_hints:
+                    - "installPublishedAgentplane"
+                    - "installPackedWorkspace"
+                    - "runPackagedMixedScopeLifecycle"
+                depends_on: []
+                expected_outputs:
+                  - "Stable 0.7.8 release metadata and generated references"
+                  - "English release notes with two accessible opening paragraphs and all planned changes"
+                  - "Reproducible published 0.7.7 upgrade verification script and source-backed qualification evidence"
+                id: "prepare-qualified-078-candidate"
+                objective: "Preserve and qualify the already committed 0.7.8 candidate 529e290f25392071470a7f6f5b1a1d9646688504. Its existing exported recipes version is an explicitly declared public_api effect. Check release notes and qualification artifacts, then return the semantic result for native verification without inventing another product edit."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/WORKFLOW.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/recipes/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/recipes/src/index.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/spec/examples/acr.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/releases/v0.7.8.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/generated-reference.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/llms-full.txt"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/releases/v0.7.8-evidence"
+                risk: "medium"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - "packages/agentplane/package.json"
+                  - "packages/core/package.json"
+                  - "packages/recipes/package.json"
+                  - "packages/recipes/src/index.ts"
+                  - "packages/spec/examples/acr.json"
+                  - "packages/testkit/package.json"
+                  - "docs/releases/v0.7.8.md"
+                  - "docs/reference/generated-reference.mdx"
+                  - "website/static/llms-full.txt"
+                  - "docs/releases/v0.7.8-evidence"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                    -
+                      capability: "task.verify"
+                      command: "bun run qualification:mixed-scope-lifecycle"
+                      id: "installed-lifecycle"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+                      id: "published-upgrade"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
+                      id: "release-notes"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "prepublish"
+                      description: "All three release packages and exact internal pins are 0.7.8. Existing version surfaces and generated references agree. Frozen dependency graph is preserved. The canonical prepublish gate passes on the committed candidate."
+                      id: "stable-candidate"
+                      required: true
+                    -
+                      check_ids:
+                        - "release-notes"
+                        - "prepublish"
+                      description: "The release notes start with two ordinary, accessible English prose paragraphs explaining the practical meaning of the entire release. Required template sections and a curated change record cover every one of the 1417 planned commits without claiming publication or unobserved test success."
+                      id: "readable-complete-notes"
+                      required: true
+                    -
+                      check_ids:
+                        - "installed-lifecycle"
+                        - "published-upgrade"
+                      description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
+                      id: "installed-reliability"
+                      required: true
+                  evidence_fingerprint: "sha256:26d3d64472fa8d1cfc95efa4b541dd5a78b6a77b34e443d58e1b7949d69cfd20"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-06T18:16:29.069Z"
+    updated_at: "2026-09-06T18:19:59.982Z"
     work_items:
       prepare-qualified-078-candidate:
         attempt: 0
@@ -1284,6 +1519,24 @@ extensions:
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
         task_revision: 14
+        work_item_id: null
+      -
+        at: "2026-09-06T18:18:53.456Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+          - "outputs_changed"
+        entity: "task"
+        id: "event_4a7740b9ca7dc02918e6374d"
+        mutation_id: "plan-refinement:work-order-202609061750-Z0XXVD-executor-6727cc071bd99cbf1c16bd15"
+        plan_digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+        task_revision: 19
         work_item_id: null
     leases: []
     mutation_receipts:
@@ -1551,6 +1804,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:e337b254448112333dc3aa41df847a7208f6474fdd15a04de63b8dc01576d7db:
+        aggregate_digest: "sha256:b12b8c74a5fa7c11e0e7069a8f608369656e8c7b3eaefa6477b74b94310352bd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T18:19:59.982Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_9a3711808d5c739abfe23a36"
+          mutation_id: "compatibility:sha256:e337b254448112333dc3aa41df847a7208f6474fdd15a04de63b8dc01576d7db"
+          plan_digest: "sha256:3265ee89d510c5fed575e40417e8b6d2a11821ad9f5ea982c3dc115ecaa22526"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e337b254448112333dc3aa41df847a7208f6474fdd15a04de63b8dc01576d7db"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       compatibility:sha256:f39b24041988d8c80f1edd6f7bee46b7d776fc185073f15804173e5ab383a790:
         aggregate_digest: "sha256:039213a7cf78cf71f21599daa3f2ceb75b7df3173d1f9fc1b0f195e350fb3cb9"
         event:
@@ -1573,6 +1850,31 @@ extensions:
         mutation_id: "compatibility:sha256:f39b24041988d8c80f1edd6f7bee46b7d776fc185073f15804173e5ab383a790"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      plan-refinement:work-order-202609061750-Z0XXVD-executor-6727cc071bd99cbf1c16bd15:
+        aggregate_digest: "sha256:8bea027c19e2865f0c30fdc3cb55b8662b4f5f2f80ca4e7ac11e4d1e0908644b"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-06T18:18:53.456Z"
+          cause_refs:
+            - "scope_expanded"
+            - "outputs_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4a7740b9ca7dc02918e6374d"
+          mutation_id: "plan-refinement:work-order-202609061750-Z0XXVD-executor-6727cc071bd99cbf1c16bd15"
+          plan_digest: "sha256:908993cbf77b0fe6b76017d18561d5dbe82a85aee7ba118921d327054aa91c67"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 19
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609061750-Z0XXVD-executor-6727cc071bd99cbf1c16bd15"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       plan-reject-571b1f92492d0423993820e92b607dd2:
@@ -1652,7 +1954,7 @@ Finalize the explicitly approved stable version 0.7.8 from verified main 262da31
 
 ## Plan
 
-Preserve committed release candidate 529e290f and declare the observed public_api effect of its approved exported version constant before qualification.
+Complete stable 0.7.8 release preparation with the required generated README headers and release-page social artifacts.
 
 ## Verify Steps
 
