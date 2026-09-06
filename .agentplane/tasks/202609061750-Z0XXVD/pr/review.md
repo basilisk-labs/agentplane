@@ -55,7 +55,7 @@ Created: 2026-09-06T17:54:49.525Z
  .../agentplane/src/cli/route-decision.testkit.ts   |  223 +-
  .../cli/run-cli.core.branch-meta.readiness.test.ts |   17 +-
  .../src/cli/run-cli.core.command-session.test.ts   |    5 +-
- .../src/cli/run-cli.core.incidents.test.ts         |   12 +
+ .../src/cli/run-cli.core.incidents.test.ts         |   89 +-
  .../src/cli/run-cli.core.installed-smoke.test.ts   |   16 +
  ...run-cli.core.lifecycle.finish-branch-pr.test.ts |    6 +
  ...-cli.core.lifecycle.finish-close-commit.test.ts |    6 +
@@ -102,7 +102,7 @@ Created: 2026-09-06T17:54:49.525Z
  .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
  website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
  website/static/img/social/manifest.json            |   16 +
- 73 files changed, 9847 insertions(+), 638 deletions(-)
+ 73 files changed, 9880 insertions(+), 682 deletions(-)
 ```
 
 </details>
