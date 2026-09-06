@@ -156,7 +156,7 @@ export async function exerciseIntegrationEffectRecovery(
     type: "integration_run_next",
     params: { taskId },
     preconditionFingerprint: { digest: fingerprint },
-    authorityRef,
+    authorityRef: `route:${taskId}:${fingerprint}`,
     idempotencyKey: effectRef,
   };
   const started = startSupervisorExecutionEpisode({
@@ -169,7 +169,7 @@ export async function exerciseIntegrationEffectRecovery(
     authority_digest: fingerprint,
     effect_ref: effectRef,
     now: "2026-01-01T00:00:00Z",
-    ...(scenario === "snapshot" || scenario === "snapshot_mismatch"
+    ...(["snapshot", "snapshot_mismatch", "native_snapshot"].includes(scenario)
       ? {
           recovery_context: {
             schema_version: 1,
@@ -561,3 +561,10 @@ export async function exerciseNativeIntegrationEffectRecovery(scenario: string):
     async () => await exerciseIntegrationEffectRecovery(scenario, native),
   );
 }
+
+export const nativeIntegrationRecoveryScenarios = [
+  "native",
+  "native_snapshot",
+  "native_before_cas",
+  "native_after_cas",
+];

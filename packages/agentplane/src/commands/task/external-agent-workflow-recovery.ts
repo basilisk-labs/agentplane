@@ -216,7 +216,9 @@ function assertOriginalIdentity(
     typed.params.taskId !== resolution.task_id ||
     context.task_id !== resolution.task_id ||
     typed.preconditionFingerprint.digest !== resolution.precondition_fingerprint_digest ||
-    typed.authorityRef !== resolution.authority_ref ||
+    // The typed route authority differs from the supervisor journal wrapper authority.
+    typed.authorityRef !==
+      `route:${resolution.task_id}:${resolution.precondition_fingerprint_digest}` ||
     typed.idempotencyKey !== resolution.effect_ref ||
     context.queue.branch !== expected.branch ||
     context.queue.headSha !== expected.head_sha ||
