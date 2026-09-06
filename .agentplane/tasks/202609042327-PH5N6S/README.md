@@ -4,7 +4,7 @@ title: "Run supervisor verification against the committed implementation without
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -777,9 +777,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-06T05:44:46.391Z"
+    updated_at: "2026-09-06T05:53:05.261Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -846,14 +846,79 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       verification-provenance-convergence:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "verification-provenance-convergence"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:c8009d6b1379be3253c5d923e4298e718cda8a1af8b597cbd6a0a99b682e9a99"
+            id: "Verification preserves execution provenance with exact identity and durable replay-safe evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609042327-PH5N6S"
+              work_item_id: "verification-provenance-convergence"
+            provenance:
+              - "sha256:d357fe5d9d892499940f2da12fa692bc5f3bad1d34410aad490510b2504e8b60"
+              - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:05f0bb710523702b6a9358928bf1f1d4e831232137f3833abedd54d3b99cbbb6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:c193eb004ec35001928670af1c0da0c7c7bc09d4d445a0cf02022cdc339ae602"
+            id: "Clean verification ordering reconciled with canonical main owners and freshly qualified through AgentPlane"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609042327-PH5N6S"
+              work_item_id: "verification-provenance-convergence"
+            provenance:
+              - "sha256:d357fe5d9d892499940f2da12fa692bc5f3bad1d34410aad490510b2504e8b60"
+              - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:05f0bb710523702b6a9358928bf1f1d4e831232137f3833abedd54d3b99cbbb6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "provenance"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-06T05:53:05.246Z"
+              repository_snapshot_digest: "sha256:05f0bb710523702b6a9358928bf1f1d4e831232137f3833abedd54d3b99cbbb6"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "regression"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-06T05:53:05.246Z"
+              repository_snapshot_digest: "sha256:05f0bb710523702b6a9358928bf1f1d4e831232137f3833abedd54d3b99cbbb6"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json"
+              check_id: "full"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-06T05:53:05.246Z"
+              repository_snapshot_digest: "sha256:05f0bb710523702b6a9358928bf1f1d4e831232137f3833abedd54d3b99cbbb6"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -907,6 +972,22 @@ extensions:
         task_id: "202609042327-PH5N6S"
         task_revision: 10
         work_item_id: null
+      -
+        at: "2026-09-06T05:53:05.261Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_e17eebca10403f710fddc29f"
+        mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-4049c5273ede8b97b5245169"
+        plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+        task_revision: 16
+        work_item_id: "verification-provenance-convergence"
     leases: []
     mutation_receipts:
       compatibility:sha256:61e06192ec32626c09be7fd27d5c68d4a32b746bddeab1697f47bde301b211fc:
@@ -1123,6 +1204,29 @@ extensions:
         mutation_id: "compatibility:sha256:e7bed2704a959702c8ce1d7a60f3abdc53c0bb3f516ed362bbafac70303876cd"
         next_revision: 16
         previous_revision: 15
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      external-result:work-order-202609042327-PH5N6S-executor-4049c5273ede8b97b5245169:
+        aggregate_digest: "sha256:22a2da734deecd5fc67bd27819ad20287cabc2e9334879b7cf094786f4bc9786"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T05:53:05.261Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_e17eebca10403f710fddc29f"
+          mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-4049c5273ede8b97b5245169"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: "verification-provenance-convergence"
+        mutation_id: "external-result:work-order-202609042327-PH5N6S-executor-4049c5273ede8b97b5245169"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       external-result:work-order-202609042327-PH5N6S-executor-fe66808c6c5a2aa48a01a50b:
