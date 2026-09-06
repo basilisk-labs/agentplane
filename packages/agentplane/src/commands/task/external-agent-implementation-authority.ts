@@ -15,6 +15,7 @@ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
 import { cmdCommit } from "../guard/impl/commit.js";
+import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
 
@@ -296,21 +297,28 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    if (observedChangedPaths.length === 0 && !conflictContext) {
-      const recovery = await resolveRecordedImplementationRecovery({
-        purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,
-        command: opts.command,
-        task: taskAtReturn,
-        work_order: opts.work_order,
-        head,
-        recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
-      });
-      if (recovery) {
-        implementationCommit = recovery.commit;
-        recoveredExecutionBase = recovery.execution_base;
-        semantic = recovery.semantic ?? semantic;
-        reusedRecordedImplementation = true;
-      }
+  }
+  // Implementation replay can follow a supervisor task-artifact commit before verification.
+  if (
+    !conflictContext &&
+    (observedChangedPaths?.length === 0 ||
+      ((recoversRecordedImplementationCommit(opts.exchange.purpose) ||
+        opts.exchange.purpose === "implementation_rework") &&
+        head !== opts.exchange.baseline.head))
+  ) {
+    const recovery = await resolveRecordedImplementationRecovery({
+      purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,
+      command: opts.command,
+      task: taskAtReturn,
+      work_order: opts.work_order,
+      head,
+      recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
+    });
+    if (recovery) {
+      implementationCommit = recovery.commit;
+      recoveredExecutionBase = recovery.execution_base;
+      semantic = recovery.semantic ?? semantic;
+      reusedRecordedImplementation = true;
     }
   }
   if (conflictContext && head && head !== opts.exchange.baseline.head) {
@@ -513,6 +521,21 @@ export async function applyExternalImplementationResult(opts: {
         "Supervisor-observed changes exceeded the execution contract authority: " +
         authorityViolations.join(", "),
     });
+  }
+  // Conflict verification and replay are bound to the two-parent merge HEAD.
+  // Its checkpoint owner persists artifacts after verification.
+  if (opts.decision.workflowMode === "branch_pr" && !conflictContext) {
+    const status = await readDirectRepositoryStatus(opts.exchange.checkout);
+    if (hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) {
+      // Keep the implementation SHA in its evidence; commit only the supervisor's
+      // task artifacts so declared checks can require a clean repository.
+      await commitBranchSupervisorTaskArtifacts({
+        command: opts.command,
+        cwd: opts.exchange.checkout,
+        task_id: opts.exchange.task_id,
+        message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record implementation before verification`,
+      });
+    }
   }
   const verification = await recordDirectTaskVerification({
     command: opts.command,
