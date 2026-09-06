@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609060720-NZXQ0E/recover-an-interrupted-integration-queue-supervi",
   "created_at": "2026-09-06T11:45:32.878Z",
-  "diffstat_sha256": "sha256:732a07bcecbf21a25d02f548a3379f0bafd125c8354f54392c2fa3d77d1f8c3c",
+  "diffstat_sha256": "sha256:3f5892aafb7f6233cbd96610ab77bba495e57cab765009f5063cc751dabda95f",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",

@@ -1,4 +1,12 @@
 import path from "node:path";
+import * as supervisorStore from "../commands/shared/supervisor-execution-episode.js";
+import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
+import {
+  captureRecoveryCli,
+  prepareNativeIntegrationRecovery,
+  withFakeConflictGh,
+  fakeGithubProviderSource,
+} from "./task-advance-effect-recovery.testkit.js";
 import { readFile, writeFile } from "node:fs/promises";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { mkGitRepoRootWithCommit, writeConfig } from "@agentplane/testkit";
@@ -29,24 +37,30 @@ import * as integrationProvider from "../commands/pr/internal/change-request-pro
 import type { TaskRouteDecision } from "../commands/shared/route-decision-types.js";
 import { defaultConfig } from "./core-imports.js";
 
-export async function exerciseIntegrationEffectRecovery(scenario: string): Promise<void> {
-  const root = await mkGitRepoRootWithCommit();
-  await writeConfig(root, defaultConfig());
-  const command = await loadCommandContext({ cwd: root, rootOverride: null });
-  const taskId = "202609060001-RECOVER";
-  const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+export async function exerciseIntegrationEffectRecovery(
+  scenario: string,
+  native?: Awaited<ReturnType<typeof prepareNativeIntegrationRecovery>>,
+): Promise<void> {
+  const root = native?.root ?? (await mkGitRepoRootWithCommit());
+  if (!native) await writeConfig(root, defaultConfig());
+  const checkout = native?.worktree ?? root;
+  const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
+  const taskId = native?.taskId ?? "202609060001-RECOVER";
+  const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
   const head = headResult.stdout.trim();
+  const baseHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+  const baseHead = baseHeadResult.stdout.trim();
   const baseResult = await execFileAsync("git", ["branch", "--show-current"], { cwd: root });
   const base = baseResult.stdout.trim();
-  const branch = "task/recovery";
-  await execFileAsync("git", ["branch", branch], { cwd: root });
+  const branch = native?.branch ?? "task/recovery";
+  if (!native) await execFileAsync("git", ["branch", branch], { cwd: root });
   const fingerprint = `sha256:${"a".repeat(64)}`;
   const currentFingerprint = `sha256:${"b".repeat(64)}`;
   const identity = {
     branch,
     head_sha: head,
     base,
-    base_sha: head,
+    base_sha: baseHead,
     pr_number: 4626,
     pr_url: "https://github.com/example/repo/pull/4626",
     provider: {
@@ -68,7 +82,7 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
     mergedAt: null as string | null,
     mergeCommit: null as string | null,
     base,
-    baseSha: head,
+    baseSha: baseHead,
     headSha: head,
     headRef: branch,
   };
@@ -77,7 +91,7 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
     branch,
     head_sha: head,
     base,
-    base_sha: head,
+    base_sha: baseHead,
     pr_number: 4626,
     pr_url: identity.pr_url,
     changed_paths: [],
@@ -97,17 +111,26 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
     },
   } as TaskRouteDecision;
   let calls = 0;
-  const decide = () => {
+  const decide = async () => {
+    if (native)
+      return await buildTaskRouteDecision({
+        ctx: await loadCommandContext({ cwd: checkout, rootOverride: null }),
+        cwd: checkout,
+        rootOverride: null,
+        includeRemote: true,
+        freshHead: true,
+        taskId,
+      });
     calls++;
     if (scenario === "route_race" && calls === 3)
-      return Promise.resolve({
+      return {
         ...decision,
         workflowStep: {
           ...decision.workflowStep,
           preconditionFingerprint: { digest: fingerprint },
         },
-      } as TaskRouteDecision);
-    return Promise.resolve(decision);
+      } as TaskRouteDecision;
+    return decision;
   };
   const effectRef = `integration.run_next:${taskId}:${fingerprint}:${"c".repeat(64)}`;
   const authorityRef = "workflow-operation:integration.run_next";
@@ -158,7 +181,7 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
               branch: scenario === "snapshot_mismatch" ? "foreign" : branch,
               base,
               headSha: head,
-              baseSha: head,
+              baseSha: baseHead,
               prNumber: 4626,
             },
             provider: { state: "found", pr },
@@ -295,23 +318,55 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
   }
   await writeIntegrationQueue(root, { schema_version: 1, entries: [entry] });
   const inputPath = path.join(root, "operator-resolution.json");
-  await writeFile(inputPath, JSON.stringify(resolution));
-  const observed = vi
-    .spyOn(integrationProvider, "observeExistingChangeRequestByNumber")
-    .mockImplementation(async () => {
-      if (scenario === "provider_unavailable") return { state: "unavailable", reason: "offline" };
-      if (scenario === "cas_race")
-        await store.write(
-          recoverSupervisorExecutionEpisodeJournal({
-            journal,
-            state_fingerprint_digest: fingerprint,
-          }),
-        );
-      return { state: "found", pr };
+  if (native) {
+    const route = await decide();
+    expect(route.workspace.baseCheckoutPath, JSON.stringify(route.workspace)).toBe(root);
+    expect(route.workflowStep, JSON.stringify(route.workflowStep)).toMatchObject({
+      kind: "agent_episode",
+      episode: { purpose: "implementation_rework" },
     });
-  const run = async () =>
-    await reconcileIntegrationEffect({ command, task_id: taskId, input_path: inputPath, decide });
-  const successful = ["legacy", "snapshot", "stopped", "applied"].includes(scenario);
+    resolution.current_state_fingerprint = route.workflowStep.preconditionFingerprint.digest;
+  }
+  await writeFile(inputPath, JSON.stringify(resolution));
+  const observed = native
+    ? null
+    : vi
+        .spyOn(integrationProvider, "observeExistingChangeRequestByNumber")
+        .mockImplementation(async () => {
+          if (scenario === "provider_unavailable")
+            return { state: "unavailable", reason: "offline" };
+          if (scenario === "cas_race")
+            await store.write(
+              recoverSupervisorExecutionEpisodeJournal({
+                journal,
+                state_fingerprint_digest: fingerprint,
+              }),
+            );
+          return { state: "found", pr };
+        });
+  const run = async () => {
+    if (!native)
+      return await reconcileIntegrationEffect({
+        command,
+        task_id: taskId,
+        input_path: inputPath,
+        decide,
+      });
+    const result = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--workflow-recovery",
+      inputPath,
+      "--remote",
+      "--agent-json",
+      "--root",
+      checkout,
+    ]);
+    if (result.code !== 0) throw new Error(result.stderr);
+    return JSON.parse(result.stdout) as { verdict: string; replay: boolean };
+  };
+  const successful = !!native || ["legacy", "snapshot", "stopped", "applied"].includes(scenario);
   try {
     expect(() => requireIntegrationEffectResolution({ journal, decision })).toThrow(
       "unresolved integration intent",
@@ -329,7 +384,67 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
         await expect(run()).rejects.toThrow("mutex is already held");
       });
     } else if (successful) {
-      expect(await run()).toMatchObject({ verdict: resolution.verdict, replay: false });
+      if (native) {
+        const missingRemote = await captureRecoveryCli([
+          "task",
+          "advance",
+          taskId,
+          "--workflow-recovery",
+          inputPath,
+          "--agent-json",
+          "--root",
+          checkout,
+        ]);
+        expect(missingRemote.code).not.toBe(0);
+        expect(missingRemote.stderr).toContain("requires --remote");
+        await writeFile(
+          inputPath,
+          JSON.stringify({ ...resolution, current_state_fingerprint: fingerprint }),
+        );
+        try {
+          await expect(run()).rejects.toThrow("current task route changed");
+        } finally {
+          await writeFile(inputPath, JSON.stringify(resolution));
+        }
+        expect(await store.read()).toEqual(journal);
+        const unresolved = await captureRecoveryCli([
+          "task",
+          "advance",
+          taskId,
+          "--remote",
+          "--agent-json",
+          "--root",
+          checkout,
+        ]);
+        expect(unresolved.code).not.toBe(0);
+        expect(unresolved.stderr).toContain("unresolved integration intent");
+        expect(await store.read()).toEqual(journal);
+      }
+      if (scenario === "native_before_cas" || scenario === "native_after_cas") {
+        const createStore = supervisorStore.createSupervisorEpisodeStore;
+        const interruption = vi
+          .spyOn(supervisorStore, "createSupervisorEpisodeStore")
+          .mockImplementation((...args) => {
+            const real = createStore(...args);
+            return {
+              ...real,
+              compareAndSwap: async (...casArgs) => {
+                if (scenario === "native_after_cas") await real.compareAndSwap(...casArgs);
+                throw new Error("injected recovery CAS interruption");
+              },
+            };
+          });
+        try {
+          await expect(run()).rejects.toThrow("injected recovery CAS interruption");
+        } finally {
+          interruption.mockRestore();
+        }
+        if (scenario === "native_before_cas") expect(await store.read()).toEqual(journal);
+      }
+      expect(await run()).toMatchObject({
+        verdict: resolution.verdict,
+        replay: scenario === "native_after_cas",
+      });
       const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
       expect(completed.operations).toHaveLength(1);
       expect(completed.operations[0]).toMatchObject({
@@ -341,19 +456,52 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
         expect(completed.cursor).toMatchObject({
           replacement_of_operation_key: started.operation_key,
         });
-        const next = startSupervisorExecutionEpisode({
-          journal: completed,
-          role: "EXECUTOR",
-          kind: "agent_episode",
-          operation_identity: { purpose: "implementation_rework" },
-          precondition_fingerprint_digest: currentFingerprint,
-          authority_ref: "external-agent:rework",
-          authority_digest: currentFingerprint,
-          replacement_of_operation_key: started.operation_key,
-        });
-        if (next.status !== "started") throw new Error("Replacement did not start");
-        expect(next.operation_key).not.toBe(started.operation_key);
-        await store.write(next.journal);
+        if (native) {
+          const issued = await captureRecoveryCli([
+            "task",
+            "advance",
+            taskId,
+            "--remote",
+            "--agent-json",
+            "--root",
+            checkout,
+          ]);
+          expect(issued.code, issued.stderr).toBe(0);
+          expect(JSON.parse(issued.stdout)).toMatchObject({ action: { kind: "agent_episode" } });
+          const successor = validateSupervisorExecutionEpisodeJournal(await store.read());
+          expect(successor.operations).toHaveLength(2);
+          expect(successor.operations[1]).toMatchObject({
+            kind: "agent_episode",
+            replacement_of_operation_key: started.operation_key,
+          });
+          expect(successor.operations[1]!.operation_key).not.toBe(started.operation_key);
+          const repeated = await captureRecoveryCli([
+            "task",
+            "advance",
+            taskId,
+            "--remote",
+            "--agent-json",
+            "--root",
+            checkout,
+          ]);
+          expect(repeated.code, repeated.stderr).toBe(0);
+          expect(JSON.parse(repeated.stdout)).toEqual(JSON.parse(issued.stdout));
+          expect(await store.read()).toEqual(successor);
+        } else {
+          const next = startSupervisorExecutionEpisode({
+            journal: completed,
+            role: "EXECUTOR",
+            kind: "agent_episode",
+            operation_identity: { purpose: "implementation_rework" },
+            precondition_fingerprint_digest: currentFingerprint,
+            authority_ref: "external-agent:rework",
+            authority_digest: currentFingerprint,
+            replacement_of_operation_key: started.operation_key,
+          });
+          if (next.status !== "started") throw new Error("Replacement did not start");
+          expect(next.operation_key).not.toBe(started.operation_key);
+          await store.write(next.journal);
+        }
       }
       const beforeReplay = await readFile(journalPath, "utf8");
       expect(await run()).toMatchObject({ replay: true });
@@ -385,6 +533,31 @@ export async function exerciseIntegrationEffectRecovery(scenario: string): Promi
     }
     if (!successful && scenario !== "cas_race") expect(await store.read()).toEqual(journal);
   } finally {
-    observed.mockRestore();
+    observed?.mockRestore();
   }
+}
+
+export async function exerciseNativeIntegrationEffectRecovery(scenario: string): Promise<void> {
+  const native = await prepareNativeIntegrationRecovery();
+  const baseResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: native.root });
+  const head = baseResult.stdout.trim();
+  const taskResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: native.worktree });
+  const taskHead = taskResult.stdout.trim();
+  const detail = {
+    number: 4626,
+    state: "open",
+    head: { sha: taskHead, ref: native.branch },
+    base: { sha: head, ref: "main" },
+    html_url: "https://github.com/example/repo/pull/4626",
+    mergeable: true,
+    mergeable_state: "clean",
+    merged: false,
+    merged_at: null,
+    merge_commit_sha: null,
+  };
+  await withFakeConflictGh(
+    native.root,
+    fakeGithubProviderSource(detail),
+    async () => await exerciseIntegrationEffectRecovery(scenario, native),
+  );
 }
