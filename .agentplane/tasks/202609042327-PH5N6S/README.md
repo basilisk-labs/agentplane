@@ -2,10 +2,10 @@
 id: "202609042327-PH5N6S"
 title: "Run supervisor verification against the committed implementation without dirtying its checkout"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -55,9 +55,9 @@ quality_review:
     - "All nine frozen evidence digests match. The supervisor verification record binds a successful full check to a25edd68b3639f22fe74be7476df9397c588b304; its declared-check reference digest also matches the actual completed log. The preceding WorkItem checks passed 56 provenance tests, all five clean-verification scenarios and full CI. The supplementary four branch-worktree tests and static checks passed. Evidence: .agentplane/tasks/202609042327-PH5N6S/verification/20260906161451938-2e4fdd35ef38487a.json."
     - "Residual risk: This verdict covers the prepared implementation SHA. Hosted integration and final release qualification remain pending."
 token_usage:
-  agent_runs: 11
+  agent_runs: 17
   input_tokens: null
-  journal_digest: "sha256:b92601a500385ec938f01d76df3efb5f5a7d3ef916e94c45727a130eb700de24"
+  journal_digest: "sha256:374e6d9c26f4150c8b0a3e2a3a512cad6fac813484f76b18c6543318f9b7e640"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -67,7 +67,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-06T06:57:16.820Z"
+  updated_at: "2026-09-06T16:19:31.818Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -837,8 +837,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a25edd68b3639f22fe74be7476df9397c588b304"
-  message: "🚧 PH5N6S task: apply external agent result"
+  hash: "424c7e7e1659d29ce2963f1ea7981566949430b2"
+  message: "🚧 PH5N6S task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -870,6 +870,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a25edd68b363. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -998,9 +1001,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-06T16:19:31.818Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "424c7e7e1659d29ce2963f1ea7981566949430b2"
 doc_version: 3
-doc_updated_at: "2026-09-06T16:18:45.900Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-06T16:19:31.827Z"
+doc_updated_by: "CODER"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
   Summary: |-
@@ -1965,7 +1976,45 @@ extensions:
       schema_version: 1
       task_id: "202609042327-PH5N6S"
     event_cursor: 34
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609042327-PH5N6S"
+            - "git:a25edd68b3639f22fe74be7476df9397c588b304"
+          check_id: "provenance"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T16:14:51.938Z"
+          repository_snapshot_digest: "sha256:0a02e197f057bd62e811829ff2421ae084fe3c3e702ff73090d1b76386c3e9e9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042327-PH5N6S"
+            - "git:a25edd68b3639f22fe74be7476df9397c588b304"
+          check_id: "regression"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T16:14:51.938Z"
+          repository_snapshot_digest: "sha256:0a02e197f057bd62e811829ff2421ae084fe3c3e702ff73090d1b76386c3e9e9"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609042327-PH5N6S"
+            - "git:a25edd68b3639f22fe74be7476df9397c588b304"
+          check_id: "full"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T16:14:51.938Z"
+          repository_snapshot_digest: "sha256:0a02e197f057bd62e811829ff2421ae084fe3c3e702ff73090d1b76386c3e9e9"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609042327-PH5N6S"
     intent:
       acceptance_criteria: []
@@ -1976,7 +2025,7 @@ extensions:
 
         User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task.
       task_id: "202609042327-PH5N6S"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -2434,9 +2483,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 45
+    revision: 46
     schema_version: 1
-    updated_at: "2026-09-06T16:14:53.158Z"
+    updated_at: "2026-09-06T16:19:31.818Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -3627,6 +3676,31 @@ extensions:
         previous_revision: 31
         schema_version: 1
         task_id: "202609042327-PH5N6S"
+      legacy-finish:202609042327-PH5N6S:2026-09-06T16:14:51.938Z:a25edd68b3639f22fe74be7476df9397c588b304:
+        aggregate_digest: "sha256:1d361a6942deb6222b79027c8e4fb93027bb6b535d0974f532e4431ad4d77171"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-06T16:19:31.818Z"
+          cause_refs:
+            - "task-verification:202609042327-PH5N6S"
+            - "git:a25edd68b3639f22fe74be7476df9397c588b304"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1d666579a356ad3366008b76"
+          mutation_id: "legacy-finish:202609042327-PH5N6S:2026-09-06T16:14:51.938Z:a25edd68b3639f22fe74be7476df9397c588b304"
+          plan_digest: "sha256:6fd4ac1281de4ce09bb69a487dde6258f736576b37b8d966fee973d16f88a15b"
+          plan_revision: 3
+          repository_fingerprint: "sha256:0a02e197f057bd62e811829ff2421ae084fe3c3e702ff73090d1b76386c3e9e9"
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 45
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609042327-PH5N6S:2026-09-06T16:14:51.938Z:a25edd68b3639f22fe74be7476df9397c588b304"
+        next_revision: 46
+        previous_revision: 45
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
       plan-refinement:work-order-202609042327-PH5N6S-executor-d44551a1ba144c962452ee7f:
         aggregate_digest: "sha256:0dc20e914f1f61f9a78381ef17bb01b8989af149e8aa41929aa6efa0391fe66e"
         event:
@@ -3705,6 +3779,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "a25edd68b3639f22fe74be7476df9397c588b304"
+    message: "🚧 PH5N6S task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
@@ -4300,12 +4375,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/11` agent runs
+- Completeness: `0/17` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:b92601a500385ec938f01d76df3efb5f5a7d3ef916e94c45727a130eb700de24`
+- Journal digest: `sha256:374e6d9c26f4150c8b0a3e2a3a512cad6fac813484f76b18c6543318f9b7e640`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-06T06:57:16.820Z`
+- Updated at: `2026-09-06T16:19:31.818Z`
