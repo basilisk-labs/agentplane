@@ -1,3 +1,4 @@
+import { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
 import { execFile } from "node:child_process";
 import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -99,7 +100,7 @@ describe("runCli route decision commands", () => {
     try {
       const code = await runCli(["task", "status", taskId, "--route", "--root", root]);
       expect(code).toBe(0);
-      expect(statusIo.stdout).toContain(`task:                        ${taskId} TODO`);
+      expect(statusIo.stdout).toContain(`task:                        ${taskId} DOING`);
       expect(statusIo.stdout).toContain("phase:                       worktree_needed");
       expect(statusIo.stdout).toContain("authoritative_checkout:      base_checkout");
       expect(statusIo.stdout).toContain("next_code:                   start_or_recover_worktree");
@@ -264,7 +265,7 @@ describe("runCli route decision commands", () => {
           expect(textIo.stdout).toContain("must_not:");
           expect(textIo.stdout).toContain("confidence:");
           expect(textIo.stdout).toContain("verify_steps:");
-          expect(textIo.stdout).toContain("verify_steps_quality: fallback");
+          expect(textIo.stdout).toContain("verify_steps_quality: specific");
           expect(textIo.stdout).toContain("blueprint_id:");
           expect(textIo.stdout).toContain("policy_modules:");
           expect(textIo.stdout).toContain("snapshot_safe_command:");
@@ -398,9 +399,9 @@ describe("runCli route decision commands", () => {
           expect(parsed.next_action.command).toBe(
             `agentplane work start ${taskId} --agent CODER --slug route-decision-task --worktree`,
           );
-          expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
+          expect(parsed.verify_steps.text).toContain("Exercise task brief command.");
           expect(parsed.verify_steps.filled).toBe(true);
-          expect(parsed.verify_steps.quality).toBe("fallback");
+          expect(parsed.verify_steps.quality).toBe("specific");
           expect(parsed.blueprint.blueprint_id).toBe("code.branch_pr");
           expect(parsed.blueprint.required_evidence).toContain("code_pr.paths");
           expect(parsed.policy_modules).toEqual(
@@ -426,7 +427,7 @@ describe("runCli route decision commands", () => {
           expect(parsed.source_confidence.verify_steps).toMatchObject({
             source: "task_doc",
             freshness: "live_local",
-            confidence: "medium",
+            confidence: "high",
           });
         } finally {
           jsonIo.restore();
@@ -623,7 +624,19 @@ describe("runCli route decision commands", () => {
 
     const taskId = await createBranchPrTask(root);
     await approveRouteTaskPlan(root, taskId, "Exercise hosted close sync route.");
-    await runCliSilent(["task", "set-status", taskId, "DOING", "--force", "--yes", "--root", root]);
+    expect(
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: exercise already hosted close recovery.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });
@@ -656,6 +669,9 @@ describe("runCli route decision commands", () => {
     const localBaseRev = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
     const localBaseCommit = localBaseRev.stdout.trim();
 
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx, taskId });
+    await ctx.taskBackend.writeTask({ ...task, status: "DONE" });
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
     const findingsIndex = readme.lastIndexOf("## Findings");
@@ -669,7 +685,7 @@ describe("runCli route decision commands", () => {
       "utf8",
     );
     const suffix = taskId.split("-").at(-1);
-    await execFileAsync("git", ["add", readmePath], { cwd: root });
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
     await execFileAsync(
       "git",
       ["commit", "-m", `code: ${suffix} close: (${taskId}) hosted close`],
@@ -778,15 +794,13 @@ describe("runCli route decision commands", () => {
     const taskId = await createBranchPrTask(root);
     await approveRouteTaskPlan(root, taskId, "Exercise direct done route decisions.");
 
-    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
-    const readme = await readFile(readmePath, "utf8");
-    await writeFile(
-      readmePath,
-      readme
-        .replace('status: "TODO"', 'status: "DONE"')
-        .replace("commit: null", 'commit:\n  hash: "abc123"\n  message: "Direct close"'),
-      "utf8",
-    );
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx, taskId });
+    await ctx.taskBackend.writeTask({
+      ...task,
+      status: "DONE",
+      commit: { hash: "abc123", message: "Direct close" },
+    });
 
     const statusIo = captureStdIO();
     try {

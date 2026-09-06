@@ -49,16 +49,28 @@ Finalize the explicitly approved stable version 0.7.8 from verified main 262da31
  .../v0.7.8-evidence/release-plan-version.json      |    8 +
  docs/releases/v0.7.8.md                            | 1689 +++++
  packages/agentplane/package.json                   |    6 +-
+ .../agentplane/src/cli/route-decision.testkit.ts   |  222 +-
+ .../cli/run-cli.core.route-decision.batch.test.ts  |   64 +-
+ ...cli.core.route-decision.direct-closeout.test.ts |   43 +-
+ .../run-cli.core.route-decision.pre-merge.test.ts  |   79 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    |   46 +-
+ ...li.core.task-advance.evaluator-recovery.test.ts |   13 +
+ ...n-cli.core.task-advance.evidence-rework.test.ts |   50 +-
+ .../cli/run-cli.core.task-next-action-json.test.ts |   17 +-
+ .../cli/task-advance-effect-recovery.testkit.ts    |   41 +-
+ .../agentplane/src/cli/task-continuity.testkit.ts  |   88 +-
  packages/core/package.json                         |    2 +-
  packages/recipes/package.json                      |    2 +-
  packages/recipes/src/index.ts                      |    2 +-
  packages/spec/examples/acr.json                    |    4 +-
  packages/testkit/package.json                      |    2 +-
+ .../src/cli-core-tasks-query.expected-run.ts       |   28 +-
+ packages/testkit/src/release.ts                    |   55 +-
  .../baselines/v0.7-compatibility-candidate.json    |    6 +-
  .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
  website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
  website/static/img/social/manifest.json            |   16 +
- 31 files changed, 9162 insertions(+), 48 deletions(-)
+ 43 files changed, 9467 insertions(+), 489 deletions(-)
 ```
 
 </details>

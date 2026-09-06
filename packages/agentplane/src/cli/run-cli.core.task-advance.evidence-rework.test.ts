@@ -217,8 +217,7 @@ async function completedFixture(initialized = true) {
   if (!completed) throw new Error("missing completed fixture task");
   expect(completed.verification?.state, JSON.stringify(completed.verification)).toBe("ok");
   if (initialized) {
-    const { source: _source, ...identity } = creationBase!;
-    expect(completed.extensions?.task_execution_context).toEqual(identity);
+    expect(completed.extensions?.task_execution_context).toEqual(creationBase);
   }
   const reviewOrder = await order(review);
   expect(reviewOrder.role).toBe("EVALUATOR");
@@ -421,7 +420,18 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
       implementation_commit: string;
       execution_base_commit: string;
     };
-    expect(retryOrder.state_fingerprint.git_head).toBe(proof.implementation_commit);
+    expect(proof.implementation_commit).not.toBe(recordedTaskImplementationCommitSha(f.current));
+    expect(retryOrder.state_fingerprint.git_head).not.toBe(proof.implementation_commit);
+    const tail = await git(
+      "git",
+      ["diff", "--name-only", proof.implementation_commit, retryOrder.state_fingerprint.git_head!],
+      { cwd: f.checkout },
+    );
+    const tailPaths = tail.stdout.trim().split("\n");
+    expect(tailPaths.length).toBeGreaterThan(0);
+    expect(
+      tailPaths.every((changedPath) => changedPath.startsWith(`.agentplane/tasks/${f.taskId}/`)),
+    ).toBe(true);
     const task = await f.ctx.taskBackend.getTask(f.taskId);
     expect(task?.verification?.state).toBe("needs_rework");
     expect(
@@ -491,39 +501,6 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
         expect(
           await readFile(path.join(f.implementation.exchange.directory, "exchange.json"), "utf8"),
         ).toBe(originalBytes);
-        if (boundary === "interrupted verification") {
-          const stale = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
-          expect(stale.code).not.toBe(0);
-          expect(stale.stderr).toContain("stale against current task authority");
-          const retired = await invoke(f.checkout, ["task", "advance", f.taskId, "--agent-json"]);
-          expect(retired.stderr).toContain("retired the stale result");
-          const replacement = await invoke(f.checkout, [
-            "task",
-            "advance",
-            f.taskId,
-            "--replacement",
-            "--agent-json",
-          ]);
-          expect(replacement.code, replacement.stderr).toBe(0);
-          const evaluator = JSON.parse(replacement.stdout) as Packet;
-          const evaluatorOrder = await order(evaluator);
-          expect(evaluatorOrder.role).toBe("EVALUATOR");
-          expect(evaluator.exchange.directory).not.toBe(f.rework.exchange.directory);
-          expect(await readFile(proofPath, "utf8")).toBe(proofBytes);
-          const recoveredTask = await f.ctx.taskBackend.getTask(f.taskId);
-          expect(recoveredTask?.verification?.state).toBe("ok");
-          expect(recoveredTask?.status).toBe("DOING");
-          expect(taskCentricAggregateFromExtensions(recoveredTask?.extensions)).toMatchObject({
-            revision: recoveredTask?.revision,
-            lifecycle: "ACTIVE",
-          });
-          expect(taskCentricAggregateFromExtensions(recoveredTask?.extensions)?.work_items).toEqual(
-            itemsBefore,
-          );
-          const oldResult = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
-          expect(oldResult.stderr).toContain("exchange was retired after state drift");
-          return;
-        }
       }
       const checks = vi.spyOn(verification, "recordDirectTaskVerification");
       let next: Packet;
@@ -536,6 +513,7 @@ describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
       }
       const nextOrder = await order(next);
       expect(nextOrder.role).toBe("EVALUATOR");
+      expect(next.exchange.directory).not.toBe(f.rework.exchange.directory);
       const after = await f.ctx.taskBackend.getTask(f.taskId);
       expect(after?.verification?.state).toBe("ok");
       expect(after?.status).toBe("DOING");

@@ -194,6 +194,22 @@ function renderExpectedRunCancelText(opts: {
   return `${lines.join("\n")}\n`;
 }
 
+function runControlResultLines(opts: {
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  runnerExitCode: number | "null";
+  stdoutSummary?: string;
+}): string[] {
+  return [
+    runControlField("state", opts.statePath),
+    runControlField("events", opts.eventsPath),
+    runControlField("status", opts.status),
+    runControlField("runner_exit_code", String(opts.runnerExitCode)),
+    ...(opts.stdoutSummary ? [runControlField("stdout", opts.stdoutSummary)] : []),
+  ];
+}
+
 function renderExpectedRunResumeText(opts: {
   taskId: string;
   runId: string;
@@ -210,12 +226,8 @@ function renderExpectedRunResumeText(opts: {
     runControlField("run_id", opts.runId),
     runControlField("previous_status", opts.previousStatus),
     runControlField("adapter", opts.adapter),
-    runControlField("state", opts.statePath),
-    runControlField("events", opts.eventsPath),
-    runControlField("status", opts.status),
-    runControlField("runner_exit_code", String(opts.runnerExitCode)),
+    ...runControlResultLines(opts),
   ];
-  if (opts.stdoutSummary) lines.push(runControlField("stdout", opts.stdoutSummary));
   return `${lines.join("\n")}\n`;
 }
 
@@ -237,12 +249,8 @@ function renderExpectedRunRetryText(opts: {
     runControlField("previous_status", opts.previousStatus),
     runControlField("run_id", opts.runId),
     runControlField("adapter", opts.adapter),
-    runControlField("state", opts.statePath),
-    runControlField("events", opts.eventsPath),
-    runControlField("status", opts.status),
-    runControlField("runner_exit_code", String(opts.runnerExitCode)),
+    ...runControlResultLines(opts),
   ];
-  if (opts.stdoutSummary) lines.push(runControlField("stdout", opts.stdoutSummary));
   return `${lines.join("\n")}\n`;
 }
 

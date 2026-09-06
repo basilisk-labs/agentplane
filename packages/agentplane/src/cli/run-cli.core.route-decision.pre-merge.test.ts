@@ -5,6 +5,11 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import {
+  approveRouteTaskPlan,
+  completeRouteWorkItem,
+  recordRouteVerification,
+} from "./route-decision.testkit.js";
 
 import {
   captureStdIO,
@@ -45,7 +50,7 @@ async function createBranchPrTask(root: string): Promise<string> {
       "--root",
       root,
     ]);
-    expect(code).toBe(0);
+    expect(code, taskIo.stderr).toBe(0);
     return taskIo.stdout.trim();
   } finally {
     taskIo.restore();
@@ -103,19 +108,7 @@ async function createClosedPreMergeTask(): Promise<{
 
   const taskId = await createBranchPrTask(root);
   const branchName = `task/${taskId}/pre-merge-closure`;
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    "Exercise pre-merge closure route decisions.",
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
-    root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await approveRouteTaskPlan(root, taskId, "Exercise pre-merge closure route decisions.");
   await execFileAsync("git", ["add", "-A"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "task: persist approved task setup"], {
     cwd: root,
@@ -140,24 +133,8 @@ async function createClosedPreMergeTask(): Promise<{
     "--root",
     root,
   ]);
-  await runCliSilent([
-    "verify",
-    taskId,
-    "--ok",
-    "--by",
-    "CODER",
-    "--note",
-    "Implementation verified before closure.",
-    "--details",
-    [
-      "Command: pre-merge route fixture verification",
-      "Result: pass",
-      "Evidence: implementation fixture committed",
-      "Scope: pre-merge closure route decisions",
-    ].join("\n"),
-    "--root",
-    root,
-  ]);
+  await completeRouteWorkItem(root, taskId);
+  await recordRouteVerification(root, taskId, "Implementation verified before closure.");
   const evaluatorIo = captureStdIO();
   try {
     const evaluatorCode = await runCli([
@@ -241,24 +218,11 @@ async function createClosedPreMergeTask(): Promise<{
       cwd: root,
     });
   }
-  await runCliSilent([
-    "verify",
-    taskId,
-    "--ok",
-    "--by",
-    "CODER",
-    "--note",
-    "Final pre-merge implementation target verified after closure refresh.",
-    "--details",
-    [
-      "Command: final pre-merge route fixture verification",
-      "Result: pass",
-      "Evidence: post-finish lifecycle fixture committed",
-      "Scope: final pre-merge closure route decisions",
-    ].join("\n"),
-    "--root",
+  await recordRouteVerification(
     root,
-  ]);
+    taskId,
+    "Final pre-merge implementation target verified after closure refresh.",
+  );
   await runCliSilent([
     "evaluator",
     "run",
@@ -340,7 +304,7 @@ describe("pre-merge closure route decisions", () => {
             root,
           ]);
           if (code !== 0) process.stderr.write(statusIo.stderr);
-          expect(code).toBe(0);
+          expect(code, statusIo.stderr).toBe(0);
           const parsed = JSON.parse(statusIo.stdout) as {
             nextAction: { code: string; command: string };
             oracle: { phase: string; authoritativeCheckout: string };
@@ -381,7 +345,7 @@ describe("pre-merge closure route decisions", () => {
     try {
       const code = await runCli(["task", "next-action", taskId, "--json", "--root", checkout]);
       if (code !== 0) process.stderr.write(routeIo.stderr);
-      expect(code).toBe(0);
+      expect(code, routeIo.stderr).toBe(0);
       const parsed = JSON.parse(routeIo.stdout) as {
         next_action: { code: string; command: string };
       };
@@ -397,7 +361,7 @@ describe("pre-merge closure route decisions", () => {
       expect(argv.slice(0, 4)).toEqual(["agentplane", "task", "authority", "grant"]);
       const code = await runCli([...argv.slice(1), "--root", checkout]);
       if (code !== 0) process.stderr.write(grantIo.stderr);
-      expect(code).toBe(0);
+      expect(code, grantIo.stderr).toBe(0);
       expect(grantIo.stdout).toContain("task authority grant");
     } finally {
       grantIo.restore();
@@ -464,7 +428,7 @@ describe("pre-merge closure route decisions", () => {
           root,
         ]);
         if (code !== 0) process.stderr.write(statusIo.stderr);
-        expect(code).toBe(0);
+        expect(code, statusIo.stderr).toBe(0);
         const parsed = JSON.parse(statusIo.stdout) as {
           prFlow: {
             pr: { state: string; source: string; headSha: string | null };
@@ -505,7 +469,7 @@ describe("pre-merge closure route decisions", () => {
     });
   });
 
-  it("uses the DONE task branch snapshot instead of a stale base task copy", async () => {
+  it("uses the DONE authoritative task worktree instead of a stale base task copy", async () => {
     const { root, taskId, baseBranch, branchName, branchHeadSha } =
       await createClosedPreMergeTask();
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
@@ -539,6 +503,9 @@ describe("pre-merge closure route decisions", () => {
     await execFileAsync("git", ["commit", "-m", "test: persist stale base task copy"], {
       cwd: root,
     });
+
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", taskId);
+    await execFileAsync("git", ["worktree", "add", taskWorktree, branchName], { cwd: root });
 
     const fakeSource = [
       "const args = process.argv.slice(2);",
@@ -584,7 +551,7 @@ describe("pre-merge closure route decisions", () => {
           root,
         ]);
         if (code !== 0) process.stderr.write(io.stderr);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         const parsed = JSON.parse(io.stdout) as {
           task: { status: string };
           workflow_step: {
@@ -635,9 +602,6 @@ describe("pre-merge closure route decisions", () => {
           "utf8",
         );
 
-        const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-task-route-"));
-        const taskWorktree = path.join(worktreeParent, "task");
-        await execFileAsync("git", ["worktree", "add", taskWorktree, branchName], { cwd: root });
         try {
           const queuedIo = captureStdIO();
           try {
@@ -671,7 +635,6 @@ describe("pre-merge closure route decisions", () => {
           await execFileAsync("git", ["worktree", "remove", "--force", taskWorktree], {
             cwd: root,
           });
-          await rm(worktreeParent, { recursive: true, force: true });
         }
       } finally {
         io.restore();

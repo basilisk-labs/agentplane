@@ -9,7 +9,7 @@ import {
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 
-import { prepareContinuityPlan } from "./task-continuity.testkit.js";
+import { approveRouteTaskPlan } from "./route-decision.testkit.js";
 
 import { describe } from "vitest";
 
@@ -125,7 +125,7 @@ describe("task next-action JSON", () => {
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
     const taskId = await createBranchPrTask(root, "bun run test:critical");
-    await prepareContinuityPlan(
+    await approveRouteTaskPlan(
       root,
       taskId,
       "Exercise the exact next-action authority and JSON contract.",
@@ -268,11 +268,13 @@ describe("task next-action JSON", () => {
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
-    await prepareContinuityPlan(
+    await approveRouteTaskPlan(
       root,
       taskId,
       "Exercise the exact next-action authority and JSON contract.",
     );
+
+    expect(await runCliSilent(["blueprint", "snapshot", taskId, "--root", root])).toBe(0);
 
     const io = captureStdIO();
     try {
@@ -330,6 +332,11 @@ describe("task next-action JSON", () => {
         state: "present",
         source: "workflow_route_blueprint",
       });
+      // The approved task has no branch change range before its worktree starts.
+      expect(parsed.workflow_step.preconditionFingerprint.components.policy).toMatchObject({
+        state: "unavailable",
+        reason_code: "policy_graph_observation_unavailable",
+      });
       expect(
         evaluateStateFingerprintPrecondition({
           expected: parsed.workflow_step.preconditionFingerprint,
@@ -337,8 +344,8 @@ describe("task next-action JSON", () => {
           policy: WORKFLOW_STATE_FINGERPRINT_POLICY,
         }),
       ).toMatchObject({
-        status: "fresh_with_bounded_uncertainty",
-        unavailable_required_components: [],
+        status: "blocked",
+        unavailable_required_components: ["policy"],
       });
       expect(parsed.workflowStep.operation.id).toBe(parsed.workflow_step.operation.id);
       expect(parsed.execution_packet.schema_version).toBe(1);
