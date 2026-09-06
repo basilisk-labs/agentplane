@@ -27,9 +27,10 @@ Perform the user-approved dedicated incident review before release planning. Con
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/policy/incidents.md     | 1 -
- docs/developer/incident-archive.mdx | 7 +++++++
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ .agentplane/policy/incidents.md                | 1 -
+ docs/developer/incident-archive.mdx            | 7 +++++++
+ packages/agentplane/assets/policy/incidents.md | 1 -
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 ```
 
 </details>
