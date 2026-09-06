@@ -3,7 +3,10 @@ import path from "node:path";
 import { gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
 
-import type { AgentSemanticResultScopeExtensionRequest } from "@agentplaneorg/core/schemas";
+import {
+  validateSupervisorExecutionEpisodeJournal,
+  type AgentSemanticResultScopeExtensionRequest,
+} from "@agentplaneorg/core/schemas";
 import {
   approveTaskPlan,
   canonicalizeJson,
@@ -19,9 +22,14 @@ import {
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import type { CommandContext } from "./task-backend.js";
+import { resolveCommandGitCommonDir, type CommandContext } from "./task-backend.js";
+import {
+  createSupervisorEpisodeStore,
+  resolveSupervisorExecutionEpisodePath,
+} from "./supervisor-execution-episode.js";
 import {
   externalAgentResultDigest,
+  externalAgentIssueDigest,
   readExternalAgentExchange,
   readExternalAgentWorkOrder,
   validateExternalAgentResultEnvelope,
@@ -494,7 +502,7 @@ export async function recoverAppliedScopeProjection(opts: {
     accepted.work_order_ref !== opts.exchange.work_order_ref ||
     issued.state_fingerprint.git_head !== base ||
     path.resolve(issued.state_fingerprint.worktree) !== path.resolve(root) ||
-    !["result_received", "accepted"].includes(accepted.status) ||
+    !["result_received", "accepted", "retired"].includes(accepted.status) ||
     accepted.purpose !== opts.exchange.purpose ||
     !["implementation", "implementation_rework", "task_worktree_resolution"].includes(
       accepted.purpose,
@@ -532,6 +540,31 @@ export async function recoverAppliedScopeProjection(opts: {
     exchange: accepted,
     work_order: issued,
   });
+  if (accepted.status === "retired") {
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      common_git_dir: await resolveCommandGitCommonDir(opts.command),
+      task_id: task.id,
+    });
+    const journal = validateSupervisorExecutionEpisodeJournal(
+      await createSupervisorEpisodeStore(journalPath).read(),
+    );
+    const effect = `external-agent-issue:${externalAgentIssueDigest({ exchange: accepted, work_order: issued })}`;
+    if (
+      journal.task_id !== task.id ||
+      !journal.operations.some(
+        (operation) =>
+          operation.work_order_ref === accepted.work_order_ref &&
+          operation.precondition_fingerprint_digest === accepted.state_fingerprint &&
+          operation.role === issued.role &&
+          operation.effect_ref === effect,
+      )
+    )
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "The retired implementation does not match its supervisor issue receipt.",
+      });
+  }
   if (
     envelope.result.status !== "completed" ||
     externalAgentResultDigest(envelope) !== accepted.result_digest

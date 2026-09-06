@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609041801-ZVX69C-fd8e541fd2fea6bb8abf42e0",
+  "prepared_at": "2026-09-05T09:10:08.655Z",
+  "task": {
+    "id": "202609041801-ZVX69C",
+    "revision": 44,
+    "objective": "Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification\n\nOn current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.",
+    "acceptance_criteria": [
+      "agentplane doctor",
+      "agentplane task lint",
+      "bun run ci:local:full",
+      "bun run lint:core",
+      "bun run typecheck",
+      "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1",
+      "bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.\n- Out of scope: unrelated refactors not required for \"Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification\".",
+      "Preserve the approved single regression-repair WorkItem and extend its authority only to the two workflow test fixtures proven by the narrowed complete local CI failure. All acceptance criteria, outputs, verification gates, ordering, risk, and exclusions remain unchanged.",
+      "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --maxWorkers=1`. Expected: lifecycle plan approval, typed transport, evaluator rework, projection atomicity, branch-worktree replay, quality routing, PR artifact hydration, and protected integration handoff regressions pass.\n2. Run `bun x vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts packages/core/src/tasks/task-kernel/invariants.test.ts packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts packages/core/src/tasks/task-store.test.ts --maxWorkers=1`. Expected: canonical task projections, kernel invariants, replacement-plan recovery, stale-result handling, and task-store atomicity pass.\n3. Run `bun run format:check`. Expected: repository formatting is clean.\n4. Run `bun run lint:core`. Expected: core lint passes.\n5. Run `bun run typecheck`. Expected: TypeScript validation passes.\n6. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing and size budgets pass.\n7. Run `node packages/agentplane/bin/agentplane.js task lint`. Expected: task records and Verify Steps pass lint using the repository-local runtime.\n8. Run `agentplane doctor`. Expected: repository and task diagnostics report no errors.\n9. Run `git diff --check`. Expected: the final patch has no whitespace errors.\n10. Run `bun run ci:local:full`. Expected: the complete local CI gate passes after the focused repairs.\n11. Review QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, and T4RR70 against current main. Expected: each edge is classified as already present, minimally required, independently useful outside scope, or obsolete; no stale branch is merged as-is.\n12. Review the final diff and task outcome. Expected: task projections advance atomically or fail without partial state, and no package version, release note, tag, publication, dependency, MPXQBK, or full GitLab/provider-neutral expansion change is present."
+    ]
+  },
+  "evaluated_sha": "d7bbd71571d6abe27fedb205e87d8402f49ff1d1",
+  "diff_base_sha": "8e8440da19e95e3264835bcdc8ccf665d18fe26c",
+  "blueprint_digest": "1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-091008655-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4e38d2ffaef9a1a64e95cf78480777da6462d9239fff8b88f343d6e8bdf92c98",
+    "prompt_path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/14460a88db0f15c7b66369bcd6556ce44fe9b21cca6492e1f9b768027f997800.md",
+    "result_schema_path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609041801-ZVX69C/README.md",
+      "sha256": "sha256:54c016a8dc711a912d834731308e1ec8fe6be9e6aa60124c1a8bad52e702b24c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch",
+      "sha256": "sha256:004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/398981cd799871261ec37ecaf44403f19a648e2c681cb6d6d10ab0bcf338f8b6.json",
+      "sha256": "sha256:398981cd799871261ec37ecaf44403f19a648e2c681cb6d6d10ab0bcf338f8b6",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609041801-ZVX69C/verification/20260905091001067-9516b9297b6632c7.json",
+      "sha256": "sha256:cdb004362975bccb40b81d72ad171a419e38dcc09dccdd6ed38096fb94589875",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/333290060f7a86dc7ce1735f25e72cc485de331583c73b21b9b15160ac71e63b.json",
+      "sha256": "sha256:333290060f7a86dc7ce1735f25e72cc485de331583c73b21b9b15160ac71e63b",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

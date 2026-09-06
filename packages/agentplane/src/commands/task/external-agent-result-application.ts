@@ -11,7 +11,10 @@ import type { CommandContext } from "../shared/task-backend.js";
 import {
   type ExternalAgentExchange,
   type ExternalAgentResultEnvelope,
+  writeExternalAgentExchange,
 } from "./external-agent-exchange.js";
+import path from "node:path";
+import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
 import {
   applyExternalEvaluatorResult,
   isExternalEvaluatorResultApplied,
@@ -51,6 +54,25 @@ export async function applyAcceptedExternalAgentResult(opts: {
   ) {
     if (await applyExternalPlanRefinement(opts)) return;
     await applyExternalImplementationResult(opts);
+    if (
+      opts.envelope.result.status === "completed" &&
+      opts.work_order.required_inputs.some((input) => input.id === "provider-conflict-context")
+    ) {
+      const after = await refreshExternalAgentRoute({
+        cwd: opts.exchange.checkout,
+        task_id: opts.exchange.task_id,
+        include_remote: true,
+      });
+      await writeExternalAgentExchange(
+        path.join(path.dirname(opts.exchange.work_order_ref), "exchange.json"),
+        {
+          ...opts.exchange,
+          status: "accepted",
+          postcondition_fingerprint: after.workflowStep.preconditionFingerprint.digest,
+          updated_at: new Date().toISOString(),
+        },
+      );
+    }
     return;
   }
   if (opts.exchange.purpose === "task_worktree_resolution") {

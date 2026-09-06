@@ -2,6 +2,7 @@ import path from "node:path";
 import { realpath } from "node:fs/promises";
 
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { resolveConflictReworkSemanticInput } from "../../commands/pr/conflict-rework-semantic-input.js";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
@@ -143,12 +144,33 @@ export async function assertRunnerCheckoutAuthority(opts: {
   bundle: RunnerContextBundle;
   authoritative_checkout_path: string | null;
   mutation_path_hint: string | null;
+  task_execution?: Pick<
+    TaskExecutionContext,
+    "authoritative_task_source" | "primary_task_id" | "selected_mode"
+  >;
 }): Promise<void> {
   const repositoryRoot = await canonicalPath(opts.bundle.repository.git_root);
+  const workOrder = opts.bundle.work_order;
+  if (!workOrder) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: "Runner checkout authority requires a canonical AgentWorkOrder.",
+    });
+  }
+  const expectedDirectWorkspaceBranch = `agentplane/workspace/${workOrder.task.id.replaceAll(
+    /[^A-Za-z0-9._-]/gu,
+    "-",
+  )}`;
+  const isolatedTaskWorkspace =
+    opts.task_execution?.authoritative_task_source === "task_worktree" &&
+    opts.task_execution.selected_mode === "direct" &&
+    opts.task_execution.primary_task_id === workOrder.task.id &&
+    opts.bundle.repository.branch === expectedDirectWorkspaceBranch;
   const authoritativePath = opts.authoritative_checkout_path
     ? await canonicalPath(opts.authoritative_checkout_path)
     : null;
-  if (authoritativePath && authoritativePath !== repositoryRoot) {
+  if (authoritativePath && authoritativePath !== repositoryRoot && !isolatedTaskWorkspace) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -162,10 +184,27 @@ export async function assertRunnerCheckoutAuthority(opts: {
       },
     });
   }
+  for (const writableRoot of workOrder.authority.writable_roots) {
+    const relative = path.relative(repositoryRoot, await canonicalPath(writableRoot));
+    if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message: "Runner WorkOrder writable roots must stay inside the runner repository.",
+        context: {
+          policy_field: "write_scope",
+          repository_root: repositoryRoot,
+          writable_root: writableRoot,
+        },
+      });
+    }
+  }
   if ((opts.bundle.execution.write_scope?.writable_roots.length ?? 0) === 0) return;
-  const mutationPath = opts.mutation_path_hint
-    ? await canonicalPath(opts.mutation_path_hint)
-    : null;
+  const mutationPath = isolatedTaskWorkspace
+    ? repositoryRoot
+    : opts.mutation_path_hint
+      ? await canonicalPath(opts.mutation_path_hint)
+      : null;
   if (mutationPath !== repositoryRoot) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -185,7 +224,25 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   const task = bundle.task;
   if (!task) return;
   const status = normalizeTaskStatus(task.metadata.status);
-  if (status !== "DOING") {
+  const step = bundle.route_decision?.workflowStep;
+  const order = bundle.work_order;
+  const conflictRework =
+    status === "DONE" &&
+    step?.kind === "agent_episode" &&
+    step.id === "agent.provider_conflict_rework" &&
+    step.episode.purpose === "implementation_rework" &&
+    order?.role === "EXECUTOR" &&
+    order.task.id === task.metadata.task_id &&
+    bundle.route_decision?.task.id === task.metadata.task_id &&
+    order.state_fingerprint.digest === step.preconditionFingerprint.digest &&
+    resolveConflictReworkSemanticInput({
+      task_id: order.task.id,
+      checkout: bundle.repository.git_root,
+      head: order.state_fingerprint.git_head,
+      writable_roots: order.authority.writable_roots,
+      required_inputs: order.required_inputs,
+    }) !== null;
+  if (status !== "DOING" && !conflictRework) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",

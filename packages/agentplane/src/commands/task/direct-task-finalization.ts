@@ -147,6 +147,7 @@ export async function resolveDirectImplementationCommit(opts: {
   cwd: string;
   task_id: string;
   execution_base_commit: string | null;
+  observed_base_commit?: string;
   allowed_paths: readonly string[];
   observed_changed_paths: readonly string[] | null;
 }): Promise<DirectImplementationCommit> {
@@ -221,13 +222,31 @@ export async function resolveDirectImplementationCommit(opts: {
         `${observedScopeViolations.join(", ")}.`,
     };
   }
-  const committed = new Set(changed);
+  // Conflict application measures implementation scope from the integration base,
+  // but its observed semantic writes originate at the bound task head. A file
+  // copied from the base is committed even when it vanishes from the first range.
+  if (opts.observed_base_commit) {
+    const ancestry = await runGit({
+      cwd: opts.cwd,
+      args: ["merge-base", "--is-ancestor", opts.observed_base_commit, commit],
+    });
+    if (ancestry.exitCode !== 0) {
+      return { status: "missing", reason: "The semantic observation base is not an ancestor." };
+    }
+  }
+  const observedCommitted = opts.observed_base_commit
+    ? await committedPaths({ cwd: opts.cwd, base: opts.observed_base_commit, commit })
+    : changed;
+  if (!observedCommitted) {
+    return { status: "missing", reason: "The semantic observation commit range is unavailable." };
+  }
+  const committed = new Set(observedCommitted);
   // Filesystem snapshots can include a newly-created parent directory alongside
   // the committed file. Git's name-only range reports files, not directories,
   // so accept such a directory marker only when it is an exact parent of an
   // implementation path in the immutable committed range.
   const uncommittedObservedPaths = observedNonTaskPaths.filter(
-    (entry) => !committed.has(entry) && !isCommittedDirectoryObservation(entry, changed),
+    (entry) => !committed.has(entry) && !isCommittedDirectoryObservation(entry, observedCommitted),
   );
   if (uncommittedObservedPaths.length > 0) {
     return {
@@ -279,6 +298,43 @@ export async function recordDirectImplementationEvidence(opts: {
   ) {
     return null;
   }
+  const relative = path.join(
+    opts.command.config.paths.workflow_dir,
+    opts.task_id,
+    "supervision",
+    "implementation-evidence.json",
+  );
+  const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
+  await mkdir(path.dirname(absolute), { recursive: true });
+  await writeJsonStableIfChanged(
+    absolute,
+    buildDirectImplementationEvidenceArtifact({
+      ...opts,
+      execution_baseline_status: opts.execution_baseline_status,
+      committed_diff_stdout: commitDiffCheck.stdout,
+      staged_diff_stdout: stagedDiffCheck.stdout,
+      commit_paths_stdout: commitPaths.stdout,
+      final_status: finalStatus,
+    }),
+  );
+  return {
+    artifact_path: relative,
+    implementation_commit: opts.implementation_commit,
+    changed_paths: pathsFromNameStatus(commitPaths.stdout),
+  };
+}
+
+export function buildDirectImplementationEvidenceArtifact(opts: {
+  task_id: string;
+  execution_base_commit: string;
+  implementation_commit: string;
+  execution_baseline_status: DirectRepositoryStatus;
+  committed_diff_stdout: string;
+  staged_diff_stdout: string;
+  commit_paths_stdout: string;
+  final_status: DirectRepositoryStatus;
+}) {
+  const finalStatus = opts.final_status;
   const baseline = new Set(opts.execution_baseline_status.lines);
   const final = new Set(finalStatus.lines);
   const classification = [
@@ -292,15 +348,8 @@ export async function recordDirectImplementationEvidence(opts: {
       .filter((line) => !final.has(line))
       .map((line) => ({ line, classification: "removed_during_execution" })),
   ];
-  const relative = path.join(
-    opts.command.config.paths.workflow_dir,
-    opts.task_id,
-    "supervision",
-    "implementation-evidence.json",
-  );
-  const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
-  await mkdir(path.dirname(absolute), { recursive: true });
-  await writeJsonStableIfChanged(absolute, {
+
+  return {
     schema_version: 1,
     kind: "direct_task_implementation_evidence",
     task_id: opts.task_id,
@@ -311,19 +360,19 @@ export async function recordDirectImplementationEvidence(opts: {
         id: "committed-diff-check",
         command: `git diff --check ${opts.execution_base_commit}..${opts.implementation_commit}`,
         result: "pass",
-        stdout: outputLines(commitDiffCheck.stdout),
+        stdout: outputLines(opts.committed_diff_stdout),
       },
       {
         id: "staged-diff-check",
         command: "git diff --cached --check",
         result: "pass",
-        stdout: outputLines(stagedDiffCheck.stdout),
+        stdout: outputLines(opts.staged_diff_stdout),
       },
       {
         id: "commit-paths",
         command: `git diff --name-status --diff-filter=ACDMRTUXB ${opts.execution_base_commit}..${opts.implementation_commit}`,
         result: "pass",
-        stdout: outputLines(commitPaths.stdout),
+        stdout: outputLines(opts.commit_paths_stdout),
       },
       {
         id: "final-repository-status",
@@ -342,11 +391,6 @@ export async function recordDirectImplementationEvidence(opts: {
       ),
       classification,
     },
-  });
-  return {
-    artifact_path: relative,
-    implementation_commit: opts.implementation_commit,
-    changed_paths: pathsFromNameStatus(commitPaths.stdout),
   };
 }
 

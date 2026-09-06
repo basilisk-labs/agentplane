@@ -220,8 +220,10 @@ async function observeRepositoryFile(
   }
 }
 
-function semanticTaskComponent(state: WorkflowRouteStateInput): StateFingerprintComponentInput {
-  const task = structuredClone(state.task);
+export function workflowTaskFingerprintComponent(
+  input: WorkflowRouteStateInput["task"],
+): StateFingerprintComponentInput {
+  const task = structuredClone(input);
   Reflect.deleteProperty(task, "revision");
   if (task.extensions) {
     Reflect.deleteProperty(task.extensions, SIDE_EFFECT_AUTHORITY_EXTENSION_KEY);
@@ -240,7 +242,7 @@ function semanticTaskComponent(state: WorkflowRouteStateInput): StateFingerprint
   return presentComponent("workflow_route_task", task);
 }
 
-async function observeWorkflowPolicy(opts: {
+export async function observeWorkflowPolicy(opts: {
   ctx: CommandContext;
   repositoryRoot: string;
   policyPaths: readonly string[];
@@ -378,7 +380,7 @@ function bootstrapFingerprint(state: WorkflowRouteStateInput): StateFingerprint 
     git_head: state.resume.head_sha,
     worktree,
     components: {
-      task: semanticTaskComponent(state),
+      task: workflowTaskFingerprintComponent(state.task),
       git: presentComponent("workflow_route_bootstrap", projection.workspace),
       backend_projection: presentComponent("workflow_route_bootstrap", {
         sync: state.task.sync ?? null,
@@ -444,7 +446,7 @@ export async function captureWorkflowStepFingerprint(opts: {
             relativePath: blueprintPath,
           }),
         fingerprintInputs: (observation) => ({
-          task: semanticTaskComponent(opts.state),
+          task: workflowTaskFingerprintComponent(opts.state.task),
           workflow_mode: opts.state.workflowMode,
           step: workflowAuthority(opts.step),
           blueprint_observation: observation,
@@ -576,7 +578,7 @@ export async function captureWorkflowStepFingerprint(opts: {
     git_head: git?.head_commit ?? null,
     worktree: authoritativePath ?? fallbackWorktree,
     components: {
-      task: semanticTaskComponent(opts.state),
+      task: workflowTaskFingerprintComponent(opts.state.task),
       git: gitComponent,
       backend_projection: backendProjection,
       policy,

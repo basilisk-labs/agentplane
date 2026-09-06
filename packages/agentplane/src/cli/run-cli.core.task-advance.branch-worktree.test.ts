@@ -228,6 +228,22 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
     io.restore();
   }
   expect(
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "1. Run bun run test:critical. Expected: the focused recovery contract passes.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
+  expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);
 }
@@ -450,6 +466,7 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
         commit: implementation,
         execution_base: workOrder.state_fingerprint.git_head,
         semantic: resultFor(packet, workOrder).result,
+        exchange: expect.objectContaining({ task_id: taskId }) as ExternalAgentExchange,
       });
       expect(
         await resolveRecordedImplementationRecovery({

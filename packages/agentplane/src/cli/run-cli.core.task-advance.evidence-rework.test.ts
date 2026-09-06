@@ -3,6 +3,7 @@ import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
+import * as processRunner from "@agentplaneorg/core/process";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import {
@@ -17,6 +18,8 @@ import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
 import * as refinement from "../commands/task/external-agent-plan-refinement.js";
 import * as verification from "../commands/task/direct-task-verification.js";
+import * as fingerprints from "../commands/shared/workflow-step-fingerprint.js";
+import * as exchanges from "../commands/task/external-agent-exchange.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
 import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
 import { defaultConfig } from "./core-imports.js";
@@ -160,6 +163,22 @@ async function implementationFixture(initialized = true) {
   const approval = await resume(root, planning);
   expect(approval.action.kind).toBe("approval_required");
   expect(
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "1. Run bun run test:critical. Expected: the focused recovery contract passes.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
+  expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);
   if (!initialized) await commitFixture(root, "test: persist approved evidence rework plan");
@@ -271,6 +290,159 @@ async function completedFixture(initialized = true) {
 }
 
 describe("task-level evidence-only rework", { timeout: 180_000 }, () => {
+  it.each([false, true])(
+    "replaces provider-only stale results without replaying implementation (interrupted=%s)",
+    async (interrupted) => {
+      const f = await completedFixture();
+      await report(f.rework, "Preserve the completed implementation and refresh checks.");
+      const resultBytes = await readFile(f.rework.exchange.result_path, "utf8");
+      const source = recordedTaskImplementationCommitSha(f.current);
+      const items = taskCentricAggregateFromExtensions(f.current.extensions)?.work_items;
+      const capture = fingerprints.captureWorkflowStepFingerprint;
+      let providerOnly = false;
+      const drift = vi
+        .spyOn(fingerprints, "captureWorkflowStepFingerprint")
+        .mockImplementation(async (options) => {
+          const flow = options.state.prFlow;
+          const observed = await capture(
+            options.state.task.id === f.taskId && flow
+              ? {
+                  ...options,
+                  state: {
+                    ...options.state,
+                    prFlow: {
+                      ...flow,
+                      reviewThreads: {
+                        ...flow.reviewThreads,
+                        checked: !flow.reviewThreads.checked,
+                      },
+                    },
+                  },
+                }
+              : options,
+          );
+          if (!providerOnly && options.state.task.id === f.taskId && flow) {
+            const unchanged = await capture(options);
+            expect({
+              ...observed,
+              digest: unchanged.digest,
+              components: {
+                ...observed.components,
+                provider: unchanged.components.provider,
+              },
+            }).toEqual(unchanged);
+            expect(observed.components.provider.digest).not.toBe(
+              unchanged.components.provider.digest,
+            );
+            providerOnly = true;
+          }
+          return observed;
+        });
+      try {
+        const stale = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+        expect(stale.code).not.toBe(0);
+        expect(stale.stderr).toContain("stale against current task authority");
+        expect(providerOnly).toBe(true);
+        const write = exchanges.writeExternalAgentExchange;
+        const failure = vi
+          .spyOn(exchanges, "writeExternalAgentExchange")
+          .mockImplementation(async (file, value) => {
+            if (interrupted && value.status === "retired") {
+              throw new Error("injected retirement interruption");
+            }
+            return write(file, value);
+          });
+        try {
+          const retired = await invoke(f.checkout, ["task", "advance", f.taskId, "--agent-json"]);
+          expect(retired.code).not.toBe(0);
+          expect(retired.stderr).toContain(
+            interrupted ? "injected retirement interruption" : "retired the stale result",
+          );
+        } finally {
+          failure.mockRestore();
+        }
+        const replaced = await invoke(f.checkout, [
+          "task",
+          "advance",
+          f.taskId,
+          "--replacement",
+          "--agent-json",
+        ]);
+        expect(replaced.code, replaced.stderr).toBe(0);
+        const fresh = JSON.parse(replaced.stdout) as Packet;
+        expect(fresh.exchange.directory).not.toBe(f.rework.exchange.directory);
+        const repeated = await packet(f.checkout, f.taskId);
+        expect(repeated.exchange.directory).toBe(fresh.exchange.directory);
+        expect(await readFile(f.rework.exchange.result_path, "utf8")).toBe(resultBytes);
+        const rejected = await invoke(f.checkout, f.rework.exchange.resume_argv.slice(1));
+        expect(rejected.code).not.toBe(0);
+        await report(fresh, "Preserve the completed implementation and refresh checks.");
+        await resume(f.checkout, fresh);
+        const evaluator = await packet(f.checkout, f.taskId);
+        const evaluatorOrder = await order(evaluator);
+        expect(evaluatorOrder.role).toBe("EVALUATOR");
+        const after = await f.ctx.taskBackend.getTask(f.taskId);
+        expect(recordedTaskImplementationCommitSha(after!)).toBe(source);
+        expect(taskCentricAggregateFromExtensions(after?.extensions)?.work_items).toEqual(items);
+        expect(after?.verification?.state).toBe("ok");
+      } finally {
+        drift.mockRestore();
+      }
+    },
+  );
+
+  it("recovers a second implementation after failed verification without adopting older history", async () => {
+    const f = await completedFixture();
+    await writeFile(path.join(f.checkout, "feature.ts"), "export const feature = false;\n");
+    await report(f.rework, "Apply the reviewed correction.");
+    const run = processRunner.runProcess;
+    let failed = false;
+    const processSpy = vi.spyOn(processRunner, "runProcess").mockImplementation(async (options) => {
+      const result = await run(options);
+      if (!failed && options.command === "bun" && options.args?.includes("test:critical")) {
+        failed = true;
+        return { ...result, exitCode: 1, stderr: "injected transient check failure" };
+      }
+      return result;
+    });
+    try {
+      await resume(f.checkout, f.rework);
+    } finally {
+      processSpy.mockRestore();
+    }
+    expect(failed).toBe(true);
+    const retry = await packet(f.checkout, f.taskId);
+    const retryOrder = await order(retry);
+    const proofPath = path.join(
+      f.checkout,
+      `.agentplane/tasks/${f.taskId}/supervision/implementation-evidence.json`,
+    );
+    const proof = JSON.parse(await readFile(proofPath, "utf8")) as {
+      implementation_commit: string;
+      execution_base_commit: string;
+    };
+    expect(retryOrder.state_fingerprint.git_head).toBe(proof.implementation_commit);
+    const task = await f.ctx.taskBackend.getTask(f.taskId);
+    expect(task?.verification?.state).toBe("needs_rework");
+    expect(
+      await resolveRecordedImplementationRecovery({
+        command: f.ctx,
+        task: task!,
+        work_order: retryOrder,
+        head: retryOrder.state_fingerprint.git_head,
+        recorded_commit: recordedTaskImplementationCommitSha(task!),
+        purpose: "implementation_rework",
+      }),
+    ).toMatchObject({
+      commit: proof.implementation_commit,
+      execution_base: proof.execution_base_commit,
+    });
+    await report(retry, "The transient failure is resolved. Recheck unchanged source.");
+    await resume(f.checkout, retry);
+    const evaluatorOrder = await order(await packet(f.checkout, f.taskId));
+    expect(evaluatorOrder.role).toBe("EVALUATOR");
+  });
+
   it.each(
     [true, false].flatMap((initialized) =>
       ["normal return", "interrupted proof refresh", "interrupted verification"].map(
@@ -512,10 +684,42 @@ const verificationClarification = {
 describe("pure external plan refinement", { timeout: 180_000 }, () => {
   it("projects verification clarification and issues a fresh evaluator packet", async () => {
     const f = await completedFixture();
-    await report(f.rework, "Project the approved verification contract.", {
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        f.taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "PLANNER fallback scaffold. Replace with task-specific acceptance checks.",
+        "--root",
+        f.checkout,
+      ]),
+    ).toBe(0);
+    const retired = await invoke(f.checkout, [
+      "task",
+      "advance",
+      f.taskId,
+      "--replacement",
+      "--agent-json",
+    ]);
+    expect(retired.code).not.toBe(0);
+    expect(retired.stderr).toContain("retired the stale result");
+    const replacement = await invoke(f.checkout, [
+      "task",
+      "advance",
+      f.taskId,
+      "--replacement",
+      "--agent-json",
+    ]);
+    expect(replacement.code, replacement.stderr).toBe(0);
+    const clarification = JSON.parse(replacement.stdout) as Packet;
+    await report(clarification, "Project the approved verification contract.", {
       plan_refinement: verificationClarification,
     });
-    const next = await resume(f.checkout, f.rework);
+    const next = await resume(f.checkout, clarification);
     const current = await f.ctx.taskBackend.getTask(f.taskId);
     expect(current?.sections?.["Verify Steps"]).toContain("bun run test:critical");
     expect(current?.sections?.["Verify Steps"]).not.toContain("PLANNER fallback scaffold");

@@ -194,6 +194,24 @@ async function prepareHostApproval(root: string, taskId: string): Promise<Record
   }
 }
 
+async function currentHostApproval(root: string, taskId: string): Promise<Record<string, unknown>> {
+  const io = captureStdIO();
+  try {
+    expect(
+      await runCli(["task", "advance", taskId, "--agent-json", "--root", root]),
+      io.stderr,
+    ).toBe(0);
+    const approval = JSON.parse(io.stdout) as {
+      action: { kind: string };
+      operator_action: { host_user_decision: { request: Record<string, unknown> } };
+    };
+    expect(approval.action.kind).toBe("approval_required");
+    return approval.operator_action.host_user_decision.request;
+  } finally {
+    io.restore();
+  }
+}
+
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("atomically rejects a task-centric proposal, invalidates stale approval, and replans", async () => {
     const root = await mkGitRepoRootWithCommit();
@@ -540,7 +558,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     expect(codeApprove2).toBe(0);
   });
 
-  it("task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery", async () => {
+  it("task plan approve requires task-specific Verify Steps for verify-required tasks", async () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
 
@@ -584,11 +602,11 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     ]);
     expect(codeSet).toBe(0);
 
-    const hostRequest = await prepareHostApproval(root, taskId);
-    const hostDecision = Buffer.from(
+    const scaffoldRequest = await prepareHostApproval(root, taskId);
+    const scaffoldDecision = Buffer.from(
       JSON.stringify({
         schema_version: 1,
-        ...hostRequest,
+        ...scaffoldRequest,
         host_id: "codex",
         conversation_id: "conversation-1",
         message_id: "message-1",
@@ -596,26 +614,73 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       }),
       "utf8",
     ).toString("base64url");
-    const codeApprove = await runCli([
-      "task",
-      "plan",
-      "approve",
-      taskId,
-      "--host-user-decision",
-      hostDecision,
-      "--note",
-      "OK",
-      "--root",
-      root,
-    ]);
-    expect(codeApprove).toBe(0);
+    expect(
+      await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--host-user-decision",
+        scaffoldDecision,
+        "--note",
+        "OK",
+        "--root",
+        root,
+      ]),
+    ).not.toBe(0);
+
+    expect(
+      await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run `bun run test:critical`. Expected: the task-specific behavior passes.",
+        "--updated-by",
+        "PLANNER",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+
+    const hostRequest = await currentHostApproval(root, taskId);
+    const hostDecision = Buffer.from(
+      JSON.stringify({
+        schema_version: 1,
+        ...hostRequest,
+        host_id: "codex",
+        conversation_id: "conversation-1",
+        message_id: "message-2",
+        decided_at: "2026-08-21T10:01:00.000Z",
+      }),
+      "utf8",
+    ).toString("base64url");
+    expect(
+      await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--host-user-decision",
+        hostDecision,
+        "--note",
+        "OK",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
     const readme = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
       "utf8",
     );
-    expect(readme).toContain("Review the changed artifact or behavior for the `code` task.");
+    expect(readme).toContain("Run `bun run test:critical`.");
+    expect(readme).not.toContain("PLANNER fallback scaffold");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+    expect(readme).toContain('status: "DOING"');
     expect(
       executionGrantFromExtensions(parseTaskReadme(readme).frontmatter.extensions),
     ).toMatchObject({
@@ -625,20 +690,26 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       status: "active",
     });
 
-    expect(
-      await runCli([
-        "task",
-        "plan",
-        "set",
-        taskId,
-        "--text",
-        "1) Implement the revised change\n2) Verify the revised change",
-        "--updated-by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]),
-    ).toBe(0);
+    const replanIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          "1) Implement the revised change\n2) Verify the revised change",
+          "--updated-by",
+          "ORCHESTRATOR",
+          "--root",
+          root,
+        ]),
+        replanIo.stderr,
+      ).toBe(0);
+    } finally {
+      replanIo.restore();
+    }
     const replanned = parseTaskReadme(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
     ).frontmatter;

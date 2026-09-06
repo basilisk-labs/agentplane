@@ -1,4 +1,9 @@
 import {
+  stoppedEpisode,
+  applyBranchImplementationResult,
+  recoverProductionBranchConflict,
+} from "./branch-task-supervisor-implementation.js";
+import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
@@ -15,70 +20,45 @@ import {
   openSupervisorExecutionEpisode,
   tryAcquireSupervisorExecutionLease,
 } from "../shared/supervisor-execution-episode.js";
-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  resolveCommandGitCommonDir,
+} from "../shared/task-backend.js";
 import type {
   BranchEpisodeOutcome,
-  BranchEvaluatorEvidence,
-  BranchExecutorEvidence,
   BranchTaskSupervisorOptions,
-  BranchTaskSupervisorStopCode,
 } from "./branch-task-supervisor.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { runAndApplyDirectTaskEvaluator } from "./direct-task-supervisor-evaluator.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
-import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
-import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
-import type { JournalProjection } from "./direct-task-supervisor-result.js";
+
 import { journalProjection } from "./direct-task-supervisor-result.js";
 import {
   renderDirectTaskVerificationDetails,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
-import { cmdTaskSetStatus } from "./set-status.js";
+
 import { cmdVerifyParsed } from "./verify-record.js";
+import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
 import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usage.js";
+
+import path from "node:path";
+import { readFile } from "node:fs/promises";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
+import { taskCentricDigest } from "@agentplaneorg/core/tasks";
+
 import {
-  observedExternalEffectsFromRunnerResult,
-  recordObservedTaskExecutionContract,
-} from "./task-execution-contract-observation.js";
-import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+  createRunnerRunId,
+  resolveSupervisorTaskRunnerPaths,
+} from "../../runner/task-run-paths.js";
 
-function operationId(decision: TaskRouteDecision): string | null {
-  return decision.workflowStep.kind === "cli_operation" ? decision.workflowStep.operation.id : null;
-}
-
-function stoppedEpisode(opts: {
-  decision: TaskRouteDecision;
-  code: BranchTaskSupervisorStopCode;
-  reason: string;
-  journal?: JournalProjection | null;
-  executor?: BranchExecutorEvidence;
-  evaluator?: BranchEvaluatorEvidence;
-  provider_episodes?: number;
-  lifecycle_calls?: number;
-  executor_lifecycle_event_delta?: number | null;
-}): BranchEpisodeOutcome {
-  return {
-    status: "stopped",
-    decision: opts.decision,
-    stop: {
-      code: opts.code,
-      reason: opts.reason,
-      route_step_id: opts.decision.workflowStep.id,
-      operation_id: operationId(opts.decision),
-    },
-    journal: opts.journal ?? null,
-    ...(opts.executor ? { executor: opts.executor } : {}),
-    ...(opts.evaluator ? { evaluator: opts.evaluator } : {}),
-    provider_episodes: opts.provider_episodes ?? 0,
-    lifecycle_calls: opts.lifecycle_calls ?? 0,
-    executor_lifecycle_event_delta: opts.executor_lifecycle_event_delta ?? null,
-  };
-}
+import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
+import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -132,6 +112,16 @@ async function executeBranchImplementationEpisode(opts: {
         journal: journalProjection(journal, opened.journal_path),
       });
     }
+    const conflictRun = step.id === "agent.provider_conflict_rework" ? createRunnerRunId() : null;
+    const conflictRunPaths = conflictRun
+      ? await resolveSupervisorTaskRunnerPaths({
+          git_root: command.resolvedProject.gitRoot,
+          workflow_dir: command.config.paths.workflow_dir,
+          task_id: opts.input.task_id,
+          run_id: conflictRun,
+          common_git_dir: await resolveCommandGitCommonDir(command),
+        })
+      : null;
     const started = startSupervisorExecutionEpisode({
       journal,
       role: "EXECUTOR",
@@ -144,7 +134,10 @@ async function executeBranchImplementationEpisode(opts: {
       precondition_fingerprint_digest: step.preconditionFingerprint.digest,
       authority_ref: `branch-pr:${opts.input.task_id}:${step.id}`,
       authority_digest: step.preconditionFingerprint.digest,
-      effect_ref: `branch-pr:${opts.input.task_id}:${step.preconditionFingerprint.digest}`,
+      effect_ref:
+        conflictRunPaths?.result_path ??
+        `branch-pr:${opts.input.task_id}:${step.preconditionFingerprint.digest}`,
+      ...(conflictRunPaths ? { work_order_ref: conflictRunPaths.bundle_path } : {}),
     });
     if (started.status !== "started") {
       await opened.store.write(started.journal);
@@ -179,6 +172,7 @@ async function executeBranchImplementationEpisode(opts: {
         ctx: command,
         cwd: checkout,
         task_id: opts.input.task_id,
+        ...(conflictRun ? { run_id: conflictRun } : {}),
         include_remote: true,
         execution_role: step.episode.role,
         ...(opts.input.sandbox_override ? { sandbox_override: opts.input.sandbox_override } : {}),
@@ -197,7 +191,8 @@ async function executeBranchImplementationEpisode(opts: {
         decision: opts.decision,
         code: "executor_adapter_crash",
         reason:
-          "The branch EXECUTOR adapter failed after durable intent; the provider will not be replayed automatically.",
+          "The branch EXECUTOR adapter failed after durable intent; the provider will not be replayed automatically. " +
+          (error instanceof Error ? `${error.name}: ${error.message}` : "Unknown adapter error."),
         journal: journalProjection(journal, opened.journal_path),
         provider_episodes: 1,
       });
@@ -207,6 +202,58 @@ async function executeBranchImplementationEpisode(opts: {
       execution: executed,
     });
     const exitCode = taskRunnerLifecycleExitCode(lifecycle);
+    // Persist the application authority before Git changes invalidate the route fingerprint.
+    // The exact runner references in this intent identify the result; Git effects have their
+    // own result-bound snapshot and merge proof.
+    const acceptedRoute = conflictRun ? await opts.decide() : null;
+    const acceptedTask = acceptedRoute
+      ? await command.taskBackend.getTask(opts.input.task_id)
+      : null;
+    if (
+      acceptedRoute &&
+      (acceptedTask?.revision !==
+        acceptedRoute.workflowStep.preconditionFingerprint.task_revision ||
+        taskCentricDigest(workflowTaskFingerprintComponent(acceptedTask)) !==
+          acceptedRoute.workflowStep.preconditionFingerprint.components.task.digest)
+    ) {
+      throw new Error(
+        "Managed conflict initial Task observation differs from its route authority.",
+      );
+    }
+    const applicationContext =
+      acceptedRoute && acceptedTask
+        ? {
+            run_id: executed.invocation.run_id,
+            work_order_id: executed.invocation.work_order_id,
+            result_digest: taskCentricDigest(executed.result),
+            execution_base_commit: executionBaseCommit,
+            execution_baseline_status: executionBaselineStatus,
+            execution_lifecycle_event_count: eventsBefore,
+            accepted_task: acceptedTask,
+            accepted_authority: conflictApplicationAuthority(acceptedRoute),
+            status_at: new Date().toISOString(),
+          }
+        : null;
+    if (applicationContext) {
+      // This is the original supervisor Git observation, not a second lifecycle store.
+      // Recovery cannot reconstruct the pre-execution status from the post-merge tree.
+      const contextPath = path.join(executed.invocation.run_dir, "implementation-context.json");
+      const existing = await readFile(contextPath, "utf8").catch((error: unknown) => {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
+      });
+      if (existing === null) {
+        await atomicWriteFile(
+          contextPath,
+          `${JSON.stringify(applicationContext, null, 2)}\n`,
+          "utf8",
+        );
+      } else {
+        if (taskCentricDigest(JSON.parse(existing)) !== taskCentricDigest(applicationContext)) {
+          throw new Error("Managed conflict implementation context changed after observation.");
+        }
+      }
+    }
     journal = completeSupervisorExecutionEpisode({
       journal,
       operation_key: started.operation_key,
@@ -217,10 +264,15 @@ async function executeBranchImplementationEpisode(opts: {
         semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
       },
       usage: branchSupervisorUsageFromLifecycle(lifecycle),
-      progress: lifecycle.lifecycle.state_fingerprint ?? {
-        run_id: lifecycle.invocation.run_id,
-        status: lifecycle.lifecycle.status,
-      },
+      progress: acceptedRoute
+        ? {
+            authority: conflictApplicationAuthority(acceptedRoute),
+            implementation: applicationContext,
+          }
+        : (lifecycle.lifecycle.state_fingerprint ?? {
+            run_id: lifecycle.invocation.run_id,
+            status: lifecycle.lifecycle.status,
+          }),
       failed: exitCode !== 0,
     });
     await opened.store.write(journal);
@@ -235,124 +287,18 @@ async function executeBranchImplementationEpisode(opts: {
         provider_episodes: 1,
       });
     }
-    const observed = observeDirectExecutor(lifecycle, {
-      allow_unverified_receipt: opts.input.danger_authority?.danger_full_access_authorized === true,
-    });
-    if ("stop" in observed) {
-      return stoppedEpisode({
-        decision: opts.decision,
-        code: observed.stop,
-        reason: observed.reason,
-        journal: journalRef,
-        provider_episodes: 1,
-      });
-    }
-    const currentTask = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
-    const eventDelta = (currentTask.events?.length ?? 0) - eventsBefore;
-    if (eventDelta !== 0) {
-      return stoppedEpisode({
-        decision: opts.decision,
-        code: "executor_lifecycle_mutation",
-        reason:
-          "The EXECUTOR changed task lifecycle events; branch_pr lifecycle remains CLI-owned.",
-        journal: journalRef,
-        executor_lifecycle_event_delta: eventDelta,
-        provider_episodes: 1,
-      });
-    }
-    const implementation = await prepareDirectImplementationEvidence({
+    return await applyBranchImplementationResult(opts, {
+      checkout,
       command,
-      cwd: checkout,
-      task_id: opts.input.task_id,
-      execution_base_commit: executionBaseCommit,
-      execution_baseline_status: executionBaselineStatus,
-      allowed_paths: lifecycle.lifecycle.work_order_authority?.writable_roots ?? [],
-      observed_changed_paths:
-        lifecycle.result?.evidence?.provenance === "supervisor_observed"
-          ? (lifecycle.result.evidence.changed_paths ?? [])
-          : null,
+      opened,
+      journal,
+      executed,
+      eventsBefore,
+      executionBaseCommit,
+      executionBaselineStatus,
+      acceptedRoute,
+      applicationContext,
     });
-    if (implementation.status !== "ready") {
-      return stoppedEpisode({
-        decision: opts.decision,
-        code:
-          implementation.status === "scope_violation"
-            ? "implementation_scope_violation"
-            : "implementation_commit_missing",
-        reason: implementation.reason,
-        journal: journalRef,
-        provider_episodes: 1,
-        executor_lifecycle_event_delta: eventDelta,
-      });
-    }
-    const commit = implementation.evidence.implementation_commit;
-    const taskExecution =
-      opts.input.task_execution ??
-      (await resolveTaskExecutionContext({
-        ctx: command,
-        tasks: [currentTask],
-        primaryTaskId: currentTask.id,
-      }));
-    const reconciliation = await recordObservedTaskExecutionContract({
-      command,
-      execution: taskExecution,
-      task: currentTask,
-      changed_paths: implementation.evidence.changed_paths,
-      observed_external_effects: observedExternalEffectsFromRunnerResult(lifecycle.result),
-      preserved_commit: commit,
-    });
-    if (reconciliation.task.execution_contract?.observed.authority_violations.length) {
-      return stoppedEpisode({
-        decision: opts.decision,
-        code: "implementation_scope_violation",
-        reason:
-          "Supervisor-observed changes exceeded the execution contract authority; preserve the committed work and require a corrected scope or explicit side-effect authority before continuing.",
-        journal: journalRef,
-        provider_episodes: 1,
-        executor_lifecycle_event_delta: eventDelta,
-      });
-    }
-    await cmdTaskSetStatus({
-      ctx: command,
-      cwd: checkout,
-      taskId: opts.input.task_id,
-      status: "DOING",
-      author: "SUPERVISOR",
-      body:
-        `Implementation committed: ${commit.slice(0, 12)}. ` +
-        "CLI recorded the observed branch EXECUTOR receipt and committed work-unit identity.",
-      commit,
-      force: false,
-      yes: false,
-      commitFromComment: true,
-      commitAllow: [],
-      commitAutoAllow: false,
-      commitAllowTasks: true,
-      commitRequireClean: false,
-      confirmStatusCommit: true,
-      quiet: true,
-    });
-    const refreshed = await opts.decide();
-    if (journal.status === "running" && journal.cursor.phase === "completed") {
-      journal = advanceSupervisorExecutionEpisodeState({
-        journal,
-        state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
-        route_observation: { step_id: refreshed.workflowStep.id },
-      });
-      await opened.store.write(journal);
-    }
-    return {
-      status: "completed",
-      decision: refreshed,
-      executor: {
-        ...observed.executor,
-        implementation_commit: commit,
-      },
-      journal: journalProjection(journal, opened.journal_path),
-      provider_episodes: 1,
-      lifecycle_calls: 1,
-      executor_lifecycle_event_delta: eventDelta,
-    };
   } finally {
     await lease.release();
   }
@@ -382,9 +328,15 @@ async function executeBranchVerificationEpisode(opts: {
       id: "task_verify",
       decision: opts.decide,
       run: async () => {
+        const verification = await resolveImplementationVerificationTask({
+          command,
+          checkout,
+          task,
+          workflow: "branch_pr",
+        });
         const checks = await runDirectTaskVerification({
           command,
-          task,
+          task: verification.task,
           task_id: opts.input.task_id,
           cwd: checkout,
         });
@@ -400,11 +352,12 @@ async function executeBranchVerificationEpisode(opts: {
             ? "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
             : `Rework: ${failureReason}`,
           details: renderDirectTaskVerificationDetails({
-            task,
+            task: verification.task,
             taskId: opts.input.task_id,
             workflow: "branch_pr",
             result: checks,
           }),
+          verificationSnapshot: verification.snapshot,
           localOnly: false,
           repoFixable: !passed,
           incidentTags: [],
@@ -555,6 +508,8 @@ export async function executeProductionBranchEpisode(opts: {
   decision: TaskRouteDecision;
   decide: () => Promise<TaskRouteDecision>;
 }): Promise<BranchEpisodeOutcome> {
+  const recovery = await recoverProductionBranchConflict(opts);
+  if (recovery) return recovery;
   const step = opts.decision.workflowStep;
   if (step.kind !== "agent_episode") {
     return stoppedEpisode({

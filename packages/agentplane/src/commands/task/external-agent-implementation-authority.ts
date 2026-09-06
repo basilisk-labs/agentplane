@@ -1,10 +1,23 @@
-import path from "node:path";
+import {
+  pathFromStatusLine,
+  hasChangedTaskArtifacts,
+  finishExternalImplementationVerification,
+} from "./external-agent-implementation-finalization.js";
+import {
+  authorityPath,
+  pathAllowed,
+  recoverExternalConflictEvidence,
+  applyExternalConflictResolution,
+} from "./external-agent-conflict-application.js";
 
-import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
 import { cmdCommit } from "../guard/impl/commit.js";
+import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
+import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
+
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -18,10 +31,7 @@ import {
 } from "./external-agent-blocked-result.js";
 import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
-import {
-  isTaskLevelVerificationReworkState,
-  recordDirectTaskVerification,
-} from "./direct-task-verification.js";
+import { recordDirectTaskVerification } from "./direct-task-verification.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
 import { cmdTaskSetStatus } from "./set-status.js";
@@ -35,53 +45,12 @@ import {
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
 import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
-import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import {
-  recordTaskCentricExternalResult,
-  type TaskCentricExternalResultProjection,
-} from "./task-centric-external-result.js";
-
-function pathFromStatusLine(line: string): string {
-  const raw = line.length >= 4 ? line.slice(3).trim() : "";
-  const renamed = raw.includes(" -> ") ? (raw.split(" -> ").at(-1) ?? raw) : raw;
-  return renamed.replaceAll("\\", "/");
-}
-
-function authorityPath(value: string, cwd: string): string | null {
-  const relative = path.relative(cwd, path.resolve(cwd, value)).replaceAll("\\", "/");
-  if (relative === "") return ".";
-  if (relative === ".." || relative.startsWith("../") || path.posix.isAbsolute(relative)) {
-    return null;
-  }
-  return relative.replace(/\/$/u, "");
-}
-
-function pathAllowed(value: string, allowed: readonly string[]): boolean {
-  return allowed.some((root) => root === "." || value === root || value.startsWith(`${root}/`));
-}
-
-function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
-  const prefix = `.agentplane/tasks/${taskId}/`;
-  return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
-}
-
-function isTaskLevelVerificationRework(opts: {
-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
-  work_order: AgentWorkOrderV2;
-  semantic: AgentSemanticResult;
-}): boolean {
-  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  return isTaskLevelVerificationReworkState({
-    work_item_id: opts.work_order.task.work_item_id ?? null,
-    has_plan_refinement: Boolean(opts.semantic.plan_refinement),
-    task_verification_state: opts.task.verification?.state,
-    has_current_plan: Boolean(aggregate?.current_plan),
-    all_required_work_items_completed:
-      aggregate?.current_plan?.proposal.work_items.work_items
-        .filter((item) => !item.optional)
-        .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED") ?? false,
-  });
-}
+  prepareExternalVerificationCheckpoint,
+  completeExternalVerificationCheckpoint,
+  recoverExternalVerificationCheckpoint,
+} from "./external-agent-implementation-checkpoint.js";
+import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
 function assertExternalImplementationReturnState(opts: {
   exchange: ExternalAgentExchange;
@@ -285,13 +254,35 @@ export async function applyExternalImplementationResult(opts: {
     readDirectTaskHead(opts.exchange.checkout),
     readDirectRepositoryStatus(opts.exchange.checkout),
   ]);
+  const conflictContext = resolveConflictReworkSemanticInput({
+    task_id: opts.work_order.task.id,
+    checkout: opts.exchange.checkout,
+    head: opts.work_order.state_fingerprint.git_head,
+    writable_roots: opts.work_order.authority.writable_roots,
+    required_inputs: opts.work_order.required_inputs,
+  });
+  if (await recoverExternalConflictEvidence(opts, conflictContext, head, status)) return;
+  const recoveredVerification = conflictContext
+    ? await recoverExternalVerificationCheckpoint(opts)
+    : null;
+  if (recoveredVerification) {
+    await finishExternalImplementationVerification({
+      ...opts,
+      semantic,
+      task: recoveredVerification.task,
+      verification: recoveredVerification.verification,
+      conflict: true,
+    });
+    return;
+  }
   const taskAtReturn = await loadTaskFromContext({
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
-  let implementationCommit = recoversRecordedImplementationCommit(opts.exchange.purpose)
-    ? opts.decision.task.commit
-    : null;
+  let implementationCommit =
+    !conflictContext && recoversRecordedImplementationCommit(opts.exchange.purpose)
+      ? opts.decision.task.commit
+      : null;
   let reusedRecordedImplementation = false;
   let recoveredExecutionBase: string | null = null;
   let observedChangedPaths: string[] | null = null;
@@ -305,7 +296,7 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    if (observedChangedPaths.length === 0) {
+    if (observedChangedPaths.length === 0 && !conflictContext) {
       const recovery = await resolveRecordedImplementationRecovery({
         purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,
         command: opts.command,
@@ -322,7 +313,11 @@ export async function applyExternalImplementationResult(opts: {
       }
     }
   }
-  if (implementationCommit) {
+  if (conflictContext && head && head !== opts.exchange.baseline.head) {
+    implementationCommit = head;
+  } else if (conflictContext && head && observedChangedPaths?.length === 0) {
+    implementationCommit = head;
+  } else if (implementationCommit) {
     if (!recoveredExecutionBase) {
       await assertRecoverableImplementationCommit({
         cwd: opts.exchange.checkout,
@@ -348,15 +343,17 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    implementationCommit = await resolveVerifiedEvidenceOnlyReworkCommit({
-      command: opts.command,
-      exchange: opts.exchange,
-      work_order: opts.work_order,
-      task: taskAtReturn,
-      route_commit: opts.decision.task.commit,
-      head,
-      changed_paths: observedChangedPaths,
-    });
+    implementationCommit = conflictContext
+      ? null
+      : await resolveVerifiedEvidenceOnlyReworkCommit({
+          command: opts.command,
+          exchange: opts.exchange,
+          work_order: opts.work_order,
+          task: taskAtReturn,
+          route_commit: opts.decision.task.commit,
+          head,
+          changed_paths: observedChangedPaths,
+        });
     if (implementationCommit) {
       reusedRecordedImplementation = true;
       await assertRecoverableImplementationCommit({
@@ -373,29 +370,41 @@ export async function applyExternalImplementationResult(opts: {
             "Completed implementation result produced no supervisor-observed workspace change.",
         });
       }
-      const exitCode = await cmdCommit({
-        ctx: opts.command,
-        cwd: opts.exchange.checkout,
-        taskId: opts.exchange.task_id,
-        message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: apply external agent result`,
-        close: false,
-        allow: observedChangedPaths,
-        autoAllow: false,
-        allowTasks: true,
-        allowBase: false,
-        allowPolicy: false,
-        allowConfig: false,
-        allowHooks: false,
-        allowCI: false,
-        requireClean: false,
-        quiet: true,
-        closeUnstageOthers: false,
-        closeCheckOnly: false,
-      });
-      if (exitCode !== 0)
-        throw new Error(`External-agent implementation commit exited ${exitCode}.`);
+      if (conflictContext && opts.exchange.result_digest) {
+        await commitConflictResolutionSnapshot({
+          command: opts.command,
+          cwd: opts.exchange.checkout,
+          task_id: opts.exchange.task_id,
+          result_digest: opts.exchange.result_digest,
+          changed_paths: observedChangedPaths,
+        });
+      } else {
+        const exitCode = await cmdCommit({
+          ctx: opts.command,
+          cwd: opts.exchange.checkout,
+          taskId: opts.exchange.task_id,
+          message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: apply external agent result`,
+          close: false,
+          allow: observedChangedPaths,
+          autoAllow: false,
+          allowTasks: true,
+          allowBase: false,
+          allowPolicy: false,
+          allowConfig: false,
+          allowHooks: false,
+          allowCI: false,
+          requireClean: false,
+          quiet: true,
+          closeUnstageOthers: false,
+          closeCheckOnly: false,
+        });
+        if (exitCode !== 0)
+          throw new Error(`External-agent implementation commit exited ${exitCode}.`);
+      }
     }
   }
+  if (conflictContext)
+    implementationCommit = await applyExternalConflictResolution(opts, conflictContext);
   const executionContext = taskAtReturn.extensions?.task_execution_context as
     | { base_sha?: unknown }
     | undefined;
@@ -421,13 +430,18 @@ export async function applyExternalImplementationResult(opts: {
         command: opts.command,
         cwd: opts.exchange.checkout,
         task_id: opts.exchange.task_id,
-        execution_base_commit: reusedRecordedImplementation
-          ? recordedExecutionBase
-          : opts.exchange.baseline.head,
+        execution_base_commit: conflictContext
+          ? conflictContext.local.base_head_sha
+          : reusedRecordedImplementation
+            ? recordedExecutionBase
+            : opts.exchange.baseline.head,
         execution_baseline_status: {
           command: "git status --short --untracked-files=all",
           lines: opts.exchange.baseline.changed_paths,
         },
+        observed_base_commit: conflictContext
+          ? (opts.exchange.baseline.head ?? undefined)
+          : undefined,
         allowed_paths: [
           ...opts.work_order.authority.writable_roots,
           `.agentplane/tasks/${opts.exchange.task_id}`,
@@ -506,59 +520,22 @@ export async function applyExternalImplementationResult(opts: {
     task: reconciliation.task,
     work_order: opts.work_order,
     workflow: opts.decision.workflowMode === "branch_pr" ? "branch_pr" : "direct",
+    beforePersist: conflictContext
+      ? (mutation, checks) =>
+          prepareExternalVerificationCheckpoint({
+            ...opts,
+            mutation,
+            verification: checks,
+            expected_task: reconciliation.task,
+          })
+      : undefined,
+    afterPersist: conflictContext ? () => completeExternalVerificationCheckpoint(opts) : undefined,
   });
-  const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);
-  const postVerificationStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
-  const canonicalProjection: TaskCentricExternalResultProjection | null =
-    isTaskLevelVerificationRework({
-      task: reconciliation.task,
-      work_order: opts.work_order,
-      semantic,
-    })
-      ? null
-      : await recordTaskCentricExternalResult({
-          command: opts.command,
-          work_order: opts.work_order,
-          semantic,
-          verification,
-          head: postVerificationHead,
-          dirty_paths: (postVerificationStatus?.lines ?? [])
-            .map((line) => pathFromStatusLine(line))
-            .filter(Boolean),
-        });
-  if (verification.status !== "passed") {
-    if (canonicalProjection?.state !== "legacy_task") return;
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: verification.reason ?? "Declared implementation verification did not pass.",
-    });
-  }
-  if (canonicalProjection?.state === "work_item_rework") return;
-  if (opts.decision.workflowMode === "branch_pr") {
-    opts.command.git.invalidateStatus();
-    const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
-    if (!hasChangedTaskArtifacts(currentStatus?.lines ?? [], opts.exchange.task_id)) return;
-    const evidenceExitCode = await cmdCommit({
-      ctx: opts.command,
-      cwd: opts.exchange.checkout,
-      taskId: opts.exchange.task_id,
-      message: `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external implementation evidence`,
-      close: false,
-      allow: [],
-      autoAllow: false,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-      closeUnstageOthers: false,
-      closeCheckOnly: false,
-    });
-    if (evidenceExitCode !== 0) {
-      throw new Error(`External-agent implementation evidence commit exited ${evidenceExitCode}.`);
-    }
-  }
+  await finishExternalImplementationVerification({
+    ...opts,
+    semantic,
+    task: reconciliation.task,
+    verification,
+    conflict: conflictContext !== null,
+  });
 }

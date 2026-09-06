@@ -1,4 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as fs from "node:fs/promises";
+import * as git from "@agentplaneorg/core/git";
+import { resolveRecordedImplementationRecovery } from "./external-agent-implementation-recovery.js";
+
+vi.mock("node:fs/promises", { spy: true });
+vi.mock("@agentplaneorg/core/git", { spy: true });
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { parseCommandArgv } from "../../cli/spec/parse.js";
@@ -44,61 +50,37 @@ const STATE_SCOPE_DIGEST = `sha256:${"2".repeat(64)}`;
 const STATE_FINGERPRINT = `sha256:${"3".repeat(64)}`;
 
 describe("task scope extend command parsing", () => {
-  it.each([
-    {
-      option: "--state-scope-digest",
-      value: STATE_SCOPE_DIGEST,
-      expected: { stateScopeDigest: STATE_SCOPE_DIGEST },
+  it.each(
+    [
+      { option: "--state-scope-digest", value: STATE_SCOPE_DIGEST, key: "stateScopeDigest" },
+      { option: "--state-fingerprint", value: STATE_FINGERPRINT, key: "stateFingerprint" },
+    ].flatMap((binding) => [false, true].map((padded) => ({ ...binding, padded }))),
+  )(
+    "preserves scalar $option after normalization (padded=$padded)",
+    ({ option, value, key, padded }) => {
+      expect(
+        parseCommandArgv(taskScopeExtendSpec, [
+          "T-1",
+          "--scope-root",
+          "packages/agentplane",
+          "--request-digest",
+          REQUEST_DIGEST,
+          option,
+          padded ? `  ${value}  ` : value,
+          "--by",
+          "USER",
+        ]),
+      ).toMatchObject({
+        parsed: {
+          taskId: "T-1",
+          scopeRoots: ["packages/agentplane"],
+          requestDigest: REQUEST_DIGEST,
+          by: "USER",
+          [key]: value,
+        },
+      });
     },
-    {
-      option: "--state-fingerprint",
-      value: STATE_FINGERPRINT,
-      expected: { stateFingerprint: STATE_FINGERPRINT },
-    },
-  ])("preserves scalar $option", ({ option, value, expected }) => {
-    expect(
-      parseCommandArgv(taskScopeExtendSpec, [
-        "T-1",
-        "--scope-root",
-        "packages/agentplane",
-        "--request-digest",
-        REQUEST_DIGEST,
-        option,
-        value,
-        "--by",
-        "USER",
-      ]),
-    ).toMatchObject({
-      parsed: {
-        taskId: "T-1",
-        scopeRoots: ["packages/agentplane"],
-        requestDigest: REQUEST_DIGEST,
-        by: "USER",
-        ...expected,
-      },
-    });
-  });
-
-  it.each([
-    { option: "--state-scope-digest", value: STATE_SCOPE_DIGEST, key: "stateScopeDigest" },
-    { option: "--state-fingerprint", value: STATE_FINGERPRINT, key: "stateFingerprint" },
-  ] as const)("normalizes scalar $option before digest validation", ({ option, value, key }) => {
-    expect(
-      parseCommandArgv(taskScopeExtendSpec, [
-        "T-1",
-        "--scope-root",
-        "packages/agentplane",
-        "--request-digest",
-        REQUEST_DIGEST,
-        option,
-        `  ${value}  `,
-        "--by",
-        "USER",
-      ]),
-    ).toMatchObject({
-      parsed: { [key]: value },
-    });
-  });
+  );
 
   it("continues to reject a missing state binding", () => {
     const base = [
@@ -318,7 +300,7 @@ function fixture(
 describe("blocked task execution scope extension", () => {
   it.each(["valid", "digest", "receipt", "scope", "approval", "verification", "task", "plan"])(
     "recovers only an applied scope receipt without relaxing generic revision checks (%s)",
-    (variant) => {
+    async (variant) => {
       const { command, pending, task } = fixture();
       const aggregate = taskCentricAggregate(task.id);
       task.revision = aggregate.revision;
@@ -396,6 +378,37 @@ describe("blocked task execution scope extension", () => {
         expect(recovered).toBeNull();
       }
       expect(split).toEqual(before);
+      const completed = structuredClone(split);
+      completed.plan_approval = { state: "approved", updated_at: NOW, updated_by: "USER" };
+      const runtime = taskCentricAggregateFromExtensions(completed.extensions)!;
+      for (const item of Object.values(runtime.work_items)) item.state = "COMPLETED";
+      const commit = "b".repeat(40);
+      const read = vi.spyOn(fs, "readFile").mockResolvedValue(
+        JSON.stringify({
+          kind: "direct_task_implementation_evidence",
+          task_id: completed.id,
+          implementation_commit: commit,
+          execution_base_commit: "a".repeat(40),
+        }),
+      );
+      const ancestry = vi.spyOn(git, "gitIsAncestor").mockResolvedValue(false);
+      try {
+        expect(
+          await resolveRecordedImplementationRecovery({
+            command,
+            task: completed,
+            work_order: { task: { work_item_id: null } } as never,
+            head: commit,
+            recorded_commit: null,
+            purpose: "implementation",
+          }),
+        ).toBeNull();
+        // A proven historical split reaches Git proof, but never bypasses it.
+        expect(ancestry).toHaveBeenCalledTimes(variant === "valid" ? 1 : 0);
+      } finally {
+        read.mockRestore();
+        ancestry.mockRestore();
+      }
     },
   );
 

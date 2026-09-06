@@ -1,0 +1,29 @@
+# Semantic quality review: pass
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned pass with 9 typed finding(s).
+
+## Findings
+- Reviewed the approved plan digest sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129, its single sequential repair WorkItem, Verify Steps, scope roots and exclusions in .agentplane/tasks/202609041801-ZVX69C/README.md. The Task record marks the WorkItem COMPLETED with all five expected output manifests. The production diff remains within the declared task-owned roots; no package version, lockfile, release note, tag, workflow expansion or stale-branch import was introduced. The qualification-script edits only give existing fixtures task-specific Verify Steps.
+- In frozen actual-diff 43e88c637545daa15c8989e5862f3b5bab2648e68840df5793252f528b8a1b6d.patch, conflict context assembly binds task, checkout, branch, head, base and writable roots. The runner DONE exception requires the exact conflict EXECUTOR episode and matching WorkOrder fingerprint. It does not authorize arbitrary execution of closed tasks. Scoped semantic content remains separate from supervisor Git effects.
+- The shared conflict merge owner prepares an isolated tree, preserves automatic base-only changes, validates unresolved/path/index/workspace conditions and rechecks live authority and branch/base identity before materialization. Commit proof checks the exact parents, tree, result trailer and clean postcondition. The real-Git tests exercise foreign content, literal pathspecs, interrupted hooks and repeat application. These are behavior assertions, not weakened success expectations.
+- Managed recovery uses the existing supervisor journal, recorded run and authentic result, then reconstructs exact Task postconditions through existing contract/projection/status owners. It compares the full Task and README/evidence bytes, admits only the current task's expected artifacts, and resumes before protected publication dispatch without executing the provider again. The reviewed tests cover merge, contract, status and evidence interruption and repeated rejection of policy, result, context, Task and workspace drift.
+- External recovery keeps verification progress in the existing exchange, not a competing Task store. The native TaskStore exposes the actual serialized prepared afterimage before its normal concurrency-checked write. After a matching completed Task write, recovery finishes the existing PR projection owner and finalization rather than repeating merge or checks. Non-native stores without that proof fail closed. Atomic pre-write failure, after-write resume and tamper rejection tests retain the original authority boundary.
+- All frozen evidence file digests match the evaluator WorkOrder. Frozen verification record .agentplane/tasks/202609041801-ZVX69C/verification/20260905225439680-2fe977358aa50ba1.json binds implementation 8b1594fdbddea370c02760dd835f4f98f9caf160, branch base 8e8440da19e95e3264835bcdc8ccf665d18fe26c, context/environment, verification contract and Verify Steps. Its checks include doctor, task lint, full CI, lint, types, both mandatory CLI/core focused suites and policy routing. The preceding WorkItem evidence also records the extra evaluator/runner suites, formatting and diff checks as passed. HEAD 4bed92f9eeac21183a2558bab17c9795a20ec6a7 differs from the evaluated implementation only in this task's supervisor-owned artifacts; source and test content are unchanged.
+- The stale-branch salvage decision remains bounded: the existing PX8PZT owner carries the necessary task-kernel recovery contracts; obsolete QWP8S8, 9T9528, HBSZ4F and DVS5NN branches were not merged. 9RCWZQ release work, MPXQBK and T4RR70 GitLab expansion remain excluded. Rollback remains the retained task-scoped commit chain, not a rewrite of main or imported stale history.
+- Residual risk: This local verdict does not establish hosted integration readiness or completion of the overarching Clean Core goal. Provider refresh, any necessary conflict episode, SHA-bound post-resolution verification, integration, PH5N6S disposition and final-main checks remain pending.
+- Residual risk: Recovery evidence qualifies the documented successful-result, merge and Task-write cutpoints. It does not claim recovery from arbitrary filesystem corruption or unsupported backends.
+
+## Evidence
+- .agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/43e88c637545daa15c8989e5862f3b5bab2648e68840df5793252f528b8a1b6d.patch
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- The review retains the configured trust model: supervisor-owned exchange/journal/run artifacts are protected from semantic workspace writes. Digest validation is not a replacement for that provenance boundary.
+- Explicit local test-provider danger authority qualifies lifecycle behavior, not OS containment. No stronger sandbox claim is inferred from those fixtures.
+
+## Residual Risks
+- none recorded

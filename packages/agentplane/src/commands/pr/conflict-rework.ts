@@ -397,8 +397,18 @@ export async function prepareConflictReworkPacket(opts: {
     };
   }
 
+  const localBase = await resolveLocalRef({
+    gitRoot: opts.gitRoot,
+    gitOps,
+    ref: base,
+    reasonCode: "provider_base_unavailable",
+    label: `base ${base}`,
+  });
+  if (!localBase.ok) return localBase.preparation;
+
   const routeEligibility = resolveConflictRouteEligibility({
     report: opts.report,
+    localBase: localBase.value,
     identity: {
       taskId: opts.taskId,
       taskBranch,
@@ -412,15 +422,6 @@ export async function prepareConflictReworkPacket(opts: {
   if (routeEligibility.state === "ineligible") {
     return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
   }
-
-  const localBase = await resolveLocalRef({
-    gitRoot: opts.gitRoot,
-    gitOps,
-    ref: base,
-    reasonCode: "provider_base_unavailable",
-    label: `base ${base}`,
-  });
-  if (!localBase.ok) return localBase.preparation;
 
   const routeEvidence = routeEligibility.evidence;
   const baseContextResolution = await resolveConflictReworkBaseContext({
@@ -557,13 +558,13 @@ export async function prepareConflictReworkPacket(opts: {
         role: "CODER",
         revalidate_command: `agentplane pr conflict-rework ${opts.taskId} --expect-freshness-token ${token}`,
         after_resolution:
-          "after a CODER records a new resolution commit, refresh provider truth, rerun normal verification, then use the ordinary lease-safe PR publication and integration route",
+          "after CODER returns scoped workspace edits, AgentPlane validates and commits the resolution with the bound base parent, refreshes provider truth, and repeats verification before ordinary lease-safe publication and integration",
       },
       safety: {
         preparation_mutations: [],
         cli_must_not: [
           "do not choose conflict hunks or semantic resolution",
-          "do not auto-rebase, auto-merge, force-push, or rewrite the task branch",
+          "do not auto-rebase, force-push, rewrite history, or apply a merge without the matching accepted semantic result",
           "do not publish, enqueue, clean up, or merge while this packet is stale",
         ],
       },

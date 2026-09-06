@@ -16,6 +16,7 @@ export async function prepareDirectImplementationEvidence(opts: {
   cwd: string;
   task_id: string;
   execution_base_commit: string | null;
+  observed_base_commit?: string;
   execution_baseline_status: DirectRepositoryStatus | null;
   allowed_paths: readonly string[];
   observed_changed_paths: readonly string[] | null;
@@ -27,6 +28,7 @@ export async function prepareDirectImplementationEvidence(opts: {
       cwd: opts.cwd,
       task_id: opts.task_id,
       execution_base_commit: opts.execution_base_commit,
+      observed_base_commit: opts.observed_base_commit,
       allowed_paths: opts.allowed_paths,
       observed_changed_paths: opts.observed_changed_paths,
     });

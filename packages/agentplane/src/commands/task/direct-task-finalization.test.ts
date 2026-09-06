@@ -94,6 +94,58 @@ describe("direct task finalization", () => {
     ).resolves.toEqual({ status: "ready", commit: "def456" });
   });
 
+  it.each(["committed", "missing", "foreign-base", "unavailable"] as const)(
+    "proves base-identical observed writes against their semantic baseline: %s",
+    async (variant) => {
+      mocks.runProcess
+        .mockResolvedValueOnce({ exitCode: 0, stdout: "merge-head\n", stderr: "" })
+        .mockResolvedValueOnce({ exitCode: 0, stdout: "src/implementation.ts\n", stderr: "" })
+        .mockResolvedValueOnce({
+          exitCode: variant === "foreign-base" ? 1 : 0,
+          stdout: "",
+          stderr: "",
+        })
+        .mockResolvedValueOnce({
+          exitCode: variant === "unavailable" ? 128 : 0,
+          stdout:
+            variant === "committed"
+              ? "src/implementation.ts\nsrc/base-copy.ts\n"
+              : "src/implementation.ts\n",
+          stderr: "",
+        });
+      const result = await resolveDirectImplementationCommit({
+        command,
+        cwd: "/repo",
+        task_id: TASK_ID,
+        execution_base_commit: "integration-base",
+        observed_base_commit: "semantic-base",
+        allowed_paths: ["src"],
+        observed_changed_paths: ["src/implementation.ts", "src/base-copy.ts"],
+      });
+      expect(result.status).toBe(variant === "committed" ? "ready" : "missing");
+      expect(mocks.runProcess).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", "integration-base..merge-head"],
+        }),
+      );
+      expect(mocks.runProcess).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          args: ["merge-base", "--is-ancestor", "semantic-base", "merge-head"],
+        }),
+      );
+      if (variant !== "foreign-base") {
+        expect(mocks.runProcess).toHaveBeenNthCalledWith(
+          4,
+          expect.objectContaining({
+            args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", "semantic-base..merge-head"],
+          }),
+        );
+      }
+    },
+  );
+
   it("does not accept an unchanged HEAD as an implementation", async () => {
     mocks.runProcess.mockResolvedValueOnce({ exitCode: 0, stdout: "abc123\n", stderr: "" });
 

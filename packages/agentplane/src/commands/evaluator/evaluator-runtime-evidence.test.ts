@@ -13,7 +13,7 @@ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
-import { cmdTaskAdd } from "../workflow.js";
+import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
 import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 
@@ -37,6 +37,15 @@ async function addTask(root: string, taskId: string): Promise<void> {
     verify: [],
     commentAuthor: null,
     commentBody: null,
+  });
+  await cmdTaskDocSet({
+    cwd: root,
+    rootOverride: root,
+    taskId,
+    section: "Verify Steps",
+    text: "1. Run `bun test`. Expected: the evaluator runtime evidence fixture passes.",
+    updatedBy: "TEST",
+    fullDoc: false,
   });
 }
 

@@ -23,9 +23,11 @@ import {
 import { readTaskRouteGitSnapshot } from "../../commands/shared/route-decision.js";
 import { checkTaskBlueprintSnapshotDrift } from "../../commands/blueprint/snapshot-artifact.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
+import { conflictReworkRequiredInputs } from "../../commands/pr/conflict-rework-semantic-input.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { RunnerPromptBlock } from "../types.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 
@@ -357,6 +359,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     execution_context: ReadOnlyExecutionContext;
     route_decision: TaskRouteDecision;
     semantic_role?: AgentWorkOrderRole;
+    task_execution?: TaskExecutionContext;
   };
   source_manifest: AgentWorkOrderSourceManifest;
   knowledge_retrieval: TaskKnowledgeRetrieval;
@@ -422,7 +425,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
     repository_snapshot: repositorySnapshot,
     retrievals: planningRetrievals,
   };
-  const mutationPath = decision.oracle.mutationPathHint;
+  const mutationPath =
+    opts.prepared.task_execution?.authoritative_task_source === "task_worktree"
+      ? taskEnvelope.repository.git_root
+      : decision.oracle.mutationPathHint;
   const executionContract = task.metadata.execution_contract;
   const taskCentric = taskCentricAggregateFromExtensions(taskEnvelope.source_task.extensions);
   const selectedWorkItem =
@@ -439,8 +445,15 @@ export function buildCanonicalAgentWorkOrder(opts: {
     selectedWorkItem?.scope_roots ?? executionContract?.authority.writable_roots;
   const hasExplicitEmptyScope =
     executionContract?.source === "agent_declared" && declaredScopeRoots?.length === 0;
+  const isolatedWorkItemCanMutate =
+    opts.prepared.task_execution?.authoritative_task_source === "task_worktree" &&
+    opts.prepared.task_execution.selected_mode === "direct" &&
+    role === "EXECUTOR" &&
+    selectedWorkItem !== null;
   const canMutate =
-    decision.executionPacket.safeToMutate && mutationPath !== null && !hasExplicitEmptyScope;
+    (decision.executionPacket.safeToMutate || isolatedWorkItemCanMutate) &&
+    mutationPath !== null &&
+    !hasExplicitEmptyScope;
   const declaredWritableRoots = (() => {
     if (!canMutate || mutationPath === null) return [];
     if (!declaredScopeRoots || declaredScopeRoots.length === 0) return [mutationPath];
@@ -484,6 +497,13 @@ export function buildCanonicalAgentWorkOrder(opts: {
     "Stop and return a blocked semantic result when the prepared state is stale or required context is missing.",
   ]);
   const allowedExternalEffects = executionContract?.authority.allowed_external_effects ?? [];
+  const conflictEpisode = decision.workflowStep.id === "agent.provider_conflict_rework";
+  const conflictInput = conflictReworkRequiredInputs(decision, {
+    task_id: task.metadata.task_id,
+    checkout: mutationPath,
+    head: stateFingerprint.git_head,
+    writable_roots: declaredWritableRoots,
+  });
   return validateAgentWorkOrderV2({
     schema_version: AGENT_WORK_ORDER_SCHEMA_VERSION,
     kind: AGENT_WORK_ORDER_KIND,
@@ -496,7 +516,12 @@ export function buildCanonicalAgentWorkOrder(opts: {
     task: {
       id: task.metadata.task_id,
       revision: task.metadata.revision,
-      objective: compactText(selectedWorkItem?.objective ?? summary, task.narrative.title),
+      objective: compactText(
+        conflictEpisode && decision.workflowStep.kind === "agent_episode"
+          ? decision.workflowStep.episode.objective
+          : (selectedWorkItem?.objective ?? summary),
+        task.narrative.title,
+      ),
       acceptance_criteria: acceptanceCriteria({
         task_envelope: taskEnvelope,
         source_manifest: opts.source_manifest,
@@ -538,12 +563,15 @@ export function buildCanonicalAgentWorkOrder(opts: {
       role,
       excerpt,
     })),
-    required_inputs: requiredInputs({
-      task_envelope: taskEnvelope,
-      source_manifest: opts.source_manifest,
-      knowledge_retrieval: opts.knowledge_retrieval,
-      work_item: selectedWorkItem,
-    }),
+    required_inputs: [
+      ...requiredInputs({
+        task_envelope: taskEnvelope,
+        source_manifest: opts.source_manifest,
+        knowledge_retrieval: opts.knowledge_retrieval,
+        work_item: selectedWorkItem,
+      }),
+      ...conflictInput,
+    ],
     required_outputs: [
       {
         id: "semantic-result",

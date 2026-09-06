@@ -50,7 +50,12 @@ describe("typed WorkflowStep reducer", () => {
         commit: { hash: resume.head_sha, message: "Existing implementation" },
       }),
     ).toBe(false);
-    for (const itemState of ["REWORK_READY", "COMPLETED"] as const) {
+    for (const [itemState, attempt, hasOutput] of [
+      ["REWORK_READY", 1, false],
+      ["COMPLETED", 1, false],
+      ["READY", 1, false],
+      ["READY", 0, true],
+    ] as const) {
       expect(
         hasUninitializedTaskBaseline({
           ...canonicalTask,
@@ -63,9 +68,27 @@ describe("typed WorkflowStep reducer", () => {
                   id: "implementation",
                   state: itemState,
                   revision: 1,
-                  attempt: 1,
+                  attempt,
                   claim_id: null,
-                  output_manifests: [],
+                  output_manifests: hasOutput
+                    ? [
+                        {
+                          schema_version: 1,
+                          id: "existing-output",
+                          kind: "implementation",
+                          schema: "implementation.v1",
+                          digest: `sha256:${"a".repeat(64)}`,
+                          producer: {
+                            task_id: task.id,
+                            plan_revision: 1,
+                            work_item_id: "implementation",
+                            attempt: 1,
+                          },
+                          repository_snapshot_digest: `sha256:${"b".repeat(64)}`,
+                          provenance: [],
+                        },
+                      ]
+                    : [],
                   validation_result: null,
                   last_failure: null,
                 },

@@ -70,6 +70,7 @@ export function requiresImplementationRecoveryReplacement(opts: {
     current.components.task.digest !== expected.components.task.digest ||
     current.components.backend_projection.digest !==
       expected.components.backend_projection.digest ||
+    current.components.provider.digest !== expected.components.provider.digest ||
     current.components.authority.digest !== expected.components.authority.digest
   );
 }

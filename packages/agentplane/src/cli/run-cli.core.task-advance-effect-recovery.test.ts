@@ -40,24 +40,13 @@ import { blockingImplementationAuthorityViolations } from "../commands/task/exte
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
-import { recoveryPlanningProposal } from "./task-advance-effect-recovery.testkit.js";
+import { writePlanningResult, type AgentPacket } from "./task-advance-effect-recovery.testkit.js";
 import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 
 installRunCliIntegrationHarness();
 
 const execFileAsync = promisify(execFile);
-
-type AgentPacket = {
-  task_id: string;
-  transition_id: string;
-  state_fingerprint: string;
-  exchange?: {
-    directory: string;
-    work_order_ref: string;
-    result_ref: string;
-  };
-};
 
 async function createTask(root: string): Promise<string> {
   const io = captureStdIO();
@@ -96,43 +85,6 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
   } finally {
     io.restore();
   }
-}
-
-async function writePlanningResult(packet: AgentPacket, summary: string): Promise<string> {
-  if (!packet.exchange) throw new Error("expected an external-agent exchange");
-  const workOrder = JSON.parse(
-    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
-  ) as AgentWorkOrderV2;
-  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
-  await writeFile(
-    resultPath,
-    `${JSON.stringify(
-      {
-        schema_version: 1,
-        kind: "agent_action_result",
-        task_id: packet.task_id,
-        transition_id: packet.transition_id,
-        state_fingerprint: packet.state_fingerprint,
-        role: workOrder.role,
-        result: {
-          schema_version: 2,
-          kind: "agent_semantic_result",
-          work_order_id: workOrder.work_order_id,
-          status: "completed",
-          summary,
-          findings: [],
-          uncertainty: [],
-          ...(workOrder.role === "PLANNER"
-            ? { task_plan_proposal: recoveryPlanningProposal(workOrder, summary) }
-            : {}),
-        },
-      },
-      null,
-      2,
-    )}\n`,
-    "utf8",
-  );
-  return resultPath;
 }
 
 describe("task advance effect recovery", () => {
@@ -794,6 +746,22 @@ describe("task advance effect recovery", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     const taskId = await createTask(root);
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run bun run test:critical. Expected: the accepted planning result resumes once without replaying the agent.",
+        "--updated-by",
+        "PLANNER",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
     const issued = await readAgentPacket(root, taskId);
     const plan = "1. Preserve the original intent. 2. Apply its observed result exactly once.";
     const resultPath = await writePlanningResult(issued, plan);
@@ -816,9 +784,22 @@ describe("task advance effect recovery", () => {
       envelope,
       work_order: workOrder,
     });
-    expect(
-      await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
-    ).toBe(0);
+    const approvalIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "USER",
+        "--root",
+        root,
+      ]);
+      expect(code, approvalIo.stderr).toBe(0);
+    } finally {
+      approvalIo.restore();
+    }
     const appliedContext = await loadCommandContext({ cwd: root, rootOverride: root });
     const appliedTask = await appliedContext.taskBackend.getTask(taskId);
     expect(appliedTask?.sections?.Plan?.trim()).toBe(plan);

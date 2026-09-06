@@ -121,10 +121,10 @@ export async function didReadmeChangeOnDisk(opts: {
   }
 }
 
-export async function writeTaskReadme(opts: {
-  entry: CachedTask;
-  next: TaskData;
-}): Promise<boolean> {
+export function prepareTaskReadmeWrite(opts: { entry: CachedTask; next: TaskData }): {
+  text: string;
+  task: TaskData;
+} {
   const { entry, next } = opts;
   const frontmatter = { ...entry.parsed.frontmatter, ...taskDataToFrontmatter(next) };
 
@@ -161,11 +161,27 @@ export async function writeTaskReadme(opts: {
     nextText = nextText.endsWith("\n") ? nextText : `${nextText}\n`;
   }
 
-  await ensureUnchangedOnDisk({
-    readmePath: entry.readmePath,
-    expectedMtimeMs: entry.mtimeMs,
-    expectedRawText: entry.rawText,
-  });
+  return {
+    text: nextText,
+    task: taskRecordToData({
+      id: entry.task.id,
+      frontmatter: frontmatter as never,
+      body,
+      readmePath: entry.readmePath,
+    }),
+  };
+}
 
-  return await writeTextIfChanged(entry.readmePath, nextText);
+export async function writeTaskReadme(opts: {
+  entry: CachedTask;
+  next: TaskData;
+  prepared?: ReturnType<typeof prepareTaskReadmeWrite>;
+}): Promise<boolean> {
+  const prepared = opts.prepared ?? prepareTaskReadmeWrite(opts);
+  await ensureUnchangedOnDisk({
+    readmePath: opts.entry.readmePath,
+    expectedMtimeMs: opts.entry.mtimeMs,
+    expectedRawText: opts.entry.rawText,
+  });
+  return await writeTextIfChanged(opts.entry.readmePath, prepared.text);
 }

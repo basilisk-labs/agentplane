@@ -6,7 +6,10 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import { parseDeclaredTaskCheck } from "../shared/declared-check.js";
+import {
+  parseDeclaredTaskCheck,
+  parseDeclaredTaskCheckSequence,
+} from "../shared/declared-check.js";
 import {
   localRuntimeEvidence,
   isRuntimeInfrastructureError,
@@ -18,6 +21,7 @@ import type { CommandContext, loadTaskFromContext } from "../shared/task-backend
 import { CliError } from "../../shared/errors.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
+import type { PreparedTaskMutationObserver } from "../shared/task-mutation.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
@@ -107,6 +111,11 @@ export async function recordDirectTaskVerification(opts: {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   work_order: AgentWorkOrderV2;
   workflow: "direct" | "branch_pr";
+  beforePersist?: (
+    mutation: Parameters<PreparedTaskMutationObserver>[0],
+    verification: DirectTaskVerificationResult,
+  ) => Promise<void>;
+  afterPersist?: () => Promise<void>;
 }): Promise<DirectTaskVerificationResult> {
   const verification = await resolveImplementationVerificationTask(opts);
   const verificationTask = verification.task;
@@ -114,17 +123,24 @@ export async function recordDirectTaskVerification(opts: {
   const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_order.task.work_item_id,
   );
-  const additionalCommands = selectedWorkItem
-    ? blockingWorkItemCommands(selectedWorkItem.validation)
+  const taskCentricValidation = opts.work_order.task.work_item_id
+    ? selectedWorkItem?.validation
+    : aggregate?.current_plan?.proposal.top_level_validation;
+  const additionalCommands = taskCentricValidation
+    ? blockingWorkItemCommands(taskCentricValidation)
     : [];
+  const usesTaskLevelPlanCommands =
+    !opts.work_order.task.work_item_id && additionalCommands.length > 0;
+  const usesTaskCentricCommands = selectedWorkItem !== undefined || usesTaskLevelPlanCommands;
   const checks = await runDirectTaskVerification({
     command: opts.command,
     task: verificationTask,
     task_id: opts.task.id,
     cwd: opts.checkout,
-    additional_commands: additionalCommands,
-    additional_only: selectedWorkItem !== undefined,
+    additional_commands: usesTaskCentricCommands ? additionalCommands : [],
+    additional_only: usesTaskCentricCommands,
     allow_empty: selectedWorkItem !== undefined,
+    map_selected_checks: usesTaskLevelPlanCommands,
   });
   if (selectedWorkItem) {
     // WorkItem validation is projected by recordTaskCentricExternalResult.
@@ -154,6 +170,9 @@ export async function recordDirectTaskVerification(opts: {
     incidentMatch: [],
     quiet: true,
     verificationSnapshot: verification.snapshot,
+    beforePersist: opts.beforePersist
+      ? (mutation) => opts.beforePersist!(mutation, checks)
+      : undefined,
   });
   if (exitCode !== 0) {
     throw new CliError({
@@ -161,6 +180,7 @@ export async function recordDirectTaskVerification(opts: {
       message: `External-agent implementation verification exited with ${exitCode}.`,
     });
   }
+  await opts.afterPersist?.();
   return checks;
 }
 
@@ -217,39 +237,6 @@ function mergedOutput(values: readonly string[]): string {
 
 export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
   return parseDeclaredTaskCheck(command);
-}
-
-function parseDirectTaskCheckSequence(command: string): ParsedDirectTaskCheck[] | null {
-  const parsed: ParsedDirectTaskCheck[] = [];
-  let segmentStart = 0;
-  let quote: "'" | '"' | null = null;
-  for (let index = 0; index < command.length; index += 1) {
-    const char = command[index] ?? "";
-    if (quote) {
-      if (char === quote) quote = null;
-      else if (char === "\\" && quote === '"' && index + 1 < command.length) index += 1;
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      quote = char;
-      continue;
-    }
-    if (char === "\\" && index + 1 < command.length) {
-      index += 1;
-      continue;
-    }
-    if (char !== "&" || command[index + 1] !== "&") continue;
-    const before = command[index - 1] ?? "";
-    const after = command[index + 2] ?? "";
-    if (!/\s/u.test(before) || !/\s/u.test(after)) return null;
-    const check = parseDirectTaskCheck(command.slice(segmentStart, index).trim());
-    if (!check) return null;
-    parsed.push(check);
-    index += 1;
-    segmentStart = index + 1;
-  }
-  const finalCheck = parseDirectTaskCheck(command.slice(segmentStart).trim());
-  return finalCheck ? [...parsed, finalCheck] : null;
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -321,7 +308,8 @@ function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
 
 function isFullRegressionCommand(command: string): boolean {
   return (
-    parseDirectTaskCheckSequence(command)?.some((parsed) => isFullRegressionCheck(parsed)) ?? false
+    parseDeclaredTaskCheckSequence(command)?.some((parsed) => isFullRegressionCheck(parsed)) ??
+    false
   );
 }
 
@@ -431,6 +419,7 @@ export async function runDirectTaskVerification(opts: {
   additional_commands?: readonly AdditionalDirectTaskCommand[];
   additional_only?: boolean;
   allow_empty?: boolean;
+  map_selected_checks?: boolean;
   run_process?: typeof runProcess;
   now?: () => number;
 }): Promise<DirectTaskVerificationResult> {
@@ -450,7 +439,8 @@ export async function runDirectTaskVerification(opts: {
       Math.min(additionalTimeouts.get(additional.command) ?? Infinity, additional.timeout_ms),
     );
   }
-  const selectedChecks = opts.additional_only ? [] : selectedLocalChecks(opts.task);
+  const selectedChecks =
+    opts.additional_only && !opts.map_selected_checks ? [] : selectedLocalChecks(opts.task);
   const requiresFullRegression = selectedChecks.includes("full_regression");
   const rootPackage =
     hasPlannerFallbackVerifySteps(opts.task) || requiresFullRegression
@@ -484,7 +474,7 @@ export async function runDirectTaskVerification(opts: {
           package_scripts: rootPackage?.scripts ?? null,
         })
       : declaredCommand;
-    const parsedSequence = parseDirectTaskCheckSequence(command);
+    const parsedSequence = parseDeclaredTaskCheckSequence(command);
     if (!parsedSequence) {
       const result = {
         status: "unsupported" as const,

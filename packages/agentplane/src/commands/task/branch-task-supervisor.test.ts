@@ -1,7 +1,15 @@
 import { validateCommitSubject } from "@agentplaneorg/core/commit";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 import { mkGitRepoRoot } from "@agentplane/testkit";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as taskBackend from "../shared/task-backend.js";
+import * as implementationRecovery from "./external-agent-implementation-recovery.js";
+import * as conflictRecovery from "./branch-task-supervisor-implementation.js";
+import * as formalOperation from "./direct-task-supervisor-formal-operation.js";
+import * as declaredVerification from "./direct-task-verification.js";
+import * as verificationRecord from "./verify-record.js";
+import * as artifactCommit from "./branch-task-supervisor-artifact-commit.js";
+import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { projectWorkflowOperationArgv } from "../shared/workflow-operation-projection.js";
@@ -21,6 +29,81 @@ import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet
 
 const taskId = "202607310001-BRANCH";
 const branch = `task/${taskId}/branch-supervisor`;
+
+it("freezes the branch verification contract before checks and persists the same snapshot", async () => {
+  const decision = agentDecision(2, "verification");
+  const task = decision.task;
+  const selected = {
+    ...task,
+    execution_contract: {
+      verification: { contract: { selected_checks: ["docs_contract", "task_outcome"] } },
+    },
+  };
+  const snapshot = {
+    execution_contract: selected.execution_contract,
+    evaluated_sha: "frozen-head",
+    changed_paths: ["docs/contract.md"],
+  };
+  const command = {
+    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    resolvedProject: { gitRoot: "/repo" },
+  };
+  const checks = {
+    status: "passed",
+    artifact_path: "checks.json",
+    reason: null,
+    checks: [
+      {
+        command: "bun run ci:local:full",
+        check_ids: ["docs_contract", "task_outcome"],
+        exit_code: 0,
+      },
+    ],
+  };
+  const spies = [
+    vi.spyOn(conflictRecovery, "recoverProductionBranchConflict").mockResolvedValue(null),
+    vi.spyOn(taskBackend, "loadCommandContext").mockResolvedValue(command as never),
+    vi.spyOn(taskBackend, "loadTaskFromContext").mockResolvedValue(task as never),
+    vi
+      .spyOn(implementationRecovery, "resolveImplementationVerificationTask")
+      .mockResolvedValue({ task: selected, snapshot } as never),
+    vi
+      .spyOn(formalOperation, "recordDirectTaskFormalOperation")
+      .mockImplementation(async (opts) => {
+        await opts.run();
+        return { decision, journal: {}, journal_path: "journal.json" } as never;
+      }),
+    vi.spyOn(declaredVerification, "runDirectTaskVerification").mockResolvedValue(checks as never),
+    vi.spyOn(verificationRecord, "cmdVerifyParsed").mockResolvedValue(0),
+    vi.spyOn(artifactCommit, "commitBranchSupervisorTaskArtifacts").mockResolvedValue(undefined),
+  ];
+  try {
+    const result = await executeProductionBranchEpisode({
+      input: { task_id: taskId } as never,
+      decision,
+      decide: () => Promise.resolve(decision),
+    });
+    expect(result.status).toBe("completed");
+    expect(implementationRecovery.resolveImplementationVerificationTask).toHaveBeenCalledOnce();
+    expect(declaredVerification.runDirectTaskVerification).toHaveBeenCalledWith(
+      expect.objectContaining({ task: selected }),
+    );
+    expect(verificationRecord.cmdVerifyParsed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        verificationSnapshot: snapshot,
+      }),
+    );
+    expect(vi.mocked(verificationRecord.cmdVerifyParsed).mock.calls[0]?.[0].details).toContain(
+      "Check: docs_contract",
+    );
+    expect(task).not.toHaveProperty("execution_contract.verification.contract.selected_checks", [
+      "docs_contract",
+      "task_outcome",
+    ]);
+  } finally {
+    for (const spy of spies) spy.mockRestore();
+  }
+});
 
 function fingerprint(revision: number) {
   const component = {
@@ -440,6 +523,36 @@ function sequencePorts(
 }
 
 describe("branch_pr task supervisor", () => {
+  it.each(["approval", "publish"] as const)(
+    "recovers an accepted application before %s dispatch",
+    async (boundary) => {
+      const root = await mkGitRepoRoot();
+      const pending =
+        boundary === "approval"
+          ? stopDecision(1, "approval")
+          : cliDecision(1, "pr.head.publish", { taskId, author: "CODER", includeTaskIds: [] });
+      const recovered = stopDecision(2, "wait");
+      const calls: string[] = [];
+      const ports = sequencePorts(root, [pending], calls);
+      ports.recover_episode = ({ decision }) =>
+        Promise.resolve(
+          decision === pending
+            ? {
+                status: "completed",
+                decision: recovered,
+                journal: null,
+                provider_episodes: 0,
+                lifecycle_calls: 1,
+              }
+            : null,
+        );
+      const result = await superviseBranchTaskRunWithPorts(ports);
+      expect(result.stop?.code).toBe("wait_required");
+      expect(result.metrics).toMatchObject({ provider_episodes: 0, lifecycle_calls: 1 });
+      expect(calls).toEqual([]);
+    },
+  );
+
   it("generates policy-valid task artifact commit subjects", () => {
     for (const artifact of [
       "verification_pass",

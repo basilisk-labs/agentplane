@@ -1,3 +1,34 @@
+import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import { isRecord } from "../../shared/guards.js";
+
+export function completedWorkItemRecoveryReadme(markdown: string): string {
+  const parsed = parseTaskReadme(markdown);
+  const aggregate = parsed.frontmatter.extensions;
+  const runtime = isRecord(aggregate) ? aggregate["agentplane.task_centric"] : null;
+  if (isRecord(aggregate) && isRecord(runtime)) {
+    // Completion changes runtime evidence, not the approved plan or its authority.
+    for (const key of ["revision", "event_cursor", "updated_at", "final_validation"])
+      Reflect.deleteProperty(runtime, key);
+    if (isRecord(runtime.work_items)) {
+      for (const item of Object.values(runtime.work_items)) {
+        if (!isRecord(item)) continue;
+        for (const key of [
+          "state",
+          "revision",
+          "attempt",
+          "claim_id",
+          "output_manifests",
+          "validation_result",
+          "last_failure",
+        ])
+          Reflect.deleteProperty(item, key);
+      }
+    }
+    Reflect.deleteProperty(aggregate, "agentplane.task_centric_runtime");
+  }
+  return renderTaskReadme(parsed.frontmatter, parsed.body);
+}
+
 export function resolveEvidenceOnlyReworkCommit(opts: {
   purpose: string;
   changed_paths: readonly string[];

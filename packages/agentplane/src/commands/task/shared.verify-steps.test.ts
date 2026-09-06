@@ -17,6 +17,14 @@ describe("isVerifyStepsFilled", () => {
     expect(isVerifyStepsFilled(`Some text\n${VERIFY_STEPS_PLACEHOLDER}\nMore text`)).toBe(false);
   });
 
+  it("returns false for the generated PLANNER fallback scaffold", () => {
+    expect(
+      isVerifyStepsFilled(
+        'PLANNER fallback scaffold for "Task". Replace with task-specific acceptance checks when PLANNER context is available.',
+      ),
+    ).toBe(false);
+  });
+
   it("returns true when the section has real content without placeholder", () => {
     expect(
       isVerifyStepsFilled(

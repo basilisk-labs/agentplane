@@ -9,6 +9,7 @@ import { loadCommandContext, type CommandContext } from "../shared/task-backend.
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
+import { recoverProductionBranchConflict } from "./branch-task-supervisor-implementation.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 import {
   resolveConfiguredAuthority,
@@ -147,6 +148,10 @@ export type BranchTaskSupervisorPorts = {
     decision: TaskRouteDecision;
     decide: () => Promise<TaskRouteDecision>;
   }) => Promise<BranchEpisodeOutcome>;
+  recover_episode?: (opts: {
+    decision: TaskRouteDecision;
+    decide: () => Promise<TaskRouteDecision>;
+  }) => Promise<BranchEpisodeOutcome | null>;
 };
 
 export type BranchTaskSupervisorOptions = {
@@ -424,15 +429,16 @@ export async function superviseBranchTaskRunWithPorts(
   };
 
   for (let stepCount = 0; stepCount < MAX_BRANCH_SUPERVISOR_STEPS; stepCount += 1) {
+    const recovery = await ports.recover_episode?.({ decision: current, decide: ports.decide });
     const step = current.workflowStep;
-    if (step.kind === "cli_operation") {
+    if (!recovery && step.kind === "cli_operation") {
       const outcome = await executeOperation({ ports, current, progress });
       if ("result" in outcome) return outcome.result;
       current = outcome.decision;
       continue;
     }
-    if (step.kind === "agent_episode") {
-      if (step.episode.purpose === "planning") {
+    if (recovery || step.kind === "agent_episode") {
+      if (!recovery && step.kind === "agent_episode" && step.episode.purpose === "planning") {
         return stopResult(
           current,
           {
@@ -444,7 +450,8 @@ export async function superviseBranchTaskRunWithPorts(
           progress,
         );
       }
-      const outcome = await ports.execute_episode({ decision: current, decide: ports.decide });
+      const outcome =
+        recovery ?? (await ports.execute_episode({ decision: current, decide: ports.decide }));
       current = outcome.decision;
       progress.journal = outcome.journal ?? progress.journal;
       progress.lifecycle_calls += outcome.lifecycle_calls;
@@ -509,6 +516,8 @@ export async function superviseBranchTaskRun(
     task_id: input.task_id,
     decide,
     execute_operation: executeBranchWorkflowOperation,
+    recover_episode: async ({ decision, decide: refresh }) =>
+      await recoverProductionBranchConflict({ input, decision, decide: refresh }),
     execute_episode: async ({ decision, decide: refresh }) =>
       await executeProductionBranchEpisode({ input, decision, decide: refresh }),
   });

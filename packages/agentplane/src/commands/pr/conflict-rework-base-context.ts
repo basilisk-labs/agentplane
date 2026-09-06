@@ -47,7 +47,12 @@ export async function resolveConflictReworkBaseContext(opts: {
   providerBase: string;
   localBase: string;
 }): Promise<BaseContextResolution> {
-  if (opts.routeEvidence.kind === "current_verified_open_pr_rework") {
+  if (
+    opts.routeEvidence.kind === "current_verified_open_pr_rework" ||
+    (opts.routeEvidence.kind === "current_queue" &&
+      opts.routeEvidence.queue.status === "queued" &&
+      opts.routeEvidence.queue.base_sha === opts.localBase)
+  ) {
     if (opts.localBase === opts.providerBase) {
       return { ok: true, context: equalBaseContext(opts.providerBase) };
     }

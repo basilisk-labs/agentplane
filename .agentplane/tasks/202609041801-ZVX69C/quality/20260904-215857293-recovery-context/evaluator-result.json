@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The implementation remains inside the declared components and does not introduce release, publication, dependency, MPXQBK, or provider-expansion changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/d8e738f6752b9f054c3ce5d0fc60e1e28390e6ad8c7e04bc46750bde49c94e50.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The task-level verification recovery preserves fail-closed plan semantics while retaining a valid implementation commit across a non-material amendment.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/d8e738f6752b9f054c3ce5d0fc60e1e28390e6ad8c7e04bc46750bde49c94e50.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Prepared evidence records passing focused CLI and core tests, formatting, lint, type checking, routing, task lint, doctor with zero errors, diff checks, and bun run ci:local:full.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/d8e738f6752b9f054c3ce5d0fc60e1e28390e6ad8c7e04bc46750bde49c94e50.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks and protected integration remain AgentPlane-owned lifecycle gates after this local evaluator verdict.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/d8e738f6752b9f054c3ce5d0fc60e1e28390e6ad8c7e04bc46750bde49c94e50.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

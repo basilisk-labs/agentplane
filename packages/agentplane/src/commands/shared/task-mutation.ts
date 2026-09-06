@@ -65,6 +65,12 @@ export type TaskMutationPlan = {
   writeOptions?: TaskWriteOptions;
 };
 
+/** Observe the computed afterimage before the existing backend persists it. */
+export type PreparedTaskMutationObserver = (mutation: {
+  current: TaskData;
+  next: TaskData;
+}) => Promise<void>;
+
 export type TaskCollectionMutationPlan<TResult> = {
   tasksToWrite?: readonly TaskData[];
   result: TResult;
@@ -202,6 +208,7 @@ export async function applyTaskMutation(opts: {
     current: TaskData,
   ) => Promise<TaskMutationPlan | null | undefined> | TaskMutationPlan | null | undefined;
   writeOptions?: TaskWriteOptions;
+  beforePersist?: PreparedTaskMutationObserver;
 }): Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }> {
   const policyAction = opts.policyAction ?? "task_mutation";
 
@@ -240,6 +247,7 @@ export async function applyTaskMutation(opts: {
       },
       {
         expectedRevision: opts.writeOptions?.expectedRevision,
+        beforePersist: opts.beforePersist,
       },
     );
     return { ...result, mode: "local-store" };
@@ -286,6 +294,10 @@ export async function applyTaskMutation(opts: {
   const changed = JSON.stringify(materializedCurrent) !== JSON.stringify(reconciledTask);
   if (!changed && plan.forceWrite !== true) {
     return { changed: false, task: reconciledTask, mode: "backend" };
+  }
+
+  if (opts.beforePersist) {
+    throw new Error("Prepared Task afterimages require the native transactional task store.");
   }
 
   const mergedWriteOptions: TaskWriteOptions = {};

@@ -89,6 +89,7 @@ export type TaskStoreIntent =
 export type TaskStoreIntentResult = TaskStoreIntent | readonly TaskStoreIntent[] | null | undefined;
 
 export type TaskStoreMutationOptions = {
+  beforePersist?: (mutation: { current: TaskData; next: TaskData }) => Promise<void>;
   expectedRevision?: number;
 };
 

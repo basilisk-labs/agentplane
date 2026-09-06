@@ -167,6 +167,28 @@ export async function approveRouteTaskPlan(
   } finally {
     resumeIo.restore();
   }
+  const verifySteps =
+    commands.length > 0
+      ? commands
+          .map((command, index) => `${index + 1}. Run \`${command}\`. Expected: ${objective}`)
+          .join("\n")
+      : `1. Review the route result. Expected: ${objective}`;
+  expect(
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      verifySteps,
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
   expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);

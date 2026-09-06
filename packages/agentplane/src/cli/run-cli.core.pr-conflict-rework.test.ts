@@ -1,7 +1,15 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import {
+  exerciseConflictExchange,
+  fakeGithubProviderSource,
+  withFakeConflictGh as withFakeGh,
+  type ConflictVerificationDrift,
+} from "./task-advance-effect-recovery.testkit.js";
+import { exerciseManagedConflict } from "./managed-conflict-recovery.testkit.js";
+import { materializeRepoLocalDistForWorktree } from "../commands/branch/work-start.materialize.js";
 
 import { describe } from "vitest";
 
@@ -90,12 +98,30 @@ async function createBranchPrTask(root: string): Promise<string> {
       "CODER",
       "--tag",
       "code",
+      "--mutation-scope",
+      "docs",
       "--allow-duplicate",
       "--root",
       root,
     ]);
-    expect(code).toBe(0);
-    return io.stdout.trim();
+    expect(code, io.stderr).toBe(0);
+    const taskId = io.stdout.trim();
+    const documented = await runCli([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "1. Inspect the provider conflict route. Expected: exact task, worktree, head and base identity is preserved; read-only preparation changes no Git state.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      root,
+    ]);
+    expect(documented, io.stderr).toBe(0);
+    return taskId;
   } finally {
     io.restore();
   }
@@ -113,23 +139,6 @@ async function worktreeForBranch(root: string, branch: string): Promise<string> 
     return worktreeLine.slice("worktree ".length);
   }
   throw new Error(`No worktree found for ${branch}`);
-}
-
-async function withFakeGh<T>(root: string, source: string, run: () => Promise<T>): Promise<T> {
-  const fakeGh = path.join(root, "fake-gh-provider-conflict.mjs");
-  await writeFile(fakeGh, source, "utf8");
-  const previousGhBin = process.env.AGENTPLANE_GH_BIN;
-  const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
-  process.env.AGENTPLANE_GH_BIN = process.execPath;
-  process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh]);
-  try {
-    return await run();
-  } finally {
-    if (previousGhBin === undefined) delete process.env.AGENTPLANE_GH_BIN;
-    else process.env.AGENTPLANE_GH_BIN = previousGhBin;
-    if (previousGhArgs === undefined) delete process.env.AGENTPLANE_GH_ARGS;
-    else process.env.AGENTPLANE_GH_ARGS = previousGhArgs;
-  }
 }
 
 async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRouteOutput> {
@@ -152,36 +161,6 @@ async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRo
   }
 }
 
-function fakeGithubProviderSource(detail: Record<string, unknown>): string {
-  return [
-    "const args = process.argv.slice(2);",
-    `const detail = ${JSON.stringify(detail)};`,
-    'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
-    "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
-    "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
-    "  console.log(JSON.stringify(detail));",
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "pr" && args[1] === "checks") {',
-    '  console.log("[]");',
-    "  process.exit(0);",
-    "}",
-    'if (args[0] === "api" && args[1] === "graphql") {',
-    "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
-    "  process.exit(0);",
-    "}",
-    "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
-    "process.exit(91);",
-    "",
-  ].join("\n");
-}
-
 describe("provider conflict rework CLI", () => {
   it("routes a clean strict local descendant through guarded publication before conflict rework", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -190,8 +169,9 @@ describe("provider conflict rework CLI", () => {
     await writeConfig(root, config);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-    await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
-    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+    await mkdir(path.join(root, "docs"), { recursive: true });
+    await writeFile(path.join(root, "docs/conflict.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "docs/conflict.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed publication conflict fixture"], {
       cwd: root,
     });
@@ -237,7 +217,7 @@ describe("provider conflict rework CLI", () => {
       "--root",
       worktree,
     ]);
-    await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
+    await writeFile(path.join(worktree, "docs/conflict.md"), "task branch\n", "utf8");
     await execFileAsync("git", ["add", "-A"], { cwd: worktree });
     await execFileAsync("git", ["commit", "-m", "test: provider-visible conflict head"], {
       cwd: worktree,
@@ -271,8 +251,8 @@ describe("provider conflict rework CLI", () => {
     });
     const localHeadSha = localHeadRaw.trim();
 
-    await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
-    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+    await writeFile(path.join(root, "docs/conflict.md"), "main branch\n", "utf8");
+    await execFileAsync("git", ["add", "docs/conflict.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: base side of publication conflict"], {
       cwd: root,
     });
@@ -381,17 +361,97 @@ describe("provider conflict rework CLI", () => {
     );
   });
 
-  it(
-    "routes a live GitHub conflict to CODER with a fresh read-only packet",
-    async () => {
+  it.each([
+    "read_only",
+    "external_exchange",
+    "external_exchange_advanced_base",
+    "after_verification_advanced_base",
+    "managed_interrupted_advanced_base",
+    "managed_status_interrupted_advanced_base",
+    "managed_status_interrupted_policy_drift_advanced_base",
+    "after_verification_base_advanced_base",
+    "after_verification_provider_advanced_base",
+    "after_verification_diffstat_advanced_base",
+    "interrupted_exchange",
+    "interrupted_drift",
+    "before_checkpoint",
+    "before_checkpoint_drift",
+    "after_verification",
+    "before_verification_artifacts",
+    "after_verification_workspace",
+    "after_verification_task",
+    "after_verification_checkpoint",
+    "after_verification_result",
+    "after_verification_policy",
+    "managed_runner",
+    "managed_workspace_drift",
+    "managed_result_drift",
+    "managed_policy_drift",
+    "managed_projection_drift",
+    "managed_interrupted",
+    "managed_status_interrupted",
+    "managed_contract_interrupted",
+    "managed_evidence_interrupted",
+    "managed_status_interrupted_context_drift",
+    "managed_status_interrupted_workspace_drift",
+    "managed_status_interrupted_policy_drift",
+    "managed_status_interrupted_task_drift",
+    "managed_interrupted_context_drift",
+    "managed_interrupted_workspace_drift",
+    "managed_interrupted_policy_drift",
+  ] as const)(
+    "routes a live GitHub conflict to CODER with a fresh packet (%s)",
+    async (scenario) => {
+      const advancedBase = scenario.endsWith("_advanced_base");
+      const mode = scenario.replace(/_advanced_base$/u, "");
       const root = await mkGitRepoRootWithBranch("main");
+      expect(await runCliSilent(["init", "--yes", "--hooks", "no", "--root", root])).toBe(0);
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
+      if (mode.startsWith("managed_")) {
+        config.runner.default_adapter = "custom";
+        config.runner.custom = {
+          command: [process.execPath, path.join(root, "managed-conflict-fixture.mjs")],
+        };
+        await writeFile(
+          path.join(root, "managed-conflict-fixture.mjs"),
+          [
+            'import { writeFileSync } from "node:fs";',
+            'writeFileSync("docs/conflict.md", "resolved task and main\\n");',
+            ...(advancedBase
+              ? ['writeFileSync("docs/base-only.md", "preserve current base contribution\\n");']
+              : []),
+            'writeFileSync(process.env.AGENTPLANE_RUNNER_RESULT_PATH, JSON.stringify({ schema_version: 2, kind: "agent_semantic_result", work_order_id: process.env.AGENTPLANE_RUNNER_WORK_ORDER_ID, status: "completed", summary: "Resolve the scoped conflict workspace.", findings: [], uncertainty: [], claimed_checks: [] }));',
+            "process.stdin.resume();",
+          ].join("\n"),
+        );
+      }
       await writeConfig(root, config);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-      await writeFile(path.join(root, "conflict.txt"), "base\n", "utf8");
-      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+      await mkdir(path.join(root, "docs"), { recursive: true });
+      await writeFile(path.join(root, "docs/conflict.md"), "base\n", "utf8");
+      await appendFile(path.join(root, ".gitignore"), "\ndist\n.agentplane/cache/\n");
+      await writeFile(
+        path.join(root, "package.json"),
+        JSON.stringify({
+          private: true,
+          scripts: { "ci:local:full": "node verify-fixture.mjs" },
+        }),
+      );
+      await writeFile(
+        path.join(root, "verify-fixture.mjs"),
+        [
+          'import assert from "node:assert/strict";',
+          'import { readFileSync } from "node:fs";',
+          'import { execFileSync } from "node:child_process";',
+          'assert.equal(readFileSync("docs/conflict.md", "utf8"), "resolved task and main\\n");',
+          'const parents = execFileSync("git", ["show", "-s", "--format=%P", "HEAD"], { encoding: "utf8" }).trim().split(" ");',
+          "assert.equal(parents.length, 2);",
+        ].join("\n"),
+      );
+      await materializeRepoLocalDistForWorktree({ repoRoot: root, worktreePath: root });
+      await execFileAsync("git", ["add", "-A"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: seed merge conflict fixture"], {
         cwd: root,
       });
@@ -446,7 +506,7 @@ describe("provider conflict rework CLI", () => {
         "--root",
         worktree,
       ]);
-      await writeFile(path.join(worktree, "conflict.txt"), "task branch\n", "utf8");
+      await writeFile(path.join(worktree, "docs/conflict.md"), "task branch\n", "utf8");
       await execFileAsync("git", ["add", "-A"], { cwd: worktree });
       await execFileAsync("git", ["commit", "-m", "test: task side of conflict fixture"], {
         cwd: worktree,
@@ -478,8 +538,8 @@ describe("provider conflict rework CLI", () => {
         cwd: worktree,
       });
 
-      await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
-      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+      await writeFile(path.join(root, "docs/conflict.md"), "main branch\n", "utf8");
+      await execFileAsync("git", ["add", "docs/conflict.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: base side of conflict fixture"], {
         cwd: root,
       });
@@ -489,6 +549,19 @@ describe("provider conflict rework CLI", () => {
       ]);
       const headSha = headRaw.trim();
       const baseSha = baseRaw.trim();
+      let currentBaseSha = baseSha;
+      if (advancedBase) {
+        await writeFile(
+          path.join(root, "docs/base-only.md"),
+          "preserve current base contribution\n",
+        );
+        await execFileAsync("git", ["add", "docs/base-only.md"], { cwd: root });
+        await execFileAsync("git", ["commit", "-m", "test: advance current conflict base"], {
+          cwd: root,
+        });
+        const advanced = await execFileAsync("git", ["rev-parse", "main"], { cwd: root });
+        currentBaseSha = advanced.stdout.trim();
+      }
       await execFileAsync(
         "git",
         ["remote", "add", "origin", "https://github.com/example/repo.git"],
@@ -508,12 +581,12 @@ describe("provider conflict rework CLI", () => {
               branch,
               base: "main",
               head_sha: headSha,
-              base_sha: baseSha,
-              changed_paths: ["conflict.txt"],
+              base_sha: currentBaseSha,
+              changed_paths: ["docs/conflict.md"],
               pr_number: 4626,
               pr_url: "https://github.example/acme/agentplane/pull/4626",
               priority: 0,
-              status: "handoff",
+              status: advancedBase ? "queued" : "handoff",
               enqueued_at: "2026-07-26T00:00:00.000Z",
               updated_at: "2026-07-26T00:01:00.000Z",
               claimed_by: "integrator",
@@ -526,43 +599,17 @@ describe("provider conflict rework CLI", () => {
         "utf8",
       );
 
-      const fakeGhSource = [
-        "const args = process.argv.slice(2);",
-        `const detail = ${JSON.stringify({
-          number: 4626,
-          html_url: "https://github.example/acme/agentplane/pull/4626",
-          state: "open",
-          merged_at: null,
-          merge_commit_sha: null,
-          mergeable: false,
-          mergeable_state: "dirty",
-          head: { ref: branch, sha: headSha },
-          base: { ref: "main", sha: baseSha },
-        })};`,
-        'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
-        "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
-        "  process.exit(0);",
-        "}",
-        'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
-        "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
-        "  process.exit(0);",
-        "}",
-        'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
-        "  console.log(JSON.stringify(detail));",
-        "  process.exit(0);",
-        "}",
-        'if (args[0] === "pr" && args[1] === "checks") {',
-        '  console.log("[]");',
-        "  process.exit(0);",
-        "}",
-        'if (args[0] === "api" && args[1] === "graphql") {',
-        "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
-        "  process.exit(0);",
-        "}",
-        "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
-        "process.exit(91);",
-        "",
-      ].join("\n");
+      const fakeGhSource = fakeGithubProviderSource({
+        number: 4626,
+        html_url: "https://github.example/acme/agentplane/pull/4626",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        mergeable: false,
+        mergeable_state: "dirty",
+        head: { ref: branch, sha: headSha },
+        base: { ref: "main", sha: baseSha },
+      });
 
       await withFakeGh(root, fakeGhSource, async () => {
         const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
@@ -599,7 +646,7 @@ describe("provider conflict rework CLI", () => {
               base_sha: baseSha,
               mergeability: { state: "conflicting" },
             },
-            candidate_conflict_paths: { paths: ["conflict.txt"], total: 1 },
+            candidate_conflict_paths: { paths: ["docs/conflict.md"], total: 1 },
             safety: {
               preparation_mutations: [],
             },
@@ -635,8 +682,73 @@ describe("provider conflict rework CLI", () => {
 
         const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
         expect(after.stdout).toBe(before.stdout);
+        if (mode.startsWith("managed_")) {
+          await exerciseManagedConflict({
+            // This explicit local test provider is not a containment qualification.
+            runner_authority: {
+              sandbox_override: "danger-full-access",
+              danger_authority: {
+                danger_full_access_authorized: true,
+                provenance: "explicit_operator",
+                source: "managed conflict regression fixture",
+              },
+            },
+            worktree,
+            taskId,
+            baseSha: currentBaseSha,
+            interrupt: mode.startsWith("managed_interrupted"),
+            interruptAfterStatus: mode.startsWith("managed_status_interrupted"),
+            interruptAfterContract: mode === "managed_contract_interrupted",
+            interruptAfterEvidence: mode === "managed_evidence_interrupted",
+            recoveryDrift: mode.endsWith("_context_drift")
+              ? "context"
+              : mode.endsWith("_workspace_drift")
+                ? "workspace"
+                : mode.endsWith("_policy_drift")
+                  ? "policy"
+                  : mode.endsWith("_task_drift")
+                    ? "task"
+                    : undefined,
+            drift:
+              mode === "managed_workspace_drift"
+                ? "workspace"
+                : mode === "managed_result_drift"
+                  ? "result"
+                  : mode === "managed_policy_drift"
+                    ? "policy"
+                    : mode === "managed_projection_drift"
+                      ? "projection"
+                      : undefined,
+          });
+        } else if (mode !== "read_only") {
+          await exerciseConflictExchange({
+            root,
+            worktree,
+            taskId,
+            headSha,
+            baseSha: currentBaseSha,
+            providerBaseSha: baseSha,
+            materializeBaseContribution: advancedBase,
+            interrupt: mode === "interrupted_exchange" || mode === "interrupted_drift",
+            driftAfterInterruption:
+              mode === "interrupted_drift" || mode === "before_checkpoint_drift",
+            interruptBeforeCheckpoint:
+              mode === "before_checkpoint" || mode === "before_checkpoint_drift",
+            interruptAfterVerification: mode.startsWith("after_verification"),
+            interruptBeforeVerificationArtifacts: mode === "before_verification_artifacts",
+            verificationDrift: mode.startsWith("after_verification_")
+              ? (mode.slice("after_verification_".length) as ConflictVerificationDrift)
+              : undefined,
+          });
+        }
+        if (advancedBase) {
+          expect(await readFile(path.join(worktree, "docs/base-only.md"), "utf8")).toBe(
+            "preserve current base contribution\n",
+          );
+        }
       });
 
+      if (mode !== "read_only") return;
       const providerCore = {
         number: 4626,
         html_url: "https://github.example/acme/agentplane/pull/4626",
@@ -759,8 +871,8 @@ describe("provider conflict rework CLI", () => {
         );
       }
 
-      await writeFile(path.join(root, "conflict.txt"), "main queue snapshot\n", "utf8");
-      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+      await writeFile(path.join(root, "docs/conflict.md"), "main queue snapshot\n", "utf8");
+      await execFileAsync("git", ["add", "docs/conflict.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: advance legacy queue snapshot"], {
         cwd: root,
       });
@@ -769,8 +881,8 @@ describe("provider conflict rework CLI", () => {
       });
       const legacyQueueBase = queueBaseRaw.trim();
 
-      await writeFile(path.join(root, "conflict.txt"), "main current base\n", "utf8");
-      await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+      await writeFile(path.join(root, "docs/conflict.md"), "main current base\n", "utf8");
+      await execFileAsync("git", ["add", "docs/conflict.md"], { cwd: root });
       await execFileAsync(
         "git",
         ["commit", "-m", "test: advance current base beyond queue snapshot"],
@@ -794,7 +906,7 @@ describe("provider conflict rework CLI", () => {
               base: "main",
               head_sha: headSha,
               base_sha: legacyQueueBase,
-              changed_paths: ["conflict.txt"],
+              changed_paths: ["docs/conflict.md"],
               pr_number: 4626,
               pr_url: "https://github.example/acme/agentplane/pull/4626",
               priority: 0,
@@ -852,17 +964,19 @@ describe("provider conflict rework CLI", () => {
           const conflictRework = route.conflict_rework;
           expect(currentBase).not.toBe(legacyQueueBase);
           expect(conflictRework).toMatchObject({
-            state: "invalid",
-            reason_code: "conflict_rework_route_ineligible",
+            state: "adoption_required",
+            adoption: { evidence: { task_id: taskId } },
           });
           expect(route.workflow_step).toMatchObject({
-            kind: "agent_episode",
-            id: "agent.verification",
+            kind: "approval",
+            id: "approval.integration.adopt_legacy_protected_conflict",
             authoritativeCheckout: "task_worktree",
-            compatibility: { code: "verification_required", command: null },
+            request: { operationId: "integration.adopt_legacy_protected_conflict" },
+            compatibility: { code: "adopt_legacy_protected_conflict" },
           });
           expect(route.execution_packet).toMatchObject({
-            actionKind: "stop",
+            actionKind: "provider_action",
+            recommendedRole: "USER",
             safeToMutate: false,
             exactArgv: null,
           });
