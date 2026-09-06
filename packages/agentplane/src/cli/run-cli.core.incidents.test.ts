@@ -9,6 +9,7 @@ import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  runCliSilent,
   setTaskVerifySteps,
   commitAll,
   configureGitUser,
@@ -72,51 +73,39 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "doc",
-          "set",
-          taskId,
-          "--section",
-          "Findings",
-          "--text",
-          [
-            "- Observation: external release recovery instructions drifted outside the repository fix.",
-            "  Impact: operators repeated the same manual recovery mistakes.",
-            "  Resolution: keep one reusable recovery note in the incident registry.",
-            "  Fixability: external",
-          ].join("\n"),
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-      } finally {
-        io.restore();
-      }
-    }
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Findings",
+        "--text",
+        [
+          "- Observation: external release recovery instructions drifted outside the repository fix.",
+          "  Impact: operators repeated the same manual recovery mistakes.",
+          "  Resolution: keep one reusable recovery note in the incident registry.",
+          "  Fixability: external",
+        ].join("\n"),
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "verify",
-          taskId,
-          "--ok",
-          "--by",
-          "CODER",
-          "--note",
-          "Verified: finish-time incident promotion path is ready for closeout.",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-      } finally {
-        io.restore();
-      }
-    }
+    expect(
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "CODER",
+        "--note",
+        "Verified: finish-time incident promotion path is ready for closeout.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
     {
       const io = captureStdIO();
