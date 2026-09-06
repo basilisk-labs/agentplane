@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -338,9 +338,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "8c870ae5d37e0c3758082dc4fc89e51377794991"
-  message: "🚧 Z0XXVD task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -2969,19 +2967,210 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 43
+    revision: 44
     schema_version: 1
-    updated_at: "2026-09-06T19:28:22.224Z"
+    updated_at: "2026-09-06T19:30:13.147Z"
     work_items:
       prepare-qualified-078-candidate:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "prepare-qualified-078-candidate"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "stable-candidate"
+            - "readable-complete-notes"
+            - "installed-reliability"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Complete the stable candidate draft with shared test support, current canonical route and recovery fixtures, and complete GitHub-compatible release notes. The candidate is ready for unchanged native release qualification."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:ae3d378a66f714997e026074c061cf6a1285ccb839f4f3c58127ff3edb549dbd"
+            id: "Stable 0.7.8 release metadata and generated references"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:19ffb6b3393ade7020f3a7defb0e227ad3a0590378f8b35d8d80fa342fb575f5"
+            id: "English release notes with two accessible opening paragraphs and all planned changes"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:9a5d82c0f4fdd182f98046cc8bbee947f1cc15fa6667c847a645491597dbe479"
+            id: "Reproducible published 0.7.7 upgrade verification script and source-backed qualification evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:0229aa8a9735a80e44aafde314beae362bdd67c6e0f9956a4d0c77c7d956d866"
+            id: "Fresh 0.7.8 README header SVGs and generated release-page social images with their manifest"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ae77fecde4aac00d55fcbad4b417f9cbd8f48261d150bafaf89e1e384b0d7a31"
+            id: "Current generated compatibility candidate snapshot for stable 0.7.8 with unchanged compatibility allowances"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a1383fa52abe8335a66c38567c89d53e58c54db34b76560fbd733b42f8a1b7bd"
+            id: "Existing test support shares planning, release options and expected run-control formatting without behavior changes"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:b176ed4a83660391732197681cad92cd16b595da966f8bc9d2124002dc380b79"
+            id: "Complete GitHub-compatible release notes below 125000 characters with both original opening paragraphs"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:755471b54a191b306ff645555313eae48b27ea2ecadb3636833eba7af0509e8a"
+            id: "Passing route and next-action regression fixtures under current canonical task contracts"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:8ad757deba7035a34b554779652d4d3c26d9e05aead1cbddb35be2388c9bcb71"
+            id: "Passing recovery fixtures for complete creation identity, required Verify Steps and exact post-verification replay"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 8
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "prepare-qualified-078-candidate"
+            provenance:
+              - "sha256:8b1f3d392518f6c4012e1322f5f52a471bbce71220396d5f3822a3c792af4122"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+              check_id: "prepublish"
+              command_identity: "bun run release:prepublish"
+              detail: "Declared check failed: bun run release:prepublish"
+              exit_code: 1
+              observed_at: "2026-09-06T19:30:13.104Z"
+              repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+              check_id: "installed-lifecycle"
+              command_identity: "bun run qualification:mixed-scope-lifecycle"
+              detail: "Declared validation command bun run qualification:mixed-scope-lifecycle was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-06T19:30:13.104Z"
+              repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+              check_id: "published-upgrade"
+              command_identity: "node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+              detail: "Declared validation command node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-06T19:30:13.104Z"
+              repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+              check_id: "release-notes"
+              command_identity: "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
+              detail: "Declared validation command node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417 was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-06T19:30:13.104Z"
+              repository_snapshot_digest: "sha256:3ec128d29077fa9389cda39404c77f41b3d4ec95c1a1a1384ed48d9ea2e70b30"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "stable-candidate"
+            - "readable-complete-notes"
+            - "installed-reliability"
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -3143,6 +3332,22 @@ extensions:
         task_id: "202609061750-Z0XXVD"
         task_revision: 38
         work_item_id: null
+      -
+        at: "2026-09-06T19:30:13.147Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_e965263aecc1e01ac4415277"
+        mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-81a9811ba63ed3feb589eb5c"
+        plan_digest: "sha256:0cf0818769494d347aa3b5897173d9ca930904d7310b97a1e55216876b733c1b"
+        plan_revision: 8
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+        task_revision: 43
+        work_item_id: "prepare-qualified-078-candidate"
     leases: []
     mutation_receipts:
       compatibility:sha256:022834da100df7fc3623c30cc816ea817bf10345a355f2f1c927d82e6bc91348:
@@ -3765,6 +3970,29 @@ extensions:
         mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-37b8a0797519841bcf1ac38a"
         next_revision: 25
         previous_revision: 24
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      external-result:work-order-202609061750-Z0XXVD-executor-81a9811ba63ed3feb589eb5c:
+        aggregate_digest: "sha256:aec00bd53524addea288b52c02891b08f2e7dd6d19b2b320a9e445bcb762e2b7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T19:30:13.147Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_e965263aecc1e01ac4415277"
+          mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-81a9811ba63ed3feb589eb5c"
+          plan_digest: "sha256:0cf0818769494d347aa3b5897173d9ca930904d7310b97a1e55216876b733c1b"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 43
+          to: "REWORK_READY"
+          work_item_id: "prepare-qualified-078-candidate"
+        mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-81a9811ba63ed3feb589eb5c"
+        next_revision: 44
+        previous_revision: 43
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       plan-refinement:work-order-202609061750-Z0XXVD-executor-54cc6de48a1743370724a628:
