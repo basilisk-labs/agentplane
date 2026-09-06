@@ -15,8 +15,13 @@ User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes imp
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Rework: review #3938665689 identifies interrupted implementation_rework replay losing the
+implementation SHA after the pre-verification artifact commit.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,12 +32,12 @@ User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes imp
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...li.core.task-advance.clean-verification.test.ts | 265 +++++++++++++++++++++
- .../external-agent-implementation-authority.ts     |  16 ++
+ ...li.core.task-advance.clean-verification.test.ts | 337 +++++++++++++++++++++
+ .../external-agent-implementation-authority.ts     |  51 +++-
  .../external-agent-implementation-finalization.ts  |  24 +-
  .../src/commands/task/verify-record-execute.ts     |  12 +-
- .../task/verify-record.durability.unit.test.ts     |  72 ++++++
- 5 files changed, 367 insertions(+), 22 deletions(-)
+ .../task/verify-record.durability.unit.test.ts     |  72 +++++
+ 5 files changed, 459 insertions(+), 37 deletions(-)
 ```
 
 </details>

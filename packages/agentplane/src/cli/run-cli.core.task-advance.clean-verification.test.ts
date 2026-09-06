@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { cp, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import {
@@ -15,6 +15,7 @@ import {
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
+import * as verification from "../commands/task/direct-task-verification.js";
 
 installRunCliIntegrationHarness();
 const exec = promisify(execFile);
@@ -40,6 +41,7 @@ async function episode(root: string, taskId: string) {
   const response = await invoke(root, ["task", "advance", taskId, "--agent-json"]);
   expect(response.code, response.stderr).toBe(0);
   const packet = JSON.parse(response.stdout) as Packet;
+  expect(packet.exchange, response.stdout).toBeDefined();
   const order = JSON.parse(
     await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
   ) as AgentWorkOrderV2;
@@ -78,9 +80,10 @@ async function returnResult(
 }
 
 describe("branch implementation clean verification", { timeout: 180_000 }, () => {
-  it.each([false, true])(
+  it.each(["clean", "foreign", "rework", "rework_foreign"])(
     "preserves the implementation and rejects unrelated dirt: %s",
-    async (foreign) => {
+    async (scenario) => {
+      const foreign = scenario === "foreign";
       const root = await mkGitRepoRootWithBranch("main");
       const git = async (...args: string[]) => {
         const output = await exec("git", args, { cwd: root });
@@ -260,6 +263,75 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
         evidence.implementation_commit,
       );
       expect(await checkoutGit("status", "--porcelain", "--", "feature.ts")).toBe("");
+      if (scenario === "clean" || foreign) return;
+
+      const rejected = await invoke(checkout, [
+        "verify",
+        taskId,
+        "--rework",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Rework: change the feature and preserve implementation identity on replay.",
+      ]);
+      expect(rejected.code, rejected.stderr).toBe(0);
+      const rework = await episode(checkout, taskId);
+      expect(rework.packet.authority.role).toBe("EXECUTOR");
+      expect(rework.order.task.work_item_id).toBeNull();
+      await writeFile(path.join(checkout, "feature.ts"), "export const feature = false;\n");
+      const interruption = vi
+        .spyOn(verification, "recordDirectTaskVerification")
+        .mockRejectedValueOnce(new Error("interrupted after the pre-verification artifact commit"));
+      try {
+        const interrupted = await returnResult(checkout, taskId, rework);
+        expect(interrupted.code).not.toBe(0);
+        expect(interrupted.stderr).toContain(
+          "interrupted after the pre-verification artifact commit",
+        );
+      } finally {
+        interruption.mockRestore();
+      }
+      const recorded = await ctx.taskBackend.getTask(taskId);
+      const implementationSha = recorded?.commit?.hash;
+      expect(implementationSha).toBeTruthy();
+      expect(implementationSha).not.toBe(evidence.implementation_commit);
+      expect(await checkoutGit("show", "-s", "--format=%s", "HEAD")).toContain(
+        "record implementation before verification",
+      );
+      expect(await checkoutGit("status", "--porcelain")).toBe("");
+      const featureHistory = await checkoutGit("log", "--format=%H", "--", "feature.ts");
+      if (scenario === "rework_foreign") {
+        await writeFile(path.join(checkout, "unrelated.txt"), "must survive replay rejection\n");
+        await checkoutGit("add", "unrelated.txt");
+        await checkoutGit("commit", "-m", "test: foreign change after interruption");
+        const refused = await invoke(checkout, rework.packet.exchange.resume_argv.slice(1));
+        expect(refused.code).not.toBe(0);
+        expect(refused.stderr).toContain(
+          "outside the recoverable Agentplane implementation effect",
+        );
+        expect(await readFile(path.join(checkout, "unrelated.txt"), "utf8")).toBe(
+          "must survive replay rejection\n",
+        );
+        const unchangedTask = await ctx.taskBackend.getTask(taskId);
+        expect(unchangedTask?.commit?.hash).toBe(implementationSha);
+        return;
+      }
+      const resumed = await invoke(checkout, rework.packet.exchange.resume_argv.slice(1));
+      expect(resumed.code, resumed.stderr).toBe(0);
+      const resumedTask = await ctx.taskBackend.getTask(taskId);
+      expect(resumedTask?.commit?.hash).toBe(implementationSha);
+      const recoveredEvidence = JSON.parse(
+        await readFile(path.join(checkout, evidencePath), "utf8"),
+      ) as { implementation_commit: string };
+      expect(recoveredEvidence.implementation_commit).toBe(implementationSha);
+      expect(await checkoutGit("show", `${implementationSha}:feature.ts`)).toBe(
+        "export const feature = false;",
+      );
+      const replayed = await invoke(checkout, rework.packet.exchange.resume_argv.slice(1));
+      expect(replayed.code, replayed.stderr).toBe(0);
+      expect(await checkoutGit("log", "--format=%H", "--", "feature.ts")).toBe(featureHistory);
+      const replayedTask = await ctx.taskBackend.getTask(taskId);
+      expect(replayedTask?.commit?.hash).toBe(implementationSha);
     },
   );
 });

@@ -297,21 +297,26 @@ export async function applyExternalImplementationResult(opts: {
       current_status_lines: status?.lines ?? [],
       require_changes: false,
     });
-    if (observedChangedPaths.length === 0 && !conflictContext) {
-      const recovery = await resolveRecordedImplementationRecovery({
-        purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,
-        command: opts.command,
-        task: taskAtReturn,
-        work_order: opts.work_order,
-        head,
-        recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
-      });
-      if (recovery) {
-        implementationCommit = recovery.commit;
-        recoveredExecutionBase = recovery.execution_base;
-        semantic = recovery.semantic ?? semantic;
-        reusedRecordedImplementation = true;
-      }
+  }
+  // Rework replay can follow a supervisor task-artifact commit before verification.
+  if (
+    !conflictContext &&
+    (observedChangedPaths?.length === 0 ||
+      (opts.exchange.purpose === "implementation_rework" && head !== opts.exchange.baseline.head))
+  ) {
+    const recovery = await resolveRecordedImplementationRecovery({
+      purpose: semantic.plan_refinement ? undefined : opts.exchange.purpose,
+      command: opts.command,
+      task: taskAtReturn,
+      work_order: opts.work_order,
+      head,
+      recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
+    });
+    if (recovery) {
+      implementationCommit = recovery.commit;
+      recoveredExecutionBase = recovery.execution_base;
+      semantic = recovery.semantic ?? semantic;
+      reusedRecordedImplementation = true;
     }
   }
   if (conflictContext && head && head !== opts.exchange.baseline.head) {

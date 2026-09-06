@@ -2,10 +2,10 @@
 id: "202609042327-PH5N6S"
 title: "Run supervisor verification against the committed implementation without dirtying its checkout"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:8965644c6363e924892611165f4efe2349f53aaa81b4b8bc013e4dc3c24571b5"
 verification:
-  state: "ok"
-  updated_at: "2026-09-06T06:54:40.173Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-06T07:15:26.802Z"
+  updated_by: "REVIEWER"
+  note: "Rework: review #3938665689 identifies interrupted implementation_rework replay losing the implementation SHA after the pre-verification artifact commit."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -127,7 +127,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -144,46 +146,10 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -856,9 +822,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "ea8830b4bee74c656ed888384625f95046df2218"
-  message: "🚧 PH5N6S task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -978,8 +944,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "ea8830b4bee74c656ed888384625f95046df2218"
+  -
+    type: "verify"
+    at: "2026-09-06T07:15:26.802Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Rework: review #3938665689 identifies interrupted implementation_rework replay losing the implementation SHA after the pre-verification artifact commit."
 doc_version: 3
-doc_updated_at: "2026-09-06T06:57:16.828Z"
+doc_updated_at: "2026-09-06T07:15:30.882Z"
 doc_updated_by: "CODER"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
@@ -1342,6 +1314,42 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-06T07:15:26.802Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Rework: review #3938665689 identifies interrupted implementation_rework replay losing the implementation SHA after the pre-verification artifact commit.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7, input_digest=sha256:64a21cd53d0ab3c60cb1ba0660913acfdfb51c2f1fe978a72c03b899a028965b
+
+    Details:
+
+    Check: task_outcome
+    Command: source review of external-agent-implementation-authority.ts and external-agent-purpose.ts
+    Result: fail
+    Evidence: https://github.com/basilisk-labs/agentplane/pull/5899#discussion_r3938665689
+    Scope: interrupted implementation_rework after the supervisor pre-verification metadata commit; reproduce in the existing clean-verification suite before fixing.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042327-PH5N6S-run-supervisor-verification-against-the-committe/.agentplane/tasks/202609042327-PH5N6S/blueprint/resolved-snapshot.json
+    - old_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+    - current_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609042327-PH5N6S
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1644,46 +1652,8 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609042327-PH5N6S"
-    event_cursor: 24
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609042327-PH5N6S"
-            - "git:2e9f7df5ebad103bf6ade9d4cffb750da2dd0318"
-          check_id: "provenance"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-06T06:54:40.173Z"
-          repository_snapshot_digest: "sha256:b4c3aff5ca5b9fa798c02ff81228f1f60e638d39c212524581bc9689516250b7"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042327-PH5N6S"
-            - "git:2e9f7df5ebad103bf6ade9d4cffb750da2dd0318"
-          check_id: "regression"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-06T06:54:40.173Z"
-          repository_snapshot_digest: "sha256:b4c3aff5ca5b9fa798c02ff81228f1f60e638d39c212524581bc9689516250b7"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609042327-PH5N6S"
-            - "git:2e9f7df5ebad103bf6ade9d4cffb750da2dd0318"
-          check_id: "full"
-          command_identity: "bun run ci:local:full"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-06T06:54:40.173Z"
-          repository_snapshot_digest: "sha256:b4c3aff5ca5b9fa798c02ff81228f1f60e638d39c212524581bc9689516250b7"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 25
+    final_validation: null
     id: "202609042327-PH5N6S"
     intent:
       acceptance_criteria: []
@@ -1694,7 +1664,7 @@ extensions:
 
         User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task.
       task_id: "202609042327-PH5N6S"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1880,9 +1850,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 32
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-06T06:57:16.820Z"
+    updated_at: "2026-09-06T07:15:30.879Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -2139,6 +2109,30 @@ extensions:
         mutation_id: "compatibility:sha256:30c90fe40c0ccf00a4fe21610bd80423355ebae9ff9983ae9ffa8f4327e93aae"
         next_revision: 22
         previous_revision: 21
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      compatibility:sha256:39fd94b914281189f475198675c58b8ce4e162a09dc7f701859b8546e4b56232:
+        aggregate_digest: "sha256:14dbb3916ac2e42162920b9f29c8c7088547e5e99ba00c2f9e5f823ae52d1c27"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T07:15:30.879Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_70adf92317d94352a14ce816"
+          mutation_id: "compatibility:sha256:39fd94b914281189f475198675c58b8ce4e162a09dc7f701859b8546e4b56232"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 32
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:39fd94b914281189f475198675c58b8ce4e162a09dc7f701859b8546e4b56232"
+        next_revision: 33
+        previous_revision: 32
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       compatibility:sha256:493bbf166cca89bcd301a7f004b19529981706fa3f2fd87d340938377cac7550:
@@ -2768,9 +2762,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "2e9f7df5ebad103bf6ade9d4cffb750da2dd0318"
-    message: "🚧 PH5N6S task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
@@ -3144,6 +3135,42 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609042327-PH5N6S
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-06T07:15:26.802Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Rework: review #3938665689 identifies interrupted implementation_rework replay losing the implementation SHA after the pre-verification artifact commit.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7, input_digest=sha256:64a21cd53d0ab3c60cb1ba0660913acfdfb51c2f1fe978a72c03b899a028965b
+
+Details:
+
+Check: task_outcome
+Command: source review of external-agent-implementation-authority.ts and external-agent-purpose.ts
+Result: fail
+Evidence: https://github.com/basilisk-labs/agentplane/pull/5899#discussion_r3938665689
+Scope: interrupted implementation_rework after the supervisor pre-verification metadata commit; reproduce in the existing clean-verification suite before fixing.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042327-PH5N6S-run-supervisor-verification-against-the-committe/.agentplane/tasks/202609042327-PH5N6S/blueprint/resolved-snapshot.json
+- old_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+- current_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609042327-PH5N6S
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
