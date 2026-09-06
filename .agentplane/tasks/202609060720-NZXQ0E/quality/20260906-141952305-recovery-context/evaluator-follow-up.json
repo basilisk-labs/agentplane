@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609060720-NZXQ0E-411b7bf65e463ed36bbb6abc",
+  "task_id": "202609060720-NZXQ0E",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Fix only the namespace comparison in the existing external-agent-workflow-recovery.ts owner. Preserve exact journal authority binding and validate the original typed route authority against its own task/fingerprint. Correct the synthetic fixture and add a real-Git native snapshot regression that fails before the fix and passes afterward. Retain all lease, queue, CAS, stale/foreign/effect checks. Use a fresh bounded implementation packet; request the narrow scope refinement if the packet omits this already-task-owned source path.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "P1: packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts:219 compares typed.authorityRef to resolution.authority_ref, but the native workflow operation uses route:<task>:<fingerprint> while the supervisor journal uses workflow-operation:integration.run_next (shared/supervisor-execution-episode.ts:489). A legitimately captured new snapshot therefore always fails assertOriginalIdentity. The synthetic snapshot fixture masks this by assigning the journal authority string to both namespaces. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b.patch",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "Residual risk: The PH5N6S operator decision remains separate from code qualification; its journal must stay unchanged until the exact supported operator recovery is available.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/62a42b5f83921de780b3d316bf1f1cfa892c67ad48b2ebe8a5e7133bf9a6b43b.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-141952305-recovery-context/evaluator-result.json"
+}
