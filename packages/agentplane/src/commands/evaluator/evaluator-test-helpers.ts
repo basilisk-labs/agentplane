@@ -7,7 +7,7 @@ import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
-import { cmdTaskAdd } from "../workflow.js";
+import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
 
 import {
   prepareEvaluatorReview,
@@ -30,6 +30,15 @@ export async function addTask(root: string, taskId: string): Promise<void> {
     verify: [],
     commentAuthor: null,
     commentBody: null,
+  });
+  await cmdTaskDocSet({
+    cwd: root,
+    rootOverride: root,
+    taskId,
+    section: "Verify Steps",
+    text: "1. Run `bun test`. Expected: the evaluator fixture passes.",
+    updatedBy: "TEST",
+    fullDoc: false,
   });
 }
 

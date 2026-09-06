@@ -301,7 +301,26 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
     });
     const approval = await resume(root, planning);
     expect(approval.action.kind).toBe("approval_required");
-    const approvalRequest = approval.operator_action?.host_user_decision?.request;
+    await runCommand(root, [
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      `1. Run \`${DETERMINISTIC_CHECK}\`. Expected: both dependent WorkItems pass.`,
+      "--updated-by",
+      "PLANNER",
+    ]);
+    const freshApproval = (await runJson(root, [
+      "task",
+      "advance",
+      taskId,
+      "--agent-json",
+    ])) as Packet;
+    expect(freshApproval.action.kind).toBe("approval_required");
+    const approvalRequest = freshApproval.operator_action?.host_user_decision?.request;
     if (!approvalRequest) throw new Error("Expected exact host user decision request.");
     expect(approvalRequest.plan_digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
     const hostDecision = Buffer.from(
@@ -323,6 +342,7 @@ describe("task-centric fresh repository release gate", { timeout: 180_000 }, () 
       "--host-user-decision",
       hostDecision,
     ]);
+    await runCommand(root, ["blueprint", "snapshot", taskId]);
     await execFileAsync("git", ["add", "-A"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: approve task-centric plan"], {
       cwd: root,

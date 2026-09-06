@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Frozen actual diff .agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch adds recoveryComparableReadme deletion of task-centric revision, lifecycle, final_validation, event_cursor, updated_at and the entire task-centric runtime. Its positive test accepts a fabricated mutation receipt with only next_revision. This accepts unproven canonical mutation drift. Current main already has receipt-aware preservation; reuse that contract and retain negative receipt/projection checks instead of this permissive historical normalization.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The same frozen diff changes direct startup to restart any task-centric DOING task without a workflow baseline. A missing baseline does not prove an untouched initial task: tasks with attempts, outputs, or a recorded commit must not restart. Reuse the narrower current-main hasUninitializedTaskBaseline contract and its direct/branch regression coverage.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The observed-check manifest and verification evidence match their frozen hashes and record all eight required gates passing on d7bbd71571d6abe27fedb205e87d8402f49ff1d1, including full local CI. These results do not prove the missing negative recovery and historical-startup contracts.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/004a5a2dfd5e556b4232a150191dd49b5160119311e3ea511862390734dc1fb8.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Reject forged or altered task-centric runtime receipts and unreceipted aggregate lifecycle drift.",
+    "Reject initial-start classification after attempts, outputs, or recorded implementation; preserve legitimate untouched initial direct and branch start."
+  ],
+  "hidden_assumptions": [
+    "Dropping runtime and aggregate lifecycle metadata assumes all such drift is authoritative.",
+    "Absence of a workflow baseline is assumed to imply initial execution."
+  ],
+  "recovery_context": "Continue within existing ZVX69C ownership. Reuse current main's receipt-aware recovery comparison and narrowly bounded initial-start contracts, retaining useful task-specific checks and accepted implementation history. Preserve the authorized operator/bootstrap changes and migrate them through the task worktree when the emitted scope permits. Do not create a new task, rewrite accepted results or task state, loosen receipt/authority guards, or touch PH5N6S-owned implementation-authority files. Run focused negative regressions before repeating the full verification gate."
+}

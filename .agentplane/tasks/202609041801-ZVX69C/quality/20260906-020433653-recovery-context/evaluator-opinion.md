@@ -1,0 +1,25 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 5 typed finding(s).
+
+## Findings
+- R1 high: implementation result application rejects a provider fingerprint different from the WorkOrder, while requiresImplementationRecoveryReplacement in external-agent-supervisor-recovery.ts does not compare provider identity. recoverPendingExternalAgentResult therefore retries the rejected result before --replacement handling, never issuing a fresh episode. This violates the approved branch-worktree resume/replay contract; preserve rejection of stale evidence and restore a supported replacement path rather than accepting stale provider state.
+- The failure is currently reproduced on PH5N6S with unchanged revision 8, HEAD 4b86e4b5028111db3e0da84a5b4bee94afdbf8cc, Task/backend/authority digests and clean worktree. Both normal advance and --replacement fail stale. The persisted exchange is result_received, the journal remains intent_recorded, and only provider differs. A read-only invocation of the current ZVX recovery predicate with this observed provider change returns false while the corresponding application predicate rejects it. No PH5N6S state, result or journal was edited.
+- The scoped Knip repair itself is complete: only two internal export modifiers were removed, both functions retain their existing callers and behavior. Knip CLI budget is 0/0 without baseline changes. All nine frozen evidence hashes match; verification 20260906020420331-e1a384eb99d68206.json is bound to implementation 2613ab498a2142b112afcd42351dbe6bb273a223 and all 11 declared checks, including full CI, passed.
+- The earlier inheritance/supersession fixes remain coherent in actual Task revision 100: verification=ok and authority_violations=[]. Do not reopen those completed repairs or repeat the accepted conflict merge.
+- Residual risk: A stale pending provider-bound result currently prevents normal and replacement continuation indefinitely.
+
+## Evidence
+- .agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c7b1fa00ed96882ff1a131c5ab4dba4b6a74b4cea074470f7ffa83dcc1db3875.patch
+
+## Missing Tests
+- Provider-only drift of an unresolved implementation/rework result must reject the old result and yield a supported fresh successor through the existing owner.
+- Unchanged provider identity, task isolation, interrupted retirement/retry and already-applied effect recovery must retain their existing behavior; no duplicate implementation or merge is permitted.
+
+## Hidden Assumptions
+- none recorded
+
+## Residual Risks
+- Use the existing ZVX69C branch-worktree resume/replay scope and external-agent-supervisor-recovery owner. Reproduce with the nearest recovery fixture. Reconcile provider freshness requirements between application and replacement without bypassing state binding or discarding applied-effect proof. Preserve the PH5N6S exchange/result/journal and all existing Task/merge evidence. Do not create a new task, change authority roots, add an artificial product delta, weaken checks, or manually rewrite native state. Qualify positive, negative and repeated/interrupted recovery, then resume the main Clean Core route.

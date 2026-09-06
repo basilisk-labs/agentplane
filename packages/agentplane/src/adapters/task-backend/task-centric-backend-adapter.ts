@@ -115,6 +115,10 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       normalizedNext.current_plan?.proposal.work_items.work_items.some(
         (item) => !item.optional && normalizedNext.work_items[item.id]?.state !== "COMPLETED",
       ) === true;
+    const currentAggregate = aggregateFrom(current);
+    const preservesApprovedPlan =
+      opts.event.entity === "plan" &&
+      currentAggregate.current_plan?.digest === normalizedNext.current_plan?.digest;
     const extensions = withTaskCentricAggregate(current.extensions, normalizedNext);
     if (opts.clear_execution_grant) delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
     if (opts.replan_required_reason_code) {
@@ -129,7 +133,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
         ...(opts.task_projection ?? {}),
         revision: currentRevision + 1,
         status: projectTaskLifecycleToLegacyStatus(normalizedNext.lifecycle),
-        ...(hasIncompleteRequiredWork
+        ...(hasIncompleteRequiredWork && !preservesApprovedPlan
           ? {
               commit: null,
               verification: {

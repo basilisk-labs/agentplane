@@ -2,7 +2,9 @@ import { execFile } from "node:child_process";
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as verification from "../commands/task/direct-task-verification.js";
+import * as scopeExtension from "../commands/shared/task-scope-extension-request.js";
 import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
 import {
   taskCentricDigest,
@@ -512,65 +514,128 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
     );
   });
 
-  it("projects explicit USER approval and issues a fresh executor with the exact requested scope", async () => {
-    const { taskId, taskWorktree } = await prepareBlockedResultTask({
-      title: "Structured blocked scope extension",
-      plan: "Request and approve one exact repository scope extension before resuming implementation.",
-      slug: "blocked-scope-extension",
-      authorityAll: true,
-    });
-    const issued = await readAgentPacket(taskWorktree, taskId);
-    const resultPath = await writeBlockedResult(
-      issued,
-      "The release image generator needs one additional writable root.",
-      { scopeRoots: ["website/static/img/social"], repositoryEffects: ["documentation"] },
-    );
+  it.each([false, true])(
+    "projects explicit USER approval and replays accepted scope implementation (legacy split=%s)",
+    async (legacySplit) => {
+      const { taskId, taskWorktree } = await prepareBlockedResultTask({
+        title: "Structured blocked scope extension",
+        plan: "Request and approve one exact repository scope extension before resuming implementation.",
+        slug: "blocked-scope-extension",
+        authorityAll: true,
+      });
+      const issued = await readAgentPacket(taskWorktree, taskId);
+      const resultPath = await writeBlockedResult(
+        issued,
+        "The release image generator needs one additional writable root.",
+        { scopeRoots: ["website/static/img/social"], repositoryEffects: ["documentation"] },
+      );
 
-    const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
-    expect(returned.code, returned.stderr).toBe(0);
-    const approval = JSON.parse(returned.stdout) as AgentPacket;
-    expect(approval.action.kind, returned.stdout).toBe("approval_required");
-    expect(approval.operator_action?.argv).toEqual(
-      expect.arrayContaining([
-        "task",
-        "authority",
-        "grant",
-        taskId,
-        "--operation",
-        "task.scope.extend",
-      ]),
-    );
+      const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
+      expect(returned.code, returned.stderr).toBe(0);
+      const approval = JSON.parse(returned.stdout) as AgentPacket;
+      expect(approval.action.kind, returned.stdout).toBe("approval_required");
+      expect(approval.operator_action?.argv).toEqual(
+        expect.arrayContaining([
+          "task",
+          "authority",
+          "grant",
+          taskId,
+          "--operation",
+          "task.scope.extend",
+        ]),
+      );
 
-    const authorityArgv = [...(approval.operator_action?.argv.slice(1) ?? [])];
-    const receiptIndex = authorityArgv.indexOf("--approval-receipt");
-    if (receiptIndex !== -1) authorityArgv.splice(receiptIndex, 2);
-    await runCliSilent([...authorityArgv, "--by", "USER", "--root", taskWorktree]);
+      const authorityArgv = [...(approval.operator_action?.argv.slice(1) ?? [])];
+      const receiptIndex = authorityArgv.indexOf("--approval-receipt");
+      if (receiptIndex !== -1) authorityArgv.splice(receiptIndex, 2);
+      await runCliSilent([...authorityArgv, "--by", "USER", "--root", taskWorktree]);
 
-    const resumed = await readAgentPacket(taskWorktree, taskId);
-    expect(resumed.action.kind, JSON.stringify(resumed, null, 2)).toBe("agent_episode");
-    expect(resumed.exchange?.result_path).not.toBe(resultPath);
-    if (!resumed.exchange) throw new Error("expected a fresh executor exchange");
-    const workOrder = JSON.parse(
-      await readFile(
-        path.join(resumed.exchange.directory, resumed.exchange.work_order_ref),
+      const applyScope = scopeExtension.applyApprovedTaskScopeExtension;
+      const splitWrite = legacySplit
+        ? vi
+            .spyOn(scopeExtension, "applyApprovedTaskScopeExtension")
+            .mockImplementationOnce((options) => {
+              const next = applyScope(options);
+              const aggregate = taskCentricAggregateFromExtensions(next.extensions)!;
+              return {
+                ...next,
+                extensions: withTaskCentricAggregate(next.extensions, {
+                  ...aggregate,
+                  revision: aggregate.revision - 1,
+                  lifecycle: "BLOCKED",
+                }),
+              };
+            })
+        : null;
+      let resumed: AgentPacket;
+      try {
+        resumed = await readAgentPacket(taskWorktree, taskId);
+      } finally {
+        splitWrite?.mockRestore();
+      }
+      expect(resumed.action.kind, JSON.stringify(resumed, null, 2)).toBe("agent_episode");
+      expect(resumed.exchange?.result_path).not.toBe(resultPath);
+      if (!resumed.exchange) throw new Error("expected a fresh executor exchange");
+      const workOrder = JSON.parse(
+        await readFile(
+          path.join(resumed.exchange.directory, resumed.exchange.work_order_ref),
+          "utf8",
+        ),
+      ) as { role: string; authority: { writable_roots: string[] } };
+      expect(workOrder.role).toBe("EXECUTOR");
+      expect(
+        workOrder.authority.writable_roots.some((root) =>
+          root.endsWith("/website/static/img/social"),
+        ),
+        JSON.stringify({ resumed, workOrder }, null, 2),
+      ).toBe(true);
+
+      const readme = await readFile(
+        path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
         "utf8",
-      ),
-    ) as { role: string; authority: { writable_roots: string[] } };
-    expect(workOrder.role).toBe("EXECUTOR");
-    expect(
-      workOrder.authority.writable_roots.some((root) =>
-        root.endsWith("/website/static/img/social"),
-      ),
-      JSON.stringify({ resumed, workOrder }, null, 2),
-    ).toBe(true);
-
-    const readme = await readFile(
-      path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md"),
-      "utf8",
-    );
-    expect(readme).toContain('status: "DOING"');
-    expect(readme).toContain('status: "applied"');
-  });
+      );
+      expect(readme).toContain('status: "DOING"');
+      expect(readme).toContain('status: "applied"');
+      const ctx = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
+      const extended = await ctx.taskBackend.getTask(taskId);
+      const canonical = taskCentricAggregateFromExtensions(extended?.extensions);
+      expect(canonical?.revision).toBe(extended!.revision! - (legacySplit ? 1 : 0));
+      expect(canonical?.lifecycle).toBe(legacySplit ? "BLOCKED" : "ACTIVE");
+      const imageDirectory = path.join(taskWorktree, "website/static/img/social");
+      await mkdir(imageDirectory, { recursive: true });
+      await writeFile(
+        path.join(imageDirectory, "fixture.svg"),
+        '<svg xmlns="http://www.w3.org/2000/svg"/>\n',
+      );
+      const completedPath = await writeCompletedResult(
+        resumed,
+        "Implemented the approved scope extension.",
+      );
+      const exactResult = await readFile(completedPath, "utf8");
+      const interruption = vi
+        .spyOn(verification, "recordDirectTaskVerification")
+        .mockRejectedValueOnce(new Error("injected post-scope verification interruption"));
+      try {
+        const interrupted = await returnAgentResult(taskWorktree, taskId, completedPath);
+        expect(interrupted.code, interrupted.stderr).not.toBe(0);
+        expect(interrupted.stderr).toContain("injected post-scope verification interruption");
+        expect(interruption).toHaveBeenCalledOnce();
+      } finally {
+        interruption.mockRestore();
+      }
+      const accepted = JSON.parse(
+        await readFile(path.join(resumed.exchange.directory, "exchange.json"), "utf8"),
+      ) as ExternalAgentExchange;
+      expect(accepted.status).toBe("result_received");
+      const replay = await returnAgentResult(taskWorktree, taskId, completedPath);
+      expect(replay.code, replay.stderr).toBe(0);
+      expect(await readFile(completedPath, "utf8")).toBe(exactResult);
+      const recovered = await ctx.taskBackend.getTask(taskId);
+      expect(taskCentricAggregateFromExtensions(recovered?.extensions)?.revision).toBe(
+        recovered?.revision,
+      );
+    },
+  );
 
   it("applies the exact scope extension through the authoritative task checkout from base", async () => {
     const { root, taskId, taskWorktree } = await prepareBlockedResultTask({

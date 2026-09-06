@@ -1,5 +1,10 @@
 import {
   createLegacyTaskAggregate,
+  createRepositorySnapshot,
+  createTaskPlanRevision,
+  taskCentricAggregateFromExtensions,
+  taskCentricDigest,
+  withTaskCentricAggregate,
   ensureDocSections,
   setMarkdownSection,
 } from "@agentplaneorg/core/tasks";
@@ -84,6 +89,94 @@ function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undef
 }
 
 describe("task plan commands (unit)", () => {
+  it.each([false, true])(
+    "approves canonical status and revision in one write (local=%s)",
+    async (local) => {
+      const now = "2026-09-01T00:00:00.000Z";
+      const validation = {
+        schema_version: 1 as const,
+        criteria: [],
+        checks: [],
+        evidence_fingerprint: taskCentricDigest("approval"),
+      };
+      const aggregate = createLegacyTaskAggregate({
+        id: "T-1",
+        revision: 3,
+        title: "Task",
+        description: "Approve",
+        status: "TODO",
+        acceptance_criteria: [],
+        captured_at: now,
+        updated_at: now,
+      });
+      const plan = createTaskPlanRevision({
+        revision: 1,
+        created_at: now,
+        proposal: {
+          schema_version: 1,
+          task_id: "T-1",
+          planning_baseline: createRepositorySnapshot({
+            git: { kind: "commit", sha: "a".repeat(40), ref: "main" },
+            dirty_paths: [],
+            policy_digest: null,
+            config_digest: null,
+            context_digest: null,
+            task_history_cursor: null,
+            captured_at: now,
+          }),
+          work_items: { schema_version: 1, work_items: [] },
+          assumptions: [],
+          unresolved_questions: [],
+          top_level_validation: validation,
+        },
+      });
+      let task = mkTask({
+        revision: 3,
+        status: "TODO",
+        doc_version: 3,
+        doc: "## Summary\nx\n\n## Plan\nImplement scoped repair\n\n## Verify Steps\nRun regression tests\n\n## Findings\nNone",
+        extensions: withTaskCentricAggregate(
+          {},
+          { ...aggregate, lifecycle: "AWAITING_PLAN_APPROVAL", current_plan: plan },
+        ),
+      });
+      const before = structuredClone(task);
+      const writes: TaskData[] = [];
+      const backend = makeTaskBackendDouble({
+        getTaskDoc: () => Promise.resolve(task.doc ?? ""),
+        writeTask: (next) => {
+          writes.push(next);
+          task = next;
+          return Promise.resolve();
+        },
+      });
+      const ctx = mkCtx({ taskBackend: backend, backend });
+      mockBackendIsLocalFileBackend.mockReturnValue(local);
+      mockLoadTaskFromContext.mockImplementation(() => Promise.resolve(task));
+      mockGetTaskStore.mockReturnValue({
+        get: () => Promise.resolve(task),
+        patch: (_id: string, patcher: (current: TaskData) => TaskStorePatch) => {
+          task = applyStorePatch(task, patcher(task));
+          writes.push(task);
+          return Promise.resolve();
+        },
+      });
+      const { cmdTaskPlanApprove } = await import("./plan.js");
+      await expect(
+        cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "USER" }),
+      ).resolves.toBe(0);
+      expect(writes).toHaveLength(1);
+      expect(task.status).toBe("DOING");
+      expect(task.revision).toBe(4);
+      const canonical = taskCentricAggregateFromExtensions(task.extensions)!;
+      expect(canonical.revision).toBe(4);
+      expect(canonical.lifecycle).toBe("ACTIVE");
+      expect(canonical.current_plan?.approval.approved_digest).toBe(plan.digest);
+      expect(task.extensions).toHaveProperty("agentplane.task_centric_runtime");
+      expect(before.status).toBe("TODO");
+    },
+  );
+
   beforeEach(() => {
     mockLoadTaskFromContext.mockReset();
     mockLoadCommandContext.mockReset();

@@ -1,4 +1,5 @@
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
@@ -339,7 +340,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (supersededStep) return supersededStep;
   const worktreeBlocker = taskWorktreeBlocker(state);
   const status = String(state.task.status).toUpperCase();
-  if (status === "TODO") {
+  if (status === "TODO" || (status === "DOING" && hasUninitializedTaskBaseline(state.task))) {
     if (state.taskWorktree?.state === "unavailable") {
       return worktreeResolutionStep(state, worktreeBlocker ?? unavailableWorktreeBlocker(state));
     }

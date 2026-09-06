@@ -69,6 +69,7 @@ describe("task shared helpers", () => {
     expect(isVerifyStepsFilled(null)).toBe(false);
     expect(isVerifyStepsFilled("")).toBe(false);
     expect(isVerifyStepsFilled(`x\n${VERIFY_STEPS_PLACEHOLDER}\n`)).toBe(false);
+    expect(isVerifyStepsFilled("PLANNER fallback scaffold. Replace this.")).toBe(false);
     expect(
       isVerifyStepsFilled(
         [

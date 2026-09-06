@@ -13,21 +13,28 @@ import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
+import {
+  recoverAppliedScopeProjection,
+  recoverAppliedTaskScopeExtension,
+} from "../shared/task-scope-extension-request.js";
+export { assertRecoverableImplementationCommit } from "../shared/task-scope-extension-request.js";
+import { preserveReceiptedMetadata } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { recordDirectImplementationEvidence } from "./direct-task-finalization.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
-import {
-  reconcileTaskExecutionContract,
-  resolveTaskExecutionContract,
-} from "../../runtime/task-routing/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   recordedTaskImplementationCommitSha,
   resolveQualityReviewTargetSha,
   taskReadmesHaveOnlyLifecycleDrift,
 } from "../shared/quality-review-target.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
-import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import {
+  resolveObservedVerificationChangedPaths,
+  resolveInheritedVerificationPaths,
+  reconcileVerificationExecutionContract,
+} from "./verify-record-observed-changes.js";
 import { isQualificationTask } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import {
@@ -38,6 +45,7 @@ import {
   type ExternalAgentExchange,
 } from "./external-agent-exchange.js";
 import {
+  completedWorkItemRecoveryReadme,
   resolveEvidenceOnlyReworkCommit,
   selectRecordedImplementationRecoveryCommit,
 } from "./evidence-only-rework-commit.js";
@@ -104,39 +112,6 @@ export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
   });
 }
 
-export async function assertRecoverableImplementationCommit(opts: {
-  cwd: string;
-  baseline: string | null;
-  commit: string;
-  task_id: string;
-}): Promise<void> {
-  const subject = await runProcess({
-    command: "git",
-    args: ["show", "-s", "--format=%s", opts.commit],
-    cwd: opts.cwd,
-    reject: false,
-  });
-  const ancestry = opts.baseline
-    ? await runProcess({
-        command: "git",
-        args: ["merge-base", "--is-ancestor", opts.baseline, opts.commit],
-        cwd: opts.cwd,
-        reject: false,
-      })
-    : null;
-  if (
-    subject.exitCode !== 0 ||
-    subject.stdout.trim() !==
-      `🚧 ${opts.task_id.split("-").at(-1)} task: apply external agent result` ||
-    (ancestry && ancestry.exitCode !== 0)
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Git history changed outside the recoverable Agentplane implementation effect.",
-    });
-  }
-}
-
 export async function refreshRecoveredImplementationEvidence(opts: {
   command: CommandContext;
   exchange: ExternalAgentExchange;
@@ -144,6 +119,25 @@ export async function refreshRecoveredImplementationEvidence(opts: {
   commit: string | null;
   preserve_recorded_evidence?: boolean;
 }) {
+  let projectionExchange = opts.exchange;
+  const task = await opts.command.taskBackend.getTask(opts.exchange.task_id);
+  if (opts.preserve_recorded_evidence && task && recoverAppliedTaskScopeExtension(task)) {
+    const recovery = await resolveRecordedImplementationRecovery({
+      command: opts.command,
+      task,
+      work_order: await readExternalAgentWorkOrder(opts.exchange.work_order_ref),
+      head: opts.commit,
+      recorded_commit: null,
+      purpose: opts.exchange.purpose,
+    });
+    if (recovery?.commit !== opts.commit || recovery.execution_base !== opts.execution_base)
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "The recorded scope recovery identity changed.",
+      });
+    projectionExchange = recovery.exchange;
+  }
+  await recoverAppliedScopeProjection({ ...opts, exchange: projectionExchange });
   if (!opts.execution_base || !opts.commit) return null;
   if (opts.preserve_recorded_evidence) {
     // Reobserve Git without rewriting the historical effect with a new episode baseline.
@@ -234,6 +228,11 @@ export function taskReadmesPreserveRecoveryContract(
   const previousExtensions = original.frontmatter.extensions;
   const nextExtensions = next.frontmatter.extensions;
   if (isRecord(previousExtensions) && isRecord(nextExtensions)) {
+    try {
+      preserveReceiptedMetadata(previousExtensions, nextExtensions);
+    } catch {
+      return false;
+    }
     const previous = previousExtensions.task_execution_context;
     const current = nextExtensions.task_execution_context;
     const identityKeys = ["schema_version", "base_ref", "base_sha", "repository_identity"];
@@ -327,6 +326,7 @@ export async function resolveImplementationVerificationTask(opts: {
     execution_contract: NonNullable<TaskData["execution_contract"]>;
     evaluated_sha: string | null;
     changed_paths: string[];
+    inherited_paths: string[];
   };
 }> {
   const execution = await resolveTaskExecutionContext({
@@ -358,9 +358,17 @@ export async function resolveImplementationVerificationTask(opts: {
     artifactTaskIds: taskIds,
     execution,
   });
+  const inheritedPaths = await resolveInheritedVerificationPaths({
+    ctx: opts.command,
+    evaluatedSha,
+    taskId: opts.task.id,
+    artifactTaskIds: taskIds,
+    execution,
+    changed_paths: changedPaths,
+  });
   const verificationTask = {
     ...opts.task,
-    execution_contract: reconcileTaskExecutionContract({
+    execution_contract: reconcileVerificationExecutionContract({
       contract:
         opts.task.execution_contract ??
         resolveTaskExecutionContract({
@@ -369,7 +377,8 @@ export async function resolveImplementationVerificationTask(opts: {
           requestedMode: opts.workflow,
         }),
       changed_paths: changedPaths,
-    }).contract,
+      inherited_paths: inheritedPaths,
+    }),
   };
   return {
     task: verificationTask,
@@ -377,6 +386,7 @@ export async function resolveImplementationVerificationTask(opts: {
       execution_contract: verificationTask.execution_contract!,
       evaluated_sha: evaluatedSha,
       changed_paths: changedPaths,
+      inherited_paths: inheritedPaths,
     },
   };
 }
@@ -393,34 +403,6 @@ async function directories(directory: string): Promise<string[]> {
   }
 }
 
-function completedWorkItemRecoveryReadme(markdown: string): string {
-  const parsed = parseTaskReadme(markdown);
-  const aggregate = parsed.frontmatter.extensions;
-  const runtime = isRecord(aggregate) ? aggregate["agentplane.task_centric"] : null;
-  if (isRecord(aggregate) && isRecord(runtime)) {
-    // Completion changes runtime evidence, not the approved plan or its authority.
-    for (const key of ["revision", "event_cursor", "updated_at", "final_validation"])
-      Reflect.deleteProperty(runtime, key);
-    if (isRecord(runtime.work_items)) {
-      for (const item of Object.values(runtime.work_items)) {
-        if (!isRecord(item)) continue;
-        for (const key of [
-          "state",
-          "revision",
-          "attempt",
-          "claim_id",
-          "output_manifests",
-          "validation_result",
-          "last_failure",
-        ])
-          Reflect.deleteProperty(item, key);
-      }
-    }
-    Reflect.deleteProperty(aggregate, "agentplane.task_centric_runtime");
-  }
-  return renderTaskReadme(parsed.frontmatter, parsed.body);
-}
-
 /** Recover only recorded implementation effects. Checks are executed again by the caller. */
 export async function resolveRecordedImplementationRecovery(opts: {
   command: CommandContext;
@@ -433,6 +415,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
   commit: string;
   execution_base: string;
   semantic: AgentSemanticResult | null;
+  exchange: ExternalAgentExchange;
 } | null> {
   const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
   const plan = aggregate?.current_plan;
@@ -460,11 +443,13 @@ export async function resolveRecordedImplementationRecovery(opts: {
   )
     return null;
   const workItemId = opts.work_order.task.work_item_id ?? null;
+  const scopeRecovery = recoverAppliedTaskScopeExtension(opts.task) !== null;
   const taskLevelRework =
     workItemId === null &&
-    opts.purpose === "implementation_rework" &&
-    (opts.task.verification?.state === "needs_rework" ||
-      ["rework", "blocked"].includes(opts.task.quality_review?.state ?? ""));
+    ((opts.purpose === "implementation_rework" &&
+      (opts.task.verification?.state === "needs_rework" ||
+        ["rework", "blocked"].includes(opts.task.quality_review?.state ?? ""))) ||
+      (["implementation", "implementation_rework"].includes(opts.purpose ?? "") && scopeRecovery));
   const commit = selectRecordedImplementationRecoveryCommit({
     task_level_rework: taskLevelRework,
     recorded_commit: opts.recorded_commit,
@@ -520,11 +505,13 @@ export async function resolveRecordedImplementationRecovery(opts: {
   if (
     currentReadmes.some(
       (readme) =>
-        !taskReadmesPreserveRecoveryContract(
-          taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
-          taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
-          commit,
-        ),
+        readme !== committedReadme &&
+        (scopeRecovery ||
+          !taskReadmesPreserveRecoveryContract(
+            taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+            taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
+            commit,
+          )),
     )
   )
     return null;
@@ -591,7 +578,12 @@ export async function resolveRecordedImplementationRecovery(opts: {
       )
         continue;
       // Task-level rework reports current claims. Interrupted WorkItems retain original claims.
-      return { commit, execution_base: base, semantic: taskLevelRework ? null : original.result };
+      return {
+        commit,
+        execution_base: base,
+        semantic: taskLevelRework ? null : original.result,
+        exchange,
+      };
     }
   }
   return null;

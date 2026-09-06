@@ -121,7 +121,8 @@ export function assertPlanCanBeApproved(opts: {
 
   const tags = toStringArray(opts.task.tags);
   const spikeTag = (opts.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-  const verifyRequired = requiresVerifyStepsByPrimary(tags, opts.config);
+  const verifyRequired =
+    toStringArray(opts.task.verify).length > 0 || requiresVerifyStepsByPrimary(tags, opts.config);
   const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
   if (verifyRequired || isSpike) {
     assertVerifyStepsFilled({

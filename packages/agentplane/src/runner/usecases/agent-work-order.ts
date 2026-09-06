@@ -316,6 +316,7 @@ export async function prepareAgentWorkOrder(opts: {
         execution_context: executionContext,
         route_decision: routeDecision,
         ...(opts.semantic_role ? { semantic_role: opts.semantic_role } : {}),
+        ...(opts.task_execution ? { task_execution: opts.task_execution } : {}),
       },
       source_manifest: sourceManifest,
       knowledge_retrieval: knowledgeRetrieval,

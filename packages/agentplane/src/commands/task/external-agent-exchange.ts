@@ -25,6 +25,8 @@ export type ExternalAgentResultEnvelope = {
   result: AgentSemanticResult;
 };
 
+import type { ExternalImplementationVerificationCheckpoint } from "./external-agent-implementation-checkpoint.js";
+
 export type ExternalAgentExchange = {
   schema_version: 1;
   kind: "external_agent_exchange";
@@ -49,6 +51,7 @@ export type ExternalAgentExchange = {
   result_digest: string | null;
   result: ExternalAgentResultEnvelope | null;
   postcondition_fingerprint: string | null;
+  verification_checkpoint?: ExternalImplementationVerificationCheckpoint;
   created_at: string;
   updated_at: string;
 };

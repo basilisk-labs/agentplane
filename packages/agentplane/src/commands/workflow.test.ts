@@ -10,6 +10,7 @@ import {
   cmdTaskListWithFilters,
   cmdTaskNext,
   cmdTaskSearch,
+  cmdTaskDocSet,
   cmdTaskPlanSet,
   cmdTaskPlanApprove,
   cmdTaskUpdate,
@@ -68,6 +69,15 @@ async function addTask(root: string, taskId: string): Promise<void> {
     verify: [],
     commentAuthor: null,
     commentBody: null,
+  });
+  await cmdTaskDocSet({
+    cwd: root,
+    rootOverride: root,
+    taskId,
+    section: "Verify Steps",
+    text: "1. Run `bun test`. Expected: the workflow fixture passes.",
+    updatedBy: "TEST",
+    fullDoc: false,
   });
 }
 

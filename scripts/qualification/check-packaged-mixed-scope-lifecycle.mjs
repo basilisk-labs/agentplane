@@ -741,6 +741,23 @@ export function runPackagedMixedScopeFixture({ run, cli, packages, tempRoot }) {
   const taskId = created.task_id;
   assert.equal(created.status, "semantic_input_required");
 
+  run(
+    process.execPath,
+    [
+      cli,
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      `1. Run \`${PACKAGED_MIXED_SCOPE_FULL_REGRESSION_COMMAND}\`. Expected: personalized greeting behavior and its regression tests pass.`,
+      "--updated-by",
+      "ORCHESTRATOR",
+    ],
+    { cwd: repo },
+  );
   const planner = advanceToEpisode(run, cli, repo, taskId, "PLANNER");
   const plan = longMixedScopePlan();
   const plannerExchange = writePacketResult(accessLog, planner, "PLANNER", {

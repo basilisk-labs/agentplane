@@ -1,0 +1,111 @@
+Task: `202609041801-ZVX69C`
+Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
+Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
+
+## Summary
+
+Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
+
+On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
+
+## Scope
+
+- In scope: On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full.
+- Out of scope: unrelated refactors not required for "Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification".
+
+## Verification
+
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-04T20:10:20.939Z
+- Branch: task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../task-centric-backend-adapter.test.ts           |  39 ++
+ .../task-backend/task-centric-backend-adapter.ts   |   6 +-
+ .../src/cli/managed-conflict-recovery.testkit.ts   | 332 ++++++++++++
+ .../src/cli/release-critical-lifecycle.test.ts     |  14 +
+ .../agentplane/src/cli/route-decision.testkit.ts   |  22 +
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++--
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 344 ++++++++----
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
+ .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
+ ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  17 +
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 208 ++++++-
+ .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
+ .../cli/task-advance-effect-recovery.testkit.ts    | 408 +++++++++++++-
+ .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
+ .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
+ .../src/commands/pr/conflict-rework-authority.ts   | 101 ++++
+ .../commands/pr/conflict-rework-base-context.ts    |   7 +-
+ .../src/commands/pr/conflict-rework-merge.test.ts  | 190 +++++++
+ .../src/commands/pr/conflict-rework-merge.ts       | 467 ++++++++++++++++
+ .../pr/conflict-rework-route-eligibility.ts        |   6 +-
+ .../commands/pr/conflict-rework-semantic-input.ts  | 112 ++++
+ .../src/commands/pr/conflict-rework.test.ts        | 142 +++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  23 +-
+ .../src/commands/shared/declared-check.test.ts     |   6 +-
+ .../src/commands/shared/declared-check.ts          |  45 +-
+ .../src/commands/shared/task-mutation.test.ts      |  51 ++
+ .../src/commands/shared/task-mutation.ts           |  12 +
+ .../shared/task-scope-extension-request.ts         |  39 +-
+ .../src/commands/shared/task-store/readme.ts       |  34 +-
+ .../src/commands/shared/task-store/store.ts        |  13 +-
+ .../src/commands/shared/task-store/types.ts        |   1 +
+ .../shared/workflow-step-conflict-rework.ts        |   6 +-
+ .../commands/shared/workflow-step-fingerprint.ts   |  14 +-
+ .../commands/shared/workflow-step-policy-scope.ts  |  11 +-
+ .../src/commands/shared/workflow-step.test.ts      |  29 +-
+ .../branch-task-supervisor-conflict-recovery.ts    | 596 +++++++++++++++++++++
+ .../task/branch-task-supervisor-episodes.ts        | 291 +++++-----
+ .../task/branch-task-supervisor-implementation.ts  | 495 +++++++++++++++++
+ .../commands/task/branch-task-supervisor.test.ts   | 115 +++-
+ .../src/commands/task/branch-task-supervisor.ts    |  17 +-
+ .../commands/task/direct-task-finalization.test.ts |  52 ++
+ .../src/commands/task/direct-task-finalization.ts  |  82 ++-
+ .../task/direct-task-supervisor-implementation.ts  |   2 +
+ .../src/commands/task/direct-task-verification.ts  |  72 ++-
+ .../commands/task/evidence-only-rework-commit.ts   |  31 ++
+ .../task/external-agent-conflict-application.ts    | 227 ++++++++
+ .../src/commands/task/external-agent-exchange.ts   |   3 +
+ .../external-agent-implementation-authority.ts     | 265 +++++----
+ .../external-agent-implementation-checkpoint.ts    | 280 ++++++++++
+ .../external-agent-implementation-finalization.ts  | 128 +++++
+ .../task/external-agent-implementation-recovery.ts | 108 ++--
+ .../task/external-agent-result-application.ts      |  22 +
+ .../task/external-agent-supervisor-recovery.ts     |   1 +
+ .../src/commands/task/external-agent-supervisor.ts |  43 +-
+ .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
+ .../src/commands/task/scope-extend.test.ts         | 125 +++--
+ .../agentplane/src/commands/task/set-status.ts     |  10 +-
+ .../src/commands/task/shared.unit.test.ts          |   1 +
+ .../src/commands/task/shared.verify-steps.test.ts  |   8 +
+ .../agentplane/src/commands/task/shared/docs.ts    |   2 +
+ .../task-execution-contract-observation.test.ts    |  19 +
+ .../task/task-execution-contract-observation.ts    | 200 ++++---
+ .../src/commands/task/verify-record-execute.ts     | 106 ++--
+ .../task/verify-record-observed-changes.ts         |  89 +++
+ .../task/verify-record.durability.unit.test.ts     | 214 +++++++-
+ .../agentplane/src/commands/task/verify-record.ts  |   3 +
+ .../src/commands/task/verify-record.types.ts       |   3 +
+ packages/agentplane/src/commands/workflow.test.ts  |  10 +
+ .../src/commands/workflow.verify-hooks.test.ts     |  12 +-
+ .../src/runner/usecases/agent-work-order-build.ts  |  46 +-
+ .../src/runner/usecases/agent-work-order.ts        |   1 +
+ .../src/runner/usecases/task-run-authority.ts      |  67 ++-
+ .../usecases/task-run-context.integration.test.ts  |   5 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   1 +
+ scripts/lib/installed-migration-matrix.mjs         |  16 +
+ .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
+ 78 files changed, 5930 insertions(+), 968 deletions(-)
+```
+
+</details>

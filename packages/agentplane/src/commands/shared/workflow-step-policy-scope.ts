@@ -1,11 +1,19 @@
 import { GitContext, gitDiffNames, gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
 
 const WORKFLOW_ROUTE_BASELINE_KEY = "workflow_route_baseline";
+
+type PolicyScopeState = Pick<
+  WorkflowRouteStateInput,
+  "task" | "workflowMode" | "taskWorktree" | "prFlow"
+> & {
+  resume: Pick<WorkflowRouteStateInput["resume"], "pr_branch" | "base_branch" | "head_sha">;
+};
 
 type WorkflowRouteBaseline = {
   version: 1;
@@ -62,6 +70,21 @@ function baselineFromTask(task: TaskData): WorkflowRouteBaseline | null {
   };
 }
 
+export function hasUninitializedTaskBaseline(task: TaskData): boolean {
+  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
+  return Boolean(
+    aggregate &&
+    !baselineFromTask(task) &&
+    !task.commit &&
+    Object.values(aggregate.work_items).every(
+      (item) =>
+        (item.state === "READY" || item.state === "PLANNED") &&
+        item.attempt === 0 &&
+        item.output_manifests.length === 0,
+    ),
+  );
+}
+
 function runnerChangedPaths(task: TaskData): string[] {
   const runner = task.runner;
   if (!isRecord(runner) || !isRecord(runner.evidence)) return [];
@@ -72,7 +95,7 @@ function runnerChangedPaths(task: TaskData): string[] {
   );
 }
 
-function taskBranch(state: WorkflowRouteStateInput): string | null {
+function taskBranch(state: PolicyScopeState): string | null {
   const candidates = [
     state.taskWorktree?.branch,
     state.prFlow?.branch.name,
@@ -103,7 +126,7 @@ async function rootCommitChangedPaths(repositoryRoot: string): Promise<string[]>
 
 export async function observeWorkflowPolicyScope(opts: {
   repositoryRoot: string;
-  state: WorkflowRouteStateInput;
+  state: PolicyScopeState;
   preobservedDirtyPaths?: readonly string[];
   excludedRoots?: readonly string[];
 }): Promise<WorkflowPolicyScopeObservation> {

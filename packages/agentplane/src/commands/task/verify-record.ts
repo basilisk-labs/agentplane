@@ -110,6 +110,8 @@ export async function cmdTaskVerifyRework(opts: {
   });
 }
 
+import type { PreparedTaskMutationObserver } from "../shared/task-mutation.js";
+
 export async function cmdVerifyParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -136,6 +138,7 @@ export async function cmdVerifyParsed(opts: {
   incidentRule?: string;
   quiet: boolean;
   verificationSnapshot?: VerificationSnapshot;
+  beforePersist?: PreparedTaskMutationObserver;
 }): Promise<number> {
   return await executeVerifyRecordCommand({
     ...opts,

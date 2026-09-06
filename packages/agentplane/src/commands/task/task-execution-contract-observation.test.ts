@@ -13,6 +13,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 import {
   observedExternalEffectsFromRunnerResult,
+  projectObservedTaskExecutionContract,
   recordObservedTaskExecutionContract,
 } from "./task-execution-contract-observation.js";
 
@@ -115,6 +116,24 @@ describe("task execution contract observation", () => {
       execution_contract: { selected_mode: "branch_pr" },
     });
     expect(persistedOptions).toEqual({ expectedRevision: 3 });
+    const before = JSON.stringify(task);
+    const projected = projectObservedTaskExecutionContract({
+      task: { ...task, blueprint_request: "code.branch_pr" },
+      workflow_dir: config.paths.workflow_dir,
+      changed_paths: [".github/workflows/ci.yml"],
+      preserved_commit: "abc123",
+    });
+    expect(JSON.stringify(task)).toBe(before);
+    expect(projected.nextTask).toEqual(persistedTask);
+    expect(projected.nextTask).not.toBeNull();
+    expect(
+      projectObservedTaskExecutionContract({
+        task: projected.nextTask!,
+        workflow_dir: config.paths.workflow_dir,
+        changed_paths: [".github/workflows/ci.yml"],
+        preserved_commit: "abc123",
+      }).nextTask,
+    ).toBeNull();
   });
 
   it("maps only supervisor capability identifiers into objective external effects", () => {

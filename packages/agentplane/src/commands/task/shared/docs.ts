@@ -14,6 +14,7 @@ export const VERIFY_STEPS_PLACEHOLDER =
 export const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 export const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 const VERIFY_STEPS_TEMPLATE_LINE_RE = /^\d+\.\s*<[^>\n]+>\.\s*Expected:\s*<[^>\n]+>\.?$/m;
+const VERIFY_STEPS_FALLBACK_RE = /PLANNER fallback scaffold/iu;
 
 export function decodeEscapedTaskTextNewlines(text: string): string {
   const normalized = text.replaceAll("\r\n", "\n");
@@ -46,6 +47,7 @@ export function isVerifyStepsFilled(sectionText: string | null): boolean {
   const normalized = (sectionText ?? "").trim();
   if (!normalized) return false;
   if (normalized.includes(VERIFY_STEPS_PLACEHOLDER)) return false;
+  if (VERIFY_STEPS_FALLBACK_RE.test(normalized)) return false;
   if (VERIFY_STEPS_TEMPLATE_LINE_RE.test(normalized)) return false;
   return true;
 }

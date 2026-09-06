@@ -275,6 +275,22 @@ function createApprovedTask(agentplane, root, workflowMode) {
   );
   run(
     agentplane,
+    [
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "1. Run `agentplane task lint`. Expected: migrated task records retain valid lifecycle fields.\n2. Run `agentplane doctor`. Expected: the installed migration fixture reports no errors.",
+      "--updated-by",
+      "ORCHESTRATOR",
+    ],
+    { cwd: root },
+  );
+  run(
+    agentplane,
     ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--note", "Matrix plan"],
     { cwd: root },
   );
