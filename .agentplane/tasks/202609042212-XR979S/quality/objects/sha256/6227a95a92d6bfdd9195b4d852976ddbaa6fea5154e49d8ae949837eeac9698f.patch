@@ -1,0 +1,315 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+index 4ec9451d0..1d2759bdc 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts
+@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
+ import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
+ import {
+   taskCentricDigest,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
+   type RepositorySnapshot,
+   type TaskPlanProposal,
+ } from "@agentplaneorg/core/tasks";
+@@ -386,6 +388,90 @@ async function prepareBlockedResultTask(opts: {
+ }
+ 
+ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
++  it("persists and replays a scope blocker from pre-merge DONE rework", async () => {
++    const { taskId, taskWorktree } = await prepareBlockedResultTask({
++      title: "Pre-merge blocker recovery",
++      plan: "Preserve an accepted blocker when a closed task needs implementation rework.",
++      slug: "pre-merge-blocker-recovery",
++    });
++    const ctx = await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree });
++    const task = await ctx.taskBackend.getTask(taskId);
++    if (!task) throw new Error("expected task fixture");
++    const aggregate = taskCentricAggregateFromExtensions(task.extensions);
++    if (!aggregate) throw new Error("expected canonical task fixture");
++    const extensions = withTaskCentricAggregate(task.extensions, {
++      ...aggregate,
++      revision: (task.revision ?? aggregate.revision) + 1,
++      lifecycle: "COMPLETED",
++      work_items: Object.fromEntries(
++        Object.entries(aggregate.work_items).map(([id, item]) => [
++          id,
++          { ...item, state: "COMPLETED" as const },
++        ]),
++      ),
++    });
++    await ctx.taskBackend.writeTask({
++      ...task,
++      status: "DONE",
++      extensions,
++      quality_review: {
++        state: "rework",
++        updated_at: new Date().toISOString(),
++        updated_by: "EVALUATOR",
++        provenance: "evaluator_supplied",
++        note: "The packaged fixture requires scoped rework.",
++        evaluated_sha: null,
++        blueprint_digest: null,
++        evidence_refs: [],
++        findings: ["Packaged fixture requires additional scope."],
++      },
++      verification: {
++        state: "needs_rework",
++        updated_at: new Date().toISOString(),
++        updated_by: "TESTER",
++        note: "Hosted qualification requires implementation rework before integration.",
++      },
++    });
++    await execFileAsync("git", ["add", ".agentplane"], { cwd: taskWorktree });
++    await execFileAsync("git", ["commit", "-m", "test: seed pre-merge rework"], {
++      cwd: taskWorktree,
++    });
++    const issued = await readAgentPacket(taskWorktree, taskId);
++    expect(issued.exchange).toBeDefined();
++    const exchange = JSON.parse(
++      await readFile(path.join(issued.exchange!.directory, "exchange.json"), "utf8"),
++    ) as ExternalAgentExchange;
++    expect(exchange.purpose).toBe("implementation_rework");
++    const resultPath = await writeBlockedResult(issued, "Packaged fixture needs exact scope.", {
++      scopeRoots: ["docs/fixture.md"],
++      repositoryEffects: ["documentation"],
++    });
++    const envelopeText = await readFile(resultPath, "utf8");
++    const staleEnvelope = JSON.parse(envelopeText) as ExternalAgentResultEnvelope;
++    staleEnvelope.state_fingerprint = `sha256:${"0".repeat(64)}`;
++    await writeFile(resultPath, JSON.stringify(staleEnvelope));
++    const rejected = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(rejected.code).not.toBe(0);
++    expect(rejected.stderr).toContain("No issued external-agent exchange matches this result");
++    const rejectedTask = await ctx.taskBackend.getTask(taskId);
++    expect(rejectedTask?.status).toBe("DONE");
++    await writeFile(resultPath, envelopeText);
++    const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(returned.code, returned.stderr).toBe(0);
++    expect(JSON.parse(returned.stdout)).toMatchObject({ action: { kind: "approval_required" } });
++    const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
++    const readme = await readFile(readmePath, "utf8");
++    expect(readme).toContain('status: "BLOCKED"');
++    const blockedTask = await ctx.taskBackend.getTask(taskId);
++    expect(taskCentricAggregateFromExtensions(blockedTask?.extensions)?.lifecycle).toBe("BLOCKED");
++    const head = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree });
++    const replay = await returnAgentResult(taskWorktree, taskId, resultPath);
++    expect(replay.code, replay.stderr).toBe(0);
++    expect(await readFile(readmePath, "utf8")).toBe(readme);
++    const replayHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree });
++    expect(replayHead.stdout).toBe(head.stdout);
++  });
++
+   it("accepts a scope-extension blocker that preserves the dirty issuance baseline", async () => {
+     const { taskId, taskWorktree } = await prepareBlockedResultTask({
+       title: "Dirty baseline scope extension",
+@@ -418,7 +504,8 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
+     const returned = await returnAgentResult(taskWorktree, taskId, resultPath);
+     expect(returned.code, returned.stderr).toBe(0);
+     expect(JSON.parse(returned.stdout)).toMatchObject({
+-      action: { kind: "approval_required" },
++      action: { kind: "agent_episode" },
++      authority: { role: "EXECUTOR" },
+     });
+     await expect(readFile(dirtyBaselinePath, "utf8")).resolves.toBe(
+       "export const concurrency = 1;\n",
+diff --git a/packages/agentplane/src/commands/task/external-agent-blocked-result.ts b/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
+index c5c20f130..bec399216 100644
+--- a/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
++++ b/packages/agentplane/src/commands/task/external-agent-blocked-result.ts
+@@ -8,6 +8,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
+ import {
+   createTaskScopeExtensionRequestState,
+   externalBlockerReceipt,
++  requiresImplementationReworkReopen,
+   TASK_SCOPE_EXTENSION_REQUEST_KEY,
+ } from "../shared/task-scope-extension-request.js";
+ 
+@@ -252,6 +253,13 @@ export async function recordExternalBlockedResult(opts: {
+   semantic: ExternalAgentResultEnvelope["result"];
+ }): Promise<void> {
+   if (!(await isExternalBlockedResultRecorded(opts))) {
++    const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
++    const reopenDone = requiresImplementationReworkReopen({
++      purpose: opts.exchange.purpose,
++      task_status: task.status,
++      work_item_id: null,
++      work_item_is_required: false,
++    });
+     await cmdTaskSetStatus({
+       ctx: opts.command,
+       cwd: opts.exchange.checkout,
+@@ -259,8 +267,8 @@ export async function recordExternalBlockedResult(opts: {
+       status: "BLOCKED",
+       author: "SUPERVISOR",
+       body: blockedResultBody({ exchange: opts.exchange, semantic: opts.semantic }),
+-      force: false,
+-      yes: false,
++      force: reopenDone,
++      yes: reopenDone,
+       commitFromComment: false,
+       commitAllow: [],
+       commitAutoAllow: false,
+diff --git a/packages/agentplane/src/commands/task/set-status.unit.test.ts b/packages/agentplane/src/commands/task/set-status.unit.test.ts
+index 29ee731fe..7eb9380aa 100644
+--- a/packages/agentplane/src/commands/task/set-status.unit.test.ts
++++ b/packages/agentplane/src/commands/task/set-status.unit.test.ts
+@@ -278,44 +278,50 @@ describe("task set-status command (unit)", () => {
+     stderrWrite.mockRestore();
+   });
+ 
+-  it("rejects a status write that would diverge from the task-centric aggregate", async () => {
+-    const ctx = mkCtx();
+-    const aggregate = createLegacyTaskAggregate({
+-      id: "T-1",
+-      revision: 4,
+-      title: "Task",
+-      description: "Task-centric projection guard",
+-      status: "DOING",
+-      acceptance_criteria: ["done"],
+-      captured_at: "2026-03-13T00:00:00.000Z",
+-      updated_at: "2026-03-13T00:00:00.000Z",
+-    });
+-    let currentTask = mkTask({
+-      id: "T-1",
+-      revision: 4,
+-      status: "DOING",
+-      extensions: withTaskCentricAggregate({}, aggregate),
+-    });
+-    const store = {
+-      update: vi
+-        .fn()
+-        .mockImplementation(
+-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+-            currentTask = await builder(currentTask);
+-            return { changed: true, task: currentTask };
+-          },
+-        ),
+-    };
+-    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+-    mocks.getTaskStore.mockReturnValue(store);
++  it.each([
++    { from: "DOING", to: "BLOCKED", consistent: true },
++    { from: "BLOCKED", to: "DOING", consistent: true },
++    { from: "BLOCKED", to: "TODO", consistent: false },
++    { from: "DONE", to: "BLOCKED", consistent: false },
++  ] as const)(
++    "preserves projection consistency for $from -> $to",
++    async ({ from, to, consistent }) => {
++      const ctx = mkCtx();
++      const aggregate = createLegacyTaskAggregate({
++        id: "T-1",
++        revision: 4,
++        title: "Task",
++        description: "Task-centric projection guard",
++        status: from,
++        acceptance_criteria: ["done"],
++        captured_at: "2026-03-13T00:00:00.000Z",
++        updated_at: "2026-03-13T00:00:00.000Z",
++      });
++      let currentTask = mkTask({
++        id: "T-1",
++        revision: 4,
++        status: from,
++        extensions: withTaskCentricAggregate({}, aggregate),
++      });
++      const store = {
++        update: vi
++          .fn()
++          .mockImplementation(
++            async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
++              currentTask = await builder(currentTask);
++              return { changed: true, task: currentTask };
++            },
++          ),
++      };
++      mocks.backendIsLocalFileBackend.mockReturnValue(true);
++      mocks.getTaskStore.mockReturnValue(store);
+ 
+-    const { cmdTaskSetStatus } = await import("./set-status.js");
+-    await expect(
+-      cmdTaskSetStatus({
++      const { cmdTaskSetStatus } = await import("./set-status.js");
++      const transition = cmdTaskSetStatus({
+         ctx,
+         cwd: "/repo",
+         taskId: "T-1",
+-        status: "BLOCKED",
++        status: to,
+         force: false,
+         yes: false,
+         commitFromComment: false,
+@@ -325,15 +331,28 @@ describe("task set-status command (unit)", () => {
+         commitRequireClean: false,
+         confirmStatusCommit: false,
+         quiet: true,
+-      }),
+-    ).rejects.toMatchObject({
+-      code: "E_VALIDATION",
+-      context: { reason_code: "task_centric_projection_mismatch" },
+-    });
+-    expect(currentTask.status).toBe("DOING");
+-    expect(currentTask.revision).toBe(4);
+-    const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
+-    expect(persistedAggregate?.revision).toBe(4);
+-    expect(persistedAggregate?.events).toEqual(aggregate.events);
+-  });
++      });
++      if (consistent) {
++        await expect(transition).resolves.toBe(0);
++        expect(currentTask.status).toBe(to);
++        const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
++        expect(persistedAggregate?.lifecycle).toBe(to === "BLOCKED" ? "BLOCKED" : "ACTIVE");
++        expect(persistedAggregate?.final_validation).toBeNull();
++        return;
++      }
++      await expect(transition).rejects.toMatchObject(
++        from === "DONE"
++          ? { code: "E_USAGE" }
++          : {
++              code: "E_VALIDATION",
++              context: { reason_code: "task_centric_projection_mismatch" },
++            },
++      );
++      expect(currentTask.status).toBe(from);
++      expect(currentTask.revision).toBe(4);
++      const persistedAggregate = taskCentricAggregateFromExtensions(currentTask.extensions);
++      expect(persistedAggregate?.revision).toBe(4);
++      expect(persistedAggregate?.events).toEqual(aggregate.events);
++    },
++  );
+ });
+diff --git a/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts b/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
+index 5e8ba0ad0..27dcc6276 100644
+--- a/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
++++ b/packages/agentplane/src/commands/task/shared/workflow-transition-service.ts
+@@ -1,8 +1,11 @@
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ import {
+   ensureDocSections,
++  legacyStatusToTaskLifecycle,
+   normalizeTaskStatus,
+   setMarkdownSection,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
+ } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
+@@ -131,6 +134,18 @@ function normalizeComments(task: TaskData): TaskComment[] {
+ function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStoreTaskPatch {
+   const patch: TaskStoreTaskPatch = { status: opts.toStatus };
+   if (opts.extraFields) Object.assign(patch, opts.extraFields);
++  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
++  if (
++    aggregate &&
++    opts.task.status !== opts.toStatus &&
++    (opts.toStatus === "BLOCKED" || (opts.task.status === "BLOCKED" && opts.toStatus === "DOING"))
++  ) {
++    patch.extensions = withTaskCentricAggregate(patch.extensions ?? opts.task.extensions, {
++      ...aggregate,
++      lifecycle: legacyStatusToTaskLifecycle(opts.toStatus),
++      final_validation: null,
++    });
++  }
+   if (opts.commit !== undefined) {
+     patch.commit = opts.commit;
+   }

@@ -222,6 +222,115 @@ describe("bootstrap-framework-dev script", () => {
     expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 
+  it.each([false, true])(
+    "rejects a task-owned install root and converges after repair (base dependency=%s)",
+    async (withDependency) => {
+      const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+      const repoRoot = await mkFrameworkRepo();
+      const foreignRoot = path.join(repoRoot, ".agentplane", "worktrees", "other", "node_modules");
+      const baseDependency = path.join(repoRoot, "base-dependency");
+      await mkdir(foreignRoot, { recursive: true });
+      await writeFile(path.join(foreignRoot, "owner.txt"), "other task");
+      if (withDependency) {
+        await writeFile(
+          path.join(repoRoot, "package.json"),
+          JSON.stringify({ name: "agentplane-repo", devDependencies: { eslint: "^10.5.0" } }),
+        );
+        await mkdir(baseDependency);
+        await writeFile(path.join(baseDependency, "package.json"), '{"name":"eslint"}');
+        await fs.promises.symlink(baseDependency, path.join(foreignRoot, "eslint"), "dir");
+      }
+      await fs.promises.symlink(foreignRoot, path.join(repoRoot, "node_modules"), "dir");
+      const packageLayouts = ["packages/core", "packages/agentplane", "website"];
+      for (const relative of packageLayouts)
+        await mkdir(path.join(repoRoot, relative, "node_modules"), { recursive: true });
+      await mkdir(path.join(repoRoot, "agentplane-recipes"));
+      await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}");
+      const calls: string[] = [];
+      const exec: FrameworkDevExec = (root, cmd, args) => recordCallExec(root, cmd, args, calls);
+
+      runFrameworkDevBootstrap(repoRoot, exec, { resolveCommonRepoRoot: () => repoRoot });
+
+      expect(calls).toContain("bun install --ignore-scripts");
+      await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
+      expect(await readFile(path.join(foreignRoot, "owner.txt"), "utf8")).toBe("other task");
+      await mkdir(path.join(repoRoot, "node_modules"));
+      if (withDependency)
+        await fs.promises.symlink(
+          baseDependency,
+          path.join(repoRoot, "node_modules", "eslint"),
+          "dir",
+        );
+      for (const relative of packageLayouts)
+        await mkdir(path.join(repoRoot, relative, "node_modules"), { recursive: true });
+      calls.length = 0;
+
+      runFrameworkDevBootstrap(repoRoot, exec, { resolveCommonRepoRoot: () => repoRoot });
+
+      expect(calls).not.toContain("bun install --ignore-scripts");
+      expect(calls).toContain("bun run --filter=agentplane build");
+      expect(await readFile(path.join(foreignRoot, "owner.txt"), "utf8")).toBe("other task");
+    },
+  );
+
+  it("reinstalls a layout whose declared dependency is owned by another task worktree", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    await writeFile(
+      path.join(repoRoot, "package.json"),
+      JSON.stringify({
+        name: "agentplane-repo",
+        private: true,
+        devDependencies: { eslint: "^10.5.0" },
+      }),
+      "utf8",
+    );
+    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
+    const foreignDependency = path.join(
+      repoRoot,
+      ".agentplane",
+      "worktrees",
+      "foreign",
+      "node_modules",
+      "eslint",
+    );
+    await mkdir(foreignDependency, { recursive: true });
+    await writeFile(path.join(foreignDependency, "package.json"), '{"name":"eslint"}\n', "utf8");
+    await fs.promises.symlink(
+      foreignDependency,
+      path.join(repoRoot, "node_modules", "eslint"),
+      "dir",
+    );
+    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun install --ignore-scripts",
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
+    await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "packages", "core", "node_modules"))).rejects.toThrow();
+    await expect(
+      lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
+    ).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "website", "node_modules"))).rejects.toThrow();
+  });
+
   it("reconciles the managed hook set and adds a missing post-merge hook", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();

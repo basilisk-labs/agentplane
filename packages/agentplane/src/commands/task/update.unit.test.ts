@@ -2,6 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { makeTaskCommandContext } from "@agentplane/testkit/task";
+import {
+  createLegacyTaskAggregate,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mockLoadCommandContext =
@@ -46,6 +51,50 @@ function mkCtx(task: TaskData): CommandContext {
 }
 
 describe("task update command (unit)", () => {
+  it.each([false, true])("keeps canonical metadata writes atomic (stale=%s)", async (stale) => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 3,
+      title: "Title",
+      description: "Desc",
+      status: "TODO",
+      acceptance_criteria: [],
+      captured_at: "2026-09-01T00:00:00.000Z",
+      updated_at: "2026-09-01T00:00:00.000Z",
+    });
+    const task = mkTask({
+      revision: stale ? 4 : 3,
+      extensions: withTaskCentricAggregate({}, aggregate),
+    });
+    const ctx = mkCtx(task);
+    const write = vi.spyOn(ctx.taskBackend, "writeTask");
+    const { cmdTaskUpdate } = await import("./update.js");
+    const run = cmdTaskUpdate({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      description: "Updated",
+      tags: [],
+      replaceTags: false,
+      dependsOn: [],
+      replaceDependsOn: false,
+      verify: [],
+      replaceVerify: false,
+    });
+    if (stale) {
+      await expect(run).rejects.toThrow(/revision mismatch/u);
+      expect(write).not.toHaveBeenCalled();
+      return;
+    }
+    await expect(run).resolves.toBe(0);
+    const next = write.mock.calls[0]![0];
+    expect(next.revision).toBe(4);
+    expect(taskCentricAggregateFromExtensions(next.extensions)?.revision).toBe(4);
+    expect(write.mock.calls[0]![1]).toEqual({ expectedRevision: 3 });
+    expect(task.revision).toBe(3);
+    expect(aggregate.revision).toBe(3);
+  });
+
   beforeEach(() => {
     mockLoadCommandContext.mockReset();
   });

@@ -1,0 +1,1906 @@
+diff --git a/packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts b/packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+index 0344dea5c..84a62377f 100644
+--- a/packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
++++ b/packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+@@ -222,6 +222,64 @@ describe("bootstrap-framework-dev script", () => {
+     expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
+   });
+ 
++  it("reinstalls a layout whose declared dependency is owned by another task worktree", async () => {
++    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
++    const repoRoot = await mkFrameworkRepo();
++    await writeFile(
++      path.join(repoRoot, "package.json"),
++      JSON.stringify({
++        name: "agentplane-repo",
++        private: true,
++        devDependencies: { eslint: "^10.5.0" },
++      }),
++      "utf8",
++    );
++    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
++    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
++    await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
++      recursive: true,
++    });
++    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
++    const foreignDependency = path.join(
++      repoRoot,
++      ".agentplane",
++      "worktrees",
++      "foreign",
++      "node_modules",
++      "eslint",
++    );
++    await mkdir(foreignDependency, { recursive: true });
++    await writeFile(path.join(foreignDependency, "package.json"), '{"name":"eslint"}\n', "utf8");
++    await fs.promises.symlink(
++      foreignDependency,
++      path.join(repoRoot, "node_modules", "eslint"),
++      "dir",
++    );
++    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
++    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
++    const calls: string[] = [];
++    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
++      recordCallExec(currentRepoRoot, cmd, args, calls);
++
++    runFrameworkDevBootstrap(repoRoot, exec, {
++      resolveCommonRepoRoot: () => repoRoot,
++    });
++
++    expect(calls).toEqual([
++      "bun install --ignore-scripts",
++      "bun run --filter=@agentplaneorg/core build",
++      "bun run --filter=agentplane build",
++      "bun run --filter=@agentplane/testkit build",
++      "node packages/agentplane/bin/agentplane.js runtime explain",
++    ]);
++    await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
++    await expect(lstat(path.join(repoRoot, "packages", "core", "node_modules"))).rejects.toThrow();
++    await expect(
++      lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
++    ).rejects.toThrow();
++    await expect(lstat(path.join(repoRoot, "website", "node_modules"))).rejects.toThrow();
++  });
++
+   it("reconciles the managed hook set and adds a missing post-merge hook", async () => {
+     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+     const repoRoot = await mkFrameworkRepo();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts b/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
+index 58640f642..281840655 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
+@@ -9,6 +9,7 @@ import { defaultConfig } from "@agentplaneorg/core/config";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+ import { loadCommandContext } from "../commands/shared/task-backend.js";
++import { buildTaskHandoffArtifact } from "../commands/shared/task-handoff.js";
+ import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
+ import { staleClaim, writeActiveClaim } from "../runner/usecases/task-run-active-claim.testkit.js";
+ import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
+@@ -50,6 +51,91 @@ async function planAndStartTask(opts: {
+ }
+ 
+ describe("runCli task handoff and recovery", () => {
++  it("reads the protected integration owner's handoff from a task worktree without mutation", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
++    const created = captureStdIO();
++    let taskId: string;
++    try {
++      expect(
++        await runCli([
++          "task",
++          "new",
++          "--title",
++          "Read protected handoff",
++          "--description",
++          "Recover integration evidence from its owning checkout.",
++          "--owner",
++          "CODER",
++          "--tag",
++          "workflow",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      taskId = created.stdout.trim();
++    } finally {
++      created.restore();
++    }
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: persist handoff task"], { cwd: root });
++    const branch = `task/${taskId}/handoff-reader`;
++    const worktree = path.join(root, ".agentplane", "worktrees", "handoff-reader");
++    await execFileAsync("git", ["worktree", "add", "-b", branch, worktree], { cwd: root });
++    const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: worktree });
++    const head = headResult.stdout.trim();
++    const handoff = buildTaskHandoffArtifact({
++      task_id: taskId,
++      created_at: "2026-08-27T00:00:00.000Z",
++      from_role: "INTEGRATOR",
++      reason: "Resume protected integration.",
++      branch,
++      pr_branch: branch,
++      base_branch: "main",
++      head_sha: head,
++      route: { kind: "protected_base_integrate", status: "awaiting_github_merge", pr_number: 321 },
++    });
++    const artifactPath = path.join(root, ".agentplane", "tasks", taskId, "handoff", "latest.json");
++    await mkdir(path.dirname(artifactPath), { recursive: true });
++    await writeFile(artifactPath, JSON.stringify(handoff), "utf8");
++    const before = await readFile(artifactPath, "utf8");
++    const snapshot = async () =>
++      Promise.all(
++        [root, worktree].map(async (cwd) => {
++          const [headResult, statusResult] = await Promise.all([
++            execFileAsync("git", ["rev-parse", "HEAD"], { cwd }),
++            execFileAsync("git", ["status", "--porcelain"], { cwd }),
++          ]);
++          return { head: headResult.stdout, status: statusResult.stdout };
++        }),
++      );
++    const gitBefore = await snapshot();
++    for (let attempt = 0; attempt < 2; attempt += 1) {
++      for (const checkout of [root, worktree]) {
++        for (const command of [["handoff", "show"], ["resume-context"]]) {
++          const io = captureStdIO();
++          try {
++            expect(await runCli(["task", ...command, taskId, "--json", "--root", checkout])).toBe(
++              0,
++            );
++            const result = JSON.parse(io.stdout) as Record<string, unknown>;
++            expect(command[0] === "handoff" ? result : result.latest_handoff).toEqual(handoff);
++          } finally {
++            io.restore();
++          }
++        }
++      }
++    }
++    expect(await snapshot()).toEqual(gitBefore);
++    expect(await readFile(artifactPath, "utf8")).toBe(before);
++    await expect(
++      access(path.join(worktree, ".agentplane", "tasks", taskId, "handoff", "latest.json")),
++    ).rejects.toMatchObject({ code: "ENOENT" });
++  });
++
+   it("task reclaim records a deterministic handoff for a task awaiting a local agent", async () => {
+     const root = await mkGitRepoRootWithCommit();
+     await writeConfig(root, defaultConfig());
+@@ -380,15 +466,16 @@ describe("runCli task handoff and recovery", () => {
+     await execFileAsync("git", ["commit", "-m", "test: persist stale base task"], { cwd: root });
+ 
+     const branch = `task/${taskId}/resume-snapshot`;
+-    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+-    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
++    const taskWorktree = path.join(root, ".agentplane", "worktrees", "resume-snapshot");
++    await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree], { cwd: root });
++    const readmePath = path.join(taskWorktree, ".agentplane", "tasks", taskId, "README.md");
+     const branchReadme = await readFile(readmePath, "utf8");
+     await writeFile(
+       readmePath,
+       branchReadme.replace(/status:\s*["']?TODO["']?/u, 'status: "DONE"'),
+       "utf8",
+     );
+-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
++    const prDir = path.join(taskWorktree, ".agentplane", "tasks", taskId, "pr");
+     await mkdir(prDir, { recursive: true });
+     await writeFile(
+       path.join(prDir, "meta.json"),
+@@ -405,15 +492,17 @@ describe("runCli task handoff and recovery", () => {
+       })}\n`,
+       "utf8",
+     );
+-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
++    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: taskWorktree });
+     await execFileAsync("git", ["commit", "-m", "test: add task branch resume metadata"], {
+-      cwd: root,
++      cwd: taskWorktree,
+     });
+-    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+ 
+     const io = captureStdIO();
+     try {
+-      expect(await runCli(["task", "resume-context", taskId, "--json", "--root", root])).toBe(0);
++      expect(
++        await runCli(["task", "resume-context", taskId, "--json", "--root", root]),
++        io.stderr,
++      ).toBe(0);
+       const parsed = JSON.parse(io.stdout) as {
+         task_status: string;
+         base_branch: string | null;
+diff --git a/packages/agentplane/src/commands/branch/work-start.materialize.test.ts b/packages/agentplane/src/commands/branch/work-start.materialize.test.ts
+new file mode 100644
+index 000000000..d61addc8b
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/work-start.materialize.test.ts
+@@ -0,0 +1,172 @@
++import {
++  lstat,
++  mkdtemp,
++  mkdir,
++  readFile,
++  readlink,
++  rm,
++  symlink,
++  writeFile,
++} from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { afterEach, describe, expect, it } from "vitest";
++
++import {
++  isReusableWorkspaceInstallLayout,
++  materializeRepoLocalInstallLayoutForWorktree,
++} from "./work-start.materialize.js";
++
++const tempRoots: string[] = [];
++
++async function temporaryRepo(): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-install-layout-"));
++  tempRoots.push(root);
++  await mkdir(path.join(root, ".agentplane", "worktrees"), { recursive: true });
++  return root;
++}
++
++async function writeRootManifest(root: string): Promise<void> {
++  await writeFile(
++    path.join(root, "package.json"),
++    JSON.stringify({
++      name: "fixture",
++      private: true,
++      devDependencies: { eslint: "^10.5.0" },
++    }),
++    "utf8",
++  );
++}
++
++afterEach(async () => {
++  while (tempRoots.length > 0) {
++    const root = tempRoots.pop();
++    if (root) await rm(root, { recursive: true, force: true });
++  }
++});
++
++describe("task-worktree install layout materialization", () => {
++  it("rejects unreadable manifests, missing dependencies, and dependency roots without manifests", async () => {
++    const repoRoot = await temporaryRepo();
++    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++
++    await writeRootManifest(repoRoot);
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++
++    await mkdir(path.join(repoRoot, "node_modules", "eslint"), { recursive: true });
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++  });
++
++  it("rejects a dangling declared dependency target", async () => {
++    const repoRoot = await temporaryRepo();
++    await writeRootManifest(repoRoot);
++    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
++    await symlink(
++      path.join(repoRoot, ".agentplane", "worktrees", "removed", "node_modules", "eslint"),
++      path.join(repoRoot, "node_modules", "eslint"),
++      "dir",
++    );
++
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++  });
++
++  it("rejects a declared dependency owned by another task worktree", async () => {
++    const repoRoot = await temporaryRepo();
++    await writeRootManifest(repoRoot);
++    const foreignDependency = path.join(
++      repoRoot,
++      ".agentplane",
++      "worktrees",
++      "foreign",
++      "node_modules",
++      "eslint",
++    );
++    await mkdir(foreignDependency, { recursive: true });
++    await writeFile(path.join(foreignDependency, "package.json"), '{"name":"eslint"}\n', "utf8");
++    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
++    await symlink(foreignDependency, path.join(repoRoot, "node_modules", "eslint"), "dir");
++
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++  });
++
++  it("rejects workspace and dependency symlinks owned outside the repository", async () => {
++    const repoRoot = await temporaryRepo();
++    const foreignRoot = await temporaryRepo();
++    await writeRootManifest(repoRoot);
++    await mkdir(path.join(foreignRoot, "node_modules", "eslint"), { recursive: true });
++    await writeFile(
++      path.join(foreignRoot, "node_modules", "eslint", "package.json"),
++      '{"name":"eslint"}\n',
++      "utf8",
++    );
++    await symlink(
++      path.join(foreignRoot, "node_modules"),
++      path.join(repoRoot, "node_modules"),
++      "dir",
++    );
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++
++    await rm(path.join(repoRoot, "node_modules"), { force: true });
++    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
++    await symlink(
++      path.join(foreignRoot, "node_modules", "eslint"),
++      path.join(repoRoot, "node_modules", "eslint"),
++      "dir",
++    );
++    await expect(
++      isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
++    ).resolves.toBe(false);
++  });
++
++  it("preserves healthy workspace, website, recipes, and package-local reuse", async () => {
++    const repoRoot = await temporaryRepo();
++    const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "current");
++    await writeRootManifest(repoRoot);
++    await mkdir(path.join(repoRoot, "node_modules", "eslint"), { recursive: true });
++    await writeFile(
++      path.join(repoRoot, "node_modules", "eslint", "package.json"),
++      '{"name":"eslint"}\n',
++      "utf8",
++    );
++    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
++    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
++    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
++    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
++    await writeFile(
++      path.join(repoRoot, "packages", "core", "node_modules", "marker.txt"),
++      "healthy\n",
++      "utf8",
++    );
++    await mkdir(worktreePath, { recursive: true });
++
++    await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
++
++    const workspaceNodeModules = await lstat(path.join(worktreePath, "node_modules"));
++    const websiteNodeModules = await lstat(path.join(worktreePath, "website", "node_modules"));
++    const recipes = await lstat(path.join(worktreePath, "agentplane-recipes"));
++
++    expect(workspaceNodeModules.isSymbolicLink()).toBe(true);
++    expect(await readlink(path.join(worktreePath, "node_modules"))).toBe(
++      path.join(repoRoot, "node_modules"),
++    );
++    expect(websiteNodeModules.isSymbolicLink()).toBe(true);
++    expect(recipes.isSymbolicLink()).toBe(true);
++    await expect(
++      readFile(path.join(worktreePath, "packages", "core", "node_modules", "marker.txt"), "utf8"),
++    ).resolves.toBe("healthy\n");
++  });
++});
+diff --git a/packages/agentplane/src/commands/branch/work-start.materialize.ts b/packages/agentplane/src/commands/branch/work-start.materialize.ts
+index 1a35964b8..78c8afa63 100644
+--- a/packages/agentplane/src/commands/branch/work-start.materialize.ts
++++ b/packages/agentplane/src/commands/branch/work-start.materialize.ts
+@@ -1,4 +1,15 @@
+-import { copyFile, cp, lstat, mkdir, readdir, readlink, rm, symlink } from "node:fs/promises";
++import {
++  copyFile,
++  cp,
++  lstat,
++  mkdir,
++  readdir,
++  readFile,
++  readlink,
++  realpath,
++  rm,
++  symlink,
++} from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { LocalBackend } from "../../backends/task-backend.js";
+@@ -11,6 +22,52 @@ function isPresentString(value: string | null): value is string {
+   return value !== null;
+ }
+ 
++function declaredDirectDependencies(manifest: unknown): string[] {
++  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) return [];
++  const record = manifest as Record<string, unknown>;
++  const names = ["dependencies", "devDependencies"].flatMap((field) => {
++    const dependencies = record[field];
++    return dependencies && typeof dependencies === "object" && !Array.isArray(dependencies)
++      ? Object.keys(dependencies as Record<string, unknown>)
++      : [];
++  });
++  return [...new Set(names)].toSorted();
++}
++
++export async function isReusableWorkspaceInstallLayout(opts: {
++  repoRoot: string;
++  sourceRoot: string;
++}): Promise<boolean> {
++  const sourcePath = path.join(opts.sourceRoot, "node_modules");
++  const manifest = await readFile(path.join(opts.sourceRoot, "package.json"), "utf8")
++    .then((text) => JSON.parse(text) as unknown)
++    .catch(() => null);
++  if (manifest === null) return false;
++
++  const resolvedRepoRoot = await realpath(opts.repoRoot).catch(() => path.resolve(opts.repoRoot));
++  const resolvedSource = await realpath(sourcePath).catch(() => null);
++  if (!resolvedSource || !isPathWithin(resolvedRepoRoot, resolvedSource)) return false;
++  const taskWorktreesRoot = path.join(opts.repoRoot, ".agentplane", "worktrees");
++  const resolvedTaskWorktreesRoot = await realpath(taskWorktreesRoot).catch(() =>
++    path.resolve(taskWorktreesRoot),
++  );
++  if (isPathWithin(resolvedTaskWorktreesRoot, resolvedSource)) return false;
++
++  for (const dependency of declaredDirectDependencies(manifest)) {
++    const dependencyRoot = path.join(sourcePath, ...dependency.split("/"));
++    const resolvedDependency = await realpath(dependencyRoot).catch(() => null);
++    if (
++      !resolvedDependency ||
++      !isPathWithin(resolvedRepoRoot, resolvedDependency) ||
++      isPathWithin(resolvedTaskWorktreesRoot, resolvedDependency) ||
++      !(await fileExists(path.join(dependencyRoot, "package.json")))
++    ) {
++      return false;
++    }
++  }
++  return true;
++}
++
+ export async function materializeLocalBackendReadmesForWorktree(opts: {
+   backend: CommandContext["taskBackend"];
+   repoRoot: string;
+@@ -101,6 +158,7 @@ export async function materializeRepoLocalDistForWorktree(opts: {
+ }
+ 
+ async function linkDirectoryIntoWorktree(opts: {
++  repoRoot: string;
+   sourceRoots: string[];
+   worktreePath: string;
+   relativePath: string;
+@@ -108,7 +166,10 @@ async function linkDirectoryIntoWorktree(opts: {
+   let sourcePath = "";
+   for (const sourceRoot of opts.sourceRoots) {
+     const candidate = path.join(sourceRoot, opts.relativePath);
+-    if (await fileExists(candidate)) {
++    const reusable =
++      opts.relativePath !== "node_modules" ||
++      (await isReusableWorkspaceInstallLayout({ repoRoot: opts.repoRoot, sourceRoot }));
++    if ((await fileExists(candidate)) && reusable) {
+       sourcePath = candidate;
+       break;
+     }
+@@ -204,6 +265,7 @@ export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
+   const linkTargets = ["node_modules", path.join("website", "node_modules"), "agentplane-recipes"];
+   for (const relativePath of linkTargets) {
+     await linkDirectoryIntoWorktree({
++      repoRoot: opts.repoRoot,
+       sourceRoots,
+       worktreePath: opts.worktreePath,
+       relativePath,
+diff --git a/packages/agentplane/src/commands/pr/branch-publication.test.ts b/packages/agentplane/src/commands/pr/branch-publication.test.ts
+index 5eccc376a..68c5bc5fd 100644
+--- a/packages/agentplane/src/commands/pr/branch-publication.test.ts
++++ b/packages/agentplane/src/commands/pr/branch-publication.test.ts
+@@ -7,6 +7,7 @@ import {
+   configurePushableOrigin,
+   execFile,
+   installFakeGhPrApi,
++  mkdir,
+   mkGitRepoRootWithBranch,
+   mkdtemp,
+   os,
+@@ -39,6 +40,7 @@ async function installGithubPushTransport(opts: {
+   remotePath: string;
+   branch: string;
+   advertisedPushUrl?: string;
++  advertisedRemoteHead?: string | null;
+   raceHead?: string | null;
+   sourceRaceHead?: string | null;
+ }): Promise<{ fakeGitBin: string; pushLogPath: string }> {
+@@ -62,6 +64,7 @@ async function installGithubPushTransport(opts: {
+       `const remoteRef = ${JSON.stringify(`refs/heads/${opts.branch}`)};`,
+       `const advertisedFetchUrl = ${JSON.stringify(MATCHING_GITHUB_PUSH_URL)};`,
+       `const advertisedPushUrl = ${JSON.stringify(advertisedPushUrl)};`,
++      `const advertisedRemoteHead = ${JSON.stringify(opts.advertisedRemoteHead ?? null)};`,
+       `const raceHead = ${JSON.stringify(opts.raceHead ?? null)};`,
+       `const sourceRaceHead = ${JSON.stringify(opts.sourceRaceHead ?? null)};`,
+       `const pushLogPath = ${JSON.stringify(pushLogPath)};`,
+@@ -76,6 +79,10 @@ async function installGithubPushTransport(opts: {
+       "    process.exit(0);",
+       "  }",
+       "}",
++      "if (advertisedRemoteHead && args[0] === 'ls-remote' && args.includes(remoteRef)) {",
++      "  console.log(`${advertisedRemoteHead}\\t${remoteRef}`);",
++      "  process.exit(0);",
++      "}",
+       "if (args[0] === 'push') fs.appendFileSync(pushLogPath, `${JSON.stringify(args)}\\n`);",
+       "if (raceHead && args[0] === 'push' && args.some((arg) => arg.startsWith('--force-with-lease='))) {",
+       "  const update = spawnSync(realGit, [`--git-dir=${remotePath}`, 'update-ref', remoteRef, raceHead], { stdio: 'inherit', env: process.env });",
+@@ -99,7 +106,10 @@ async function installGithubPushTransport(opts: {
+   return { fakeGitBin, pushLogPath };
+ }
+ 
+-async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
++async function setupRewrittenOpenPrBranch(
++  scenarioName: string,
++  options: { changedPath?: string } = {},
++): Promise<{
+   branch: string;
+   fakeGhBin: string;
+   fakeGitBin: string;
+@@ -127,6 +137,14 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
+     cwd: root,
+     env: cleanGitEnv(),
+   });
++  if (options.changedPath) {
++    await mkdir(path.dirname(path.join(root, options.changedPath)), { recursive: true });
++    await writeFile(path.join(root, options.changedPath), "remote task evidence\n", "utf8");
++    await execFileAsync("git", ["add", "--", options.changedPath], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++  }
+   await execFileAsync("git", ["commit", "--allow-empty", "-m", "feat original task head"], {
+     cwd: root,
+     env: cleanGitEnv(),
+@@ -145,6 +163,13 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
+     ["fetch", remotePath, `+refs/heads/${branch}:refs/remotes/origin/${branch}`],
+     { cwd: root, env: cleanGitEnv() },
+   );
++  if (options.changedPath) {
++    await writeFile(path.join(root, options.changedPath), "local task evidence\n", "utf8");
++    await execFileAsync("git", ["add", "--", options.changedPath], {
++      cwd: root,
++      env: cleanGitEnv(),
++    });
++  }
+   await execFileAsync(
+     "git",
+     ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+@@ -481,6 +506,304 @@ describe("PR task branch publication", { timeout: TEST_TIMEOUT_MS }, () => {
+     );
+   });
+ 
++  it("publishes an orphan branch when divergence is confined to the current Task artifacts", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-task-artifacts", {
++      changedPath: ".agentplane/tasks/T-LEASE/README.md",
++    });
++    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-task-artifacts-response",
++      branch: fixture.branch,
++      existingResponse: [],
++      createResponse: {},
++    });
++    const originalPath = process.env.PATH;
++    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).resolves.toBe(true);
++    } finally {
++      process.env.PATH = originalPath;
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      fixture.localHead,
++    );
++    const pushLogText = await readFile(fixture.pushLogPath, "utf8");
++    expect(pushLogText).toContain(
++      `--force-with-lease=refs/heads/${fixture.branch}:${fixture.oldHead}`,
++    );
++    expect(pushLogText).not.toContain('"--force"');
++  });
++
++  it("refuses orphan branch replacement when source files diverge", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-source-divergence", {
++      changedPath: "src/index.ts",
++    });
++    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-source-divergence-response",
++      branch: fixture.branch,
++      existingResponse: [],
++      createResponse: {},
++    });
++    const originalPath = process.env.PATH;
++    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).rejects.toThrow();
++    } finally {
++      process.env.PATH = originalPath;
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      fixture.oldHead,
++    );
++    const pushLogText = await readFile(fixture.pushLogPath, "utf8");
++    expect(pushLogText).not.toContain("--force-with-lease=");
++  });
++
++  it("refuses orphan branch replacement when provider evidence is unavailable", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-provider-unavailable", {
++      changedPath: ".agentplane/tasks/T-LEASE/README.md",
++    });
++    const { fakeBin: unavailableGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-provider-unavailable-response",
++      branch: fixture.branch,
++      existingResponse: [],
++      createResponse: {},
++      rejectEnvKey: "AGENTPLANE_TEST_PROVIDER_UNAVAILABLE",
++      rejectEnvValue: "1",
++    });
++    const originalPath = process.env.PATH;
++    const originalProviderState = process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE;
++    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${unavailableGhBin}${path.delimiter}${originalPath ?? ""}`;
++    process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE = "1";
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).rejects.toThrow();
++    } finally {
++      process.env.PATH = originalPath;
++      if (originalProviderState === undefined) {
++        delete process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE;
++      } else {
++        process.env.AGENTPLANE_TEST_PROVIDER_UNAVAILABLE = originalProviderState;
++      }
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      fixture.oldHead,
++    );
++  });
++
++  it("refuses orphan branch replacement when provider evidence is ambiguous", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-provider-ambiguous", {
++      changedPath: ".agentplane/tasks/T-LEASE/README.md",
++    });
++    const providerRecord = (number: number) => ({
++      number,
++      html_url: `https://github.com/example/repo/pull/${number}`,
++      state: "open",
++      merged_at: null,
++      merge_commit_sha: null,
++      head: { ref: fixture.branch, sha: fixture.oldHead },
++      base: { ref: "main" },
++    });
++    const { fakeBin: ambiguousGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-provider-ambiguous-response",
++      branch: fixture.branch,
++      existingResponse: [providerRecord(321), providerRecord(322)],
++      createResponse: {},
++    });
++    const originalPath = process.env.PATH;
++    process.env.PATH = `${fixture.fakeGitBin}${path.delimiter}${ambiguousGhBin}${path.delimiter}${originalPath ?? ""}`;
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).rejects.toThrow();
++    } finally {
++      process.env.PATH = originalPath;
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      fixture.oldHead,
++    );
++  });
++
++  it("refuses orphan branch replacement when fetch and push target different repositories", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-mismatched-repository", {
++      changedPath: ".agentplane/tasks/T-LEASE/README.md",
++    });
++    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-mismatched-repository-response",
++      branch: fixture.branch,
++      existingResponse: [],
++      createResponse: {},
++    });
++    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
++      root: fixture.root,
++      remotePath: fixture.remotePath,
++      branch: fixture.branch,
++      advertisedPushUrl: "git@github.com:other/repo.git",
++    });
++    const originalPath = process.env.PATH;
++    process.env.PATH = `${fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).rejects.toThrow();
++    } finally {
++      process.env.PATH = originalPath;
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      fixture.oldHead,
++    );
++    const pushLogText = await readFile(pushLogPath, "utf8");
++    expect(pushLogText).not.toContain("--force-with-lease=");
++  });
++
++  it("refuses orphan branch replacement when the observed remote object is unavailable", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-missing-object", {
++      changedPath: ".agentplane/tasks/T-LEASE/README.md",
++    });
++    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-missing-object-response",
++      branch: fixture.branch,
++      existingResponse: [],
++      createResponse: {},
++    });
++    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
++      root: fixture.root,
++      remotePath: fixture.remotePath,
++      branch: fixture.branch,
++      advertisedRemoteHead: "f".repeat(40),
++    });
++    const originalPath = process.env.PATH;
++    process.env.PATH = `${fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).rejects.toThrow();
++    } finally {
++      process.env.PATH = originalPath;
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      fixture.oldHead,
++    );
++    const pushLogText = await readFile(pushLogPath, "utf8");
++    expect(pushLogText).not.toContain("--force-with-lease=");
++  });
++
++  it("fails closed when an orphan branch moves after observation", async () => {
++    const fixture = await setupRewrittenOpenPrBranch("orphan-force-lease-race", {
++      changedPath: ".agentplane/tasks/T-LEASE/README.md",
++    });
++    const execFileAsync = promisify(execFile);
++    await execFileAsync("git", ["checkout", "-b", "orphan-race-head", fixture.oldHead], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["commit", "--allow-empty", "-m", "feat concurrent orphan head"], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    const { stdout: raceHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    const raceHead = raceHeadStdout.trim();
++    await execFileAsync("git", ["push", "origin", "HEAD:refs/heads/orphan-race-seed"], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    await execFileAsync("git", ["checkout", fixture.branch], {
++      cwd: fixture.root,
++      env: cleanGitEnv(),
++    });
++    const { fakeBin: missingGhBin } = await installFakeGhPrApi({
++      scenarioName: "orphan-force-lease-race-response",
++      branch: fixture.branch,
++      existingResponse: [],
++      createResponse: {},
++    });
++    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
++      root: fixture.root,
++      remotePath: fixture.remotePath,
++      branch: fixture.branch,
++      raceHead,
++    });
++    const originalPath = process.env.PATH;
++    process.env.PATH = `${fakeGitBin}${path.delimiter}${missingGhBin}${path.delimiter}${originalPath ?? ""}`;
++    try {
++      await expect(
++        pushTaskBranchUpstreamIfConfigured({
++          gitRoot: fixture.root,
++          branch: fixture.branch,
++          baseBranch: "main",
++          taskId: "T-LEASE",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++        }),
++      ).rejects.toThrow();
++    } finally {
++      process.env.PATH = originalPath;
++    }
++
++    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
++      raceHead,
++    );
++    const pushLogText = await readFile(pushLogPath, "utf8");
++    expect(pushLogText).toContain(
++      `--force-with-lease=refs/heads/${fixture.branch}:${fixture.oldHead}`,
++    );
++    expect(pushLogText).not.toContain('"--force"');
++  });
++
+   it("fails closed when the remote branch moves after observation", async () => {
+     const fixture = await setupRewrittenOpenPrBranch("force-lease-race");
+     const execFileAsync = promisify(execFile);
+diff --git a/packages/agentplane/src/commands/pr/branch-publication.ts b/packages/agentplane/src/commands/pr/branch-publication.ts
+index 45d6db1c2..9f9a46c26 100644
+--- a/packages/agentplane/src/commands/pr/branch-publication.ts
++++ b/packages/agentplane/src/commands/pr/branch-publication.ts
+@@ -2,6 +2,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
+ import { gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
+ 
+ import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
++import { isTaskLocalOnlyAdvance } from "../shared/task-local-freshness.js";
+ import { observeExistingChangeRequestByBranch } from "./internal/change-request-provider.js";
+ import { parseGitRemoteUrl } from "./internal/git-host-identity.js";
+ import { ghEnv } from "./internal/gh-api.js";
+@@ -219,11 +220,105 @@ async function pushRebasedBranchWithObservedLease(opts: {
+   return true;
+ }
+ 
++async function pushOrphanTaskArtifactBranchWithObservedLease(opts: {
++  gitRoot: string;
++  branch: string;
++  baseBranch: string | null;
++  prNumber: number | null;
++  taskId: string | null;
++  workflowDir: string | null;
++  tasksPath: string | null;
++  upstream: string;
++  remote: string;
++}): Promise<boolean> {
++  const baseBranch = opts.baseBranch?.trim() ?? "";
++  const taskId = opts.taskId?.trim() ?? "";
++  const workflowDir = opts.workflowDir?.trim() ?? "";
++  if (
++    !baseBranch ||
++    !taskId ||
++    !workflowDir ||
++    opts.prNumber !== null ||
++    opts.remote !== "origin" ||
++    opts.upstream !== `origin/${opts.branch}`
++  ) {
++    return false;
++  }
++
++  try {
++    if (
++      !(await remoteTargetsShareRepository({
++        gitRoot: opts.gitRoot,
++        remote: opts.remote,
++      }))
++    ) {
++      return false;
++    }
++
++    const observation = await observeExistingChangeRequestByBranch({
++      gitRoot: opts.gitRoot,
++      branch: opts.branch,
++      baseBranch,
++      requireUnique: true,
++    });
++    if (observation.state !== "not_found") return false;
++
++    const { localHead, remoteHead } = await resolvePublicationHeads({
++      gitRoot: opts.gitRoot,
++      branch: opts.branch,
++      remote: opts.remote,
++    });
++    if (
++      !localHead ||
++      !remoteHead ||
++      localHead === remoteHead ||
++      !GIT_OBJECT_ID_PATTERN.test(localHead) ||
++      !GIT_OBJECT_ID_PATTERN.test(remoteHead)
++    ) {
++      return false;
++    }
++    if (
++      !(await isTaskLocalOnlyAdvance({
++        gitRoot: opts.gitRoot,
++        workflowDir,
++        taskId,
++        tasksPath: opts.tasksPath ?? undefined,
++        fromRef: remoteHead,
++        toRef: localHead,
++      }))
++    ) {
++      return false;
++    }
++
++    const remoteRef = `refs/heads/${opts.branch}`;
++    await execFileAsync(
++      "git",
++      [
++        "push",
++        "--no-verify",
++        `--force-with-lease=${remoteRef}:${remoteHead}`,
++        opts.remote,
++        `${localHead}:${remoteRef}`,
++      ],
++      {
++        cwd: opts.gitRoot,
++        env: ghEnv(),
++      },
++    );
++    return true;
++  } catch {
++    return false;
++  }
++}
++
+ export async function pushTaskBranchUpstreamIfConfigured(opts: {
+   gitRoot: string;
+   branch: string;
+   baseBranch?: string | null;
+   prNumber?: number | null;
++  taskId?: string | null;
++  workflowDir?: string | null;
++  tasksPath?: string | null;
+ }): Promise<boolean> {
+   const currentBranch = await gitCurrentBranch(opts.gitRoot).catch(() => "");
+   if (currentBranch.trim() !== opts.branch.trim()) return false;
+@@ -281,7 +376,20 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
+       upstream: trimmedUpstream,
+       remote,
+     });
+-    if (!publishedRebasedBranch) throw err;
++    const publishedOrphanTaskArtifactBranch = publishedRebasedBranch
++      ? false
++      : await pushOrphanTaskArtifactBranchWithObservedLease({
++          gitRoot: opts.gitRoot,
++          branch: opts.branch,
++          baseBranch: opts.baseBranch ?? null,
++          prNumber: opts.prNumber ?? null,
++          taskId: opts.taskId ?? null,
++          workflowDir: opts.workflowDir ?? null,
++          tasksPath: opts.tasksPath ?? null,
++          upstream: trimmedUpstream,
++          remote,
++        });
++    if (!publishedRebasedBranch && !publishedOrphanTaskArtifactBranch) throw err;
+   }
+   await gitRefreshBranchTrackingRef(opts.gitRoot, opts.branch);
+   return true;
+diff --git a/packages/agentplane/src/commands/pr/flow-status.ts b/packages/agentplane/src/commands/pr/flow-status.ts
+index fcb87020c..a765b8f5e 100644
+--- a/packages/agentplane/src/commands/pr/flow-status.ts
++++ b/packages/agentplane/src/commands/pr/flow-status.ts
+@@ -20,7 +20,7 @@ import {
+   preMergeClosureBasisIsAncestor,
+   taskIsClosedByPreMergeClosure,
+ } from "../task/hosted-close.command.js";
+-import { readTaskHandoffLatest, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
++import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
+ import {
+   readIntegrationQueue,
+   type IntegrationQueueEntry,
+@@ -236,14 +236,9 @@ async function resolveHandoffStatus(opts: {
+   gitRoot: string;
+   workflowDir: string;
+   taskId: string;
++  baseBranch: string;
+ }): Promise<HandoffStatus> {
+-  const handoff = await readTaskHandoffLatest(
+-    resolveTaskHandoffPaths({
+-      git_root: opts.gitRoot,
+-      workflow_dir: opts.workflowDir,
+-      task_id: opts.taskId,
+-    }),
+-  );
++  const handoff = await readTaskHandoffForTask({ ...opts, workflowMode: "branch_pr" });
+   if (!handoff) return { present: false };
+   const providerBaseSha = trimmed(handoff.route?.provider_base_sha);
+   const routeProviderBaseShaState =
+@@ -531,6 +526,7 @@ export async function resolvePrFlowStatus(opts: {
+       gitRoot: resolved.gitRoot,
+       workflowDir: config.paths.workflow_dir,
+       taskId: task.id,
++      baseBranch,
+     }),
+   ]);
+   const report: PrFlowStatusReport = {
+diff --git a/packages/agentplane/src/commands/pr/open.ts b/packages/agentplane/src/commands/pr/open.ts
+index 248e49d6c..413ca2d61 100644
+--- a/packages/agentplane/src/commands/pr/open.ts
++++ b/packages/agentplane/src/commands/pr/open.ts
+@@ -109,6 +109,9 @@ export async function cmdPrOpen(opts: {
+           branch: initialSync.meta.branch,
+           baseBranch: initialSync.meta.base ?? null,
+           prNumber: initialSync.meta.pr_number ?? null,
++          taskId: opts.taskId,
++          workflowDir: commandCtx.config.paths.workflow_dir,
++          tasksPath: commandCtx.config.paths.tasks_path,
+         });
+       } catch (err) {
+         const reason = `task branch push failed: ${summarizePrOpenFailure(err)}`;
+diff --git a/packages/agentplane/src/commands/shared/task-handoff-reader.test.ts b/packages/agentplane/src/commands/shared/task-handoff-reader.test.ts
+new file mode 100644
+index 000000000..c52f259fd
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-handoff-reader.test.ts
+@@ -0,0 +1,163 @@
++import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import type * as CoreGit from "@agentplaneorg/core/git";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++
++import { readTaskHandoffForTask } from "./task-handoff-reader.js";
++import { buildTaskHandoffArtifact, type TaskHandoffArtifact } from "./task-handoff.js";
++
++const mocks = vi.hoisted(() => ({ findWorktreeForBranch: vi.fn() }));
++vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
++  ...(await importOriginal<typeof CoreGit>()),
++  findWorktreeForBranch: mocks.findWorktreeForBranch,
++}));
++
++const taskId = "202608272129-READ01";
++let root: string;
++let base: string;
++let worktree: string;
++const artifactPath = (checkout: string): string =>
++  path.join(checkout, ".agentplane/tasks", taskId, "handoff/latest.json");
++const protectedHandoff = (): TaskHandoffArtifact =>
++  buildTaskHandoffArtifact({
++    task_id: taskId,
++    created_at: "2026-08-27T00:00:00.000Z",
++    from_role: "INTEGRATOR",
++    reason: "Protected integration needs provider recovery.",
++    branch: `task/${taskId}/repair`,
++    pr_branch: `task/${taskId}/repair`,
++    base_branch: "main",
++    head_sha: "a".repeat(40),
++    route: { kind: "protected_base_integrate", status: "awaiting_github_merge", pr_number: 123 },
++  });
++
++async function write(checkout: string, value: unknown): Promise<void> {
++  const target = artifactPath(checkout);
++  await mkdir(path.dirname(target), { recursive: true });
++  await writeFile(target, JSON.stringify(value), "utf8");
++}
++
++const read = (mode: "direct" | "branch_pr" = "branch_pr") =>
++  readTaskHandoffForTask({
++    gitRoot: worktree,
++    workflowDir: ".agentplane/tasks",
++    taskId,
++    workflowMode: mode,
++    baseBranch: "main",
++  });
++
++beforeEach(async () => {
++  root = await mkdtemp(path.join(os.tmpdir(), "agentplane-handoff-owner-"));
++  base = path.join(root, "base");
++  worktree = path.join(root, "task");
++  await Promise.all([mkdir(base), mkdir(worktree)]);
++  mocks.findWorktreeForBranch.mockReset().mockResolvedValue(base);
++});
++
++afterEach(async () => {
++  await rm(root, { recursive: true, force: true });
++});
++
++describe("task handoff owner readback", () => {
++  it("recovers the base-owned legacy handoff without copying or changing it", async () => {
++    const handoff = protectedHandoff();
++    delete handoff.route!.provider_base_sha;
++    await write(base, handoff);
++    const before = await readFile(artifactPath(base), "utf8");
++    for (let attempt = 0; attempt < 2; attempt += 1) {
++      const observed = await read();
++      expect(observed).toEqual(handoff);
++      expect(observed?.route).not.toHaveProperty("provider_base_sha");
++    }
++    expect(mocks.findWorktreeForBranch).toHaveBeenCalledWith(worktree, "main");
++    expect(await readFile(artifactPath(base), "utf8")).toBe(before);
++    expect(await readdir(worktree)).toEqual([]);
++  });
++
++  it("keeps local runner hints unless protected integration owns the handoff", async () => {
++    const local = buildTaskHandoffArtifact({
++      task_id: taskId,
++      created_at: "2026-08-26T00:00:00.000Z",
++      from_role: "CODER",
++      reason: "Resume a local runner.",
++    });
++    await write(worktree, local);
++    expect(await read()).toEqual(local);
++    await write(base, protectedHandoff());
++    const observed = await read();
++    expect(observed?.from_role).toBe("INTEGRATOR");
++    expect(await read("direct")).toEqual(local);
++    expect(JSON.parse(await readFile(artifactPath(worktree), "utf8"))).toEqual(local);
++  });
++
++  it("does not adopt an unrelated generic handoff from the base checkout", async () => {
++    await write(
++      base,
++      buildTaskHandoffArtifact({
++        task_id: taskId,
++        created_at: "2026-08-27T00:00:00.000Z",
++        from_role: "CODER",
++        reason: "Local base runner hint.",
++      }),
++    );
++    expect(await read()).toBeNull();
++  });
++
++  it.each(["base", "local"])("rejects another task in the %s artifact", async (location) => {
++    await write(location === "base" ? base : worktree, {
++      ...protectedHandoff(),
++      task_id: "202608272129-OTHER1",
++    });
++    await expect(read()).rejects.toMatchObject({ code: "E_VALIDATION" });
++  });
++
++  it.each(["role", "base"])(
++    "rejects a protected artifact with a mismatched %s owner",
++    async (field) => {
++      const handoff = protectedHandoff();
++      if (field === "role") handoff.from_role = "CODER";
++      else handoff.base_branch = "other";
++      await write(base, handoff);
++      await expect(read()).rejects.toMatchObject({ code: "E_VALIDATION" });
++    },
++  );
++
++  it.each(["role", "branch", "pr-branch", "base", "head", "pr", "provider", "provider-base"])(
++    "rejects ambiguous protected %s identities",
++    async (field) => {
++      const local = protectedHandoff();
++      if (field === "role") local.from_role = "CODER";
++      if (field === "branch") local.branch = `task/${taskId}/other`;
++      if (field === "pr-branch") local.pr_branch = `task/${taskId}/other`;
++      if (field === "base") local.base_branch = "other";
++      if (field === "head") local.head_sha = "b".repeat(40);
++      if (field === "pr") local.route!.pr_number = 456;
++      if (field === "provider") local.route!.provider = "github";
++      if (field === "provider-base") local.route!.provider_base_sha = null;
++      await write(base, protectedHandoff());
++      await write(worktree, local);
++      await expect(read()).rejects.toMatchObject({ code: "E_VALIDATION" });
++    },
++  );
++
++  it("rejects malformed owner evidence instead of falling back to a local hint", async () => {
++    await write(base, { task_id: taskId, route: { kind: "protected_base_integrate" } });
++    await expect(read()).rejects.toThrow();
++  });
++
++  it("accepts matching protected identities without copying over either artifact", async () => {
++    const local = { ...protectedHandoff(), created_at: "2026-08-26T00:00:00.000Z" };
++    await write(worktree, local);
++    await write(base, protectedHandoff());
++    expect(await read()).toEqual(protectedHandoff());
++    expect(JSON.parse(await readFile(artifactPath(worktree), "utf8"))).toEqual(local);
++  });
++
++  it("reads a protected artifact when the caller is already on its owner", async () => {
++    await write(worktree, protectedHandoff());
++    mocks.findWorktreeForBranch.mockResolvedValue(worktree);
++    expect(await read()).toEqual(protectedHandoff());
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/task-handoff-reader.ts b/packages/agentplane/src/commands/shared/task-handoff-reader.ts
+new file mode 100644
+index 000000000..7064bcb8c
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/task-handoff-reader.ts
+@@ -0,0 +1,78 @@
++import { realpath } from "node:fs/promises";
++import path from "node:path";
++
++import { findWorktreeForBranch } from "@agentplaneorg/core/git";
++
++import { CliError } from "../../shared/errors.js";
++import {
++  readTaskHandoffLatest,
++  resolveTaskHandoffPaths,
++  type TaskHandoffArtifact,
++} from "./task-handoff.js";
++
++function invalidHandoff(taskId: string, reason: string): never {
++  throw new CliError({
++    code: "E_VALIDATION",
++    message: `Cannot resolve task handoff for ${taskId}: ${reason}`,
++  });
++}
++
++function protectedIdentity(handoff: TaskHandoffArtifact): string {
++  return JSON.stringify([
++    handoff.task_id,
++    handoff.from_role,
++    handoff.branch,
++    handoff.pr_branch,
++    handoff.base_branch,
++    handoff.head_sha,
++    handoff.route?.pr_number,
++    handoff.route?.provider,
++    Object.hasOwn(handoff.route ?? {}, "provider_base_sha"),
++    handoff.route?.provider_base_sha,
++  ]);
++}
++
++/** Read the protected integration owner's artifact without copying it into the task worktree. */
++export async function readTaskHandoffForTask(opts: {
++  gitRoot: string;
++  workflowDir: string;
++  taskId: string;
++  workflowMode: "direct" | "branch_pr";
++  baseBranch: string | null;
++}): Promise<TaskHandoffArtifact | null> {
++  const read = async (gitRoot: string): Promise<TaskHandoffArtifact | null> => {
++    const handoff = await readTaskHandoffLatest(
++      resolveTaskHandoffPaths({
++        git_root: gitRoot,
++        workflow_dir: opts.workflowDir,
++        task_id: opts.taskId,
++      }),
++    );
++    if (handoff && handoff.task_id !== opts.taskId) {
++      invalidHandoff(opts.taskId, "persisted task identity does not match the requested task");
++    }
++    return handoff;
++  };
++
++  const local = await read(opts.gitRoot);
++  if (opts.workflowMode !== "branch_pr" || !opts.baseBranch) return local;
++
++  const baseRoot = await findWorktreeForBranch(opts.gitRoot, opts.baseBranch);
++  if (!baseRoot) return local;
++  const [currentPath, basePath] = await Promise.all([realpath(opts.gitRoot), realpath(baseRoot)]);
++  if (path.resolve(currentPath) === path.resolve(basePath)) return local;
++
++  const base = await read(baseRoot);
++  if (base?.route?.kind !== "protected_base_integrate") return local;
++  if (base.from_role !== "INTEGRATOR" || base.base_branch !== opts.baseBranch) {
++    invalidHandoff(opts.taskId, "protected handoff does not match its integration owner");
++  }
++  if (
++    local?.route?.kind === "protected_base_integrate" &&
++    protectedIdentity(local) !== protectedIdentity(base)
++  ) {
++    invalidHandoff(opts.taskId, "ambiguous protected handoff identities across checkouts");
++  }
++
++  return base;
++}
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts b/packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts
+new file mode 100644
+index 000000000..e2337c77b
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts
+@@ -0,0 +1,130 @@
++import { mkdtemp, rm } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { runDirectTaskVerification } from "./direct-task-verification.js";
++
++const TASK_ID = "202607290000-RF10A1";
++const roots: string[] = [];
++const runProcess = vi.fn();
++
++function command(root: string) {
++  return {
++    config: { paths: { workflow_dir: ".agentplane/tasks" } },
++    resolvedProject: { gitRoot: root },
++  } as never;
++}
++
++async function root(): Promise<string> {
++  const value = await mkdtemp(path.join(os.tmpdir(), "agentplane-direct-sequence-"));
++  roots.push(value);
++  return value;
++}
++
++afterEach(async () => {
++  vi.clearAllMocks();
++  await Promise.all(roots.splice(0).map(async (entry) => await rm(entry, { recursive: true })));
++});
++
++describe("direct task verification sequences", () => {
++  it("runs a safe sequence in order without a shell", async () => {
++    const cwd = await root();
++    runProcess
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "generated", stderr: "" })
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "fresh", stderr: "" });
++    const check = "bun run docs:readme-header:generate && bun run docs:readme-header:check";
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: [check], task_kind: "code", mutation_scope: "code" },
++      task_id: TASK_ID,
++      cwd,
++      run_process: runProcess,
++    });
++    expect(result).toMatchObject({
++      status: "passed",
++      reason: null,
++      checks: [{ command: check, script: null, exit_code: 0, stdout_tail: "generated\nfresh" }],
++    });
++    expect(runProcess).toHaveBeenNthCalledWith(
++      1,
++      expect.objectContaining({ command: "bun", args: ["run", "docs:readme-header:generate"] }),
++    );
++    expect(runProcess).toHaveBeenNthCalledWith(
++      2,
++      expect.objectContaining({ command: "bun", args: ["run", "docs:readme-header:check"] }),
++    );
++  });
++
++  it("stops on first failure and shares one timeout budget", async () => {
++    const cwd = await root();
++    runProcess
++      .mockResolvedValueOnce({ exitCode: 0, stdout: "first", stderr: "" })
++      .mockResolvedValueOnce({ exitCode: 7, stdout: "", stderr: "second failed" });
++    const nowValues = [1000, 1000, 1250, 1250];
++    const check = "bun run first && bun run second && bun run should-not-run";
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: [], task_kind: "code", mutation_scope: "code" },
++      task_id: TASK_ID,
++      cwd,
++      additional_commands: [{ command: check, timeout_ms: 1000 }],
++      additional_only: true,
++      run_process: runProcess,
++      now: () => nowValues.shift() ?? 1250,
++    });
++    expect(result).toMatchObject({
++      status: "failed",
++      reason: `Declared check failed: ${check}`,
++      checks: [{ command: check, exit_code: 7 }],
++    });
++    expect(runProcess).toHaveBeenCalledTimes(2);
++    expect(runProcess).toHaveBeenNthCalledWith(1, expect.objectContaining({ timeoutMs: 1000 }));
++    expect(runProcess).toHaveBeenNthCalledWith(2, expect.objectContaining({ timeoutMs: 750 }));
++  });
++
++  it("rejects malformed or unsafe sequences before execution", async () => {
++    for (const check of [
++      "bun run first &&",
++      "&& bun run second",
++      "bun run first && && bun run second",
++      "bun run first&&bun run second",
++      "bun run first || bun run second",
++      "bun run first; bun run second",
++      "bun run first & bun run second",
++    ]) {
++      const cwd = await root();
++      const result = await runDirectTaskVerification({
++        command: command(cwd),
++        task: { verify: [check], task_kind: "code", mutation_scope: "code" } as TaskData,
++        task_id: TASK_ID,
++        cwd,
++        run_process: runProcess,
++      });
++      expect(result).toMatchObject({
++        status: "unsupported",
++        reason: `Unsupported declared check: ${check}`,
++      });
++    }
++    expect(runProcess).not.toHaveBeenCalled();
++  });
++
++  it("keeps quoted ampersands inside one structured argument", async () => {
++    const cwd = await root();
++    runProcess.mockResolvedValueOnce({ exitCode: 0, stdout: "1 pass", stderr: "" });
++    const result = await runDirectTaskVerification({
++      command: command(cwd),
++      task: { verify: ["bun test 'a && b'"], task_kind: "code", mutation_scope: "code" },
++      task_id: TASK_ID,
++      cwd,
++      run_process: runProcess,
++    });
++    expect(result.status).toBe("passed");
++    expect(runProcess).toHaveBeenCalledOnce();
++    expect(runProcess).toHaveBeenCalledWith(
++      expect.objectContaining({ command: "bun", args: ["test", "a && b"] }),
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+index 2183012bc..1d79dad37 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.test.ts
+@@ -26,6 +26,7 @@ import {
+   runDirectTaskVerification,
+ } from "./direct-task-verification.js";
+ import { resolveEvidenceOnlyReworkCommit } from "./evidence-only-rework-commit.js";
++import "./direct-task-verification.sequence.cases.js";
+ 
+ const TASK_ID = "202607290000-RF10A1";
+ const roots: string[] = [];
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index 29e130798..9d388645d 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -209,10 +209,47 @@ function tail(value: string): string {
+   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
+ }
+ 
++function mergedOutput(values: readonly string[]): string {
++  return tail(values.filter(Boolean).join("\n"));
++}
++
+ export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+   return parseDeclaredTaskCheck(command);
+ }
+ 
++function parseDirectTaskCheckSequence(command: string): ParsedDirectTaskCheck[] | null {
++  const parsed: ParsedDirectTaskCheck[] = [];
++  let segmentStart = 0;
++  let quote: "'" | '"' | null = null;
++  for (let index = 0; index < command.length; index += 1) {
++    const char = command[index] ?? "";
++    if (quote) {
++      if (char === quote) quote = null;
++      else if (char === "\\" && quote === '"' && index + 1 < command.length) index += 1;
++      continue;
++    }
++    if (char === "'" || char === '"') {
++      quote = char;
++      continue;
++    }
++    if (char === "\\" && index + 1 < command.length) {
++      index += 1;
++      continue;
++    }
++    if (char !== "&" || command[index + 1] !== "&") continue;
++    const before = command[index - 1] ?? "";
++    const after = command[index + 2] ?? "";
++    if (!/\s/u.test(before) || !/\s/u.test(after)) return null;
++    const check = parseDirectTaskCheck(command.slice(segmentStart, index).trim());
++    if (!check) return null;
++    parsed.push(check);
++    index += 1;
++    segmentStart = index + 1;
++  }
++  const finalCheck = parseDirectTaskCheck(command.slice(segmentStart).trim());
++  return finalCheck ? [...parsed, finalCheck] : null;
++}
++
+ function directTaskCheckTimeoutMs(script: string | null): number {
+   return script === null
+     ? DEFAULT_CHECK_TIMEOUT_MS
+@@ -259,9 +296,7 @@ function selectedLocalChecks(task: Pick<TaskData, "execution_contract">): string
+   );
+ }
+ 
+-function isFullRegressionCommand(command: string): boolean {
+-  const parsed = parseDirectTaskCheck(command);
+-  if (!parsed) return false;
++function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
+   if (parsed.script === "ci:local:full") return true;
+   if (
+     ["npm", "pnpm", "yarn"].includes(parsed.executable) &&
+@@ -282,6 +317,12 @@ function isFullRegressionCommand(command: string): boolean {
+   return parsed.executable === "go" && parsed.args[0] === "test" && parsed.args.includes("./...");
+ }
+ 
++function isFullRegressionCommand(command: string): boolean {
++  return (
++    parseDirectTaskCheckSequence(command)?.some((parsed) => isFullRegressionCheck(parsed)) ?? false
++  );
++}
++
+ function checkIdsForCommand(command: string, selectedChecks: readonly string[]): string[] {
+   if (isFullRegressionCommand(command)) return [...selectedChecks];
+   return selectedChecks.filter((checkId) => checkId !== "full_regression");
+@@ -389,6 +430,7 @@ export async function runDirectTaskVerification(opts: {
+   additional_only?: boolean;
+   allow_empty?: boolean;
+   run_process?: typeof runProcess;
++  now?: () => number;
+ }): Promise<DirectTaskVerificationResult> {
+   const checks: DirectTaskCheck[] = [];
+   const commands = opts.additional_only
+@@ -440,8 +482,8 @@ export async function runDirectTaskVerification(opts: {
+           package_scripts: rootPackage?.scripts ?? null,
+         })
+       : declaredCommand;
+-    const parsed = parseDirectTaskCheck(command);
+-    if (!parsed) {
++    const parsedSequence = parseDirectTaskCheckSequence(command);
++    if (!parsedSequence) {
+       const result = {
+         status: "unsupported" as const,
+         checks,
+@@ -449,74 +491,87 @@ export async function runDirectTaskVerification(opts: {
+       };
+       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+     }
+-    const started = Date.now();
++    const now = opts.now ?? Date.now;
++    const started = now();
++    const timeoutBudgetMs =
++      additionalTimeouts.get(declaredCommand) ??
++      Math.max(...parsedSequence.map((parsed) => directTaskCheckTimeoutMs(parsed.script)));
++    const deadline = started + timeoutBudgetMs;
+     const env = verificationChildEnv();
+-    const runtime = localRuntimeEvidence(parsed.executable, env);
++    let runtime = localRuntimeEvidence(parsedSequence[0]!.executable, env);
++    const stdout: string[] = [];
++    const stderr: string[] = [];
++    let exitCode: number | null = 0;
++    let zeroTests = false;
++    let infrastructureFailure = false;
++    const completedCheck = (error?: unknown): DirectTaskCheck => ({
++      runtime,
++      ...(infrastructureFailure || (error && isRuntimeInfrastructureError(error))
++        ? { failure_kind: "infrastructure" as const }
++        : {}),
++      command,
++      ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
++      script: parsedSequence.length === 1 ? (parsedSequence[0]?.script ?? null) : null,
++      check_ids: [
++        ...new Set([
++          ...(additionalCheckIds.get(declaredCommand) ?? []),
++          ...checkIdsForCommand(command, selectedChecks),
++        ]),
++      ],
++      exit_code: error ? null : exitCode,
++      duration_ms: Math.max(0, now() - started),
++      stdout_tail: mergedOutput(stdout),
++      stderr_tail: mergedOutput([
++        ...stderr,
++        ...(error ? [error instanceof Error ? error.message : "unknown process failure"] : []),
++      ]),
++    });
+     try {
+-      const executed = await (opts.run_process ?? runProcess)({
+-        command: parsed.executable,
+-        args: parsed.args,
+-        cwd: opts.cwd,
+-        env,
+-        timeoutMs:
+-          additionalTimeouts.get(declaredCommand) ?? directTaskCheckTimeoutMs(parsed.script),
+-        maxBuffer: 1024 * 1024,
+-        reject: false,
+-      });
+-      checks.push({
+-        runtime,
+-        command,
+-        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+-        script: parsed.script,
+-        check_ids: [
+-          ...new Set([
+-            ...(additionalCheckIds.get(declaredCommand) ?? []),
+-            ...checkIdsForCommand(command, selectedChecks),
+-          ]),
+-        ],
+-        exit_code: Number.isInteger(executed.exitCode) ? executed.exitCode : null,
+-        duration_ms: Math.max(0, Date.now() - started),
+-        stdout_tail: tail(executed.stdout),
+-        stderr_tail: tail(executed.stderr),
+-      });
+-      if (executed.exitCode !== 0) {
+-        const infrastructure =
+-          runtime.status === "unavailable" || isRuntimeInfrastructureError(executed);
+-        if (infrastructure) checks[checks.length - 1]!.failure_kind = "infrastructure";
+-        const result = {
+-          status: infrastructure ? ("unsupported" as const) : ("failed" as const),
+-          checks,
+-          reason: `Declared check failed: ${command}`,
+-        };
+-        return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
++      for (const parsed of parsedSequence) {
++        const remainingTimeoutMs = parsedSequence.length === 1 ? timeoutBudgetMs : deadline - now();
++        if (remainingTimeoutMs <= 0) {
++          throw new Error(
++            `Declared check exhausted its ${String(timeoutBudgetMs)}ms timeout budget.`,
++          );
++        }
++        const segmentRuntime = localRuntimeEvidence(parsed.executable, env);
++        const executed = await (opts.run_process ?? runProcess)({
++          command: parsed.executable,
++          args: parsed.args,
++          cwd: opts.cwd,
++          env,
++          timeoutMs: remainingTimeoutMs,
++          maxBuffer: 1024 * 1024,
++          reject: false,
++        });
++        stdout.push(executed.stdout);
++        stderr.push(executed.stderr);
++        exitCode = Number.isInteger(executed.exitCode) ? executed.exitCode : null;
++        zeroTests = bunTestReportedZeroTests({
++          parsed,
++          stdout: executed.stdout,
++          stderr: executed.stderr,
++        });
++        infrastructureFailure =
++          segmentRuntime.status === "unavailable" || isRuntimeInfrastructureError(executed);
++        if (infrastructureFailure || exitCode !== 0 || zeroTests) {
++          runtime = segmentRuntime;
++          break;
++        }
+       }
+-      if (bunTestReportedZeroTests({ parsed, stdout: executed.stdout, stderr: executed.stderr })) {
++      checks.push(completedCheck());
++      if (exitCode !== 0 || zeroTests) {
+         const result = {
+-          status: "failed" as const,
++          status: infrastructureFailure ? ("unsupported" as const) : ("failed" as const),
+           checks,
+-          reason: `Declared bun test check executed zero tests: ${command}`,
++          reason: zeroTests
++            ? `Declared bun test check executed zero tests: ${command}`
++            : `Declared check failed: ${command}`,
+         };
+         return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+       }
+     } catch (error) {
+-      checks.push({
+-        runtime,
+-        command,
+-        ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+-        script: parsed.script,
+-        check_ids: [
+-          ...new Set([
+-            ...(additionalCheckIds.get(declaredCommand) ?? []),
+-            ...checkIdsForCommand(command, selectedChecks),
+-          ]),
+-        ],
+-        exit_code: null,
+-        duration_ms: Math.max(0, Date.now() - started),
+-        stdout_tail: "",
+-        stderr_tail: error instanceof Error ? tail(error.message) : "unknown process failure",
+-      });
+-      if (isRuntimeInfrastructureError(error))
+-        checks[checks.length - 1]!.failure_kind = "infrastructure";
++      checks.push(completedCheck(error));
+       const result = {
+         status: isRuntimeInfrastructureError(error)
+           ? ("unsupported" as const)
+diff --git a/packages/agentplane/src/commands/task/handoff-show.command.ts b/packages/agentplane/src/commands/task/handoff-show.command.ts
+index 2704dfb1e..f463ec9c7 100644
+--- a/packages/agentplane/src/commands/task/handoff-show.command.ts
++++ b/packages/agentplane/src/commands/task/handoff-show.command.ts
+@@ -1,9 +1,14 @@
++import { resolveBaseBranch } from "@agentplaneorg/core/git";
++import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
++
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type { CliReportEntry } from "../../cli/output.js";
++import { CliError } from "../../shared/errors.js";
+ 
+ import { loadCommandContext } from "../shared/task-backend.js";
+-import { readTaskHandoffLatestRequired, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
++import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
++import { readTaskPrMetaSummary, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
+ 
+ export type TaskHandoffShowParsed = {
+   taskId: string;
+@@ -41,10 +46,34 @@ export const runTaskHandoffShow = async (ctx: CommandCtx, parsed: TaskHandoffSho
+     workflow_dir: commandCtx.config.paths.workflow_dir,
+     task_id: parsed.taskId,
+   });
+-  const handoff = await readTaskHandoffLatestRequired({
+-    task_id: parsed.taskId,
+-    paths,
++  const task = await commandCtx.taskBackend.getTask(parsed.taskId);
++  const workflowMode =
++    task?.execution_contract?.selected_mode ??
++    task?.execution_route?.selected_mode ??
++    commandCtx.config.workflow_mode;
++  const prMeta = await readTaskPrMetaSummary({ ctx: commandCtx, task_id: parsed.taskId });
++  const frozenBase = task ? taskExecutionBaseFromExtensions(task.extensions) : null;
++  const handoff = await readTaskHandoffForTask({
++    gitRoot: commandCtx.resolvedProject.gitRoot,
++    workflowDir: commandCtx.config.paths.workflow_dir,
++    taskId: parsed.taskId,
++    workflowMode,
++    baseBranch:
++      frozenBase?.base_ref ??
++      prMeta.base ??
++      (await resolveBaseBranch({
++        cwd: commandCtx.resolvedProject.gitRoot,
++        rootOverride: commandCtx.resolvedProject.gitRoot,
++        mode: workflowMode,
++      }).catch(() => null)),
+   });
++  if (!handoff) {
++    throw new CliError({
++      exitCode: 4,
++      code: "E_IO",
++      message: `Task handoff artifact not found for ${parsed.taskId} (${paths.latest_path})`,
++    });
++  }
+   if (parsed.json) {
+     emitter.json(handoff);
+     return 0;
+diff --git a/packages/agentplane/src/commands/task/handoff.shared.ts b/packages/agentplane/src/commands/task/handoff.shared.ts
+index 519121df4..4833b4908 100644
+--- a/packages/agentplane/src/commands/task/handoff.shared.ts
++++ b/packages/agentplane/src/commands/task/handoff.shared.ts
+@@ -11,13 +11,12 @@ import {
+   buildRunnerHintCommands,
+   buildTaskHandoffArtifact,
+   currentGitBranch,
+-  readTaskHandoffLatest,
+   readTaskPrMetaSummary,
+   projectDurableTaskHandoffRunnerHint,
+-  resolveTaskHandoffPaths,
+   type TaskHandoffArtifact,
+   type TaskHandoffRunnerHint,
+ } from "../shared/task-handoff.js";
++import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
+ import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
+ import { isProcessAlive } from "../../runner/process-supervision/signals.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -58,24 +57,23 @@ export async function buildTaskResumeContext(opts: {
+   const ctx =
+     opts.ctx ??
+     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+-  const workflowMode = opts.workflow_mode ?? ctx.config.workflow_mode;
++  const requestedMode = opts.workflow_mode ?? ctx.config.workflow_mode;
+   const task =
+     opts.task ??
+     (await loadTaskFromContext({
+       ctx,
+       taskId: opts.task_id,
+-      preferBranchSnapshot: workflowMode === "branch_pr",
++      preferBranchSnapshot: requestedMode === "branch_pr",
+     }));
+-  const handoffPaths = resolveTaskHandoffPaths({
+-    git_root: ctx.resolvedProject.gitRoot,
+-    workflow_dir: ctx.config.paths.workflow_dir,
+-    task_id: opts.task_id,
+-  });
+-  const [branch, latest_handoff, prMeta] = await Promise.all([
++  const workflowMode =
++    opts.workflow_mode ??
++    task.execution_contract?.selected_mode ??
++    task.execution_route?.selected_mode ??
++    ctx.config.workflow_mode;
++  const [branch, prMeta] = await Promise.all([
+     Object.hasOwn(opts, "preobserved_branch")
+       ? Promise.resolve(opts.preobserved_branch ?? null)
+       : currentGitBranch(ctx.resolvedProject.gitRoot),
+-    readTaskHandoffLatest(handoffPaths),
+     readTaskPrMetaSummary({ ctx, task_id: opts.task_id }),
+   ]);
+   // A route refresh can follow a mutation performed through a separate command
+@@ -93,6 +91,13 @@ export async function buildTaskResumeContext(opts: {
+       rootOverride: ctx.resolvedProject.gitRoot,
+       mode: workflowMode,
+     }).catch(() => null));
++  const latest_handoff = await readTaskHandoffForTask({
++    gitRoot: ctx.resolvedProject.gitRoot,
++    workflowDir: ctx.config.paths.workflow_dir,
++    taskId: opts.task_id,
++    workflowMode,
++    baseBranch: base_branch,
++  });
+ 
+   let runner: TaskHandoffRunnerHint;
+   if (opts.include_runner_state === false) {
+diff --git a/scripts/workflow/bootstrap-framework-dev.mjs b/scripts/workflow/bootstrap-framework-dev.mjs
+index e4f74fc69..c38841b74 100644
+--- a/scripts/workflow/bootstrap-framework-dev.mjs
++++ b/scripts/workflow/bootstrap-framework-dev.mjs
+@@ -65,7 +65,23 @@ function defaultExec(repoRoot, cmd, args) {
+ }
+ 
+ function hasWorkspaceNodeModules(repoRoot) {
+-  return pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "node_modules"));
++  const nodeModulesPath = path.join(repoRoot, "node_modules");
++  if (!pathResolvesWithinRepo(repoRoot, nodeModulesPath)) return false;
++  const manifest = readJsonIfPresent(path.join(repoRoot, "package.json"));
++  if (!manifest) return false;
++  const taskWorktreesRoot = path.join(repoRoot, ".agentplane", "worktrees");
++  for (const dependency of declaredDirectDependencies(manifest)) {
++    const dependencyRoot = path.join(nodeModulesPath, ...dependency.split("/"));
++    const resolvedDependency = resolveRealPathIfPresent(dependencyRoot);
++    if (
++      !resolvedDependency ||
++      pathResolvesWithinRepo(taskWorktreesRoot, dependencyRoot) ||
++      !fs.existsSync(path.join(dependencyRoot, "package.json"))
++    ) {
++      return false;
++    }
++  }
++  return true;
+ }
+ 
+ function resolveRealPathIfPresent(targetPath) {
+@@ -76,6 +92,24 @@ function resolveRealPathIfPresent(targetPath) {
+   }
+ }
+ 
++function readJsonIfPresent(targetPath) {
++  try {
++    return JSON.parse(fs.readFileSync(targetPath, "utf8"));
++  } catch {
++    return null;
++  }
++}
++
++function declaredDirectDependencies(manifest) {
++  const names = ["dependencies", "devDependencies"].flatMap((field) => {
++    const dependencies = manifest?.[field];
++    return dependencies && typeof dependencies === "object" && !Array.isArray(dependencies)
++      ? Object.keys(dependencies)
++      : [];
++  });
++  return [...new Set(names)].toSorted();
++}
++
+ function pathResolvesWithinRepo(repoRoot, targetPath) {
+   const normalizedRepoRoot = resolveRealPathIfPresent(repoRoot) ?? path.resolve(repoRoot);
+   const realPath = resolveRealPathIfPresent(targetPath);
+@@ -91,9 +125,11 @@ function removeForeignInstallLayouts(repoRoot) {
+     path.join(repoRoot, "packages", "agentplane", "node_modules"),
+     path.join(repoRoot, "website", "node_modules"),
+   ];
++  const rebuildInstallLayout =
++    fs.existsSync(path.join(repoRoot, "node_modules")) && !hasWorkspaceNodeModules(repoRoot);
+   for (const targetPath of installLayoutPaths) {
+     if (!fs.existsSync(targetPath)) continue;
+-    if (pathResolvesWithinRepo(repoRoot, targetPath)) continue;
++    if (!rebuildInstallLayout && pathResolvesWithinRepo(repoRoot, targetPath)) continue;
+     fs.rmSync(targetPath, { recursive: true, force: true });
+   }
+ }

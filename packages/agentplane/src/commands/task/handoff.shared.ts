@@ -11,13 +11,12 @@ import {
   buildRunnerHintCommands,
   buildTaskHandoffArtifact,
   currentGitBranch,
-  readTaskHandoffLatest,
   readTaskPrMetaSummary,
   projectDurableTaskHandoffRunnerHint,
-  resolveTaskHandoffPaths,
   type TaskHandoffArtifact,
   type TaskHandoffRunnerHint,
 } from "../shared/task-handoff.js";
+import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { CliError } from "../../shared/errors.js";
@@ -58,24 +57,23 @@ export async function buildTaskResumeContext(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const workflowMode = opts.workflow_mode ?? ctx.config.workflow_mode;
+  const requestedMode = opts.workflow_mode ?? ctx.config.workflow_mode;
   const task =
     opts.task ??
     (await loadTaskFromContext({
       ctx,
       taskId: opts.task_id,
-      preferBranchSnapshot: workflowMode === "branch_pr",
+      preferBranchSnapshot: requestedMode === "branch_pr",
     }));
-  const handoffPaths = resolveTaskHandoffPaths({
-    git_root: ctx.resolvedProject.gitRoot,
-    workflow_dir: ctx.config.paths.workflow_dir,
-    task_id: opts.task_id,
-  });
-  const [branch, latest_handoff, prMeta] = await Promise.all([
+  const workflowMode =
+    opts.workflow_mode ??
+    task.execution_contract?.selected_mode ??
+    task.execution_route?.selected_mode ??
+    ctx.config.workflow_mode;
+  const [branch, prMeta] = await Promise.all([
     Object.hasOwn(opts, "preobserved_branch")
       ? Promise.resolve(opts.preobserved_branch ?? null)
       : currentGitBranch(ctx.resolvedProject.gitRoot),
-    readTaskHandoffLatest(handoffPaths),
     readTaskPrMetaSummary({ ctx, task_id: opts.task_id }),
   ]);
   // A route refresh can follow a mutation performed through a separate command
@@ -93,6 +91,13 @@ export async function buildTaskResumeContext(opts: {
       rootOverride: ctx.resolvedProject.gitRoot,
       mode: workflowMode,
     }).catch(() => null));
+  const latest_handoff = await readTaskHandoffForTask({
+    gitRoot: ctx.resolvedProject.gitRoot,
+    workflowDir: ctx.config.paths.workflow_dir,
+    taskId: opts.task_id,
+    workflowMode,
+    baseBranch: base_branch,
+  });
 
   let runner: TaskHandoffRunnerHint;
   if (opts.include_runner_state === false) {

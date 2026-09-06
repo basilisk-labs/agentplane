@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All nine frozen evidence digests match. Supervisor verification targets 61eaeab6223b52e69ecdb4e6800c6a868088902b. Complete local CI passed in 461826 ms; lint, typecheck, routing and the 83-test focused group passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/590d4505b464d3d05f50a84bc3d53e3778ec1a6997886c10abc788c75970ff34.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Reviewed the new parser diff: invocation-local single-pass matching preserves unknown, duplicate, missing and malformed attribute rejection. Negative cases followed by repeated valid parsing cover state isolation. Existing compiled CLI smoke passes after rebuilding the actual bundle; no claim is made about an unproven compiler root cause.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/590d4505b464d3d05f50a84bc3d53e3778ec1a6997886c10abc788c75970ff34.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The docs-contract test consolidation preserves both original scenarios and strengthens exact command assertions without changing the size budget. Current-main comparison retains the four previously reviewed lifecycle boundary ports; imported main commits are ancestry, not newly adopted task implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/590d4505b464d3d05f50a84bc3d53e3778ec1a6997886c10abc788c75970ff34.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The named handoff suite is in cli-core, not the declared agentplane project. Independently ran it for this evaluated tree: all five tests pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/590d4505b464d3d05f50a84bc3d53e3778ec1a6997886c10abc788c75970ff34.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Do not transfer this result to a changed implementation SHA without supported equivalence evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/590d4505b464d3d05f50a84bc3d53e3778ec1a6997886c10abc788c75970ff34.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Final-main verification must explicitly include the cli-core handoff suite.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/590d4505b464d3d05f50a84bc3d53e3778ec1a6997886c10abc788c75970ff34.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

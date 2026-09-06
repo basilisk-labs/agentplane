@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202609031717-PX8PZT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-05T11:24:05.395Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 4 typed finding(s).",
+  "evaluated_sha": "b5463f7ecf31fce789114107af744e2d61359f91",
+  "blueprint_digest": "9835eeedd4f7bff83a4d05406a5b137fe83613e9603455b29739259c6ace420b",
+  "findings": [
+    "The frozen actual diff b6464112c93b2f8f31debfe51b8e90844efc616bdc1d0fd8540b76164f63375c.patch changes runDirectTaskVerification to break a sequence on infrastructureFailure, but its result guard only checks exitCode and zeroTests. If runtime identity is unavailable and the process exits zero, the remaining required segments are skipped and the method returns passed with failure_kind infrastructure.",
+    "Read-only reproduction transpiled the actual runDirectTaskVerification function and used in-memory artifact persistence with an unavailable runtime observation and successful process outcome. Result: status passed, executedSegments 1, requiredSegments 2, failureKind infrastructure. Runtime digest availability is independent of process success (for example executable content unreadable or resolver mismatch).",
+    "The bootstrap root-ownership correction is coherent and covered by both negative cases plus convergence. Current full CI passed, but existing sequence tests do not cover infrastructure observations with zero exit status.",
+    "Residual risk: Current-main reconciliation, hosted integration and full goal qualification remain pending."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/b6464112c93b2f8f31debfe51b8e90844efc616bdc1d0fd8540b76164f63375c.patch"
+  ],
+  "missing_tests": [
+    "Extend existing sequence cases for unavailable runtime evidence with zero process exit. Assert unsupported, infrastructure classification, and no execution of remaining segments. Retain successful complete sequence and repeated invocation coverage."
+  ],
+  "hidden_assumptions": [
+    "The final result guard assumes every infrastructure failure also has a nonzero exit code or zero-test report."
+  ],
+  "residual_risks": [
+    "Fix the existing runDirectTaskVerification final guard to fail closed on infrastructureFailure. Preserve classification, shared timeout, stop-first-failure and structured argv behavior. Add the nearest regression and run focused checks before supervisor verification. Do not add an alternate evidence store or weaken runtime identity."
+  ]
+}

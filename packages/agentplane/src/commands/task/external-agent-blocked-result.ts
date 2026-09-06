@@ -1,6 +1,7 @@
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import { commitRefreshedTaskArtifacts } from "../guard/impl/commit-refresh.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../shared/post-commit-pr-artifacts.js";
@@ -8,6 +9,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import {
   createTaskScopeExtensionRequestState,
   externalBlockerReceipt,
+  requiresImplementationReworkReopen,
   TASK_SCOPE_EXTENSION_REQUEST_KEY,
 } from "../shared/task-scope-extension-request.js";
 
@@ -92,13 +94,16 @@ async function persistScopeExtensionRequest(opts: {
   if (!pending) return;
   const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
   await opts.command.taskBackend.writeTask(
-    {
-      ...task,
-      extensions: {
-        ...(task.extensions ?? {}),
-        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+    projectTaskCentricCompatibilityMutation({
+      current: task,
+      next: {
+        ...task,
+        extensions: {
+          ...(task.extensions ?? {}),
+          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
+        },
       },
-    },
+    }),
     task.revision ? { expectedRevision: task.revision } : undefined,
   );
 }
@@ -252,6 +257,13 @@ export async function recordExternalBlockedResult(opts: {
   semantic: ExternalAgentResultEnvelope["result"];
 }): Promise<void> {
   if (!(await isExternalBlockedResultRecorded(opts))) {
+    const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
+    const reopenDone = requiresImplementationReworkReopen({
+      purpose: opts.exchange.purpose,
+      task_status: task.status,
+      work_item_id: null,
+      work_item_is_required: false,
+    });
     await cmdTaskSetStatus({
       ctx: opts.command,
       cwd: opts.exchange.checkout,
@@ -259,8 +271,8 @@ export async function recordExternalBlockedResult(opts: {
       status: "BLOCKED",
       author: "SUPERVISOR",
       body: blockedResultBody({ exchange: opts.exchange, semantic: opts.semantic }),
-      force: false,
-      yes: false,
+      force: reopenDone,
+      yes: reopenDone,
       commitFromComment: false,
       commitAllow: [],
       commitAutoAllow: false,

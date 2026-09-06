@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch introduces hasWorkspaceNodeModules checks in scripts/workflow/bootstrap-framework-dev.mjs. The root is checked only for containment in repoRoot. The .agentplane/worktrees exclusion is inside the per-dependency loop, so an empty declared dependency set accepts a root symlink into another task worktree. A dependency symlink back into the owning base can similarly conceal ownership of the containing layout.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Read-only reproduction executed the actual hasWorkspaceNodeModules and its helpers in a VM with filesystem observations representing /repo/node_modules -> /repo/.agentplane/worktrees/other/node_modules and a valid empty-dependency package manifest. Expected false; actual true. All frozen evidence hashes matched before evaluation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The nearest bootstrap regression checks a declared dependency owned by another task, not ownership of the node_modules root. isReusableWorkspaceInstallLayout in work-start.materialize.ts already validates root ownership independently, demonstrating the intended existing contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "This is an acceptance defect in the fourth approved boundary contract, not a request to broaden access policy or add a new lifecycle task. Existing passing branch verification does not cover this negative case.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration, current-main reconciliation, and final goal qualification remain incomplete.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609031717-PX8PZT/quality/objects/sha256/af03090e2b1a7b5b0bf72bf5508138444853c0b1e479d73eee29580dfbc4540c.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Extend the existing bootstrap test suite with a node_modules root symlink into a foreign task worktree, including an empty dependency manifest and dependency links back to the owning base. Confirm installation is requested and foreign target content is preserved.",
+    "Retain the valid base-owned layout case and repeat the bootstrap to verify convergence without repeated installation."
+  ],
+  "hidden_assumptions": [
+    "Checking each declared dependency was assumed to prove ownership of the node_modules container itself."
+  ],
+  "recovery_context": "Use the existing PX8PZT bootstrap/install-layout WorkItem owner. Reject a task-worktree-owned node_modules root before iterating dependencies, reuse the existing realpath containment primitive, and extend nearby regressions. Do not modify frozen evidence or introduce task-specific exceptions. After focused checks, let the supervisor rerun mandatory verification and issue a fresh evaluator packet."
+}

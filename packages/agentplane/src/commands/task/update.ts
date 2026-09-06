@@ -1,4 +1,5 @@
 import { assertLegacyMutation } from "../shared/task-mutation.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, emitCommandResult, unknownEntityMessage } from "../../cli/output.js";
@@ -105,7 +106,10 @@ export async function cmdTaskUpdate(opts: {
     }
     next.verify = mergedVerify;
 
-    await ctx.taskBackend.writeTask(next);
+    await ctx.taskBackend.writeTask(
+      projectTaskCentricCompatibilityMutation({ current: task, next }),
+      task.revision === undefined ? undefined : { expectedRevision: task.revision },
+    );
     emitCommandResult(output, {
       kind: "success",
       action: "updated",
