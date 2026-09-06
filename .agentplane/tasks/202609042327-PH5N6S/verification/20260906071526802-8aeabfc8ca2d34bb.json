@@ -1,0 +1,101 @@
+{
+  "details": "Check: task_outcome\nCommand: source review of external-agent-implementation-authority.ts and external-agent-purpose.ts\nResult: fail\nEvidence: https://github.com/basilisk-labs/agentplane/pull/5899#discussion_r3938665689\nScope: interrupted implementation_rework after the supervisor pre-verification metadata commit; reproduce in the existing clean-verification suite before fixing.",
+  "digest": "sha256:8aeabfc8ca2d34bbb9a61d9c6b60e2fe251be9db89ee41082d722bc81cdb82bf",
+  "implementation_sha": "2e9f7df5ebad103bf6ade9d4cffb750da2dd0318",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:64a21cd53d0ab3c60cb1ba0660913acfdfb51c2f1fe978a72c03b899a028965b",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:6554570dfb2d00dd202880ae0a7cbb2e28c9e3cd868070e1e405c4b70b78756b",
+      "digest": "sha256:e7dd34487375477c3e891e0df614bd64cf7fc536afb569f60634ae0c163f3832",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+      "digest": "sha256:59cea23734c98b7e5f555281aa5e80486a3b683ea69f115b14577451a4775200",
+      "primary_task_id": "202609042327-PH5N6S",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609042327-PH5N6S"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+      "digest": "sha256:0ebcedefe3e60d7f9de03f7f7c904e6ef616586aad483334f73332d63ae31ad5",
+      "strategy": "branch_diff",
+      "target_sha": "2e9f7df5ebad103bf6ade9d4cffb750da2dd0318"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:309c38fe724713a42aee0b59442e1480f1f2813c2dd2ac39e6ffa06a676cb6d5",
+    "verify_steps_digest": "sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: review #3938665689 identifies interrupted implementation_rework replay losing the implementation SHA after the pre-verification artifact commit.",
+  "recorded_at": "2026-09-06T07:15:26.802Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: Verification preserves valid execution provenance only for the same identity; negative, repeated and interrupted persistence remains fail-closed. Recovery must still reject missing original exchange evidence, foreign identity, unproved provenance and stale results.\n2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.\n3. Run `bun run ci:local:full`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.",
+  "scope_digest": "sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7",
+  "task_id": "202609042327-PH5N6S",
+  "verification_command": "agentplane verify 202609042327-PH5N6S --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

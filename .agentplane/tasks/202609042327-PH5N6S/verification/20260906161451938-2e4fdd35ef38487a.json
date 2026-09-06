@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042327-PH5N6S Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042327-PH5N6S Verification Contract check critical_paths\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042327-PH5N6S Verification Contract check docs_contract\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042327-PH5N6S Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609042327-PH5N6S Verification Contract check task_outcome",
+  "digest": "sha256:2e4fdd35ef38487a9bfabaf3717726359f8b766b372534461ce286b6045e0fc2",
+  "implementation_sha": "a25edd68b3639f22fe74be7476df9397c588b304",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:97bd50389135f43afcbbbe103a617e3f0166f231fb2ddc03a4c6fd6ae042a903",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e7dc3e3d159aaf161d429b6076fefd4ccb0b0a5c294da3001131e6d46203ec1e",
+      "digest": "sha256:d8e7a5a5df6ad4eb23e6c845eaaf6fdaa62e8ae813f8063f75c8a6d1b7120288",
+      "references": [
+        {
+          "digest": "sha256:89fb478221df57fb7d3ea5daf5b6f8feaaed4fb3efb6957086cff9a023a5515b",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+      "digest": "sha256:59cea23734c98b7e5f555281aa5e80486a3b683ea69f115b14577451a4775200",
+      "primary_task_id": "202609042327-PH5N6S",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609042327-PH5N6S"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d345cdb14c53a98a85ece41ab472433f8e1fb32c",
+      "digest": "sha256:2c4d3ed83ae8beac0e9acfb84f004d49d5ff5691a255641b0b419a45fd9d2c2a",
+      "strategy": "branch_diff",
+      "target_sha": "a25edd68b3639f22fe74be7476df9397c588b304"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:d75932c0e42b75af39d5cc0195f292c1b983737a60f47041285568c48e28ddfd",
+    "verify_steps_digest": "sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-09-06T16:14:51.938Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: Verification preserves valid execution provenance only for the same identity; negative, repeated and interrupted persistence remains fail-closed. Recovery must still reject missing original exchange evidence, foreign identity, unproved provenance and stale results.\n2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.\n3. Run `bun run ci:local:full`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.",
+  "scope_digest": "sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7",
+  "task_id": "202609042327-PH5N6S",
+  "verification_command": "agentplane verify 202609042327-PH5N6S --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -387,14 +387,22 @@ async function recordVerificationResult(opts: {
           id: "verification-record",
           result: opts.state === "ok" ? "pass" : "fail",
         });
+        const previousExecutionBase = taskExecutionBaseFromExtensions(current.extensions);
+        const preserveExecutionSource =
+          previousExecutionBase !== null &&
+          previousExecutionBase.repository_identity !== null &&
+          previousExecutionBase.base_ref === verificationExecutionContext.base_ref &&
+          previousExecutionBase.base_sha === verificationExecutionContext.base_sha &&
+          previousExecutionBase.source !== "legacy";
         const nextExtensions = {
           ...current.extensions,
           task_execution_context: {
             schema_version: 1,
             base_ref: verificationExecutionContext.base_ref,
             base_sha: verificationExecutionContext.base_sha,
-            repository_identity:
-              taskExecutionBaseFromExtensions(current.extensions)?.repository_identity ?? null,
+            repository_identity: previousExecutionBase?.repository_identity ?? null,
+            // Provenance belongs to the frozen identity, not a newly resolved verification base.
+            ...(preserveExecutionSource ? { source: previousExecutionBase.source } : {}),
           },
         };
         if (opts.state !== "ok") {

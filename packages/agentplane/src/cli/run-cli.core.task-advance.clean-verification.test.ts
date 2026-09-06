@@ -1,0 +1,384 @@
+import { execFile } from "node:child_process";
+import { cp, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
+import { describe, expect, it, vi } from "vitest";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import {
+  captureStdIO,
+  installRunCliIntegrationHarness,
+  mkGitRepoRootWithBranch,
+  runCliSilent,
+  writeConfig,
+} from "@agentplane/testkit";
+import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { defaultConfig } from "./core-imports.js";
+import { runCli } from "./run-cli.js";
+import * as verification from "../commands/task/direct-task-verification.js";
+
+installRunCliIntegrationHarness();
+const exec = promisify(execFile);
+
+type Packet = {
+  transition_id: string;
+  state_fingerprint: string;
+  authority: { role: string };
+  exchange: { directory: string; result_path: string; resume_argv: string[] };
+};
+
+async function invoke(root: string, argv: string[]) {
+  const io = captureStdIO();
+  try {
+    const code = await runCli([...argv, "--root", root]);
+    return { code, stdout: io.stdout, stderr: io.stderr };
+  } finally {
+    io.restore();
+  }
+}
+
+async function episode(root: string, taskId: string) {
+  const response = await invoke(root, ["task", "advance", taskId, "--agent-json"]);
+  expect(response.code, response.stderr).toBe(0);
+  const packet = JSON.parse(response.stdout) as Packet;
+  expect(packet.exchange, response.stdout).toBeDefined();
+  const order = JSON.parse(
+    await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
+  ) as AgentWorkOrderV2;
+  return { packet, order };
+}
+
+async function returnResult(
+  root: string,
+  taskId: string,
+  current: Awaited<ReturnType<typeof episode>>,
+  fields: Record<string, unknown> = {},
+) {
+  const { packet, order } = current;
+  await writeFile(
+    packet.exchange.result_path,
+    JSON.stringify({
+      schema_version: 1,
+      kind: "agent_action_result",
+      task_id: taskId,
+      transition_id: packet.transition_id,
+      state_fingerprint: packet.state_fingerprint,
+      role: packet.authority.role,
+      result: {
+        schema_version: 2,
+        kind: "agent_semantic_result",
+        work_order_id: order.work_order_id,
+        status: "completed",
+        summary: "Verify the committed implementation with durable supervisor evidence.",
+        findings: [],
+        uncertainty: [],
+        ...fields,
+      },
+    }),
+  );
+  return invoke(root, packet.exchange.resume_argv.slice(1));
+}
+
+describe("branch implementation clean verification", { timeout: 180_000 }, () => {
+  it.each(["clean", "foreign", "implementation_replay", "rework", "rework_foreign"])(
+    "preserves the implementation and rejects unrelated dirt: %s",
+    async (scenario) => {
+      const foreign = scenario === "foreign";
+      const root = await mkGitRepoRootWithBranch("main");
+      const git = async (...args: string[]) => {
+        const output = await exec("git", args, { cwd: root });
+        return output.stdout.trim();
+      };
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
+      const created = await invoke(root, [
+        "task",
+        "new",
+        "--title",
+        "Clean verification fixture",
+        "--description",
+        "Preserve implementation provenance before clean checks.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "bun run test:critical",
+      ]);
+      expect(created.code, created.stderr).toBe(0);
+      const taskId = created.stdout.trim();
+      await cp(
+        path.join(process.cwd(), "packages/agentplane/assets/policy"),
+        path.join(root, ".agentplane/policy"),
+        { recursive: true },
+      );
+      await writeFile(
+        path.join(root, ".gitignore"),
+        `${await readFile(path.join(root, ".gitignore"), "utf8")}\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n`,
+      );
+      await writeFile(
+        path.join(root, "package.json"),
+        JSON.stringify({
+          scripts: {
+            "test:critical":
+              "node -e \"const c=require('node:child_process'); if(c.execFileSync('git',['status','--porcelain']).toString().trim()) process.exit(1); console.log('1 passed');\"",
+          },
+        }),
+      );
+      await git("add", ".agentplane", "package.json", ".gitignore");
+      await git("commit", "-m", "test: seed clean-check fixture");
+      const planning = await episode(root, taskId);
+      const criterion = {
+        id: "clean",
+        description: "Checks see a clean checkout.",
+        required: true,
+        check_ids: ["check"],
+      };
+      const validation = {
+        schema_version: 1,
+        criteria: [criterion],
+        checks: [
+          {
+            id: "check",
+            kind: "deterministic",
+            required: true,
+            capability: "task.verify",
+            command: "bun run test:critical",
+          },
+        ],
+        evidence_fingerprint: planning.order.planning_context!.repository_snapshot.digest,
+      };
+      const planned = await returnResult(root, taskId, planning, {
+        task_intent: {
+          task_kind: "code",
+          mutation_scope: "code",
+          risk_flags: [],
+          tags: ["code"],
+          execution: {
+            schema_version: 2,
+            preferred_mode: "branch_pr",
+            scope_roots: ["feature.ts"],
+            repository_effects: ["repository_write", "source_code"],
+            external_effects: [],
+            requirements_uncertainty: "bounded",
+            implementation_uncertainty: "bounded",
+            reversibility: "reversible",
+            rationale: ["Only the feature file may change."],
+          },
+        },
+        task_plan_proposal: {
+          schema_version: 1,
+          task_id: taskId,
+          planning_baseline: planning.order.planning_context!.repository_snapshot,
+          work_items: {
+            schema_version: 1,
+            work_items: [
+              {
+                id: "feature",
+                objective: "Implement the feature with clean verification.",
+                depends_on: [],
+                required_inputs: [],
+                expected_outputs: ["feature"],
+                scope_roots: ["feature.ts"],
+                acceptance_criteria: [criterion],
+                validation,
+                context: {
+                  required_sources: [],
+                  optional_sources: [],
+                  symbol_hints: [],
+                  max_bytes: 65_536,
+                },
+                risk: "low",
+                capabilities: ["task.verify"],
+                resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
+                optional: false,
+                priority: 1,
+              },
+            ],
+          },
+          assumptions: [],
+          unresolved_questions: [],
+          top_level_validation: validation,
+        },
+      });
+      expect(planned.code, planned.stderr).toBe(0);
+      const verifySteps = await invoke(root, [
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "Run `bun run test:critical`. Expected: verification sees a clean committed checkout and preserves the implementation identity.",
+      ]);
+      expect(verifySteps.code, verifySteps.stderr).toBe(0);
+      const approval = await invoke(root, ["task", "plan", "approve", taskId, "--by", "USER"]);
+      expect(approval.code, approval.stderr).toBe(0);
+      await git("add", ".agentplane");
+      await git("commit", "-m", "test: persist approved plan");
+      const implementation = await episode(root, taskId);
+      const checkout = implementation.order.state_fingerprint.worktree;
+      const checkoutGit = async (...args: string[]) => {
+        const output = await exec("git", args, { cwd: checkout });
+        return output.stdout.trim();
+      };
+      await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
+      if (foreign) await writeFile(path.join(checkout, "unrelated.txt"), "must survive\n");
+      if (scenario === "implementation_replay") {
+        const interruption = vi
+          .spyOn(verification, "recordDirectTaskVerification")
+          .mockRejectedValueOnce(new Error("interrupted initial verification"));
+        try {
+          const interrupted = await returnResult(root, taskId, implementation);
+          expect(interrupted.code).not.toBe(0);
+          expect(interrupted.stderr).toContain("interrupted initial verification");
+        } finally {
+          interruption.mockRestore();
+        }
+        const ctx = await loadCommandContext({ cwd: checkout, rootOverride: checkout });
+        const interruptedTask = await ctx.taskBackend.getTask(taskId);
+        const implementationSha = interruptedTask?.commit?.hash;
+        expect(implementationSha).toBeTruthy();
+        expect(await checkoutGit("rev-parse", "HEAD")).not.toBe(implementationSha);
+        expect(await checkoutGit("show", "-s", "--format=%s", "HEAD")).toContain(
+          "record implementation before verification",
+        );
+        expect(await checkoutGit("status", "--porcelain")).toBe("");
+        const evidencePath = path.join(
+          checkout,
+          `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
+        );
+        const evidenceBefore = await readFile(evidencePath, "utf8");
+        const evidence = JSON.parse(evidenceBefore) as {
+          implementation_commit: string;
+          execution_base_commit: string;
+        };
+        expect(evidence.implementation_commit).toBe(implementationSha);
+        expect(evidence.execution_base_commit).toBe(
+          implementation.order.state_fingerprint.git_head,
+        );
+        const featureHistory = await checkoutGit("log", "--format=%H", "--", "feature.ts");
+        for (let replay = 0; replay < 2; replay++) {
+          const resumed = await invoke(
+            checkout,
+            implementation.packet.exchange.resume_argv.slice(1),
+          );
+          expect(resumed.code, resumed.stderr).toBe(0);
+          const resumedTask = await ctx.taskBackend.getTask(taskId);
+          expect(resumedTask?.commit?.hash).toBe(implementationSha);
+          expect(await readFile(evidencePath, "utf8")).toBe(evidenceBefore);
+          expect(await checkoutGit("log", "--format=%H", "--", "feature.ts")).toBe(featureHistory);
+        }
+        return;
+      }
+      const result = await returnResult(root, taskId, implementation);
+      if (foreign) {
+        expect(result.code).not.toBe(0);
+        expect(await readFile(path.join(checkout, "unrelated.txt"), "utf8")).toBe("must survive\n");
+        expect(await checkoutGit("ls-files", "unrelated.txt")).toBe("");
+        return;
+      }
+      expect(result.code, result.stderr).toBe(0);
+      const checks = JSON.parse(
+        await readFile(
+          path.join(checkout, `.agentplane/tasks/${taskId}/supervision/declared-checks.json`),
+          "utf8",
+        ),
+      ) as { checks: { command: string; exit_code: number }[] };
+      expect(checks.checks).toHaveLength(1);
+      expect(checks.checks[0]).toMatchObject({ command: "bun run test:critical", exit_code: 0 });
+      const ctx = await loadCommandContext({ cwd: checkout, rootOverride: checkout });
+      const task = await ctx.taskBackend.getTask(taskId);
+      expect(taskCentricAggregateFromExtensions(task?.extensions)?.work_items.feature?.state).toBe(
+        "COMPLETED",
+      );
+      const evidencePath = `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`;
+      const evidence = JSON.parse(await readFile(path.join(checkout, evidencePath), "utf8")) as {
+        implementation_commit: string;
+      };
+      expect(task?.commit).toMatchObject({ hash: evidence.implementation_commit });
+      expect(await checkoutGit("show", `${evidence.implementation_commit}:feature.ts`)).toBe(
+        "export const feature = true;",
+      );
+      expect(await checkoutGit("rev-parse", "HEAD")).not.toBe(evidence.implementation_commit);
+      expect(await checkoutGit("show", `HEAD:${evidencePath}`)).toContain(
+        evidence.implementation_commit,
+      );
+      expect(await checkoutGit("status", "--porcelain", "--", "feature.ts")).toBe("");
+      if (scenario === "clean" || foreign) return;
+
+      const rejected = await invoke(checkout, [
+        "verify",
+        taskId,
+        "--rework",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Rework: change the feature and preserve implementation identity on replay.",
+      ]);
+      expect(rejected.code, rejected.stderr).toBe(0);
+      const rework = await episode(checkout, taskId);
+      expect(rework.packet.authority.role).toBe("EXECUTOR");
+      expect(rework.order.task.work_item_id).toBeNull();
+      await writeFile(path.join(checkout, "feature.ts"), "export const feature = false;\n");
+      const interruption = vi
+        .spyOn(verification, "recordDirectTaskVerification")
+        .mockRejectedValueOnce(new Error("interrupted after the pre-verification artifact commit"));
+      try {
+        const interrupted = await returnResult(checkout, taskId, rework);
+        expect(interrupted.code).not.toBe(0);
+        expect(interrupted.stderr).toContain(
+          "interrupted after the pre-verification artifact commit",
+        );
+      } finally {
+        interruption.mockRestore();
+      }
+      const recorded = await ctx.taskBackend.getTask(taskId);
+      const implementationSha = recorded?.commit?.hash;
+      expect(implementationSha).toBeTruthy();
+      expect(implementationSha).not.toBe(evidence.implementation_commit);
+      expect(await checkoutGit("show", "-s", "--format=%s", "HEAD")).toContain(
+        "record implementation before verification",
+      );
+      expect(await checkoutGit("status", "--porcelain")).toBe("");
+      const featureHistory = await checkoutGit("log", "--format=%H", "--", "feature.ts");
+      if (scenario === "rework_foreign") {
+        await writeFile(path.join(checkout, "unrelated.txt"), "must survive replay rejection\n");
+        await checkoutGit("add", "unrelated.txt");
+        await checkoutGit("commit", "-m", "test: foreign change after interruption");
+        const refused = await invoke(checkout, rework.packet.exchange.resume_argv.slice(1));
+        expect(refused.code).not.toBe(0);
+        expect(refused.stderr).toContain(
+          "outside the recoverable Agentplane implementation effect",
+        );
+        expect(await readFile(path.join(checkout, "unrelated.txt"), "utf8")).toBe(
+          "must survive replay rejection\n",
+        );
+        const unchangedTask = await ctx.taskBackend.getTask(taskId);
+        expect(unchangedTask?.commit?.hash).toBe(implementationSha);
+        return;
+      }
+      const resumed = await invoke(checkout, rework.packet.exchange.resume_argv.slice(1));
+      expect(resumed.code, resumed.stderr).toBe(0);
+      const resumedTask = await ctx.taskBackend.getTask(taskId);
+      expect(resumedTask?.commit?.hash).toBe(implementationSha);
+      const recoveredEvidence = JSON.parse(
+        await readFile(path.join(checkout, evidencePath), "utf8"),
+      ) as { implementation_commit: string };
+      expect(recoveredEvidence.implementation_commit).toBe(implementationSha);
+      expect(await checkoutGit("show", `${implementationSha}:feature.ts`)).toBe(
+        "export const feature = false;",
+      );
+      const replayed = await invoke(checkout, rework.packet.exchange.resume_argv.slice(1));
+      expect(replayed.code, replayed.stderr).toBe(0);
+      expect(await checkoutGit("log", "--format=%H", "--", "feature.ts")).toBe(featureHistory);
+      const replayedTask = await ctx.taskBackend.getTask(taskId);
+      expect(replayedTask?.commit?.hash).toBe(implementationSha);
+    },
+  );
+});

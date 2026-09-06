@@ -2,7 +2,7 @@ import { conflictEvidenceAuthority } from "./external-agent-conflict-application
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { CliError } from "../../shared/errors.js";
-import { cmdCommit } from "../guard/impl/commit.js";
+import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 
 import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -98,31 +98,15 @@ export async function finishExternalImplementationVerification(opts: {
           }),
         )
       : null;
-    const evidenceExitCode = await cmdCommit({
-      ctx: opts.command,
+    await commitBranchSupervisorTaskArtifacts({
+      command: opts.command,
       cwd: opts.exchange.checkout,
-      taskId: opts.exchange.task_id,
+      task_id: opts.exchange.task_id,
       message:
         `🚧 ${opts.exchange.task_id.split("-").at(-1)} task: record external implementation evidence` +
         (evidenceAuthority
           ? `\n\nAgentPlane-Result: ${opts.exchange.result_digest}\nAgentPlane-Postcondition: ${evidenceAuthority}`
           : ""),
-      close: false,
-      allow: [],
-      autoAllow: false,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-      closeUnstageOthers: false,
-      closeCheckOnly: false,
     });
-    if (evidenceExitCode !== 0) {
-      throw new Error(`External-agent implementation evidence commit exited ${evidenceExitCode}.`);
-    }
   }
 }
