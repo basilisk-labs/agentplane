@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 81
+revision: 83
 origin:
   system: "manual"
 depends_on: []
@@ -222,10 +222,22 @@ execution_contract:
       - "website/static/llms-full.txt"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+    changed_paths:
+      - "docs/releases/v0.7.8-evidence/preparation.md"
+      - "packages/agentplane/src/cli/cli-smoke.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+      - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+      - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -336,7 +348,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:dc48d9e0edc2bc7377321a293d129b01e23fc9d50647ce862b87d05c691fed8f"
+      digest: "sha256:0bc702a6b7c8eec7a1ff5eb0eb25109328b5e087d394869ffb2c24b99f194490"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
         - "central_component:packages/agentplane/src/cli/cli-smoke.test.ts"
@@ -379,6 +391,8 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
         - "central_component:packages/core/package.json"
+        - "central_path:packages/agentplane/src/cli/cli-smoke.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
@@ -388,10 +402,22 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+        changed_files:
+          - "docs/releases/v0.7.8-evidence/preparation.md"
+          - "packages/agentplane/src/cli/cli-smoke.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+          - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+          - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "release_metadata"
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -430,7 +456,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "7a92cb5a661e7a0ab446a2000059d485b9cc83a1"
+  message: "🚧 Z0XXVD task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -462,6 +490,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3ff64f276046. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 7a92cb5a661e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -548,8 +579,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 3ff64f276046. CLI accepted one state-bound external-agent semantic result."
     commit: "3ff64f276046a7590c142e50e19e5d82ee1aa72e"
+  -
+    type: "status"
+    at: "2026-09-06T21:53:04.854Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 7a92cb5a661e. CLI accepted one state-bound external-agent semantic result."
+    commit: "7a92cb5a661e7a0ab446a2000059d485b9cc83a1"
 doc_version: 3
-doc_updated_at: "2026-09-06T21:48:04.165Z"
+doc_updated_at: "2026-09-06T21:53:04.854Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -1223,7 +1262,7 @@ extensions:
       revision: 15
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 46
+    event_cursor: 48
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -7042,9 +7081,9 @@ extensions:
         revision: 14
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 81
+    revision: 83
     schema_version: 1
-    updated_at: "2026-09-06T21:48:04.165Z"
+    updated_at: "2026-09-06T21:53:04.854Z"
     work_items:
       prepare-qualified-078-candidate:
         attempt: 0
@@ -7955,6 +7994,54 @@ extensions:
         mutation_id: "compatibility:sha256:60653003ed0b87c62ef448d73e7f5a1e24a48fbf8dd58aa7dfea28701277db11"
         next_revision: 78
         previous_revision: 77
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:65df26162e45e872d7377608694b4ef1d055be906c232ca579977c0beba3a27c:
+        aggregate_digest: "sha256:5808b2e39bbba93c6603ecace4231cc576766d210adc789abe09f7808afa0e88"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T21:53:04.854Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5f42cb51209f2b1d10864fd8"
+          mutation_id: "compatibility:sha256:65df26162e45e872d7377608694b4ef1d055be906c232ca579977c0beba3a27c"
+          plan_digest: "sha256:add612a3fb85a6cf8a5aca26dc918ae5a59e63ed68746a3f08d149dc30ef7570"
+          plan_revision: 15
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 82
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:65df26162e45e872d7377608694b4ef1d055be906c232ca579977c0beba3a27c"
+        next_revision: 83
+        previous_revision: 82
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:6f790eda55fc36e583afe0c5a868208b52d2afda6c3ebc0a4b5657cf899c7742:
+        aggregate_digest: "sha256:16cfabe158f9bd1aafc72a9940c0eaf64c60cd65ec7a95ff2551179a7b0cfc39"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T21:53:04.854Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_673d05722dc7b47b6ee62964"
+          mutation_id: "compatibility:sha256:6f790eda55fc36e583afe0c5a868208b52d2afda6c3ebc0a4b5657cf899c7742"
+          plan_digest: "sha256:add612a3fb85a6cf8a5aca26dc918ae5a59e63ed68746a3f08d149dc30ef7570"
+          plan_revision: 15
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 81
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6f790eda55fc36e583afe0c5a868208b52d2afda6c3ebc0a4b5657cf899c7742"
+        next_revision: 82
+        previous_revision: 81
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       compatibility:sha256:799e3b7339d08d6b19b67cc357c43ae214094bdfcaf70d7f18d191b187dfa2bb:
@@ -8995,7 +9082,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "3ff64f276046a7590c142e50e19e5d82ee1aa72e"
+    hash: "7a92cb5a661e7a0ab446a2000059d485b9cc83a1"
   task_execution_context:
     base_ref: "main"
     base_sha: "262da3130bc5628a7641c400c74368ae355000bf"

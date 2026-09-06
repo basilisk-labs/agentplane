@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 93f1a3c013a6457e1438ce801c627dcbc7ab7745..3ff64f276046a7590c142e50e19e5d82ee1aa72e",
+      "command": "git diff --check a5425459b7d369c4987a798241017d4210e60058..7a92cb5a661e7a0ab446a2000059d485b9cc83a1",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 93f1a3c013a6457e1438ce801c627dcbc7ab7745..3ff64f276046a7590c142e50e19e5d82ee1aa72e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a5425459b7d369c4987a798241017d4210e60058..7a92cb5a661e7a0ab446a2000059d485b9cc83a1",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,7 +23,12 @@
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/meta.json",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/review.md",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
-        "M\tpackages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+        "M\tdocs/releases/v0.7.8-evidence/preparation.md",
+        "M\tpackages/agentplane/src/cli/cli-smoke.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.state.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.validation.unit.test.ts"
       ]
     },
     {
@@ -33,8 +38,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "93f1a3c013a6457e1438ce801c627dcbc7ab7745",
-  "implementation_commit": "3ff64f276046a7590c142e50e19e5d82ee1aa72e",
+  "execution_base_commit": "a5425459b7d369c4987a798241017d4210e60058",
+  "implementation_commit": "7a92cb5a661e7a0ab446a2000059d485b9cc83a1",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
