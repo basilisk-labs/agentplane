@@ -4,7 +4,7 @@ title: "Archive the resolved WorkItem input planning incident before AgentPlane 
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -760,19 +760,89 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609061636-BW11J6"
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-06T17:01:03.539Z"
+    updated_at: "2026-09-06T17:01:07.214Z"
     work_items:
       synchronize-archived-incident-policy:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "synchronize-archived-incident-policy"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:128bc29a42a9376c4bc4435704b398a8f76e86789b75c174a08cb390b3c45731"
+            id: "Archived INC-20260829-01 with preserved source evidence and matching empty repository and bundled registries"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609061636-BW11J6"
+              work_item_id: "synchronize-archived-incident-policy"
+            provenance:
+              - "sha256:3a711364768fa4446a100865783ad3e35876ff83883fa3b06cc89e99cf8479e8"
+              - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:fac1d425f12db8a516e793eb0b82fd38867eee9c75c71fff945631f0bdb11e50"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
+              check_id: "routing"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-06T17:01:07.208Z"
+              repository_snapshot_digest: "sha256:fac1d425f12db8a516e793eb0b82fd38867eee9c75c71fff945631f0bdb11e50"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
+              check_id: "incidents"
+              command_identity: "bun run release:incidents:check"
+              detail: "Observed by bun run release:incidents:check."
+              exit_code: 0
+              observed_at: "2026-09-06T17:01:07.208Z"
+              repository_snapshot_digest: "sha256:fac1d425f12db8a516e793eb0b82fd38867eee9c75c71fff945631f0bdb11e50"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
+              check_id: "planning"
+              command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
+              detail: "Observed by bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-06T17:01:07.208Z"
+              repository_snapshot_digest: "sha256:fac1d425f12db8a516e793eb0b82fd38867eee9c75c71fff945631f0bdb11e50"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
+              check_id: "docs"
+              command_identity: "bun run docs:site:generate:check"
+              detail: "Observed by bun run docs:site:generate:check."
+              exit_code: 0
+              observed_at: "2026-09-06T17:01:07.208Z"
+              repository_snapshot_digest: "sha256:fac1d425f12db8a516e793eb0b82fd38867eee9c75c71fff945631f0bdb11e50"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061636-BW11J6/supervision/declared-checks.json"
+              check_id: "format"
+              command_identity: "bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx"
+              detail: "Observed by bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx."
+              exit_code: 0
+              observed_at: "2026-09-06T17:01:07.208Z"
+              repository_snapshot_digest: "sha256:fac1d425f12db8a516e793eb0b82fd38867eee9c75c71fff945631f0bdb11e50"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -809,6 +879,22 @@ extensions:
         task_id: "202609061636-BW11J6"
         task_revision: 9
         work_item_id: null
+      -
+        at: "2026-09-06T17:01:07.214Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_1bf95a6ad0036a2c6569c0ab"
+        mutation_id: "external-result:work-order-202609061636-BW11J6-executor-dc1a2495188a0bb03cc7d3cb"
+        plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
+        task_revision: 14
+        work_item_id: "synchronize-archived-incident-policy"
     leases: []
     mutation_receipts:
       compatibility:sha256:3107280ef874dde882a402da8170c32944eee975ce2cd734c28b5227985a3017:
@@ -1048,6 +1134,29 @@ extensions:
         mutation_id: "external-result:work-order-202609061636-BW11J6-executor-3e93f737cd871926019c8887"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
+      external-result:work-order-202609061636-BW11J6-executor-dc1a2495188a0bb03cc7d3cb:
+        aggregate_digest: "sha256:8213eb6b783ed98d5b08215d2fb41975634585b77aa6845aa2916ce42e61766b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T17:01:07.214Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_1bf95a6ad0036a2c6569c0ab"
+          mutation_id: "external-result:work-order-202609061636-BW11J6-executor-dc1a2495188a0bb03cc7d3cb"
+          plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: "synchronize-archived-incident-policy"
+        mutation_id: "external-result:work-order-202609061636-BW11J6-executor-dc1a2495188a0bb03cc7d3cb"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609061636-BW11J6"
       plan-refinement:work-order-202609061636-BW11J6-executor-1f0d4b3754d4a5903ad04f29:
