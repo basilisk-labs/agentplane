@@ -182,7 +182,9 @@ export async function completeExternalVerificationCheckpoint(opts: {
   const task = await opts.command.taskBackend.getTask(opts.exchange.task_id);
   const prefix = `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/pr/`;
   const generated = new Set(
-    ["github-body.md", "github-title.txt", "meta.json", "review.md"].map((file) => prefix + file),
+    ["github-body.md", "github-title.txt", "meta.json", "review.md", "diffstat.txt"].map(
+      (file) => prefix + file,
+    ),
   );
   const artifactKeys = Object.keys({ ...observed.artifacts, ...checkpoint.artifacts });
   if (
@@ -193,7 +195,17 @@ export async function completeExternalVerificationCheckpoint(opts: {
       (key) => !generated.has(key) && observed.artifacts[key] !== checkpoint.artifacts[key],
     )
   )
-    throw new Error("Conflict verification owner changed its prepared postcondition.");
+    throw new Error(
+      "Conflict verification owner changed its prepared postcondition: " +
+        JSON.stringify({
+          head: observed.head !== checkpoint.head,
+          authority: observed.authority !== checkpoint.authority,
+          task: taskCentricDigest(task) !== taskCentricDigest(checkpoint.task),
+          artifacts: artifactKeys.filter(
+            (key) => !generated.has(key) && observed.artifacts[key] !== checkpoint.artifacts[key],
+          ),
+        }),
+    );
   const completed = { ...payload, stage: "completed" as const, artifacts: observed.artifacts };
   await writeExternalAgentExchange(file, {
     ...exchange,

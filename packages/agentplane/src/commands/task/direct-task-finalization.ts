@@ -147,6 +147,7 @@ export async function resolveDirectImplementationCommit(opts: {
   cwd: string;
   task_id: string;
   execution_base_commit: string | null;
+  observed_base_commit?: string;
   allowed_paths: readonly string[];
   observed_changed_paths: readonly string[] | null;
 }): Promise<DirectImplementationCommit> {
@@ -221,13 +222,31 @@ export async function resolveDirectImplementationCommit(opts: {
         `${observedScopeViolations.join(", ")}.`,
     };
   }
-  const committed = new Set(changed);
+  // Conflict application measures implementation scope from the integration base,
+  // but its observed semantic writes originate at the bound task head. A file
+  // copied from the base is committed even when it vanishes from the first range.
+  if (opts.observed_base_commit) {
+    const ancestry = await runGit({
+      cwd: opts.cwd,
+      args: ["merge-base", "--is-ancestor", opts.observed_base_commit, commit],
+    });
+    if (ancestry.exitCode !== 0) {
+      return { status: "missing", reason: "The semantic observation base is not an ancestor." };
+    }
+  }
+  const observedCommitted = opts.observed_base_commit
+    ? await committedPaths({ cwd: opts.cwd, base: opts.observed_base_commit, commit })
+    : changed;
+  if (!observedCommitted) {
+    return { status: "missing", reason: "The semantic observation commit range is unavailable." };
+  }
+  const committed = new Set(observedCommitted);
   // Filesystem snapshots can include a newly-created parent directory alongside
   // the committed file. Git's name-only range reports files, not directories,
   // so accept such a directory marker only when it is an exact parent of an
   // implementation path in the immutable committed range.
   const uncommittedObservedPaths = observedNonTaskPaths.filter(
-    (entry) => !committed.has(entry) && !isCommittedDirectoryObservation(entry, changed),
+    (entry) => !committed.has(entry) && !isCommittedDirectoryObservation(entry, observedCommitted),
   );
   if (uncommittedObservedPaths.length > 0) {
     return {

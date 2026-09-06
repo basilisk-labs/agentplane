@@ -439,6 +439,9 @@ export async function applyExternalImplementationResult(opts: {
           command: "git status --short --untracked-files=all",
           lines: opts.exchange.baseline.changed_paths,
         },
+        observed_base_commit: conflictContext
+          ? (opts.exchange.baseline.head ?? undefined)
+          : undefined,
         allowed_paths: [
           ...opts.work_order.authority.writable_roots,
           `.agentplane/tasks/${opts.exchange.task_id}`,

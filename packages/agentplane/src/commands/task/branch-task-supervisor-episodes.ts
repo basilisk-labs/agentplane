@@ -40,6 +40,7 @@ import {
 } from "./direct-task-verification.js";
 
 import { cmdVerifyParsed } from "./verify-record.js";
+import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
@@ -327,9 +328,15 @@ async function executeBranchVerificationEpisode(opts: {
       id: "task_verify",
       decision: opts.decide,
       run: async () => {
+        const verification = await resolveImplementationVerificationTask({
+          command,
+          checkout,
+          task,
+          workflow: "branch_pr",
+        });
         const checks = await runDirectTaskVerification({
           command,
-          task,
+          task: verification.task,
           task_id: opts.input.task_id,
           cwd: checkout,
         });
@@ -345,11 +352,12 @@ async function executeBranchVerificationEpisode(opts: {
             ? "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
             : `Rework: ${failureReason}`,
           details: renderDirectTaskVerificationDetails({
-            task,
+            task: verification.task,
             taskId: opts.input.task_id,
             workflow: "branch_pr",
             result: checks,
           }),
+          verificationSnapshot: verification.snapshot,
           localOnly: false,
           repoFixable: !passed,
           incidentTags: [],

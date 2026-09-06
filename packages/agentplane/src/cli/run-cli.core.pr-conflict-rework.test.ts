@@ -371,6 +371,7 @@ describe("provider conflict rework CLI", () => {
     "managed_status_interrupted_policy_drift_advanced_base",
     "after_verification_base_advanced_base",
     "after_verification_provider_advanced_base",
+    "after_verification_diffstat_advanced_base",
     "interrupted_exchange",
     "interrupted_drift",
     "before_checkpoint",
@@ -417,6 +418,9 @@ describe("provider conflict rework CLI", () => {
           [
             'import { writeFileSync } from "node:fs";',
             'writeFileSync("docs/conflict.md", "resolved task and main\\n");',
+            ...(advancedBase
+              ? ['writeFileSync("docs/base-only.md", "preserve current base contribution\\n");']
+              : []),
             'writeFileSync(process.env.AGENTPLANE_RUNNER_RESULT_PATH, JSON.stringify({ schema_version: 2, kind: "agent_semantic_result", work_order_id: process.env.AGENTPLANE_RUNNER_WORK_ORDER_ID, status: "completed", summary: "Resolve the scoped conflict workspace.", findings: [], uncertainty: [], claimed_checks: [] }));',
             "process.stdin.resume();",
           ].join("\n"),
@@ -724,6 +728,7 @@ describe("provider conflict rework CLI", () => {
             headSha,
             baseSha: currentBaseSha,
             providerBaseSha: baseSha,
+            materializeBaseContribution: advancedBase,
             interrupt: mode === "interrupted_exchange" || mode === "interrupted_drift",
             driftAfterInterruption:
               mode === "interrupted_drift" || mode === "before_checkpoint_drift",
@@ -959,17 +964,19 @@ describe("provider conflict rework CLI", () => {
           const conflictRework = route.conflict_rework;
           expect(currentBase).not.toBe(legacyQueueBase);
           expect(conflictRework).toMatchObject({
-            state: "invalid",
-            reason_code: "conflict_rework_route_ineligible",
+            state: "adoption_required",
+            adoption: { evidence: { task_id: taskId } },
           });
           expect(route.workflow_step).toMatchObject({
-            kind: "agent_episode",
-            id: "agent.verification",
+            kind: "approval",
+            id: "approval.integration.adopt_legacy_protected_conflict",
             authoritativeCheckout: "task_worktree",
-            compatibility: { code: "verification_required", command: null },
+            request: { operationId: "integration.adopt_legacy_protected_conflict" },
+            compatibility: { code: "adopt_legacy_protected_conflict" },
           });
           expect(route.execution_packet).toMatchObject({
-            actionKind: "stop",
+            actionKind: "provider_action",
+            recommendedRole: "USER",
             safeToMutate: false,
             exactArgv: null,
           });

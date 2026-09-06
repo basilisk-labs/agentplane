@@ -6,14 +6,14 @@ Created: 2026-09-04T18:17:29.251Z
 
 - Task: `202609041801-ZVX69C`
 - Title: Repair post-integration Clean Core task-cycle regression and restore final release-readiness verification
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re`
 - Canonical task record: `.agentplane/tasks/202609041801-ZVX69C/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework required after accepted conflict merge 68c87697a8750c535a4d258f7bd8eb6ff0b5bf1b. The merge owner correctly applied current base 6e49077db61daed5204b514e7d6e071c190edda6, but direct finalization falsely rejects two supervisor-observed test paths already committed in snapshot 99fdb3c4cc9123982becb3edebb5bd030885fd0e because their merged bytes equal the integration base. Read-only owner reproduction returns missing on the clean merged checkout. Preserve semantic observation provenance separately from integration-base evidence; qualify external and managed base-identical files, interruption replay and stale rejection. Normal replacement then ran all required commands but failed verification persistence because docs_contract was required and absent from its structured evidence. Reconcile the actual task-owned implementation base, contract and truthful check mapping in existing owners; do not widen scope to automatic main-only changes or fabricate evidence. Do not repeat unchanged broad verification before a narrow repair. Preserve the completed merge, original retired exchange/result, approved single WorkItem, MPXQBK and release exclusions.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,20 +31,19 @@ Created: 2026-09-04T18:17:29.251Z
 ```text
  .../task-centric-backend-adapter.test.ts           |  39 ++
  .../task-backend/task-centric-backend-adapter.ts   |   6 +-
- .../task-backend/task-centric-backend-runtime.ts   |  78 +++
  .../src/cli/managed-conflict-recovery.testkit.ts   | 332 ++++++++++++
  .../src/cli/release-critical-lifecycle.test.ts     |  14 +
  .../agentplane/src/cli/route-decision.testkit.ts   |  22 +
  .../src/cli/run-cli.core.lifecycle.plan.test.ts    | 135 +++--
- .../cli/run-cli.core.pr-conflict-rework.test.ts    | 325 +++++++----
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 344 ++++++++----
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   9 +-
  .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
  .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
  ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++-
- ...n-cli.core.task-advance.branch-worktree.test.ts |  83 ++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  17 +
  ...n-cli.core.task-advance.evidence-rework.test.ts | 105 +++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
- .../cli/task-advance-effect-recovery.testkit.ts    | 393 +++++++++++++-
+ .../cli/task-advance-effect-recovery.testkit.ts    | 408 +++++++++++++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
  .../commands/evaluator/evaluator-test-helpers.ts   |  11 +-
  .../src/commands/pr/conflict-rework-authority.ts   | 101 ++++
@@ -59,45 +58,38 @@ Created: 2026-09-04T18:17:29.251Z
  .../src/commands/shared/declared-check.ts          |  45 +-
  .../src/commands/shared/task-mutation.test.ts      |  51 ++
  .../src/commands/shared/task-mutation.ts           |  12 +
- .../shared/task-scope-extension-request.ts         | 263 ++++++++-
+ .../shared/task-scope-extension-request.ts         |  39 +-
  .../src/commands/shared/task-store/readme.ts       |  34 +-
  .../src/commands/shared/task-store/store.ts        |  13 +-
  .../src/commands/shared/task-store/types.ts        |   1 +
- .../src/commands/shared/workflow-step-branch.ts    |   3 +-
  .../shared/workflow-step-conflict-rework.ts        |   6 +-
- .../src/commands/shared/workflow-step-factory.ts   |   6 +-
  .../commands/shared/workflow-step-fingerprint.ts   |  14 +-
- .../commands/shared/workflow-step-policy-scope.ts  |  27 +-
- .../src/commands/shared/workflow-step.test.ts      |  88 +++
+ .../commands/shared/workflow-step-policy-scope.ts  |  11 +-
+ .../src/commands/shared/workflow-step.test.ts      |  29 +-
  .../branch-task-supervisor-conflict-recovery.ts    | 596 +++++++++++++++++++++
- .../task/branch-task-supervisor-episodes.ts        | 279 ++++------
- .../task/branch-task-supervisor-implementation.ts  | 494 +++++++++++++++++
- .../commands/task/branch-task-supervisor.test.ts   |  30 ++
+ .../task/branch-task-supervisor-episodes.ts        | 291 +++++-----
+ .../task/branch-task-supervisor-implementation.ts  | 495 +++++++++++++++++
+ .../commands/task/branch-task-supervisor.test.ts   | 115 +++-
  .../src/commands/task/branch-task-supervisor.ts    |  17 +-
- .../src/commands/task/direct-task-finalization.ts  |  59 +-
- .../direct-task-verification.sequence.cases.ts     | 161 ++++++
- .../commands/task/direct-task-verification.test.ts |  46 +-
- .../src/commands/task/direct-task-verification.ts  | 185 ++++---
+ .../commands/task/direct-task-finalization.test.ts |  52 ++
+ .../src/commands/task/direct-task-finalization.ts  |  82 ++-
+ .../task/direct-task-supervisor-implementation.ts  |   2 +
+ .../src/commands/task/direct-task-verification.ts  |  72 ++-
  .../commands/task/evidence-only-rework-commit.ts   |  31 ++
  .../task/external-agent-conflict-application.ts    | 227 ++++++++
  .../src/commands/task/external-agent-exchange.ts   |   3 +
- .../external-agent-implementation-authority.ts     | 262 ++++-----
- .../external-agent-implementation-checkpoint.ts    | 268 +++++++++
+ .../external-agent-implementation-authority.ts     | 265 +++++----
+ .../external-agent-implementation-checkpoint.ts    | 280 ++++++++++
  .../external-agent-implementation-finalization.ts  | 128 +++++
- .../external-agent-implementation-recovery.test.ts |  85 ++-
- .../task/external-agent-implementation-recovery.ts | 120 ++---
+ .../task/external-agent-implementation-recovery.ts |  82 +--
  .../task/external-agent-result-application.ts      |  22 +
  .../src/commands/task/external-agent-supervisor.ts |  43 +-
  .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
- packages/agentplane/src/commands/task/plan.ts      |  35 +-
- .../agentplane/src/commands/task/plan.unit.test.ts |  93 ++++
- .../src/commands/task/scope-extend.test.ts         | 424 ++++++++++-----
+ .../src/commands/task/scope-extend.test.ts         | 125 +++--
  .../agentplane/src/commands/task/set-status.ts     |  10 +-
- .../src/commands/task/set-status.unit.test.ts      | 118 ++--
  .../src/commands/task/shared.unit.test.ts          |   1 +
  .../src/commands/task/shared.verify-steps.test.ts  |   8 +
  .../agentplane/src/commands/task/shared/docs.ts    |   2 +
- .../task/shared/workflow-transition-service.ts     |  79 +++
  .../task-execution-contract-observation.test.ts    |  19 +
  .../task/task-execution-contract-observation.ts    | 200 ++++---
  .../src/commands/task/verify-record-execute.ts     |  54 +-
@@ -113,7 +105,7 @@ Created: 2026-09-04T18:17:29.251Z
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 84 files changed, 6581 insertions(+), 1137 deletions(-)
+ 76 files changed, 5497 insertions(+), 926 deletions(-)
 ```
 
 </details>

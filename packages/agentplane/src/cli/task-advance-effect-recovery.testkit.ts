@@ -25,7 +25,8 @@ export type ConflictVerificationDrift =
   | "result"
   | "policy"
   | "base"
-  | "provider";
+  | "provider"
+  | "diffstat";
 
 export async function withFakeConflictGh<T>(
   root: string,
@@ -85,6 +86,7 @@ export async function exerciseConflictExchange(opts: {
   headSha: string;
   baseSha: string;
   providerBaseSha?: string;
+  materializeBaseContribution?: boolean;
   interrupt?: boolean;
   driftAfterInterruption?: boolean;
   interruptBeforeCheckpoint?: boolean;
@@ -139,6 +141,12 @@ export async function exerciseConflictExchange(opts: {
       local: { base_head_sha: baseSha },
     });
     await writeFile(path.join(worktree, "docs/conflict.md"), "resolved task and main\n");
+    if (opts.materializeBaseContribution) {
+      await writeFile(
+        path.join(worktree, "docs/base-only.md"),
+        "preserve current base contribution\n",
+      );
+    }
     await writeFile(
       issued.exchange.result_path,
       JSON.stringify({
@@ -209,6 +217,13 @@ export async function exerciseConflictExchange(opts: {
         if (opts.verificationDrift) {
           const mode = opts.verificationDrift;
           switch (mode) {
+            case "diffstat": {
+              await writeFile(
+                path.join(worktree, ".agentplane/tasks", taskId, "pr/diffstat.txt"),
+                "foreign diffstat\n",
+              );
+              break;
+            }
             case "base": {
               await writeFile(path.join(root, "docs/base-only.md"), "subsequent base change\n");
               await execFileAsync("git", ["add", "docs/base-only.md"], { cwd: root });

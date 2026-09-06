@@ -290,6 +290,7 @@ export async function applyBranchImplementationResult(
     cwd: checkout,
     task_id: opts.input.task_id,
     execution_base_commit: conflict?.local.base_head_sha ?? executionBaseCommit,
+    observed_base_commit: conflict ? (executionBaseCommit ?? undefined) : undefined,
     execution_baseline_status: executionBaselineStatus,
     allowed_paths: lifecycle.lifecycle.work_order_authority?.writable_roots ?? [],
     observed_changed_paths:
