@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -146,10 +146,31 @@ execution_contract:
       - "website/static/llms-full.txt"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/testkit"
+    changed_paths:
+      - "docs/releases/v0.7.8.md"
+      - "packages/agentplane/src/cli/route-decision.testkit.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+      - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+      - "packages/agentplane/src/cli/task-continuity.testkit.ts"
+      - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
+      - "packages/testkit/src/release.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "release_metadata"
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -222,7 +243,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:09f04344e2cd92c7758cb24cc85e6881d6486fb684427522d5d835a363b61d2b"
+      digest: "sha256:bbd924abac1b1eac2fd29237fba66d65082d7198258d21bf3158828336e77e3a"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/route-decision.testkit.ts"
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
@@ -235,6 +256,16 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
         - "central_component:packages/agentplane/src/cli/task-continuity.testkit.ts"
         - "central_component:packages/core/package.json"
+        - "central_path:packages/agentplane/src/cli/route-decision.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+        - "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/task-continuity.testkit.ts"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
@@ -244,10 +275,31 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/testkit"
+        changed_files:
+          - "docs/releases/v0.7.8.md"
+          - "packages/agentplane/src/cli/route-decision.testkit.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+          - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/cli/task-continuity.testkit.ts"
+          - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
+          - "packages/testkit/src/release.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "release_metadata"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -286,7 +338,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "8c870ae5d37e0c3758082dc4fc89e51377794991"
+  message: "🚧 Z0XXVD task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -300,6 +354,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3363de4a5e3c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8c870ae5d37e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -338,8 +395,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 3363de4a5e3c. CLI accepted one state-bound external-agent semantic result."
     commit: "3363de4a5e3c34ca4780e2c63306ad3230824c79"
+  -
+    type: "status"
+    at: "2026-09-06T19:28:22.224Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8c870ae5d37e. CLI accepted one state-bound external-agent semantic result."
+    commit: "8c870ae5d37e0c3758082dc4fc89e51377794991"
 doc_version: 3
-doc_updated_at: "2026-09-06T19:18:04.101Z"
+doc_updated_at: "2026-09-06T19:28:22.224Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -794,7 +859,7 @@ extensions:
       revision: 8
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 25
+    event_cursor: 27
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -2904,9 +2969,9 @@ extensions:
         revision: 7
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 41
+    revision: 43
     schema_version: 1
-    updated_at: "2026-09-06T19:18:04.101Z"
+    updated_at: "2026-09-06T19:28:22.224Z"
     work_items:
       prepare-qualified-078-candidate:
         attempt: 0
@@ -3246,6 +3311,30 @@ extensions:
         mutation_id: "compatibility:sha256:3a7d4e38747fb89a3ca23da8d1d7dfd5298e74458f0cadd1bfa99c009afb1957"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:418d0f37f37951919d308c49d62dc9a72bf66d90246b8e647da474400e8a0b93:
+        aggregate_digest: "sha256:ec96f3030c94e34d8e96805fda934ef37d6880da403fcd2c3aaf7370954b991e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T19:28:22.224Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9b82af7dc60d9648b6bfea83"
+          mutation_id: "compatibility:sha256:418d0f37f37951919d308c49d62dc9a72bf66d90246b8e647da474400e8a0b93"
+          plan_digest: "sha256:0cf0818769494d347aa3b5897173d9ca930904d7310b97a1e55216876b733c1b"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 42
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:418d0f37f37951919d308c49d62dc9a72bf66d90246b8e647da474400e8a0b93"
+        next_revision: 43
+        previous_revision: 42
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       compatibility:sha256:4af655c42f73034172bda96e10b07765218b5c74eeb17548d80a4c946e4f5c16:
@@ -3608,6 +3697,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:faa599df220a808f971ff56c3541da39237ada22a15da6cfd301abc6c49405c8:
+        aggregate_digest: "sha256:bb370a346b99126247d1de5a46c9d4c6654ac8fb6323f488d5cc9fe24b7eb8e4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T19:28:22.224Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_acfe131c4f6b8da4a6177493"
+          mutation_id: "compatibility:sha256:faa599df220a808f971ff56c3541da39237ada22a15da6cfd301abc6c49405c8"
+          plan_digest: "sha256:0cf0818769494d347aa3b5897173d9ca930904d7310b97a1e55216876b733c1b"
+          plan_revision: 8
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 41
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:faa599df220a808f971ff56c3541da39237ada22a15da6cfd301abc6c49405c8"
+        next_revision: 42
+        previous_revision: 41
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       external-result:work-order-202609061750-Z0XXVD-executor-0fc481657b38f844c8c5dd58:
         aggregate_digest: "sha256:797e164c64ea3b97acaf1e0f4381ecf6efab4a48c690c12b6b9e49e3acc2c57d"
         event:
@@ -3833,7 +3946,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "3363de4a5e3c34ca4780e2c63306ad3230824c79"
+    hash: "8c870ae5d37e0c3758082dc4fc89e51377794991"
   task_execution_context:
     base_ref: "main"
     base_sha: "262da3130bc5628a7641c400c74368ae355000bf"
