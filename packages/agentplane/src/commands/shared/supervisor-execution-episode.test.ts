@@ -159,6 +159,80 @@ function successfulOperationResult() {
 }
 
 describe("persisted supervisor execution episodes", () => {
+  it("persists integration operation and provider identity before invoking the queue worker", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    if (decision.workflowStep.kind !== "cli_operation") throw new Error("expected operation");
+    const operation: WorkflowOperation = {
+      ...decision.workflowStep.operation,
+      id: "integration.run_next",
+      type: "integration_run_next",
+      params: { taskId },
+      idempotencyKey: `integration.run_next:${taskId}:fixture`,
+      expectedPostconditions:
+        WORKFLOW_OPERATION_REGISTRY["integration.run_next"].expectedPostconditions,
+    };
+    decision.workflowStep = { ...decision.workflowStep, id: operation.id, operation };
+    decision.executionPacket.exactArgv = projectWorkflowOperationArgv(operation);
+    decision.prFlow = {
+      branch: { name: "task/fixture", headSha: "head", metaHeadSha: "head" },
+      queue: {
+        present: true,
+        status: "queued",
+        reason: null,
+        updatedAt: "2026-07-28T00:00:00.000Z",
+        branch: "task/fixture",
+        headSha: "head",
+        base: "main",
+        baseSha: "base",
+        prNumber: 7,
+      },
+      providerObservation: { state: "not_found" },
+    } as TaskRouteDecision["prFlow"];
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    let beforeInvocation: unknown;
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      execute: async () => {
+        beforeInvocation = await createSupervisorEpisodeStore(journalPath).read();
+        return {
+          status: "succeeded",
+          observed_postconditions: operation.expectedPostconditions.map((item) => item.id),
+          detail: "fixture queue result",
+          exit_code: 0,
+        };
+      },
+      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+    });
+    expect(outcome.execution.result?.status).toBe("succeeded");
+    const persisted = validateSupervisorExecutionEpisodeJournal(beforeInvocation);
+    expect(persisted).toMatchObject({
+      cursor: { phase: "intent_recorded" },
+      operations: [
+        {
+          status: "intent",
+          recovery: {
+            operation_identity: operation,
+            context: {
+              schema_version: 1,
+              kind: "integration_run_next",
+              task_id: taskId,
+              repository_root: root,
+              queue: decision.prFlow?.queue,
+              provider: { state: "not_found" },
+              branch: decision.prFlow?.branch,
+            },
+          },
+        },
+      ],
+    });
+    expect(outcome.journal.operations[0]?.recovery).toEqual(persisted.operations[0]?.recovery);
+  });
+
   it("extends an episode-only budget stop through explicit replacement recovery", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);

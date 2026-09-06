@@ -119,6 +119,7 @@ describe("task advance effect recovery", () => {
       components: {
         task: { digest: taskDigest },
         backend_projection: { digest: backendDigest },
+        provider: { digest: `sha256:${"0".repeat(64)}` },
         authority: { digest: authorityDigest },
       },
     };
