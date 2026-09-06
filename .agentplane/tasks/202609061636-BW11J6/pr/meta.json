@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609061636-BW11J6/archive-the-resolved-workitem-input-planning-inc",
+  "created_at": "2026-09-06T16:43:14.836Z",
+  "diffstat_sha256": "sha256:5436ba1a466e01187eda21e93914695304de659676fa07cb4a58ef01c2721dca",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609061636-BW11J6",
+  "updated_at": "2026-09-06T16:43:14.836Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
