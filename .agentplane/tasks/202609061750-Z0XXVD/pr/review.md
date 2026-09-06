@@ -45,11 +45,11 @@ Created: 2026-09-06T17:54:49.525Z
  docs/assets/readme-headers/spec.svg                |    4 +-
  docs/assets/readme-headers/testkit.svg             |    4 +-
  docs/reference/generated-reference.mdx             |   14 +-
- docs/releases/v0.7.8-evidence/preparation.md       |   37 +
+ docs/releases/v0.7.8-evidence/preparation.md       |   39 +
  .../v0.7.8-evidence/qualify-upgrade-0.7.7.mjs      |  283 +
  .../v0.7.8-evidence/release-plan-changes.json      | 7087 ++++++++++++++++++++
  .../v0.7.8-evidence/release-plan-version.json      |    8 +
- docs/releases/v0.7.8.md                            | 1691 +++++
+ docs/releases/v0.7.8.md                            | 1692 +++++
  packages/agentplane/package.json                   |    6 +-
  .../run-cli.core.help-snap.test.ts.snap            |    5 +-
  packages/agentplane/src/cli/cli-smoke.test.ts      |    5 +-
@@ -91,6 +91,8 @@ Created: 2026-09-06T17:54:49.525Z
  .../commands/branch/work-start.materialize.test.ts |   46 +-
  .../src/commands/branch/work-start.materialize.ts  |   10 +-
  .../src/commands/shared/route-decision-blockers.ts |    6 +-
+ .../task/execution-authority-context.test.ts       |   51 +-
+ .../commands/task/execution-authority-context.ts   |   23 +-
  .../commands/task/finish.close-tail.unit.test.ts   |    3 +
  .../src/commands/task/finish.state.unit.test.ts    |    5 +-
  .../commands/task/finish.validation.unit.test.ts   |   13 +-
@@ -107,7 +109,7 @@ Created: 2026-09-06T17:54:49.525Z
  .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
  website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
  website/static/img/social/manifest.json            |   16 +
- 78 files changed, 9900 insertions(+), 695 deletions(-)
+ 80 files changed, 9967 insertions(+), 705 deletions(-)
 ```
 
 </details>

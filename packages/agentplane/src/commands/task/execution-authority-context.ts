@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { link, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { gitEnv, gitRevParse } from "@agentplaneorg/core/git";
@@ -95,13 +95,20 @@ export async function resolveLogicalRepositoryIdentity(opts: {
     nonce: randomUUID(),
   });
   await mkdir(path.dirname(identityPath), { recursive: true, mode: 0o700 });
-  await writeFile(
-    identityPath,
-    `${JSON.stringify({ schema_version: 1, repository_identity }, null, 2)}\n`,
-    { encoding: "utf8", mode: 0o600, flag: "wx" },
-  ).catch((error) => {
-    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
-  });
+  const candidatePath = `${identityPath}.tmp-${randomUUID()}`;
+  try {
+    await writeFile(
+      candidatePath,
+      `${JSON.stringify({ schema_version: 1, repository_identity }, null, 2)}\n`,
+      { encoding: "utf8", mode: 0o600, flag: "wx" },
+    );
+    // Publish complete contents without replacing another initializer's identity.
+    await link(candidatePath, identityPath).catch((error) => {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    });
+  } finally {
+    await rm(candidatePath, { force: true });
+  }
   const winner = JSON.parse(await readFile(identityPath, "utf8")) as {
     repository_identity?: unknown;
   };
