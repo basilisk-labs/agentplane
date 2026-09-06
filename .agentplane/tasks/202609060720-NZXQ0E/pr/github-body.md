@@ -15,17 +15,8 @@ Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha
-contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard
-incorrectly treats that field as a completed effect. Fix only the existing recovery owner to
-distinguish an open PR test merge from a completed merge, and extend the existing native snapshot
-fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S
-journal remains unchanged; the user explicitly confirmed not_applied.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

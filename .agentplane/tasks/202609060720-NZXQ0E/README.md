@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "USER"
   note: "Apply the user-authorized permission override for required release repair actions. This narrow refinement adds only the generated llms-full documentation artifact required by the existing check. It does not attest a historical integration outcome."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-06T15:05:59.597Z"
-  updated_by: "REVIEWER"
-  note: "Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-09-06T15:19:02.116Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -161,8 +161,7 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -195,8 +194,41 @@ execution_contract:
       - "tests"
     verification_results:
       -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -358,8 +390,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "918d414d99ae0b453d929f4b2017e2d06b71accb"
+  message: "🚧 NZXQ0E task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -388,6 +421,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 918d414d99ae. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -477,9 +513,23 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied."
+  -
+    type: "status"
+    at: "2026-09-06T15:10:34.750Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 918d414d99ae. CLI accepted one state-bound external-agent semantic result."
+    commit: "918d414d99ae0b453d929f4b2017e2d06b71accb"
+  -
+    type: "verify"
+    at: "2026-09-06T15:19:02.116Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-06T15:06:03.820Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-06T15:19:03.157Z"
+doc_updated_by: "SUPERVISOR"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
   Summary: |-
@@ -771,6 +821,102 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-06T15:19:02.116Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786, input_digest=sha256:c38347ac131dd0540f0dc5e84a866947c318c3e4376bbecc7ccc44148c725ff7
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (2/2)
+
+    Check: docs_contract
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (1/2)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609060720-NZXQ0E-recover-an-interrupted-integration-queue-supervi/.agentplane/tasks/202609060720-NZXQ0E/blueprint/resolved-snapshot.json
+    - old_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+    - current_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609060720-NZXQ0E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609060720-NZXQ0E
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1180,7 +1326,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 28
+    event_cursor: 31
     final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
@@ -3137,9 +3283,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 47
+    revision: 50
     schema_version: 1
-    updated_at: "2026-09-06T15:06:03.815Z"
+    updated_at: "2026-09-06T15:19:03.152Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -3500,6 +3646,30 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:097686e5c0ff3614db8b7472dd70c5be1382ef565a4ee960b2bb83d8b2a5ec87:
+        aggregate_digest: "sha256:a64d51240b7be0decefa33b6156660d4e01ffe6979ba343d2bf44b4c78eb5be4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:10:34.782Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8f7947764324fe0559352e85"
+          mutation_id: "compatibility:sha256:097686e5c0ff3614db8b7472dd70c5be1382ef565a4ee960b2bb83d8b2a5ec87"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 48
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:097686e5c0ff3614db8b7472dd70c5be1382ef565a4ee960b2bb83d8b2a5ec87"
+        next_revision: 49
+        previous_revision: 48
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       compatibility:sha256:128c736d947816416ee69531cea36b343772934049a2013de0635b72e3fa8438:
         aggregate_digest: "sha256:a134f776355f20c1316234b750011809662bff1d411e840d3d1829611e907701"
         event:
@@ -3812,6 +3982,30 @@ extensions:
         previous_revision: 19
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:6b6b526a642fac2b1c402a9c010b7a5534dda39e973e46ea4affae5049667492:
+        aggregate_digest: "sha256:b089ac05f0e7df181c540684db17ec55d8f195f722e9f49cbddd1771c9de46b6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:19:03.152Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5c897b1bb79424db7022d228"
+          mutation_id: "compatibility:sha256:6b6b526a642fac2b1c402a9c010b7a5534dda39e973e46ea4affae5049667492"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 49
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6b6b526a642fac2b1c402a9c010b7a5534dda39e973e46ea4affae5049667492"
+        next_revision: 50
+        previous_revision: 49
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       compatibility:sha256:74c1a114142f26df143841977a1ef120943b610236a01d9c2f2f55d8465d9cc3:
         aggregate_digest: "sha256:9945956a9b29ba507067be2ba63e603260b3a107594854400ee9f746d70cba6c"
         event:
@@ -3930,6 +4124,30 @@ extensions:
         mutation_id: "compatibility:sha256:8a505d9494e0a0b5d5ba1777b9ebad5d31614d49fc3c9aa5bcafeddd1fa7e793"
         next_revision: 44
         previous_revision: 43
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:8eb8b34db2b08bd01b5366078149d326123f7a38dea2093c05972510bb333a34:
+        aggregate_digest: "sha256:b4624696de9ede37263aed48b3ba0322162d480c3af11d6711b694585f0c5217"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:10:34.750Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d333fa5f45df05675c6f66da"
+          mutation_id: "compatibility:sha256:8eb8b34db2b08bd01b5366078149d326123f7a38dea2093c05972510bb333a34"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 47
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8eb8b34db2b08bd01b5366078149d326123f7a38dea2093c05972510bb333a34"
+        next_revision: 48
+        previous_revision: 47
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       compatibility:sha256:956e889b35c48aa6181efbcb1f10f354adc5a32f2908bdecbafa5921bb2a2003:
@@ -4412,6 +4630,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "918d414d99ae0b453d929f4b2017e2d06b71accb"
   task_execution_context:
     base_ref: "main"
     base_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
@@ -4721,6 +4941,102 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-06T15:19:02.116Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786, input_digest=sha256:c38347ac131dd0540f0dc5e84a866947c318c3e4376bbecc7ccc44148c725ff7
+
+Details:
+
+Check: affected_unit_integration
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check critical_paths (2/2)
+
+Check: docs_contract
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (1/2)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check docs_contract (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609060720-NZXQ0E Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609060720-NZXQ0E-recover-an-interrupted-integration-queue-supervi/.agentplane/tasks/202609060720-NZXQ0E/blueprint/resolved-snapshot.json
+- old_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+- current_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609060720-NZXQ0E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609060720-NZXQ0E
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

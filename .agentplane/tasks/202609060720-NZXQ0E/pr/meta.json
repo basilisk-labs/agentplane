@@ -3,8 +3,8 @@
   "branch": "task/202609060720-NZXQ0E/recover-an-interrupted-integration-queue-supervi",
   "created_at": "2026-09-06T11:45:32.878Z",
   "diffstat_sha256": "sha256:a082ab920f03dec76235a702c9e83a240386c33954f0f6ec57ca8e50c0931870",
-  "last_verified_at": "2026-09-06T15:05:59.597Z",
-  "last_verified_diffstat_sha256": "sha256:98d373aceb1553fd20c6858ee0509c255da896d892a8a1254b2c2ca231474869",
+  "last_verified_at": "2026-09-06T15:19:02.116Z",
+  "last_verified_diffstat_sha256": "sha256:a082ab920f03dec76235a702c9e83a240386c33954f0f6ec57ca8e50c0931870",
   "pr_number": 5902,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5902",
   "provider": {
@@ -20,6 +20,6 @@
   "task_id": "202609060720-NZXQ0E",
   "updated_at": "2026-09-06T14:11:03.968Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
