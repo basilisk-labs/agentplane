@@ -4,7 +4,7 @@ title: "Run supervisor verification against the committed implementation without
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:8965644c6363e924892611165f4efe2349f53aaa81b4b8bc013e4dc3c24571b5"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-05T11:33:14.664Z"
+  state: "ok"
+  updated_at: "2026-09-06T06:01:07.627Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -87,6 +87,8 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
     external_effects: []
@@ -94,7 +96,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -130,9 +144,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:050d0888fd00ccf50fdcea4c0ce60de3294b3a947c8489c1961827a96cbe932a"
+      digest: "sha256:3052456c8efe38e8ef70dcb7602349146cb30ff17ea1a5116be2c42bda3fa17c"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -142,6 +157,8 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
         external_effects: []
@@ -223,8 +240,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 6764bc96f86b. CLI accepted one state-bound external-agent semantic result."
     commit: "6764bc96f86b48a697e3fdc63ed7f96d6ee15cf1"
+  -
+    type: "verify"
+    at: "2026-09-06T06:01:07.627Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-06T05:44:46.391Z"
+doc_updated_at: "2026-09-06T06:01:08.687Z"
 doc_updated_by: "SUPERVISOR"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
@@ -271,6 +294,60 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-06T06:01:07.627Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7, input_digest=sha256:63511f6adedcf3dc4d7169e476b101d8279fdd8bc5a3098af788ef76b99065ed
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042327-PH5N6S Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042327-PH5N6S Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042327-PH5N6S Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609042327-PH5N6S Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042327-PH5N6S-run-supervisor-verification-against-the-committe/.agentplane/tasks/202609042327-PH5N6S/blueprint/resolved-snapshot.json
+    - old_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+    - current_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609042327-PH5N6S
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609042327-PH5N6S
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -579,7 +656,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609042327-PH5N6S"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609042327-PH5N6S"
     intent:
@@ -777,9 +854,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-06T05:53:05.261Z"
+    updated_at: "2026-09-06T06:01:08.661Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -1206,6 +1283,30 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609042327-PH5N6S"
+      compatibility:sha256:eca548280dd3aaeeb25b6477b8e2f176dcd77c7be813597b6e56243fa6900a86:
+        aggregate_digest: "sha256:5dc85e8cfd76c5171d6b903246e118c9feec50eef8f9653829f29db93f8765f0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T06:01:08.661Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_36e9d21b4fc199e30f41f82b"
+          mutation_id: "compatibility:sha256:eca548280dd3aaeeb25b6477b8e2f176dcd77c7be813597b6e56243fa6900a86"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:eca548280dd3aaeeb25b6477b8e2f176dcd77c7be813597b6e56243fa6900a86"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
       external-result:work-order-202609042327-PH5N6S-executor-4049c5273ede8b97b5245169:
         aggregate_digest: "sha256:22a2da734deecd5fc67bd27819ad20287cabc2e9334879b7cf094786f4bc9786"
         event:
@@ -1368,6 +1469,60 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-06T06:01:07.627Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8de46b040260f17d042f2468421ae330a1bc3379655f249c375ba63a813068a7, input_digest=sha256:63511f6adedcf3dc4d7169e476b101d8279fdd8bc5a3098af788ef76b99065ed
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042327-PH5N6S Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042327-PH5N6S Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042327-PH5N6S Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609042327-PH5N6S/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609042327-PH5N6S Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609042327-PH5N6S-run-supervisor-verification-against-the-committe/.agentplane/tasks/202609042327-PH5N6S/blueprint/resolved-snapshot.json
+- old_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+- current_digest: ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609042327-PH5N6S
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609042327-PH5N6S
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
