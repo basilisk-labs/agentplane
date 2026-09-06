@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Reviewed the combined implementation: canonical task-artifact commit ordering preserves the implementation SHA and rejects unrelated dirt; provenance persistence retains explicit/creation-checkout source only for the same valid base identity. Positive, changed-base, interrupted-write and repeated verification are covered, and recovery admission checks remain unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/2d1e77144abd4d54d3840db833cd2b1d7ab2a86559b9d366df79f1738378cbfd.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: Conflict reconciliation against current main must retain artifact ordering in its canonical owners and obtain fresh verification; branch evidence is not final-main evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/2d1e77144abd4d54d3840db833cd2b1d7ab2a86559b9d366df79f1738378cbfd.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
