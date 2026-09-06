@@ -12,8 +12,8 @@ Created: 2026-09-04T23:32:29.145Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: review #3938665689 identifies interrupted implementation_rework replay losing the implementation SHA after the pre-verification artifact commit.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
