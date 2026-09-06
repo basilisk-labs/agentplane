@@ -4,7 +4,7 @@ title: "Archive the resolved WorkItem input planning incident before AgentPlane 
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -87,10 +87,14 @@ execution_contract:
       - "packages/agentplane/assets/policy/incidents.md"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/assets/policy/incidents.md"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -126,7 +130,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:4f046a0c25d77b068eae0fd7a83f7fc9129c0d69171e8f09dec552eda707fe6f"
+      digest: "sha256:4046f60385ebdf4dc1983733f480690a8c0e9d813820efc466cb8370fec55029"
       escalation_reasons:
         - "effect_security_boundary"
       execution_groups:
@@ -135,10 +139,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/assets/policy/incidents.md"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -169,7 +177,9 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c56f52a07026c93f81d06a9d31b14db21db47429"
+  message: "🚧 BW11J6 task: apply external agent result"
 comments:
   -
     author: "DOCS"
@@ -177,6 +187,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 88c9d73a907a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: c56f52a07026. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -199,8 +212,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-06T17:01:03.539Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: c56f52a07026. CLI accepted one state-bound external-agent semantic result."
+    commit: "c56f52a07026c93f81d06a9d31b14db21db47429"
 doc_version: 3
-doc_updated_at: "2026-09-06T16:58:45.146Z"
+doc_updated_at: "2026-09-06T17:01:03.539Z"
 doc_updated_by: "SUPERVISOR"
 description: "Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task."
 sections:
@@ -512,7 +533,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609061636-BW11J6"
-    event_cursor: 7
+    event_cursor: 9
     final_validation: null
     id: "202609061636-BW11J6"
     intent:
@@ -739,9 +760,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609061636-BW11J6"
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-06T16:58:45.146Z"
+    updated_at: "2026-09-06T17:01:03.539Z"
     work_items:
       synchronize-archived-incident-policy:
         attempt: 0
@@ -812,6 +833,54 @@ extensions:
         mutation_id: "compatibility:sha256:3107280ef874dde882a402da8170c32944eee975ce2cd734c28b5227985a3017"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
+      compatibility:sha256:44e0aab818d413b75ddb516e2c73625c19fb36969ae5a1bcfc6f016e8a0ce0dc:
+        aggregate_digest: "sha256:bbbd256957c2d3d9cbf4ebf5b4fe9a93664c9e5acf1824f9f78b6294b5a3388c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T17:01:03.539Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_206192186d4c53586c2ab99f"
+          mutation_id: "compatibility:sha256:44e0aab818d413b75ddb516e2c73625c19fb36969ae5a1bcfc6f016e8a0ce0dc"
+          plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:44e0aab818d413b75ddb516e2c73625c19fb36969ae5a1bcfc6f016e8a0ce0dc"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
+      compatibility:sha256:453bc15d7c5dc575a74b914cbfe61af05da37ba73da02a5c11b9d481c9352cc9:
+        aggregate_digest: "sha256:85f4458ab816ddcbc12bf10769622c087c65c27f007e10b4e3086e0bb39e1eb0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T17:01:03.539Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_394e19c18cf43f4a0863c11a"
+          mutation_id: "compatibility:sha256:453bc15d7c5dc575a74b914cbfe61af05da37ba73da02a5c11b9d481c9352cc9"
+          plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:453bc15d7c5dc575a74b914cbfe61af05da37ba73da02a5c11b9d481c9352cc9"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609061636-BW11J6"
       compatibility:sha256:46751a10a0be644071d0edf830e61b0107b3b80ed68d99b2f97afa31ee883cb0:
@@ -1008,6 +1077,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "c56f52a07026c93f81d06a9d31b14db21db47429"
   task_execution_context:
     base_ref: "main"
     base_sha: "be1a24bce6129e5e1cb3b18432b87fc83113e8e1"
