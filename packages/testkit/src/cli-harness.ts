@@ -3,7 +3,7 @@ import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "no
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, expect } from "vitest";
 
 import { defaultConfig, loadConfig, saveConfig } from "@agentplaneorg/core/config";
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
@@ -258,64 +258,77 @@ export async function writeAndConfigureRoot(): Promise<string> {
 }
 
 export async function approveTaskPlan(root: string, taskId: string): Promise<void> {
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    "1) Do the work\n2) Verify the work",
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
-    root,
-  ]);
-  await runCliSilent([
-    "task",
-    "plan",
-    "approve",
-    taskId,
-    "--by",
-    "USER",
-    "--note",
-    "OK",
-    "--root",
-    root,
-  ]);
+  await setTaskVerifySteps(root, taskId);
+  expect(
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "1) Do the work\n2) Verify the work",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
+  expect(
+    await runCliSilent([
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--by",
+      "USER",
+      "--note",
+      "OK",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
+}
+
+export async function setTaskVerifySteps(root: string, taskId: string): Promise<void> {
+  expect(
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "Run verify for this task. Expected: verification records successfully.",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
 }
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
-  await runCliSilent([
-    "task",
-    "doc",
-    "set",
-    taskId,
-    "--section",
-    "Verify Steps",
-    "--text",
-    "Run verify for this task. Expected: verification records successfully.",
-    "--root",
-    root,
-  ]);
-  await runCliSilent([
-    "verify",
-    taskId,
-    "--ok",
-    "--by",
-    "EVALUATOR",
-    "--note",
-    "Ok to integrate",
-    "--details",
-    [
-      "Command: test harness verification",
-      "Result: pass",
-      "Evidence: task fixture",
-      "Scope: task verification",
-    ].join("\n"),
-    "--quiet",
-    "--root",
-    root,
-  ]);
+  await setTaskVerifySteps(root, taskId);
+  expect(
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "EVALUATOR",
+      "--note",
+      "Ok to integrate",
+      "--details",
+      [
+        "Command: test harness verification",
+        "Result: pass",
+        "Evidence: task fixture",
+        "Scope: task verification",
+      ].join("\n"),
+      "--quiet",
+      "--root",
+      root,
+    ]),
+  ).toBe(0);
   await recordQualityReviewPass(root, taskId);
 }
 
@@ -377,6 +390,7 @@ export async function prepareHostedIntegrateFixture(opts: {
   scenarioName: string;
   protectedBase?: boolean;
   finalHeadSubject?: string;
+  worktreePath?: string;
 }): Promise<{ headSha: string; logPath: string }> {
   if (!harnessLifecycleRegistered) {
     throw new Error(
@@ -677,6 +691,20 @@ export async function prepareHostedIntegrateFixture(opts: {
   });
   registerTestTempPath(finalFakeGh.fakeBin);
   activateFakeGh(finalFakeGh);
+
+  // Callers return the primary checkout to main after fixture preparation.
+  // Register the task branch now so integration can resolve its authoritative worktree.
+  await execFileAsync(
+    "git",
+    [
+      "worktree",
+      "add",
+      "--force",
+      opts.worktreePath ?? path.join(opts.root, ".agentplane", "worktrees", opts.taskId),
+      opts.branch,
+    ],
+    { cwd: opts.root, env },
+  );
 
   return { headSha, logPath: finalFakeGh.logPath };
 }

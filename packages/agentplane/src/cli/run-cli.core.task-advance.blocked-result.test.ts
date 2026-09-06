@@ -16,6 +16,7 @@ import {
 
 import {
   captureStdIO,
+  setTaskVerifySteps,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
   runCliSilent,
@@ -378,7 +379,10 @@ async function prepareBlockedResultTask(opts: {
   expect(JSON.parse(prepared.stdout)).toMatchObject({
     action: { kind: "approval_required" },
   });
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
+  await setTaskVerifySteps(root, taskId);
+  expect(
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
+  ).toBe(0);
   await execFileAsync("git", ["add", "."], { cwd: root });
   await execFileAsync("git", ["commit", "-m", `test: seed ${opts.slug} task`], { cwd: root });
 

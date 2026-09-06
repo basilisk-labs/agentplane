@@ -19,6 +19,7 @@ import {
 import type { TaskData } from "../../backends/task-backend.js";
 import {
   loadCommandContext,
+  loadBackendTask,
   loadTaskFromContext,
   resolveTaskBranchFromContext,
   type CommandContext,
@@ -316,7 +317,14 @@ export async function loadTaskCommandContext(opts: {
   const taskIds = unique(opts.taskIds.map((taskId) => taskId.trim()).filter(Boolean));
   if (taskIds.length === 0) throw new Error("Task command context requires at least one task id.");
   const preliminary = await Promise.all(
-    taskIds.map((taskId) => loadTaskFromContext({ ctx: opts.ctx, taskId })),
+    taskIds.map(async (taskId) => {
+      const loaded = await loadBackendTask({
+        ctx: opts.ctx,
+        cwd: opts.ctx.resolvedProject.gitRoot,
+        taskId,
+      });
+      return loaded.task;
+    }),
   );
   const primaryTaskId = opts.primaryTaskId ?? taskIds[0];
   const preliminaryPrimary = preliminary.find((task) => task.id === primaryTaskId);

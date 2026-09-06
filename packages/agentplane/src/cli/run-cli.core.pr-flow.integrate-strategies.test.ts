@@ -593,11 +593,13 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-rebase`);
       await prepareHostedIntegrateFixture({
         root,
         taskId,
         branch,
         scenarioName: "integrate-rebase-strategy",
+        worktreePath,
       });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
@@ -605,11 +607,6 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
       await execFileAsync("git", ["add", "base.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
-      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-rebase`);
-      await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
-        cwd: root,
-        env: cleanGitEnv(),
-      });
 
       const io = captureStdIO();
       try {

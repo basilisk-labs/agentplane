@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   mkGitRepoRoot,
   mkGitRepoRootWithCommit,
   registerAgentplaneHome,
@@ -146,6 +147,7 @@ describe("verify flag matrix", () => {
     const root = await mkGitRepoRootWithCommit();
     await writeDefaultConfig(root);
     const taskId = await createTask(root, `Verify matrix ${output}`);
+    await setTaskVerifySteps(root, taskId);
 
     const io = captureStdIO();
     try {

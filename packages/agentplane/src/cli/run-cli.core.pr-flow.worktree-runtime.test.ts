@@ -474,7 +474,8 @@ describe(
         expect(
           await pathExists(path.join(worktreePath, "packages", "agentplane", "dist", "cli.js")),
         ).toBe(true);
-        expect(await pathExists(path.join(worktreePath, "node_modules"))).toBe(true);
+        // The active binary belongs to another repository; its root install is not reusable.
+        expect(await pathExists(path.join(worktreePath, "node_modules"))).toBe(false);
         expect(
           await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules")),
         ).toBe(true);

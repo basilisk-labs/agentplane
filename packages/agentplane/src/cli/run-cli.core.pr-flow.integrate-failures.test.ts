@@ -27,6 +27,8 @@ vi.mock("../commands/pr/integrate/internal/github-protection.js", () => ({
   requiresPullRequestMergePath: vi.fn().mockResolvedValue(false),
 }));
 
+import { syncPrArtifacts } from "../commands/pr/internal/sync.js";
+import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { runCli } from "./run-cli.js";
 import {
   filterAgentsByWorkflow,
@@ -167,19 +169,16 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
       await prepareHostedIntegrateFixture({
         root,
         taskId,
         branch,
         scenarioName: "integrate-rebase-verify-fail",
+        worktreePath,
       });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
-      const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
-      await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
-        cwd: root,
-        env: cleanGitEnv(),
-      });
 
       const io = captureStdIO();
       try {
@@ -296,7 +295,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
   );
 
   it(
-    "integrate fails before merge when the task branch never committed PR artifacts",
+    "integrate rejects uncommitted PR artifacts before merge",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
@@ -337,6 +336,11 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       }
       await approveTaskPlan(root, taskId);
       await recordVerificationOk(root, taskId);
+      // The quality fixture creates PR metadata; omit it from this intentionally incomplete branch.
+      await rm(path.join(root, ".agentplane", "tasks", taskId, "pr"), {
+        recursive: true,
+        force: true,
+      });
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -347,21 +351,25 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
-      await runCliSilent([
-        "pr",
-        "open",
+      const taskWorktree = path.join(root, ".agentplane", "worktrees", taskId);
+      await execFileAsync("git", ["worktree", "add", taskWorktree, branch], { cwd: root });
+      // Prepare the scaffold without pr open, which now commits it automatically.
+      await syncPrArtifacts({
+        ctx: await loadCommandContext({ cwd: taskWorktree, rootOverride: taskWorktree }),
+        cwd: taskWorktree,
+        rootOverride: taskWorktree,
         taskId,
-        "--author",
-        "CODER",
-        "--branch",
+        mode: "open",
+        author: "CODER",
         branch,
-        "--root",
-        root,
-      ]);
+        remoteMode: "sync-only",
+        workflowMode: "branch_pr",
+        base: "main",
+      });
       const statusAfterPrOpen = await execFileAsync(
         "git",
         ["status", "--short", "--untracked-files=all", `.agentplane/tasks/${taskId}`],
-        { cwd: root },
+        { cwd: taskWorktree },
       );
       expect(statusAfterPrOpen.stdout).toContain(`?? .agentplane/tasks/${taskId}/pr/meta.json`);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -383,8 +391,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
           root,
         ]);
         expect(code).toBe(3);
-        expect(io.stderr).toContain("missing committed PR artifacts required for integrate");
-        expect(io.stderr).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
+        expect(io.stderr).toContain("Task worktree contains uncommitted changes");
+        expect(io.stderr).toContain(`.agentplane/tasks/${taskId}/pr/`);
       } finally {
         io.restore();
       }

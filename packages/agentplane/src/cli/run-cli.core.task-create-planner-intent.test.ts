@@ -7,6 +7,7 @@ import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import {
   installRunCliIntegrationHarness,
+  setTaskVerifySteps,
   mkGitRepoRootWithCommit,
   mkTempDir,
   writeConfig,
@@ -62,6 +63,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const issued = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
@@ -235,6 +237,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const issued = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
@@ -515,6 +518,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const issued = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
@@ -596,6 +600,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const planning = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
@@ -634,12 +639,14 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       summary: "Added the requested local package metadata.",
       includeIntent: false,
     });
-    await runJson(
+    const escalation = await runJson(
       root,
       ["task", "advance", taskId, "--result", implementationResult, "--agent-json"],
       metrics,
     );
-    const frontmatter = await readLifecycleMetrics(root, taskId, metrics);
+    expect(escalation).toMatchObject({ action: { kind: "approval_required" } });
+    const taskWorktree = await findTaskWorktree(root, taskId);
+    const frontmatter = await readLifecycleMetrics(taskWorktree, taskId, metrics);
     const contract = frontmatter.execution_contract as {
       selected_mode: string;
       observed: { changed_paths: string[] };
@@ -653,12 +660,13 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
     expect(contract.escalation.preserved_commit).toMatch(/^[0-9a-f]{40}$/u);
     expect(metrics).toMatchObject({
       control_plane_commands: 6,
-      approval_boundaries: 1,
+      approval_boundaries: 2,
       verification_time_ms: 0,
       work_preserved: true,
       recovery_commands: 0,
     });
-    expect(metrics.lifecycle_transitions).toBe(3);
+    // Escalation pauses for plan approval before another execution transition.
+    expect(metrics.lifecycle_transitions).toBe(2);
   }, 60_000);
 
   it("keeps declared deployment and destructive Git effects forbidden", async () => {
@@ -674,6 +682,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const planning = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
@@ -760,6 +769,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const planning = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
@@ -868,6 +878,7 @@ describe("task create planner intent", { timeout: 60_000 }, () => {
       metrics,
     );
     const taskId = created.task_id as string;
+    await setTaskVerifySteps(root, taskId);
     const planning = (await runJson(
       root,
       ["task", "advance", taskId, "--agent-json"],
