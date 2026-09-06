@@ -6,7 +6,7 @@ Created: 2026-09-06T16:43:14.836Z
 
 - Task: `202609061636-BW11J6`
 - Title: Archive the resolved WorkItem input planning incident before AgentPlane 0.7.8
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609061636-BW11J6/archive-the-resolved-workitem-input-planning-inc`
 - Canonical task record: `.agentplane/tasks/202609061636-BW11J6/README.md`
 
