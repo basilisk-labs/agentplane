@@ -12,8 +12,8 @@ Created: 2026-09-06T17:54:49.525Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run release:prepublish
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -56,10 +56,11 @@ Created: 2026-09-06T17:54:49.525Z
  packages/recipes/src/index.ts                      |    2 +-
  packages/spec/examples/acr.json                    |    4 +-
  packages/testkit/package.json                      |    2 +-
+ .../baselines/v0.7-compatibility-candidate.json    |    6 +-
  .../docs/releases/v0.7.8-evidence/preparation.png  |  Bin 0 -> 55103 bytes
  website/static/img/social/docs/releases/v0.7.8.png |  Bin 0 -> 52552 bytes
  website/static/img/social/manifest.json            |   16 +
- 30 files changed, 9159 insertions(+), 45 deletions(-)
+ 31 files changed, 9162 insertions(+), 48 deletions(-)
 ```
 
 </details>
