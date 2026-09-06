@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 104
+revision: 105
 origin:
   system: "manual"
 depends_on: []
@@ -39,36 +39,37 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-06T02:05:42.759Z"
+  updated_at: "2026-09-06T02:33:41.062Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 5 typed finding(s)."
-  evaluated_sha: "2613ab498a2142b112afcd42351dbe6bb273a223"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "8701b4ee14a0566d0c1fe97401604fa973847db4"
   blueprint_digest: "1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c"
   evidence_refs:
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-020433653-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-020433653-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/e1f0de837a9cd415240a5c6e3442aefc5dc4a85877bd9df8e094292b26ce601a.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-020433653-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-020433653-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-020433653-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-020433653-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-023206671-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-023206671-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/08235e4db419938e9127c24bde6984f99cde82301d62548b100745f29b72c438.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-023206671-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-023206671-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-023206671-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609041801-ZVX69C/README.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/c7b1fa00ed96882ff1a131c5ab4dba4b6a74b4cea074470f7ffa83dcc1db3875.patch"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/431f83c22f0d1ada008383f790f41e77bbc99858af8fbc53c60e8bbf134f4057.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260906020420331-e1a384eb99d68206.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/cc047c96dc329fefcd26beac6d85cbe1087d17af8ef2c68fdad2e2d210c1049f.patch"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/6c3995abcbdcf9a802b7493cbf8636cddd193566046d0ca3cb0d13f1a5406511.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260906023153341-289a1719eb1e1d5b.json"
     - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/333290060f7a86dc7ce1735f25e72cc485de331583c73b21b9b15160ac71e63b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "R1 high: implementation result application rejects a provider fingerprint different from the WorkOrder, while requiresImplementationRecoveryReplacement in external-agent-supervisor-recovery.ts does not compare provider identity. recoverPendingExternalAgentResult therefore retries the rejected result before --replacement handling, never issuing a fresh episode. This violates the approved branch-worktree resume/replay contract; preserve rejection of stale evidence and restore a supported replacement path rather than accepting stale provider state."
-    - "The failure is currently reproduced on PH5N6S with unchanged revision 8, HEAD 4b86e4b5028111db3e0da84a5b4bee94afdbf8cc, Task/backend/authority digests and clean worktree. Both normal advance and --replacement fail stale. The persisted exchange is result_received, the journal remains intent_recorded, and only provider differs. A read-only invocation of the current ZVX recovery predicate with this observed provider change returns false while the corresponding application predicate rejects it. No PH5N6S state, result or journal was edited."
-    - "The scoped Knip repair itself is complete: only two internal export modifiers were removed, both functions retain their existing callers and behavior. Knip CLI budget is 0/0 without baseline changes. All nine frozen evidence hashes match; verification 20260906020420331-e1a384eb99d68206.json is bound to implementation 2613ab498a2142b112afcd42351dbe6bb273a223 and all 11 declared checks, including full CI, passed."
-    - "The earlier inheritance/supersession fixes remain coherent in actual Task revision 100: verification=ok and authority_violations=[]. Do not reopen those completed repairs or repeat the accepted conflict merge."
-    - "Residual risk: A stale pending provider-bound result currently prevents normal and replacement continuation indefinitely."
+    - "Reviewed the production delta against the actual return-state invariant. Recovery now includes the provider digest already enforced by implementation admission. No old result becomes acceptable: task identity, revision, worktree, backend and authority checks remain, and provider drift retires the unresolved intent through its existing CAS owner."
+    - "The closest CLI regressions independently compare fingerprints to prove provider-only drift. They reproduce the old dead end and verify fresh replacement identity, stable repeated issuance, rejection and byte preservation of the old result, interruption between journal retirement and exchange persistence, unchanged implementation SHA and completed WorkItems, and subsequent fresh verification/evaluation. All 25 evidence-rework and 41 nearest implementation-recovery tests passed."
+    - "Earlier qualified conflict merge, inherited-path classification, verification supersession and Knip repairs are unchanged. The actual Task revision 104 has verification=ok and authority_violations=[]. No completed implementation, accepted merge, result, queue entry or approval was manually rewritten."
+    - "Verified all nine frozen evidence digests. Record 20260906023153341-289a1719eb1e1d5b.json is bound to implementation 8701b4ee14a0566d0c1fe97401604fa973847db4, original full branch range, Verify Steps, runtime/context and evidence inputs. All 11 supervisor checks passed, including 74 CLI-cycle tests, 147 core-cycle tests, 21 evaluator/runner tests, format, lint, typecheck, routing, doctor, task lint, diff check and full CI."
+    - "The new semantic diff changes only the existing recovery predicate and its existing CLI test file. Subsequent HEAD changes contain only supervisor-owned task artifacts. The approved salvage classification and release/MPXQBK exclusions remain intact."
+    - "Residual risk: Actual PH5N6S recovery must use the updated runtime and fresh normal route; it was not mutated during this evaluation."
+    - "Residual risk: Provider and queue state must be recomputed after publication. Old hosted checks do not qualify this new head."
 token_usage:
   agent_runs: 41
   input_tokens: null
@@ -1408,7 +1409,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-06T02:31:54.589Z"
+doc_updated_at: "2026-09-06T02:33:41.103Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -5434,7 +5435,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 82
+    event_cursor: 83
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -6906,9 +6907,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 104
+    revision: 105
     schema_version: 1
-    updated_at: "2026-09-06T02:31:54.581Z"
+    updated_at: "2026-09-06T02:31:54.589Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -7823,6 +7824,30 @@ extensions:
         mutation_id: "compatibility:sha256:4881685110c506df59e8197ccfb56bee2e194f98d29033626088a4e07f6e67ca"
         next_revision: 104
         previous_revision: 103
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:4ab7bfde78bbe3bccf97dc3be7de7303664a51d4e97cd2b053a1b031ea84c119:
+        aggregate_digest: "sha256:867162af509f537559366d84c91eaf9264e213be4750d5e00586af6eeb6a6608"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T02:31:54.589Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2eb01301d340a92290dd66cf"
+          mutation_id: "compatibility:sha256:4ab7bfde78bbe3bccf97dc3be7de7303664a51d4e97cd2b053a1b031ea84c119"
+          plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 104
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4ab7bfde78bbe3bccf97dc3be7de7303664a51d4e97cd2b053a1b031ea84c119"
+        next_revision: 105
+        previous_revision: 104
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:4e247977824b2c30c9b6445972360f9f9bb33bc54bccf02fda96fe2c416f6fb9:
