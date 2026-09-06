@@ -4,7 +4,7 @@ title: "Run supervisor verification against the committed implementation without
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -84,10 +84,16 @@ execution_contract:
       - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -124,7 +130,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:23ca5f97d24dc36b16f797efd3175daae8366bddf7c2fc2cb934a04e487b83eb"
+      digest: "sha256:050d0888fd00ccf50fdcea4c0ce60de3294b3a947c8489c1961827a96cbe932a"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
       execution_groups:
@@ -133,10 +139,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -168,7 +180,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "6764bc96f86b48a697e3fdc63ed7f96d6ee15cf1"
+  message: "🚧 PH5N6S task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -176,6 +190,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: fa586d9c7d1e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6764bc96f86b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -198,8 +215,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-06T05:44:46.391Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6764bc96f86b. CLI accepted one state-bound external-agent semantic result."
+    commit: "6764bc96f86b48a697e3fdc63ed7f96d6ee15cf1"
 doc_version: 3
-doc_updated_at: "2026-09-06T03:16:23.556Z"
+doc_updated_at: "2026-09-06T05:44:46.391Z"
 doc_updated_by: "SUPERVISOR"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
@@ -554,7 +579,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609042327-PH5N6S"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609042327-PH5N6S"
     intent:
@@ -752,9 +777,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 14
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-06T03:16:23.556Z"
+    updated_at: "2026-09-06T05:44:46.391Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -1004,6 +1029,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609042327-PH5N6S"
+      compatibility:sha256:c282678a8ec550883979c1c1f1b28ae73bd549c70b60f5da1471c434078c7427:
+        aggregate_digest: "sha256:b5ecdba3b98b9da40d0c0cf80f944e59b8b12ec5ba3e5023985182615c04eea2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T05:44:46.391Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_42981b199e033b6235d64443"
+          mutation_id: "compatibility:sha256:c282678a8ec550883979c1c1f1b28ae73bd549c70b60f5da1471c434078c7427"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c282678a8ec550883979c1c1f1b28ae73bd549c70b60f5da1471c434078c7427"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
       compatibility:sha256:d05987cb8ccf82b6dba8397b5fd6bf51aac292b9a9189fdf8f06823ad01052e7:
         aggregate_digest: "sha256:9413d9f90b079b51c72642047b923f508403a6162778a96c2f0907904d57931c"
         event:
@@ -1050,6 +1099,30 @@ extensions:
         mutation_id: "compatibility:sha256:e7a767ac3abef08a06ab5887d7e2329873b60b576105d114e640a0de204eae1c"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      compatibility:sha256:e7bed2704a959702c8ce1d7a60f3abdc53c0bb3f516ed362bbafac70303876cd:
+        aggregate_digest: "sha256:b8244570b9a610831cdc6a85945a915b6bab5abb3db487d2247232d0b3ad4e92"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T05:44:46.391Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e8e23ca516a27cb320e9df8b"
+          mutation_id: "compatibility:sha256:e7bed2704a959702c8ce1d7a60f3abdc53c0bb3f516ed362bbafac70303876cd"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e7bed2704a959702c8ce1d7a60f3abdc53c0bb3f516ed362bbafac70303876cd"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       external-result:work-order-202609042327-PH5N6S-executor-fe66808c6c5a2aa48a01a50b:
@@ -1126,6 +1199,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "6764bc96f86b48a697e3fdc63ed7f96d6ee15cf1"
   task_execution_context:
     base_ref: "main"
     base_sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
