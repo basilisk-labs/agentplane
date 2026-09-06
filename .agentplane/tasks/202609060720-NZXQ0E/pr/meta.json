@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:98d373aceb1553fd20c6858ee0509c255da896d892a8a1254b2c2ca231474869",
   "pr_number": 5902,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5902",
+  "pre_merge_closure": {
+    "basis_commit": "e4b14ecccfcbfce0956b670f661e55f80f1ca78d",
+    "branch": "task/202609060720-NZXQ0E/recover-an-interrupted-integration-queue-supervi",
+    "pr_number": 5902,
+    "recorded_at": "2026-09-06T14:39:03.307Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

@@ -1,10 +1,11 @@
 ---
 id: "202609060720-NZXQ0E"
 title: "Recover an interrupted integration queue supervisor intent before semantic rework"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -51,6 +52,20 @@ quality_review:
     - ".agentplane/policy/security.must.md"
   findings:
     - "Confirmed: the prior snapshot authority mismatch is resolved without relaxing journal authority, effect or operation-key identity. Native snapshot and legacy recovery preserve exact replay and a single rework successor; stale, foreign, live-owner and contradictory effects are rejected. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch."
+token_usage:
+  agent_runs: 21
+  input_tokens: null
+  journal_digest: "sha256:df8a25ae8695c914a6c9112b69df439d45c0b8506c0b0e5104080ec1302b093a"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-06T14:39:03.216Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -376,8 +391,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "08115f327915f9873ef8b1273b10c23da97885b8"
-  message: "🚧 NZXQ0E task: apply external agent result"
+  hash: "e4b14ecccfcbfce0956b670f661e55f80f1ca78d"
+  message: "🚧 NZXQ0E task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -403,6 +418,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 08115f327915. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -478,9 +496,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-06T14:39:03.216Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e4b14ecccfcbfce0956b670f661e55f80f1ca78d"
 doc_version: 3
-doc_updated_at: "2026-09-06T14:35:34.824Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-06T14:39:03.216Z"
+doc_updated_by: "CODER"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
   Summary: |-
@@ -1152,7 +1178,34 @@ extensions:
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
     event_cursor: 27
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609060720-NZXQ0E"
+            - "git:08115f327915f9873ef8b1273b10c23da97885b8"
+          check_id: "focused-recovery"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-06T14:35:33.585Z"
+          repository_snapshot_digest: "sha256:4724f2d580c9c0a0b9f1ae61c68290e2c24dd40f91ce6d8672985725e5ac5069"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609060720-NZXQ0E"
+            - "git:08115f327915f9873ef8b1273b10c23da97885b8"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-06T14:35:33.585Z"
+          repository_snapshot_digest: "sha256:4724f2d580c9c0a0b9f1ae61c68290e2c24dd40f91ce6d8672985725e5ac5069"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609060720-NZXQ0E"
     intent:
       acceptance_criteria:
@@ -1173,7 +1226,7 @@ extensions:
 
         Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery.
       task_id: "202609060720-NZXQ0E"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -3108,9 +3161,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 45
+    revision: 46
     schema_version: 1
-    updated_at: "2026-09-06T14:35:34.824Z"
+    updated_at: "2026-09-06T14:39:03.216Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -4186,6 +4239,31 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      legacy-finish:202609060720-NZXQ0E:2026-09-06T14:35:33.585Z:08115f327915f9873ef8b1273b10c23da97885b8:
+        aggregate_digest: "sha256:6a77c3bbc1536798ab2ce4f1e08b8785140ac96122664877305d43938adb1642"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-06T14:39:03.216Z"
+          cause_refs:
+            - "task-verification:202609060720-NZXQ0E"
+            - "git:08115f327915f9873ef8b1273b10c23da97885b8"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_781c0412de11f9cab373df86"
+          mutation_id: "legacy-finish:202609060720-NZXQ0E:2026-09-06T14:35:33.585Z:08115f327915f9873ef8b1273b10c23da97885b8"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: "sha256:4724f2d580c9c0a0b9f1ae61c68290e2c24dd40f91ce6d8672985725e5ac5069"
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 45
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609060720-NZXQ0E:2026-09-06T14:35:33.585Z:08115f327915f9873ef8b1273b10c23da97885b8"
+        next_revision: 46
+        previous_revision: 45
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       plan-refinement:work-order-202609060720-NZXQ0E-executor-2b9263094ba2716f37737f3c:
         aggregate_digest: "sha256:701d9f42943972aed9d6b51169616283526d02c9978e79bd3fae6b1e4dff0fcc"
         event:
@@ -4336,6 +4414,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "08115f327915f9873ef8b1273b10c23da97885b8"
+    message: "🚧 NZXQ0E task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
@@ -4629,3 +4708,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/21` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:df8a25ae8695c914a6c9112b69df439d45c0b8506c0b0e5104080ec1302b093a`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-06T14:39:03.216Z`
