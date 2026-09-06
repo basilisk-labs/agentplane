@@ -37,6 +37,9 @@ vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  loadBackendTask: async (opts: { taskId: string }) => ({
+    task: await mocks.loadTaskFromContext(opts),
+  }),
 }));
 vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,

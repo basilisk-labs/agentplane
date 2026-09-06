@@ -4,7 +4,7 @@ import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "@agentplaneorg/core/git";
+import * as CoreGit from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
 import { createMutableTaskStore } from "./finish-task-store.testkit.js";
 
@@ -44,6 +44,9 @@ vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  loadBackendTask: async (opts: { taskId: string }) => ({
+    task: await mocks.loadTaskFromContext(opts),
+  }),
 }));
 vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
@@ -64,11 +67,7 @@ vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
 vi.mock("@agentplaneorg/core/git", async () => {
-  const actualUnknown: unknown = await vi.importActual("@agentplaneorg/core/git");
-  const actual =
-    actualUnknown && typeof actualUnknown === "object"
-      ? (actualUnknown as Record<string, unknown>)
-      : {};
+  const actual = await vi.importActual<typeof CoreGit>("@agentplaneorg/core/git");
   return {
     ...actual,
     gitEnv: () => ({}),
@@ -175,7 +174,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     backendId: "mock",
     backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
     git: {
-      ...new GitContext({ gitRoot: "/repo" }),
+      ...new CoreGit.GitContext({ gitRoot: "/repo" }),
       statusStagedPaths: vi.fn().mockResolvedValue([]),
       statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
       invalidateStatus: vi.fn(),

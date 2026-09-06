@@ -16,7 +16,7 @@ function makeMocks() {
     cmdCommit: vi.fn(),
     ensureReconciledBeforeMutation: vi.fn(),
     loadCommandContext: vi.fn(),
-    loadTaskFromContext: vi.fn(),
+    loadTaskFromContext: vi.fn<(opts: { taskId: string }) => Promise<TaskData>>(),
     backendIsLocalFileBackend: vi.fn(),
     getTaskStore: vi.fn(),
     readCommitInfo: vi.fn(),
@@ -62,6 +62,9 @@ vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  loadBackendTask: async (opts: { taskId: string }) => ({
+    task: await mocks.loadTaskFromContext(opts),
+  }),
 }));
 vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,

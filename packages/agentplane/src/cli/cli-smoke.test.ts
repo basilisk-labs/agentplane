@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { createRecipeArchive } from "@agentplane/testkit";
+import { createRecipeArchive, setTaskVerifySteps } from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
 
@@ -100,6 +100,7 @@ describe("agentplane CLI smoke", () => {
       expect(taskNew.code).toBe(0);
       const taskId = taskNew.stdout.trim();
       expect(taskId).toMatch(/^\d{12}-/);
+      await setTaskVerifySteps(root, taskId);
 
       const planSet = await runCliWithOutput(root, [
         "task",
@@ -151,7 +152,7 @@ describe("agentplane CLI smoke", () => {
         "--note",
         "Smoke verification: local checks only; core lifecycle commands succeeded.",
       ]);
-      expect(verify.code).toBe(0);
+      expect(verify.code, `${verify.stdout}\n${verify.stderr}`).toBe(0);
 
       const evaluator = await runCliWithOutput(root, [
         "evaluator",

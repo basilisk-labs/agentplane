@@ -382,18 +382,17 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
     await runCliSilent(["pr", "update", taskId, "--branch", branch, "--root", root]);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh pr artifacts`);
+    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-protected-main`);
     await prepareHostedIntegrateFixture({
       root,
       taskId,
       branch,
       scenarioName: "integrate-protected-main",
       protectedBase: true,
+      worktreePath: taskWorktree,
     });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
-    const taskWorktree = path.join(root, ".agentplane", "worktrees", `${taskId}-protected-main`);
-    await mkdir(path.dirname(taskWorktree), { recursive: true });
-    await execFileAsync("git", ["worktree", "add", taskWorktree, branch], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const { stdout: beforeMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
