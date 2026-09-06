@@ -30,11 +30,11 @@ Created: 2026-09-04T23:32:29.145Z
 
 ```text
  ...li.core.task-advance.clean-verification.test.ts | 265 +++++++++++++++++++++
- .../external-agent-implementation-authority.ts     |  14 ++
+ .../external-agent-implementation-authority.ts     |  16 ++
  .../external-agent-implementation-finalization.ts  |  24 +-
  .../src/commands/task/verify-record-execute.ts     |  12 +-
  .../task/verify-record.durability.unit.test.ts     |  72 ++++++
- 5 files changed, 365 insertions(+), 22 deletions(-)
+ 5 files changed, 367 insertions(+), 22 deletions(-)
 ```
 
 </details>

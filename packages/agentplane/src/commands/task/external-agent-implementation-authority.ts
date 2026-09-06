@@ -515,7 +515,9 @@ export async function applyExternalImplementationResult(opts: {
         authorityViolations.join(", "),
     });
   }
-  if (opts.decision.workflowMode === "branch_pr") {
+  // Conflict verification and replay are bound to the two-parent merge HEAD.
+  // Its checkpoint owner persists artifacts after verification.
+  if (opts.decision.workflowMode === "branch_pr" && !conflictContext) {
     const status = await readDirectRepositoryStatus(opts.exchange.checkout);
     if (hasChangedTaskArtifacts(status?.lines ?? [], opts.exchange.task_id)) {
       // Keep the implementation SHA in its evidence; commit only the supervisor's
