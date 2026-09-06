@@ -33,10 +33,7 @@ import {
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
-import {
-  reconcileTaskExecutionContract,
-  resolveTaskExecutionContract,
-} from "../../runtime/task-routing/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   loadTaskCommandContext,
   resolveTaskExecutionContext,
@@ -50,7 +47,11 @@ import {
   nowIso,
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
-import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import {
+  resolveObservedVerificationChangedPaths,
+  resolveInheritedVerificationPaths,
+  reconcileVerificationExecutionContract,
+} from "./verify-record-observed-changes.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import { parseVerificationCheckDetails } from "../shared/verification-details.js";
@@ -104,6 +105,7 @@ async function recordVerificationResult(opts: {
   quiet: boolean;
   command: ExecuteVerifyRecordCommandOptions["command"];
   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
+  beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -135,6 +137,7 @@ async function recordVerificationResult(opts: {
       taskId: opts.taskId,
       policyAction: "task_verify",
       phase: "verify",
+      beforePersist: opts.beforePersist,
       build: async (current) => {
         const baseExecutionContract =
           opts.verificationSnapshot?.execution_contract ??
@@ -193,10 +196,21 @@ async function recordVerificationResult(opts: {
             artifactTaskIds: qualityReviewTaskIds,
             execution: taskCommand.execution,
           }));
-        const observedExecutionContract = reconcileTaskExecutionContract({
+        const inheritedPaths =
+          opts.verificationSnapshot?.inherited_paths ??
+          (await resolveInheritedVerificationPaths({
+            ctx,
+            evaluatedSha,
+            taskId: current.id,
+            artifactTaskIds: qualityReviewTaskIds,
+            execution: taskCommand.execution,
+            changed_paths: observedChangedPaths,
+          }));
+        const observedExecutionContract = reconcileVerificationExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
-        }).contract;
+          inherited_paths: inheritedPaths,
+        });
         const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
         const requiresConcreteDetails =
@@ -369,12 +383,10 @@ async function recordVerificationResult(opts: {
           id: `recorded-check-${String(index + 1)}`,
           result: check.result,
         }));
-        if (verificationResults.length === 0) {
-          verificationResults.push({
-            id: "verification-record",
-            result: opts.state === "ok" ? "pass" : "fail",
-          });
-        }
+        verificationResults.push({
+          id: "verification-record",
+          result: opts.state === "ok" ? "pass" : "fail",
+        });
         const previousExecutionBase = taskExecutionBaseFromExtensions(current.extensions);
         const preserveExecutionSource =
           previousExecutionBase !== null &&
@@ -396,11 +408,21 @@ async function recordVerificationResult(opts: {
         if (opts.state !== "ok") {
           Reflect.deleteProperty(nextExtensions, "implementation_commit");
         }
-        const reconciledContract = reconcileTaskExecutionContract({
-          contract: observedExecutionContract,
+        const reconciledContract = reconcileVerificationExecutionContract({
+          contract: {
+            ...observedExecutionContract,
+            observed: {
+              ...observedExecutionContract.observed,
+              // This transition replaces this owner's current results; durable records retain history.
+              verification_results: observedExecutionContract.observed.verification_results.filter(
+                ({ id }) => id !== "verification-record" && !/^recorded-check-\d+$/u.test(id),
+              ),
+            },
+          },
           changed_paths: observedChangedPaths,
+          inherited_paths: inheritedPaths,
           verification_results: verificationResults,
-        }).contract;
+        });
         intents.unshift(
           setTaskFieldsIntent({
             execution_contract: reconciledContract,
@@ -448,33 +470,7 @@ async function recordVerificationResult(opts: {
     throw error;
   }
 
-  if (workflowMode === "branch_pr") {
-    const syncResult = await ensurePrArtifactsSynced({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-      author: opts.by,
-      workflowMode,
-    });
-    if (syncResult) {
-      const { metaPath } = await resolvePrPaths({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        taskId: opts.taskId,
-      });
-      const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
-      await writeJsonStableIfChanged(
-        metaPath,
-        buildVerifiedPrMeta({
-          meta,
-          at,
-          state: opts.state === "ok" ? "pass" : "fail",
-        }),
-      );
-    }
-  }
+  if (workflowMode === "branch_pr") await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
 
   let incidentSummary: string | null = null;
   if (opts.collectIncidents === true) {
@@ -529,6 +525,29 @@ async function recordVerificationResult(opts: {
   }
 }
 
+export async function syncRecordedVerificationArtifacts(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  by: string;
+  at: string;
+  state: VerifyState;
+}): Promise<void> {
+  const syncResult = await ensurePrArtifactsSynced({
+    ...opts,
+    author: opts.by,
+    workflowMode: "branch_pr",
+  });
+  if (!syncResult) return;
+  const { metaPath } = await resolvePrPaths(opts);
+  const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+  await writeJsonStableIfChanged(
+    metaPath,
+    buildVerifiedPrMeta({ meta, at: opts.at, state: opts.state === "ok" ? "pass" : "fail" }),
+  );
+}
+
 export async function executeVerifyRecordCommand(
   opts: ExecuteVerifyRecordCommandOptions,
 ): Promise<number> {
@@ -554,6 +573,7 @@ export async function executeVerifyRecordCommand(
       quiet: opts.quiet,
       command: opts.command,
       verificationSnapshot: opts.verificationSnapshot,
+      beforePersist: opts.beforePersist,
     });
     return 0;
   } catch (err) {
