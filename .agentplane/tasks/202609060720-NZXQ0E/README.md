@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -31,27 +31,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-06T14:37:38.789Z"
+  updated_at: "2026-09-06T15:20:08.973Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "08115f327915f9873ef8b1273b10c23da97885b8"
+  evaluated_sha: "918d414d99ae0b453d929f4b2017e2d06b71accb"
   blueprint_digest: "dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08"
   evidence_refs:
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/b07de64967259c28a61ea2d98111ac6a3d271515a7d23b5f8b99f96fa23a265d.md"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-143541261-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-151909802-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-151909802-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/55d3c19fc6e981e1e6caacf1e05ae59f0954bd6c62885c8bac4e058a0cbb7a07.md"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-151909802-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-151909802-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/20260906-151909802-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch"
-    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d432810efed67a9796c3798ac83aeb9dae81559a2a3fbe58ce29ab077e82a875.json"
-    - ".agentplane/tasks/202609060720-NZXQ0E/verification/20260906143533585-999dcc3471096a87.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d826199b0298eb9790fe2487020c70eba78127ab357c33dfc45b212839a1ed9e.patch"
+    - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/55b284fd162659604550b6fe26f480518a091394ffe988bb2724b41fb379bdee.json"
+    - ".agentplane/tasks/202609060720-NZXQ0E/verification/20260906151902116-3f232ba044be9b99.json"
     - ".agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/c5d8a66b2ba0f481170312cb7d6ce94c6776b2f749321906d9c7e3faa908be7e.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "Confirmed: the prior snapshot authority mismatch is resolved without relaxing journal authority, effect or operation-key identity. Native snapshot and legacy recovery preserve exact replay and a single rework successor; stale, foreign, live-owner and contradictory effects are rejected. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/1e40a07e898e3bc84373582bc5be79631a24d6357ff2ff11d4caaff8a5736bfb.patch."
+    - "Confirmed: the GitHub test-merge false rejection is fixed in the existing recovery owner without changing other providers or weakening completed-merge rejection. The native snapshot test covers a non-null test merge SHA and preserves one rework successor and idempotent replay. Evidence: .agentplane/tasks/202609060720-NZXQ0E/quality/objects/sha256/d826199b0298eb9790fe2487020c70eba78127ab357c33dfc45b212839a1ed9e.patch; .agentplane/tasks/202609060720-NZXQ0E/verification/20260906151902116-3f232ba044be9b99.json."
 token_usage:
   agent_runs: 21
   input_tokens: null
@@ -528,7 +528,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-06T15:19:03.157Z"
+doc_updated_at: "2026-09-06T15:20:08.999Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
@@ -1326,7 +1326,7 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 31
+    event_cursor: 32
     final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
@@ -3283,9 +3283,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 50
+    revision: 51
     schema_version: 1
-    updated_at: "2026-09-06T15:19:03.152Z"
+    updated_at: "2026-09-06T15:19:03.157Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -4052,6 +4052,30 @@ extensions:
         mutation_id: "compatibility:sha256:76cf262b936b48e4ab0653634a11bdae15953d25e5dd53509871b2e103fd9afe"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:776a51d83d49357c0428487eb811a0c69051b3a9281aefb41e39cc49c9ea8491:
+        aggregate_digest: "sha256:7ae48396e49918caafd8dff694f340e210e8d9246c929c06b3aca6d63136ec2d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:19:03.157Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_830debee5c44e96d3fec1147"
+          mutation_id: "compatibility:sha256:776a51d83d49357c0428487eb811a0c69051b3a9281aefb41e39cc49c9ea8491"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 50
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:776a51d83d49357c0428487eb811a0c69051b3a9281aefb41e39cc49c9ea8491"
+        next_revision: 51
+        previous_revision: 50
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       compatibility:sha256:783f7432497617d3f4fef79e648d6def96152beb2518d3c4f099be5f58c962f7:
