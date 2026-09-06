@@ -344,7 +344,8 @@ export async function reconcileIntegrationEffect(opts: {
       if (resolution.verdict === "not_applied") {
         if (
           pr.status !== "OPEN" ||
-          pr.mergeCommit ||
+          // GitHub reports a test merge SHA before an open PR is merged.
+          (pr.provider !== "github" && pr.mergeCommit) ||
           pr.mergedAt ||
           (entry.status !== "queued" && entry.status !== "rework") ||
           pr.baseSha !== expected.base_sha ||
