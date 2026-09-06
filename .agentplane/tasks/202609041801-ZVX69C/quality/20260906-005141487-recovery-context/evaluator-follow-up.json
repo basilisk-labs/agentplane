@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202609041801-ZVX69C-dd6ff05fb8be1c437d19a41b",
+  "task_id": "202609041801-ZVX69C",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Reuse the existing ZVX69C WorkItem and verification/observed-contract owners. Preserve merge 68c87697a8750c535a4d258f7bd8eb6ff0b5bf1b and implementation 0bc37e5952e2713f665ee69687b4aab45f83fd54. Reproduce the two current-state contradictions with focused regressions before changing code. Do not rerun conflict execution, widen writable roots to inherited main content, hand-edit projections, or rerun unchanged full CI. Fix ownership and supersession, then obtain fresh verification through the normal route.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "F1 high: The frozen task-document execution_contract.observed contains 148 writable_scope violations for content inherited from current integration base 6e49077db61daed5204b514e7d6e071c190edda6, including PX8PZT/M5G987 task artifacts and main-only runtime/bootstrap changes. Read-only Git comparison proves that none of these 148 paths differs between this base and evaluated implementation 0bc37e5952e2713f665ee69687b4aab45f83fd54. The verification owner derives changed paths from the original execution base 8e8440da19e95e3264835bcdc8ccf665d18fe26c and persists that complete historical diff as task write observations. Inherited integration content must not become semantic write authority or require granting unrelated writable roots. Preserve complete verification coverage and immutable evidence identity while distinguishing the proven task-owned delta using existing integration/implementation provenance. Evidence: .agentplane/tasks/202609041801-ZVX69C/README.md and .agentplane/tasks/202609041801-ZVX69C/verification/20260906005133349-3333ff72a472e6ae.json.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/40808ed62f33cfafbffd7bd5875c634bee6789c896184843356314bc46a6db9a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "F2 high: The same frozen task-document has verification.state=ok, 56 recorded-check entries marked pass, but execution_contract.observed.verification_results still contains id=verification-record,result=fail and authority_violations still contains verification:verification-record:fail. The earlier explicit rework record is retained as an active failure after the successful full replacement verification. A successful current verification must supersede the corresponding prior current-state failure through the canonical owner while retaining its historical evidence; it must not clear unrelated failures or bypass required checks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/40808ed62f33cfafbffd7bd5875c634bee6789c896184843356314bc46a6db9a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "All nine frozen evaluator evidence digests match. The verification record is bound to 0bc37e5952e2713f665ee69687b4aab45f83fd54. All 11 declared checks passed, including focused CLI 72 tests, core 147 tests, evaluator/runner 21 tests, formatting, lint, typecheck, routing, task lint, doctor, diff check, and full CI. These checks do not establish coherence of the contradictory observed Task fields.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/40808ed62f33cfafbffd7bd5875c634bee6789c896184843356314bc46a6db9a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "The reviewed source repairs preserve the existing trust boundary: semantic-baseline ancestry and scope checks for base-identical conflict writes; one frozen verification contract for check execution and persistence; exact completed diffstat hashes on replay. Existing tests prove interrupted/repeated recovery and reject altered base, provider, policy, result and workspace. The read-only legacy adoption fixture now agrees with the existing protected approval contract. No new source defect was found in these repairs themselves.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/40808ed62f33cfafbffd7bd5875c634bee6789c896184843356314bc46a6db9a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "summary": "Residual risk: Passing checks currently coexist with false current authority violations, so the task cannot yet be treated as safely finalized.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/40808ed62f33cfafbffd7bd5875c634bee6789c896184843356314bc46a6db9a.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/evaluator-result.json"
+}

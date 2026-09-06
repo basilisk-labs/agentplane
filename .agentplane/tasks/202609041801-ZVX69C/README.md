@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 88
+revision: 89
 origin:
   system: "manual"
 depends_on: []
@@ -39,38 +39,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-05T23:55:14.789Z"
+  updated_at: "2026-09-06T00:54:17.039Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "1050a0f4856603b998283a05f2caa4cc8ebcca96"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "0bc37e5952e2713f665ee69687b4aab45f83fd54"
   blueprint_digest: "1d5d03aeacdb1b483834043137b255a61757d9709689684a0ace4bb88d72636c"
   evidence_refs:
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-235342026-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-235342026-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/9c30f4960c4390de1c8cc6aeb3560d8462b116c9d5200c9f1eac17769f6d58f1.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-235342026-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-235342026-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260905-235342026-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/dcb2aaebe8ac6173f6204f89098551c30a51c0a6eebf50ef203693992e2b8a96.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/20260906-005141487-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609041801-ZVX69C/README.md"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/93676f0b9d9b8e1bb7fd2774a97efcb32d8751c4928675d72c00042ee09d4ca7.patch"
-    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/dde30d38441cb085cd9ca2ee25a2759eedaaa2a2d7e20f8c0572b9221923706e.json"
-    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260905235054264-fef636be01d8e0fa.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/40808ed62f33cfafbffd7bd5875c634bee6789c896184843356314bc46a6db9a.patch"
+    - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/b256533b42de8bca7baa82e9e28a6b3563113e54b159dc535c609586730f4f7f.json"
+    - ".agentplane/tasks/202609041801-ZVX69C/verification/20260906005133349-3333ff72a472e6ae.json"
     - ".agentplane/tasks/202609041801-ZVX69C/quality/objects/sha256/333290060f7a86dc7ce1735f25e72cc485de331583c73b21b9b15160ac71e63b.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed the frozen actual diff 93676f0b9d9b8e1bb7fd2774a97efcb32d8751c4928675d72c00042ee09d4ca7.patch against the approved single repair WorkItem, current non-material amendment and Verify Steps. The additional production changes stay in the existing conflict, policy observation and supervisor owners. No release metadata, dependency, MPXQBK, stale branch import or provider-neutral expansion was added."
-    - "Conflict semantic input now rejects disagreement between local.base_head_sha and base_context.current_base_sha and between provider.base_sha and provider_conflict_base_sha. External and managed snapshot, merge-parent, execution evidence and verification-checkpoint paths use the current local base consistently. Live provider identity still compares the original provider base, so the repair does not silently accept provider drift."
-    - "Reviewed conflict-rework-authority.ts and both managed application/recovery callers. Policy equivalence is limited to a reobservation of the accepted scope using actual current policy/configuration bytes; policy module selection must remain equal. The Git owner independently proves the exact accepted merge tree and all other authority components remain compared. The normalized progress comparison permits an unchanged Task after the merge cutpoint to reuse the original execution; changed Task state still requires the exact native afterimage proof."
-    - "The regression matrix preserves existing success, interruption and tamper cases and adds seven advanced-base cases. Tests assert retention of base-only content, no repeated provider execution after merge or Task-write interruption, and repeated rejection of changed policy, local base and provider base without altering HEAD. The independent wrong-base merge guard and malformed-context unit cases cover negative identities. Mechanical relocation of the existing fake provider introduces no competing implementation."
-    - "All nine frozen evaluator evidence digests match their declared hashes. The current verification record 20260905235054264-fef636be01d8e0fa.json records result ok for implementation 1050a0f4856603b998283a05f2caa4cc8ebcca96 with bound implementation/context/environment/contract/Verify Steps inputs. All 11 declared checks passed, including required CLI 72 tests, core 147 tests, evaluator/runner 21 tests, formatting, lint, types, routing, task lint, doctor, diff check and full CI. The separate conflict matrix reports 37 passing scenarios and the four unit suites 85 passes; their scope is not represented as final-main evidence."
-    - "The prior owner-controlled recovery contracts remain intact: original run/result/journal provenance, immutable Git snapshot and parent/tree checks, exact prepared native Task afterimages, verification checkpoint replay and rejection of foreign artifacts. The retained task commit chain supplies rollback evidence. The scoped salvage classification remains unchanged: PX8PZT carries the necessary minimal lifecycle ports; obsolete branches are not imported, and release/MPXQBK/GitLab expansion remain excluded."
-    - "Residual risk: The branch is not yet integrated. This verdict does not approve queue mutation from stale identity or transfer these checks to a future merge tree. Fresh conflict resolution and SHA-bound verification are still required."
-    - "Residual risk: PH5N6S disposition, hosted terminal state, queue/cleanup and full final-main verification remain part of the overall Clean Core goal."
+    - "F1 high: The frozen task-document execution_contract.observed contains 148 writable_scope violations for content inherited from current integration base 6e49077db61daed5204b514e7d6e071c190edda6, including PX8PZT/M5G987 task artifacts and main-only runtime/bootstrap changes. Read-only Git comparison proves that none of these 148 paths differs between this base and evaluated implementation 0bc37e5952e2713f665ee69687b4aab45f83fd54. The verification owner derives changed paths from the original execution base 8e8440da19e95e3264835bcdc8ccf665d18fe26c and persists that complete historical diff as task write observations. Inherited integration content must not become semantic write authority or require granting unrelated writable roots. Preserve complete verification coverage and immutable evidence identity while distinguishing the proven task-owned delta using existing integration/implementation provenance. Evidence: .agentplane/tasks/202609041801-ZVX69C/README.md and .agentplane/tasks/202609041801-ZVX69C/verification/20260906005133349-3333ff72a472e6ae.json."
+    - "F2 high: The same frozen task-document has verification.state=ok, 56 recorded-check entries marked pass, but execution_contract.observed.verification_results still contains id=verification-record,result=fail and authority_violations still contains verification:verification-record:fail. The earlier explicit rework record is retained as an active failure after the successful full replacement verification. A successful current verification must supersede the corresponding prior current-state failure through the canonical owner while retaining its historical evidence; it must not clear unrelated failures or bypass required checks."
+    - "All nine frozen evaluator evidence digests match. The verification record is bound to 0bc37e5952e2713f665ee69687b4aab45f83fd54. All 11 declared checks passed, including focused CLI 72 tests, core 147 tests, evaluator/runner 21 tests, formatting, lint, typecheck, routing, task lint, doctor, diff check, and full CI. These checks do not establish coherence of the contradictory observed Task fields."
+    - "The reviewed source repairs preserve the existing trust boundary: semantic-baseline ancestry and scope checks for base-identical conflict writes; one frozen verification contract for check execution and persistence; exact completed diffstat hashes on replay. Existing tests prove interrupted/repeated recovery and reject altered base, provider, policy, result and workspace. The read-only legacy adoption fixture now agrees with the existing protected approval contract. No new source defect was found in these repairs themselves."
+    - "Residual risk: Passing checks currently coexist with false current authority violations, so the task cannot yet be treated as safely finalized."
 token_usage:
   agent_runs: 35
   input_tokens: null
@@ -1951,7 +1949,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-06T00:51:34.446Z"
+doc_updated_at: "2026-09-06T00:54:17.083Z"
 doc_updated_by: "SUPERVISOR"
 description: "On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repair the deterministic CLI-cycle failures in lifecycle plan approval, task-centric projection atomicity, branch-worktree resume/replay, quality routing, PR artifact hydration, and protected integration handoff. Distinguish stale fixtures from production defects, preserve fail-closed canonical projection rules, add or adjust only necessary regressions, and complete the Clean Core salvage audit without importing stale QWP8S8, 9T9528, 9RCWZQ, HBSZ4F, DVS5NN, MPXQBK, or T4RR70 branches as-is. Exclude package versions, release notes, tags, publication, dependency upgrades, and full provider-neutral GitLab expansion. Require focused task-cycle tests, formatting, lint, typecheck, policy routing, task lint, doctor, and bun run ci:local:full."
 sections:
@@ -4794,7 +4792,7 @@ extensions:
       revision: 5
       schema_version: 1
       task_id: "202609041801-ZVX69C"
-    event_cursor: 67
+    event_cursor: 68
     final_validation: null
     id: "202609041801-ZVX69C"
     intent:
@@ -6266,9 +6264,9 @@ extensions:
         revision: 4
         schema_version: 1
         task_id: "202609041801-ZVX69C"
-    revision: 88
+    revision: 89
     schema_version: 1
-    updated_at: "2026-09-06T00:51:34.438Z"
+    updated_at: "2026-09-06T00:51:34.446Z"
     work_items:
       repair-and-qualify-clean-core-task-cycle:
         attempt: 1
@@ -7567,6 +7565,30 @@ extensions:
         mutation_id: "compatibility:sha256:9655eeb94bdb67f9ab27a7bfb296abd49fe405d0d455b2f425b0251e719aef15"
         next_revision: 61
         previous_revision: 60
+        schema_version: 1
+        task_id: "202609041801-ZVX69C"
+      compatibility:sha256:98bf4bcb69f4d4c22a10f40ccbae9ccaaaa8010e1d20e4afdfdd7c8a620376e7:
+        aggregate_digest: "sha256:66e5cce924af5bf588f6fafe2e9ef0d82a53840be69437d07aa706ff1ecef695"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T00:51:34.446Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6c49ef4d0abd7adf367f2c28"
+          mutation_id: "compatibility:sha256:98bf4bcb69f4d4c22a10f40ccbae9ccaaaa8010e1d20e4afdfdd7c8a620376e7"
+          plan_digest: "sha256:29abb5ee727e7e4210b4ff881fcf924c0d6d4c3107519e57810a5a8c0aa21129"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609041801-ZVX69C"
+          task_revision: 88
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:98bf4bcb69f4d4c22a10f40ccbae9ccaaaa8010e1d20e4afdfdd7c8a620376e7"
+        next_revision: 89
+        previous_revision: 88
         schema_version: 1
         task_id: "202609041801-ZVX69C"
       compatibility:sha256:9b457842b4857678611f2f5c2d8efa3d73926fee7667133e75356ef6defa9b55:
