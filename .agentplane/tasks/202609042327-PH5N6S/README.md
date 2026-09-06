@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -27,32 +27,33 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-06T06:02:37.526Z"
+  updated_at: "2026-09-06T06:36:58.240Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "6764bc96f86b48a697e3fdc63ed7f96d6ee15cf1"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "d8298cfe7b38b3b085a44810a4000ad323e67afd"
   blueprint_digest: "ca81d53b3644f4df6815de07a1ecfb299ffb8bf18ab9e3f1bc6efc4dc222fbb5"
   evidence_refs:
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-060113872-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-060113872-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/5b552acd64041e840c0d0a464804237ddb996398c7c938f968e3933bb4da0f26.md"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-060113872-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-060113872-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-060113872-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-063114023-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-063114023-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/2fa207d5404abfc80f8a3744811b97875c21ad35a0a4c191c6a5412076674446.md"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-063114023-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-063114023-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-063114023-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/20260906-063114023-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609042327-PH5N6S/README.md"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/2d1e77144abd4d54d3840db833cd2b1d7ab2a86559b9d366df79f1738378cbfd.patch"
-    - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/21650d617aa2f99432f645b2b5c68b35dfc51441e5b4df9343b2993f0da12c6f.json"
-    - ".agentplane/tasks/202609042327-PH5N6S/verification/20260906060107627-d96f8504b5481e21.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/5f21a0e8545d799300ec12cdde63d55326594ad3303c468fe16f8ad6de34fd08.patch"
+    - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/10f883e7f90b70ad6d2e9aff21b17087d54754c7292301fcc92b1039564aa796.json"
+    - ".agentplane/tasks/202609042327-PH5N6S/verification/20260906063105358-82d0b17ed4ee3e90.json"
     - ".agentplane/tasks/202609042327-PH5N6S/quality/objects/sha256/449f581ef4a15693c0e494ba72b2c72223fc08f6558738713d4860ae854f64bc.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed the combined implementation: canonical task-artifact commit ordering preserves the implementation SHA and rejects unrelated dirt; provenance persistence retains explicit/creation-checkout source only for the same valid base identity. Positive, changed-base, interrupted-write and repeated verification are covered, and recovery admission checks remain unchanged."
-    - "Residual risk: Conflict reconciliation against current main must retain artifact ordering in its canonical owners and obtain fresh verification; branch evidence is not final-main evidence."
+    - "The merged artifact-commit ordering changes conflict recovery behavior. Running the existing cli-core run-cli.core.pr-conflict-rework.test.ts with -t advanced_base produced 5 failures and 3 passes. external_exchange_advanced_base fails its declared clean-check command; after_verification_advanced_base fails replay with Conflict snapshot does not match the persisted semantic result; base/provider/diffstat drift cases fail before their expected identity-bound checkpoint checks. The current full CI does not cover this focused suite."
+    - "Residual risk: PR publication and integration must wait for repaired conflict recovery and fresh verification."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -949,7 +950,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-06T06:31:06.473Z"
+doc_updated_at: "2026-09-06T06:36:58.254Z"
 doc_updated_by: "SUPERVISOR"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
@@ -1506,7 +1507,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609042327-PH5N6S"
-    event_cursor: 19
+    event_cursor: 20
     final_validation: null
     id: "202609042327-PH5N6S"
     intent:
@@ -1704,9 +1705,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609042327-PH5N6S"
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-06T06:31:06.470Z"
+    updated_at: "2026-09-06T06:31:06.473Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -2059,6 +2060,30 @@ extensions:
         mutation_id: "compatibility:sha256:8ad1130d0b535f8df4c83ea690268d2c41d8d2dfa40318ba190e0e59174fc4c2"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      compatibility:sha256:91cc0ccbfb7c061488593912e25bb920d99a1720b894cd18922ed3d334ddf484:
+        aggregate_digest: "sha256:57e118cc8eb4e2a774b9e4b94d29d1c876a3a3ab04df67e088e2c9a216328b90"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T06:31:06.473Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_196dfdff99c6603ca7af2842"
+          mutation_id: "compatibility:sha256:91cc0ccbfb7c061488593912e25bb920d99a1720b894cd18922ed3d334ddf484"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:91cc0ccbfb7c061488593912e25bb920d99a1720b894cd18922ed3d334ddf484"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       compatibility:sha256:9ce6c778142c4ab4b16b1a7a1776160776c07870651c1606385c35eccae6ede2:
