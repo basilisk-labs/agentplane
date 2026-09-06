@@ -152,7 +152,7 @@ export function hasPendingManagedConflict(journal: SupervisorExecutionEpisodeJou
   );
 }
 
-export async function proveManagedConflictTaskApplication(opts: {
+async function proveManagedConflictTaskApplication(opts: {
   command: CommandContext;
   checkout: string;
   decision: TaskRouteDecision;

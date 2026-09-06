@@ -29,7 +29,7 @@ export function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: 
   return statusLines.some((line) => pathFromStatusLine(line).startsWith(prefix));
 }
 
-export function isTaskLevelVerificationRework(opts: {
+function isTaskLevelVerificationRework(opts: {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   work_order: AgentWorkOrderV2;
   semantic: AgentSemanticResult;
