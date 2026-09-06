@@ -15,8 +15,8 @@ Finalize the explicitly approved stable version 0.7.8 from verified main 262da31
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run release:prepublish
 - Canonical workflow state lives in the task README.
 
 <details>
