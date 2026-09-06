@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 010f7598eefd21ee5f19b9893485ed88cf0a7d3d..bcd1de2213d918ce9fe5fc0eba592b7809e265f6",
+      "command": "git diff --check 7d0fdb43f4bdf339783509a30ee77b57be9da9e8..3363de4a5e3c34ca4780e2c63306ad3230824c79",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 010f7598eefd21ee5f19b9893485ed88cf0a7d3d..bcd1de2213d918ce9fe5fc0eba592b7809e265f6",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7d0fdb43f4bdf339783509a30ee77b57be9da9e8..3363de4a5e3c34ca4780e2c63306ad3230824c79",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,23 +22,8 @@
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/github-body.md",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/meta.json",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/review.md",
-        "M\tdocs/assets/header.svg",
-        "M\tdocs/assets/readme-headers/adr.svg",
-        "M\tdocs/assets/readme-headers/agentplane-cli.svg",
-        "M\tdocs/assets/readme-headers/agentplane.svg",
-        "M\tdocs/assets/readme-headers/core.svg",
-        "M\tdocs/assets/readme-headers/docs.svg",
-        "M\tdocs/assets/readme-headers/humanizer.svg",
-        "M\tdocs/assets/readme-headers/recipes.svg",
-        "M\tdocs/assets/readme-headers/releases.svg",
-        "M\tdocs/assets/readme-headers/schemas.svg",
-        "M\tdocs/assets/readme-headers/scripts.svg",
-        "M\tdocs/assets/readme-headers/skills.svg",
-        "M\tdocs/assets/readme-headers/spec.svg",
-        "M\tdocs/assets/readme-headers/testkit.svg",
-        "A\twebsite/static/img/social/docs/releases/v0.7.8-evidence/preparation.png",
-        "A\twebsite/static/img/social/docs/releases/v0.7.8.png",
-        "M\twebsite/static/img/social/manifest.json"
+        "M\t.agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
+        "M\tscripts/baselines/v0.7-compatibility-candidate.json"
       ]
     },
     {
@@ -48,23 +33,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "010f7598eefd21ee5f19b9893485ed88cf0a7d3d",
-  "implementation_commit": "bcd1de2213d918ce9fe5fc0eba592b7809e265f6",
+  "execution_base_commit": "7d0fdb43f4bdf339783509a30ee77b57be9da9e8",
+  "implementation_commit": "3363de4a5e3c34ca4780e2c63306ad3230824c79",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202609061750-Z0XXVD/README.md"
+      " M .agentplane/tasks/202609061750-Z0XXVD/README.md",
+      " M .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202609061750-Z0XXVD/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202609061750-Z0XXVD/README.md"
+      " M .agentplane/tasks/202609061750-Z0XXVD/README.md",
+      " M .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
     ],
     "unchanged_from_execution_baseline": []
   },
