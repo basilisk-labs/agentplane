@@ -13,12 +13,15 @@ import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
 import { resolveEvaluatorReviewTarget } from "../evaluator/evaluator-qualification-review.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import * as executionContext from "../../runtime/task-execution-context/index.js";
 import { mkGitRepoRootWithCommit, writeDefaultConfig } from "@agentplane/testkit";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 const mocks = vi.hoisted(() => ({
   writeJsonStableIfChanged: vi.fn(),
 }));
+
+const resolveTaskExecutionContextOriginal = resolveTaskExecutionContext;
 
 vi.mock("../../shared/write-if-changed.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -56,6 +59,75 @@ describe("task verification durability", () => {
   beforeEach(() => {
     mocks.writeJsonStableIfChanged.mockReset();
   });
+
+  it.each([
+    ["explicit", false],
+    ["creation_checkout", false],
+    ["explicit", true],
+  ] as const)(
+    "preserves %s provenance across interrupted=%s verification and retry",
+    async (source, interrupted) => {
+      mocks.writeJsonStableIfChanged.mockImplementation(async (filePath, value) => {
+        await writeFile(String(filePath), `${JSON.stringify(value)}\n`, "utf8");
+        return true;
+      });
+      const root = await makeRepo();
+      const taskId = "202602050900-V1F4P";
+      await addTask(root, taskId);
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+      const current = await ctx.taskBackend.getTask(taskId);
+      if (!current) throw new Error("missing task fixture");
+      const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      const identity = {
+        schema_version: 1,
+        base_ref: "main",
+        base_sha: stdout.trim(),
+        repository_identity: "sha256:" + "a".repeat(64),
+        source,
+      };
+      await ctx.taskBackend.writeTask?.({
+        ...current,
+        extensions: { ...current.extensions, task_execution_context: identity },
+      });
+      const verify = () =>
+        cmdVerifyParsed({
+          ctx,
+          cwd: root,
+          rootOverride: undefined,
+          taskId,
+          state: "ok",
+          by: "REVIEWER",
+          note: "Verify provenance durability.",
+          details:
+            "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: focused check\nScope: task outcome",
+          quiet: true,
+        });
+      if (interrupted) {
+        mocks.writeJsonStableIfChanged.mockRejectedValueOnce(new Error("interrupted record write"));
+        await expect(verify()).rejects.toThrow("interrupted record write");
+        const interruptedTask = await ctx.taskBackend.getTask(taskId);
+        expect(interruptedTask?.extensions?.task_execution_context).toEqual(identity);
+      }
+      for (let attempt = 0; attempt < 2; attempt++) {
+        await verify();
+        const verifiedTask = await ctx.taskBackend.getTask(taskId);
+        expect(verifiedTask?.extensions?.task_execution_context).toEqual(identity);
+      }
+      const resolve = vi
+        .spyOn(executionContext, "resolveTaskExecutionContext")
+        .mockImplementation(async (options) => {
+          const result = await resolveTaskExecutionContextOriginal(options);
+          return { ...result, base_ref: "changed-base" };
+        });
+      try {
+        await verify();
+        const changedTask = await ctx.taskBackend.getTask(taskId);
+        expect(changedTask?.extensions?.task_execution_context).not.toHaveProperty("source");
+      } finally {
+        resolve.mockRestore();
+      }
+    },
+  );
 
   it("fails closed when durable verification record creation fails", async () => {
     const root = await makeRepo();

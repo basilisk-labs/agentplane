@@ -4,7 +4,7 @@ title: "Run supervisor verification against the committed implementation without
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -16,9 +16,9 @@ mutation_scope: "code"
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-04T23:32:23.257Z"
-  updated_by: "ORCHESTRATOR"
-  note: null
+  updated_at: "2026-09-06T05:40:19.235Z"
+  updated_by: "HOST:local:USER"
+  note: "host_user_decision=sha256:8965644c6363e924892611165f4efe2349f53aaa81b4b8bc013e4dc3c24571b5"
 verification:
   state: "needs_rework"
   updated_at: "2026-09-05T11:33:14.664Z"
@@ -59,12 +59,16 @@ execution_contract:
     writable_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "Reuse the existing supervisor artifact commit owner before verification; avoid parallel checkout infrastructure."
+      - "Preserve the completed implementation and cover its foreseeable canonical-owner conflict reconciliation in this same task."
+      - "Repair provenance loss in its existing writer without loosening the recovery comparator."
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -75,23 +79,16 @@ execution_contract:
     scope_roots:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
-      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -109,6 +106,9 @@ execution_contract:
         components:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:repository_write"
@@ -124,26 +124,19 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e511c508927349a5db9bc9b5ae6856487504861a766aed20f0ab286983325fc1"
+      digest: "sha256:23ca5f97d24dc36b16f797efd3175daae8366bddf7c2fc2cb934a04e487b83eb"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
-          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -175,7 +168,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
 commit: null
 comments:
   -
@@ -207,7 +199,7 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-05T11:33:16.157Z"
+doc_updated_at: "2026-09-06T03:16:23.556Z"
 doc_updated_by: "SUPERVISOR"
 description: "User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task."
 sections:
@@ -218,13 +210,11 @@ sections:
   Scope: |-
     - In scope: User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes implementation/task evidence before checks that require a clean exact commit, causing ci:local:full to refuse its own checkout. Reproduce through existing supervisor tests and fix ordering or reuse the canonical isolated verification mechanism. Preserve exact implementation identity, evidence durability, interruption recovery, authority and clean-worktree checks. Do not change Factory checks. Exclude unrelated lifecycle/approval work and workspace-base recovery, which will be a subsequent bounded slice. Coordinate source ownership with the remote AgentPlane Clean Core task.
     - Out of scope: unrelated refactors not required for "Run supervisor verification against the committed implementation without dirtying its checkout".
-  Plan: "Preserve committed implementation verification by publishing pending task artifacts through the canonical supervisor artifact owner before branch verification."
+  Plan: "Preserve completed clean-verification unchanged. Then repair execution-provenance loss in verify-record-execute and extend its nearest durability regressions. Keep unchanged-result recovery fail-closed and do not recreate the missing historical exchange. Qualify the genuine new implementation with provenance/recovery focused tests, clean-verification tests and full CI. Use only fresh AgentPlane episodes for subsequent canonical-owner conflict reconciliation, verification, provider integration and cleanup. The declared five writable files are the exact union of WorkItem scopes and write claims. Stop for fresh USER approval before implementation."
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: Verification preserves valid execution provenance only for the same identity; negative, repeated and interrupted persistence remains fail-closed. Recovery must still reject missing original exchange evidence, foreign identity, unproved provenance and stale results.
+    2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.
+    3. Run `bun run ci:local:full`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-09-05T11:33:14.664Z — VERIFY — needs_rework
@@ -269,9 +259,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "ORCHESTRATOR"
-    approval_evidence_digest: null
-    approval_kind: "manual_operator"
+    actor: "HOST:local:USER"
+    approval_evidence_digest: "sha256:8965644c6363e924892611165f4efe2349f53aaa81b4b8bc013e4dc3c24571b5"
+    approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -280,12 +270,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:588429cd9fdbd724a7315a1c6adbc0037ba9ca1d32efb45b051b1db146ffb3dd"
-    grant_id: "503e12f1-9f35-4f1d-af82-d4d703ce4d20"
-    issued_at: "2026-09-04T23:32:23.257Z"
+    digest: "sha256:c18c762f53901344a803d00ad3bbcc6b3bf93340fd7d84d5ef42d25cc3864132"
+    grant_id: "e6f7785c-c16f-40b1-90f8-e123f9b2ec1b"
+    issued_at: "2026-09-06T05:40:19.235Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:3877aedf6c7cb749cf43824f62d933f60595cd8566e877d4af2b6f54af1b4401"
-    plan_revision: 2
+    plan_digest: "sha256:4d2ffc15f2e7f12723f749c88f7f26a668389561e8355486209f1cb7528ab085"
+    plan_revision: 13
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
@@ -294,88 +284,49 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-04T23:32:23.257Z"
-        approved_by: "ORCHESTRATOR"
-        approved_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+        approved_at: "2026-09-06T05:40:19.235Z"
+        approved_by: "HOST:local:USER"
+        approved_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
         policy_facts:
-          - "manual_operator"
+          - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-04T23:32:16.167Z"
-      digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+      created_at: "2026-09-06T03:15:46.175Z"
+      digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
       proposal:
         assumptions:
-          - "User explicitly authorized fixing the AgentPlane blockers."
-          - "Preserve Factory tasks and original implementation provenance; changes to task execution context are a later slice."
-          - "No overlap with published ZVX69C source diff."
+          - "Preserve the completed clean-verification WorkItem definition, completion receipts and outputs. Do not rerun completed effects. The new WorkItem owns a confirmed additional verification-writer defect and is not an artificial implementation delta."
+          - "The original external exchange is unavailable. This plan does not authorize reconstruction, adoption without proof, metadata repair, receipt fabrication, or weakening unchanged-result admission. Historical evidence remains historical; a new semantic episode and fresh checks qualify the actual new implementation."
+          - "Keep recovery's existing rejection of lost explicit provenance. Fix the writer that drops provenance. Retain valid provenance only while the original execution identity is unchanged; do not copy it to a new base or repository identity."
+          - "PR #5897 is merged into main 1e3c0b4b3d1457d18224dd94bac19d91bafa90bd. PH5N6S head remains 4b86e4b5028111db3e0da84a5b4bee94afdbf8cc with implementation fa586d9c7d1eddcf5cc76f6ccdf53e9df7679231. AgentPlane must refresh these identities before integration."
+          - "The finalization module exists on current main but not the task branch. Do not create a duplicate before the normal conflict-rework route brings that owner into the task worktree. Preserve the functional ordering when reconciling the real conflict."
+          - "Formal commits, working-branch publication, PR synchronization, integration, close and task-owned cleanup remain AgentPlane-owned and require fresh route authority. This plan does not authorize these actions inside a semantic episode."
+          - "Exclude Factory repository changes, MPXQBK, release preparation, versions, release notes, tags, package publication, mass branch cleanup, history rewriting, approval/security-model changes, new state stores and unrelated lifecycle work."
+          - "Stop at fresh USER plan approval before implementation. Plan approval does not establish missing historical provenance or replace a future state-bound external authority decision."
         planning_baseline:
-          captured_at: "2026-09-04T23:28:00.511Z"
+          captured_at: "2026-09-06T03:11:40.913Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:e62d0428f02d16a1c6111c30379045666e1071329c00279ae803c8270c327e40"
+          digest: "sha256:c9733838134069e20ac04c18f76b893a5f71526875aeeec643dc09b1fb30c066"
           dirty_paths:
-            - ".agentplane/tasks/202608210955-9SX2C6/README.md"
-            - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/README.md"
-            - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608241434-129F8R/README.md"
-            - ".agentplane/tasks/202608241434-EH8E74/README.md"
-            - ".agentplane/tasks/202608241434-KCC9K4/README.md"
-            - ".agentplane/tasks/202608241434-QQNDGT/README.md"
-            - ".agentplane/tasks/202608241434-SFPD91/README.md"
-            - ".agentplane/tasks/202608241434-TA84WK/README.md"
-            - ".agentplane/tasks/202608241434-WVYA5T/README.md"
-            - ".agentplane/tasks/202608241435-40YZCE/README.md"
-            - ".agentplane/tasks/202608241435-73DA89/README.md"
-            - ".agentplane/tasks/202608241435-D001ET/README.md"
-            - ".agentplane/tasks/202608241435-HTV4K2/README.md"
-            - ".agentplane/tasks/202608241435-NDR0BX/README.md"
-            - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
-            - ".agentplane/tasks/202608241435-W3DG6V/README.md"
-            - ".agentplane/tasks/202608241435-YSW0E0/README.md"
-            - ".agentplane/tasks/202608241436-2G9DA8/README.md"
-            - ".agentplane/tasks/202608241436-63W678/README.md"
-            - ".agentplane/tasks/202608241436-8PJKJP/README.md"
-            - ".agentplane/tasks/202608241436-99B067/README.md"
-            - ".agentplane/tasks/202608241436-A87Y59/README.md"
-            - ".agentplane/tasks/202608241436-DHPR5E/README.md"
-            - ".agentplane/tasks/202608241436-H60MCY/README.md"
-            - ".agentplane/tasks/202608241436-TX6TRF/README.md"
-            - ".agentplane/tasks/202608241436-W6A113/README.md"
-            - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
-            - ".agentplane/tasks/202608241437-H5418M/README.md"
-            - ".agentplane/tasks/202608241437-SH3CDX/README.md"
-            - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
-            - ".agentplane/tasks/202608241437-XY3950/README.md"
-            - ".agentplane/tasks/202608250007-P5BWP0/README.md"
-            - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608251038-42AC0D/README.md"
-            - ".agentplane/tasks/202608251053-QAZ236/README.md"
-            - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
-            - ".agentplane/tasks/202608252233-JR4T47/README.md"
-            - ".agentplane/tasks/202608252234-4CKSWA/README.md"
-            - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
-            - ".agentplane/tasks/202608262032-MAJQ5E/README.md"
-            - ".agentplane/tasks/202608270848-0RAFH9/README.md"
-            - ".agentplane/tasks/202608270848-37XB2K/README.md"
-            - ".agentplane/tasks/202608270848-N28TBB/README.md"
-            - ".agentplane/tasks/202608270848-V32542/README.md"
-            - ".agentplane/tasks/202608271350-HVGQPQ/README.md"
-            - ".agentplane/tasks/202608291005-33PHG4/README.md"
-            - ".agentplane/tasks/202608291006-0AJG13/README.md"
-            - ".agentplane/tasks/202608291953-8YA3HG/README.md"
-            - ".agentplane/tasks/202608312248-WXP9JS/README.md"
             - ".agentplane/tasks/202609042327-PH5N6S/README.md"
           git:
             kind: "commit"
             ref: null
-            sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
+            sha: "4b86e4b5028111db3e0da84a5b4bee94afdbf8cc"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:11"
         schema_version: 1
         task_id: "202609042327-PH5N6S"
         top_level_validation:
           checks:
+            -
+              capability: "task.verify"
+              command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+              id: "provenance"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 300000
             -
               capability: "task.verify"
               command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
@@ -393,12 +344,20 @@ extensions:
           criteria:
             -
               check_ids:
+                - "provenance"
+                - "regression"
+                - "full"
+              description: "Verification preserves valid explicit execution provenance for unchanged execution identity. It must not transfer provenance to a changed identity. Positive, negative, repeated and interrupted verification remain atomic and fail-closed. Recovery still rejects missing original exchange evidence, foreign identity, unproved provenance and stale results."
+              id: "provenance-durability"
+              required: true
+            -
+              check_ids:
                 - "regression"
                 - "full"
               description: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
               id: "clean-verification"
               required: true
-          evidence_fingerprint: "sha256:e62d0428f02d16a1c6111c30379045666e1071329c00279ae803c8270c327e40"
+          evidence_fingerprint: "sha256:c9733838134069e20ac04c18f76b893a5f71526875aeeec643dc09b1fb30c066"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -473,10 +432,129 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:e62d0428f02d16a1c6111c30379045666e1071329c00279ae803c8270c327e40"
                 schema_version: 1
-      revision: 1
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "provenance"
+                    - "regression"
+                    - "full"
+                  description: "Verification preserves valid explicit execution provenance for unchanged execution identity. It must not transfer provenance to a changed identity. Positive, negative, repeated and interrupted verification remain atomic and fail-closed. Recovery still rejects missing original exchange evidence, foreign identity, unproved provenance and stale results."
+                  id: "provenance-durability"
+                  required: true
+                -
+                  check_ids:
+                    - "regression"
+                    - "full"
+                  description: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
+                  id: "clean-verification"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 150000
+                optional_sources:
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+                  - "packages/agentplane/src/runtime/task-execution-context/index.ts"
+                required_sources:
+                  - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                  - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  - "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+                symbol_hints:
+                  - "task_execution_context"
+                  - "taskExecutionBaseFromExtensions"
+                  - "recordDirectTaskVerification"
+                  - "commitBranchSupervisorTaskArtifacts"
+                  - "finishExternalImplementationVerification"
+              depends_on:
+                - "clean-verification"
+              expected_outputs:
+                - "Verification preserves execution provenance with exact identity and durable replay-safe evidence"
+                - "Clean verification ordering reconciled with canonical main owners and freshly qualified through AgentPlane"
+              id: "verification-provenance-convergence"
+              objective: "Fix the confirmed provenance loss in the existing verification persistence owner. Preserve the completed clean-verification implementation and its historical evidence. Qualify both changes through a fresh genuine implementation episode and fresh verification. When AgentPlane supplies conflict rework against current main, retain artifact commit ordering in the canonical implementation and finalization owners without recreating the old parallel implementation."
+              optional: false
+              priority: 2
+              required_inputs:
+                - "Canonical artifact commit before branch verification"
+                - "Real Git regression covering clean checks and preservation"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+              risk: "medium"
+              scope_roots:
+                - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+                - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+                - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+                - "packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1"
+                    id: "provenance"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 300000
+                  -
+                    capability: "task.verify"
+                    command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+                    id: "regression"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 300000
+                  -
+                    capability: "task.verify"
+                    command: "bun run ci:local:full"
+                    id: "full"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 1800000
+                criteria:
+                  -
+                    check_ids:
+                      - "provenance"
+                      - "regression"
+                      - "full"
+                    description: "Verification preserves valid explicit execution provenance for unchanged execution identity. It must not transfer provenance to a changed identity. Positive, negative, repeated and interrupted verification remain atomic and fail-closed. Recovery still rejects missing original exchange evidence, foreign identity, unproved provenance and stale results."
+                    id: "provenance-durability"
+                    required: true
+                  -
+                    check_ids:
+                      - "regression"
+                      - "full"
+                    description: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
+                    id: "clean-verification"
+                    required: true
+                evidence_fingerprint: "sha256:c9733838134069e20ac04c18f76b893a5f71526875aeeec643dc09b1fb30c066"
+                schema_version: 1
+      revision: 2
       schema_version: 1
       task_id: "202609042327-PH5N6S"
-    event_cursor: 4
+    event_cursor: 9
     final_validation: null
     id: "202609042327-PH5N6S"
     intent:
@@ -490,10 +568,193 @@ extensions:
       task_id: "202609042327-PH5N6S"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 8
+    plan_history:
+      -
+        approval:
+          approved_at: null
+          approved_by: null
+          approved_digest: null
+          policy_facts: []
+          state: "rejected"
+        created_at: "2026-09-04T23:32:16.167Z"
+        digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+        proposal:
+          assumptions:
+            - "User explicitly authorized fixing the AgentPlane blockers."
+            - "Preserve Factory tasks and original implementation provenance; changes to task execution context are a later slice."
+            - "No overlap with published ZVX69C source diff."
+          planning_baseline:
+            captured_at: "2026-09-04T23:28:00.511Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:e62d0428f02d16a1c6111c30379045666e1071329c00279ae803c8270c327e40"
+            dirty_paths:
+              - ".agentplane/tasks/202608210955-9SX2C6/README.md"
+              - ".agentplane/tasks/202608212244-Q3QMJR/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/README.md"
+              - ".agentplane/tasks/202608220034-FPEFRK/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608241434-129F8R/README.md"
+              - ".agentplane/tasks/202608241434-EH8E74/README.md"
+              - ".agentplane/tasks/202608241434-KCC9K4/README.md"
+              - ".agentplane/tasks/202608241434-QQNDGT/README.md"
+              - ".agentplane/tasks/202608241434-SFPD91/README.md"
+              - ".agentplane/tasks/202608241434-TA84WK/README.md"
+              - ".agentplane/tasks/202608241434-WVYA5T/README.md"
+              - ".agentplane/tasks/202608241435-40YZCE/README.md"
+              - ".agentplane/tasks/202608241435-73DA89/README.md"
+              - ".agentplane/tasks/202608241435-D001ET/README.md"
+              - ".agentplane/tasks/202608241435-HTV4K2/README.md"
+              - ".agentplane/tasks/202608241435-NDR0BX/README.md"
+              - ".agentplane/tasks/202608241435-RJXGHQ/README.md"
+              - ".agentplane/tasks/202608241435-W3DG6V/README.md"
+              - ".agentplane/tasks/202608241435-YSW0E0/README.md"
+              - ".agentplane/tasks/202608241436-2G9DA8/README.md"
+              - ".agentplane/tasks/202608241436-63W678/README.md"
+              - ".agentplane/tasks/202608241436-8PJKJP/README.md"
+              - ".agentplane/tasks/202608241436-99B067/README.md"
+              - ".agentplane/tasks/202608241436-A87Y59/README.md"
+              - ".agentplane/tasks/202608241436-DHPR5E/README.md"
+              - ".agentplane/tasks/202608241436-H60MCY/README.md"
+              - ".agentplane/tasks/202608241436-TX6TRF/README.md"
+              - ".agentplane/tasks/202608241436-W6A113/README.md"
+              - ".agentplane/tasks/202608241437-5YZ0N8/README.md"
+              - ".agentplane/tasks/202608241437-H5418M/README.md"
+              - ".agentplane/tasks/202608241437-SH3CDX/README.md"
+              - ".agentplane/tasks/202608241437-V8BA7Q/README.md"
+              - ".agentplane/tasks/202608241437-XY3950/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/README.md"
+              - ".agentplane/tasks/202608250007-P5BWP0/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608251038-42AC0D/README.md"
+              - ".agentplane/tasks/202608251053-QAZ236/README.md"
+              - ".agentplane/tasks/202608251735-ZJ7YZE/README.md"
+              - ".agentplane/tasks/202608252233-JR4T47/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/README.md"
+              - ".agentplane/tasks/202608252234-4CKSWA/blueprint/resolved-snapshot.json"
+              - ".agentplane/tasks/202608262032-MAJQ5E/README.md"
+              - ".agentplane/tasks/202608270848-0RAFH9/README.md"
+              - ".agentplane/tasks/202608270848-37XB2K/README.md"
+              - ".agentplane/tasks/202608270848-N28TBB/README.md"
+              - ".agentplane/tasks/202608270848-V32542/README.md"
+              - ".agentplane/tasks/202608271350-HVGQPQ/README.md"
+              - ".agentplane/tasks/202608291005-33PHG4/README.md"
+              - ".agentplane/tasks/202608291006-0AJG13/README.md"
+              - ".agentplane/tasks/202608291953-8YA3HG/README.md"
+              - ".agentplane/tasks/202608312248-WXP9JS/README.md"
+              - ".agentplane/tasks/202609042327-PH5N6S/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d345cdb14c53a98a85ece41ab472433f8e1fb32c"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+                id: "regression"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+            criteria:
+              -
+                check_ids:
+                  - "regression"
+                  - "full"
+                description: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
+                id: "clean-verification"
+                required: true
+            evidence_fingerprint: "sha256:e62d0428f02d16a1c6111c30379045666e1071329c00279ae803c8270c327e40"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "regression"
+                      - "full"
+                    description: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
+                    id: "clean-verification"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 100000
+                  optional_sources:
+                    - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                    - "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts"
+                  symbol_hints:
+                    - "recordDirectTaskVerification"
+                    - "commitBranchSupervisorTaskArtifacts"
+                depends_on: []
+                expected_outputs:
+                  - "Canonical artifact commit before branch verification"
+                  - "Real Git regression covering clean checks and preservation"
+                id: "clean-verification"
+                objective: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1"
+                      id: "regression"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                  criteria:
+                    -
+                      check_ids:
+                        - "regression"
+                        - "full"
+                      description: "Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed."
+                      id: "clean-verification"
+                      required: true
+                  evidence_fingerprint: "sha256:e62d0428f02d16a1c6111c30379045666e1071329c00279ae803c8270c327e40"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-05T11:33:16.115Z"
+    updated_at: "2026-09-06T03:16:23.556Z"
     work_items:
       clean-verification:
         attempt: 1
@@ -559,6 +820,15 @@ extensions:
           stale_evidence: []
           status: "passed"
           unsatisfied_criteria: []
+      verification-provenance-convergence:
+        attempt: 0
+        claim_id: null
+        id: "verification-provenance-convergence"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -578,8 +848,66 @@ extensions:
         task_id: "202609042327-PH5N6S"
         task_revision: 6
         work_item_id: "clean-verification"
+      -
+        at: "2026-09-06T02:53:09.060Z"
+        from: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+        to: "sha256:323289d67bd12dac27a1c2686ac6572ab5477127caf65a52ce7371fd433c486e"
+        actor_id: "external:EXECUTOR"
+        cause_refs: []
+        entity: "plan"
+        id: "event_308a63fd8c73954fedd1c5f6"
+        mutation_id: "plan-refinement:work-order-202609042327-PH5N6S-executor-d44551a1ba144c962452ee7f"
+        plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+        task_revision: 8
+        work_item_id: null
+      -
+        at: "2026-09-06T03:11:15.797Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "ORCHESTRATOR"
+        cause_refs:
+          - "plan:sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+          - "note:sha256:37f76b09792e7e1ed753ca2475fc13e1e42b4f2845bdbc2938d53980c7b0d556"
+        entity: "task"
+        id: "event_d9205dc068391ac137599b75"
+        mutation_id: "plan-reject-40c4bd0661a6b7b4b7bd5dcd0ea6c35f"
+        plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+        task_revision: 10
+        work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:61e06192ec32626c09be7fd27d5c68d4a32b746bddeab1697f47bde301b211fc:
+        aggregate_digest: "sha256:edcb4639bf3bc6acb38364ab7c515987cdafe2dc588462a6f6c4507f81200cb6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T03:07:05.683Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2fce794f308e2283b568462e"
+          mutation_id: "compatibility:sha256:61e06192ec32626c09be7fd27d5c68d4a32b746bddeab1697f47bde301b211fc"
+          plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:61e06192ec32626c09be7fd27d5c68d4a32b746bddeab1697f47bde301b211fc"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
       compatibility:sha256:7583308de102ff45a4db022e1f87ffe80d5e871019adee8c56946587e9bb495a:
         aggregate_digest: "sha256:34b9d990a476b46bbce51a8db43ebf921d96b054278e4684cf461dcb496a1905"
         event:
@@ -602,6 +930,54 @@ extensions:
         mutation_id: "compatibility:sha256:7583308de102ff45a4db022e1f87ffe80d5e871019adee8c56946587e9bb495a"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      compatibility:sha256:8ad1130d0b535f8df4c83ea690268d2c41d8d2dfa40318ba190e0e59174fc4c2:
+        aggregate_digest: "sha256:ae1bfb5b7c4544f3d0cb7f9566b082a38f380afb280c2b2bda740493050845fc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T03:16:23.556Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_a2bbc04724c041529151fd66"
+          mutation_id: "compatibility:sha256:8ad1130d0b535f8df4c83ea690268d2c41d8d2dfa40318ba190e0e59174fc4c2"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8ad1130d0b535f8df4c83ea690268d2c41d8d2dfa40318ba190e0e59174fc4c2"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      compatibility:sha256:ae11ecc1011c65952a96021b25dceacd303ed5b4aa3212037e767e9e7c36d9e8:
+        aggregate_digest: "sha256:982bc07a94685806f88357377a0b797ebd9cda355c8d6437eb9906aabdf97f2a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T03:16:23.553Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_14be943ceb9f3a2dfcba0a83"
+          mutation_id: "compatibility:sha256:ae11ecc1011c65952a96021b25dceacd303ed5b4aa3212037e767e9e7c36d9e8"
+          plan_digest: "sha256:2167b01a99a96a823870014ab2823b2e4cc11e0ad37f61b25410ab898cef317e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 12
+          to: "AWAITING_PLAN_APPROVAL"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ae11ecc1011c65952a96021b25dceacd303ed5b4aa3212037e767e9e7c36d9e8"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609042327-PH5N6S"
       compatibility:sha256:c04e97e16b156c55ca81f0e6a8f9423c3909aeaa8a8611b64b787949909472bc:
@@ -699,6 +1075,54 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609042327-PH5N6S"
+      plan-refinement:work-order-202609042327-PH5N6S-executor-d44551a1ba144c962452ee7f:
+        aggregate_digest: "sha256:0dc20e914f1f61f9a78381ef17bb01b8989af149e8aa41929aa6efa0391fe66e"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-06T02:53:09.060Z"
+          cause_refs: []
+          entity: "plan"
+          from: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+          id: "event_308a63fd8c73954fedd1c5f6"
+          mutation_id: "plan-refinement:work-order-202609042327-PH5N6S-executor-d44551a1ba144c962452ee7f"
+          plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 8
+          to: "sha256:323289d67bd12dac27a1c2686ac6572ab5477127caf65a52ce7371fd433c486e"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609042327-PH5N6S-executor-d44551a1ba144c962452ee7f"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
+      plan-reject-40c4bd0661a6b7b4b7bd5dcd0ea6c35f:
+        aggregate_digest: "sha256:7438f04fde54c39843b16b7c8cbe9e26054a874c4959a70d8bca1e971359eeac"
+        event:
+          actor_id: "ORCHESTRATOR"
+          at: "2026-09-06T03:11:15.797Z"
+          cause_refs:
+            - "plan:sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+            - "note:sha256:37f76b09792e7e1ed753ca2475fc13e1e42b4f2845bdbc2938d53980c7b0d556"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d9205dc068391ac137599b75"
+          mutation_id: "plan-reject-40c4bd0661a6b7b4b7bd5dcd0ea6c35f"
+          plan_digest: "sha256:d3392e38765e3c24e7ec3dc5f3221c2043e03933fc3dcf141df1bcbb7303bdc3"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609042327-PH5N6S"
+          task_revision: 10
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-reject-40c4bd0661a6b7b4b7bd5dcd0ea6c35f"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609042327-PH5N6S"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -725,15 +1149,13 @@ User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes imp
 
 ## Plan
 
-Preserve committed implementation verification by publishing pending task artifacts through the canonical supervisor artifact owner before branch verification.
+Preserve completed clean-verification unchanged. Then repair execution-provenance loss in verify-record-execute and extend its nearest durability regressions. Keep unchanged-result recovery fail-closed and do not recreate the missing historical exchange. Qualify the genuine new implementation with provenance/recovery focused tests, clean-verification tests and full CI. Use only fresh AgentPlane episodes for subsequent canonical-owner conflict reconciliation, verification, provider integration and cleanup. The declared five writable files are the exact union of WorkItem scopes and write claims. Stop for fresh USER approval before implementation.
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run `bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts --maxWorkers=1`. Expected: Verification preserves valid execution provenance only for the same identity; negative, repeated and interrupted persistence remains fail-closed. Recovery must still reject missing original exchange evidence, foreign identity, unproved provenance and stale results.
+2. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.
+3. Run `bun run ci:local:full`. Expected: Branch implementation verification sees a clean committed checkout while its original implementation SHA remains authoritative; task evidence is durable and unrelated dirty data remains fail-closed.
 
 ## Verification
 

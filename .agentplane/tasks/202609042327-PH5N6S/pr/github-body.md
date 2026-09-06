@@ -29,7 +29,9 @@ User-authorized blocking repair for Arkady Factory APTA3E. Supervisor writes imp
 ```text
  ...li.core.task-advance.clean-verification.test.ts | 255 +++++++++++++++++++++
  .../external-agent-implementation-authority.ts     |  36 ++-
- 2 files changed, 272 insertions(+), 19 deletions(-)
+ .../src/commands/task/verify-record-execute.ts     |  12 +-
+ .../task/verify-record.durability.unit.test.ts     |  72 ++++++
+ 4 files changed, 354 insertions(+), 21 deletions(-)
 ```
 
 </details>
