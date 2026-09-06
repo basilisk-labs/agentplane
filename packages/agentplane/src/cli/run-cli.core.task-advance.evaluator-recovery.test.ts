@@ -140,6 +140,19 @@ async function prepareEvaluator(branchPr = false) {
     await resultFor(planning, "Implement one scoped file and preserve evaluator recovery."),
   );
   expect(planned.code, planned.stderr).toBe(0);
+  const documented = await invoke(root, [
+    "task",
+    "doc",
+    "set",
+    id,
+    "--section",
+    "Verify Steps",
+    "--text",
+    "1. Run `bun run test:critical`. Expected: the scoped fixture passes with exit code 0 before evaluator recovery.",
+    "--updated-by",
+    "PLANNER",
+  ]);
+  expect(documented.code, documented.stderr).toBe(0);
   const approved = await invoke(root, ["task", "plan", "approve", id, "--by", "ORCHESTRATOR"]);
   expect(approved.code, approved.stderr).toBe(0);
   if (branchPr) {

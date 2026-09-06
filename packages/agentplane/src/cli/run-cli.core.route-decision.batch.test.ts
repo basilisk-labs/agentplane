@@ -1,10 +1,10 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
-import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
 import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
 import { mkGitRepoRootWithCommit } from "@agentplane/testkit";
 
@@ -100,21 +100,22 @@ async function addIncludedBatchExtension(opts: {
   primaryTaskId: string;
   branch: string;
 }): Promise<void> {
-  const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
-  const current = await readFile(taskPath, "utf8");
-  const parsed = parseTaskReadme(current);
-  parsed.frontmatter.extensions = {
-    ...(parsed.frontmatter.extensions ?? {}),
-    branch_pr_batch: {
-      base: "main",
-      branch: opts.branch,
-      included_task_ids: [opts.taskId],
-      primary_task_id: opts.primaryTaskId,
-      role: "included",
-      updated_at: "2026-05-23T00:00:00.000Z",
+  const ctx = await loadCommandContext({ cwd: opts.root, rootOverride: opts.root });
+  const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+  await ctx.taskBackend.writeTask({
+    ...task,
+    extensions: {
+      ...task.extensions,
+      branch_pr_batch: {
+        base: "main",
+        branch: opts.branch,
+        included_task_ids: [opts.taskId],
+        primary_task_id: opts.primaryTaskId,
+        role: "included",
+        updated_at: "2026-05-23T00:00:00.000Z",
+      },
     },
-  };
-  await writeFile(taskPath, renderTaskReadme(parsed.frontmatter, parsed.body), "utf8");
+  });
 }
 
 describe("runCli route decision batch ownership", () => {
@@ -317,8 +318,8 @@ describe("runCli route decision batch ownership", () => {
       });
       expect(parsed.batch_ownership.task_states).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ id: primaryTaskId, status: "TODO", verification: "pending" }),
-          expect.objectContaining({ id: includedTaskId, status: "TODO", verification: "pending" }),
+          expect.objectContaining({ id: primaryTaskId, status: "DOING", verification: "pending" }),
+          expect.objectContaining({ id: includedTaskId, status: "DOING", verification: "pending" }),
         ]),
       );
       expect(parsed.next_action.code).toBe("verify_included_task");
@@ -426,16 +427,23 @@ describe("runCli route decision batch ownership", () => {
     const primaryTaskId = await createTask(root);
     const includedTaskId = await createTask(root);
     await approveTasks(root, [primaryTaskId, includedTaskId], "Recover included closure.");
-    await runCliSilent([
-      "task",
-      "set-status",
-      includedTaskId,
-      "DOING",
-      "--force",
-      "--yes",
-      "--root",
-      root,
-    ]);
+    expect(
+      await runCliSilent([
+        "task",
+        "start-ready",
+        includedTaskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: exercise landed included task recovery.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await rm(path.join(root, ".agentplane", "tasks", includedTaskId, "pr"), {
+      recursive: true,
+      force: true,
+    });
     await recordRouteVerification(
       root,
       includedTaskId,

@@ -3,7 +3,11 @@ import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schema
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe } from "vitest";
-import { approveRouteTaskPlan, recordRouteVerification } from "./route-decision.testkit.js";
+import {
+  approveRouteTaskPlan,
+  completeRouteWorkItem,
+  recordRouteVerification,
+} from "./route-decision.testkit.js";
 import { mkGitRepoRootWithCommit, withEvaluatorPolicyFixture } from "@agentplane/testkit";
 
 import {
@@ -382,28 +386,7 @@ describe("runCli route decision direct closeout", () => {
       });
 
       const taskId = await createBranchPrTask(root);
-      await runCliSilent([
-        "task",
-        "plan",
-        "set",
-        taskId,
-        "--text",
-        "Exercise no-close-commit route cleanup.",
-        "--updated-by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
-      await runCliSilent([
-        "task",
-        "plan",
-        "approve",
-        taskId,
-        "--by",
-        "ORCHESTRATOR",
-        "--root",
-        root,
-      ]);
+      await approveRouteTaskPlan(root, taskId, "Exercise no-close-commit route cleanup.");
       await runCliSilent([
         "task",
         "start-ready",
@@ -416,18 +399,12 @@ describe("runCli route decision direct closeout", () => {
         root,
       ]);
       await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
-      await runCliSilent([
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "EVALUATOR",
-        "--note",
-        "Ok to finish with manual close commit handling.",
-        "--quiet",
-        "--root",
+      await completeRouteWorkItem(root, taskId);
+      await recordRouteVerification(
         root,
-      ]);
+        taskId,
+        "Ok to finish with manual close commit handling.",
+      );
       await recordEvaluatorReview(root, taskId);
       await commitAll(root, "track task artifacts before finish");
 

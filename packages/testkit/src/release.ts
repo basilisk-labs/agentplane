@@ -127,25 +127,27 @@ export async function writeReleasePushScripts(opts: {
   );
 }
 
+type ReleaseWorkspaceOptions = {
+  coreVersion?: string;
+  cliVersion?: string;
+  recipesVersion?: string;
+  dependencyVersion?: string;
+  recipesDependencyVersion?: string;
+  extraDependencies?: Record<string, string>;
+  extraWorkspacePackages?: {
+    relDir: string;
+    name: string;
+    version?: string;
+    private?: boolean;
+  }[];
+  writeNotes?: boolean;
+  notesVersion?: string;
+  notesBody?: string;
+};
+
 export async function seedReleaseWorkspace(
   root: string,
-  opts: {
-    coreVersion?: string;
-    cliVersion?: string;
-    recipesVersion?: string;
-    dependencyVersion?: string;
-    recipesDependencyVersion?: string;
-    extraDependencies?: Record<string, string>;
-    extraWorkspacePackages?: {
-      relDir: string;
-      name: string;
-      version?: string;
-      private?: boolean;
-    }[];
-    writeNotes?: boolean;
-    notesVersion?: string;
-    notesBody?: string;
-  } = {},
+  opts: ReleaseWorkspaceOptions = {},
 ): Promise<void> {
   const coreVersion = opts.coreVersion ?? "1.2.3";
   const cliVersion = opts.cliVersion ?? coreVersion;
@@ -191,24 +193,7 @@ export async function seedReleaseWorkspace(
 }
 
 export async function initReleaseWorkspace(
-  opts: {
-    prefix?: string;
-    coreVersion?: string;
-    cliVersion?: string;
-    recipesVersion?: string;
-    dependencyVersion?: string;
-    recipesDependencyVersion?: string;
-    extraDependencies?: Record<string, string>;
-    extraWorkspacePackages?: {
-      relDir: string;
-      name: string;
-      version?: string;
-      private?: boolean;
-    }[];
-    writeNotes?: boolean;
-    notesVersion?: string;
-    notesBody?: string;
-  } = {},
+  opts: ReleaseWorkspaceOptions & { prefix?: string } = {},
 ): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), opts.prefix ?? "agentplane-release-"));
   await seedReleaseWorkspace(root, opts);

@@ -19,6 +19,54 @@ type PlanningPacket = {
   };
 };
 
+export function createFixtureTaskPlan(
+  workOrder: AgentWorkOrderV2,
+  opts: {
+    id: string;
+    objective: string;
+    expectedOutput: string;
+    validation: NonNullable<TaskPlanProposal["top_level_validation"]>;
+  },
+): TaskPlanProposal {
+  const baseline = workOrder.planning_context?.repository_snapshot;
+  if (!baseline) throw new Error("Task fixture requires the issued planning snapshot.");
+  const { objective, validation } = opts;
+  return {
+    schema_version: 1,
+    task_id: workOrder.task.id,
+    planning_baseline: baseline,
+    work_items: {
+      schema_version: 1,
+      work_items: [
+        {
+          id: opts.id,
+          objective,
+          depends_on: [],
+          required_inputs: [],
+          expected_outputs: [opts.expectedOutput],
+          scope_roots: ["."],
+          acceptance_criteria: validation.criteria,
+          validation,
+          context: {
+            required_sources: [],
+            optional_sources: [],
+            symbol_hints: [],
+            max_bytes: 65_536,
+          },
+          risk: "low",
+          capabilities: ["task.verify"],
+          resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
+          optional: false,
+          priority: 1,
+        },
+      ],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+}
+
 export async function prepareContinuityPlan(
   root: string,
   taskId: string,
@@ -77,40 +125,12 @@ export async function prepareContinuityPlan(
     checks: taskChecks,
     evidence_fingerprint: baseline.digest,
   };
-  const proposal: TaskPlanProposal = {
-    schema_version: 1,
-    task_id: taskId,
-    planning_baseline: baseline,
-    work_items: {
-      schema_version: 1,
-      work_items: [
-        {
-          id: "exercise-route",
-          objective,
-          depends_on: [],
-          required_inputs: [],
-          expected_outputs: ["route-result"],
-          scope_roots: ["."],
-          acceptance_criteria: [criterion],
-          validation,
-          context: {
-            required_sources: [],
-            optional_sources: [],
-            symbol_hints: [],
-            max_bytes: 65_536,
-          },
-          risk: "low",
-          capabilities: ["task.verify"],
-          resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
-          optional: false,
-          priority: 1,
-        },
-      ],
-    },
-    assumptions: [],
-    unresolved_questions: [],
-    top_level_validation: validation,
-  };
+  const proposal = createFixtureTaskPlan(workOrder, {
+    id: "exercise-route",
+    objective,
+    expectedOutput: "route-result",
+    validation,
+  });
   await writeFile(
     packet.exchange.result_path,
     JSON.stringify({
