@@ -1,10 +1,11 @@
 ---
 id: "202609061636-BW11J6"
 title: "Archive the resolved WorkItem input planning incident before AgentPlane 0.7.8"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +57,20 @@ quality_review:
     - ".agentplane/policy/security.must.md"
   findings:
     - "The frozen diff preserves every original incident field in the historical archive, removes only its active entry from both matching registries, and leaves canonical input-plan admission unchanged. All required verification is bound to the reviewed implementation SHA."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:4e28104c22a036f3e88e82da4981575266058b59c7eea2155f562ec5f27954af"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-06T17:11:06.855Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -259,8 +274,8 @@ execution_contract:
       - "repository_effect:security_boundary"
       - "task_outcome"
 commit:
-  hash: "c56f52a07026c93f81d06a9d31b14db21db47429"
-  message: "🚧 BW11J6 task: apply external agent result"
+  hash: "9412f386b042d75d4377d702d4334fd723db5f0f"
+  message: "🚧 BW11J6 task: record external evaluator result"
 comments:
   -
     author: "DOCS"
@@ -271,6 +286,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c56f52a07026. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "DOCS"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -307,9 +325,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-06T17:11:06.855Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "9412f386b042d75d4377d702d4334fd723db5f0f"
 doc_version: 3
-doc_updated_at: "2026-09-06T17:09:23.122Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-06T17:11:06.855Z"
+doc_updated_by: "DOCS"
 description: "Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task."
 sections:
   Summary: |-
@@ -741,7 +767,67 @@ extensions:
       schema_version: 1
       task_id: "202609061636-BW11J6"
     event_cursor: 11
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609061636-BW11J6"
+            - "git:c56f52a07026c93f81d06a9d31b14db21db47429"
+          check_id: "routing"
+          command_identity: "node .agentplane/policy/check-routing.mjs"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T17:09:22.113Z"
+          repository_snapshot_digest: "sha256:2e3b0b84b2daca089b0a0c2365d55c1ea6175fd8d59975a3c3d260b49d5a9f94"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061636-BW11J6"
+            - "git:c56f52a07026c93f81d06a9d31b14db21db47429"
+          check_id: "incidents"
+          command_identity: "bun run release:incidents:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T17:09:22.113Z"
+          repository_snapshot_digest: "sha256:2e3b0b84b2daca089b0a0c2365d55c1ea6175fd8d59975a3c3d260b49d5a9f94"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061636-BW11J6"
+            - "git:c56f52a07026c93f81d06a9d31b14db21db47429"
+          check_id: "planning"
+          command_identity: "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/external-agent-planning-authority.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T17:09:22.113Z"
+          repository_snapshot_digest: "sha256:2e3b0b84b2daca089b0a0c2365d55c1ea6175fd8d59975a3c3d260b49d5a9f94"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061636-BW11J6"
+            - "git:c56f52a07026c93f81d06a9d31b14db21db47429"
+          check_id: "docs"
+          command_identity: "bun run docs:site:generate:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T17:09:22.113Z"
+          repository_snapshot_digest: "sha256:2e3b0b84b2daca089b0a0c2365d55c1ea6175fd8d59975a3c3d260b49d5a9f94"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061636-BW11J6"
+            - "git:c56f52a07026c93f81d06a9d31b14db21db47429"
+          check_id: "format"
+          command_identity: "bun x prettier --check .agentplane/policy/incidents.md docs/developer/incident-archive.mdx"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-06T17:09:22.113Z"
+          repository_snapshot_digest: "sha256:2e3b0b84b2daca089b0a0c2365d55c1ea6175fd8d59975a3c3d260b49d5a9f94"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609061636-BW11J6"
     intent:
       acceptance_criteria:
@@ -777,7 +863,7 @@ extensions:
 
         Perform the user-approved dedicated incident review before release planning. Confirm the existing canonical planning admission rejects unproduced WorkItem required_inputs before persistence, run its current regressions, preserve the complete INC-20260829-01 record and fresh evidence in docs/developer/incident-archive.mdx, then remove that resolved entry from the active incidents registry. Do not change implementation behavior, weaken checks, close legacy release gates, or publish a release in this task.
       task_id: "202609061636-BW11J6"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -967,9 +1053,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609061636-BW11J6"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-06T17:09:23.122Z"
+    updated_at: "2026-09-06T17:11:06.855Z"
     work_items:
       synchronize-archived-incident-policy:
         attempt: 1
@@ -1414,6 +1500,31 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609061636-BW11J6"
+      legacy-finish:202609061636-BW11J6:2026-09-06T17:09:22.113Z:c56f52a07026c93f81d06a9d31b14db21db47429:
+        aggregate_digest: "sha256:a6b06c3e6dddea77bdae5917d707bcf70d6c9b5c5cae786f56b1d6e5357b93bd"
+        event:
+          actor_id: "DOCS"
+          at: "2026-09-06T17:11:06.855Z"
+          cause_refs:
+            - "task-verification:202609061636-BW11J6"
+            - "git:c56f52a07026c93f81d06a9d31b14db21db47429"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bb27711eb307acf1bc415fae"
+          mutation_id: "legacy-finish:202609061636-BW11J6:2026-09-06T17:09:22.113Z:c56f52a07026c93f81d06a9d31b14db21db47429"
+          plan_digest: "sha256:dbfba34aa75010506851c1ad28c31600f07a87699c1ff7642d22f12718551c84"
+          plan_revision: 2
+          repository_fingerprint: "sha256:2e3b0b84b2daca089b0a0c2365d55c1ea6175fd8d59975a3c3d260b49d5a9f94"
+          schema_version: 1
+          task_id: "202609061636-BW11J6"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609061636-BW11J6:2026-09-06T17:09:22.113Z:c56f52a07026c93f81d06a9d31b14db21db47429"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609061636-BW11J6"
       plan-refinement:work-order-202609061636-BW11J6-executor-1f0d4b3754d4a5903ad04f29:
         aggregate_digest: "sha256:c60edbb0b89c465712091088b8921d56af7461f39874fc6ab0948c445a619b71"
         event:
@@ -1443,6 +1554,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "c56f52a07026c93f81d06a9d31b14db21db47429"
+    message: "🚧 BW11J6 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "be1a24bce6129e5e1cb3b18432b87fc83113e8e1"
@@ -1673,3 +1785,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4e28104c22a036f3e88e82da4981575266058b59c7eea2155f562ec5f27954af`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-06T17:11:06.855Z`

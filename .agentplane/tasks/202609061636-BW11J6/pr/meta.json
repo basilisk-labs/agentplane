@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:217d0380f512c750a78633e8ed8f85c31a6ac0689eff2467adb9823339385b1e",
   "pr_number": 5903,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5903",
+  "pre_merge_closure": {
+    "basis_commit": "9412f386b042d75d4377d702d4334fd723db5f0f",
+    "branch": "task/202609061636-BW11J6/archive-the-resolved-workitem-input-planning-inc",
+    "pr_number": 5903,
+    "recorded_at": "2026-09-06T17:11:06.921Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
