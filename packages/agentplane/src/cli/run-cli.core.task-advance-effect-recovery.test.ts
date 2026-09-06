@@ -1,4 +1,7 @@
-import { exerciseIntegrationEffectRecovery } from "./workflow-effect-recovery.testkit.js";
+import {
+  exerciseIntegrationEffectRecovery,
+  exerciseNativeIntegrationEffectRecovery,
+} from "./workflow-effect-recovery.testkit.js";
 import { execFile } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -89,6 +92,11 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
 }
 
 describe("task advance effect recovery", () => {
+  it.each(["native", "native_before_cas", "native_after_cas"])(
+    "recovers through the native operator command: %s",
+    exerciseNativeIntegrationEffectRecovery,
+    180_000,
+  );
   it.each([
     "legacy",
     "snapshot",
@@ -116,9 +124,8 @@ describe("task advance effect recovery", () => {
     "route_race",
     "cas_race",
     "snapshot_mismatch",
-  ])(
-    "reconciles integration only with exact operator evidence: %s",
-    exerciseIntegrationEffectRecovery,
+  ])("reconciles integration only with exact operator evidence: %s", (scenario) =>
+    exerciseIntegrationEffectRecovery(scenario),
   );
 
   it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
