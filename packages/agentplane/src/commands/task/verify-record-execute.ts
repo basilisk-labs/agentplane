@@ -33,10 +33,7 @@ import {
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
-import {
-  reconcileTaskExecutionContract,
-  resolveTaskExecutionContract,
-} from "../../runtime/task-routing/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   loadTaskCommandContext,
   resolveTaskExecutionContext,
@@ -50,7 +47,11 @@ import {
   nowIso,
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
-import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import {
+  resolveObservedVerificationChangedPaths,
+  resolveInheritedVerificationPaths,
+  reconcileVerificationExecutionContract,
+} from "./verify-record-observed-changes.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import { parseVerificationCheckDetails } from "../shared/verification-details.js";
@@ -195,10 +196,21 @@ async function recordVerificationResult(opts: {
             artifactTaskIds: qualityReviewTaskIds,
             execution: taskCommand.execution,
           }));
-        const observedExecutionContract = reconcileTaskExecutionContract({
+        const inheritedPaths =
+          opts.verificationSnapshot?.inherited_paths ??
+          (await resolveInheritedVerificationPaths({
+            ctx,
+            evaluatedSha,
+            taskId: current.id,
+            artifactTaskIds: qualityReviewTaskIds,
+            execution: taskCommand.execution,
+            changed_paths: observedChangedPaths,
+          }));
+        const observedExecutionContract = reconcileVerificationExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
-        }).contract;
+          inherited_paths: inheritedPaths,
+        });
         const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
         const requiresConcreteDetails =
@@ -371,12 +383,10 @@ async function recordVerificationResult(opts: {
           id: `recorded-check-${String(index + 1)}`,
           result: check.result,
         }));
-        if (verificationResults.length === 0) {
-          verificationResults.push({
-            id: "verification-record",
-            result: opts.state === "ok" ? "pass" : "fail",
-          });
-        }
+        verificationResults.push({
+          id: "verification-record",
+          result: opts.state === "ok" ? "pass" : "fail",
+        });
         const nextExtensions = {
           ...current.extensions,
           task_execution_context: {
@@ -390,11 +400,21 @@ async function recordVerificationResult(opts: {
         if (opts.state !== "ok") {
           Reflect.deleteProperty(nextExtensions, "implementation_commit");
         }
-        const reconciledContract = reconcileTaskExecutionContract({
-          contract: observedExecutionContract,
+        const reconciledContract = reconcileVerificationExecutionContract({
+          contract: {
+            ...observedExecutionContract,
+            observed: {
+              ...observedExecutionContract.observed,
+              // This transition replaces this owner's current results; durable records retain history.
+              verification_results: observedExecutionContract.observed.verification_results.filter(
+                ({ id }) => id !== "verification-record" && !/^recorded-check-\d+$/u.test(id),
+              ),
+            },
+          },
           changed_paths: observedChangedPaths,
+          inherited_paths: inheritedPaths,
           verification_results: verificationResults,
-        }).contract;
+        });
         intents.unshift(
           setTaskFieldsIntent({
             execution_contract: reconciledContract,

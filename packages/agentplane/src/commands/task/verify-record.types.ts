@@ -9,6 +9,7 @@ export type VerificationSnapshot = {
   execution_contract: NonNullable<TaskData["execution_contract"]>;
   evaluated_sha: string | null;
   changed_paths: string[];
+  inherited_paths?: string[];
 };
 
 export type VerifyStructuredFindingInput = {

@@ -23,17 +23,18 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
 import { recordDirectImplementationEvidence } from "./direct-task-finalization.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
-import {
-  reconcileTaskExecutionContract,
-  resolveTaskExecutionContract,
-} from "../../runtime/task-routing/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   recordedTaskImplementationCommitSha,
   resolveQualityReviewTargetSha,
   taskReadmesHaveOnlyLifecycleDrift,
 } from "../shared/quality-review-target.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
-import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import {
+  resolveObservedVerificationChangedPaths,
+  resolveInheritedVerificationPaths,
+  reconcileVerificationExecutionContract,
+} from "./verify-record-observed-changes.js";
 import { isQualificationTask } from "./qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 import {
@@ -325,6 +326,7 @@ export async function resolveImplementationVerificationTask(opts: {
     execution_contract: NonNullable<TaskData["execution_contract"]>;
     evaluated_sha: string | null;
     changed_paths: string[];
+    inherited_paths: string[];
   };
 }> {
   const execution = await resolveTaskExecutionContext({
@@ -356,9 +358,17 @@ export async function resolveImplementationVerificationTask(opts: {
     artifactTaskIds: taskIds,
     execution,
   });
+  const inheritedPaths = await resolveInheritedVerificationPaths({
+    ctx: opts.command,
+    evaluatedSha,
+    taskId: opts.task.id,
+    artifactTaskIds: taskIds,
+    execution,
+    changed_paths: changedPaths,
+  });
   const verificationTask = {
     ...opts.task,
-    execution_contract: reconcileTaskExecutionContract({
+    execution_contract: reconcileVerificationExecutionContract({
       contract:
         opts.task.execution_contract ??
         resolveTaskExecutionContract({
@@ -367,7 +377,8 @@ export async function resolveImplementationVerificationTask(opts: {
           requestedMode: opts.workflow,
         }),
       changed_paths: changedPaths,
-    }).contract,
+      inherited_paths: inheritedPaths,
+    }),
   };
   return {
     task: verificationTask,
@@ -375,6 +386,7 @@ export async function resolveImplementationVerificationTask(opts: {
       execution_contract: verificationTask.execution_contract!,
       evaluated_sha: evaluatedSha,
       changed_paths: changedPaths,
+      inherited_paths: inheritedPaths,
     },
   };
 }

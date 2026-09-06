@@ -8,9 +8,15 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import * as taskMutation from "../shared/task-mutation.js";
-import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+import {
+  resolveTaskExecutionContract,
+  reconcileTaskExecutionContract,
+} from "../../runtime/task-routing/index.js";
 import { cmdVerifyParsed } from "./verify-record.js";
-import { resolveObservedVerificationChangedPaths } from "./verify-record-observed-changes.js";
+import {
+  resolveObservedVerificationChangedPaths,
+  resolveInheritedVerificationPaths,
+} from "./verify-record-observed-changes.js";
 import { resolveEvaluatorReviewTarget } from "../evaluator/evaluator-qualification-review.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { mkGitRepoRootWithCommit, writeDefaultConfig } from "@agentplane/testkit";
@@ -164,7 +170,16 @@ describe("task verification durability", () => {
     await ctx.taskBackend.writeTask?.({
       ...current,
       status: "DOING",
-      execution_contract: executionContract,
+      execution_contract: {
+        ...executionContract,
+        observed: {
+          ...executionContract.observed,
+          verification_results: [
+            { id: "recorded-check-99", result: "fail" },
+            { id: "independent-owner", result: "fail" },
+          ],
+        },
+      },
       doc: [
         "## Summary",
         "x",
@@ -177,22 +192,53 @@ describe("task verification durability", () => {
         "<!-- END VERIFICATION RESULTS -->",
       ].join("\n"),
     });
-    const before = await ctx.taskBackend.getTask(taskId);
-    if (!before) throw new Error("missing persisted task fixture");
-
+    mocks.writeJsonStableIfChanged.mockImplementation(async (filePath, value) => {
+      const resolvedPath = String(filePath);
+      await mkdir(path.dirname(resolvedPath), { recursive: true });
+      await writeFile(resolvedPath, `${JSON.stringify(value)}\n`, "utf8");
+      return true;
+    });
     await cmdVerifyParsed({
       ctx,
       cwd: root,
-      rootOverride: undefined,
       taskId,
-      state: "ok",
+      state: "needs_rework",
       by: "REVIEWER",
-      note: "Focused check passed.",
-      details:
-        "Check: affected_unit_integration\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: focused behavior\n\nCheck: critical_paths\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: critical behavior\n\nCheck: task_outcome\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: task outcome",
+      note: "The previous verification requires rework.",
       quiet: true,
     });
+    const before = await ctx.taskBackend.getTask(taskId);
+    if (!before) throw new Error("missing persisted task fixture");
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        taskId,
+        state: "ok",
+        by: "REVIEWER",
+        note: "Incomplete replacement.",
+        details:
+          "Check: task_outcome\nCommand: bun test\nResult: pass\nEvidence: one check\nScope: partial",
+        quiet: true,
+      }),
+    ).rejects.toThrow("every check selected");
+    const afterIncomplete = await ctx.taskBackend.getTask(taskId);
+    expect(afterIncomplete?.revision).toBe(before.revision);
 
+    const verify = () =>
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: undefined,
+        taskId,
+        state: "ok",
+        by: "REVIEWER",
+        note: "Focused check passed.",
+        details:
+          "Check: affected_unit_integration\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: focused behavior\n\nCheck: critical_paths\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: critical behavior\n\nCheck: task_outcome\nCommand: bun test focused\nResult: pass\nEvidence: 1 test passed\nScope: task outcome",
+        quiet: true,
+      });
+    await verify();
     const task = await ctx.taskBackend.getTask(taskId);
     expect(task).toMatchObject({
       revision: before.revision + 1,
@@ -200,13 +246,31 @@ describe("task verification durability", () => {
       execution_contract: {
         observed: {
           verification_results: [
+            { id: "independent-owner", result: "fail" },
             { id: "recorded-check-1", result: "pass" },
             { id: "recorded-check-2", result: "pass" },
             { id: "recorded-check-3", result: "pass" },
+            { id: "verification-record", result: "pass" },
           ],
         },
       },
     });
+    expect(task?.execution_contract?.observed.authority_violations).toEqual([
+      "verification:independent-owner:fail",
+    ]);
+    await verify();
+    const replay = await ctx.taskBackend.getTask(taskId);
+    expect(replay?.revision).toBe(task!.revision + 1);
+    expect(replay?.execution_contract).toEqual(task?.execution_contract);
+    const recordsDir = path.join(root, ".agentplane/tasks", taskId, "verification");
+    const recordFiles = await readdir(recordsDir);
+    const records = await Promise.all(
+      recordFiles.map(
+        async (file) =>
+          JSON.parse(await readFile(path.join(recordsDir, file), "utf8")) as { result: string },
+      ),
+    );
+    expect(records.map(({ result }) => result).toSorted()).toEqual(["needs_rework", "ok", "ok"]);
   });
 
   it("materializes a Verification Contract for an already-active legacy task", async () => {
@@ -241,7 +305,7 @@ describe("task verification durability", () => {
     });
   });
 
-  it.each(["task", "base"] as const)(
+  it.each(["task", "base", "merged_base", "merged_foreign_write"] as const)(
     "strengthens a legacy branch task contract from the %s checkout",
     async (checkout) => {
       const root = await makeRepo();
@@ -267,6 +331,9 @@ describe("task verification durability", () => {
         cwd: root,
       });
       await execFileAsync("git", ["branch", "-M", baseBranch], { cwd: root });
+      const { stdout: initialBase } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
       const taskBranch = `task/${taskId}/contract-diff`;
       await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", baseBranch], {
         cwd: root,
@@ -304,12 +371,20 @@ describe("task verification durability", () => {
       const { stdout: implementationOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,
       });
-      const implementationSha = implementationOutput.trim();
+      let implementationSha = implementationOutput.trim();
       const initial = await taskCtx.taskBackend.getTask(taskId);
       if (!initial) throw new Error("missing branch verification fixture");
       await taskCtx.taskBackend.writeTask?.({
         ...initial,
-        extensions: { ...initial.extensions, implementation_commit: { hash: implementationSha } },
+        extensions: {
+          ...initial.extensions,
+          implementation_commit: { hash: implementationSha },
+          task_execution_context: {
+            schema_version: 1,
+            base_ref: baseBranch,
+            base_sha: initialBase.trim(),
+          },
+        },
       });
       await execFileAsync("git", ["add", "-f", `.agentplane/tasks/${taskId}`], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "test: persist task branch snapshot"], {
@@ -322,14 +397,56 @@ describe("task verification durability", () => {
       const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-verify-worktree-"));
       const taskWorktree = path.join(worktreeParent, "task");
       await execFileAsync("git", ["worktree", "add", taskWorktree, taskBranch], { cwd: root });
-      if (checkout === "base") {
+      if (checkout !== "task") {
         await writeFile(path.join(root, "unrelated.ts"), "export const unrelated = true;\n");
         await execFileAsync("git", ["add", "unrelated.ts"], { cwd: root });
         await execFileAsync("git", ["commit", "-m", "test: independent base change"], {
           cwd: root,
         });
       }
-      const commandRoot = checkout === "task" ? taskWorktree : root;
+      let expectedTaskHead = taskHeadOutput;
+      const mergedBase = checkout.startsWith("merged_");
+      if (mergedBase) {
+        await execFileAsync(
+          "git",
+          ["merge", "--no-ff", "main", "-m", "test: include current base"],
+          { cwd: taskWorktree },
+        );
+        if (checkout === "merged_foreign_write") {
+          await writeFile(
+            path.join(taskWorktree, "unrelated.ts"),
+            "export const unrelated = false;\n",
+          );
+          await execFileAsync("git", ["add", "unrelated.ts"], { cwd: taskWorktree });
+          await execFileAsync("git", ["commit", "-m", "test: task modifies inherited file"], {
+            cwd: taskWorktree,
+          });
+        }
+        const mergedHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: taskWorktree });
+        expectedTaskHead = mergedHead.stdout;
+        implementationSha = expectedTaskHead.trim();
+        const mergedCtx = await loadCommandContext({ cwd: taskWorktree, rootOverride: null });
+        const mergedTask = await mergedCtx.taskBackend.getTask(taskId);
+        if (!mergedTask) throw new Error("missing merged task fixture");
+        const staleContract = resolveTaskExecutionContract({
+          config: mergedCtx.config,
+          task: mergedTask,
+          requestedMode: "branch_pr",
+        });
+        staleContract.authority.writable_roots = [".github", "schemas"];
+        await mergedCtx.taskBackend.writeTask?.({
+          ...mergedTask,
+          execution_contract: reconcileTaskExecutionContract({
+            contract: staleContract,
+            changed_paths: ["unrelated.ts"],
+          }).contract,
+          extensions: {
+            ...mergedTask.extensions,
+            implementation_commit: { hash: implementationSha },
+          },
+        });
+      }
+      const commandRoot = checkout === "base" ? root : taskWorktree;
       const ctx = await loadCommandContext({ cwd: commandRoot, rootOverride: null });
       ctx.config.workflow_mode = "branch_pr";
       const { stdout: checkoutHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
@@ -358,11 +475,16 @@ describe("task verification durability", () => {
       expect(task?.execution_contract?.observed.changed_paths).toEqual([
         ".github/workflows/ci.yml",
         "schemas/task.schema.json",
+        ...(checkout === "merged_foreign_write" ? ["unrelated.ts"] : []),
       ]);
       expect(contract).toMatchObject({
         observed: {
-          changed_files: [".github/workflows/ci.yml", "schemas/task.schema.json"],
-          changed_components: [".github", "schemas"],
+          changed_files: [
+            ".github/workflows/ci.yml",
+            "schemas/task.schema.json",
+            ...(mergedBase ? ["unrelated.ts"] : []),
+          ],
+          changed_components: [".github", "schemas", ...(mergedBase ? ["unrelated.ts"] : [])],
         },
         requires_full_regression: true,
       });
@@ -372,6 +494,28 @@ describe("task verification durability", () => {
       expect(contract?.escalation_reasons).toContain("central_path:schemas/task.schema.json");
       expect(contract?.escalation_reasons).toContain("effect_ci");
       expect(contract?.escalation_reasons).toContain("effect_schema");
+      if (mergedBase) {
+        expect(
+          task?.execution_contract?.observed.authority_violations.includes(
+            "writable_scope:unrelated.ts",
+          ),
+        ).toBe(checkout === "merged_foreign_write");
+        const execution = await resolveTaskExecutionContext({
+          ctx: authoritativeCtx,
+          tasks: [task!],
+          primaryTaskId: taskId,
+        });
+        await expect(
+          resolveInheritedVerificationPaths({
+            ctx: authoritativeCtx,
+            taskId,
+            evaluatedSha: implementationSha,
+            artifactTaskIds: [taskId],
+            execution: { ...execution, base_sha: implementationSha },
+            changed_paths: ["unrelated.ts"],
+          }),
+        ).rejects.toThrow("outside the frozen execution ancestry");
+      }
 
       const verificationDir = path.join(
         taskWorktree,
@@ -396,7 +540,7 @@ describe("task verification durability", () => {
       });
       const currentTaskHead = await execFileAsync("git", ["rev-parse", taskBranch], { cwd: root });
       expect(currentHead.stdout).toBe(checkoutHead);
-      expect(currentTaskHead.stdout).toBe(taskHeadOutput);
+      expect(currentTaskHead.stdout).toBe(expectedTaskHead);
     },
   );
 
