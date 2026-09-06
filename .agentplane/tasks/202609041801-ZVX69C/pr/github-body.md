@@ -39,7 +39,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../run-cli.core.route-decision.quality.test.ts    | 132 +++--
  ...n-cli.core.task-advance-effect-recovery.test.ts |  85 ++-
  ...n-cli.core.task-advance.branch-worktree.test.ts |  17 +
- ...n-cli.core.task-advance.evidence-rework.test.ts | 105 +++-
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 208 ++++++-
  .../src/cli/run-cli.critical.task-centric.test.ts  |  22 +-
  .../cli/task-advance-effect-recovery.testkit.ts    | 408 +++++++++++++-
  .../evaluator/evaluator-runtime-evidence.test.ts   |  11 +-
@@ -81,6 +81,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../external-agent-implementation-finalization.ts  | 128 +++++
  .../task/external-agent-implementation-recovery.ts | 108 ++--
  .../task/external-agent-result-application.ts      |  22 +
+ .../task/external-agent-supervisor-recovery.ts     |   1 +
  .../src/commands/task/external-agent-supervisor.ts |  43 +-
  .../agentplane/src/commands/task/plan-shared.ts    |   3 +-
  .../src/commands/task/scope-extend.test.ts         | 125 +++--
@@ -104,7 +105,7 @@ On current main after 925NNG, YHERVV, and F31YXS integration, reproduce and repa
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  scripts/lib/installed-migration-matrix.mjs         |  16 +
  .../check-packaged-mixed-scope-lifecycle.mjs       |  17 +
- 77 files changed, 5826 insertions(+), 968 deletions(-)
+ 78 files changed, 5930 insertions(+), 968 deletions(-)
 ```
 
 </details>
