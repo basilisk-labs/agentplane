@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c7394f218f3e57dd1a48b295dd7c49319b8d704d..8c870ae5d37e0c3758082dc4fc89e51377794991",
+      "command": "git diff --check 191c62eafc10f6f1817b6230167cf260184fcbd5..70c0fad2aaef708a66d3e51446ef5633cec50eb3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c7394f218f3e57dd1a48b295dd7c49319b8d704d..8c870ae5d37e0c3758082dc4fc89e51377794991",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 191c62eafc10f6f1817b6230167cf260184fcbd5..70c0fad2aaef708a66d3e51446ef5633cec50eb3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,19 +23,8 @@
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/meta.json",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/pr/review.md",
         "M\t.agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
-        "M\tdocs/releases/v0.7.8.md",
         "M\tpackages/agentplane/src/cli/route-decision.testkit.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts",
-        "M\tpackages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts",
-        "M\tpackages/agentplane/src/cli/task-continuity.testkit.ts",
-        "M\tpackages/testkit/src/cli-core-tasks-query.expected-run.ts",
-        "M\tpackages/testkit/src/release.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
       ]
     },
     {
@@ -45,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c7394f218f3e57dd1a48b295dd7c49319b8d704d",
-  "implementation_commit": "8c870ae5d37e0c3758082dc4fc89e51377794991",
+  "execution_base_commit": "191c62eafc10f6f1817b6230167cf260184fcbd5",
+  "implementation_commit": "70c0fad2aaef708a66d3e51446ef5633cec50eb3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
