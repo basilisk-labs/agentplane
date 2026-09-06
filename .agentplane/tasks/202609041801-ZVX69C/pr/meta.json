@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:379838e1fb831b439dcb6ae5be448b564a11600f21658f1c177a3dfd7565971f",
   "pr_number": 5897,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5897",
+  "pre_merge_closure": {
+    "basis_commit": "8f7b0706b69c104806f4591567750ceb58697ce2",
+    "branch": "task/202609041801-ZVX69C/repair-post-integration-clean-core-task-cycle-re",
+    "pr_number": 5897,
+    "recorded_at": "2026-09-06T01:41:46.069Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
