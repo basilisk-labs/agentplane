@@ -4,7 +4,7 @@ title: "Recover an interrupted integration queue supervisor intent before semant
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ verify:
   - "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-06T13:02:53.954Z"
+  updated_at: "2026-09-06T13:23:56.986Z"
   updated_by: "USER"
-  note: "Apply the user-authorized permission override for complete release repairs to this scoped fixture split required by the enforced module-size limit; verification and effect authority are unchanged."
+  note: "Apply the user-authorized permission override to maintain the nearest critical test exact expectations for the approved compatibility candidate; no assertion is removed or weakened."
 verification:
   state: "pending"
   updated_at: null
@@ -66,6 +66,7 @@ execution_contract:
       - "docs/user/cli-reference.generated.mdx"
       - "docs/user/task-lifecycle.mdx"
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
       - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
       - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
@@ -78,6 +79,8 @@ execution_contract:
       - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
       - "packages/core/src/runner/supervisor-execution-episode.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
@@ -101,6 +104,7 @@ execution_contract:
       - "docs/user/cli-reference.generated.mdx"
       - "docs/user/task-lifecycle.mdx"
       - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
       - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
       - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
@@ -113,6 +117,8 @@ execution_contract:
       - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
       - "packages/core/src/runner/supervisor-execution-episode.test.ts"
       - "packages/core/src/runner/supervisor-execution-episode.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
   observed:
     authority_violations: []
     changed_components: []
@@ -142,6 +148,7 @@ execution_contract:
           - "docs/user/cli-reference.generated.mdx"
           - "docs/user/task-lifecycle.mdx"
           - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
           - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
           - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
@@ -154,6 +161,8 @@ execution_contract:
           - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
           - "packages/core/src/runner/supervisor-execution-episode.test.ts"
           - "packages/core/src/runner/supervisor-execution-episode.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:documentation"
@@ -177,9 +186,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cbcb7b492a02cf2d2f4f7eb7571002664e0f19d58d20d44c3668da0be3444484"
+      digest: "sha256:3bc93b2a85ad84c6f0c8e22c25fdde2b6c59c8e8b303ff35fae0cc57c0d53377"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+        - "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
         - "central_component:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
         - "central_component:packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
         - "central_component:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
@@ -187,6 +197,7 @@ execution_contract:
         - "central_component:packages/core/src/runner/supervisor-execution-episode-migration.ts"
         - "central_component:packages/core/src/runner/supervisor-execution-episode.test.ts"
         - "central_component:packages/core/src/runner/supervisor-execution-episode.ts"
+        - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -250,6 +261,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d72bb02b4803. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 365147eabce0. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -273,8 +287,16 @@ events:
     to: "DOING"
     note: "Implementation committed: d72bb02b4803. CLI accepted one state-bound external-agent semantic result."
     commit: "d72bb02b4803ba011fa5b19606c5e1bef4d72e41"
+  -
+    type: "status"
+    at: "2026-09-06T13:09:40.751Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 365147eabce0. CLI accepted one state-bound external-agent semantic result."
+    commit: "365147eabce01f9674d4d7bb83868e9f98acc2b1"
 doc_version: 3
-doc_updated_at: "2026-09-06T13:02:38.234Z"
+doc_updated_at: "2026-09-06T13:23:35.851Z"
 doc_updated_by: "SUPERVISOR"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
@@ -285,7 +307,7 @@ sections:
   Scope: |-
     - In scope: Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery.
     - Out of scope: unrelated refactors not required for "Recover an interrupted integration queue supervisor intent before semantic rework".
-  Plan: "Add one scoped integration-recovery testkit while preserving the existing three WorkItems and deterministic verification contract."
+  Plan: "Include the existing critical compatibility test in the active WorkItem to maintain its exact count, provenance and digest expectations for the additive recovery option."
   Verify Steps: |-
     1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1`. Expected: an interrupted integration.run_next can return to semantic rework only with exact durable queue/provider identity and exclusive ownership; missing, foreign, live-owner and uncertain effects remain fail-closed; interruption and repeat do not duplicate effects.
     2. Run `bun run ci:local:full` after focused regressions pass and the native supervisor commits the implementation. Expected: all required full regression gates pass for the actual repair SHA without manual state edits, weakened authority or a second state store.
@@ -309,12 +331,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:3aa962fe6733f58b5d54f6fbe8f4fd4d6872f975810025922344952639197cb0"
-    digest: "sha256:76f7a3afee75781065b50c31ce5a54fb29291c79e01e761fd423ed2ea68e0d58"
-    grant_id: "97949c90-693a-4428-95af-b42741484ba2"
-    issued_at: "2026-09-06T13:02:53.954Z"
+    digest: "sha256:aa0585733a2736e1f1d5d595b3469f92b14563fdaad7b29c09f1b737894b5124"
+    grant_id: "85ff11b8-be8c-469c-a282-e39291b9056e"
+    issued_at: "2026-09-06T13:23:56.986Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:39f2924fe758aa86984cf551a76f3d9ea7c92a910f8d7a86b246c48c5839fa66"
-    plan_revision: 17
+    plan_digest: "sha256:c2b014afd2694e07aa86687a69098e9cd2973f4f78b4368a6247b582b24e41d7"
+    plan_revision: 26
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:5bffa75f1c5c9cc45183dca07ec41d5ddca75cf9b43a03f1ba6370d6dacd6920"
@@ -323,14 +345,14 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-06T13:02:53.954Z"
+        approved_at: "2026-09-06T13:23:56.986Z"
         approved_by: "USER"
-        approved_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+        approved_digest: "sha256:7483701cb7be35253e8cfc29b6a913efc47bd2a654542bac518ef94ceb43311c"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-06T13:02:38.222Z"
-      digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+      created_at: "2026-09-06T13:23:35.834Z"
+      digest: "sha256:7483701cb7be35253e8cfc29b6a913efc47bd2a654542bac518ef94ceb43311c"
       proposal:
         assumptions:
           - "User authorized correcting the release plan and continuing. The changed persisted evidence and operator recovery interface require a fresh approval of this concrete revision."
@@ -339,19 +361,21 @@ extensions:
           - "No release/version/tag/publication changes, dependency changes, MPXQBK work, task-specific bypass, manual state edit, or unrelated provider expansion belongs to this task."
           - "An operator outcome decision is a separate evidence boundary; general implementation consent is not a factual verdict on an uncertain historical effect."
         planning_baseline:
-          captured_at: "2026-09-06T13:01:47.663Z"
+          captured_at: "2026-09-06T13:22:57.738Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+          digest: "sha256:c0cea8027055400115b5834521f9e47d29b9d736b1d36845a64c55294ff56c9e"
           dirty_paths:
             - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+            - ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json"
+            - ".agentplane/tasks/202609060720-NZXQ0E/supervision/implementation-evidence.json"
           git:
             kind: "commit"
             ref: null
-            sha: "1d8deae874d4eaff0db07f3b23df55e69b52d403"
+            sha: "365147eabce01f9674d4d7bb83868e9f98acc2b1"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:16"
+          task_history_cursor: "task-revision:25"
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
         top_level_validation:
@@ -397,7 +421,7 @@ extensions:
               description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
               id: "native-handoff"
               required: true
-          evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+          evidence_fingerprint: "sha256:c0cea8027055400115b5834521f9e47d29b9d736b1d36845a64c55294ff56c9e"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -482,7 +506,7 @@ extensions:
                     description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
                     id: "negative-and-replay"
                     required: true
-                evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+                evidence_fingerprint: "sha256:c0cea8027055400115b5834521f9e47d29b9d736b1d36845a64c55294ff56c9e"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -508,6 +532,8 @@ extensions:
                 required_sources:
                   - "AGENTS.md"
                   - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                  - "scripts/bench/capture-compatibility-candidate.mjs"
+                  - "scripts/baselines/v0.6.24-compatibility-contract.json"
                 symbol_hints:
                   - "startSupervisorExecutionEpisode"
                   - "recoverPendingExternalAgentResult"
@@ -535,6 +561,18 @@ extensions:
                   kind: "workspace"
                   mode: "write"
                   resource: "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                -
+                  kind: "workspace"
+                  mode: "write"
+                  resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                -
+                  kind: "workspace"
+                  mode: "write"
+                  resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                -
+                  kind: "workspace"
+                  mode: "write"
+                  resource: "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
               risk: "high"
               scope_roots:
                 - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
@@ -551,6 +589,9 @@ extensions:
                 - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
                 - "docs/user/cli-reference.generated.mdx"
                 - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                - "scripts/baselines/v0.7-compatibility-candidate.json"
+                - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
               validation:
                 checks:
                   -
@@ -580,7 +621,7 @@ extensions:
                     description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
                     id: "negative-and-replay"
                     required: true
-                evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+                evidence_fingerprint: "sha256:c0cea8027055400115b5834521f9e47d29b9d736b1d36845a64c55294ff56c9e"
                 schema_version: 1
             -
               acceptance_criteria:
@@ -665,12 +706,12 @@ extensions:
                     description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
                     id: "native-handoff"
                     required: true
-                evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+                evidence_fingerprint: "sha256:c0cea8027055400115b5834521f9e47d29b9d736b1d36845a64c55294ff56c9e"
                 schema_version: 1
-      revision: 4
+      revision: 6
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 10
+    event_cursor: 14
     final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
@@ -1547,9 +1588,721 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 18
+      -
+        approval:
+          approved_at: "2026-09-06T13:02:53.954Z"
+          approved_by: "USER"
+          approved_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-06T13:02:38.222Z"
+        digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+        proposal:
+          assumptions:
+            - "User authorized correcting the release plan and continuing. The changed persisted evidence and operator recovery interface require a fresh approval of this concrete revision."
+            - "Reuse NZXQ0E and leave PH5N6S implementation replay repair in PH5N6S. One WorkItem is active at a time."
+            - "The first WorkItem has no produced-output dependencies. Later required_inputs exactly match preceding expected_outputs, as required by INC-20260829-01."
+            - "No release/version/tag/publication changes, dependency changes, MPXQBK work, task-specific bypass, manual state edit, or unrelated provider expansion belongs to this task."
+            - "An operator outcome decision is a separate evidence boundary; general implementation consent is not a factual verdict on an uncertain historical effect."
+          planning_baseline:
+            captured_at: "2026-09-06T13:01:47.663Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+            dirty_paths:
+              - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "1d8deae874d4eaff0db07f3b23df55e69b52d403"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:16"
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                id: "focused-recovery"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-regression"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "New integration CLI intents persist the original typed operation and its queue/provider identity before execution. The journal digest and operation key bind this evidence. Absent legacy evidence is preserved as absent; migration never invents it. Corruption and foreign identity are rejected."
+                id: "durable-identity"
+                required: true
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "An interrupted integration intent is reconciled under exclusive supervisor ownership and the existing queue mutex, using exact operation/journal identity and fresh provider/queue observations. Legacy intents without their original snapshot require an explicit operator verdict bound to the exact operation, current route, and content-digested evidence. No agent-generated verdict or OPEN-PR-only inference is accepted. Reconciliation never invokes merge/enqueue or repeats the interrupted operation."
+                id: "explicit-reconciliation"
+                required: true
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                id: "negative-and-replay"
+                required: true
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
+                id: "native-handoff"
+                required: true
+            evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "New integration CLI intents persist the original typed operation and its queue/provider identity before execution. The journal digest and operation key bind this evidence. Absent legacy evidence is preserved as absent; migration never invents it. Corruption and foreign identity are rejected."
+                    id: "durable-identity"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                    id: "negative-and-replay"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources: []
+                  required_sources:
+                    - "AGENTS.md"
+                    - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                  symbol_hints:
+                    - "startSupervisorExecutionEpisode"
+                    - "recoverPendingExternalAgentResult"
+                    - "withIntegrationQueueMutex"
+                depends_on: []
+                expected_outputs:
+                  - "Durable integration intent identity and compatibility regressions"
+                id: "durable-cli-identity"
+                objective: "Persist and validate the original integration operation identity in the existing supervisor journal owner before the effect starts. Retain a fail-closed legacy path for journals without the evidence. Add compatible legacy/current/corrupt fixtures and preserve existing operation-key behavior where no new evidence is supplied."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                      id: "focused-recovery"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "New integration CLI intents persist the original typed operation and its queue/provider identity before execution. The journal digest and operation key bind this evidence. Absent legacy evidence is preserved as absent; migration never invents it. Corruption and foreign identity are rejected."
+                      id: "durable-identity"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                      id: "negative-and-replay"
+                      required: true
+                  evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "An interrupted integration intent is reconciled under exclusive supervisor ownership and the existing queue mutex, using exact operation/journal identity and fresh provider/queue observations. Legacy intents without their original snapshot require an explicit operator verdict bound to the exact operation, current route, and content-digested evidence. No agent-generated verdict or OPEN-PR-only inference is accepted. Reconciliation never invokes merge/enqueue or repeats the interrupted operation."
+                    id: "explicit-reconciliation"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                    id: "negative-and-replay"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources: []
+                  required_sources:
+                    - "AGENTS.md"
+                    - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                  symbol_hints:
+                    - "startSupervisorExecutionEpisode"
+                    - "recoverPendingExternalAgentResult"
+                    - "withIntegrationQueueMutex"
+                depends_on:
+                  - "durable-cli-identity"
+                expected_outputs:
+                  - "Qualified exact-intent workflow reconciliation"
+                id: "bound-workflow-reconciliation"
+                objective: "Implement an evidence-bound reconciliation path at task advance. Use the existing journal CAS, supervisor lease and queue mutex. Add an explicit operator input route for historical intents lacking the original snapshot; require exact journal/operation/current-route binding, operator provenance, a typed outcome and content-bound evidence, then independently check fresh provider/queue identity. Never infer a historical not-applied result from OPEN alone. Restore only semantic rework after a known failed/not-applied integration; preserve unresolved effects and completed merge outcomes. Keep this logic in one focused owner and expose the smallest command option needed."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "Durable integration intent identity and compatibility regressions"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "docs/user/cli-reference.generated.mdx"
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts"
+                  - "packages/agentplane/src/commands/task/advance.command.ts"
+                  - "packages/agentplane/src/commands/task/advance.spec.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+                  - "docs/user/cli-reference.generated.mdx"
+                  - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                      id: "focused-recovery"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "An interrupted integration intent is reconciled under exclusive supervisor ownership and the existing queue mutex, using exact operation/journal identity and fresh provider/queue observations. Legacy intents without their original snapshot require an explicit operator verdict bound to the exact operation, current route, and content-digested evidence. No agent-generated verdict or OPEN-PR-only inference is accepted. Reconciliation never invokes merge/enqueue or repeats the interrupted operation."
+                      id: "explicit-reconciliation"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                      id: "negative-and-replay"
+                      required: true
+                  evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                    id: "negative-and-replay"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
+                    id: "native-handoff"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources: []
+                  required_sources:
+                    - "AGENTS.md"
+                    - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                  symbol_hints:
+                    - "startSupervisorExecutionEpisode"
+                    - "recoverPendingExternalAgentResult"
+                    - "withIntegrationQueueMutex"
+                depends_on:
+                  - "bound-workflow-reconciliation"
+                expected_outputs:
+                  - "Native recovery qualification and PH5N6S handoff"
+                id: "qualify-recovery-handoff"
+                objective: "Exercise the native command in real-Git fixtures with replay, interruption and negative controls. Document the operator evidence boundary and recovery command. Run the declared focused suite and full regression through the supervisor. Deliver a concrete PH5N6S operator handoff bound to its historical intent; do not mutate PH5N6S from this episode or claim its recovery without observed native evidence."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "Qualified exact-intent workflow reconciliation"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  - "docs/user/task-lifecycle.mdx"
+                  - "docs/user/cli-reference.generated.mdx"
+                  - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                      id: "focused-recovery"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                      id: "negative-and-replay"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
+                      id: "native-handoff"
+                      required: true
+                  evidence_fingerprint: "sha256:741c7bc89d98dd4e260ca0eb54230f214ec73e46599e3799112aaea5532cd712"
+                  schema_version: 1
+        revision: 4
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      -
+        approval:
+          approved_at: "2026-09-06T13:20:02.151Z"
+          approved_by: "USER"
+          approved_digest: "sha256:ab21e4519ec576ff2c391a416209356e77b0d585b885c5d1cd0199c0e8706372"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-06T13:19:43.210Z"
+        digest: "sha256:ab21e4519ec576ff2c391a416209356e77b0d585b885c5d1cd0199c0e8706372"
+        proposal:
+          assumptions:
+            - "User authorized correcting the release plan and continuing. The changed persisted evidence and operator recovery interface require a fresh approval of this concrete revision."
+            - "Reuse NZXQ0E and leave PH5N6S implementation replay repair in PH5N6S. One WorkItem is active at a time."
+            - "The first WorkItem has no produced-output dependencies. Later required_inputs exactly match preceding expected_outputs, as required by INC-20260829-01."
+            - "No release/version/tag/publication changes, dependency changes, MPXQBK work, task-specific bypass, manual state edit, or unrelated provider expansion belongs to this task."
+            - "An operator outcome decision is a separate evidence boundary; general implementation consent is not a factual verdict on an uncertain historical effect."
+          planning_baseline:
+            captured_at: "2026-09-06T13:19:03.681Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:4e2e9f4684fc48d2be4e3e266b18fd745fbaa003238ff8eb246a488fa40f4ecb"
+            dirty_paths:
+              - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+              - ".agentplane/tasks/202609060720-NZXQ0E/supervision/declared-checks.json"
+              - ".agentplane/tasks/202609060720-NZXQ0E/supervision/implementation-evidence.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "365147eabce01f9674d4d7bb83868e9f98acc2b1"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:22"
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                id: "focused-recovery"
+                kind: "deterministic"
+                required: true
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-regression"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "New integration CLI intents persist the original typed operation and its queue/provider identity before execution. The journal digest and operation key bind this evidence. Absent legacy evidence is preserved as absent; migration never invents it. Corruption and foreign identity are rejected."
+                id: "durable-identity"
+                required: true
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "An interrupted integration intent is reconciled under exclusive supervisor ownership and the existing queue mutex, using exact operation/journal identity and fresh provider/queue observations. Legacy intents without their original snapshot require an explicit operator verdict bound to the exact operation, current route, and content-digested evidence. No agent-generated verdict or OPEN-PR-only inference is accepted. Reconciliation never invokes merge/enqueue or repeats the interrupted operation."
+                id: "explicit-reconciliation"
+                required: true
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                id: "negative-and-replay"
+                required: true
+              -
+                check_ids:
+                  - "focused-recovery"
+                  - "full-regression"
+                description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
+                id: "native-handoff"
+                required: true
+            evidence_fingerprint: "sha256:4e2e9f4684fc48d2be4e3e266b18fd745fbaa003238ff8eb246a488fa40f4ecb"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "New integration CLI intents persist the original typed operation and its queue/provider identity before execution. The journal digest and operation key bind this evidence. Absent legacy evidence is preserved as absent; migration never invents it. Corruption and foreign identity are rejected."
+                    id: "durable-identity"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                    id: "negative-and-replay"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources: []
+                  required_sources:
+                    - "AGENTS.md"
+                    - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                  symbol_hints:
+                    - "startSupervisorExecutionEpisode"
+                    - "recoverPendingExternalAgentResult"
+                    - "withIntegrationQueueMutex"
+                depends_on: []
+                expected_outputs:
+                  - "Durable integration intent identity and compatibility regressions"
+                id: "durable-cli-identity"
+                objective: "Persist and validate the original integration operation identity in the existing supervisor journal owner before the effect starts. Retain a fail-closed legacy path for journals without the evidence. Add compatible legacy/current/corrupt fixtures and preserve existing operation-key behavior where no new evidence is supplied."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                risk: "high"
+                scope_roots:
+                  - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                      id: "focused-recovery"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "New integration CLI intents persist the original typed operation and its queue/provider identity before execution. The journal digest and operation key bind this evidence. Absent legacy evidence is preserved as absent; migration never invents it. Corruption and foreign identity are rejected."
+                      id: "durable-identity"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                      id: "negative-and-replay"
+                      required: true
+                  evidence_fingerprint: "sha256:4e2e9f4684fc48d2be4e3e266b18fd745fbaa003238ff8eb246a488fa40f4ecb"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "An interrupted integration intent is reconciled under exclusive supervisor ownership and the existing queue mutex, using exact operation/journal identity and fresh provider/queue observations. Legacy intents without their original snapshot require an explicit operator verdict bound to the exact operation, current route, and content-digested evidence. No agent-generated verdict or OPEN-PR-only inference is accepted. Reconciliation never invokes merge/enqueue or repeats the interrupted operation."
+                    id: "explicit-reconciliation"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                    id: "negative-and-replay"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources: []
+                  required_sources:
+                    - "AGENTS.md"
+                    - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                    - "scripts/bench/capture-compatibility-candidate.mjs"
+                    - "scripts/baselines/v0.6.24-compatibility-contract.json"
+                  symbol_hints:
+                    - "startSupervisorExecutionEpisode"
+                    - "recoverPendingExternalAgentResult"
+                    - "withIntegrationQueueMutex"
+                depends_on:
+                  - "durable-cli-identity"
+                expected_outputs:
+                  - "Qualified exact-intent workflow reconciliation"
+                id: "bound-workflow-reconciliation"
+                objective: "Implement an evidence-bound reconciliation path at task advance. Use the existing journal CAS, supervisor lease and queue mutex. Add an explicit operator input route for historical intents lacking the original snapshot; require exact journal/operation/current-route binding, operator provenance, a typed outcome and content-bound evidence, then independently check fresh provider/queue identity. Never infer a historical not-applied result from OPEN alone. Restore only semantic rework after a known failed/not-applied integration; preserve unresolved effects and completed merge outcomes. Keep this logic in one focused owner and expose the smallest command option needed."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "Durable integration intent identity and compatibility regressions"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "docs/user/cli-reference.generated.mdx"
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "scripts/checks/check-compatibility-contract-baseline.mjs"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-supervisor-episode.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts"
+                  - "packages/agentplane/src/commands/task/advance.command.ts"
+                  - "packages/agentplane/src/commands/task/advance.spec.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode.test.ts"
+                  - "packages/core/src/runner/supervisor-execution-episode-migration.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                  - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+                  - "docs/user/cli-reference.generated.mdx"
+                  - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                      id: "focused-recovery"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "An interrupted integration intent is reconciled under exclusive supervisor ownership and the existing queue mutex, using exact operation/journal identity and fresh provider/queue observations. Legacy intents without their original snapshot require an explicit operator verdict bound to the exact operation, current route, and content-digested evidence. No agent-generated verdict or OPEN-PR-only inference is accepted. Reconciliation never invokes merge/enqueue or repeats the interrupted operation."
+                      id: "explicit-reconciliation"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                      id: "negative-and-replay"
+                      required: true
+                  evidence_fingerprint: "sha256:4e2e9f4684fc48d2be4e3e266b18fd745fbaa003238ff8eb246a488fa40f4ecb"
+                  schema_version: 1
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                    id: "negative-and-replay"
+                    required: true
+                  -
+                    check_ids:
+                      - "focused-recovery"
+                      - "full-regression"
+                    description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
+                    id: "native-handoff"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 65536
+                  optional_sources: []
+                  required_sources:
+                    - "AGENTS.md"
+                    - ".agentplane/tasks/202609060720-NZXQ0E/README.md"
+                  symbol_hints:
+                    - "startSupervisorExecutionEpisode"
+                    - "recoverPendingExternalAgentResult"
+                    - "withIntegrationQueueMutex"
+                depends_on:
+                  - "bound-workflow-reconciliation"
+                expected_outputs:
+                  - "Native recovery qualification and PH5N6S handoff"
+                id: "qualify-recovery-handoff"
+                objective: "Exercise the native command in real-Git fixtures with replay, interruption and negative controls. Document the operator evidence boundary and recovery command. Run the declared focused suite and full regression through the supervisor. Deliver a concrete PH5N6S operator handoff bound to its historical intent; do not mutate PH5N6S from this episode or claim its recovery without observed native evidence."
+                optional: false
+                priority: 1
+                required_inputs:
+                  - "Qualified exact-intent workflow reconciliation"
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "."
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  - "docs/user/task-lifecycle.mdx"
+                  - "docs/user/cli-reference.generated.mdx"
+                  - "packages/agentplane/src/cli/workflow-effect-recovery.testkit.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
+                      id: "focused-recovery"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Cover missing/foreign/stale/contradictory evidence, live supervisor and queue owners, changed task/PR/branch/head/base/provider, interruption before and after CAS, and repeated reconciliation. Verify one distinct rework successor and preserved completed effects. Correct the missing provider component in the existing fingerprint fixture."
+                      id: "negative-and-replay"
+                      required: true
+                    -
+                      check_ids:
+                        - "focused-recovery"
+                        - "full-regression"
+                      description: "Document and exercise the exact supported native recovery route on a real-Git fixture. Preserve the historical PH5N6S intent until the required operator decision and fresh evidence are available. Then the operator can recover PH5N6S through the same command; no hand-edited journal, substituted snapshot, duplicate task, or production task mutation is permitted in the semantic episode."
+                      id: "native-handoff"
+                      required: true
+                  evidence_fingerprint: "sha256:4e2e9f4684fc48d2be4e3e266b18fd745fbaa003238ff8eb246a488fa40f4ecb"
+                  schema_version: 1
+        revision: 5
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-06T13:02:38.234Z"
+    updated_at: "2026-09-06T13:23:35.851Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 0
@@ -1689,6 +2442,56 @@ extensions:
         task_id: "202609060720-NZXQ0E"
         task_revision: 15
         work_item_id: null
+      -
+        at: "2026-09-06T13:16:14.163Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_be2c12622ddd39917afe0dfc"
+        mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-91d9b48e05e27c6d5c35e8c9"
+        plan_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+        task_revision: 20
+        work_item_id: "bound-workflow-reconciliation"
+      -
+        at: "2026-09-06T13:19:02.142Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+        entity: "task"
+        id: "event_6cd8b0a3910c1027acdb0b9a"
+        mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-2b9263094ba2716f37737f3c"
+        plan_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+        plan_revision: 4
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+        task_revision: 21
+        work_item_id: null
+      -
+        at: "2026-09-06T13:22:56.171Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+        entity: "task"
+        id: "event_90cf09f4b80b0af50b4d58ee"
+        mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-8cc3e176963e71049c9c5f79"
+        plan_digest: "sha256:ab21e4519ec576ff2c391a416209356e77b0d585b885c5d1cd0199c0e8706372"
+        plan_revision: 5
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+        task_revision: 24
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:04e233ccf4f75eeae00e344792ced3e384f15c8c88b9f22f9e55e32de7db7601:
@@ -1787,6 +2590,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:3d4511f25df91accd6a7ac13d84daee61a8df0adfc7dee80e1b724d890107ce9:
+        aggregate_digest: "sha256:e5914367ced5b7937e8676e19198d283fd950b9dffb44807fd0f679f96aa221f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T13:23:35.851Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_cd84072910c15ea6b20be389"
+          mutation_id: "compatibility:sha256:3d4511f25df91accd6a7ac13d84daee61a8df0adfc7dee80e1b724d890107ce9"
+          plan_digest: "sha256:7483701cb7be35253e8cfc29b6a913efc47bd2a654542bac518ef94ceb43311c"
+          plan_revision: 6
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3d4511f25df91accd6a7ac13d84daee61a8df0adfc7dee80e1b724d890107ce9"
+        next_revision: 27
+        previous_revision: 26
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       compatibility:sha256:4c21ebbc923b1cc3c448b84f33cdcbbe0ace505bbbd01eeb940d98973ecc754c:
         aggregate_digest: "sha256:8f104f9de261771779c3a6ee1b2fbd5ab34d0ee30d90ab2b3a89a309e8b210e9"
         event:
@@ -1833,6 +2660,78 @@ extensions:
         mutation_id: "compatibility:sha256:6034d2a87dfa8e87769a7d91dcc12fc32718835416812d690142d6c8e87b3e99"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:6081285dda81dda28f9822dd440d3b268d88e98a4c14c3a3c33f10fb4e784e4e:
+        aggregate_digest: "sha256:f5173a872275cda3670c73113e13db88120775803502aa879c938c0fdb8932e7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T13:09:40.751Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1d33133891d615d2e2924022"
+          mutation_id: "compatibility:sha256:6081285dda81dda28f9822dd440d3b268d88e98a4c14c3a3c33f10fb4e784e4e"
+          plan_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6081285dda81dda28f9822dd440d3b268d88e98a4c14c3a3c33f10fb4e784e4e"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:74c1a114142f26df143841977a1ef120943b610236a01d9c2f2f55d8465d9cc3:
+        aggregate_digest: "sha256:9945956a9b29ba507067be2ba63e603260b3a107594854400ee9f746d70cba6c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T13:19:43.223Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_578db2381c0f749ac5946f3b"
+          mutation_id: "compatibility:sha256:74c1a114142f26df143841977a1ef120943b610236a01d9c2f2f55d8465d9cc3"
+          plan_digest: "sha256:ab21e4519ec576ff2c391a416209356e77b0d585b885c5d1cd0199c0e8706372"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:74c1a114142f26df143841977a1ef120943b610236a01d9c2f2f55d8465d9cc3"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:76cf262b936b48e4ab0653634a11bdae15953d25e5dd53509871b2e103fd9afe:
+        aggregate_digest: "sha256:8eba8a89c80f46bc1eed4618e47766d38bc5c353c91c6b15dddf7ef0e622f3d0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T13:09:40.751Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0c74ca2e0cbc01de619f4987"
+          mutation_id: "compatibility:sha256:76cf262b936b48e4ab0653634a11bdae15953d25e5dd53509871b2e103fd9afe"
+          plan_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:76cf262b936b48e4ab0653634a11bdae15953d25e5dd53509871b2e103fd9afe"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       compatibility:sha256:956e889b35c48aa6181efbcb1f10f354adc5a32f2908bdecbafa5921bb2a2003:
@@ -1907,6 +2806,29 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
+      external-result:work-order-202609060720-NZXQ0E-executor-91d9b48e05e27c6d5c35e8c9:
+        aggregate_digest: "sha256:1c0988e7ed44e25d076f495d142f290ec3441be0614aeca801a021eb1e84fb5d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T13:16:14.163Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_be2c12622ddd39917afe0dfc"
+          mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-91d9b48e05e27c6d5c35e8c9"
+          plan_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 20
+          to: "REWORK_READY"
+          work_item_id: "bound-workflow-reconciliation"
+        mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-91d9b48e05e27c6d5c35e8c9"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
       external-result:work-order-202609060720-NZXQ0E-executor-e132840456f5b8b73c0e948c:
         aggregate_digest: "sha256:4a9c33f6e100f8989095f05b2524167a186a99ba9965fc9f3b604d705974f5eb"
         event:
@@ -1928,6 +2850,30 @@ extensions:
         mutation_id: "external-result:work-order-202609060720-NZXQ0E-executor-e132840456f5b8b73c0e948c"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      plan-refinement:work-order-202609060720-NZXQ0E-executor-2b9263094ba2716f37737f3c:
+        aggregate_digest: "sha256:701d9f42943972aed9d6b51169616283526d02c9978e79bd3fae6b1e4dff0fcc"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-06T13:19:02.142Z"
+          cause_refs:
+            - "scope_expanded"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6cd8b0a3910c1027acdb0b9a"
+          mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-2b9263094ba2716f37737f3c"
+          plan_digest: "sha256:a39a5181a7994dc4e79d77789618042a8add57df6cdf0ab8be561ebef5be124a"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 21
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-2b9263094ba2716f37737f3c"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       plan-refinement:work-order-202609060720-NZXQ0E-executor-3e81c34692ffec6cca318d2e:
@@ -1952,6 +2898,30 @@ extensions:
         mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-3e81c34692ffec6cca318d2e"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      plan-refinement:work-order-202609060720-NZXQ0E-executor-8cc3e176963e71049c9c5f79:
+        aggregate_digest: "sha256:0346c411ca190dc81350fab75e9a2e39dddd2c4c5764dd7c57baf9f03cfe389b"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-06T13:22:56.171Z"
+          cause_refs:
+            - "scope_expanded"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_90cf09f4b80b0af50b4d58ee"
+          mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-8cc3e176963e71049c9c5f79"
+          plan_digest: "sha256:ab21e4519ec576ff2c391a416209356e77b0d585b885c5d1cd0199c0e8706372"
+          plan_revision: 5
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 24
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609060720-NZXQ0E-executor-8cc3e176963e71049c9c5f79"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       plan-refinement:work-order-202609060720-NZXQ0E-executor-bc5eb8d9f97d518d56a644b3:
@@ -2007,7 +2977,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "d72bb02b4803ba011fa5b19606c5e1bef4d72e41"
+    hash: "365147eabce01f9674d4d7bb83868e9f98acc2b1"
   task_execution_context:
     base_ref: "main"
     base_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
@@ -2032,7 +3002,7 @@ Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N
 
 ## Plan
 
-Add one scoped integration-recovery testkit while preserving the existing three WorkItems and deterministic verification contract.
+Include the existing critical compatibility test in the active WorkItem to maintain its exact count, provenance and digest expectations for the additive recovery option.
 
 ## Verify Steps
 

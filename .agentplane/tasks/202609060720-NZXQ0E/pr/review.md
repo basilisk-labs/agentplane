@@ -31,6 +31,7 @@ Created: 2026-09-06T11:45:32.878Z
 ```text
  docs/user/cli-reference.generated.mdx              |   1 +
  ...n-cli.core.task-advance-effect-recovery.test.ts |  34 ++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/workflow-effect-recovery.testkit.ts    | 390 ++++++++++++++++++++
  .../shared/supervisor-execution-episode.test.ts    |  74 ++++
  .../shared/supervisor-execution-episode.ts         |  13 +
@@ -40,7 +41,9 @@ Created: 2026-09-06T11:45:32.878Z
  .../task/external-agent-workflow-recovery.ts       | 406 +++++++++++++++++++++
  .../runner/supervisor-execution-episode.test.ts    |  56 +++
  .../src/runner/supervisor-execution-episode.ts     |  44 +++
- 11 files changed, 1058 insertions(+)
+ .../baselines/v0.7-compatibility-candidate.json    |  31 +-
+ .../check-compatibility-contract-baseline.mjs      |  15 +
+ 14 files changed, 1100 insertions(+), 11 deletions(-)
 ```
 
 </details>
