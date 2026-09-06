@@ -1,0 +1,105 @@
+{
+  "details": null,
+  "digest": "sha256:36183255aa086fc664147989df1583e8c1480a5857aaf0b1f68b582133a61be8",
+  "implementation_sha": "08115f327915f9873ef8b1273b10c23da97885b8",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:40a6a30d529aece40d86b7f171b4d627c99031b2787e6a601ab87ae14c70cac3",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd",
+      "digest": "sha256:d5570ad48ee1c338ac2de8726d31833dd7b3c18c1b191e495a7d1c21d799e386",
+      "primary_task_id": "202609060720-NZXQ0E",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "effect_schema",
+        "effect_security_boundary",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609060720-NZXQ0E"
+      ]
+    },
+    "implementation": {
+      "base_sha": "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd",
+      "digest": "sha256:91e65cd423e478b69a85d7663aa6e07d6672aa7f017605cc3ebe692c12905766",
+      "strategy": "branch_diff",
+      "target_sha": "08115f327915f9873ef8b1273b10c23da97885b8"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:eb2c306c60ce3713e8288b71a46f3c46c54867f7bf3931b8f23379a3c2a629a1",
+    "verify_steps_digest": "sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied.",
+  "recorded_at": "2026-09-06T15:05:59.597Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1`. Expected: an interrupted integration.run_next can return to semantic rework only with exact durable queue/provider identity and exclusive ownership; missing, foreign, live-owner and uncertain effects remain fail-closed; interruption and repeat do not duplicate effects.\n2. Run `bun run ci:local:full` after focused regressions pass and the native supervisor commits the implementation. Expected: all required full regression gates pass for the actual repair SHA without manual state edits, weakened authority or a second state store.",
+  "scope_digest": "sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786",
+  "task_id": "202609060720-NZXQ0E",
+  "verification_command": "agentplane verify 202609060720-NZXQ0E --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}

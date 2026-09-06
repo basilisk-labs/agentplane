@@ -2,10 +2,10 @@
 id: "202609060720-NZXQ0E"
 title: "Recover an interrupted integration queue supervisor intent before semantic rework"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "USER"
   note: "Apply the user-authorized permission override for required release repair actions. This narrow refinement adds only the generated llms-full documentation artifact required by the existing check. It does not attest a historical integration outcome."
 verification:
-  state: "ok"
-  updated_at: "2026-09-06T14:35:33.585Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-06T15:05:59.597Z"
+  updated_by: "REVIEWER"
+  note: "Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -161,7 +161,8 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.mjs"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
@@ -194,41 +195,8 @@ execution_contract:
       - "tests"
     verification_results:
       -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
-      -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -390,9 +358,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "e4b14ecccfcbfce0956b670f661e55f80f1ca78d"
-  message: "🚧 NZXQ0E task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -504,8 +471,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "e4b14ecccfcbfce0956b670f661e55f80f1ca78d"
+  -
+    type: "verify"
+    at: "2026-09-06T15:05:59.597Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied."
 doc_version: 3
-doc_updated_at: "2026-09-06T14:39:03.216Z"
+doc_updated_at: "2026-09-06T15:06:03.820Z"
 doc_updated_by: "CODER"
 description: "Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery."
 sections:
@@ -768,6 +741,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609060720-NZXQ0E
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-06T15:05:59.597Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786, input_digest=sha256:40a6a30d529aece40d86b7f171b4d627c99031b2787e6a601ab87ae14c70cac3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609060720-NZXQ0E-recover-an-interrupted-integration-queue-supervi/.agentplane/tasks/202609060720-NZXQ0E/blueprint/resolved-snapshot.json
+    - old_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+    - current_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609060720-NZXQ0E
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1177,35 +1180,8 @@ extensions:
       revision: 7
       schema_version: 1
       task_id: "202609060720-NZXQ0E"
-    event_cursor: 27
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609060720-NZXQ0E"
-            - "git:08115f327915f9873ef8b1273b10c23da97885b8"
-          check_id: "focused-recovery"
-          command_identity: "bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts --maxWorkers=1"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-06T14:35:33.585Z"
-          repository_snapshot_digest: "sha256:4724f2d580c9c0a0b9f1ae61c68290e2c24dd40f91ce6d8672985725e5ac5069"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609060720-NZXQ0E"
-            - "git:08115f327915f9873ef8b1273b10c23da97885b8"
-          check_id: "full-regression"
-          command_identity: "bun run ci:local:full"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-06T14:35:33.585Z"
-          repository_snapshot_digest: "sha256:4724f2d580c9c0a0b9f1ae61c68290e2c24dd40f91ce6d8672985725e5ac5069"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 28
+    final_validation: null
     id: "202609060720-NZXQ0E"
     intent:
       acceptance_criteria:
@@ -1226,7 +1202,7 @@ extensions:
 
         Blocking Clean Core recovery linked to 202608291006-255K66 and 202609042327-PH5N6S. A native integration.run_next worker was interrupted while PR #5899 remained open due to a genuine unresolved review. The journal retains a running cli_operation intent. A supported verify --rework correctly routes PH5N6S to CODER, but task advance cannot issue the episode: Another unresolved external-agent episode already owns this task. --replacement rejects a nonterminal intent. task run reconcile reports no_active_claim because this is a supervisor workflow operation, not a runner effect. Reproduce and repair recovery in the existing supervisor owners. Reconcile only with durable queue/provider evidence and exclusive ownership; never infer that an uncertain merge was not applied, rerun a completed effect, weaken identity or authority, or edit journals/projections manually. Restore the original task route and return to PH5N6S for its separate implementation_rework replay finding. Do not duplicate the PH5N6S implementation. Preserve all completed Clean Core tasks. Exclude MPXQBK, release/version/tag/publication, mass cleanup, history rewriting and unrelated work. One bounded recovery task is necessary because PH5N6S cannot receive a semantic episode and its approved five source paths exclude supervisor dispatch recovery.
       task_id: "202609060720-NZXQ0E"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -3161,9 +3137,9 @@ extensions:
         revision: 6
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
-    revision: 46
+    revision: 47
     schema_version: 1
-    updated_at: "2026-09-06T14:39:03.216Z"
+    updated_at: "2026-09-06T15:06:03.815Z"
     work_items:
       bound-workflow-reconciliation:
         attempt: 1
@@ -3762,6 +3738,30 @@ extensions:
         mutation_id: "compatibility:sha256:599fb553c6970e9cff1f3d8d21d149979d97f87913b62895b13127a65e09bb31"
         next_revision: 32
         previous_revision: 31
+        schema_version: 1
+        task_id: "202609060720-NZXQ0E"
+      compatibility:sha256:5ecc5c446788e062fe42a6af02023d9d0b39c0740af0546199216d086ac5c911:
+        aggregate_digest: "sha256:f1f169ceaa229cc5614c7936a9443dd4e5692e57bffd350600d7d87b6401b3ce"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T15:06:03.815Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_627dbc02adedfd6e9268d4a3"
+          mutation_id: "compatibility:sha256:5ecc5c446788e062fe42a6af02023d9d0b39c0740af0546199216d086ac5c911"
+          plan_digest: "sha256:ca1faae8913703eba784605abb6b2321b5f57169c1b89c83624d0b87f8159f4f"
+          plan_revision: 7
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609060720-NZXQ0E"
+          task_revision: 46
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5ecc5c446788e062fe42a6af02023d9d0b39c0740af0546199216d086ac5c911"
+        next_revision: 47
+        previous_revision: 46
         schema_version: 1
         task_id: "202609060720-NZXQ0E"
       compatibility:sha256:6034d2a87dfa8e87769a7d91dcc12fc32718835416812d690142d6c8e87b3e99:
@@ -4412,9 +4412,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "08115f327915f9873ef8b1273b10c23da97885b8"
-    message: "🚧 NZXQ0E task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1e3c0b4b3d1457d18224dd94bac19d91bafa90bd"
@@ -4694,6 +4691,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609060720-NZXQ0E
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-06T15:05:59.597Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Rework: live GitHub PR #5899 is open with merged=false and merged_at=null, but REST merge_commit_sha contains the test merge commit 8cd6e5da45cd91dcf93f0c94866d3e62c10191bd. The recovery guard incorrectly treats that field as a completed effect. Fix only the existing recovery owner to distinguish an open PR test merge from a completed merge, and extend the existing native snapshot fixture to cover this REST response while retaining contradictory merged-state rejection. PH5N6S journal remains unchanged; the user explicitly confirmed not_applied.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4c15b1acc2c02a791b8e579a9b5d43f85399e8a2c17332838bcc774ff9540786, input_digest=sha256:40a6a30d529aece40d86b7f171b4d627c99031b2787e6a601ab87ae14c70cac3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609060720-NZXQ0E-recover-an-interrupted-integration-queue-supervi/.agentplane/tasks/202609060720-NZXQ0E/blueprint/resolved-snapshot.json
+- old_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+- current_digest: dc2b5dde4c1100c3cfa315f0bd3400661b66041df3e780d94d1ed81f253feb08
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609060720-NZXQ0E
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

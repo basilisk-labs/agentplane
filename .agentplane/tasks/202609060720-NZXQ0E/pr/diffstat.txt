@@ -9,10 +9,10 @@
  .../src/commands/task/advance.command.ts           |  26 +
  .../agentplane/src/commands/task/advance.spec.ts   |  12 +
  .../task/external-agent-supervisor-recovery.ts     |   2 +
- .../task/external-agent-workflow-recovery.ts       | 408 +++++++++++++++
+ .../task/external-agent-workflow-recovery.ts       | 409 +++++++++++++++
  .../runner/supervisor-execution-episode.test.ts    |  56 ++
  .../src/runner/supervisor-execution-episode.ts     |  44 ++
  .../baselines/v0.7-compatibility-candidate.json    |  31 +-
  .../check-compatibility-contract-baseline.mjs      |  15 +
  website/static/llms-full.txt                       |  56 ++
- 17 files changed, 1534 insertions(+), 22 deletions(-)
+ 17 files changed, 1535 insertions(+), 22 deletions(-)

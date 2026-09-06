@@ -553,7 +553,7 @@ export async function exerciseNativeIntegrationEffectRecovery(scenario: string):
     mergeable_state: "clean",
     merged: false,
     merged_at: null,
-    merge_commit_sha: null,
+    merge_commit_sha: scenario === "native_snapshot" ? "c".repeat(40) : null,
   };
   await withFakeConflictGh(
     native.root,
