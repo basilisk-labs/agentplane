@@ -12,8 +12,8 @@ Created: 2026-09-04T23:32:29.145Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun x vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts --maxWorkers=1
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
