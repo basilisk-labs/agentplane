@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:aeb38395753126df4d3c624868c7b261988eb55de693d44cca602bbf0e99252a",
   "pr_number": 5899,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5899",
+  "pre_merge_closure": {
+    "basis_commit": "b82739de719c160acb631be6d771c69ccaba1590",
+    "branch": "task/202609042327-PH5N6S/run-supervisor-verification-against-the-committe",
+    "pr_number": 5899,
+    "recorded_at": "2026-09-06T06:02:42.921Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
