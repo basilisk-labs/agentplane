@@ -1,4 +1,7 @@
-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import {
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import { LocalBackend } from "../backends/task-backend.js";
 import { recoverWorkPlanningBase } from "../commands/branch/work-resume-planning-base.js";
 import { execFile, spawn } from "node:child_process";
@@ -16,6 +19,7 @@ import {
 
 import {
   captureStdIO,
+  setTaskVerifySteps,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
   runCliSilent,
@@ -282,6 +286,7 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
   } finally {
     io.restore();
   }
+  await setTaskVerifySteps(root, taskId);
   expect(
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
   ).toBe(0);
@@ -369,6 +374,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       const taskRoot = inspected.worktree;
       const taskCtx = await loadCommandContext({ cwd: taskRoot, rootOverride: null });
       const original = (await taskCtx.taskBackend.getTask(taskId))!;
+      expect(original.status).toBe("DOING");
       expect(original.depends_on).toEqual([dependencyId]);
       expect(await taskCtx.taskBackend.getTask(dependencyId)).toBeNull();
       const beforeRoute = await buildTaskRouteDecision({
@@ -408,13 +414,21 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       const pinned = (await taskCtx.taskBackend.getTask(taskId))!;
       await taskCtx.taskBackend.writeTask({ ...pinned, extensions: original.extensions });
       const restored = (await taskCtx.taskBackend.getTask(taskId))!;
-      await taskCtx.taskBackend.writeTask({ ...restored, status: "DOING" });
+      const untouched = taskCentricAggregateFromExtensions(restored.extensions)!;
+      const workItem = Object.values(untouched.work_items)[0]!;
+      await taskCtx.taskBackend.writeTask({
+        ...restored,
+        extensions: withTaskCentricAggregate(restored.extensions, {
+          ...untouched,
+          work_items: { ...untouched.work_items, [workItem.id]: { ...workItem, attempt: 1 } },
+        }),
+      });
       await expect(recoverWorkPlanningBase({ ctx, taskId, apply: false })).rejects.toThrow(
-        "already started",
+        "WorkItem execution or validation already exists",
       );
       await taskCtx.taskBackend.writeTask({
         ...(await taskCtx.taskBackend.getTask(taskId))!,
-        status: "TODO",
+        extensions: restored.extensions,
       });
       await execFileAsync(
         "git",
@@ -507,9 +521,14 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
           {
             cwd: root,
             env: { ...process.env, AGENTPLANE_RECOVERY_TEST_MARKER: marker },
-            stdio: "ignore",
+            stdio: ["ignore", "ignore", "pipe"],
           },
         );
+        let childStderr = "";
+        child.stderr?.setEncoding("utf8");
+        child.stderr?.on("data", (chunk: string) => {
+          childStderr += chunk;
+        });
         const exited = new Promise((resolve) => child.once("exit", resolve));
         let hookPids: { hookPid: number; gitPid: number } | null = null;
         try {
@@ -521,7 +540,10 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
             }
             await new Promise((resolve) => setTimeout(resolve, 50));
           }
-          expect(hookPids, "isolated CLI must reach the post-merge crash boundary").not.toBeNull();
+          expect(
+            hookPids,
+            `isolated CLI must reach the post-merge crash boundary: ${childStderr}`,
+          ).not.toBeNull();
           child.kill("SIGKILL");
           await exited;
         } finally {
@@ -595,7 +617,7 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       expect(afterRoute.blockers.some((blocker) => blocker.code === "dependency_not_ready")).toBe(
         false,
       );
-      expect(after.status).toBe("TODO");
+      expect(after.status).toBe("DOING");
       expect(after.extensions!.task_execution_context).toMatchObject({
         ...priorBase,
         base_sha: target,
@@ -809,7 +831,19 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       "--root",
       root,
     ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await setTaskVerifySteps(root, taskId);
+    expect(
+      await runCliSilent([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
     await writeHarnessGitignore(root);
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed read-only resolution"], {

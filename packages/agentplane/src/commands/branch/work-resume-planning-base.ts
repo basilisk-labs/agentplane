@@ -64,7 +64,7 @@ export async function recoverWorkPlanningBase(opts: {
   if (base?.source !== "creation_checkout")
     refuse("explicit or unknown base provenance cannot be changed");
   if (
-    task.status !== "TODO" ||
+    !["TODO", "DOING"].includes(task.status) ||
     task.commit ||
     task.verification?.state === "ok" ||
     (task.verification?.attempts ?? 0) > 0
@@ -72,6 +72,8 @@ export async function recoverWorkPlanningBase(opts: {
     refuse("Task has already started");
   if (!Number.isInteger(task.revision) || (task.revision ?? 0) < 1)
     refuse("Task revision is unavailable");
+  // Plan approval projects ACTIVE as DOING before a WorkItem is claimed.
+  // The aggregate execution checks below determine whether work has actually started.
   const aggregate = taskCentricAggregateFromExtensions(task.extensions);
   if (!aggregate) refuse("an approved structured plan is required");
   const plan = aggregate.current_plan;

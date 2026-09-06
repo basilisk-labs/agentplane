@@ -9,6 +9,7 @@ import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   commitAll,
   configureGitUser,
   installRunCliIntegrationHarness,
@@ -65,6 +66,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }
@@ -219,6 +221,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         promotableTaskId = io.stdout.trim();
+        await setTaskVerifySteps(root, promotableTaskId);
       } finally {
         io.restore();
       }
@@ -303,6 +306,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         localOnlyTaskId = io.stdout.trim();
+        await setTaskVerifySteps(root, localOnlyTaskId);
       } finally {
         io.restore();
       }
@@ -399,6 +403,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }
@@ -491,6 +496,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         defaultTaskId = io.stdout.trim();
+        await setTaskVerifySteps(root, defaultTaskId);
       } finally {
         io.restore();
       }
@@ -573,6 +579,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         collectTaskId = io.stdout.trim();
+        await setTaskVerifySteps(root, collectTaskId);
       } finally {
         io.restore();
       }
@@ -654,6 +661,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }
@@ -792,6 +800,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }
@@ -887,6 +896,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }
@@ -976,6 +986,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }
@@ -1102,6 +1113,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         ]);
         expect(code).toBe(0);
         taskId = io.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         io.restore();
       }

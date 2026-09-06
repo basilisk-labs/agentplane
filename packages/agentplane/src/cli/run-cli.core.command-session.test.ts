@@ -5,6 +5,7 @@ import {
   captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
   mkTempDir,
   writeConfig,
 } from "@agentplane/testkit";
@@ -119,7 +120,7 @@ describe("runCli CommandSession", () => {
   });
 
   it("keeps local task routes lazy and does not resolve provider capabilities", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "direct";
     config.agents.approvals.require_plan = false;
@@ -181,7 +182,7 @@ describe("runCli CommandSession", () => {
   });
 
   it("traces the branch_pr preparation graph without implicit provider access", async () => {
-    const root = await mkGitRepoRoot();
+    const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;

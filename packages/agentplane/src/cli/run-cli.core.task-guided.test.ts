@@ -10,6 +10,7 @@ import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { getTaskStore, setTaskFieldsIntent } from "../commands/shared/task-store.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   commitAll,
   configureGitUser,
   installRunCliIntegrationHarness,
@@ -321,6 +322,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
         root,
       ]),
     ).toBe(0);
+    await setTaskVerifySteps(root, taskId);
     expect(
       await runCli(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]),
     ).toBe(0);
@@ -506,6 +508,7 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
         root,
       ]),
     ).toBe(0);
+    await setTaskVerifySteps(root, taskId);
     expect(
       await runCli(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]),
     ).toBe(0);

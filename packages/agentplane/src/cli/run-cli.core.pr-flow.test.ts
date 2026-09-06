@@ -494,9 +494,21 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ioTask.restore();
       }
       await approveTaskPlan(root, taskId);
-      await execFileAsync("git", ["branch", `task/${taskId}/first-owner`, "main"], {
-        cwd: root,
-      });
+      await commitAll(root, "test: persist approved task before branch ownership");
+      await execFileAsync(
+        "git",
+        [
+          "worktree",
+          "add",
+          "-b",
+          `task/${taskId}/first-owner`,
+          path.join(root, ".agentplane", "worktrees", `${taskId}-first-owner`),
+          "main",
+        ],
+        {
+          cwd: root,
+        },
+      );
 
       const io = captureStdIO();
       try {
@@ -512,9 +524,12 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
           "--root",
           root,
         ]);
-        expect(code).toBe(5);
-        expect(io.stderr).toContain("already has active branch ownership");
-        expect(io.stderr).toContain(`task/${taskId}/first-owner`);
+        expect(code, io.stderr).toBe(5);
+        expect(io.stderr).toContain(
+          "Refusing to create task worktrees from internal control checkout",
+        );
+        expect(io.stderr).toContain(`${taskId}-first-owner`);
+        expect(await gitBranchExists(root, `task/${taskId}/second-owner`)).toBe(false);
       } finally {
         io.restore();
       }

@@ -10,6 +10,7 @@ import { readTask } from "@agentplaneorg/core/tasks";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   commitAll,
   configureGitUser,
   mkGitRepoRoot,
@@ -78,6 +79,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioNew.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioNew.restore();
     }
@@ -179,6 +181,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         taskId = ioNew.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         ioNew.restore();
       }
@@ -316,6 +319,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         taskId = ioNew.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         ioNew.restore();
       }
@@ -411,6 +415,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         taskId = ioNew.stdout.trim();
+        await setTaskVerifySteps(root, taskId);
       } finally {
         ioNew.restore();
       }
@@ -507,6 +512,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioNew.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioNew.restore();
     }

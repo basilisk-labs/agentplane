@@ -7,7 +7,6 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   approveTaskPlan,
   captureStdIO,
-  cleanGitEnv,
   commitPathsIfChanged,
   configureGitUser,
   installRunCliIntegrationHarness,
@@ -114,23 +113,19 @@ describe("runCli integrate rebase race", () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
       await prepareHostedIntegrateFixture({
         root,
         taskId,
         branch,
         scenarioName: "integrate-rebase-race",
+        worktreePath,
       });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
       await execFileAsync("git", ["add", "base.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
-
-      const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
-      await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
-        cwd: root,
-        env: cleanGitEnv(),
-      });
 
       const io = captureStdIO();
       try {

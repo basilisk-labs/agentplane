@@ -143,6 +143,22 @@ async function approvePlan(binPath: string, root: string, taskId: string): Promi
     binPath,
     [
       "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "Run the installed runtime smoke scenario. Expected: the generated project remains usable.",
+      "--root",
+      root,
+    ],
+    root,
+  );
+  await expectInstalledOk(
+    binPath,
+    [
+      "task",
       "plan",
       "set",
       taskId,

@@ -29,6 +29,8 @@ import * as taskBackend from "../backends/task-backend.js";
 import { cloudProjectionIdentitySha256 } from "../backends/task-backend/cloud-projection-identity.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
+  recordVerificationOk,
   cleanGitEnv,
   commitAll,
   configureGitUser,
@@ -117,6 +119,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await setTaskVerifySteps(root, depId);
     await runCliSilent([
       "task",
       "plan",
@@ -157,20 +160,8 @@ describe("runCli", () => {
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-    await runCliSilent([
-      "verify",
-      depId,
-      "--ok",
-      "--by",
-      "EVALUATOR",
-      "--note",
-      "Ok to finish dependency; EVALUATOR quality gate passed with cited evidence.",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-    await recordEvaluatorPass(root, depId);
     await runCliSilent(["blueprint", "snapshot", depId, "--root", root]);
+    await recordVerificationOk(root, depId);
     const finishIo = captureStdIO();
     try {
       const finishCode = await runCli([

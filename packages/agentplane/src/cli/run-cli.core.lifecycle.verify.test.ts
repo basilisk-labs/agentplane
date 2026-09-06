@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   mkGitRepoRoot,
   mkGitRepoRootWithCommit,
   registerAgentplaneHome,
@@ -65,6 +66,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -124,6 +126,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -177,6 +180,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -226,6 +230,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -280,6 +285,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -328,6 +334,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -380,6 +387,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }
@@ -429,6 +437,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       taskId = ioTask.stdout.trim();
+      await setTaskVerifySteps(root, taskId);
     } finally {
       ioTask.restore();
     }

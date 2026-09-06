@@ -1,4 +1,5 @@
 import path from "node:path";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
@@ -280,7 +281,10 @@ export async function deriveBlockers(opts: {
       "The historical EVALUATOR exchange was retired; require a fresh review.",
     );
   }
-  if (normalizedTaskStatus === "TODO") {
+  if (
+    normalizedTaskStatus === "TODO" ||
+    (normalizedTaskStatus === "DOING" && taskCentricAggregateFromExtensions(opts.task.extensions))
+  ) {
     const summary = await taskDependencyReadinessBlocker(opts.task, opts.ctx.taskBackend);
     if (summary) addBlocker(blockers, "dependency_not_ready", summary);
   }

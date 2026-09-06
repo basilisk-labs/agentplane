@@ -4,6 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { describe } from "vitest";
+import { setTaskVerifySteps } from "@agentplane/testkit";
 
 import {
   captureStdIO,
@@ -171,6 +172,7 @@ describe("resolved provider conflict publication", () => {
       "--root",
       root,
     ]);
+    await setTaskVerifySteps(root, taskId);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
 
     const slug = "publish-resolved-done-head";

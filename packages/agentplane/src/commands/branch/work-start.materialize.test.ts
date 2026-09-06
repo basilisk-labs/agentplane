@@ -11,7 +11,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   isReusableWorkspaceInstallLayout,
@@ -40,6 +40,7 @@ async function writeRootManifest(root: string): Promise<void> {
 }
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
     if (root) await rm(root, { recursive: true, force: true });
@@ -130,6 +131,49 @@ describe("task-worktree install layout materialization", () => {
     await expect(
       isReusableWorkspaceInstallLayout({ repoRoot, sourceRoot: repoRoot }),
     ).resolves.toBe(false);
+  });
+
+  it("keeps package dependencies usable when the runtime root install is foreign", async () => {
+    const repoRoot = await temporaryRepo();
+    const runtimeRoot = await temporaryRepo();
+    const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "current");
+    const dependencyRoot = path.join(runtimeRoot, "node_modules", "canonicalize");
+    await mkdir(dependencyRoot, { recursive: true });
+    await writeFile(path.join(dependencyRoot, "package.json"), '{"name":"canonicalize"}\n');
+    const packageInstall = path.join(runtimeRoot, "packages", "core", "node_modules");
+    await mkdir(packageInstall, { recursive: true });
+    await symlink(dependencyRoot, path.join(packageInstall, "canonicalize"), "dir");
+    const localCore = path.join(worktreePath, "packages", "core");
+    await mkdir(localCore, { recursive: true });
+    await writeFile(path.join(localCore, "package.json"), '{"name":"@agentplaneorg/core"}\n');
+    await mkdir(path.join(packageInstall, "@agentplaneorg"), { recursive: true });
+    await symlink(
+      path.join(runtimeRoot, "packages", "core"),
+      path.join(packageInstall, "@agentplaneorg", "core"),
+      "dir",
+    );
+    vi.spyOn(process, "cwd").mockReturnValue(runtimeRoot);
+
+    await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
+
+    await expect(lstat(path.join(worktreePath, "node_modules"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+    const targetInstall = path.join(localCore, "node_modules");
+    expect(await readlink(path.join(targetInstall, "canonicalize"))).toBe(dependencyRoot);
+    await expect(
+      readFile(path.join(targetInstall, "canonicalize", "package.json"), "utf8"),
+    ).resolves.toContain('"canonicalize"');
+    await expect(
+      readFile(path.join(targetInstall, "@agentplaneorg", "core", "package.json"), "utf8"),
+    ).resolves.toContain('"@agentplaneorg/core"');
+    expect(
+      path.resolve(
+        targetInstall,
+        "@agentplaneorg",
+        await readlink(path.join(targetInstall, "@agentplaneorg", "core")),
+      ),
+    ).toBe(localCore);
   });
 
   it("preserves healthy workspace, website, recipes, and package-local reuse", async () => {

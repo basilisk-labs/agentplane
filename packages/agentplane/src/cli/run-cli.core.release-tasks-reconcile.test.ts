@@ -1,16 +1,17 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
+import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   cleanGitEnv,
   installRunCliIntegrationHarness,
   runCliSilent,
@@ -30,12 +31,13 @@ async function addIncludedBatchExtension(opts: {
   branch: string;
   base?: string;
 }): Promise<void> {
-  const taskPath = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "README.md");
-  const current = parseTaskReadme(await readFile(taskPath, "utf8"));
-  const extensions = (current.frontmatter.extensions ?? {}) as Record<string, unknown>;
-  const next = renderTaskReadme(
+  const ctx = await loadCommandContext({ cwd: opts.root, rootOverride: opts.root });
+  const task = await ctx.taskBackend.getTask(opts.taskId);
+  if (!task) throw new Error(`Missing fixture task ${opts.taskId}`);
+  const extensions = task.extensions ?? {};
+  await ctx.taskBackend.writeTask(
     {
-      ...current.frontmatter,
+      ...task,
       extensions: {
         ...extensions,
         branch_pr_batch: {
@@ -48,14 +50,11 @@ async function addIncludedBatchExtension(opts: {
         },
       },
     },
-    current.body,
+    task.revision ? { expectedRevision: task.revision } : undefined,
   );
-  await writeFile(taskPath, next, "utf8");
-  const updated = parseTaskReadme(await readFile(taskPath, "utf8"));
-  expect(updated.frontmatter.extensions).toMatchObject(extensions);
-  expect(
-    (updated.frontmatter.extensions as Record<string, unknown>).task_execution_context,
-  ).toEqual(extensions.task_execution_context);
+  const updated = await ctx.taskBackend.getTask(opts.taskId);
+  expect(updated?.extensions).toMatchObject(extensions);
+  expect(updated?.extensions?.task_execution_context).toEqual(extensions.task_execution_context);
 }
 
 async function writePrMeta(opts: {
@@ -117,7 +116,9 @@ async function createDocBackedTask(root: string, title: string): Promise<string>
       root,
     ]);
     expect(code).toBe(0);
-    return io.stdout.trim();
+    const taskId = io.stdout.trim();
+    await setTaskVerifySteps(root, taskId);
+    return taskId;
   } finally {
     io.restore();
   }

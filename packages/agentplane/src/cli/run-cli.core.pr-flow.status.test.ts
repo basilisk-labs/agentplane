@@ -338,6 +338,11 @@ describe("runCli pr flow status", () => {
       },
     );
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["worktree", "add", path.join(root, ".agentplane", "worktrees", taskId), branch],
+      { cwd: root },
+    );
 
     const fakeBin = await installFakeGh(root, {
       checksExitCode: 0,
@@ -355,7 +360,7 @@ describe("runCli pr flow status", () => {
     process.env.PATH = `${fakeBin}${path.delimiter}${oldPath ?? ""}`;
     const io = captureStdIO();
     try {
-      expect(await runCli(["pr", "flow", "status", taskId, "--root", root])).toBe(0);
+      expect(await runCli(["pr", "flow", "status", taskId, "--root", root]), io.stderr).toBe(0);
       expectLabeledValue(io.stdout, "task", `${taskId} DONE`);
       expectLabeledValue(io.stdout, "branch", branch);
       expectLabeledValue(

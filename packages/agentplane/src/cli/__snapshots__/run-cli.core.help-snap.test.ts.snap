@@ -92,6 +92,7 @@ Usage:
   agentplane task new --title <text> --description <text> --owner <id> [options]
 
 Options:
+  --canonical  Create an atomic canonical Task during staged controller cutover.
   --title <text>  Task title. (required)
   --description <text>  Task description. (required)
   --owner <id>  Owner id (e.g. CODER). (required)
@@ -110,10 +111,10 @@ Options:
 `;
 
 exports[`runCli help snapshots (cli2) > help task plan --compact snapshot 1`] = `
-"task plan - Task plan commands (set/approve/reject).
+"task plan - Task plan commands (set/approve/reject/recover-rejection).
 
 Usage:
-  agentplane task plan <set|approve|reject> [args] [options]
+  agentplane task plan <set|approve|reject|recover-rejection> [args] [options]
 "
 `;
 

@@ -195,9 +195,13 @@ async function cloneInstallLayoutEntry(opts: {
     const linkTarget = await readlink(opts.sourcePath);
     const resolvedSourceTarget = path.resolve(path.dirname(opts.sourcePath), linkTarget);
     const targetWithinSourceRoot = isPathWithin(opts.sourceRoot, resolvedSourceTarget);
-    const mappedTarget = targetWithinSourceRoot
+    const worktreeTarget = targetWithinSourceRoot
       ? path.join(opts.worktreePath, path.relative(opts.sourceRoot, resolvedSourceTarget))
-      : resolvedSourceTarget;
+      : null;
+    // A rejected root install is not present in the new worktree. Retain the runtime's
+    // package dependency target instead of rebasing it into a nonexistent dependency store.
+    const mappedTarget =
+      worktreeTarget && (await fileExists(worktreeTarget)) ? worktreeTarget : resolvedSourceTarget;
     const resolvedTargetStats = await lstat(resolvedSourceTarget).catch(() => null);
     const linkType =
       process.platform === "win32"
@@ -206,7 +210,7 @@ async function cloneInstallLayoutEntry(opts: {
           : "file"
         : undefined;
     const portableTarget =
-      process.platform === "win32"
+      process.platform === "win32" || !isPathWithin(opts.worktreePath, mappedTarget)
         ? mappedTarget
         : path.relative(path.dirname(opts.targetPath), mappedTarget);
     await symlink(portableTarget, opts.targetPath, linkType);

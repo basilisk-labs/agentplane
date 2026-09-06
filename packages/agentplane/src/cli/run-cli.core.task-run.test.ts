@@ -6,6 +6,7 @@ import { gzipSync } from "node:zlib";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  setTaskVerifySteps,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithCommit,
   runCliSilent,
@@ -105,7 +106,10 @@ async function createStartedRunnerTask(root: string, title: string): Promise<str
     "--root",
     root,
   ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await setTaskVerifySteps(root, taskId);
+  expect(
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]),
+  ).toBe(0);
   await runCliSilent([
     "task",
     "start-ready",

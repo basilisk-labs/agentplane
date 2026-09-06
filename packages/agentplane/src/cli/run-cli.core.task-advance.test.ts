@@ -14,6 +14,7 @@ import {
 
 import {
   captureStdIO,
+  setTaskVerifySteps,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithCommit,
   mkGitRepoRootWithBranch,
@@ -255,7 +256,10 @@ async function planAndApproveTask(root: string, taskId: string, plan: string): P
   const planned = await returnAgentResult(root, taskId, resultPath);
   expect(planned.code, planned.stderr).toBe(0);
   expect((JSON.parse(planned.stdout) as AgentPacket).action.kind).toBe("approval_required");
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await setTaskVerifySteps(root, taskId);
+  expect(
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]),
+  ).toBe(0);
 }
 
 async function mkGitRepoRootWithMainCommit(): Promise<string> {
@@ -436,7 +440,7 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
       "utf8",
     );
-    expect(readme).toContain('status: "TODO"');
+    expect(readme).toContain('status: "DOING"');
   });
 
   it("rejects a tampered exchange checkout before applying semantic task state", async () => {
