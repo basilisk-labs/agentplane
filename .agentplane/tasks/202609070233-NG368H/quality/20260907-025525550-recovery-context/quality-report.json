@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202609070233-NG368H",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-07T02:58:01.563Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab",
+  "blueprint_digest": "4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea",
+  "findings": [
+    "Reviewed the actual three-line workflow change and eight behavioral matrix cases in the existing contract suite. The manual branch follows the release-ready guard and does not alter package publication flags or the workflow_dispatch-only publish job condition.",
+    "Verified all frozen evidence digests and read the recorded successful focused contract, workflow lint and full local CI results. The product diff contains only the two approved paths.",
+    "Residual risk: Hosted integration and recovery publication remain separate pending operations. No publication success is inferred from this local review."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/f1c8c6d9c0d62f0432bb4f6443d406dd196269e181e0519179b4e8de993d683a.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
