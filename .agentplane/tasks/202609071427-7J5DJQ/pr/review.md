@@ -39,10 +39,10 @@ Created: 2026-09-07T14:33:24.150Z
  .github/workflows/workflows-lint.yml               |   2 +-
  package.json                                       |   2 +-
  ...n-cli.core.task-advance.branch-worktree.test.ts | 105 ++++++++++++++++-----
- .../external-agent-implementation-authority.ts     |  22 ++++-
+ .../external-agent-implementation-authority.ts     |  44 +++++----
  .../agentplane/src/shared/sqlite-driver.test.ts    | 103 ++++++++++++++++++++
  packages/agentplane/src/shared/sqlite-driver.ts    |   2 +-
- 13 files changed, 226 insertions(+), 44 deletions(-)
+ 13 files changed, 234 insertions(+), 58 deletions(-)
 ```
 
 </details>
