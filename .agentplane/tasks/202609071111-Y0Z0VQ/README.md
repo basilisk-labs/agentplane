@@ -4,7 +4,7 @@ title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequenti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,40 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T13:15:13.099Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 9 typed finding(s)."
+  evaluated_sha: "e0ae49d29fd69c88c8ad00e69b06b144700109d7"
+  blueprint_digest: "85b28705409c43af1231a757e649951365020667c9d902d08719bee6d565de83"
+  evidence_refs:
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/20260907-131131706-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/20260907-131131706-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/cefdad5ab8b0c9690ae71fa2a0173aa84261718aedaf5a49d8a635fabb52e9a5.md"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/20260907-131131706-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/20260907-131131706-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/20260907-131131706-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/README.md"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/c336621946fad6df1d83bd6e262e57b84d0508d531c8655c349e5daf989c04e1.patch"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/81d51bf44f74c4a8480af7ae2bdac5e50bbc25e077f863f104789dd41aabe3c8.json"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/verification/20260907131125505-23deea5512fcdc2e.json"
+    - ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/24a7d0c1bb5362dd7312c50b47d573d82cc3d11adbbe7960c0b6d41bf881e2e4.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Inspected the frozen 32-file package diff at e0ae49d29fd69c88c8ad00e69b06b144700109d7 against ca07204eed841a1aa245e3bb8d14832d7ea3ac30. All nine frozen evidence digests match. Current prepared HEAD c963a9561b27fde23f6218f8311cd3bfd98a72ca differs only in supervisor-owned task verification artifacts; the package diff is unchanged."
+    - "AP-02 uses the same required-WorkItem completion predicate for routing and final validation. Direct interception is limited to verified closeout, so ordinary runner execution remains intact. READY and REWORK_READY negative routes are covered without weakening optional or legacy cases."
+    - "AP-04 reassessment retains durable implementation/base/exchange identity, ancestry and current writable-scope checks. It accepts only a newer approved plan at the admitted current task revision and unchanged source HEAD. Fresh semantic claims and current deterministic checks are used; the failing replacement-check test proves old green evidence cannot complete the new WorkItem."
+    - "AP-05 rejects null or mismatched WorkItem identity and admission drift in plan, approval, attempt, claim and WorkItem revision. Replay additionally compares the semantic digest; unchanged replay is idempotent. Existing CAS remains the persistence boundary. AP-06 preserves material replanning while removing stale text as canonical authority."
+    - "AP-09 supplements only missing local projections through existing owner and unique branch resolution, validates README identity, and does not rewrite task truth. Missing, malformed, absent-directory, ambiguous-branch and foreign-ID fixtures cover the meaningful boundaries."
+    - "AP-01 qualification preserves the damaged snapshot and proves synchronized replace-verify and single-winner concurrent CAS. AP-08 proves exact native kernel effect/resource delegation and rejection of production scope. No unsupported legacy grant or historical recovery claim is introduced. AP-03/AP-07 behavior remains protected."
+    - "CLI-owned declared-checks and verification record show bun run ci:local:full passed for this frozen implementation. Targeted regressions also cover both successful and rejected recovery paths. Helper moves retain existing behavior and comply with module-size and architecture constraints. No required test gap or unapproved implementation scope expansion was found."
+    - "Residual risk: Historical Factory revision divergence is not repaired or attributed to a proven writer; damaged legacy snapshots remain fail-closed."
+    - "Residual risk: Legacy ExecutionGrant has no resource-scoped deployment capability equivalent to native kernel authority. Actual Factory execution and deployment remain unverified."
 execution_route:
   frozen: true
   reason_codes:
@@ -825,7 +859,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071111-Y0Z0VQ"
-    event_cursor: 14
+    event_cursor: 15
     final_validation: null
     id: "202609071111-Y0Z0VQ"
     intent:
@@ -840,9 +874,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-07T13:11:26.476Z"
+    updated_at: "2026-09-07T13:11:26.478Z"
     work_items:
       canonical-plan-routing:
         attempt: 1
@@ -1342,6 +1376,30 @@ extensions:
         mutation_id: "compatibility:sha256:8b7cba8fe97a2e021f102965d3a3823e896eddfc6b5f2e7175e1632e5bd265dc"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+      compatibility:sha256:b2dcd415108fddb2f074874e2717939a194178705a0ae3595861eab2de00ad7f:
+        aggregate_digest: "sha256:c3e5edffbcaa82a180526691cd04767486fdbd2a268abc247f31aed4b11b2501"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:11:26.478Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6d82ab421c34da75baaad1fc"
+          mutation_id: "compatibility:sha256:b2dcd415108fddb2f074874e2717939a194178705a0ae3595861eab2de00ad7f"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b2dcd415108fddb2f074874e2717939a194178705a0ae3595861eab2de00ad7f"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
       compatibility:sha256:b6fa7d21a435cfaee9ae55819a0d7adc019414c6f5757dc0cd80b1f0201893e3:

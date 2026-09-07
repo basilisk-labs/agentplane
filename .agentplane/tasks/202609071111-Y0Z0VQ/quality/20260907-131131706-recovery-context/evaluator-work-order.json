@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071111-Y0Z0VQ-fb059049ccc74279d7ba200d",
+  "prepared_at": "2026-09-07T13:11:31.706Z",
+  "task": {
+    "id": "202609071111-Y0Z0VQ",
+    "revision": 21,
+    "objective": "Repair confirmed Arkady Factory compatibility lifecycle defects sequentially\n\nRecheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation.",
+    "acceptance_criteria": [
+      "- In scope: Recheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation.\n- Out of scope: unrelated refactors not required for \"Repair confirmed Arkady Factory compatibility lifecycle defects sequentially\".",
+      "Goal: Repair current AgentPlane defects from the Arkady Factory audit in one task with one active WorkItem at a time.\n\nSequence: completion-route -> existing-result -> canonical-plan-routing -> task-discovery -> remaining-integrity-qualification.\n1. AP-02: Add a regression for required READY WorkItems with attempt=0 and successful legacy evidence. Correct route selection before closeout. Preserve finish validation.\n2. AP-04/AP-05: Reproduce zero-delta and identity failures. Implement exact WorkItem result binding and safe acceptance of an existing implementation with current supervisor evidence. Preserve replay safety and reject stale or ambiguous results.\n3. AP-06: Make an accepted canonical plan authoritative over stale legacy planning text without bypassing genuine material replanning.\n4. AP-09: Keep tasks discoverable when local README is absent using authoritative identity and existing checkout resolution. Report ambiguity without arbitrary branch selection or hidden repair.\n5. AP-01/AP-08: Reproduce revision divergence and scoped external-effect approval propagation on isolated fixtures. Fix only confirmed defects through existing atomic write and grant mechanisms. Preserve AP-03/AP-07 protections.\n\nVerification: For each WorkItem, first run the nearest existing regression suite with the new failing behavioral case, then implement the smallest correction and rerun it. Use bunx --no-install vitest --config vitest.workspace.ts run with project agentplane for command/backend tests, core for core tests, and cli-core for run-cli.core tests. Run bun run typecheck, targeted ESLint and Prettier checks on changed files, and git diff --check. Run bun run ci:local:full after all implementation WorkItems. Return exact observed results through each semantic result; AgentPlane owns verification persistence.\n\nScope: Only the listed source roots and their adjacent tests. No Factory mutations, unrelated cleanup, schema proliferation, fabricated implementation delta, weakened checks, manual task/projection/receipt repair, or real external deployment. Local edits and isolated tests are authorized by the user. External publication and formal approval remain explicit boundaries. Stop on unresolved authority, material public recovery API design, or evidence incompatible with the current plan. Rollback: revert only the task implementation changes through the supported lifecycle.\n\nCompletion evidence: Each confirmed defect has a behavior regression and passing relevant checks. Record non-reproduced claims as qualification limits. Review the final diff and tracked state. Do not claim historical Factory end-to-end recovery without running its supported isolated equivalent.",
+      "1. For each WorkItem, reproduce its defect in the nearest existing behavioral test before implementation. Run bunx --no-install vitest --config vitest.workspace.ts run with project agentplane for command/backend tests, core for core tests, and cli-core for run-cli.core tests. Expected: the regression fails before the correction and passes afterwards.\n2. Run bun run typecheck, targeted ESLint and Prettier checks on changed files, and git diff --check. Expected: all pass.\n3. After all implementation WorkItems, run bun run ci:local:full. Expected: all required checks pass.\n4. Verify stale result rejection, exact replay, unchanged implementation acceptance, canonical plan routing, missing projection discovery, revision integrity, and scoped authority using isolated fixtures. Do not execute actual external deployment.\n5. Review the final diff and git status --short --untracked-files=all. Report non-reproduced historical claims and unverified Factory runtime behavior explicitly."
+    ]
+  },
+  "evaluated_sha": "e0ae49d29fd69c88c8ad00e69b06b144700109d7",
+  "diff_base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+  "blueprint_digest": "85b28705409c43af1231a757e649951365020667c9d902d08719bee6d565de83",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071111-Y0Z0VQ/quality/20260907-131131706-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ebcbdc508c8662cd17a13b506c191e2e7b387422e1d70e71146dc059c4b452b4",
+    "prompt_path": ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/cefdad5ab8b0c9690ae71fa2a0173aa84261718aedaf5a49d8a635fabb52e9a5.md",
+    "result_schema_path": ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071111-Y0Z0VQ/README.md",
+      "sha256": "sha256:a6b4b0daac0a92561984bb88bbbf233719bbdf34431505202d763b5e65acf0d9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/c336621946fad6df1d83bd6e262e57b84d0508d531c8655c349e5daf989c04e1.patch",
+      "sha256": "sha256:c336621946fad6df1d83bd6e262e57b84d0508d531c8655c349e5daf989c04e1",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/81d51bf44f74c4a8480af7ae2bdac5e50bbc25e077f863f104789dd41aabe3c8.json",
+      "sha256": "sha256:81d51bf44f74c4a8480af7ae2bdac5e50bbc25e077f863f104789dd41aabe3c8",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071111-Y0Z0VQ/verification/20260907131125505-23deea5512fcdc2e.json",
+      "sha256": "sha256:1a3b31360005ee08fa7dbcce4dbf7efe84ec504b382461e5a703fa7fb8163fd6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071111-Y0Z0VQ/quality/objects/sha256/24a7d0c1bb5362dd7312c50b47d573d82cc3d11adbbe7960c0b6d41bf881e2e4.json",
+      "sha256": "sha256:24a7d0c1bb5362dd7312c50b47d573d82cc3d11adbbe7960c0b6d41bf881e2e4",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
