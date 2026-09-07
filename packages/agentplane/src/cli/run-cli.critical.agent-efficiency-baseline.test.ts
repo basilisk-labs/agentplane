@@ -902,3 +902,51 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
     TEST_TIMEOUT_MS,
   );
 });
+
+describeCritical("repository efficiency snapshots", () => {
+  it(
+    "binds sampling to Git evidence and preserves unavailable usage",
+    async () => {
+      const root = await makeRepoTempRoot();
+      const git = (...args: string[]) => execFileAsync("git", args, { cwd: root });
+      await git("init");
+      await mkdir(path.join(root, "packages/agentplane"), { recursive: true });
+      await mkdir(path.join(root, ".agentplane/tasks/T1"), { recursive: true });
+      await writeFile(path.join(root, "packages/agentplane/package.json"), "{}\n");
+      await writeFile(path.join(root, ".agentplane/tasks/T1/README.md"), "---\nid: T1\n---\n");
+      await git("add", ".");
+      await git(
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.invalid",
+        "commit",
+        "-m",
+        "fixture",
+      );
+      const moduleUrl = pathToFileURL(
+        path.join(REPO_ROOT, "scripts/lib/agent-efficiency-repository-snapshot.mjs"),
+      ).href;
+      const expression = `import { measureRepositoryEfficiency } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(measureRepositoryEfficiency({ repoRoot: ${JSON.stringify(root)} })));`;
+      const first = await runNode(["--input-type=module", "-e", expression]);
+      expect(first.exitCode).toBe(0);
+      const snapshot = JSON.parse(first.stdout);
+      expect(snapshot.totals).toMatchObject({
+        sampled_tasks: 1,
+        tasks_with_usage: 0,
+        service_commits: 0,
+        input_tokens: { value: null, tasks_observed: 0 },
+      });
+      expect(snapshot.tasks[0]).toMatchObject({
+        work_items: null,
+        roles: null,
+        prepared_context_bytes: null,
+        delivered_context_bytes: null,
+      });
+      await writeFile(path.join(root, ".agentplane/tasks/T1/README.md"), "uncommitted mutation");
+      const repeated = await runNode(["--input-type=module", "-e", expression]);
+      expect(repeated.stdout).toBe(first.stdout);
+    },
+    TEST_TIMEOUT_MS,
+  );
+});

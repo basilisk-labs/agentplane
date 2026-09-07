@@ -1,3 +1,8 @@
+import {
+  buildAgentWorkOrderV2ValidFixture,
+  renderAgentSemanticResultSchemaJson,
+} from "@agentplaneorg/core/schemas";
+import { issueKernelExchange } from "../task/kernel-exchange.js";
 import { mkdir, readFile, readdir, rename, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { mkGitRepoRoot } from "@agentplane/testkit";
@@ -435,4 +440,67 @@ describe("evaluator evidence object store", () => {
       await rm(outsideRoot, { recursive: true, force: true });
     }
   });
+});
+
+it("shares canonical result schemas across new exchanges and preserves historical schema copies", async () => {
+  const root = await mkGitRepoRoot();
+  const command = {
+    resolvedProject: { gitRoot: root },
+    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    memo: {},
+  } as never;
+  const order = {
+    ...buildAgentWorkOrderV2ValidFixture(),
+    work_order_id: `sha256:${"1".repeat(64)}`,
+  };
+  const first = await issueKernelExchange(command, order, "host");
+  const second = await issueKernelExchange(
+    command,
+    { ...order, work_order_id: `sha256:${"2".repeat(64)}` },
+    "host",
+  );
+  const firstPath = path.resolve(first.exchange.directory, first.exchange.result_schema_ref);
+  const secondPath = path.resolve(second.exchange.directory, second.exchange.result_schema_ref);
+  expect(firstPath).toBe(secondPath);
+  expect(await readFile(firstPath, "utf8")).toBe(renderAgentSemanticResultSchemaJson());
+  expect(await readdir(path.dirname(firstPath))).toHaveLength(1);
+  expect(await readdir(first.exchange.directory)).not.toContain("result-schema.json");
+  const bytes = (await readFile(firstPath)).byteLength;
+  expect(bytes).toBeGreaterThan(1000);
+  expect(
+    (await readFile(path.join(first.exchange.directory, "result-schema-object.json"))).byteLength,
+  ).toBeLessThan(bytes);
+  // An interrupted publication with a durable object and no descriptor reuses the object.
+  await rm(path.join(first.exchange.directory, "result-schema-object.json"));
+  const replay = await issueKernelExchange(command, order, "host");
+  expect(path.resolve(replay.exchange.directory, replay.exchange.result_schema_ref)).toBe(
+    firstPath,
+  );
+  expect(await readdir(path.dirname(firstPath))).toHaveLength(1);
+  const changed = await putEvaluatorEvidenceObject({
+    gitRoot: root,
+    taskQualityRoot: path.join(root, ".agentplane/tasks", order.task.id, "quality"),
+    logicalName: "canonical-result-schema",
+    kind: "result_schema",
+    extension: ".json",
+    mediaType: "application/schema+json",
+    contents: '{"const":"changed schema"}\n',
+  });
+  expect(path.join(root, changed.path)).not.toBe(firstPath);
+  expect(await readdir(path.dirname(firstPath))).toHaveLength(2);
+  expect((await readFile(firstPath)).byteLength).toBe(bytes);
+  // A historical exchange keeps its original copy and never migrates it implicitly.
+  await writeFile(
+    path.join(first.exchange.directory, "result-schema.json"),
+    '{"historical":true}\n',
+  );
+  const historical = await issueKernelExchange(command, order, "host");
+  expect(historical.exchange.result_schema_ref).toBe("result-schema.json");
+  expect(await readFile(path.join(first.exchange.directory, "result-schema.json"), "utf8")).toBe(
+    '{"historical":true}\n',
+  );
+  await writeFile(secondPath, "tampered");
+  await expect(
+    issueKernelExchange(command, { ...order, work_order_id: `sha256:${"2".repeat(64)}` }, "host"),
+  ).rejects.toThrow(/changed after preparation/u);
 });

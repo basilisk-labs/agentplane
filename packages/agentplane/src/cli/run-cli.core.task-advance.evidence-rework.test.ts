@@ -187,6 +187,10 @@ async function completedFixture(initialized = true) {
   if (initialized) {
     expect(completed.extensions?.task_execution_context).toEqual(creationBase);
   }
+  const beforeReviewCommit = await git("git", ["log", "-1", "--format=%s"], { cwd: checkout });
+  expect(beforeReviewCommit.stdout).not.toContain("record external implementation evidence");
+  const pendingEvidence = await git("git", ["status", "--porcelain"], { cwd: checkout });
+  expect(pendingEvidence.stdout).toContain(`.agentplane/tasks/${taskId}/`);
   const reviewOrder = await order(review);
   expect(reviewOrder.role).toBe("EVALUATOR");
   expect(
@@ -203,6 +207,15 @@ async function completedFixture(initialized = true) {
     },
   });
   await resume(checkout, review);
+  const committedChecks = await git(
+    "git",
+    ["show", `HEAD:.agentplane/tasks/${taskId}/supervision/declared-checks.json`],
+    { cwd: checkout },
+  );
+  expect(JSON.parse(committedChecks.stdout).status).toBe("passed");
+  const combinedCommit = await git("git", ["log", "-1", "--format=%s"], { cwd: checkout });
+  expect(combinedCommit.stdout).toContain("record external evaluator result");
+
   // The operator supplies task documentation before a fresh semantic episode.
   expect(
     await runCliSilent([

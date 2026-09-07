@@ -364,6 +364,95 @@ describe("canonical native authority", () => {
     expect(read.record.aggregate.authority_lineage).toHaveLength(2);
   });
 
+  it("admits only an exact native USER-approved authority delta", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const afterPlanApproval = await f.adapter.read(f.taskId);
+    if (afterPlanApproval.kind !== "canonical") throw new Error(afterPlanApproval.kind);
+    const approvedPlan = afterPlanApproval.record.aggregate.current_plan;
+    const { authority: parent } = await f.resolver.resolve(f.taskId);
+    f.values.repository_fingerprint = k.kernelDigest("schema-sync");
+    f.setObservation({
+      kind: "repository_implementation",
+      previous_fingerprint: parent.repository_fingerprint,
+      evidence_digest: k.kernelDigest("schema-observation"),
+      changed_paths: ["schemas/generated.json", "src/implementation.ts"],
+    });
+    const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
+    const prepared = await f.resolver.prepareDelta(f.taskId, effects);
+    expect(prepared.request).toMatchObject({
+      parent_authority_digest: parent.digest,
+      added_scope_roots: ["schemas/generated.json"],
+      added_repository_effects: ["schema"],
+    });
+    f.setApproval({
+      kind: "manual_operator",
+      actor_id: "USER",
+      invocation_id: prepared.request_digest,
+    });
+    await expect(
+      f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: ["schemas"],
+        repository_effects: ["schema"],
+        request_digest: prepared.request_digest,
+        repositoryEffects: effects,
+      }),
+    ).rejects.toThrow("authority_delta_request_mismatch");
+    await expect(
+      f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: prepared.request.added_scope_roots,
+        repository_effects: prepared.request.added_repository_effects,
+        request_digest: k.kernelDigest("stale"),
+        repositoryEffects: effects,
+      }),
+    ).rejects.toThrow("authority_delta_request_mismatch");
+    expect(
+      await f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: prepared.request.added_scope_roots,
+        repository_effects: prepared.request.added_repository_effects,
+        request_digest: prepared.request_digest,
+        repositoryEffects: effects,
+      }),
+    ).toMatchObject({ kind: "committed" });
+    const read = await f.adapter.read(f.taskId);
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    expect(k.canonicalAuthorityIssues(read.record.aggregate)).toEqual([]);
+    expect(read.record.aggregate.current_plan).toEqual(approvedPlan);
+    expect(read.record.aggregate.work_items).toEqual({});
+    await expect(f.resolver.resolve(f.taskId)).resolves.toMatchObject({
+      authority: { repository_fingerprint: f.values.repository_fingerprint },
+    });
+    expect(read.record.aggregate.authority_lineage?.at(-1)).toMatchObject({
+      approval_mode: "manual_operator",
+      observation: {
+        kind: "authority_delta",
+        request_digest: prepared.request_digest,
+        added_scope_roots: ["schemas/generated.json"],
+      },
+      authority: {
+        scope_roots: ["schemas/generated.json", "src"],
+        repository_effects: ["repository_write", "schema"],
+        provenance: {
+          kind: "USER",
+          parent_authority_digest: parent.digest,
+          evidence_digest: parent.provenance.evidence_digest,
+        },
+      },
+    });
+    await expect(
+      f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: prepared.request.added_scope_roots,
+        repository_effects: prepared.request.added_repository_effects,
+        request_digest: prepared.request_digest,
+        repositoryEffects: effects,
+      }),
+    ).rejects.toThrow();
+  });
+
   it("requires a new native decision for material expansion and rejects changed policy or expiry", async () => {
     const f = await fixture();
     f.values.ceiling = { ...f.values.ceiling, scope_roots: ["different"] };

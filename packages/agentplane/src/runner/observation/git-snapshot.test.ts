@@ -1,8 +1,9 @@
-import { chmod, mkdir, mkdtemp, rm, symlink, unlink, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, realpath, rm, symlink, unlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as snapshots from "./git-snapshot.js";
 
 import { gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
@@ -21,6 +22,7 @@ import { observeKernelRepository, kernelRepositoryChangedPaths } from "./kernel-
 const tempRoots: string[] = [];
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
 
@@ -319,6 +321,189 @@ describe("canonical implementation identity", () => {
       repository_identity: identity,
       operational_paths: [".agentplane/tasks", ".agentplane/tasks.json"],
     });
+
+  async function addSubmodule(root: string, source: string, name = "module"): Promise<string> {
+    await git(root, ["-c", "protocol.file.allow=always", "submodule", "add", "-q", source, name]);
+    await git(root, ["commit", "-qm", "add submodule"]);
+    return path.join(root, name);
+  }
+
+  it("separates expected gitlink identity from actual clean HEAD", async () => {
+    const source = await createRepository();
+    const root = await createRepository();
+    const module = await addSubmodule(root, source);
+    const expected = await git(module, ["rev-parse", "HEAD"]);
+    const clean = await observe(root);
+    expect(clean.files.find((file) => file.path === "module")).toMatchObject({
+      kind: "submodule",
+      expected_gitlink_sha: expected,
+      actual_head_sha: expected,
+      initialized: true,
+      tracked_dirty: false,
+      untracked_dirty: false,
+    });
+    expect((await observe(root)).fingerprint).toBe(clean.fingerprint);
+    await git(module, [
+      "-c",
+      "user.name=AgentPlane",
+      "-c",
+      "user.email=agentplane@example.com",
+      "commit",
+      "--allow-empty",
+      "-qm",
+      "different HEAD",
+    ]);
+    const different = await observe(root);
+    expect(different.files.find((file) => file.path === "module")).toMatchObject({
+      expected_gitlink_sha: expected,
+      actual_head_sha: await git(module, ["rev-parse", "HEAD"]),
+      tracked_dirty: false,
+      untracked_dirty: false,
+    });
+    expect(kernelRepositoryChangedPaths(clean, different)).toEqual(["module"]);
+    await git(root, ["add", "module"]);
+    const staged = await observe(root);
+    expect(staged.fingerprint).not.toBe(different.fingerprint);
+    await git(root, ["commit", "-qm", "record gitlink"]);
+    expect((await observe(root)).fingerprint).toBe(staged.fingerprint);
+  });
+
+  it("fingerprints repeated tracked, hidden and untracked submodule writes", async () => {
+    const root = await createRepository();
+    const module = await addSubmodule(root, await createRepository());
+    const clean = await observe(root);
+    await writeRepoFile(module, "tracked.txt", "dirty");
+    const dirty = await observe(root);
+    expect(dirty.files.find((file) => file.path === "module")).toMatchObject({
+      tracked_dirty: true,
+      untracked_dirty: false,
+    });
+    expect(kernelRepositoryChangedPaths(clean, dirty)).toEqual(["module"]);
+    await writeRepoFile(module, "tracked.txt", "different dirty");
+    const repeated = await observe(root);
+    expect(repeated.fingerprint).not.toBe(dirty.fingerprint);
+    await git(module, ["update-index", "--assume-unchanged", "tracked.txt"]);
+    const hidden = await observe(root);
+    await writeRepoFile(module, "tracked.txt", "hidden dirty");
+    expect((await observe(root)).fingerprint).not.toBe(hidden.fingerprint);
+    await writeRepoFile(module, "untracked.txt", "first");
+    const untracked = await observe(root);
+    expect(untracked.files.find((file) => file.path === "module")).toMatchObject({
+      untracked_dirty: true,
+    });
+    await writeRepoFile(module, "untracked.txt", "second");
+    expect((await observe(root)).fingerprint).not.toBe(untracked.fingerprint);
+  });
+
+  it("represents uninitialized submodules without claiming an observed working tree", async () => {
+    const root = await createRepository();
+    const module = await addSubmodule(root, await createRepository());
+    const initialized = await observe(root);
+    const expected = await git(module, ["rev-parse", "HEAD"]);
+    await git(root, ["submodule", "deinit", "-f", "--", "module"]);
+    const empty = await observe(root);
+    expect(empty.files.find((file) => file.path === "module")).toEqual({
+      path: "module",
+      kind: "submodule",
+      expected_gitlink_sha: expected,
+      actual_head_sha: null,
+      initialized: false,
+      tracked_dirty: null,
+      untracked_dirty: null,
+      working_state: null,
+    });
+    expect(kernelRepositoryChangedPaths(initialized, empty)).toEqual(["module"]);
+    await rm(module, { recursive: true });
+    expect((await observe(root)).fingerprint).toBe(empty.fingerprint);
+    await git(root, [
+      "-c",
+      "protocol.file.allow=always",
+      "submodule",
+      "update",
+      "--init",
+      "module",
+    ]);
+    expect((await observe(root)).fingerprint).toBe(initialized.fingerprint);
+  });
+
+  it("recursively observes nested submodule checkout and content changes", async () => {
+    const source = await createRepository();
+    await addSubmodule(source, await createRepository(), "nested");
+    const root = await createRepository();
+    const module = await addSubmodule(root, source);
+    const uninitialized = await observe(root);
+    await git(root, [
+      "-c",
+      "protocol.file.allow=always",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive",
+    ]);
+    const initialized = await observe(root);
+    expect(initialized.fingerprint).not.toBe(uninitialized.fingerprint);
+    await writeRepoFile(path.join(module, "nested"), "tracked.txt", "nested change");
+    const dirty = await observe(root);
+    expect(kernelRepositoryChangedPaths(initialized, dirty)).toEqual(["module"]);
+    await writeRepoFile(path.join(module, "nested"), "tracked.txt", "another nested change");
+    expect((await observe(root)).fingerprint).not.toBe(dirty.fingerprint);
+  });
+
+  it("fails closed for populated uninitialized paths and invalid Git metadata", async () => {
+    const root = await createRepository();
+    const module = await addSubmodule(root, await createRepository());
+    await git(root, ["submodule", "deinit", "-f", "--", "module"]);
+    await writeRepoFile(module, "unknown.txt", "unobserved content");
+    await expect(observe(root)).rejects.toMatchObject({
+      reason_code: "uninitialized_submodule_has_content",
+    });
+    await writeRepoFile(module, ".git", "gitdir: missing-git-directory\n");
+    await expect(observe(root)).rejects.toThrow();
+  });
+
+  it("rejects symlink submodule checkouts and respects explicitly excluded submodules", async () => {
+    const root = await createRepository();
+    const source = await createRepository();
+    const module = await addSubmodule(root, source);
+    const excluded = await observeKernelRepository({
+      repository_root: root,
+      repository_identity: identity,
+      operational_paths: ["module"],
+    });
+    expect(excluded.files.some((file) => file.path === "module")).toBe(false);
+    await writeRepoFile(module, "tracked.txt", "excluded change");
+    expect(
+      (
+        await observeKernelRepository({
+          repository_root: root,
+          repository_identity: identity,
+          operational_paths: ["module"],
+        })
+      ).fingerprint,
+    ).toBe(excluded.fingerprint);
+    await rm(module, { recursive: true });
+    await symlink(source, module);
+    await expect(observe(root)).rejects.toThrow();
+  });
+
+  it("refuses a submodule that changes between the two complete observations", async () => {
+    const root = await createRepository();
+    const module = await addSubmodule(root, await createRepository());
+    const canonicalModule = await realpath(module);
+    const capture = snapshots.captureGitSnapshot;
+    let changed = false;
+    vi.spyOn(snapshots, "captureGitSnapshot").mockImplementation(async (input) => {
+      const snapshot = await capture(input);
+      if (!changed && input.repository_root === canonicalModule) {
+        changed = true;
+        await writeRepoFile(module, "tracked.txt", "concurrent change");
+      }
+      return snapshot;
+    });
+    await expect(observe(root)).rejects.toMatchObject({
+      reason_code: "repository_changed_during_observation",
+    });
+  });
 
   it("keeps content identity across staging, commits and native evidence writes", async () => {
     const root = await createRepository();

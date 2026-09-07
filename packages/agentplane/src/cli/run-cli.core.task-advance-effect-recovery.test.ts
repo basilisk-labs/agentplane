@@ -148,6 +148,103 @@ describe("task advance effect recovery", () => {
     ).toBe(true);
   });
 
+  it.each([
+    ["result_received", true, true],
+    ["result_received", false, false],
+    ["accepted", true, false],
+    ["consumed", true, false],
+  ])("bounds planning replacement for %s with drift=%s", (status, drift, expected) => {
+    const fingerprint = `sha256:${"a".repeat(64)}`;
+    expect(
+      requiresPlanningRecoveryReplacement({
+        decision: {
+          workflowStep: {
+            kind: "agent_episode",
+            episode: { purpose: "planning" },
+            preconditionFingerprint: {
+              digest: drift ? `sha256:${"b".repeat(64)}` : fingerprint,
+            },
+          },
+        } as never,
+        exchange: {
+          purpose: "planning",
+          status,
+          state_fingerprint: fingerprint,
+        } as ExternalAgentExchange,
+      }),
+    ).toBe(expected);
+  });
+
+  it("retires a received stale planning result and issues one repeatable fresh episode", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const resultPath = await writePlanningResult(issued, "Plan against the original snapshot.");
+    await writeFile(path.join(root, "parallel-change.txt"), "new repository input\n");
+    const rejected = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--result",
+      resultPath,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("External-agent result is stale");
+    if (!issued.exchange) throw new Error("expected exchange");
+    const exchangePath = path.join(issued.exchange.directory, "exchange.json");
+    const received = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+    expect(received.status).toBe("result_received");
+    const retired = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(retired.code).not.toBe(0);
+    expect(retired.stderr).toContain("retired the stale result");
+    expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({
+      status: "retired",
+      result_digest: received.result_digest,
+      result: received.result,
+    });
+    const replacement = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--replacement",
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(replacement.code, replacement.stderr).toBe(0);
+    const fresh = JSON.parse(replacement.stdout) as AgentPacket;
+    expect(fresh.action.kind).toBe("agent_episode");
+    expect(fresh.transition_id).not.toBe(issued.transition_id);
+    expect(fresh.state_fingerprint).not.toBe(issued.state_fingerprint);
+    const replay = await readAgentPacket(root, taskId);
+    expect(replay.transition_id).toBe(fresh.transition_id);
+    const oldResult = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--result",
+      resultPath,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(oldResult.code).not.toBe(0);
+    expect(oldResult.stderr).toContain("retired");
+  });
+
   it("requires replacement when plan approval changes pending implementation authority", () => {
     const taskDigest = `sha256:${"a".repeat(64)}`;
     const backendDigest = `sha256:${"b".repeat(64)}`;

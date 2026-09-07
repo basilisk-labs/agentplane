@@ -2,7 +2,10 @@ import { conflictEvidenceAuthority } from "./external-agent-conflict-application
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { CliError } from "../../shared/errors.js";
-import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
+import {
+  canCoalesceVerificationArtifacts,
+  commitBranchSupervisorTaskArtifacts,
+} from "./branch-task-supervisor-artifact-commit.js";
 
 import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -90,6 +93,20 @@ export async function finishExternalImplementationVerification(opts: {
     opts.command.git.invalidateStatus();
     const currentStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
     if (!hasChangedTaskArtifacts(currentStatus?.lines ?? [], opts.exchange.task_id)) return;
+    if (
+      !opts.conflict &&
+      (await canCoalesceVerificationArtifacts({
+        command: opts.command,
+        cwd: opts.exchange.checkout,
+        task_id: opts.exchange.task_id,
+        next: await refreshExternalAgentRoute({
+          cwd: opts.exchange.checkout,
+          task_id: opts.exchange.task_id,
+          include_remote: false,
+        }),
+      }))
+    )
+      return;
     const evidenceAuthority = opts.conflict
       ? conflictEvidenceAuthority(
           await refreshExternalAgentRoute({

@@ -1,6 +1,17 @@
+import { runKernelFinalValidation } from "./kernel-final-validation.js";
+import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
+import {
+  issueKernelInspection,
+  acceptKernelInspection,
+  resumeKernelInspection,
+} from "./kernel-inspection.js";
 import { canonicalPlanFromProposal } from "./kernel-plan.js";
 import path from "node:path";
-import { taskKernel as k, kernelPlanProposalSchema } from "@agentplaneorg/core/tasks";
+import {
+  repositoryEffectsForPath,
+  taskKernel as k,
+  kernelPlanProposalSchema,
+} from "@agentplaneorg/core/tasks";
 import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import type { KernelWorkBinding } from "../../runner/usecases/kernel-task-lifecycle.js";
 import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
@@ -15,6 +26,37 @@ import {
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+
+async function authorityDeltaStop(runtime: Runtime, taskId: string) {
+  const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
+  return {
+    kind: "human_required" as const,
+    reason: "canonical_authority_delta_requires_user",
+    summary: "Repository changes exceed the approved canonical scope.",
+    authority_delta: prepared,
+    operator_action: {
+      kind: "extend_scope" as const,
+      argv: [
+        "agentplane",
+        "task",
+        "scope",
+        "extend",
+        taskId,
+        ...prepared.request.added_scope_roots.flatMap((root) => ["--scope-root", root]),
+        ...prepared.request.added_repository_effects.flatMap((effect) => [
+          "--repository-effect",
+          effect,
+        ]),
+        "--request-digest",
+        prepared.request_digest,
+        "--state-scope-digest",
+        prepared.request_digest,
+        "--by",
+        "USER",
+      ],
+    },
+  };
+}
 
 async function acceptKernelSemanticResult(
   command: CommandContext,
@@ -43,6 +85,8 @@ async function acceptKernelSemanticResult(
       summary: semantic.summary,
     };
   const binding = workOrder.canonical_binding!;
+  if (binding.phase === "inspection")
+    return (await acceptKernelInspection(command, runtime, directory, semantic)) ?? null;
   const mutationId = `result:${workOrder.work_order_id}`;
   if (saved) await writeKernelArtifact(directory, "received-result.json", semantic);
   if (binding.phase === "planning") {
@@ -108,7 +152,7 @@ async function acceptKernelSemanticResult(
           continuation?.kind !== "repository_implementation" ||
           continuation.changed_paths.some(
             (changed) =>
-              !item.definition.execution_requirements.scope_roots.some(
+              !parent.scope_roots.some(
                 (root) => root === "." || changed === root || changed.startsWith(`${root}/`),
               ),
           )
@@ -180,7 +224,14 @@ export async function advanceCanonicalTask(opts: {
     );
     if (stop) return { schema_version: 1, task_id: opts.task_id, action: stop };
   }
-  for (let step = 0; step < 6; step++) {
+  const visited = new Set<string>();
+  let finalValidation: {
+    fingerprint: string;
+    environment_digest: string;
+    evidence_digest: k.Sha256Digest;
+    plan_digest: string;
+  } | null = null;
+  for (let step = 0; step < 16; step++) {
     const context = await runtime.native.readContext(opts.task_id);
     const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
     if (current.read.kind !== "canonical")
@@ -210,6 +261,97 @@ export async function advanceCanonicalTask(opts: {
       };
     }
     const operationId = `${route.reason_code}:${record.digest}:${context.repository_fingerprint}`;
+    const parent = record.aggregate.authority_lineage?.at(-1)?.authority;
+    if (
+      plan?.state === "APPROVED" &&
+      parent &&
+      parent.repository_fingerprint !== context.repository_fingerprint
+    ) {
+      try {
+        requireKernelCommit(await runtime.authority.continue(opts.task_id));
+        continue;
+      } catch (error) {
+        if ((error as { reason_code?: string }).reason_code !== "repository_observation_scope")
+          throw error;
+        return {
+          schema_version: 1,
+          task_id: opts.task_id,
+          action: await authorityDeltaStop(runtime, opts.task_id),
+          canonical_revision: record.aggregate.revision,
+        };
+      }
+    }
+    if (visited.has(operationId))
+      return {
+        schema_version: 1,
+        task_id: opts.task_id,
+        action: { kind: "human_required", reason: "canonical_transition_no_progress" },
+      };
+    visited.add(operationId);
+    if (
+      route.reason_code === "kernel_final_validation_required" ||
+      route.reason_code === "kernel_task_completion_required"
+    ) {
+      if (
+        route.reason_code === "kernel_task_completion_required" &&
+        finalValidation?.fingerprint === context.repository_fingerprint &&
+        finalValidation.environment_digest === k.kernelDigest(verificationChildEnv()) &&
+        finalValidation.plan_digest === plan?.digest &&
+        record.aggregate.final_validation?.evidence_digests.includes(
+          finalValidation.evidence_digest,
+        )
+      ) {
+        const completion = await runtime.input({ kind: "complete_task" }, operationId);
+        if (completion.command.expected_task_revision !== record.aggregate.revision)
+          throw new Error("Canonical task changed before completion");
+        requireKernelCommit(await runtime.lifecycle.apply(completion));
+      } else {
+        const checked = await runKernelFinalValidation(opts.command, runtime, record);
+        if (checked.stop) return { schema_version: 1, task_id: opts.task_id, action: checked.stop };
+        finalValidation = {
+          fingerprint: checked.fingerprint,
+          environment_digest: checked.environment_digest,
+          evidence_digest: checked.evidence_digest,
+          plan_digest: checked.plan_digest,
+        };
+      }
+      continue;
+    }
+
+    if (
+      route.reason_code === "kernel_work_item_validation_resolution_required" &&
+      route.work_item_id
+    ) {
+      const stop = await resumeKernelInspection(opts.command, runtime, record, route.work_item_id);
+      if (stop) return { schema_version: 1, task_id: opts.task_id, action: stop };
+      continue;
+    }
+
+    if (
+      route.work_item_id &&
+      ["kernel_work_item_inspection_required", "kernel_work_item_validation_required"].includes(
+        route.reason_code,
+      )
+    ) {
+      if (route.reason_code === "kernel_work_item_inspection_required") {
+        requireKernelCommit(
+          await runtime.lifecycle.apply(
+            await runtime.input(
+              {
+                kind: "transition_work_item",
+                action: "inspect",
+                work_item_id: route.work_item_id,
+                claim_id: record.aggregate.work_items[route.work_item_id]!.claim_id,
+              },
+              operationId,
+            ),
+          ),
+        );
+        continue;
+      }
+      return issueKernelInspection(opts.command, runtime, record, route.work_item_id);
+    }
+
     if (route.reason_code === "kernel_work_item_materialization_required" && plan) {
       requireKernelCommit(
         await runtime.lifecycle.apply(
@@ -272,17 +414,23 @@ export async function advanceCanonicalTask(opts: {
         context,
         implementation: begun.work_order,
       });
-      return issueKernelExchange(opts.command, order, opts.transport);
+      return issueKernelExchange(opts.command, order, opts.transport, result.record);
     }
     return {
       schema_version: 1,
       task_id: opts.task_id,
       action: {
-        kind: route.reason_code === "kernel_task_completed" ? "terminal" : "external_wait",
+        kind: ["kernel_task_completed", "kernel_task_cancelled"].includes(route.reason_code)
+          ? "terminal"
+          : "external_wait",
         reason: route.reason_code,
       },
       canonical_revision: record.aggregate.revision,
     };
   }
-  throw new Error("Canonical transition budget exhausted");
+  return {
+    schema_version: 1,
+    task_id: opts.task_id,
+    action: { kind: "human_required", reason: "canonical_transition_budget_exhausted" },
+  };
 }

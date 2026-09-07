@@ -253,6 +253,51 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
   });
 
+  it("persists cache coverage and per-role usage once across journal reloads", () => {
+    const prepared = start({ journal: journal() });
+    if (prepared.status !== "started") throw new Error("expected episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: prepared.journal,
+      operation_key: prepared.operation_key,
+      result: { status: "ok" },
+      usage: {
+        input_tokens: 10,
+        output_tokens: 5,
+        total_tokens: 15,
+        cached_input_tokens: 0,
+        prepared_context_bytes: 42,
+      },
+      now: NOW,
+    });
+    const reloaded = validateSupervisorExecutionEpisodeJournal(
+      JSON.parse(JSON.stringify(completed)),
+    );
+    expect(reloaded.usage).toMatchObject({
+      cached_input_tokens: 0,
+      cached_input_observed_agent_runs: 1,
+      prepared_context_bytes: 42,
+      prepared_context_observed_agent_runs: 1,
+    });
+    expect(reloaded.operations.at(-1)).toMatchObject({
+      role: "EXECUTOR",
+      usage: {
+        input_tokens: 10,
+        cached_input_tokens: 0,
+        prepared_context_bytes: 42,
+      },
+    });
+    expect(() =>
+      completeSupervisorExecutionEpisode({
+        journal: reloaded,
+        operation_key: prepared.operation_key,
+        result: {},
+        usage: { input_tokens: 10 },
+        now: NOW,
+      }),
+    ).toThrow(/intent-recorded/u);
+    expect(reloaded.usage.input_tokens).toBe(10);
+  });
+
   it("tracks output-breakdown provenance independently from primary token telemetry", () => {
     const primaryOnly = start({ journal: journal() });
     if (primaryOnly.status !== "started") throw new Error("expected primary-only episode");

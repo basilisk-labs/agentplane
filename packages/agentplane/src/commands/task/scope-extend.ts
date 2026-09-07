@@ -4,6 +4,7 @@ import {
   executionGrantForContextFromExtensions,
   rebaseExecutionGrantScope,
   type TaskRepositoryEffect,
+  repositoryEffectsForPath,
 } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -27,6 +28,8 @@ import {
 } from "../shared/task-scope-extension-request.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 
 const output = createCliEmitter();
 
@@ -186,6 +189,50 @@ export async function cmdTaskScopeExtend(opts: {
   quiet?: boolean;
 }): Promise<number> {
   try {
+    const canonical = await opts.ctx.taskBackend.getTask(opts.taskId);
+    if (canonical?.extensions && Object.hasOwn(canonical.extensions, TASK_KERNEL_EXTENSION)) {
+      if (opts.by !== "USER")
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Canonical authority delta requires explicit --by USER authority.",
+        });
+      if (
+        (opts.stateScopeDigest ?? opts.stateFingerprint) !== opts.requestDigest ||
+        !/^sha256:[0-9a-f]{64}$/u.test(opts.requestDigest)
+      )
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Canonical authority delta state scope must equal its exact request digest.",
+        });
+      const runtime = await createKernelRuntime({
+        command: opts.ctx,
+        task_id: opts.taskId,
+        transport: "manual",
+        operation_id: `authority-delta:${opts.requestDigest}`,
+        approval: {
+          kind: "manual_operator",
+          actor_id: opts.by,
+          invocation_id: opts.requestDigest,
+        },
+      });
+      requireKernelCommit(
+        await runtime.authority.approveDelta({
+          task_id: opts.taskId,
+          scope_roots: opts.scopeRoots,
+          repository_effects: opts.repositoryEffects,
+          request_digest: opts.requestDigest as `sha256:${string}`,
+          repositoryEffects: repositoryEffectsForPath,
+        }),
+      );
+      if (!opts.quiet)
+        emitCommandResult(output, {
+          kind: "success",
+          action: "canonical authority scope extended",
+          target: opts.taskId,
+          details: `request=${opts.requestDigest}`,
+        });
+      return 0;
+    }
     const routeCommand = opts.ctx;
     const decision = await buildTaskRouteDecision({
       ctx: routeCommand,

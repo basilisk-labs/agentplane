@@ -290,13 +290,14 @@ describe("CodexRunnerAdapter", () => {
     expect(result.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
-    expect(readCodexProviderUsageForResult(result)).toEqual({
+    expect(readCodexProviderUsageForResult(result)).toMatchObject({
       input_tokens: 100,
       output_tokens: 50,
       total_tokens: 150,
       visible_output_tokens: 30,
       reasoning_tokens: 20,
     });
+    expect(readCodexProviderUsageForResult(result)?.prepared_context_bytes).toBeGreaterThan(0);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
       prepared_metadata?: { bundle_bytes: number; bundle_sha256: string };

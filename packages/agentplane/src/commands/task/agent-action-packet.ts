@@ -1,3 +1,9 @@
+import path from "node:path";
+import {
+  buildWorkOrderContextManifest,
+  workOrderContextManifestDigest,
+  WORK_ORDER_CONTEXT_FILENAME,
+} from "../../runner/context/work-order-context.js";
 import { createHash } from "node:crypto";
 
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
@@ -42,6 +48,7 @@ export type AgentActionPacket = {
     reference: string | null;
   };
   context_refs: AgentContextRef[];
+  context_manifest?: { ref: string; digest: string; blocks: number; required: number };
   human_decision_ticket?: HumanDecisionTicket;
   operator_action?: {
     kind: "approve_plan" | "grant_side_effect_authority" | "approve_provider_merge";
@@ -444,6 +451,19 @@ export function buildAgentActionPacket(opts: {
     ...(opts.recovery ? { recovery: opts.recovery } : {}),
   };
 
+  if (packet.exchange) {
+    const manifest = buildWorkOrderContextManifest(
+      opts.work_order,
+      path.resolve(packet.exchange.directory, packet.exchange.work_order_ref),
+    );
+    packet.context_manifest = {
+      ref: path.join(packet.exchange.directory, WORK_ORDER_CONTEXT_FILENAME),
+      digest: workOrderContextManifestDigest(manifest),
+      blocks: manifest.blocks.length,
+      required: manifest.blocks.filter((block) => block.required).length,
+    };
+  }
+  // context_refs is only a preview. The complete manifest remains discoverable at every size.
   while (packet.context_refs.length > 0 && packetBytes(packet) > MAX_AGENT_ACTION_PACKET_BYTES) {
     packet.context_refs.pop();
   }

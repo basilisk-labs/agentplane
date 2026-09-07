@@ -2,6 +2,7 @@ type TokenTotals = {
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;
+  cachedInputTokens: number | null;
 };
 
 export type TokenUsageEvent = {
@@ -18,11 +19,15 @@ const ZERO_TOTALS: TokenTotals = {
   inputTokens: 0,
   outputTokens: 0,
   totalTokens: 0,
+  cachedInputTokens: null,
 };
 
 function safeInt(value: unknown): number | null {
-  if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
-  if (typeof value === "string" && /^\d+$/.test(value)) return Number.parseInt(value, 10);
+  if (typeof value === "number" && Number.isSafeInteger(value) && value >= 0) return value;
+  if (typeof value === "string" && /^\d+$/.test(value)) {
+    const parsed = Number(value);
+    return Number.isSafeInteger(parsed) ? parsed : null;
+  }
   return null;
 }
 
@@ -36,7 +41,12 @@ function extractAbsoluteTotals(payload: Record<string, unknown>): TokenTotals | 
       const output = safeInt(totalObj.outputTokens);
       const all = safeInt(totalObj.totalTokens);
       if (input !== null && output !== null && all !== null) {
-        return { inputTokens: input, outputTokens: output, totalTokens: all };
+        return {
+          inputTokens: input,
+          outputTokens: output,
+          totalTokens: all,
+          cachedInputTokens: safeInt(totalObj.cachedInputTokens),
+        };
       }
     }
   }
@@ -50,7 +60,12 @@ function extractAbsoluteTotals(payload: Record<string, unknown>): TokenTotals | 
       const output = safeInt(usage.output_tokens);
       const all = safeInt(usage.total_tokens);
       if (input !== null && output !== null && all !== null) {
-        return { inputTokens: input, outputTokens: output, totalTokens: all };
+        return {
+          inputTokens: input,
+          outputTokens: output,
+          totalTokens: all,
+          cachedInputTokens: safeInt(usage.cached_input_tokens),
+        };
       }
     }
   }
@@ -65,6 +80,11 @@ function mergeGlobal(byThread: Record<string, TokenTotals>): TokenTotals {
     global.outputTokens += totals.outputTokens;
     global.totalTokens += totals.totalTokens;
   }
+  const cached = Object.values(byThread).map((totals) => totals.cachedInputTokens ?? null);
+  global.cachedInputTokens =
+    cached.length > 0 && cached.every((value) => value !== null)
+      ? cached.reduce<number>((sum, value) => sum + (value ?? 0), 0)
+      : null;
   return global;
 }
 
@@ -85,10 +105,22 @@ export function applyTokenUsageEvent(
   }
 
   const prev = state.byThread[event.threadId] ?? { ...ZERO_TOTALS };
-  if (absolute.totalTokens < prev.totalTokens) {
+  if (
+    absolute.totalTokens < prev.totalTokens ||
+    absolute.inputTokens < prev.inputTokens ||
+    absolute.outputTokens < prev.outputTokens ||
+    absolute.totalTokens < absolute.inputTokens + absolute.outputTokens ||
+    (absolute.cachedInputTokens !== null &&
+      (absolute.cachedInputTokens > absolute.inputTokens ||
+        (prev.cachedInputTokens != null && absolute.cachedInputTokens < prev.cachedInputTokens)))
+  ) {
     return { state, accepted: false };
   }
 
+  // Partial duplicate notifications can omit cache telemetry already observed at this total.
+  if (absolute.cachedInputTokens === null && absolute.totalTokens === prev.totalTokens) {
+    absolute.cachedInputTokens = prev.cachedInputTokens ?? null;
+  }
   const nextByThread = {
     ...state.byThread,
     [event.threadId]: absolute,

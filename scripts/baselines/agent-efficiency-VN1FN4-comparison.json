@@ -1,0 +1,431 @@
+{
+  "schema_version": 1,
+  "task_id": "202609071501-VN1FN4",
+  "status": "implementation_measured_schema_parity_verified_pending_framework_review",
+  "source": {
+    "committed_head": "92efd467a7b045e7e784597168ac21bd41a975a1",
+    "committed_snapshot_digest": "sha256:6daf20729a4383c5e63e20b3663e81fc2060c0c7416f0c2ec5958665949834ea",
+    "repeated_snapshot_digest": "sha256:6daf20729a4383c5e63e20b3663e81fc2060c0c7416f0c2ec5958665949834ea",
+    "working_source_manifest_digest": "sha256:f73d4b087e863bb00b78d3d4e69c2fa485252d1a0bfea095718c88d55337e4cb",
+    "working_sources": [
+      {
+        "path": "packages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts",
+        "digest": "sha256:7658d80c8c06380b7bd210406d03671ee4639f7327e0a690a415f4fd91e2c2e2"
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+        "digest": "sha256:b1692e989a5dcaabf298707d92edff6094d7fb40e454dceacc95271b650fcd00"
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
+        "digest": "sha256:cb96171b86a69e566652f5542340e3f2eb738dec5e35b2d131260492f2b6ca48"
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "digest": "sha256:82a697849e7d8e8b99d2f50e51ba62d1a2058e73c2d15af72821c3ce903928ea"
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "digest": "sha256:ffdfa8cd7ca6de62713fad72d83e2ab332887bf62a6391bd98c31206e9d2227c"
+      },
+      {
+        "path": "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+        "digest": "sha256:ce60d71e9576889b622e771d01a26198bf01fd0d6503d8e3990ff9b68b4dc4c3"
+      },
+      {
+        "path": "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+        "digest": "sha256:79c3afa22aae902c8141a6eaeb9da3f926736000d9220d361b4d5691dcb2afbf"
+      },
+      {
+        "path": "packages/agentplane/src/commands/shared/quality-review-target.ts",
+        "digest": "sha256:384f50ae031d04b69b3e18822886fccd05cfe1d386a97489e4849edcddc7599b"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/advance.command.ts",
+        "digest": "sha256:93ad71066c835e58cd43391f05ff3ab9896217433e737d8882b2b34037d1a7a8"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+        "digest": "sha256:e05fe638d412b2b1c94785f69efcfcf3ef02437965633d9d29299b64b4a3455d"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/agent-action-packet.ts",
+        "digest": "sha256:727d4392fa2b595524620328c353e42d9f2e877c2ab9d1a49dcf64d5b5d0c651"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.test.ts",
+        "digest": "sha256:3f052e9b5cd2e48e167fd7ce94bc62ac1fb63ab12881ab8d90a4eb8c4f6a1f29"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts",
+        "digest": "sha256:fdb87bac6e2e3ac15bc7b7d6cb837892e7f25dc15d07a7172232d3963fff5af0"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+        "digest": "sha256:0f18c2b2d119111218ecf49140c1c8f9aca384c88c2c2fa7954721404cfc0164"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/external-agent-exchange.ts",
+        "digest": "sha256:bb697f351ee72a416084cf32aee17390b5686bf09cc74677fa4978369f628af0"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+        "digest": "sha256:7e66d3935ef3b585d628a7b107d2d2ed252bde9aab041e302f59c9ddd7e58ac4"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "digest": "sha256:c88670ee281353c06323799e52c3fcb59f56b8820eedff2ae08b4bcaa17b927e"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
+        "digest": "sha256:fe5553443958f649aee3ac0a0fb80acd7f0202ea2630189fd778df810ed1c7b8"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/kernel-exchange.ts",
+        "digest": "sha256:62ceb5a23aec3c2e3bb51d1470d5d68088947d4d6d21a5804203ab290fd0eae6"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/kernel-final-validation.ts",
+        "digest": "sha256:2ad62f2cd9da41c4edf68cda2eb0bc4ff7fdca0624bc71f79040df94b91200f8"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/kernel-inspection.ts",
+        "digest": "sha256:bd0265d4b4fde547282d8dde667342a6b4f1e18d77f3caf195b45931b2faf09a"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/kernel-run.ts",
+        "digest": "sha256:36c68efb53cd64d4466b8a1597a10f33392c36b991506d3c993146e8d4326753"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/scope-extend.ts",
+        "digest": "sha256:19769b4d8b6243ce78ca6451ce62e172b7d9c207c4a56402ad7a7089b701ca20"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/task-token-usage.test.ts",
+        "digest": "sha256:11e24c4bd314a2a6ff21fd5537e7a1772b409c526fc11e3dd3890a966b3f43c8"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/task-token-usage.ts",
+        "digest": "sha256:2723ebe11be61a86326c2dab01674ee3181fa5e88338f8449696b4d781260b65"
+      },
+      {
+        "path": "packages/agentplane/src/harness/token-accounting.test.ts",
+        "digest": "sha256:b49a79b66ddcac97642bd05bcea44600d45fe49b0f470fa7817b4f58fb50302c"
+      },
+      {
+        "path": "packages/agentplane/src/harness/token-accounting.ts",
+        "digest": "sha256:b2a19d7d8ee2e9137d1e09357cf19fb19892007d09d6c9eaf51379665942ef27"
+      },
+      {
+        "path": "packages/agentplane/src/runner/adapters/codex-result-transport.test.ts",
+        "digest": "sha256:ecc0cb6f5d4bf82c0f2f5ffd9622bcccc36b1488395f79615cdf975ed4d7f91f"
+      },
+      {
+        "path": "packages/agentplane/src/runner/adapters/codex-result-transport.ts",
+        "digest": "sha256:8b9e580c591ca5dae597e666a3f012059639ed1a46469ed047b4fde8539a18ea"
+      },
+      {
+        "path": "packages/agentplane/src/runner/adapters/codex.test.ts",
+        "digest": "sha256:80717698d835a6b8821e4b5a4c7baf5c80af080930b7ba4dc7fe273513a2846f"
+      },
+      {
+        "path": "packages/agentplane/src/runner/adapters/codex.ts",
+        "digest": "sha256:4c83318ae49e397048298fb90cd4c028ab05d69a0ea1cd6ca9901fdf173199fc"
+      },
+      {
+        "path": "packages/agentplane/src/runner/adapters/prepared-input.ts",
+        "digest": "sha256:d1cf56ddf05eadc65a1a3638fdd17540c5e4cb3036544e1550e927dd0c479ad0"
+      },
+      {
+        "path": "packages/agentplane/src/runner/artifacts.ts",
+        "digest": "sha256:32bbe65bd371182f70720fed3ad3996d4846251596762e6cf84b23866dbf1468"
+      },
+      {
+        "path": "packages/agentplane/src/runner/context/task-context.test.ts",
+        "digest": "sha256:7ba50df1953b951ab7746de24d59f21276e1d400e255a6827a086e461e2204f3"
+      },
+      {
+        "path": "packages/agentplane/src/runner/context/work-order-context.ts",
+        "digest": "sha256:64e462bc014a7531a4ed7df46a2828988322830475a18742173f1e07f90e5f33"
+      },
+      {
+        "path": "packages/agentplane/src/runner/observation/git-snapshot.test.ts",
+        "digest": "sha256:937c84b323bfd100228e778790273137497a1b148377d72e82f18ed1159339b5"
+      },
+      {
+        "path": "packages/agentplane/src/runner/observation/kernel-repository.ts",
+        "digest": "sha256:e523c859ff9029c8f6e8a2184268e0a0dfe562087f4143203bb1e54b1029192d"
+      },
+      {
+        "path": "packages/agentplane/src/runner/types/context.ts",
+        "digest": "sha256:3c16f335065025e8ebf7d043a3189a0d74bbc67b2a330e59555ebed4d65b4bf3"
+      },
+      {
+        "path": "packages/agentplane/src/runner/usecases/kernel-authority.test.ts",
+        "digest": "sha256:50d7cb99d5105160ed503272aa65548d4116345085af10142cd4d918a6bdf4d1"
+      },
+      {
+        "path": "packages/agentplane/src/runner/usecases/kernel-authority.ts",
+        "digest": "sha256:6a0e990725fdf9e6b3fd1402617eda44ea3aff44d860a9fe366277a8a14551fd"
+      },
+      {
+        "path": "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
+        "digest": "sha256:22758a6ea167139f3b8802bf2583df3250cd2d1fdf25f349249c7e9d89f61a44"
+      },
+      {
+        "path": "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+        "digest": "sha256:82499577dd02dc21d122f6d9eecd75aa8e0b4f6db57b51b86f5666c498606440"
+      },
+      {
+        "path": "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts",
+        "digest": "sha256:55f858303c0e8692313750a1ce031e12e8cadf07afb58580f79c887363c1acc3"
+      },
+      {
+        "path": "packages/core/schemas/agent-work-order-v2.schema.json",
+        "digest": "sha256:4c7dd224b4215d1abf2dc30c05fd016b5f34b128f4ccd7627fd3ff3dcb8598d2"
+      },
+      {
+        "path": "packages/core/schemas/task-readme-frontmatter.schema.json",
+        "digest": "sha256:36910c4cfb89e64e23a471f441996818f5389ed23d37e1ca5376db852bd75f24"
+      },
+      {
+        "path": "packages/core/schemas/tasks-export.schema.json",
+        "digest": "sha256:c2baee7b89798b2646367e066ec7b447546395b9b019244cc21e950680fac523"
+      },
+      {
+        "path": "packages/core/src/runner/agent-semantic-result.test.ts",
+        "digest": "sha256:332440c768850b303fd48663ad2f9eef1c93f3b500b31040317d2c6e337bfc81"
+      },
+      {
+        "path": "packages/core/src/runner/agent-semantic-result.ts",
+        "digest": "sha256:ff6e73da887a6948125d41a3e0c09b2d48a671b52b99d9227016410cdde3d91d"
+      },
+      {
+        "path": "packages/core/src/runner/agent-work-order.ts",
+        "digest": "sha256:9a75874b9b7d7b32637f873c546e91cbc1e915de65d0967b4c98dbe2bcab0d89"
+      },
+      {
+        "path": "packages/core/src/runner/supervisor-execution-episode.test.ts",
+        "digest": "sha256:110a4a5a90f94addd815d5d28e92e96163ed2d0f6f9068d749f3fa9b54c3d5be"
+      },
+      {
+        "path": "packages/core/src/runner/supervisor-execution-episode.ts",
+        "digest": "sha256:06aeba661ff2fbe74ce748f5c9e3c93589904b4ce4096bcbb6ed5ed3cadfc84d"
+      },
+      {
+        "path": "packages/core/src/tasks/kernel-semantic.ts",
+        "digest": "sha256:139482e21080e8287638b6dafcbf38f017e9518d5fdd4c03003cc899144bbc37"
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.task.ts",
+        "digest": "sha256:fa73a96b81c5c8cf569abcff849baf29865f24e1032597869f2a623f01d84d3b"
+      },
+      {
+        "path": "packages/core/src/tasks/task-kernel/authority-lineage.ts",
+        "digest": "sha256:921525ecf69efecdb1c894e8e154dcfb209ac098d5b61111e95d6bcdefca6041"
+      },
+      {
+        "path": "packages/core/src/tasks/task-kernel/kernel.test.ts",
+        "digest": "sha256:96250577db20891a8d39df91b026229778147cbed9ba66e53aff558d9530d712"
+      },
+      {
+        "path": "packages/core/src/tasks/task-kernel/kernel.ts",
+        "digest": "sha256:71ec7417fb4f78bf2e11d8f32613ac0997ad05655b2588c917f48ef10c4006e9"
+      },
+      {
+        "path": "packages/core/src/tasks/task-kernel/model.ts",
+        "digest": "sha256:24e2d2bc530e64c6aa7bf19f19c8f41df747dbf0c0e67c195db2c950d8854204"
+      },
+      {
+        "path": "packages/core/src/tasks/task-store.ts",
+        "digest": "sha256:fd3c9cd78f09f37149243d95b9424062c8f736950c2aa6d9602d72b8980cffb3"
+      },
+      {
+        "path": "packages/spec/schemas/agent-work-order-v2.schema.json",
+        "digest": "sha256:4c7dd224b4215d1abf2dc30c05fd016b5f34b128f4ccd7627fd3ff3dcb8598d2"
+      },
+      {
+        "path": "packages/spec/schemas/task-readme-frontmatter.schema.json",
+        "digest": "sha256:36910c4cfb89e64e23a471f441996818f5389ed23d37e1ca5376db852bd75f24"
+      },
+      {
+        "path": "packages/spec/schemas/tasks-export.schema.json",
+        "digest": "sha256:c2baee7b89798b2646367e066ec7b447546395b9b019244cc21e950680fac523"
+      },
+      {
+        "path": "schemas/agent-semantic-result.schema.json",
+        "digest": "sha256:dc7c5048cb6136df64033d110d45a3f2b290c1f3a3537ccc3c6a2bdd2df3fffa"
+      },
+      {
+        "path": "schemas/agent-work-order-v2.schema.json",
+        "digest": "sha256:4c7dd224b4215d1abf2dc30c05fd016b5f34b128f4ccd7627fd3ff3dcb8598d2"
+      },
+      {
+        "path": "schemas/task-readme-frontmatter.schema.json",
+        "digest": "sha256:36910c4cfb89e64e23a471f441996818f5389ed23d37e1ca5376db852bd75f24"
+      },
+      {
+        "path": "schemas/tasks-export.schema.json",
+        "digest": "sha256:c2baee7b89798b2646367e066ec7b447546395b9b019244cc21e950680fac523"
+      },
+      {
+        "path": "scripts/bench/compare-agent-efficiency-VN1FN4.mjs",
+        "digest": "sha256:3ca187359e42b88baec8c6cad1218818219cb82445fd461ee8013c9410c560a1"
+      },
+      {
+        "path": "scripts/bench/measure-agent-efficiency.mjs",
+        "digest": "sha256:fc25f2ba66c4cc15d9b54f06c2f83439f7315c3c596b97a929d0dd6f52c191b4"
+      },
+      {
+        "path": "scripts/lib/agent-efficiency-repository-snapshot.mjs",
+        "digest": "sha256:d761bbeb4bbdbef49347e90467e97ae9ca64d22b04c3911a0a8efe340511dbb4"
+      }
+    ],
+    "note": "Working source digests identify the uncommitted candidate; HEAD does not identify it."
+  },
+  "historical_snapshot": {
+    "before": {
+      "agent_runs": {
+        "tasks_observed": 145,
+        "value": 1314
+      },
+      "artifact_bytes": 311912258,
+      "artifact_count": 23405,
+      "cached_input_tokens": {
+        "tasks_observed": 0,
+        "value": null
+      },
+      "duplicate_bytes": 23267340,
+      "duplicate_paths": 2329,
+      "input_tokens": {
+        "tasks_observed": 27,
+        "value": 25188295
+      },
+      "observed_agent_runs": {
+        "tasks_observed": 145,
+        "value": 133
+      },
+      "output_tokens": {
+        "tasks_observed": 16,
+        "value": 159480
+      },
+      "reasoning_tokens": {
+        "tasks_observed": 16,
+        "value": 36085
+      },
+      "sampled_commits": 200,
+      "sampled_tasks": 150,
+      "service_commits": 146,
+      "tasks_with_usage": 145,
+      "usage_states": {
+        "not_recorded": 5,
+        "observed": 16,
+        "partial": 11,
+        "unavailable": 118
+      }
+    },
+    "after": {
+      "agent_runs": {
+        "tasks_observed": 145,
+        "value": 1314
+      },
+      "artifact_bytes": 311912258,
+      "artifact_count": 23405,
+      "cached_input_tokens": {
+        "tasks_observed": 0,
+        "value": null
+      },
+      "duplicate_bytes": 23267340,
+      "duplicate_paths": 2329,
+      "input_tokens": {
+        "tasks_observed": 27,
+        "value": 25188295
+      },
+      "observed_agent_runs": {
+        "tasks_observed": 145,
+        "value": 133
+      },
+      "output_tokens": {
+        "tasks_observed": 16,
+        "value": 159480
+      },
+      "reasoning_tokens": {
+        "tasks_observed": 16,
+        "value": 36085
+      },
+      "sampled_commits": 200,
+      "sampled_tasks": 150,
+      "service_commits": 146,
+      "tasks_with_usage": 145,
+      "usage_states": {
+        "not_recorded": 5,
+        "observed": 16,
+        "partial": 11,
+        "unavailable": 118
+      }
+    },
+    "change": "None: identical committed source, selection and measurement definitions",
+    "unavailable": [
+      "delivered context bytes",
+      "model-read context bytes",
+      "cached input tokens",
+      "WorkItem/role coverage for old task projections"
+    ],
+    "provider_token_saving_percent": null
+  },
+  "matched_context_probe": {
+    "fixture": "Existing lossless WorkOrder context selection scenario: 500 references, last required",
+    "fixture_digest": "sha256:f2d7af265cfee8d1a61967a60d5a6760a46911315651a96105f75d9e158a37a0",
+    "unit": "UTF-8 compact JSON bytes; referenced file contents and transport envelopes excluded",
+    "before_all_block_payload_bytes": 68874,
+    "after_required_block_payload_bytes": 4723,
+    "after_same_process_retained_payload_bytes": 0,
+    "after_restart_required_payload_bytes": 4723,
+    "full_work_order_bytes": 69750,
+    "complete_manifest_bytes": 125783,
+    "after_manifest_plus_required_payload_bytes": 130506,
+    "block_count": 510,
+    "required_block_count": 11,
+    "provider_input_tokens": null,
+    "caveat": "Payload selection is measured, not provider savings. A consumer that reads the full discovery manifest can spend more bytes than the original WorkOrder. Fresh context reloads every required block. No paid provider replay was run."
+  },
+  "service_commit_evidence": {
+    "definition": "Committed .agentplane-only change; the historical count does not imply removability",
+    "historical_before": 146,
+    "historical_after": 146,
+    "matched_provider_commit_reduction": null,
+    "verified_behavior": "Existing evidence-rework integration scenario persists passed declared checks in the evaluator-result commit. Unit coverage rejects deferral when durable local recovery or managed mode predicates are absent.",
+    "retained_cost": "Evaluator decision commit, implementation identity, verification journal and recovery boundaries remain. This report does not infer one fewer commit for every episode."
+  },
+  "artifact_evidence": {
+    "definition": "Canonical semantic-result schema payload copies for two exchanges with identical schema",
+    "before_payload_copies": 2,
+    "after_payload_objects": 1,
+    "after_descriptors": 2,
+    "live_schema_payload_bytes": 149956,
+    "live_descriptor_bytes": 373,
+    "observed_descriptor_ref": ".git/agentplane/kernel/exchanges/202609071501-VN1FN4/b0a40bc66737eb05804278c567d56f4bcf304d62ab193be729a64f996a941efd/result-schema-object.json",
+    "observed_descriptor_digest": "sha256:c92fa78f3d80e5408a1811da5a68b32df035a6674b5d11232e4a8add3ba0da46",
+    "observed_payload_digest": "sha256:99d332e68d987a4eed07a0b25b6ed47cf0b520ad1424c7afcdc7d868dd2aa6a0",
+    "two_exchange_before_schema_bytes": 299912,
+    "two_exchange_after_schema_and_descriptor_bytes": 150702,
+    "classification": "Storage arithmetic over measured live payload/descriptor sizes, supported by the existing two-exchange integration test; not a whole-task artifact benchmark",
+    "retained_cost": "One immutable payload plus per-exchange references; distinct content adds an object. Historical copies and adapter-specific schemas remain untouched."
+  },
+  "deterministic_transition_evidence": {
+    "definition": "Mocked transport dispatches in existing managed canonical lifecycle scenarios",
+    "after_local_semantic_dispatches": 3,
+    "after_cloud_rework_semantic_dispatches": 5,
+    "after_final_validation_and_completion_dispatches": 0,
+    "after_terminal_replay_additional_dispatches": 0,
+    "before_final_validation_and_completion_dispatches": null,
+    "caveat": "The previous controller stopped at this route; no matched completed baseline exists. These are test call counts, not observed provider episodes or token savings.",
+    "retained_cost": "Native final checks and immutable evidence run; restart after persistence reruns checks. Independent evaluator and approval boundaries remain semantic/human stops."
+  },
+  "correctness_limits": [
+    "Generated schema parity was synchronized through the separately USER-approved Q6MEAH task and now passes schemas:check. The current working-source manifest includes those generated mirrors.",
+    "Legacy bootstrap task QCBB76 has a separate malformed scope-extension contract; its lifecycle and integration are not complete.",
+    "Independent framework evaluation is required before comparison-report acceptance. Full repository CI, external provider effects, publication and integration are not claimed.",
+    "Missing usage stays null; native receipts, stale-state/CAS checks, authority, input/output digests and crash recovery remain required costs."
+  ]
+}
