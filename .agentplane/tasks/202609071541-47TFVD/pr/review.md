@@ -6,7 +6,7 @@ Created: 2026-09-07T15:46:17.994Z
 
 - Task: `202609071541-47TFVD`
 - Title: Propagate approved CI scope to external implementation commit guards
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen`
 - Canonical task record: `.agentplane/tasks/202609071541-47TFVD/README.md`
 
