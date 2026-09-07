@@ -35,6 +35,7 @@ import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal
 
 import { journalProjection } from "./direct-task-supervisor-result.js";
 import {
+  blockingWorkItemCommands,
   renderDirectTaskVerificationDetails,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
@@ -50,7 +51,7 @@ import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usa
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
-import { taskCentricDigest } from "@agentplaneorg/core/tasks";
+import { taskCentricAggregateFromExtensions, taskCentricDigest } from "@agentplaneorg/core/tasks";
 
 import {
   createRunnerRunId,
@@ -334,11 +335,21 @@ async function executeBranchVerificationEpisode(opts: {
           task,
           workflow: "branch_pr",
         });
+        const validation = taskCentricAggregateFromExtensions(task.extensions)?.current_plan
+          ?.proposal.top_level_validation;
+        const additionalCommands = validation ? blockingWorkItemCommands(validation) : [];
         const checks = await runDirectTaskVerification({
           command,
           task: verification.task,
           task_id: opts.input.task_id,
           cwd: checkout,
+          ...(additionalCommands.length > 0
+            ? {
+                additional_commands: additionalCommands,
+                additional_only: true,
+                map_selected_checks: true,
+              }
+            : {}),
         });
         passed = checks.status === "passed";
         failureReason = checks.reason ?? failureReason;
