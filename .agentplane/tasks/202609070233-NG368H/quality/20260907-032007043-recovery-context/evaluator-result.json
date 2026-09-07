@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The temporary output file is unique for each matrix case, is read only after successful Bash completion and is removed in finally. It models the hosted environment file contract without relying on /dev/stdout reopening.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Reviewed the cumulative two-file diff and verified frozen evidence digests. Manual recovery still follows release-ready validation; automatic publication, prerelease, package skip and exact release identity guards remain intact.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The new implementation has successful recorded contract tests, workflow lint and full local CI. Generated quality artifacts are supervisor-owned prepared evidence, not additional implementation scope.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The updated PR still requires successful hosted CI before merge. Actual recovery publication remains pending.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
