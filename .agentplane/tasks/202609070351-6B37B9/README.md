@@ -2,10 +2,10 @@
 id: "202609070351-6B37B9"
 title: "Sign macOS standalone release binaries before packaging"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "USER"
   note: "Relayed existing explicit user authorization for every action required to fix and verify the 0.7.8 release, including the explicit AGENTS permission override. Approves the bounded six-file macOS signing and verified distribution handoff repair; recovery preserves the qualified source SHA and immutable npm packages."
 verification:
-  state: "ok"
-  updated_at: "2026-09-07T07:31:33.074Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-07T07:40:46.333Z"
+  updated_by: "REVIEWER"
+  note: "Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require merged-main ancestry before executing the historical distribution source, remove checkout credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the approved workflow and test paths."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -136,7 +136,9 @@ execution_contract:
       - "scripts/generate/generate-bun-cli-assets.mjs"
       - "scripts/generate/generate-release-distribution.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - ".github"
       - "packages/agentplane"
@@ -157,37 +159,10 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -287,9 +262,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f39241a6459d52e40e61c942fcc7eb76a4622735"
-  message: "🚧 6B37B9 task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -347,8 +322,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "f39241a6459d52e40e61c942fcc7eb76a4622735"
+  -
+    type: "verify"
+    at: "2026-09-07T07:40:46.333Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require merged-main ancestry before executing the historical distribution source, remove checkout credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the approved workflow and test paths."
 doc_version: 3
-doc_updated_at: "2026-09-07T07:33:18.676Z"
+doc_updated_at: "2026-09-07T07:40:50.577Z"
 doc_updated_by: "CODER"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
@@ -496,6 +477,42 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609070351-6B37B9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T07:40:46.333Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require merged-main ancestry before executing the historical distribution source, remove checkout credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the approved workflow and test paths.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae, input_digest=sha256:8fd6aa147259a5f4488ef9c0c4df617d7c3fbd5a319f919074f52930b52baf77
+
+    Details:
+
+    Check: hosted_integration
+    Command: gh pr view 5907 --repo basilisk-labs/agentplane --json headRefOid,statusCheckRollup
+    Result: fail
+    Evidence: CodeQL check https://github.com/basilisk-labs/agentplane/runs/101661403344 returned FAILURE for exact head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. The same workflow locations have alerts actions/cache-poisoning/poisonable-step, actions/untrusted-checkout/medium and actions/unpinned-tag.
+    Scope: .github/workflows/publish.yml macOS distribution job.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070351-6B37B9-sign-macos-standalone-release-binaries-before-pa/.agentplane/tasks/202609070351-6B37B9/blueprint/resolved-snapshot.json
+    - old_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+    - current_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609070351-6B37B9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -710,35 +727,8 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 10
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609070351-6B37B9"
-            - "git:bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
-          check_id: "release-assets-contract"
-          command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-07T07:31:33.074Z"
-          repository_snapshot_digest: "sha256:132cdcf6f3ed577fb9e3b66c390406ac87c1a1d105ea7946c94fd1525977dbf1"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609070351-6B37B9"
-            - "git:bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
-          check_id: "workflow-lint"
-          command_identity: "bun run workflows:lint"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-07T07:31:33.074Z"
-          repository_snapshot_digest: "sha256:132cdcf6f3ed577fb9e3b66c390406ac87c1a1d105ea7946c94fd1525977dbf1"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 11
+    final_validation: null
     id: "202609070351-6B37B9"
     intent:
       acceptance_criteria:
@@ -759,12 +749,12 @@ extensions:
 
         Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906.
       task_id: "202609070351-6B37B9"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-07T07:33:18.676Z"
+    updated_at: "2026-09-07T07:40:50.575Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -836,6 +826,30 @@ extensions:
         work_item_id: "sign-standalone-release-assets"
     leases: []
     mutation_receipts:
+      compatibility:sha256:0f53b7f086d9aaed988b3258f685e269d123881bd5e97ff9adcdb04458a25d9a:
+        aggregate_digest: "sha256:2656e77aedd7a023d29da1b44112500150bcdd68039c99bab693d9cbe7a022d4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:40:50.575Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_a909e8bb69cc10748fc93d4a"
+          mutation_id: "compatibility:sha256:0f53b7f086d9aaed988b3258f685e269d123881bd5e97ff9adcdb04458a25d9a"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0f53b7f086d9aaed988b3258f685e269d123881bd5e97ff9adcdb04458a25d9a"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
       compatibility:sha256:314087f672ea3aa5d6dccd06c23706fe199284af05033327768315ade0d94f0b:
         aggregate_digest: "sha256:fdef35a38d6723fe6a19173f0c7d2229f714931a4a2be51481e2373b5c0becac"
         event:
@@ -1127,9 +1141,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
-    message: "🚧 6B37B9 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "68b7b240362fe005e4ea5c63ee214c37fc545212"
@@ -1295,6 +1306,42 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609070351-6B37B9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T07:40:46.333Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require merged-main ancestry before executing the historical distribution source, remove checkout credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the approved workflow and test paths.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae, input_digest=sha256:8fd6aa147259a5f4488ef9c0c4df617d7c3fbd5a319f919074f52930b52baf77
+
+Details:
+
+Check: hosted_integration
+Command: gh pr view 5907 --repo basilisk-labs/agentplane --json headRefOid,statusCheckRollup
+Result: fail
+Evidence: CodeQL check https://github.com/basilisk-labs/agentplane/runs/101661403344 returned FAILURE for exact head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. The same workflow locations have alerts actions/cache-poisoning/poisonable-step, actions/untrusted-checkout/medium and actions/unpinned-tag.
+Scope: .github/workflows/publish.yml macOS distribution job.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070351-6B37B9-sign-macos-standalone-release-binaries-before-pa/.agentplane/tasks/202609070351-6B37B9/blueprint/resolved-snapshot.json
+- old_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+- current_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609070351-6B37B9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

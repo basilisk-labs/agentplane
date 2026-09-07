@@ -2,18 +2,11 @@
   "base": "main",
   "branch": "task/202609070351-6B37B9/sign-macos-standalone-release-binaries-before-pa",
   "created_at": "2026-09-07T03:54:12.351Z",
-  "diffstat_sha256": "sha256:03f97dde342efa35bd9d6b8044d54f4ec1754db98a18d8bac462059c92a4dc42",
-  "last_verified_at": "2026-09-07T07:31:33.074Z",
+  "diffstat_sha256": "sha256:c253edefd47fdb7398d0d26e03f99f1164729b070d871a321f41cf0035dee8b8",
+  "last_verified_at": "2026-09-07T07:40:46.333Z",
   "last_verified_diffstat_sha256": "sha256:03f97dde342efa35bd9d6b8044d54f4ec1754db98a18d8bac462059c92a4dc42",
   "pr_number": 5907,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5907",
-  "pre_merge_closure": {
-    "basis_commit": "f39241a6459d52e40e61c942fcc7eb76a4622735",
-    "branch": "task/202609070351-6B37B9/sign-macos-standalone-release-binaries-before-pa",
-    "pr_number": 5907,
-    "recorded_at": "2026-09-07T07:33:18.738Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -27,6 +20,6 @@
   "task_id": "202609070351-6B37B9",
   "updated_at": "2026-09-07T04:03:49.611Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
