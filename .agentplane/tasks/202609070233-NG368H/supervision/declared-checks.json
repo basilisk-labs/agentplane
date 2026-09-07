@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "publish-contract"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+      "duration_ms": 728,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070233-NG368H-repair-manual-release-recovery-after-npm-publica\n\n\n Test Files  1 passed (1)\n      Tests  19 passed (19)\n   Start at  05:46:52\n   Duration  188ms (transform 18ms, setup 0ms, import 33ms, tests 88ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "workflow-lint"
+      ],
+      "command": "bun run workflows:lint",
+      "duration_ms": 831,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:15b9106a901ffc0f2de76ee61d0ea920fb2a78385d9ff2fd7c850616f3b90487",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "workflows:lint",
+      "stderr_tail": "$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n",
+      "stdout_tail": "workflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609070233-NG368H"
+}
