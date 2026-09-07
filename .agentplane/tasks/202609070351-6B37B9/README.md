@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -264,7 +264,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "f379949d19975562cfe19763a5aed02b1c77b5a7"
+  message: "🚧 6B37B9 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -278,6 +280,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f379949d1997. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -328,9 +333,17 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require merged-main ancestry before executing the historical distribution source, remove checkout credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the approved workflow and test paths."
+  -
+    type: "status"
+    at: "2026-09-07T07:43:50.078Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f379949d1997. CLI accepted one state-bound external-agent semantic result."
+    commit: "f379949d19975562cfe19763a5aed02b1c77b5a7"
 doc_version: 3
-doc_updated_at: "2026-09-07T07:40:50.577Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T07:43:50.144Z"
+doc_updated_by: "SUPERVISOR"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
   Summary: |-
@@ -727,7 +740,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 11
+    event_cursor: 13
     final_validation: null
     id: "202609070351-6B37B9"
     intent:
@@ -752,9 +765,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-07T07:40:50.575Z"
+    updated_at: "2026-09-07T07:43:50.092Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -826,6 +839,30 @@ extensions:
         work_item_id: "sign-standalone-release-assets"
     leases: []
     mutation_receipts:
+      compatibility:sha256:08ba188734756ee87088d64dff5f4c2b680b9e64c4e198fcf21b56ce48398566:
+        aggregate_digest: "sha256:0a3777d84b953d367d0ddd23ed965eda8c6d4c532ebed11d667e4309b901b44c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:43:50.092Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_39b3cc9c530bff89b7756dd9"
+          mutation_id: "compatibility:sha256:08ba188734756ee87088d64dff5f4c2b680b9e64c4e198fcf21b56ce48398566"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:08ba188734756ee87088d64dff5f4c2b680b9e64c4e198fcf21b56ce48398566"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
       compatibility:sha256:0f53b7f086d9aaed988b3258f685e269d123881bd5e97ff9adcdb04458a25d9a:
         aggregate_digest: "sha256:2656e77aedd7a023d29da1b44112500150bcdd68039c99bab693d9cbe7a022d4"
         event:
@@ -944,6 +981,30 @@ extensions:
         mutation_id: "compatibility:sha256:4ad581bad36e543b6a198e453b10f112cfb63fc0ecabda82e8a378667ab816ec"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
+      compatibility:sha256:810abfc9d02bfa3daac14a2db261632825563838a95e349c8a7add6974373330:
+        aggregate_digest: "sha256:c5f8ad5c222c82389bf182ffc96bc79e8b42a45c159a39fc3b70b669e3fc0dbf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:43:50.078Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fe222a08aff02f9fa1e6028a"
+          mutation_id: "compatibility:sha256:810abfc9d02bfa3daac14a2db261632825563838a95e349c8a7add6974373330"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:810abfc9d02bfa3daac14a2db261632825563838a95e349c8a7add6974373330"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609070351-6B37B9"
       compatibility:sha256:86c566e1bbc41d64f904c7bd21c56e3766373de0ea30dbb4e13f28d0eb33e3dd:
@@ -1141,6 +1202,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "f379949d19975562cfe19763a5aed02b1c77b5a7"
   task_execution_context:
     base_ref: "main"
     base_sha: "68b7b240362fe005e4ea5c63ee214c37fc545212"
