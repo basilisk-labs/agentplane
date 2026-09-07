@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:657a7b6bdc45bc3e80d225f936e89188792f3fe4274486fb7808265087e71fea",
   "pr_number": 5916,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5916",
+  "pre_merge_closure": {
+    "basis_commit": "ff1a43f687156efc22d181624dd32a8968bb114a",
+    "branch": "task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen",
+    "pr_number": 5916,
+    "recorded_at": "2026-09-07T16:50:41.927Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
