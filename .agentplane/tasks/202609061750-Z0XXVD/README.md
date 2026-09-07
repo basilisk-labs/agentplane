@@ -1002,7 +1002,7 @@ events:
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "db218e2b5846d84a17a88a7b3dcec8e30c7f29cc"
 doc_version: 3
-doc_updated_at: "2026-09-07T03:40:56.882Z"
+doc_updated_at: "2026-09-07T09:17:35.141Z"
 doc_updated_by: "DEUS"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -1329,10 +1329,10 @@ sections:
       - github_release: created
       - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.8
       - ghcr: published
-      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/34080151458
-      - external_homebrew: published | basilisk-labs/homebrew-tap | 0a01e701d90aa2e7335e243e234c0e41f29bc6ab | https://github.com/basilisk-labs/homebrew-tap/pull/42
-      - external_scoop: published | basilisk-labs/scoop-bucket | bf7515f6e13266228fd2f25b8afc610266b90bf3 | https://github.com/basilisk-labs/scoop-bucket/pull/42
-      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | a88ee6603c723123803a936c44ad64b98cd7afb8 | https://github.com/basilisk-labs/setup-agentplane/pull/42
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/34104442988
+      - external_homebrew: published | basilisk-labs/homebrew-tap | 4f516a8060427b168aa126df336db833ae2e2642 | https://github.com/basilisk-labs/homebrew-tap/pull/44
+      - external_scoop: published | basilisk-labs/scoop-bucket | 37da0603f71aa6f13424940f381913d7e51b0b43 | https://github.com/basilisk-labs/scoop-bucket/pull/44
+      - external_setup-agentplane: published | basilisk-labs/setup-agentplane | ce1ac7262f3dbe9534fb557f142026c676598856 | https://github.com/basilisk-labs/setup-agentplane/pull/44
     <!-- END HOSTED PUBLISH EVIDENCE -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -12236,10 +12236,10 @@ DecisionContextRef:
   - github_release: created
   - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.7.8
   - ghcr: published
-  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/34080151458
-  - external_homebrew: published | basilisk-labs/homebrew-tap | 0a01e701d90aa2e7335e243e234c0e41f29bc6ab | https://github.com/basilisk-labs/homebrew-tap/pull/42
-  - external_scoop: published | basilisk-labs/scoop-bucket | bf7515f6e13266228fd2f25b8afc610266b90bf3 | https://github.com/basilisk-labs/scoop-bucket/pull/42
-  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | a88ee6603c723123803a936c44ad64b98cd7afb8 | https://github.com/basilisk-labs/setup-agentplane/pull/42
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/34104442988
+  - external_homebrew: published | basilisk-labs/homebrew-tap | 4f516a8060427b168aa126df336db833ae2e2642 | https://github.com/basilisk-labs/homebrew-tap/pull/44
+  - external_scoop: published | basilisk-labs/scoop-bucket | 37da0603f71aa6f13424940f381913d7e51b0b43 | https://github.com/basilisk-labs/scoop-bucket/pull/44
+  - external_setup-agentplane: published | basilisk-labs/setup-agentplane | ce1ac7262f3dbe9534fb557f142026c676598856 | https://github.com/basilisk-labs/setup-agentplane/pull/44
 <!-- END HOSTED PUBLISH EVIDENCE -->
 <!-- END VERIFICATION RESULTS -->
 
