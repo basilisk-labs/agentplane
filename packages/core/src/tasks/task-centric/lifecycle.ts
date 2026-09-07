@@ -74,6 +74,14 @@ export type CompletionEvaluation = Readonly<{
   reason_codes: readonly string[];
 }>;
 
+export function incompleteRequiredWorkItems(task: TaskAggregate | null): readonly WorkItem[] {
+  return (
+    task?.current_plan?.proposal.work_items.work_items.filter(
+      (item) => !item.optional && task.work_items[item.id]?.state !== "COMPLETED",
+    ) ?? []
+  );
+}
+
 export function evaluateTaskCompletion(opts: {
   task: TaskAggregate;
   repository_digest: Sha256Digest;
@@ -85,12 +93,14 @@ export function evaluateTaskCompletion(opts: {
   else if (plan.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
     reasons.push("current_plan_not_approved");
   }
+  reasons.push(
+    ...incompleteRequiredWorkItems(opts.task).map(
+      (item) => `required_work_item_incomplete:${item.id}`,
+    ),
+  );
   if (plan) {
     for (const item of plan.proposal.work_items.work_items) {
       const runtime = opts.task.work_items[item.id];
-      if (!item.optional && runtime?.state !== "COMPLETED") {
-        reasons.push(`required_work_item_incomplete:${item.id}`);
-      }
       if (
         runtime?.state === "COMPLETED" &&
         !requiredOutputManifestsPresent(item, runtime.output_manifests)

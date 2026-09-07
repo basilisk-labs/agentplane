@@ -2,6 +2,7 @@ import {
   createRepositorySnapshot,
   ensureDocSections,
   isGitObjectId,
+  incompleteRequiredWorkItems,
   normalizeTaskStatus,
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
@@ -121,9 +122,7 @@ function assertTaskCanFinish(opts: {
 
   ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
   const canonical = taskCentricAggregateFromExtensions(opts.task.extensions);
-  const incomplete = canonical?.current_plan?.proposal.work_items.work_items.filter(
-    (item) => !item.optional && canonical.work_items[item.id]?.state !== "COMPLETED",
-  );
+  const incomplete = incompleteRequiredWorkItems(canonical);
   if (incomplete?.length) {
     throw new CliError({
       code: "E_VALIDATION",

@@ -1,0 +1,7 @@
+ .../src/commands/shared/workflow-step-branch.ts    |  29 +----
+ .../src/commands/shared/workflow-step-factory.ts   |  26 +++++
+ .../commands/shared/workflow-step-quality.test.ts  | 126 +++++++++++++++------
+ .../agentplane/src/commands/task/finish-shared.ts  |   5 +-
+ packages/core/src/tasks/task-centric/index.ts      |   1 +
+ packages/core/src/tasks/task-centric/lifecycle.ts  |  16 ++-
+ 6 files changed, 138 insertions(+), 65 deletions(-)
