@@ -2,7 +2,12 @@ import type { StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { RouteBlocker, RouteExecutionPacket } from "./route-oracle.js";
-import type { WorkflowRole, WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+import type {
+  WorkflowOperationParams,
+  WorkflowRole,
+  WorkflowRouteState,
+  WorkflowStep,
+} from "./workflow-step.js";
 
 export function routeBlockerSnapshot(state: WorkflowRouteState): readonly RouteBlocker[] {
   return state.blockers.map((blocker) => ({ ...blocker }));
@@ -72,4 +77,21 @@ export function commonExecution(opts: {
     evidenceMissing: opts.evidenceMissing ?? [],
     needsVerificationRecord: opts.needsVerificationRecord === true,
   };
+}
+
+export function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runner.follow"] {
+  const id = state.task.id;
+  const action = state.resume.runner.next_action;
+  if (action === "cancel_then_resume") {
+    return {
+      mode: "reclaim",
+      taskId: id,
+      author: state.task.owner,
+      reason: "stale runner pid is no longer alive",
+    };
+  }
+  if (action === "wait") {
+    return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
+  }
+  return { mode: "run", taskId: id };
 }

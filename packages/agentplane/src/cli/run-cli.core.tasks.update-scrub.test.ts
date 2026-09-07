@@ -16,7 +16,13 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createLegacyTaskAggregate,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+  readTask,
+  renderTaskReadme,
+} from "@agentplaneorg/core/tasks";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
@@ -110,6 +116,78 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.depends_on).toEqual(["202601020202-BCDEFG"]);
     expect(task.frontmatter.verify).toEqual(["bun run test"]);
   });
+
+  it.each([7, 10])(
+    "replace-verify preserves canonical revision coherence at revision %s",
+    async (revision) => {
+      const root = await mkGitRepoRoot();
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "new",
+            "--title",
+            "Replace canonical verification",
+            "--description",
+            "Verify revision coherence",
+            "--owner",
+            "CODER",
+            "--tag",
+            "code",
+            "--verify",
+            "bun run lint",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        const taskId = io.stdout.trim();
+        const before = await readTask({ cwd: root, rootOverride: root, taskId });
+        const aggregate = createLegacyTaskAggregate({
+          id: taskId,
+          revision,
+          title: before.frontmatter.title,
+          description: "Verify revision coherence",
+          status: "TODO",
+          acceptance_criteria: ["Revisions remain coherent"],
+          captured_at: "2026-09-07T00:00:00.000Z",
+          updated_at: "2026-09-07T00:00:00.000Z",
+        });
+        await writeFile(
+          before.readmePath,
+          renderTaskReadme(
+            {
+              ...before.frontmatter,
+              revision,
+              extensions: withTaskCentricAggregate(before.frontmatter.extensions, aggregate),
+            },
+            before.body,
+          ),
+        );
+        expect(
+          await runCli([
+            "task",
+            "update",
+            taskId,
+            "--replace-verify",
+            "--verify",
+            "bun run test",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        const after = await readTask({ cwd: root, rootOverride: root, taskId });
+        const projected = taskCentricAggregateFromExtensions(after.frontmatter.extensions)!;
+        expect(after.frontmatter.verify).toEqual(["bun run test"]);
+        expect(after.frontmatter.revision).toBe(revision + 1);
+        expect(projected.revision).toBe(after.frontmatter.revision);
+        expect(projected.current_plan).toEqual(aggregate.current_plan);
+        expect(projected.work_items).toEqual(aggregate.work_items);
+      } finally {
+        io.restore();
+      }
+    },
+  );
 
   it("task update allows code primary without verify commands", async () => {
     const root = await mkGitRepoRoot();
