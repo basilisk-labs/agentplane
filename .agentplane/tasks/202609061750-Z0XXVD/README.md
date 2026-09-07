@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 101
+revision: 102
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,39 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T01:01:47.400Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
+  evaluated_sha: "89f5d9f78721699f5c1f0b5f822526c721482e71"
+  blueprint_digest: "f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2"
+  evidence_refs:
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/20260907-005827692-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/20260907-005827692-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/objects/sha256/f6331ef73a2b70c44dd0a4fa3560c0af7eb94bcb7364aba4ef8b6bcaa322fd93.md"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/20260907-005827692-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/20260907-005827692-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/20260907-005827692-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609061750-Z0XXVD/README.md"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/objects/sha256/51c8fd55091a7b1fc995de1617b6c92af30b73b85743786ddc41d039450def45.patch"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/objects/sha256/67ceeac2f70b860fc170dd88f0b88a07d2b90699b63add837ed4ab4f3dcd862b.json"
+    - ".agentplane/tasks/202609061750-Z0XXVD/verification/20260907005818558-6e801547090e99cc.json"
+    - ".agentplane/tasks/202609061750-Z0XXVD/quality/objects/sha256/e38ab976328dda593137048ffc9caeb97fb03a8f93ab7879025697f5a532392d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.release.md"
+  findings:
+    - "Reconstructed the approved preparation and recovery contract from the Task and frozen evaluator work order. All required evidence digests match. Every changed product path in the evaluated 262da3130..89f5d9f7 range belongs to an approved WorkItem scope; remaining changes are CLI-owned task evidence. No unrelated legacy beta task or T4RR70 change is included."
+    - "Release package versions, exact internal pins, recipes runtime version and generated surfaces agree on 0.7.8. Other dependency ranges and the lockfile are unchanged. The notes retain two practical introductory paragraphs and all 1417 planned commit references. The preparation document separates historical failures and focused results from final native and hosted evidence."
+    - "The six bounded runtime corrections preserve the owning contracts. Planning-base recovery still rejects executed WorkItems, mismatched provenance, repository identity, ownership, ancestry, leases and effects. Dependency readiness also applies to the approved ACTIVE projection. Install layout reuse still rejects a foreign root installation while preserving usable package targets. Preliminary task reads use the existing traced backend boundary."
+    - "Concurrent repository identity creation publishes complete private contents through an exclusive link and cannot replace the winner. The controlled overlapping-write regression verifies both callers receive the same persisted identity and no candidate remains. Read-only and foreign-base validation remain covered."
+    - "Final branch verification forwards required Task commands and their IDs and deadlines through existing primitives, retaining the frozen snapshot and legacy fallback. The regression covers both planned and legacy cases. Native qualification ran beyond the old 30-minute limit and completed successfully without changing any individual suite limit or acceptance check."
+    - "Reviewed the frozen deterministic evidence and native result: prepublish passed in 2304413 ms, packed lifecycle in 21808 ms, published 0.7.7 upgrade in 23513 ms, notes in 192 ms, and the separately required full_regression CI in 479835 ms. All 113 release groups, downstream coverage and critical paths completed. These results support candidate acceptance, not a claim of hosted publication."
+    - "The upgrade qualification uses an actual published 0.7.7 install and three packed candidate packages in isolated direct and branch_pr projects. It asserts task identity, owner, description, DOING state, project content, dedicated upgrade commit, correct installed runtime, routing, doctor, preserved worktrees, clean final state and a no-change repeated apply. Recovery fixture updates preserve the relevant negative and replay assertions under current canonical semantics."
+    - "Residual risk: The reviewed candidate has not yet been published. The operator must use the successfully verified hosted SHA, inspect canonical publish-result and public distribution evidence, and verify the 0.7.9-beta.1 follow-up."
 execution_route:
   frozen: true
   reason_codes:
@@ -1988,7 +2021,7 @@ extensions:
       revision: 17
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 59
+    event_cursor: 60
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -8995,9 +9028,9 @@ extensions:
         revision: 16
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 101
+    revision: 102
     schema_version: 1
-    updated_at: "2026-09-07T00:58:19.880Z"
+    updated_at: "2026-09-07T00:58:19.892Z"
     work_items:
       honor-branch-verification-plan:
         attempt: 1
@@ -10361,6 +10394,30 @@ extensions:
         mutation_id: "compatibility:sha256:6f790eda55fc36e583afe0c5a868208b52d2afda6c3ebc0a4b5657cf899c7742"
         next_revision: 82
         previous_revision: 81
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:7694f8a1629ab308544c0ee2cacba650cdcb19cd01f880d46798155df3c91ab7:
+        aggregate_digest: "sha256:bc1cb47fbbf91f1ac393f80357a7375ea688c6ceb516fc20a84b9ca2b19383e3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T00:58:19.892Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cd1c11f0387b77b4341c06e2"
+          mutation_id: "compatibility:sha256:7694f8a1629ab308544c0ee2cacba650cdcb19cd01f880d46798155df3c91ab7"
+          plan_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
+          plan_revision: 17
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 101
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7694f8a1629ab308544c0ee2cacba650cdcb19cd01f880d46798155df3c91ab7"
+        next_revision: 102
+        previous_revision: 101
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       compatibility:sha256:799e3b7339d08d6b19b67cc357c43ae214094bdfcaf70d7f18d191b187dfa2bb:

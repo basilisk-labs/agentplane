@@ -1,0 +1,27 @@
+# Semantic quality review: pass
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned pass with 8 typed finding(s).
+
+## Findings
+- Reconstructed the approved preparation and recovery contract from the Task and frozen evaluator work order. All required evidence digests match. Every changed product path in the evaluated 262da3130..89f5d9f7 range belongs to an approved WorkItem scope; remaining changes are CLI-owned task evidence. No unrelated legacy beta task or T4RR70 change is included.
+- Release package versions, exact internal pins, recipes runtime version and generated surfaces agree on 0.7.8. Other dependency ranges and the lockfile are unchanged. The notes retain two practical introductory paragraphs and all 1417 planned commit references. The preparation document separates historical failures and focused results from final native and hosted evidence.
+- The six bounded runtime corrections preserve the owning contracts. Planning-base recovery still rejects executed WorkItems, mismatched provenance, repository identity, ownership, ancestry, leases and effects. Dependency readiness also applies to the approved ACTIVE projection. Install layout reuse still rejects a foreign root installation while preserving usable package targets. Preliminary task reads use the existing traced backend boundary.
+- Concurrent repository identity creation publishes complete private contents through an exclusive link and cannot replace the winner. The controlled overlapping-write regression verifies both callers receive the same persisted identity and no candidate remains. Read-only and foreign-base validation remain covered.
+- Final branch verification forwards required Task commands and their IDs and deadlines through existing primitives, retaining the frozen snapshot and legacy fallback. The regression covers both planned and legacy cases. Native qualification ran beyond the old 30-minute limit and completed successfully without changing any individual suite limit or acceptance check.
+- Reviewed the frozen deterministic evidence and native result: prepublish passed in 2304413 ms, packed lifecycle in 21808 ms, published 0.7.7 upgrade in 23513 ms, notes in 192 ms, and the separately required full_regression CI in 479835 ms. All 113 release groups, downstream coverage and critical paths completed. These results support candidate acceptance, not a claim of hosted publication.
+- The upgrade qualification uses an actual published 0.7.7 install and three packed candidate packages in isolated direct and branch_pr projects. It asserts task identity, owner, description, DOING state, project content, dedicated upgrade commit, correct installed runtime, routing, doctor, preserved worktrees, clean final state and a no-change repeated apply. Recovery fixture updates preserve the relevant negative and replay assertions under current canonical semantics.
+- Residual risk: The reviewed candidate has not yet been published. The operator must use the successfully verified hosted SHA, inspect canonical publish-result and public distribution evidence, and verify the 0.7.9-beta.1 follow-up.
+
+## Evidence
+- .agentplane/tasks/202609061750-Z0XXVD/quality/objects/sha256/51c8fd55091a7b1fc995de1617b6c92af30b73b85743786ddc41d039450def45.patch
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- none recorded
+
+## Residual Risks
+- none recorded
