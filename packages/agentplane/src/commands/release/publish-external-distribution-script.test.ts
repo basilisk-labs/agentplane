@@ -25,6 +25,46 @@ afterEach(async () => {
 });
 
 describe("publish-external-distribution script", () => {
+  it.each([
+    { module: "homebrew", tag: "v0.4.2" },
+    { module: "setup-agentplane", tag: "v0.4.1" },
+  ])(
+    "rejects setup-tag repair for $module and $tag before using credentials",
+    async ({ module, tag }) => {
+      const root = await makeTempRoot();
+      await expect(
+        execFileAsync(
+          "node",
+          [
+            SCRIPT_PATH,
+            "--module",
+            module,
+            "--repo",
+            "basilisk-labs/setup-agentplane",
+            "--source",
+            root,
+            "--copy",
+            "action.yml:action.yml",
+            "--version",
+            "0.4.2",
+            "--tag",
+            tag,
+            "--sha",
+            "abc123",
+            "--token-env",
+            "AGENTPLANE_TEST_MISSING_TOKEN",
+            "--out",
+            path.join(root, "result.json"),
+            "--repair-existing-setup-tag",
+          ],
+          { env: { ...process.env, AGENTPLANE_TEST_MISSING_TOKEN: "" } },
+        ),
+      ).rejects.toThrow(
+        "Setup tag repair requires the setup-agentplane module and its exact version tag",
+      );
+    },
+  );
+
   it("records a skipped evidence file when the target repository token is missing", async () => {
     const root = await makeTempRoot();
     await mkdir(path.join(root, "source", "Formula"), { recursive: true });
@@ -328,105 +368,191 @@ describe("publish-external-distribution script", () => {
     expect(topicsPayload.names).toEqual(["agentplane", "scoop", "windows", "cli"]);
   }, 180_000);
 
-  it("creates the setup-agentplane version tag after publishing the action repository", async () => {
-    const root = await makeTempRoot();
-    const binDir = path.join(root, "bin");
-    const originDir = path.join(root, "origin.git");
-    await mkdir(path.join(root, "source"), { recursive: true });
-    await mkdir(binDir, { recursive: true });
-    await writeFile(path.join(root, "source", "action.yml"), "name: setup-agentplane\n");
-    await writeFile(path.join(root, "source", "README.md"), "# setup-agentplane\n");
-    await writeFile(
-      path.join(binDir, "gh"),
-      [
-        "#!/usr/bin/env node",
-        "const fs = require('node:fs');",
-        "const path = require('node:path');",
-        "const { execFileSync } = require('node:child_process');",
-        "const args = process.argv.slice(2);",
-        `const originDir = ${JSON.stringify(originDir)};`,
-        "function git(gitArgs, cwd) { execFileSync('git', gitArgs, { cwd, stdio: 'ignore' }); }",
-        [
-          "if (args[0] === 'repo' && args[1] === 'clone') {",
-          "  fs.rmSync(originDir, { recursive: true, force: true });",
-          "  git(['init', '--bare', originDir]);",
-          "  git(['clone', originDir, args[3]]);",
-          "  git(['config', 'user.name', 'test'], args[3]);",
-          "  git(['config', 'user.email', 'test@example.com'], args[3]);",
-          "  git(['switch', '-c', 'main'], args[3]);",
-          "  fs.writeFileSync(path.join(args[3], 'action.yml'), 'name: old setup-agentplane' + String.fromCharCode(10));",
-          "  fs.writeFileSync(path.join(args[3], 'README.md'), '# old setup-agentplane' + String.fromCharCode(10));",
-          "  git(['add', '.'], args[3]);",
-          "  git(['commit', '-m', 'initial'], args[3]);",
-          "  git(['push', '--set-upstream', 'origin', 'main'], args[3]);",
-          "  process.exit(0);",
-          "}",
-        ].join("\n"),
-        "if (args[0] === 'auth') process.exit(0);",
-        "if (args[0] === 'api') process.exit(0);",
-        "if (args[0] === 'pr' && args[1] === 'list') { process.stdout.write(''); process.exit(0); }",
-        "if (args[0] === 'pr' && args[1] === 'create') { process.stdout.write('https://github.com/basilisk-labs/setup-agentplane/pull/7' + String.fromCharCode(10)); process.exit(0); }",
-        [
-          "if (args[0] === 'pr' && args[1] === 'merge') {",
-          "  git(['switch', 'main'], process.cwd());",
-          "  git(['merge', '--ff-only', 'agentplane/v0.4.2'], process.cwd());",
-          "  git(['push', 'origin', 'main'], process.cwd());",
-          "  process.exit(0);",
-          "}",
-        ].join("\n"),
-        "console.error('unexpected gh ' + args.join(' '));",
-        "process.exit(2);",
-      ].join("\n"),
-    );
-    await chmod(path.join(binDir, "gh"), 0o755);
-    const outPath = path.join(root, "result.json");
-
-    await execFileAsync(
-      "node",
-      [
-        SCRIPT_PATH,
-        "--module",
-        "setup-agentplane",
-        "--repo",
-        "basilisk-labs/setup-agentplane",
-        "--source",
-        path.join(root, "source"),
-        "--copy",
-        "action.yml:action.yml",
-        "--copy",
-        "README.md:README.md",
-        "--version",
-        "0.4.2",
-        "--tag",
-        "v0.4.2",
-        "--sha",
-        "abc123",
-        "--token-env",
-        "AGENTPLANE_TEST_TOKEN",
-        "--out",
-        outPath,
-      ],
-      {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
-          AGENTPLANE_TEST_TOKEN: "token",
-        },
-      },
-    );
-
-    const payload = JSON.parse(await readFile(outPath, "utf8")) as {
-      status: string;
-      setupTag: { status: string; tag: string; sha: string };
-    };
-    expect(payload.status).toBe("published");
-    expect(payload.setupTag).toMatchObject({
+  it.each([
+    {
+      scenario: "creates a missing tag",
+      stale: false,
+      repair: false,
+      race: false,
       status: "published",
-      tag: "v0.4.2",
-    });
-    expect(payload.setupTag.sha).toMatch(/^[0-9a-f]{40}$/u);
-  }, 180_000);
+    },
+    {
+      scenario: "refuses a stale tag by default",
+      stale: true,
+      repair: false,
+      race: false,
+      status: "tag_unverified",
+    },
+    {
+      scenario: "repairs a stale tag explicitly",
+      stale: true,
+      repair: true,
+      race: false,
+      status: "published",
+    },
+    {
+      scenario: "preserves a concurrently changed tag",
+      stale: true,
+      repair: true,
+      race: true,
+      status: "tag_unverified",
+    },
+  ])(
+    "$scenario after publishing setup-agentplane",
+    async ({ stale, repair, race, status }) => {
+      const root = await makeTempRoot();
+      const binDir = path.join(root, "bin");
+      const originDir = path.join(root, "origin.git");
+      await mkdir(path.join(root, "source"), { recursive: true });
+      await mkdir(binDir, { recursive: true });
+      await writeFile(path.join(root, "source", "action.yml"), "name: setup-agentplane\n");
+      await writeFile(path.join(root, "source", "README.md"), "# setup-agentplane\n");
+      await writeFile(
+        path.join(binDir, "gh"),
+        [
+          "#!/usr/bin/env node",
+          "const fs = require('node:fs');",
+          "const path = require('node:path');",
+          "const { execFileSync } = require('node:child_process');",
+          "const args = process.argv.slice(2);",
+          `const originDir = ${JSON.stringify(originDir)};`,
+          "function git(gitArgs, cwd) { execFileSync('git', gitArgs, { cwd, stdio: 'ignore' }); }",
+          [
+            "if (args[0] === 'repo' && args[1] === 'clone') {",
+            "  fs.rmSync(originDir, { recursive: true, force: true });",
+            "  git(['init', '--bare', originDir]);",
+            "  git(['clone', originDir, args[3]]);",
+            "  git(['config', 'user.name', 'test'], args[3]);",
+            "  git(['config', 'user.email', 'test@example.com'], args[3]);",
+            "  git(['switch', '-c', 'main'], args[3]);",
+            "  fs.writeFileSync(path.join(args[3], 'action.yml'), 'name: old setup-agentplane' + String.fromCharCode(10));",
+            "  fs.writeFileSync(path.join(args[3], 'README.md'), '# old setup-agentplane' + String.fromCharCode(10));",
+            "  git(['add', '.'], args[3]);",
+            "  git(['commit', '-m', 'initial'], args[3]);",
+            "  git(['push', '--set-upstream', 'origin', 'main'], args[3]);",
+            ...(stale
+              ? [
+                  "  git(['tag', 'v0.4.2'], args[3]);",
+                  "  git(['push', 'origin', 'refs/tags/v0.4.2'], args[3]);",
+                ]
+              : []),
+            ...(race
+              ? [
+                  "  git(['switch', '-c', 'concurrent'], args[3]);",
+                  "  git(['commit', '--allow-empty', '-m', 'concurrent tag target'], args[3]);",
+                  "  git(['push', 'origin', 'concurrent'], args[3]);",
+                  "  git(['switch', 'main'], args[3]);",
+                ]
+              : []),
+            "  process.exit(0);",
+            "}",
+          ].join("\n"),
+          "if (args[0] === 'auth') process.exit(0);",
+          "if (args[0] === 'api') process.exit(0);",
+          "if (args[0] === 'pr' && args[1] === 'list') { process.stdout.write(''); process.exit(0); }",
+          "if (args[0] === 'pr' && args[1] === 'create') { process.stdout.write('https://github.com/basilisk-labs/setup-agentplane/pull/7' + String.fromCharCode(10)); process.exit(0); }",
+          [
+            "if (args[0] === 'pr' && args[1] === 'merge') {",
+            "  git(['switch', 'main'], process.cwd());",
+            "  git(['merge', '--ff-only', 'agentplane/v0.4.2'], process.cwd());",
+            "  git(['push', 'origin', 'main'], process.cwd());",
+            "  process.exit(0);",
+            "}",
+          ].join("\n"),
+          "console.error('unexpected gh ' + args.join(' '));",
+          "process.exit(2);",
+        ].join("\n"),
+      );
+      await chmod(path.join(binDir, "gh"), 0o755);
+      if (race) {
+        await writeFile(
+          path.join(binDir, "git"),
+          [
+            "#!/usr/bin/env node",
+            "const { spawnSync } = require('node:child_process');",
+            "const args = process.argv.slice(2);",
+            `const env = { ...process.env, PATH: ${JSON.stringify(process.env.PATH ?? "")} };`,
+            "const result = spawnSync('git', args, { env, encoding: 'utf8' });",
+            "process.stdout.write(result.stdout || '');",
+            "process.stderr.write(result.stderr || '');",
+            "if (result.status === 0 && args[0] === 'ls-remote' && args.includes('refs/tags/v0.4.2')) {",
+            `  const mutation = spawnSync('git', ['--git-dir', ${JSON.stringify(originDir)}, 'update-ref', 'refs/tags/v0.4.2', 'refs/heads/concurrent'], { env, encoding: 'utf8' });`,
+            "  if (mutation.status !== 0) process.exit(mutation.status || 1);",
+            "}",
+            "process.exit(result.status ?? 1);",
+          ].join("\n"),
+        );
+        await chmod(path.join(binDir, "git"), 0o755);
+      }
+      const outPath = path.join(root, "result.json");
+
+      await execFileAsync(
+        "node",
+        [
+          SCRIPT_PATH,
+          "--module",
+          "setup-agentplane",
+          "--repo",
+          "basilisk-labs/setup-agentplane",
+          "--source",
+          path.join(root, "source"),
+          "--copy",
+          "action.yml:action.yml",
+          "--copy",
+          "README.md:README.md",
+          "--version",
+          "0.4.2",
+          "--tag",
+          "v0.4.2",
+          "--sha",
+          "abc123",
+          "--token-env",
+          "AGENTPLANE_TEST_TOKEN",
+          "--out",
+          outPath,
+          ...(repair ? ["--repair-existing-setup-tag"] : []),
+        ],
+        {
+          cwd: process.cwd(),
+          env: {
+            ...process.env,
+            PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
+            AGENTPLANE_TEST_TOKEN: "token",
+          },
+        },
+      );
+
+      const payload = JSON.parse(await readFile(outPath, "utf8")) as {
+        status: string;
+        setupTag: { status: string; tag: string; sha: string };
+      };
+      expect(payload.status).toBe(status);
+      expect(payload.setupTag).toMatchObject({
+        status: status === "published" ? "published" : "failed",
+        tag: "v0.4.2",
+      });
+      const { stdout: tagSha } = await execFileAsync("git", [
+        "--git-dir",
+        originDir,
+        "rev-parse",
+        "refs/tags/v0.4.2",
+      ]);
+      const expectedRef = race
+        ? "refs/heads/concurrent"
+        : status === "published"
+          ? "refs/heads/main"
+          : "refs/heads/main^";
+      const { stdout: expectedSha } = await execFileAsync("git", [
+        "--git-dir",
+        originDir,
+        "rev-parse",
+        expectedRef,
+      ]);
+      expect(tagSha.trim()).toBe(expectedSha.trim());
+      if (status === "published") expect(payload.setupTag.sha).toBe(tagSha.trim());
+    },
+    180_000,
+  );
 
   it("verifies setup-agentplane tag proof when action files are unchanged", async () => {
     const root = await makeTempRoot();

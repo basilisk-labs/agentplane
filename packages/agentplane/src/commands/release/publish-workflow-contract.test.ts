@@ -17,7 +17,13 @@ type WorkflowJob = {
   "runs-on": string;
   needs: string | string[];
   if: string;
-  steps: { name?: string; uses?: string; run?: string; with?: Record<string, string | boolean> }[];
+  steps: {
+    name?: string;
+    uses?: string;
+    run?: string;
+    env?: Record<string, string>;
+    with?: Record<string, string | boolean>;
+  }[];
 };
 type PublishWorkflow = { jobs: { distribution: WorkflowJob; publish: WorkflowJob } };
 
@@ -26,6 +32,53 @@ function step(job: WorkflowJob, name: string) {
 }
 
 describe("publish workflow contract", () => {
+  it.each(["false", "true"])(
+    "uses current setup tooling and passes tag repair only for %s",
+    async (repair) => {
+      const workflow = parseYaml(
+        await readFile(PUBLISH_WORKFLOW_PATH, "utf8"),
+      ) as PublishWorkflow & {
+        on: {
+          workflow_dispatch: { inputs: { repair_setup_tag: { type: string; default: boolean } } };
+        };
+      };
+      expect(workflow.on.workflow_dispatch.inputs.repair_setup_tag).toMatchObject({
+        type: "boolean",
+        default: false,
+      });
+      const publish = workflow.jobs.publish;
+      const checkout = step(publish, "Checkout current setup publication runtime");
+      expect(checkout).toMatchObject({
+        uses: "actions/checkout@v6",
+        with: {
+          ref: "${{ github.workflow_sha }}",
+          path: ".agentplane/.release/runtime",
+          "persist-credentials": false,
+        },
+      });
+      const render = step(publish, "Render setup-agentplane action");
+      expect(render?.run).toContain(
+        "node .agentplane/.release/runtime/scripts/render-setup-agentplane-action.mjs",
+      );
+      expect(publish.steps.indexOf(checkout!)).toBeLessThan(publish.steps.indexOf(render!));
+      const publication = step(publish, "Publish setup-agentplane PR");
+      expect(publication?.env?.REPAIR_SETUP_TAG).toBe(
+        "${{ github.event.inputs.repair_setup_tag || 'false' }}",
+      );
+      if (!publication?.run) throw new Error("Missing setup publication command");
+      const script = publication.run.replaceAll(/\$\{\{[^}]+\}\}/gu, "fixture");
+      const stdout = execFileSync("bash", ["-c", `node() { printf '%s\\n' "$@"; }\n${script}`], {
+        env: { ...process.env, REPAIR_SETUP_TAG: repair },
+        encoding: "utf8",
+      });
+      const argv = stdout.trim().split("\n");
+      expect(argv[0]).toBe(
+        ".agentplane/.release/runtime/scripts/publish-external-distribution.mjs",
+      );
+      expect(argv.includes("--repair-existing-setup-tag")).toBe(repair === "true");
+    },
+  );
+
   it("builds signed historical assets on macOS and publishes the same run artifact", async () => {
     const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
     const distribution = workflow.jobs.distribution;
@@ -319,7 +372,9 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Render Scoop bucket manifest");
     expect(workflow).toContain("node scripts/render-scoop-manifest.mjs");
     expect(workflow).toContain("Render setup-agentplane action");
-    expect(workflow).toContain("node scripts/render-setup-agentplane-action.mjs");
+    expect(workflow).toContain(
+      "node .agentplane/.release/runtime/scripts/render-setup-agentplane-action.mjs",
+    );
     expect(workflow).toContain("Publish Homebrew tap PR");
     expect(workflow).toContain("continue-on-error: true");
     expect(workflow).toContain("Publish Scoop bucket PR");
