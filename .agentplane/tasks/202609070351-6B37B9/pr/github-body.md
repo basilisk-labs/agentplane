@@ -15,8 +15,15 @@ Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 e
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note:
+
+```text
+Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require
+merged-main ancestry before executing the historical distribution source, remove checkout
+credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the
+approved workflow and test paths.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,13 +34,13 @@ Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 e
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .github/workflows/publish.yml                      | 119 ++++++++++++++++++--
- .../release/generate-bun-cli-assets-script.test.ts |  83 +++++++++++++-
- .../generate-release-distribution-script.test.ts   |  32 +++++-
- .../release/publish-workflow-contract.test.ts      | 122 ++++++++++++++++++++-
- scripts/generate/generate-bun-cli-assets.mjs       |   7 ++
+ .github/workflows/publish.yml                      | 135 +++++++++++++++-
+ .../release/generate-bun-cli-assets-script.test.ts |  83 +++++++++-
+ .../generate-release-distribution-script.test.ts   |  32 +++-
+ .../release/publish-workflow-contract.test.ts      | 175 ++++++++++++++++++++-
+ scripts/generate/generate-bun-cli-assets.mjs       |   7 +
  scripts/generate/generate-release-distribution.mjs |   3 +-
- 6 files changed, 353 insertions(+), 13 deletions(-)
+ 6 files changed, 422 insertions(+), 13 deletions(-)
 ```
 
 </details>

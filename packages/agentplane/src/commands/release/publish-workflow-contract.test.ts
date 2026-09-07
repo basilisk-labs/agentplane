@@ -17,7 +17,7 @@ type WorkflowJob = {
   "runs-on": string;
   needs: string | string[];
   if: string;
-  steps: { name?: string; run?: string; with?: Record<string, string> }[];
+  steps: { name?: string; uses?: string; run?: string; with?: Record<string, string | boolean> }[];
 };
 type PublishWorkflow = { jobs: { distribution: WorkflowJob; publish: WorkflowJob } };
 
@@ -34,8 +34,16 @@ describe("publish workflow contract", () => {
     expect(distribution.needs).toBe("detect");
     expect(distribution.if).toBe(publish.if);
     expect(publish.needs).toEqual(["detect", "distribution"]);
-    expect(distribution.steps[0]?.with?.ref).toBe("${{ needs.detect.outputs.sha }}");
-    expect(distribution.steps[1]?.with?.ref).toBe("${{ github.workflow_sha }}");
+    expect(distribution.steps[0]?.with?.ref).toBe("main");
+    expect(distribution.steps[0]?.with?.["persist-credentials"]).toBe(false);
+    const runtime = step(distribution, "Checkout current packaging runtime");
+    expect(runtime?.with?.ref).toBe("${{ github.workflow_sha }}");
+    expect(runtime?.with?.["persist-credentials"]).toBe(false);
+    const bun = distribution.steps.find((entry) => entry.uses?.startsWith("oven-sh/setup-bun@"));
+    expect(bun?.uses).toMatch(/^oven-sh\/setup-bun@[0-9a-f]{40}$/u);
+    expect(bun?.with?.["no-cache"]).toBe(true);
+    const node = distribution.steps.find((entry) => entry.uses?.startsWith("actions/setup-node@"));
+    expect(node?.with?.["package-manager-cache"]).toBe(false);
     const build = step(distribution, "Generate release distribution assets");
     expect(build?.run).toContain(
       ".agentplane/.release/runtime/scripts/generate-release-distribution.mjs",
@@ -52,6 +60,51 @@ describe("publish workflow contract", () => {
     expect(download?.with?.["run-id"]).toBeUndefined();
     expect(upload?.with?.["if-no-files-found"]).toBe("error");
   });
+
+  it.skipIf(process.platform === "win32").each(["ancestor", "unmerged", "invalid"])(
+    "only builds release commits from main history (%s)",
+    async (scenario) => {
+      const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
+      const script = step(
+        workflow.jobs.distribution,
+        "Select qualified release source from main history",
+      )?.run;
+      if (!script) throw new Error("Release source ancestry check is missing");
+      const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-ancestry-"));
+      try {
+        const git = (...args: string[]) =>
+          execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: "pipe" }).trim();
+        git("init", "--initial-branch=main");
+        git("config", "user.name", "Release fixture");
+        git("config", "user.email", "release-fixture@example.invalid");
+        git("-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "release source");
+        const release = git("rev-parse", "HEAD");
+        git("-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "main successor");
+        const main = git("rev-parse", "HEAD");
+        git("update-ref", "refs/remotes/origin/main", main);
+        git("checkout", "-b", "unmerged", release);
+        git("-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "untrusted side branch");
+        const unmerged = git("rev-parse", "HEAD");
+        git("checkout", "main");
+        const sha = scenario === "ancestor" ? release : scenario === "unmerged" ? unmerged : "main";
+        const run = () =>
+          execFileSync("bash", ["-c", script], {
+            cwd: root,
+            env: { ...process.env, RELEASE_SHA: sha },
+            stdio: "pipe",
+          });
+        if (scenario === "ancestor") {
+          expect(run).not.toThrow();
+          expect(git("rev-parse", "HEAD")).toBe(release);
+        } else {
+          expect(run).toThrow();
+          expect(git("rev-parse", "HEAD")).toBe(main);
+        }
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
 
   it
     .skipIf(process.platform === "win32")
