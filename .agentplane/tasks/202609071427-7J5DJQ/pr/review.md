@@ -38,11 +38,11 @@ Created: 2026-09-07T14:33:24.150Z
  .github/workflows/task-hosted-close.yml            |   2 +-
  .github/workflows/workflows-lint.yml               |   2 +-
  package.json                                       |   2 +-
- ...n-cli.core.task-advance.branch-worktree.test.ts |  94 ++++++++++++++++++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts |  98 +++++++++++++++++++-
  .../external-agent-implementation-authority.ts     |  18 +++-
  .../agentplane/src/shared/sqlite-driver.test.ts    | 103 +++++++++++++++++++++
  packages/agentplane/src/shared/sqlite-driver.ts    |   2 +-
- 13 files changed, 228 insertions(+), 27 deletions(-)
+ 13 files changed, 232 insertions(+), 27 deletions(-)
 ```
 
 </details>

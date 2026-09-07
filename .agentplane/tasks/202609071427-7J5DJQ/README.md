@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -202,7 +202,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "80c8bc0a270143160442a52b7b213a85c1fb7081"
+  message: "🚧 7J5DJQ task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -213,6 +215,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts, packages/agentplane/src/commands/task/external-agent-implementation-authority.ts; repository effects: source_code, tests."
+  -
+    author: "USER"
+    body: "Record the user-authorized implementation commits after the CI guard blocked supervisor commit recovery. Bun upgrade: f359f1ee3057e2727cec81cc6bb06b1445e9bfef. CI guard and regression coverage: 80c8bc0a270143160442a52b7b213a85c1fb7081. Preserve DOING and pending verification. The user explicitly authorized commit, merge, and blocker repair."
 events:
   -
     type: "status"
@@ -228,9 +233,17 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The prepared baseline preserves the complete tested Bun patch. The user explicitly requested fixing the CI autocommit blocker. Request bounded source and regression-test scope before modifying the supervisor. Recommended action: Use an explicit operator recovery route to record the tested, scoped implementation with the already approved CI authority, or separately authorize a narrow supervisor fix and regression test for propagation of approved CI write authority. Do not discard the patch, relax repository protections globally, or manually edit task lifecycle/projection artifacts. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts,packages/agentplane/src/commands/task/external-agent-implementation-authority.ts; repository effects=source_code,tests; request digest=sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0. Agentplane receipt: external-agent-blocker/tr_7a29fe3c16006a603914f056d1f8ba1a/sha256:c8b77be3cacf6bbb3a7f4fee1ea9996ba6861919c45fcdf8efce3b9ecb6ca10e/sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0."
+  -
+    type: "status"
+    at: "2026-09-07T15:58:48.462Z"
+    author: "USER"
+    from: "DOING"
+    to: "DOING"
+    note: "Record the user-authorized implementation commits after the CI guard blocked supervisor commit recovery. Bun upgrade: f359f1ee3057e2727cec81cc6bb06b1445e9bfef. CI guard and regression coverage: 80c8bc0a270143160442a52b7b213a85c1fb7081. Preserve DOING and pending verification. The user explicitly authorized commit, merge, and blocker repair."
+    commit: "80c8bc0a270143160442a52b7b213a85c1fb7081"
 doc_version: 3
-doc_updated_at: "2026-09-07T15:45:49.028Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T15:58:48.462Z"
+doc_updated_by: "USER"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -564,7 +577,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 7
+    event_cursor: 8
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -817,9 +830,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 9
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-07T15:45:49.028Z"
+    updated_at: "2026-09-07T15:58:48.462Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 0
@@ -881,6 +894,30 @@ extensions:
         mutation_id: "compatibility:sha256:47e40aa014a3af1cec6a5ca23ba15b5ff61da155c473245c7e37fb414a7e5e6f"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:5e3c62a6c2087633500ef0c51d05b82968fefe3a5e163214fa358ae22f4f037b:
+        aggregate_digest: "sha256:b29a88566be0a2ca326f8c7c2dd689be0a264f2c776add5b240aaab2b3c8e43b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:58:48.462Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_97ad7ce1a383d3a9fe51d1a7"
+          mutation_id: "compatibility:sha256:5e3c62a6c2087633500ef0c51d05b82968fefe3a5e163214fa358ae22f4f037b"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5e3c62a6c2087633500ef0c51d05b82968fefe3a5e163214fa358ae22f4f037b"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:674f824059ea62bf42bd57d915bdee1e97ab2585d17415d322a45b660f482b08:

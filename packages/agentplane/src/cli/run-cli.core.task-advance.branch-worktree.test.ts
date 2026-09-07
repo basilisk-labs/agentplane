@@ -325,7 +325,11 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       } else {
         expect(interruption).not.toHaveBeenCalled();
         expect(after.stdout).toBe(before.stdout);
-        expect(io.stderr).toMatch(/protected by default|escaped semantic authority/);
+        expect(io.stderr).toContain(
+          ci.allowed
+            ? "External-agent changes escaped semantic authority: .github/workflows/allowed.yml"
+            : "Staged file is protected by default: .github/workflows/allowed.yml",
+        );
       }
     } finally {
       io.restore();
