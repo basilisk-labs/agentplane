@@ -6,7 +6,7 @@ Created: 2026-09-07T14:33:24.150Z
 
 - Task: `202609071427-7J5DJQ`
 - Title: Upgrade Bun to 1.4.2 and qualify runtime migration boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati`
 - Canonical task record: `.agentplane/tasks/202609071427-7J5DJQ/README.md`
 
