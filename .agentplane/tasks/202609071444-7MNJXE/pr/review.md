@@ -6,7 +6,7 @@ Created: 2026-09-07T14:56:49.833Z
 
 - Task: `202609071444-7MNJXE`
 - Title: Repair CodeQL configuration consistency and triage current GitHub security findings
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071444-7MNJXE/repair-codeql-configuration-consistency-and-tria`
 - Canonical task record: `.agentplane/tasks/202609071444-7MNJXE/README.md`
 
