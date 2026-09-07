@@ -4,7 +4,7 @@ title: "Sign macOS standalone release binaries before packaging"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -486,22 +486,78 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T04:03:33.435Z"
+    updated_at: "2026-09-07T04:03:42.576Z"
     work_items:
       sign-standalone-release-assets:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "sign-standalone-release-assets"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:5cef90f82ba01f009eaf97148738bc7b571e0473aeb0e8d934af2730ca064abd"
+            id: "Signed macOS asset packaging with qualified workflow artifact handoff and regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609070351-6B37B9"
+              work_item_id: "sign-standalone-release-assets"
+            provenance:
+              - "sha256:045868bfbf6923c37c1f9ee77e3fa3c208c8a872f741b9563a6f5fb64b02524a"
+              - ".agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:89005bd99fa8fa0390dab1e5d5f101a17bbd1b081348420f1a13be34aaf29f5f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json"
+              check_id: "release-assets-contract"
+              command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts"
+              detail: "Observed by bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-07T04:03:42.571Z"
+              repository_snapshot_digest: "sha256:89005bd99fa8fa0390dab1e5d5f101a17bbd1b081348420f1a13be34aaf29f5f"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json"
+              check_id: "workflow-lint"
+              command_identity: "bun run workflows:lint"
+              detail: "Observed by bun run workflows:lint."
+              exit_code: 0
+              observed_at: "2026-09-07T04:03:42.571Z"
+              repository_snapshot_digest: "sha256:89005bd99fa8fa0390dab1e5d5f101a17bbd1b081348420f1a13be34aaf29f5f"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T04:03:42.576Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_9cad7e47b1a990ec17e17cca"
+        mutation_id: "external-result:work-order-202609070351-6B37B9-executor-5902555594aa912a478f4139"
+        plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
+        task_revision: 7
+        work_item_id: "sign-standalone-release-assets"
     leases: []
     mutation_receipts:
       compatibility:sha256:314087f672ea3aa5d6dccd06c23706fe199284af05033327768315ade0d94f0b:
@@ -622,6 +678,29 @@ extensions:
         mutation_id: "compatibility:sha256:ed658ff86fcfde89ce226b85cb9b5a8c09f28c5edaf42c008ddaf6fe588557c8"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
+      external-result:work-order-202609070351-6B37B9-executor-5902555594aa912a478f4139:
+        aggregate_digest: "sha256:c0e3c8e61aa8fcd091d2666bf14045255f38d6fcfee845be5a381265c97f733b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T04:03:42.576Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_9cad7e47b1a990ec17e17cca"
+          mutation_id: "external-result:work-order-202609070351-6B37B9-executor-5902555594aa912a478f4139"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "sign-standalone-release-assets"
+        mutation_id: "external-result:work-order-202609070351-6B37B9-executor-5902555594aa912a478f4139"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609070351-6B37B9"
     pending_effects: []
