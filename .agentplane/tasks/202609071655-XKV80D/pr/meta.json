@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609071655-XKV80D/accept-report-only-workitem-results-without-requ",
+  "created_at": "2026-09-07T17:00:24.316Z",
+  "diffstat_sha256": "sha256:8ce744e9e30f09dd548afa10edeb4a5ed1cb9a989f096b89a0329fbe02d5d065",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609071655-XKV80D",
+  "updated_at": "2026-09-07T17:00:24.316Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

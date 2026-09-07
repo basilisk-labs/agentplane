@@ -741,7 +741,9 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
   );
   it("retains ordinary completed-no-diff rejection", async () => {
     const f = await implementationFixture();
-    await report(f.implementation, "No implementation and no refinement.");
+    await report(f.implementation, "No implementation and no refinement.", {
+      findings: ["A report does not satisfy the approved source implementation."],
+    });
     const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
     expect(result.code).not.toBe(0);
     expect(result.stderr).toContain("no supervisor-observed workspace change");

@@ -1,4 +1,8 @@
 import {
+  externalReportResultPath,
+  materializeExternalReportResult,
+} from "./external-agent-report-result.js";
+import {
   pathFromStatusLine,
   hasChangedTaskArtifacts,
   finishExternalImplementationVerification,
@@ -105,11 +109,12 @@ export function assertExternalImplementationReturnState(opts: {
     .map((entry) => authorityPath(entry, opts.exchange.checkout))
     .filter((entry): entry is string => entry !== null);
   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
+  const reportPath = externalReportResultPath(opts);
   const forbidden = changed.filter((entry) => {
     const taskArtifact = entry.startsWith(taskPrefix);
     const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
     if (baselineTaskArtifact) return false;
-    return taskArtifact || !pathAllowed(entry, allowed);
+    return (taskArtifact && entry !== reportPath) || !pathAllowed(entry, allowed);
   });
   if (forbidden.length > 0) {
     throw new CliError({
@@ -402,6 +407,10 @@ export async function applyExternalImplementationResult(opts: {
         task_id: opts.exchange.task_id,
       });
     } else {
+      observedChangedPaths = await materializeExternalReportResult({
+        ...opts,
+        changed_paths: observedChangedPaths,
+      });
       if (observedChangedPaths.length === 0) {
         throw new CliError({
           code: "E_VALIDATION",

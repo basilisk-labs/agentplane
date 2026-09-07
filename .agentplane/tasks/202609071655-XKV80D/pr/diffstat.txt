@@ -1,0 +1,5 @@
+ ...n-cli.core.task-advance.evidence-rework.test.ts |   4 +-
+ .../external-agent-implementation-authority.ts     |  11 +-
+ .../task/external-agent-report-result.test.ts      | 380 +++++++++++++++++++++
+ .../commands/task/external-agent-report-result.ts  |  88 +++++
+ 4 files changed, 481 insertions(+), 2 deletions(-)
