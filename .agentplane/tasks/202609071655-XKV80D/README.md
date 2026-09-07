@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -174,7 +174,6 @@ execution_contract:
           - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
         evidence_requirements:
           - "hosted_integration"
-          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:security_boundary"
           - "repository_effect:source_code"
@@ -190,28 +189,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e9a64efe332d6033e6aebf9378ef3f04a0a6774d9696c3997f856319fe0e1a27"
+      digest: "sha256:47b819868005aeb804ef027256aa8bb4835b8e17c7b4f67f478065a69ecfbc7d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "effect_security_boundary"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/pr/github-title.txt"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/pr/meta.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
-        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -219,39 +201,14 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
-          - ".agentplane"
           - "packages/agentplane"
         changed_files:
-          - ".agentplane/tasks/202609071541-47TFVD/README.md"
-          - ".agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json"
-          - ".agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt"
-          - ".agentplane/tasks/202609071541-47TFVD/pr/github-body.md"
-          - ".agentplane/tasks/202609071541-47TFVD/pr/github-title.txt"
-          - ".agentplane/tasks/202609071541-47TFVD/pr/meta.json"
-          - ".agentplane/tasks/202609071541-47TFVD/pr/review.md"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
-          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json"
-          - ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
-          - ".agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json"
-          - ".agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json"
-          - ".agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
-          - ".agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
-          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
         external_effects: []
         repository_effects:
-          - "documentation"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -266,7 +223,6 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
-        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "task_outcome"
@@ -283,7 +239,6 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
-      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
       - "repository_effect:source_code"
@@ -291,7 +246,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-2"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
+  message: "🚧 XKV80D task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -302,6 +259,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 36bfc3ba23e0. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -338,9 +298,17 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-07T19:02:21.835Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 36bfc3ba23e0. CLI accepted one state-bound external-agent semantic result."
+    commit: "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
 doc_version: 3
-doc_updated_at: "2026-09-07T18:49:45.551Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T19:02:21.893Z"
+doc_updated_by: "SUPERVISOR"
 description: "User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority."
 sections:
   Summary: |-
@@ -660,7 +628,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071655-XKV80D"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609071655-XKV80D"
     intent:
@@ -680,9 +648,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-07T18:49:45.550Z"
+    updated_at: "2026-09-07T19:02:21.849Z"
     work_items:
       report-result:
         attempt: 1
@@ -791,6 +759,54 @@ extensions:
         mutation_id: "compatibility:sha256:17ae65dff4dd077a6ef445e14a6d8971c350f5881768cbdf0fc49c741f422fc9"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
+      compatibility:sha256:4e3249d03d294806f63df34389a38aac77881cd2faf5265bea485ee7a4788b81:
+        aggregate_digest: "sha256:67ae7674b06a6eb3096b96598c70ae923d0f0550cf7607fdb4e775c8e0b26a01"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T19:02:21.849Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_054dda9e675e2fdfde5b5fc8"
+          mutation_id: "compatibility:sha256:4e3249d03d294806f63df34389a38aac77881cd2faf5265bea485ee7a4788b81"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4e3249d03d294806f63df34389a38aac77881cd2faf5265bea485ee7a4788b81"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
+      compatibility:sha256:5dd69cf78494a90186591e5ef7832c3a914d12e2d7fc0f4f3d6354a1d90cfc9d:
+        aggregate_digest: "sha256:d87f4816aa84546e2978a22551b47638152ee3f9e13231c273d3be4489d8cf6b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T19:02:21.835Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d289a74a0ad956f20ee382b7"
+          mutation_id: "compatibility:sha256:5dd69cf78494a90186591e5ef7832c3a914d12e2d7fc0f4f3d6354a1d90cfc9d"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5dd69cf78494a90186591e5ef7832c3a914d12e2d7fc0f4f3d6354a1d90cfc9d"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609071655-XKV80D"
       compatibility:sha256:6294a072685886bb1575b25d7acd35430de18eeee00b9370a34c38ff29d68513:
@@ -989,6 +1005,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"

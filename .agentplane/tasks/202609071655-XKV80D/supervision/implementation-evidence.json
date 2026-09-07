@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 92efd467a7b045e7e784597168ac21bd41a975a1..693879a426881d13a1f40f2eb4ab15fd233e25ce",
+      "command": "git diff --check 53fa92448183f8e294f0b870389f529141e98d48..36bfc3ba23e0c65466a5b6c172ef58dfd63883c1",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,21 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 92efd467a7b045e7e784597168ac21bd41a975a1..693879a426881d13a1f40f2eb4ab15fd233e25ce",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 53fa92448183f8e294f0b870389f529141e98d48..36bfc3ba23e0c65466a5b6c172ef58dfd63883c1",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609071655-XKV80D/README.md",
-        "A\t.agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202609071655-XKV80D/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609071655-XKV80D/pr/github-body.md",
-        "A\t.agentplane/tasks/202609071655-XKV80D/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609071655-XKV80D/pr/meta.json",
-        "A\t.agentplane/tasks/202609071655-XKV80D/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-report-result.test.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-report-result.ts"
+        "M\t.agentplane/tasks/202609071655-XKV80D/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609071655-XKV80D/pr/github-body.md",
+        "M\t.agentplane/tasks/202609071655-XKV80D/pr/meta.json",
+        "M\t.agentplane/tasks/202609071655-XKV80D/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       ]
     },
     {
@@ -37,60 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "92efd467a7b045e7e784597168ac21bd41a975a1",
-  "implementation_commit": "693879a426881d13a1f40f2eb4ab15fd233e25ce",
+  "execution_base_commit": "53fa92448183f8e294f0b870389f529141e98d48",
+  "implementation_commit": "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      "?? .agentplane/tasks/202609071655-XKV80D/README.md",
-      "?? .agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/diffstat.txt",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/github-body.md",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/github-title.txt",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/meta.json",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/review.md"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071655-XKV80D/pr/review.md"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202609071655-XKV80D/README.md",
-      "?? .agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/diffstat.txt",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/github-body.md",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/github-title.txt",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/meta.json",
-      "?? .agentplane/tasks/202609071655-XKV80D/pr/review.md"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
