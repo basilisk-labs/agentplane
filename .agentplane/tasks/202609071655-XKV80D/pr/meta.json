@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609071655-XKV80D/accept-report-only-workitem-results-without-requ",
   "created_at": "2026-09-07T17:00:24.316Z",
-  "diffstat_sha256": "sha256:8ce744e9e30f09dd548afa10edeb4a5ed1cb9a989f096b89a0329fbe02d5d065",
+  "diffstat_sha256": "sha256:8d0a4f2ce743926f149a426221b8de7350fcee5c6f4f94cb00b5291bee933310",
   "last_verified_at": "2026-09-07T18:49:41.523Z",
   "last_verified_diffstat_sha256": "sha256:8ce744e9e30f09dd548afa10edeb4a5ed1cb9a989f096b89a0329fbe02d5d065",
   "pr_number": 5919,

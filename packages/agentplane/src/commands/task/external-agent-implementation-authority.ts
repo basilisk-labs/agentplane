@@ -13,23 +13,16 @@ import {
   recoverExternalConflictEvidence,
   applyExternalConflictResolution,
 } from "./external-agent-conflict-application.js";
-
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-
 import { CliError } from "../../shared/errors.js";
 import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
-
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-
-import type {
-  ExternalAgentExchange,
-  ExternalAgentResultEnvelope,
-} from "./external-agent-exchange.js";
+import type * as ExternalAgent from "./external-agent-exchange.js";
 import {
   isExternalBlockedResultRecorded,
   recordExternalBlockedResult,
@@ -56,9 +49,8 @@ import {
   recoverExternalVerificationCheckpoint,
 } from "./external-agent-implementation-checkpoint.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
-
 export function assertExternalImplementationReturnState(opts: {
-  exchange: ExternalAgentExchange;
+  exchange: ExternalAgent.ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
   current: TaskRouteDecision;
   current_head: string | null;
@@ -109,12 +101,11 @@ export function assertExternalImplementationReturnState(opts: {
     .map((entry) => authorityPath(entry, opts.exchange.checkout))
     .filter((entry): entry is string => entry !== null);
   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
-  const reportPath = externalReportResultPath(opts);
   const forbidden = changed.filter((entry) => {
     const taskArtifact = entry.startsWith(taskPrefix);
-    const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
-    if (baselineTaskArtifact) return false;
-    return (taskArtifact && entry !== reportPath) || !pathAllowed(entry, allowed);
+    if (taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry)) return false;
+    if (taskArtifact) return entry !== externalReportResultPath(opts);
+    return !pathAllowed(entry, allowed);
   });
   if (forbidden.length > 0) {
     throw new CliError({
@@ -133,8 +124,8 @@ export function assertExternalImplementationReturnState(opts: {
 
 export async function applyExternalReadOnlyWorktreeObservation(opts: {
   command: CommandContext;
-  exchange: ExternalAgentExchange;
-  envelope: ExternalAgentResultEnvelope;
+  exchange: ExternalAgent.ExternalAgentExchange;
+  envelope: ExternalAgent.ExternalAgentResultEnvelope;
 }): Promise<void> {
   await cmdTaskComment({
     ctx: opts.command,
@@ -170,12 +161,11 @@ export async function applyExternalReadOnlyWorktreeObservation(opts: {
   if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
 }
 
-export function blockingImplementationAuthorityViolations(violations: readonly string[]): string[] {
-  return violations.filter((violation) => !violation.startsWith("verification:"));
-}
+export const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
+  items.filter((violation) => !violation.startsWith("verification:"));
 
 function assertScopeExtensionBlockerPreservedBaseline(opts: {
-  exchange: ExternalAgentExchange;
+  exchange: ExternalAgent.ExternalAgentExchange;
   current_head: string | null;
   current_status_lines: readonly string[];
 }): void {
@@ -211,9 +201,9 @@ export function implementationCommitAllowsCi(
 export async function applyExternalImplementationResult(opts: {
   command: CommandContext;
   decision: TaskRouteDecision;
-  exchange: ExternalAgentExchange;
+  exchange: ExternalAgent.ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
-  envelope: ExternalAgentResultEnvelope;
+  envelope: ExternalAgent.ExternalAgentResultEnvelope;
 }): Promise<void> {
   let semantic = opts.envelope.result;
   if (semantic.status !== "completed") {
