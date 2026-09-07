@@ -4,7 +4,7 @@ title: "Repair manual release recovery after npm publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -81,10 +81,17 @@ execution_contract:
       - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".github"
+      - "packages/agentplane"
+    changed_paths:
+      - ".github/workflows/publish.yml"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "ci"
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -119,9 +126,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:6d6d48e695bc68c99dfd57186ba160e5113520f9c8712bddc20d98500a13aca2"
+      digest: "sha256:0e29fc5bb36d10ea6dd17ec3a3f62a1adf2c76d5f7a234954a04b343b8a7ec12"
       escalation_reasons:
         - "central_component:.github/workflows/publish.yml"
+        - "central_path:.github/workflows/publish.yml"
         - "effect_ci"
       execution_groups:
         - "docs-schema"
@@ -129,10 +137,17 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".github"
+          - "packages/agentplane"
+        changed_files:
+          - ".github/workflows/publish.yml"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -164,11 +179,16 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+  message: "🚧 NG368H task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a0c5a7f80225. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -177,9 +197,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T02:46:48.398Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a0c5a7f80225. CLI accepted one state-bound external-agent semantic result."
+    commit: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
 doc_version: 3
-doc_updated_at: "2026-09-07T02:38:22.951Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T02:46:48.398Z"
+doc_updated_by: "SUPERVISOR"
 description: "Publish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release."
 sections:
   Summary: |-
@@ -380,7 +408,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070233-NG368H"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609070233-NG368H"
     intent:
@@ -405,9 +433,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 6
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T02:38:22.951Z"
+    updated_at: "2026-09-07T02:46:48.398Z"
     work_items:
       recover-post-npm-publication:
         attempt: 0
@@ -471,6 +499,54 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609070233-NG368H"
+      compatibility:sha256:b866dcfed3676c29cad8db9dab0e339701d22344a0df942ac3968bbf151b4b3f:
+        aggregate_digest: "sha256:8aa1117421db8683d99f04495ae71353ffca0f25c71decc690678862a636fe00"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T02:46:48.398Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_193dc97d0cf9edcfcb546ae0"
+          mutation_id: "compatibility:sha256:b866dcfed3676c29cad8db9dab0e339701d22344a0df942ac3968bbf151b4b3f"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b866dcfed3676c29cad8db9dab0e339701d22344a0df942ac3968bbf151b4b3f"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609070233-NG368H"
+      compatibility:sha256:d896d189614c146d8c529d15691a1f3a2d313bc5726557ec241c846701d581dc:
+        aggregate_digest: "sha256:09d410a17b056554fac0d2478ac87ceba631ebcbebdfd7066cacd5b0e2f2af66"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T02:46:48.398Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5d8d45f5a1a920d23a24d8f1"
+          mutation_id: "compatibility:sha256:d896d189614c146d8c529d15691a1f3a2d313bc5726557ec241c846701d581dc"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d896d189614c146d8c529d15691a1f3a2d313bc5726557ec241c846701d581dc"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609070233-NG368H"
       compatibility:sha256:efd85035dc9cca41e807c420e4a3f725cf2a850536be37076dce97f9c76d43dc:
         aggregate_digest: "sha256:c6e20322302bd3f1ed647dbe61e8ebfef80f46d8e330e2c32bde85df500072e2"
         event:
@@ -498,6 +574,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
   task_execution_context:
     base_ref: "main"
     base_sha: "81b3fe507426d82ea903d7a63fd6335b583d81b5"
