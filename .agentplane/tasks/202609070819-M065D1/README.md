@@ -1,10 +1,11 @@
 ---
 id: "202609070819-M065D1"
 title: "Keep setup-agentplane installations usable across workflow steps"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -60,6 +61,20 @@ quality_review:
     - "CLI-owned evidence confirms 8 renderer tests, 43 publisher/workflow tests, workflow lint and full ci:local:full pass. Full verification took 477066ms and includes all critical CLI groups, documentation build/design, platform-critical tests and significant coverage. Supervisor final tracked state is clean."
     - "Residual risk: Hosted exact-head CI including CodeQL is required before integration."
     - "Residual risk: Actual publication with repair_setup_tag=true and execution of the published setup action remain separately authorized operator verification after integration. The prior canonical publish result is still incomplete and is not promoted by this source review."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:e0d676d0220d10db905bb16ebe81d8c89536c2b65845729edc891f7497899b8c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T08:44:29.010Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -285,8 +300,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
-  message: "🚧 M065D1 task: apply external agent result"
+  hash: "313c9595f5d328ea78d8c75e9c9f1544cf8db902"
+  message: "🚧 M065D1 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -294,6 +309,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d2a97545f436. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -316,9 +334,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-07T08:44:29.010Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "313c9595f5d328ea78d8c75e9c9f1544cf8db902"
 doc_version: 3
-doc_updated_at: "2026-09-07T08:42:33.547Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T08:44:29.010Z"
+doc_updated_by: "CODER"
 description: "Release 0.7.8 verification found invalid Bash input interpolation, deletion of the installed CLI by download cleanup, and a setup-agentplane version tag still naming the previous checksum bundle. Repair the existing action renderer and prove installation remains usable in a subsequent workflow step. Add an explicit opt-in hosted setup-tag repair that uses a compare-and-swap Git push after verified main publication. Canonical recovery must use the current tested renderer for the qualified historical payload. Keep normal tag mismatch fail-closed behavior, the release source SHA, AgentPlane release tag, npm packages, signed archive checksums and unrelated channels unchanged. External publication is a separately authorized operator action after integration."
 sections:
   Summary: "Repair setup-agentplane input handling and installation lifetime, then enable explicit hosted setup-tag recovery for the qualified historical release. Source repair is local; publication and final release evidence remain separately authorized operator work."
@@ -680,7 +706,45 @@ extensions:
       schema_version: 1
       task_id: "202609070819-M065D1"
     event_cursor: 9
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609070819-M065D1"
+            - "git:d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+          check_id: "action-install"
+          command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T08:42:32.616Z"
+          repository_snapshot_digest: "sha256:faa3cd2741b74108e126b3093013b5e763c83c556402033d6d44548ac79cbd2a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609070819-M065D1"
+            - "git:d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+          check_id: "publish-recovery"
+          command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T08:42:32.616Z"
+          repository_snapshot_digest: "sha256:faa3cd2741b74108e126b3093013b5e763c83c556402033d6d44548ac79cbd2a"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609070819-M065D1"
+            - "git:d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+          check_id: "workflow-lint"
+          command_identity: "bun run workflows:lint"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T08:42:32.616Z"
+          repository_snapshot_digest: "sha256:faa3cd2741b74108e126b3093013b5e763c83c556402033d6d44548ac79cbd2a"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609070819-M065D1"
     intent:
       acceptance_criteria:
@@ -706,12 +770,12 @@ extensions:
 
         Release 0.7.8 verification found invalid Bash input interpolation, deletion of the installed CLI by download cleanup, and a setup-agentplane version tag still naming the previous checksum bundle. Repair the existing action renderer and prove installation remains usable in a subsequent workflow step. Add an explicit opt-in hosted setup-tag repair that uses a compare-and-swap Git push after verified main publication. Canonical recovery must use the current tested renderer for the qualified historical payload. Keep normal tag mismatch fail-closed behavior, the release source SHA, AgentPlane release tag, npm packages, signed archive checksums and unrelated channels unchanged. External publication is a separately authorized operator action after integration.
       task_id: "202609070819-M065D1"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-07T08:42:33.547Z"
+    updated_at: "2026-09-07T08:44:29.010Z"
     work_items:
       repair-setup-install-and-recovery:
         attempt: 1
@@ -1032,11 +1096,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609070819-M065D1"
+      legacy-finish:202609070819-M065D1:2026-09-07T08:42:32.616Z:d2a97545f436acf2bab742d4ae12ea3ac2771b2e:
+        aggregate_digest: "sha256:ea5e89ae84e5d8dbd628e6326ce5ebb58f36458d65b6053a5e67ef9dc2fcc425"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T08:44:29.010Z"
+          cause_refs:
+            - "task-verification:202609070819-M065D1"
+            - "git:d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a19963aed56c58c58a865bbf"
+          mutation_id: "legacy-finish:202609070819-M065D1:2026-09-07T08:42:32.616Z:d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+          plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+          plan_revision: 1
+          repository_fingerprint: "sha256:faa3cd2741b74108e126b3093013b5e763c83c556402033d6d44548ac79cbd2a"
+          schema_version: 1
+          task_id: "202609070819-M065D1"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609070819-M065D1:2026-09-07T08:42:32.616Z:d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609070819-M065D1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+    message: "🚧 M065D1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "b99c7d87348d22b54cb2a36445fd94cddd732bf5"
@@ -1187,3 +1277,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e0d676d0220d10db905bb16ebe81d8c89536c2b65845729edc891f7497899b8c`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T08:44:29.010Z`
