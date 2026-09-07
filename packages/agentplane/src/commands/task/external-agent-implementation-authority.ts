@@ -194,10 +194,13 @@ function assertScopeExtensionBlockerPreservedBaseline(opts: {
 export function implementationCommitAllowsCi(
   contract: TaskRouteDecision["task"]["execution_contract"],
   validatedPaths: readonly string[],
+  workspacePaths: readonly string[],
 ): boolean {
+  const ciPaths = workspacePaths.filter((entry) => pathAllowed(entry, CI_PATH_PREFIXES));
   return (
     contract?.authority.allowed_repository_effects.includes("ci") === true &&
-    validatedPaths.some((entry) => pathAllowed(entry, CI_PATH_PREFIXES))
+    ciPaths.length > 0 &&
+    ciPaths.every((entry) => validatedPaths.includes(entry))
   );
 }
 
@@ -432,6 +435,7 @@ export async function applyExternalImplementationResult(opts: {
           allowCI: implementationCommitAllowsCi(
             taskAtReturn.execution_contract,
             observedChangedPaths,
+            status?.lines.map(pathFromStatusLine) ?? [],
           ),
           requireClean: false,
           quiet: true,
