@@ -1,0 +1,441 @@
+diff --git a/.agentplane/agents/PLANNER.json b/.agentplane/agents/PLANNER.json
+index 23ee7a0ed..157ec7638 100644
+--- a/.agentplane/agents/PLANNER.json
++++ b/.agentplane/agents/PLANNER.json
+@@ -1,24 +1,23 @@
+ {
+   "id": "PLANNER",
+-  "role": "Own the task backlog and Verify Steps via agentplane, keeping every approved plan refined into the smallest valid task graph.",
+-  "description": "Converts goals into atomic single-owner leaf tasks with PLANNER-authored acceptance contracts, minimal dependency edges, and no bookkeeping-only noise.",
++  "role": "Prepare a semantic plan for one user Task.",
++  "description": "Decompose the requested outcome into the smallest valid graph of internal WorkItems.",
+   "inputs": {
+     "high.level.goal": "High-level goals, features, bugs, or refactors to plan.",
+     "planning.constraints": "Optional constraints such as deadlines, priority, components, requested outcome, tags, touched areas, and blueprint summary."
+   },
+   "outputs": {
+-    "tasks.updated": "Updated tasks in the canonical backend reflecting priorities, statuses, and PLANNER-owned Verify Steps.",
+-    "backlog.view": "A clear backlog view so humans can review current state quickly.",
+-    "structured.reply": "A structured reply listing every touched task ID, its new status, rationale, and any deferred follow-up work."
++    "task.plan.proposal": "A TaskPlanProposal with internal WorkItems, acceptance criteria, validation, and unresolved questions.",
++    "structured.reply": "A typed semantic result for the supplied work order."
+   },
+   "permissions": {
+-    "task.management": "Manage tasks via `ap` and follow shared workflow rules in AGENTS.md and `ap quickstart` / `ap role <ROLE>` output."
++    "repository.read": "Inspect the supplied context. Remain read-only."
+   },
+   "workflow": {
+-    "goal": "Goal: map an approved objective to the smallest valid executable task graph and author concrete Verify Steps for each executable leaf from requested outcome, tags, touched areas, and blueprint summary.",
+-    "success.criteria": "Success criteria: no duplicate open task exists; every unresolved draft node is classified as atomic, composite, ambiguous, or capability_gap; composite nodes are split until leaves have one owner, a real deliverable boundary, explicit depends_on, valid title/description/tags, and concrete Verify Steps; each Verify Steps section is acceptance-oriented, bounded, command-safe, and not merely a weak generic DoD; bookkeeping-only work stays inside the executable leaf.",
+-    "constraints": "Constraints: create and update tasks through `ap`; prefer one task when one owner and one verification boundary satisfy the goal; use the route oracle for branch_pr handoffs; split only at real owner, deliverable, dependency, or verification boundaries; assign existing agent IDs and schedule CREATOR only for a measured capability gap; keep observations task-local; replace deterministic Verify Steps scaffolds with acceptance-specific checks.",
+-    "stop.rules": "Stop rules: ask one narrow question only when the task graph would otherwise be invalid; stop on missing approval, unresolved owner/dependency boundaries, unsafe scope drift, cyclic or duplicate dependency edges, or acceptance criteria that cannot be made concrete.",
+-    "output": "Output: task IDs, owners, status, dependency edges, Verify Steps, rationale for recursive split/merge decisions, atomicity notes for each leaf, and deferred follow-up work."
++    "goal": "Goal: produce one TaskPlanProposal for the supplied user Task.",
++    "success.criteria": "Success criteria: each WorkItem has one owner, a concrete output, explicit dependencies, scope roots, acceptance criteria, validation, context, risk, capabilities, and resource claims. The graph has no duplicate outputs or dependency cycles.",
++    "constraints": "Constraints: use one WorkItem when one owner and one verification boundary satisfy the goal. Split only at a real owner, output, dependency, or verification boundary. Keep bookkeeping inside its WorkItem. Use the supported validation capability. Bind deterministic checks to declared Task checks. Copy the supplied repository snapshot exactly into planning_baseline. Do not create top-level tasks. Do not mutate task lifecycle state.",
++    "stop.rules": "Stop rules: preserve material questions as unresolved. If a missing answer would invalidate the graph, ask one narrow question. Stop on missing approval, unsafe scope drift, unresolved ownership, or acceptance criteria that cannot be made concrete.",
++    "output": "Output: return the TaskPlanProposal through the declared typed result. Include assumptions, unresolved questions, and risk notes."
+   }
+ }
+diff --git a/packages/agentplane/assets/agents/PLANNER.json b/packages/agentplane/assets/agents/PLANNER.json
+index 23ee7a0ed..157ec7638 100644
+--- a/packages/agentplane/assets/agents/PLANNER.json
++++ b/packages/agentplane/assets/agents/PLANNER.json
+@@ -1,24 +1,23 @@
+ {
+   "id": "PLANNER",
+-  "role": "Own the task backlog and Verify Steps via agentplane, keeping every approved plan refined into the smallest valid task graph.",
+-  "description": "Converts goals into atomic single-owner leaf tasks with PLANNER-authored acceptance contracts, minimal dependency edges, and no bookkeeping-only noise.",
++  "role": "Prepare a semantic plan for one user Task.",
++  "description": "Decompose the requested outcome into the smallest valid graph of internal WorkItems.",
+   "inputs": {
+     "high.level.goal": "High-level goals, features, bugs, or refactors to plan.",
+     "planning.constraints": "Optional constraints such as deadlines, priority, components, requested outcome, tags, touched areas, and blueprint summary."
+   },
+   "outputs": {
+-    "tasks.updated": "Updated tasks in the canonical backend reflecting priorities, statuses, and PLANNER-owned Verify Steps.",
+-    "backlog.view": "A clear backlog view so humans can review current state quickly.",
+-    "structured.reply": "A structured reply listing every touched task ID, its new status, rationale, and any deferred follow-up work."
++    "task.plan.proposal": "A TaskPlanProposal with internal WorkItems, acceptance criteria, validation, and unresolved questions.",
++    "structured.reply": "A typed semantic result for the supplied work order."
+   },
+   "permissions": {
+-    "task.management": "Manage tasks via `ap` and follow shared workflow rules in AGENTS.md and `ap quickstart` / `ap role <ROLE>` output."
++    "repository.read": "Inspect the supplied context. Remain read-only."
+   },
+   "workflow": {
+-    "goal": "Goal: map an approved objective to the smallest valid executable task graph and author concrete Verify Steps for each executable leaf from requested outcome, tags, touched areas, and blueprint summary.",
+-    "success.criteria": "Success criteria: no duplicate open task exists; every unresolved draft node is classified as atomic, composite, ambiguous, or capability_gap; composite nodes are split until leaves have one owner, a real deliverable boundary, explicit depends_on, valid title/description/tags, and concrete Verify Steps; each Verify Steps section is acceptance-oriented, bounded, command-safe, and not merely a weak generic DoD; bookkeeping-only work stays inside the executable leaf.",
+-    "constraints": "Constraints: create and update tasks through `ap`; prefer one task when one owner and one verification boundary satisfy the goal; use the route oracle for branch_pr handoffs; split only at real owner, deliverable, dependency, or verification boundaries; assign existing agent IDs and schedule CREATOR only for a measured capability gap; keep observations task-local; replace deterministic Verify Steps scaffolds with acceptance-specific checks.",
+-    "stop.rules": "Stop rules: ask one narrow question only when the task graph would otherwise be invalid; stop on missing approval, unresolved owner/dependency boundaries, unsafe scope drift, cyclic or duplicate dependency edges, or acceptance criteria that cannot be made concrete.",
+-    "output": "Output: task IDs, owners, status, dependency edges, Verify Steps, rationale for recursive split/merge decisions, atomicity notes for each leaf, and deferred follow-up work."
++    "goal": "Goal: produce one TaskPlanProposal for the supplied user Task.",
++    "success.criteria": "Success criteria: each WorkItem has one owner, a concrete output, explicit dependencies, scope roots, acceptance criteria, validation, context, risk, capabilities, and resource claims. The graph has no duplicate outputs or dependency cycles.",
++    "constraints": "Constraints: use one WorkItem when one owner and one verification boundary satisfy the goal. Split only at a real owner, output, dependency, or verification boundary. Keep bookkeeping inside its WorkItem. Use the supported validation capability. Bind deterministic checks to declared Task checks. Copy the supplied repository snapshot exactly into planning_baseline. Do not create top-level tasks. Do not mutate task lifecycle state.",
++    "stop.rules": "Stop rules: preserve material questions as unresolved. If a missing answer would invalidate the graph, ask one narrow question. Stop on missing approval, unsafe scope drift, unresolved ownership, or acceptance criteria that cannot be made concrete.",
++    "output": "Output: return the TaskPlanProposal through the declared typed result. Include assumptions, unresolved questions, and risk notes."
+   }
+ }
+diff --git a/packages/agentplane/src/agents/agents-template.test.ts b/packages/agentplane/src/agents/agents-template.test.ts
+index 376a72a01..d40bee74d 100644
+--- a/packages/agentplane/src/agents/agents-template.test.ts
++++ b/packages/agentplane/src/agents/agents-template.test.ts
+@@ -193,7 +193,11 @@ describe("agents-template", () => {
+       const repoPath = path.join(repoAgentsDir, entry);
+       const repoText = await readFile(repoPath, "utf8");
+       expect(repoText).not.toContain(LOCAL_CLI);
+-      expect(repoText).toMatch(compactCommandRe);
++      if (entry === "PLANNER.json") {
++        expect(repoText).not.toMatch(/`(?:ap|agentplane) task /u);
++      } else {
++        expect(repoText).toMatch(compactCommandRe);
++      }
+     }
+   });
+ 
+@@ -318,3 +322,24 @@ describe("agents-template", () => {
+     expect(filterAgentsByWorkflow(template, "direct")).toBe(`${template}\n`);
+   });
+ });
++
++it("keeps PLANNER scoped to a read-only proposal with internal WorkItems", async () => {
++  const text = await readFile(
++    path.join(process.cwd(), "packages/agentplane/assets/agents/PLANNER.json"),
++    "utf8",
++  );
++  const planner = JSON.parse(text) as {
++    role: string;
++    outputs: Record<string, string>;
++    permissions: Record<string, string>;
++    workflow: Record<string, string>;
++  };
++  expect(planner.role).toContain("one user Task");
++  expect(planner.outputs["task.plan.proposal"]).toContain("TaskPlanProposal");
++  expect(planner.permissions).toEqual({
++    "repository.read": "Inspect the supplied context. Remain read-only.",
++  });
++  expect(planner.workflow.constraints).toContain("Do not create top-level tasks.");
++  expect(planner.workflow.constraints).toContain("Do not mutate task lifecycle state.");
++  expect(text).not.toMatch(/task.management|tasks.updated|backlog.view|ap quickstart/u);
++});
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.test.ts b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+index fdca1de03..3b0e3abd1 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.test.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.test.ts
+@@ -454,3 +454,55 @@ describe("compact agent action packet", () => {
+     );
+   });
+ });
++
++it.each([
++  "planning",
++  "implementation",
++  "implementation_rework",
++  "quality_review",
++  "verification",
++  "task_worktree_resolution",
++] as const)("delivers the language contract for the external %s episode", (purpose) => {
++  const packet = buildAgentActionPacket({
++    decision: decision(
++      step({
++        kind: "agent_episode",
++        episode: {
++          purpose,
++          role: "CODER",
++          taskId: TASK_ID,
++          objective: "Preserve Пример --flag=exact.",
++        },
++      }),
++    ),
++    work_order: workOrder(),
++  });
++  expect(packet.action.instruction).toContain("simple technical English");
++  expect(packet.action.instruction).toContain(
++    "Write one action, condition, or constraint in each sentence.",
++  );
++  expect(packet.action.instruction).toContain(
++    "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
++  );
++  expect(packet.authority.network).toBe("deny");
++  expect(packet.stop.reason).toBe("semantic_boundary");
++});
++
++it("preserves the language contract on the managed-runner continuation route", () => {
++  const packet = buildAgentActionPacket({
++    decision: decision(
++      step({
++        kind: "cli_operation",
++        operation: { id: "runner.follow", params: { mode: "run" } },
++      }),
++    ),
++    work_order: workOrder(),
++  });
++  expect(packet.action.kind).toBe("agent_episode");
++  expect(packet.action.instruction).toContain("simple technical English");
++  expect(packet.action.instruction).toContain(
++    "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
++  );
++  expect(packet.authority.network).toBe("deny");
++  expect(packet.stop).toEqual({ reason: "semantic_boundary", resume: "request_fresh_packet" });
++});
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index 0b9b69886..633911e67 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -4,6 +4,7 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ import { createHumanDecisionTicket, type HumanDecisionTicket } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { AGENT_INSTRUCTION_LANGUAGE } from "../../runner/context/semantic-prompt-projection.js";
+ import { userApprovalReceiptRequestForStep } from "./user-approval-receipt.js";
+ 
+ // The packet stays compact, but must fit a normal exchange envelope plus a typed
+@@ -117,22 +118,22 @@ function semanticInstruction(
+ ): string {
+   switch (purpose) {
+     case "planning": {
+-      return "Prepare a task-specific structured TaskPlanProposal in result.task_plan_proposal. Copy work_order.planning_context.repository_snapshot exactly into planning_baseline. Decompose the one user Task into internal WorkItems with dependencies, typed outputs, scope, acceptance, validation, context, risk, capabilities, and resource claims; do not create top-level tasks. Use the supported validation capability from the work order and bind deterministic checks to the declared Task checks. Keep material questions unresolved rather than guessing. Also, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale; do not infer them from title keywords.";
++      return "Prepare a task-specific structured TaskPlanProposal in result.task_plan_proposal. Copy work_order.planning_context.repository_snapshot exactly into planning_baseline. Decompose the one user Task into internal WorkItems with dependencies, typed outputs, scope, acceptance, validation, context, risk, capabilities, and resource claims. Do not create top-level tasks. Use the supported validation capability from the work order. Bind deterministic checks to the declared Task checks. Keep material questions unresolved rather than guessing. If intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically. Declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale. Do not infer these values from title keywords.";
+     }
+     case "implementation": {
+-      return "Perform the scoped implementation from the prepared context and report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact scope, output, acceptance, risk, effect, dependency, architecture, and local-operation deltas.";
++      return "Perform the scoped implementation from the prepared context. Report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact scope, output, acceptance, risk, effect, dependency, architecture, and local-operation deltas.";
+     }
+     case "implementation_rework": {
+-      return "Address the scoped evaluator findings from the prepared context and report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact deltas.";
++      return "Address the scoped evaluator findings from the prepared context. Report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact deltas.";
+     }
+     case "quality_review": {
+-      return "Assess the scoped result against the prepared acceptance evidence and report a verdict.";
++      return "Assess the scoped result against the prepared acceptance evidence. Report a verdict.";
+     }
+     case "task_worktree_resolution": {
+-      return "Resolve the scoped task workspace conflict described by the prepared context and report the outcome.";
++      return "Resolve the scoped task workspace conflict described by the prepared context. Report the outcome.";
+     }
+     case "verification": {
+-      return "Assess the scoped result against the prepared checks and report an evidence-backed outcome.";
++      return "Assess the scoped result against the prepared checks. Report an evidence-backed outcome.";
+     }
+   }
+ }
+@@ -255,7 +256,10 @@ function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action
+   const step = decision.workflowStep;
+   if (step.kind === "agent_episode") {
+     return {
+-      action: { kind: "agent_episode", instruction: semanticInstruction(step.episode.purpose) },
++      action: {
++        kind: "agent_episode",
++        instruction: `${semanticInstruction(step.episode.purpose)}\n${AGENT_INSTRUCTION_LANGUAGE}`,
++      },
+       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
+     };
+   }
+@@ -267,8 +271,7 @@ function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action
+     return {
+       action: {
+         kind: "agent_episode",
+-        instruction:
+-          "Perform the scoped semantic task from the prepared context and report the outcome.",
++        instruction: `Perform the scoped semantic task from the prepared context. Report the outcome.\n${AGENT_INSTRUCTION_LANGUAGE}`,
+       },
+       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
+     };
+diff --git a/packages/agentplane/src/runner/context/base-prompts.test.ts b/packages/agentplane/src/runner/context/base-prompts.test.ts
+index 6c3e910af..536c9d7a6 100644
+--- a/packages/agentplane/src/runner/context/base-prompts.test.ts
++++ b/packages/agentplane/src/runner/context/base-prompts.test.ts
+@@ -1,4 +1,4 @@
+-import { mkdir, mkdtemp, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
++import { readFile, mkdir, mkdtemp, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ 
+@@ -20,6 +20,8 @@ import {
+   runnerPromptBlocksToModuleGraph,
+ } from "./base-prompts.js";
+ 
++import { AGENT_INSTRUCTION_LANGUAGE } from "./semantic-prompt-projection.js";
++
+ const tempDirs = new Set<string>();
+ 
+ async function makeTempRepo(): Promise<string> {
+@@ -874,3 +876,22 @@ describe("collectRunnerBasePrompts", () => {
+     );
+   });
+ });
++
++it("keeps the runtime language contract aligned with the bundled gateway", async () => {
++  const gateway = await readFile(
++    path.join(process.cwd(), "packages/agentplane/assets/AGENTS.md"),
++    "utf8",
++  );
++  const language = gateway
++    .split("### Agent instruction language\n")[1]!
++    .split("<!-- /ap:fragment -->")[0]!
++    .trim()
++    .split("\n")
++    .filter(Boolean)
++    .map((line) => line.replace(/^- /u, ""))
++    .join("\n");
++  expect(AGENT_INSTRUCTION_LANGUAGE).toBe(language);
++  expect(() =>
++    assertSemanticProviderPromptHasNoProcessChoreography({ prompt: AGENT_INSTRUCTION_LANGUAGE }),
++  ).not.toThrow();
++});
+diff --git a/packages/agentplane/src/runner/context/semantic-prompt-projection.ts b/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
+index c8d865a79..7460c939e 100644
+--- a/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
++++ b/packages/agentplane/src/runner/context/semantic-prompt-projection.ts
+@@ -11,6 +11,17 @@ import { readContainedStableTextNoFollow } from "../../shared/contained-stable-f
+ import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
+ import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
+ 
++// Keep this provider contract aligned with the gateway language policy.
++export const AGENT_INSTRUCTION_LANGUAGE = [
++  "Write framework-owned agent-to-agent instructions in simple technical English.",
++  "Write one action, condition, or constraint in each sentence.",
++  "Name the actor if the actor is not clear.",
++  "Put a condition before the action that depends on it.",
++  "Use one term for one concept.",
++  "Do not use idioms, metaphors, or vague references.",
++  "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
++].join("\n");
++
+ type ProcessChoreographyMatch = {
+   id: string;
+   match: string;
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index e698e648a..da26f3c40 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -264,3 +264,32 @@ describe("runner bootstrap result examples", () => {
+     ).toThrow(InvalidRunnerResultManifestError);
+   });
+ });
++
++it("reduces fixed prompt baselines while preserving semantic inputs", () => {
++  for (const role of ["EXECUTOR", "EVALUATOR"] as const) {
++    const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
++    bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
++    bundle.work_order.role = role;
++    const bootstrap = renderTaskRunnerBootstrap(bundle);
++    // Measured before compaction on ca07204ee with these fixed fixtures.
++    const baseline = role === "EXECUTOR" ? 8590 : 9196;
++    expect(Buffer.byteLength(bootstrap, "utf8")).toBeLessThan(baseline);
++    expect(bootstrap).toContain("simple technical English");
++    expect(bootstrap).toContain(
++      "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
++    );
++    expect(bootstrap).toContain(
++      "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
++    );
++    expect(bootstrap).toContain(
++      "Stop and return a blocked semantic result when required context is missing or stale.",
++    );
++    for (const raw of extractResultExamples(bootstrap).values()) {
++      expect(() => parseRunnerResultManifestText(raw, "example.json")).not.toThrow();
++      expect(raw).not.toMatch(/legacy claims|release image|schemas:check/u);
++    }
++    const literal = "Preserve Пример --flag=exact and `scope/path.ts` exactly.";
++    bundle.work_order.task.objective = literal;
++    expect(renderTaskRunnerBootstrap(bundle)).toContain(literal);
++  }
++});
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index 08f388d2a..5093a1414 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -1,9 +1,12 @@
+ import {
+   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
+-  buildAgentSemanticResultV2ValidFixtures,
++  type AgentSemanticResult,
+ } from "@agentplaneorg/core/schemas";
+ 
+-import { semanticTextHasProcessChoreography } from "../context/semantic-prompt-projection.js";
++import {
++  AGENT_INSTRUCTION_LANGUAGE,
++  semanticTextHasProcessChoreography,
++} from "../context/semantic-prompt-projection.js";
+ import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
+ 
+ type EvaluatorSkepticismLevel = NonNullable<
+@@ -64,9 +67,45 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
+ }
+ 
+ function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
+-  const fixtures = buildAgentSemanticResultV2ValidFixtures(workOrderId);
++  const base = {
++    schema_version: 2 as const,
++    kind: "agent_semantic_result" as const,
++    work_order_id: workOrderId,
++    findings: [],
++    uncertainty: [],
++  };
++  const examples: Record<
++    (typeof AGENT_SEMANTIC_RESULT_STATUS_VALUES)[number],
++    AgentSemanticResult
++  > = {
++    completed: { ...base, status: "completed", summary: "Describe the completed outcome." },
++    blocked: {
++      ...base,
++      status: "blocked",
++      summary: "Describe the blocker.",
++      blocker: {
++        summary: "State the unmet requirement.",
++        recommended_action: "State the required action.",
++      },
++    },
++    needs_context: {
++      ...base,
++      status: "needs_context",
++      summary: "State the context gap.",
++      knowledge_request: {
++        schema_version: 1,
++        kind: "knowledge_request",
++        scope: "task_context",
++        query: "Name the missing context.",
++        reason: "Explain why it is required.",
++        desired_kind: "any",
++        blocking: true,
++      },
++    },
++    failed: { ...base, status: "failed", summary: "Describe the failed attempt." },
++  };
+   return AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(
+-    (status) => `- ${status}: ${JSON.stringify(fixtures[status])}`,
++    (status) => `- ${status}: ${JSON.stringify(examples[status])}`,
+   );
+ }
+ 
+@@ -208,11 +247,9 @@ export function renderTaskRunnerBootstrap(
+     ...(codexGoalLine ? [codexGoalLine, ""] : []),
+     "# agentplane runner bootstrap",
+     "",
+-    "Work only on the semantic objective and authority projected below.",
+     "- Use only the supplied context, writable roots, and declared tools.",
+     "- Do not inspect internal orchestration artifacts or invoke undeclared interfaces.",
+     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
+-    "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
+     "",
+     `- target: ${targetLabel}`,
+     `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
+@@ -224,6 +261,8 @@ export function renderTaskRunnerBootstrap(
+     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
+     "Treat protected_paths as forbidden even when the native sandbox permits them.",
+     "",
++    AGENT_INSTRUCTION_LANGUAGE,
++    "",
+     "## Semantic policy and role context",
+     "",
+     ...renderSemanticPromptProjectionLines(bundle),
+@@ -254,7 +293,7 @@ export function renderTaskRunnerBootstrap(
+         ]
+       : []),
+     "Return one AgentSemanticResult v2 object through the configured result channel.",
+-    "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
++    "Select the example matching the semantic outcome. Keep work_order_id unchanged. Replace placeholder text with observed facts. Include claimed_checks when checks were attempted.",
+     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
+   ].join("\n");
+ }

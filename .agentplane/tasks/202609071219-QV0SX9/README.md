@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: "host_user_decision=sha256:ee0369e1e1369eedf4614ac785371d252dcf6f9d6d827933528cff0f98ffbe33"
 verification:
   state: "ok"
-  updated_at: "2026-09-07T14:03:52.599Z"
+  updated_at: "2026-09-07T14:13:28.349Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -333,8 +333,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-09-07T14:13:28.349Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-07T14:03:54.104Z"
+doc_updated_at: "2026-09-07T14:13:29.526Z"
 doc_updated_by: "SUPERVISOR"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
@@ -361,7 +367,7 @@ sections:
     1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.
     2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.
     3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.
-    4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.
+    4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR remains below 8590 bytes and EVALUATOR remains below 9196 bytes. Final measured sizes are 7823 and 8429 bytes. Report bytes only.
     5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.
     6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations.
   Verification: |-
@@ -449,6 +455,96 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f, input_digest=sha256:4360bfb80c3409aba726ec46afc3dde1bff093e23c7707abf7807cd44a296a69
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+    - old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T14:13:28.349Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:55f75ddd2e03c3936c282d4ccf587b528d0586fbb1384034b0bdb1150cf608b7, input_digest=sha256:e6c49fc52a70094cc935c1a184f595810ed52cf6ebd6d4ca62315f4634578bde
 
     Details:
 
@@ -833,7 +929,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 17
+    event_cursor: 19
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -1100,9 +1196,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 20
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-07T14:03:54.102Z"
+    updated_at: "2026-09-07T14:13:29.524Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1243,6 +1339,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609071219-QV0SX9"
+      compatibility:sha256:4bb96a8aa1cc90158dec0518aaaa32222ae33203b412cc54285d6bb836229b8c:
+        aggregate_digest: "sha256:43105a3ad34e9263d5ddc9de6fa4bb717a6521017ab4931d46c200c05ab9052c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:13:29.524Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_21c5f74795d1bc5412e055e0"
+          mutation_id: "compatibility:sha256:4bb96a8aa1cc90158dec0518aaaa32222ae33203b412cc54285d6bb836229b8c"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4bb96a8aa1cc90158dec0518aaaa32222ae33203b412cc54285d6bb836229b8c"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
       compatibility:sha256:60e107a98b9cd1cbd591190abea982d9345035b45ba1b66107d4292d39941aba:
         aggregate_digest: "sha256:fbed11a06020bfd27cfb40474d6c7208a35d55c4173b2eefd13e5e3fe91e6959"
         event:
@@ -1265,6 +1385,30 @@ extensions:
         mutation_id: "compatibility:sha256:60e107a98b9cd1cbd591190abea982d9345035b45ba1b66107d4292d39941aba"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:78e57ff859b0015e93d469f733ba698a6a8519a0c58da80e48bf5d14de5cc4f8:
+        aggregate_digest: "sha256:faec5c6f6bc1d43e34aacdbb6a89e862b25ed71e01028048592076bf20d37a47"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:04:49.409Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_75957e3cab7bb4d47437c045"
+          mutation_id: "compatibility:sha256:78e57ff859b0015e93d469f733ba698a6a8519a0c58da80e48bf5d14de5cc4f8"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:78e57ff859b0015e93d469f733ba698a6a8519a0c58da80e48bf5d14de5cc4f8"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:81b0d0042b77e674113abb0c586d4c9b24985ac98156020dce99bee1b46720c5:
@@ -1673,7 +1817,7 @@ External writes, commits, publication, and hosted integration require their own 
 1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.
 2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.
 3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.
-4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.
+4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR remains below 8590 bytes and EVALUATOR remains below 9196 bytes. Final measured sizes are 7823 and 8429 bytes. Report bytes only.
 5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.
 6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations.
 
@@ -1763,6 +1907,96 @@ Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f, input_digest=sha256:4360bfb80c3409aba726ec46afc3dde1bff093e23c7707abf7807cd44a296a69
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+- old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T14:13:28.349Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:55f75ddd2e03c3936c282d4ccf587b528d0586fbb1384034b0bdb1150cf608b7, input_digest=sha256:e6c49fc52a70094cc935c1a184f595810ed52cf6ebd6d4ca62315f4634578bde
 
 Details:
 
