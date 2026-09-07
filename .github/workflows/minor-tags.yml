@@ -1,0 +1,35 @@
+name: Update minor version tags
+
+on:
+  workflow_run:
+    workflows: [Publish release]
+    types: [completed]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: minor-version-tags
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      # Always execute trusted default-branch code, including for historical releases.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Test minor tag updates
+        run: node --test scripts/release/update-minor-tags.test.mjs
+      - name: Update and verify minor aliases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release/update-minor-tags.mjs --apply
