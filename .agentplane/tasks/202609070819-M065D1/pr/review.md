@@ -12,8 +12,8 @@ Created: 2026-09-07T08:23:50.856Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-07T08:23:50.856Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T08:23:50.856Z
+- Updated: 2026-09-07T08:34:19.665Z
 - Branch: task/202609070819-M065D1/keep-setup-agentplane-installations-usable-acros
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

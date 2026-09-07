@@ -4,7 +4,7 @@ title: "Keep setup-agentplane installations usable across workflow steps"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "USER"
   note: "Operator relay of the existing user authorization to fix everything required for release completion and explicit AGENTS permission override. The six-file setup-action and explicit CAS tag recovery plan is within that authorization. No host decision receipt is synthesized."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-07T08:42:32.616Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -108,7 +108,49 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -236,8 +278,14 @@ events:
     to: "DOING"
     note: "Implementation committed: d2a97545f436. CLI accepted one state-bound external-agent semantic result."
     commit: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+  -
+    type: "verify"
+    at: "2026-09-07T08:42:32.616Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-07T08:33:59.973Z"
+doc_updated_at: "2026-09-07T08:42:33.547Z"
 doc_updated_by: "SUPERVISOR"
 description: "Release 0.7.8 verification found invalid Bash input interpolation, deletion of the installed CLI by download cleanup, and a setup-agentplane version tag still naming the previous checksum bundle. Repair the existing action renderer and prove installation remains usable in a subsequent workflow step. Add an explicit opt-in hosted setup-tag repair that uses a compare-and-swap Git push after verified main publication. Canonical recovery must use the current tested renderer for the qualified historical payload. Keep normal tag mismatch fail-closed behavior, the release source SHA, AgentPlane release tag, npm packages, signed archive checksums and unrelated channels unchanged. External publication is a separately authorized operator action after integration."
 sections:
@@ -252,6 +300,114 @@ sections:
     5. After integration, recover the unchanged release SHA through hosted publication with explicit setup-tag repair, verify the published action in separate install and CLI steps, and refresh the existing release evidence PR. External validation remains outside this semantic repair.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T08:42:32.616Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:98eff9bcc2cc81dbae5eaaf40d64d909ecd2d2fbbe641cba2dc332e2f8589c3a, input_digest=sha256:7b0e9dac2686c533a67ebea164a44f8bbb93e52e0e19b086e5095ef0a662171f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070819-M065D1-keep-setup-agentplane-installations-usable-acros/.agentplane/tasks/202609070819-M065D1/blueprint/resolved-snapshot.json
+    - old_digest: f58ac25aa75e157577aff348de0d1803ca85a3fd2f428261887a3f2bab1ca358
+    - current_digest: f58ac25aa75e157577aff348de0d1803ca85a3fd2f428261887a3f2bab1ca358
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609070819-M065D1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609070819-M065D1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -491,7 +647,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070819-M065D1"
-    event_cursor: 7
+    event_cursor: 8
     final_validation: null
     id: "202609070819-M065D1"
     intent:
@@ -521,9 +677,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T08:34:12.308Z"
+    updated_at: "2026-09-07T08:42:33.545Z"
     work_items:
       repair-setup-install-and-recovery:
         attempt: 1
@@ -773,6 +929,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609070819-M065D1"
+      compatibility:sha256:fad086d763f12059538b7e4f5a69912d3497c27aec56e7282bd90b4ab6e0b46a:
+        aggregate_digest: "sha256:70af751739d8f881c1b4dbad10f3894834661e62170a8a8af79b97d9222bb9b1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T08:42:33.545Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_051f66b49f0a2c8ae41fb923"
+          mutation_id: "compatibility:sha256:fad086d763f12059538b7e4f5a69912d3497c27aec56e7282bd90b4ab6e0b46a"
+          plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070819-M065D1"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fad086d763f12059538b7e4f5a69912d3497c27aec56e7282bd90b4ab6e0b46a"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609070819-M065D1"
       external-result:work-order-202609070819-M065D1-executor-9710348c0770741dfe982a88:
         aggregate_digest: "sha256:8d7c3294b3d87d10cdeb8d3051e7e885d4ef4195a6637a25daf10efbc53e61b9"
         event:
@@ -835,6 +1015,114 @@ Propose one bounded setup-action and hosted recovery repair with executable inst
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T08:42:32.616Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:98eff9bcc2cc81dbae5eaaf40d64d909ecd2d2fbbe641cba2dc332e2f8589c3a, input_digest=sha256:7b0e9dac2686c533a67ebea164a44f8bbb93e52e0e19b086e5095ef0a662171f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609070819-M065D1 Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070819-M065D1-keep-setup-agentplane-installations-usable-acros/.agentplane/tasks/202609070819-M065D1/blueprint/resolved-snapshot.json
+- old_digest: f58ac25aa75e157577aff348de0d1803ca85a3fd2f428261887a3f2bab1ca358
+- current_digest: f58ac25aa75e157577aff348de0d1803ca85a3fd2f428261887a3f2bab1ca358
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609070819-M065D1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609070819-M065D1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
