@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: "Relayed existing explicit user authorization to fix every required release blocker and override AGENTS permission gates for correct release finalization. Approves the bounded two-file manual publication recovery plan; release payload and exact published SHA remain unchanged."
 verification:
   state: "ok"
-  updated_at: "2026-09-07T02:55:19.700Z"
+  updated_at: "2026-09-07T03:19:54.048Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -309,8 +309,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 44b9d295258f. CLI accepted one state-bound external-agent semantic result."
     commit: "44b9d295258f2ec638ab7afd397418d76d425595"
+  -
+    type: "verify"
+    at: "2026-09-07T03:19:54.048Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T03:11:39.125Z"
+doc_updated_at: "2026-09-07T03:19:55.816Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release."
 sections:
@@ -337,6 +343,96 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d1d6100be6c35fd95db9a9b8f49a2c496cddbcc41d87b0e344e9dedf1eeaf30, input_digest=sha256:f66f72d0c1c83824aa0a277878a7f89c5c6161902bd3232edcfc408ac4dea82f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070233-NG368H Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070233-NG368H-repair-manual-release-recovery-after-npm-publica/.agentplane/tasks/202609070233-NG368H/blueprint/resolved-snapshot.json
+    - old_digest: 4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea
+    - current_digest: 4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609070233-NG368H
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609070233-NG368H
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T03:19:54.048Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d1d6100be6c35fd95db9a9b8f49a2c496cddbcc41d87b0e344e9dedf1eeaf30, input_digest=sha256:54cab34aa433cbf5dfdc5abe5da9f211c3cfe910a16eec78442e8013df0ff1b1
 
     Details:
 
@@ -602,7 +698,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070233-NG368H"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609070233-NG368H"
     intent:
@@ -627,9 +723,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-07T03:11:39.074Z"
+    updated_at: "2026-09-07T03:19:55.815Z"
     work_items:
       recover-post-npm-publication:
         attempt: 1
@@ -869,6 +965,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609070233-NG368H"
+      compatibility:sha256:dc56189f8a8b32f2b3d96dee0ac8ff844c827e391c0e500c73f1770943df447b:
+        aggregate_digest: "sha256:279c234a286da702a20ec0c228487512e533e5cdd7cd954c31d636c80a5ae6b5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T03:19:55.815Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_34e2222d677c4c2ca1ee80b2"
+          mutation_id: "compatibility:sha256:dc56189f8a8b32f2b3d96dee0ac8ff844c827e391c0e500c73f1770943df447b"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dc56189f8a8b32f2b3d96dee0ac8ff844c827e391c0e500c73f1770943df447b"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609070233-NG368H"
       compatibility:sha256:e651daa3940158812d2ddb680aa604e7f03a6dc516b7f8d8debc3249efc65407:
         aggregate_digest: "sha256:bdd125454c1913a9304bd6a108e1042e2516e8caefc19692b87f26f1bdcbba4c"
         event:
@@ -1014,6 +1134,96 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d1d6100be6c35fd95db9a9b8f49a2c496cddbcc41d87b0e344e9dedf1eeaf30, input_digest=sha256:f66f72d0c1c83824aa0a277878a7f89c5c6161902bd3232edcfc408ac4dea82f
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070233-NG368H Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070233-NG368H Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070233-NG368H Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070233-NG368H Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070233-NG368H Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070233-NG368H Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070233-NG368H Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070233-NG368H Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070233-NG368H Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070233-NG368H Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070233-NG368H-repair-manual-release-recovery-after-npm-publica/.agentplane/tasks/202609070233-NG368H/blueprint/resolved-snapshot.json
+- old_digest: 4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea
+- current_digest: 4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609070233-NG368H
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609070233-NG368H
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T03:19:54.048Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:8d1d6100be6c35fd95db9a9b8f49a2c496cddbcc41d87b0e344e9dedf1eeaf30, input_digest=sha256:54cab34aa433cbf5dfdc5abe5da9f211c3cfe910a16eec78442e8013df0ff1b1
 
 Details:
 
