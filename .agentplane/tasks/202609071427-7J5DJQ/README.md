@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: "host_user_decision=sha256:603ba56307c6fb0d9158728c02b758b267a37ae8ba96ae044feffe2f1ee923cb"
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-07T15:47:19.733Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -62,6 +62,8 @@ execution_contract:
       - ".github/workflows"
       - "bun.lock"
       - "package.json"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/shared/sqlite-driver.test.ts"
       - "packages/agentplane/src/shared/sqlite-driver.ts"
       - "website/bun.lock"
@@ -73,6 +75,7 @@ execution_contract:
     rationale:
       - "Official runtime downloads and registry reads are necessary for qualification. No external writes or global runtime replacement are included."
       - "The user requested implementation of staged Bun adoption. A branch worktree isolates toolchain and CI changes from other active work."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts,packages/agentplane/src/commands/task/external-agent-implementation-authority.ts; repository_effects=source_code,tests"
     repository_effects:
       - "ci"
       - "dependencies"
@@ -87,6 +90,8 @@ execution_contract:
       - ".github/workflows"
       - "bun.lock"
       - "package.json"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/shared/sqlite-driver.test.ts"
       - "packages/agentplane/src/shared/sqlite-driver.ts"
       - "website/bun.lock"
@@ -118,6 +123,8 @@ execution_contract:
           - ".github/workflows"
           - "bun.lock"
           - "package.json"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/shared/sqlite-driver.test.ts"
           - "packages/agentplane/src/shared/sqlite-driver.ts"
           - "website/bun.lock"
@@ -142,11 +149,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1410426f3fe95d9825108fba241034e7cb1c0eac30f536f11d0a7e3b3cf36445"
+      digest: "sha256:15f5fc6462459e94a60d2a76a16fe28e8b59d83afb6753267d505a10df76f84c"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "effect_ci"
         - "effect_dependencies"
       execution_groups:
@@ -199,6 +207,12 @@ comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The prepared baseline preserves the complete tested Bun patch. The user explicitly requested fixing the CI autocommit blocker. Request bounded source and regression-test scope before modifying the supervisor. Recommended action: Use an explicit operator recovery route to record the tested, scoped implementation with the already approved CI authority, or separately authorize a narrow supervisor fix and regression test for propagation of approved CI write authority. Do not discard the patch, relax repository protections globally, or manually edit task lifecycle/projection artifacts. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts,packages/agentplane/src/commands/task/external-agent-implementation-authority.ts; repository effects=source_code,tests; request digest=sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0. Agentplane receipt: external-agent-blocker/tr_7a29fe3c16006a603914f056d1f8ba1a/sha256:c8b77be3cacf6bbb3a7f4fee1ea9996ba6861919c45fcdf8efce3b9ecb6ca10e/sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts, packages/agentplane/src/commands/task/external-agent-implementation-authority.ts; repository effects: source_code, tests."
 events:
   -
     type: "status"
@@ -207,10 +221,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T15:45:49.028Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The prepared baseline preserves the complete tested Bun patch. The user explicitly requested fixing the CI autocommit blocker. Request bounded source and regression-test scope before modifying the supervisor. Recommended action: Use an explicit operator recovery route to record the tested, scoped implementation with the already approved CI authority, or separately authorize a narrow supervisor fix and regression test for propagation of approved CI write authority. Do not discard the patch, relax repository protections globally, or manually edit task lifecycle/projection artifacts. Requested scope: roots=packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts,packages/agentplane/src/commands/task/external-agent-implementation-authority.ts; repository effects=source_code,tests; request digest=sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0. Agentplane receipt: external-agent-blocker/tr_7a29fe3c16006a603914f056d1f8ba1a/sha256:c8b77be3cacf6bbb3a7f4fee1ea9996ba6861919c45fcdf8efce3b9ecb6ca10e/sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0."
 doc_version: 3
-doc_updated_at: "2026-09-07T14:33:24.041Z"
-doc_updated_by: "CODER"
-description: "Implement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes."
+doc_updated_at: "2026-09-07T15:45:49.028Z"
+doc_updated_by: "SUPERVISOR"
+description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
     Upgrade Bun to 1.4.2 and qualify runtime migration boundaries
@@ -276,17 +297,35 @@ extensions:
     scope_digest: "sha256:7a2ad85e72c431b5480f685d2fd50d01e582e43c21aed2670db0e12305167190"
     status: "active"
     task_id: "202609071427-7J5DJQ"
+  agentplane.scope_extension_request:
+    applied_at: "2026-09-07T15:47:19.733Z"
+    applied_by: "USER"
+    blocker_state_fingerprint: "sha256:c8b77be3cacf6bbb3a7f4fee1ea9996ba6861919c45fcdf8efce3b9ecb6ca10e"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Propagate approved CI write authority to the automatic implementation commit and add positive and negative regression coverage. The user explicitly requested this blocker fix. Preserve the existing Bun patch and qualification evidence."
+      repository_effects:
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+    request_digest: "sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0"
+    schema_version: 1
+    status: "applied"
+    transition_id: "tr_7a29fe3c16006a603914f056d1f8ba1a"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-07T14:33:14.101Z"
-        approved_by: "HOST:local:USER"
-        approved_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+        approved_at: "2026-09-07T15:47:19.733Z"
+        approved_by: "USER"
+        approved_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
         policy_facts:
-          - "host_user_decision"
+          - "state_bound_scope_extension:sha256:02ef64f44fe332eb7b3700d01c5670d554ed9040443f2bd11062e92a9f5192f0"
         state: "approved"
-      created_at: "2026-09-07T14:29:57.130Z"
-      digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+      created_at: "2026-09-07T15:47:19.733Z"
+      digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
       proposal:
         assumptions:
           - "One coherent WorkItem contains sequential qualification stages."
@@ -457,15 +496,25 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: ".agentplane/cache/bun-qualification"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
               risk: "medium"
               scope_roots:
-                - "package.json"
-                - "bun.lock"
-                - "website/bun.lock"
-                - ".github/workflows"
-                - "packages/agentplane/src/shared/sqlite-driver.ts"
-                - "packages/agentplane/src/shared/sqlite-driver.test.ts"
                 - ".agentplane/cache/bun-qualification"
+                - ".github/workflows"
+                - "bun.lock"
+                - "package.json"
+                - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+                - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                - "packages/agentplane/src/shared/sqlite-driver.test.ts"
+                - "packages/agentplane/src/shared/sqlite-driver.ts"
+                - "website/bun.lock"
               validation:
                 checks:
                   -
@@ -512,10 +561,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:b2e55c8cc01f9f6d808236aa4b56314599e79d8c536cb4072f9e5247c371d0f1"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 2
+    event_cursor: 7
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -529,10 +578,248 @@ extensions:
       task_id: "202609071427-7J5DJQ"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 4
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-07T14:33:14.101Z"
+          approved_by: "HOST:local:USER"
+          approved_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-07T14:29:57.130Z"
+        digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+        proposal:
+          assumptions:
+            - "One coherent WorkItem contains sequential qualification stages."
+            - "Existing Node distribution and verification remain supported."
+            - "Host execution and non-host gaps must be distinguished in the report."
+            - "Global runtime changes and external writes are outside scope."
+          planning_baseline:
+            captured_at: "2026-09-07T14:27:30.559Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:b2e55c8cc01f9f6d808236aa4b56314599e79d8c536cb4072f9e5247c371d0f1"
+            dirty_paths:
+              - ".agentplane/tasks/202609071412-9Q9KQN/README.md"
+              - ".agentplane/tasks/202609071427-7J5DJQ/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "2639130b3181867f53fa37121783c67c9ef1d064"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "task-check"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "task-check"
+                description: "Pin Bun 1.4.2 in packageManager and all eight existing Bun workflows. Preserve Node engines, Vitest, tsup, dependency versions, historical baselines, and unrelated task artifacts."
+                id: "pins"
+                required: true
+              -
+                check_ids:
+                  - "task-check"
+                description: "Run bun install --frozen-lockfile --ignore-scripts at the root and for website under Bun 1.4.2. Prefer retaining both existing lockfiles. If migration is required, allow only lockfile format changes and prove dependency resolutions are unchanged."
+                id: "install"
+                required: true
+              -
+                check_ids:
+                  - "task-check"
+                description: "Exercise openSqliteDatabase under Node and Bun 1.4.2 for persisted reads/writes, commit, rollback, readonly rejection, and parameter/result behavior. Add a focused driver contract test using existing Vitest infrastructure. Correct only demonstrated adapter incompatibility and its stale Node-SQLite availability comment."
+                id: "sqlite"
+                required: true
+              -
+                check_ids:
+                  - "task-check"
+                description: "Run the existing process-supervision and SQLite-related suites with Node. Run representative existing suites with Vitest under Bun as a comparison. Report differences and skipped tests. Do not replace the default test runtime or remove skips without evidence. With the task-local Bun first on PATH, run bun run build, bun run release:bun:smoke, bun run workflows:lint, bun run ci:local:full, bun run docs:site:typecheck, and bun run docs:site:build:check. Run the compiled CLI smoke on the host. Inspect the five-target release contract; explicitly report unavailable non-host execution as a remaining qualification gap."
+                id: "qualification"
+                required: true
+              -
+                check_ids:
+                  - "task-check"
+                description: "Measure repeated warm CLI startup and representative test runs under Node and Bun with identical inputs. Record binary versions, commands, run counts, median durations, and output parity. Use the results to recommend the next migration step; no speedup is an acceptance requirement."
+                id: "comparison"
+                required: true
+              -
+                check_ids:
+                  - "task-check"
+                description: "Return the scoped patch and qualification evidence through the semantic result. Keep source verification and runtime comparison findings separate. Stop at AgentPlane approval or external-effect boundaries. Do not publish, push, merge, drop Node support, switch the distribution default, or migrate Vitest/tsup."
+                id: "scope"
+                required: true
+            evidence_fingerprint: "sha256:b2e55c8cc01f9f6d808236aa4b56314599e79d8c536cb4072f9e5247c371d0f1"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "task-check"
+                    description: "Pin Bun 1.4.2 in packageManager and all eight existing Bun workflows. Preserve Node engines, Vitest, tsup, dependency versions, historical baselines, and unrelated task artifacts."
+                    id: "pins"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-check"
+                    description: "Run bun install --frozen-lockfile --ignore-scripts at the root and for website under Bun 1.4.2. Prefer retaining both existing lockfiles. If migration is required, allow only lockfile format changes and prove dependency resolutions are unchanged."
+                    id: "install"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-check"
+                    description: "Exercise openSqliteDatabase under Node and Bun 1.4.2 for persisted reads/writes, commit, rollback, readonly rejection, and parameter/result behavior. Add a focused driver contract test using existing Vitest infrastructure. Correct only demonstrated adapter incompatibility and its stale Node-SQLite availability comment."
+                    id: "sqlite"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-check"
+                    description: "Run the existing process-supervision and SQLite-related suites with Node. Run representative existing suites with Vitest under Bun as a comparison. Report differences and skipped tests. Do not replace the default test runtime or remove skips without evidence. With the task-local Bun first on PATH, run bun run build, bun run release:bun:smoke, bun run workflows:lint, bun run ci:local:full, bun run docs:site:typecheck, and bun run docs:site:build:check. Run the compiled CLI smoke on the host. Inspect the five-target release contract; explicitly report unavailable non-host execution as a remaining qualification gap."
+                    id: "qualification"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-check"
+                    description: "Measure repeated warm CLI startup and representative test runs under Node and Bun with identical inputs. Record binary versions, commands, run counts, median durations, and output parity. Use the results to recommend the next migration step; no speedup is an acceptance requirement."
+                    id: "comparison"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-check"
+                    description: "Return the scoped patch and qualification evidence through the semantic result. Keep source verification and runtime comparison findings separate. Stop at AgentPlane approval or external-effect boundaries. Do not publish, push, merge, drop Node support, switch the distribution default, or migrate Vitest/tsup."
+                    id: "scope"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 100000
+                  optional_sources:
+                    - "packages/agentplane/src/runner/process-supervision.test.ts"
+                    - "packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.test.ts"
+                  required_sources:
+                    - "package.json"
+                    - "bun.lock"
+                    - "website/bun.lock"
+                    - ".github/workflows/ci.yml"
+                    - ".github/workflows/publish.yml"
+                    - "packages/agentplane/src/shared/sqlite-driver.ts"
+                    - "scripts/release/smoke-bun-compiled-cli.mjs"
+                    - "scripts/generate/generate-bun-cli-assets.mjs"
+                    - "vitest.workspace.ts"
+                  symbol_hints:
+                    - "openSqliteDatabase"
+                    - "resolvePreferredNodeExecutable"
+                depends_on: []
+                expected_outputs:
+                  - "repository_patch:bun-1.4.2"
+                  - "test_contract:sqlite-driver"
+                  - "qualification_report:node-bun-comparison"
+                id: "upgrade-and-qualify-bun"
+                objective: "Pin Bun 1.4.2 in packageManager and all eight existing Bun workflows. Preserve Node engines, Vitest, tsup, dependency versions, historical baselines, and unrelated task artifacts. Use a task-local Bun 1.4.2 binary and task-local download/cache directories. Verify the official binary identity. Do not replace the global Bun or the AgentPlane supervisor runtime. Permit only network reads for official Bun downloads and package installation. Run bun install --frozen-lockfile --ignore-scripts at the root and for website under Bun 1.4.2. Prefer retaining both existing lockfiles. If migration is required, allow only lockfile format changes and prove dependency resolutions are unchanged. Exercise openSqliteDatabase under Node and Bun 1.4.2 for persisted reads/writes, commit, rollback, readonly rejection, and parameter/result behavior. Add a focused driver contract test using existing Vitest infrastructure. Correct only demonstrated adapter incompatibility and its stale Node-SQLite availability comment. Run the existing process-supervision and SQLite-related suites with Node. Run representative existing suites with Vitest under Bun as a comparison. Report differences and skipped tests. Do not replace the default test runtime or remove skips without evidence. With the task-local Bun first on PATH, run bun run build, bun run release:bun:smoke, bun run workflows:lint, bun run ci:local:full, bun run docs:site:typecheck, and bun run docs:site:build:check. Run the compiled CLI smoke on the host. Inspect the five-target release contract; explicitly report unavailable non-host execution as a remaining qualification gap. Measure repeated warm CLI startup and representative test runs under Node and Bun with identical inputs. Record binary versions, commands, run counts, median durations, and output parity. Use the results to recommend the next migration step; no speedup is an acceptance requirement. Return the scoped patch and qualification evidence through the semantic result. Keep source verification and runtime comparison findings separate. Stop at AgentPlane approval or external-effect boundaries. Do not publish, push, merge, drop Node support, switch the distribution default, or migrate Vitest/tsup."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "bun.lock"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/bun.lock"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".github/workflows"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/shared/sqlite-driver.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/shared/sqlite-driver.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/cache/bun-qualification"
+                risk: "medium"
+                scope_roots:
+                  - "package.json"
+                  - "bun.lock"
+                  - "website/bun.lock"
+                  - ".github/workflows"
+                  - "packages/agentplane/src/shared/sqlite-driver.ts"
+                  - "packages/agentplane/src/shared/sqlite-driver.test.ts"
+                  - ".agentplane/cache/bun-qualification"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "task-check"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "task-check"
+                      description: "Pin Bun 1.4.2 in packageManager and all eight existing Bun workflows. Preserve Node engines, Vitest, tsup, dependency versions, historical baselines, and unrelated task artifacts."
+                      id: "pins"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-check"
+                      description: "Run bun install --frozen-lockfile --ignore-scripts at the root and for website under Bun 1.4.2. Prefer retaining both existing lockfiles. If migration is required, allow only lockfile format changes and prove dependency resolutions are unchanged."
+                      id: "install"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-check"
+                      description: "Exercise openSqliteDatabase under Node and Bun 1.4.2 for persisted reads/writes, commit, rollback, readonly rejection, and parameter/result behavior. Add a focused driver contract test using existing Vitest infrastructure. Correct only demonstrated adapter incompatibility and its stale Node-SQLite availability comment."
+                      id: "sqlite"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-check"
+                      description: "Run the existing process-supervision and SQLite-related suites with Node. Run representative existing suites with Vitest under Bun as a comparison. Report differences and skipped tests. Do not replace the default test runtime or remove skips without evidence. With the task-local Bun first on PATH, run bun run build, bun run release:bun:smoke, bun run workflows:lint, bun run ci:local:full, bun run docs:site:typecheck, and bun run docs:site:build:check. Run the compiled CLI smoke on the host. Inspect the five-target release contract; explicitly report unavailable non-host execution as a remaining qualification gap."
+                      id: "qualification"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-check"
+                      description: "Measure repeated warm CLI startup and representative test runs under Node and Bun with identical inputs. Record binary versions, commands, run counts, median durations, and output parity. Use the results to recommend the next migration step; no speedup is an acceptance requirement."
+                      id: "comparison"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-check"
+                      description: "Return the scoped patch and qualification evidence through the semantic result. Keep source verification and runtime comparison findings separate. Stop at AgentPlane approval or external-effect boundaries. Do not publish, push, merge, drop Node support, switch the distribution default, or migrate Vitest/tsup."
+                      id: "scope"
+                      required: true
+                  evidence_fingerprint: "sha256:b2e55c8cc01f9f6d808236aa4b56314599e79d8c536cb4072f9e5247c371d0f1"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-07T14:33:24.041Z"
+    updated_at: "2026-09-07T15:45:49.028Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 0
@@ -548,6 +835,126 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d:
+        aggregate_digest: "sha256:ac81b6a91b8ff9b4a221591b1fa3664b46fa4a48f23b6a50a7877bc1ab503d8d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:33:24.041Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_10d393385ccefd4539a2f455"
+          mutation_id: "compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d"
+          plan_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 4
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d"
+        next_revision: 5
+        previous_revision: 4
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:47e40aa014a3af1cec6a5ca23ba15b5ff61da155c473245c7e37fb414a7e5e6f:
+        aggregate_digest: "sha256:21f8ab4f334d1a5cb8980b895beee1bc62002f5f489f2f0cbabb82f91ba70cad"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:45:49.028Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_313c3a4a994b7d01fd3554d0"
+          mutation_id: "compatibility:sha256:47e40aa014a3af1cec6a5ca23ba15b5ff61da155c473245c7e37fb414a7e5e6f"
+          plan_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 5
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:47e40aa014a3af1cec6a5ca23ba15b5ff61da155c473245c7e37fb414a7e5e6f"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:674f824059ea62bf42bd57d915bdee1e97ab2585d17415d322a45b660f482b08:
+        aggregate_digest: "sha256:58791ed682d29ec1f5d3c945703198c9d1d354a75c9bf9597f06152a7bbae72b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:45:49.028Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_3a00d318bbcbbc1f429d5317"
+          mutation_id: "compatibility:sha256:674f824059ea62bf42bd57d915bdee1e97ab2585d17415d322a45b660f482b08"
+          plan_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:674f824059ea62bf42bd57d915bdee1e97ab2585d17415d322a45b660f482b08"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:8a987ea24fb7b2ee8be9db2391bce3afe184657ac4306f576b745eb3747d2102:
+        aggregate_digest: "sha256:9c98a00b549c7d02d702b4d828306588e7f1403b6f62b9219bcd94dc8914e9b7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:45:49.028Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_4812a6af1f0bc212ce690919"
+          mutation_id: "compatibility:sha256:8a987ea24fb7b2ee8be9db2391bce3afe184657ac4306f576b745eb3747d2102"
+          plan_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 6
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8a987ea24fb7b2ee8be9db2391bce3afe184657ac4306f576b745eb3747d2102"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:a3064513d6cb0e6b2538c1a0386ace845177d7f8ae81b1dca41f883df3b3977e:
+        aggregate_digest: "sha256:ea53f503fec0ac474bb9aa8c8884b3547809eabb2563856ee74b705c59088c89"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:45:49.028Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_11a2a3bfc58edf43d8a4499f"
+          mutation_id: "compatibility:sha256:a3064513d6cb0e6b2538c1a0386ace845177d7f8ae81b1dca41f883df3b3977e"
+          plan_digest: "sha256:057b9028d5f18c38d611ea57587221ad308833dc7e4edfa260df10b5c2d29eed"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 7
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a3064513d6cb0e6b2538c1a0386ace845177d7f8ae81b1dca41f883df3b3977e"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
       compatibility:sha256:c5981769177c387848dd2c282cef4a62550e312706948906c40f119a559b6851:
         aggregate_digest: "sha256:e69ed8736c560c2787c06a31b68e21ce74d9c7f723df2f61888e30a0c274c97c"
         event:

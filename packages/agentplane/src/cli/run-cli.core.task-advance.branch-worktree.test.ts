@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { cp, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -114,7 +114,11 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
   }
 }
 
-async function approveStructuredPlan(root: string, taskId: string): Promise<void> {
+async function approveStructuredPlan(
+  root: string,
+  taskId: string,
+  ci?: { allowed: boolean; scope: string },
+): Promise<void> {
   const packet = await readAgentPacket(root, taskId);
   expect(packet.authority.role).toBe("PLANNER");
   if (!packet.exchange) throw new Error("expected a planning exchange");
@@ -161,8 +165,8 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
           execution: {
             schema_version: 2,
             preferred_mode: "branch_pr",
-            scope_roots: ["."],
-            repository_effects: ["repository_write", "source_code"],
+            scope_roots: ci ? [ci.scope] : ["."],
+            repository_effects: ["repository_write", "source_code", ...(ci?.allowed ? ["ci"] : [])],
             external_effects: [],
             requirements_uncertainty: "bounded",
             implementation_uncertainty: "bounded",
@@ -183,7 +187,7 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
                 depends_on: [],
                 required_inputs: [],
                 expected_outputs: ["worktree-result"],
-                scope_roots: ["."],
+                scope_roots: ci ? [ci.scope] : ["."],
                 acceptance_criteria: [criterion],
                 validation,
                 context: {
@@ -249,6 +253,86 @@ async function approveStructuredPlan(root: string, taskId: string): Promise<void
 }
 
 describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
+  it.each([
+    { allowed: true, scope: ".github/workflows/allowed.yml", passes: true },
+    { allowed: false, scope: ".github/workflows/allowed.yml", passes: false },
+    { allowed: true, scope: ".github/workflows/other.yml", passes: false },
+  ])("commits workflow changes only with CI effect and path authority: %j", async (ci) => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const taskId = await createTask(root);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    const ignore = await readFile(path.join(root, ".gitignore"), "utf8");
+    await writeFile(
+      path.join(root, ".gitignore"),
+      `${ignore}\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n`,
+    );
+    await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed CI authority task"], { cwd: root });
+    await approveStructuredPlan(root, taskId, ci);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: persist approved CI plan"], { cwd: root });
+    const packet = await readAgentPacket(root, taskId);
+    if (!packet.exchange) throw new Error("missing implementation exchange");
+    const workOrder = JSON.parse(
+      await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
+    ) as AgentWorkOrderV2;
+    const checkout = workOrder.state_fingerprint.worktree;
+    const before = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
+    await mkdir(path.join(checkout, ".github/workflows"), { recursive: true });
+    const workflow = "name: approved\non: workflow_dispatch\njobs: {}\n";
+    await writeFile(path.join(checkout, ".github/workflows/allowed.yml"), workflow);
+    await writeFile(
+      packet.exchange.result_path,
+      JSON.stringify({
+        schema_version: 1,
+        kind: "agent_action_result",
+        task_id: taskId,
+        transition_id: packet.transition_id,
+        state_fingerprint: packet.state_fingerprint,
+        role: "EXECUTOR",
+        result: {
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          work_order_id: workOrder.work_order_id,
+          status: "completed",
+          summary: "Update the authorized workflow.",
+          findings: [],
+          uncertainty: [],
+        },
+      }),
+    );
+    const interruption = vi
+      .spyOn(verification, "recordDirectTaskVerification")
+      .mockRejectedValueOnce(new Error("stop after implementation commit"));
+    const io = captureStdIO();
+    try {
+      expect(await runCli([...packet.exchange.resume_argv.slice(1), "--root", root])).not.toBe(0);
+      const after = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
+      if (ci.passes) {
+        expect(io.stderr).toContain("stop after implementation commit");
+        expect(interruption).toHaveBeenCalledOnce();
+        expect(after.stdout).not.toBe(before.stdout);
+        const committed = await execFileAsync(
+          "git",
+          ["show", "HEAD:.github/workflows/allowed.yml"],
+          { cwd: checkout },
+        );
+        expect(committed.stdout).toBe(workflow);
+      } else {
+        expect(interruption).not.toHaveBeenCalled();
+        expect(after.stdout).toBe(before.stdout);
+        expect(io.stderr).toMatch(/protected by default|escaped semantic authority/);
+      }
+    } finally {
+      io.restore();
+      interruption.mockRestore();
+    }
+  });
+
   it.each(["before verification", "before WorkItem projection"])(
     "recovers an implementation interrupted %s through a fresh episode",
     async (boundary) => {
