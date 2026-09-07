@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:ee0369e1e1369eedf4614ac785371d252dcf6f9d6d827933528cff0f98ffbe33"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-07T13:53:48.547Z"
+  state: "ok"
+  updated_at: "2026-09-07T14:03:52.599Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -92,9 +92,7 @@ execution_contract:
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-3:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - ".agentplane"
       - "packages/agentplane"
@@ -118,14 +116,35 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
         id: "recorded-check-3"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -224,8 +243,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-3"
-      - "verification_recovery:verification-record"
 commit:
   hash: "b847aa915f64886905be06ccfb30e37544f35d25"
   message: "🚧 QV0SX9 task: apply external agent result"
@@ -310,8 +327,14 @@ events:
     to: "DOING"
     note: "Implementation committed: b847aa915f64. CLI accepted one state-bound external-agent semantic result."
     commit: "b847aa915f64886905be06ccfb30e37544f35d25"
+  -
+    type: "verify"
+    at: "2026-09-07T14:03:52.599Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T13:55:41.528Z"
+doc_updated_at: "2026-09-07T14:03:54.104Z"
 doc_updated_by: "SUPERVISOR"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
@@ -398,6 +421,96 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202609071219-QV0SX9 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+    - old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T14:03:52.599Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f, input_digest=sha256:4360bfb80c3409aba726ec46afc3dde1bff093e23c7707abf7807cd44a296a69
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -720,7 +833,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -987,9 +1100,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-07T13:55:41.528Z"
+    updated_at: "2026-09-07T14:03:54.102Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1128,6 +1241,30 @@ extensions:
         mutation_id: "compatibility:sha256:423f40c1992f332ed35a56ba44d716b9c9fdb2d1db10cd1b659c53ae66c63919"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:60e107a98b9cd1cbd591190abea982d9345035b45ba1b66107d4292d39941aba:
+        aggregate_digest: "sha256:fbed11a06020bfd27cfb40474d6c7208a35d55c4173b2eefd13e5e3fe91e6959"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:03:54.102Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_40497348abc0b4cd9e27bf90"
+          mutation_id: "compatibility:sha256:60e107a98b9cd1cbd591190abea982d9345035b45ba1b66107d4292d39941aba"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:60e107a98b9cd1cbd591190abea982d9345035b45ba1b66107d4292d39941aba"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:81b0d0042b77e674113abb0c586d4c9b24985ac98156020dce99bee1b46720c5:
@@ -1598,6 +1735,96 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202609071219-QV0SX9 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+- old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T14:03:52.599Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f, input_digest=sha256:4360bfb80c3409aba726ec46afc3dde1bff093e23c7707abf7807cd44a296a69
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071219-QV0SX9 Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current
