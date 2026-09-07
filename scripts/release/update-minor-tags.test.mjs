@@ -21,9 +21,7 @@ test("selects numeric stable patches and peels annotated tags", () => {
   assert.deepEqual(
     plan.map(({ ref, sha }) => [ref, sha]),
     [
-      ["refs/tags/0.6", "bbb"],
       ["refs/tags/v0.6", "bbb"],
-      ["refs/tags/0.7", "ccc"],
       ["refs/tags/v0.7", "ccc"],
     ],
   );
@@ -60,7 +58,7 @@ test("real Git creation, advancement, rerun and atomic stale rejection", () => {
         git(["ls-remote", "--tags", "origin"]),
       );
     applyMinorTags(plan(), git);
-    assert.match(git(["ls-remote", "origin", "refs/tags/0.6"]), new RegExp(first));
+    assert.match(git(["ls-remote", "origin", "refs/tags/v0.6"]), new RegExp(first));
     applyMinorTags(plan(), () => assert.fail("rerun must not push"));
     git(["-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-m", "second"]);
     const second = git(["rev-parse", "HEAD"]);
@@ -69,11 +67,11 @@ test("real Git creation, advancement, rerun and atomic stale rejection", () => {
     const stale = plan();
     git(["-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-m", "concurrent"]);
     const concurrent = git(["rev-parse", "HEAD"]);
-    git(["push", "--force", "origin", `${concurrent}:refs/tags/0.6`]);
+    git(["push", "--force", "origin", `${concurrent}:refs/tags/v0.6`]);
     assert.throws(() => applyMinorTags(stale, git));
-    assert.match(git(["ls-remote", "origin", "refs/tags/v0.6"]), new RegExp(first));
+    assert.match(git(["ls-remote", "origin", "refs/tags/v0.6"]), new RegExp(concurrent));
     applyMinorTags(plan(), git);
-    for (const alias of ["0.6", "v0.6"])
+    for (const alias of ["v0.6"])
       assert.match(git(["ls-remote", "origin", `refs/tags/${alias}`]), new RegExp(second));
     assert.equal(git(["rev-parse", "v0.6.9^{}"]), first);
   } finally {
