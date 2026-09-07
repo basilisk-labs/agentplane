@@ -1,10 +1,11 @@
 ---
 id: "202609071413-GESADH"
 title: "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
     - "The shared persistReview guard rejects a pass with no evaluated SHA before writing result, report, opinion, or task review state."
     - "The scoped regression suite exercises repeated interleaving and normal direct finish, while the production change leaves branch_pr selection unchanged."
     - "Residual risk: Hosted checks for the revised PR head and integration remain supervisor-owned lifecycle gates. The historical v0.6.27 package was not rerun; this review applies to the current implementation."
+token_usage:
+  agent_runs: 4
+  input_tokens: null
+  journal_digest: "sha256:deda3109b558b1856b8400df7ce5836d21481de4b8ff1d1d1ae6dcdccd321d95"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T15:00:42.387Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -264,8 +279,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
-  message: "🚧 GESADH task: apply external agent result"
+  hash: "5d218ad85b2cf2a7c7237a083aa8e9c1763197e4"
+  message: "🚧 GESADH task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -276,6 +291,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1bb30cf8640c. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -312,9 +330,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T15:00:42.387Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "5d218ad85b2cf2a7c7237a083aa8e9c1763197e4"
 doc_version: 3
-doc_updated_at: "2026-09-07T14:55:57.511Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T15:00:42.387Z"
+doc_updated_by: "CODER"
 description: "User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them."
 sections:
   Summary: |-
@@ -678,7 +704,34 @@ extensions:
       schema_version: 1
       task_id: "202609071413-GESADH"
     event_cursor: 10
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071413-GESADH"
+            - "git:1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+          check_id: "review-regression"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T14:55:56.024Z"
+          repository_snapshot_digest: "sha256:eddd04ddf88ac4ca96b4d1babe99700d05341a111395514d936c91e0f102199c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609071413-GESADH"
+            - "git:1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T14:55:56.024Z"
+          repository_snapshot_digest: "sha256:eddd04ddf88ac4ca96b4d1babe99700d05341a111395514d936c91e0f102199c"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071413-GESADH"
     intent:
       acceptance_criteria: []
@@ -689,12 +742,12 @@ extensions:
 
         User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them.
       task_id: "202609071413-GESADH"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-07T14:55:57.511Z"
+    updated_at: "2026-09-07T15:00:42.387Z"
     work_items:
       repair-direct-review-identity:
         attempt: 1
@@ -1031,11 +1084,37 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609071413-GESADH"
+      legacy-finish:202609071413-GESADH:2026-09-07T14:55:56.024Z:1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6:
+        aggregate_digest: "sha256:10d2000c52ac3a23b6a1a27e714940a5781f6b7807819e89c842a0fe2baa9ebb"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T15:00:42.387Z"
+          cause_refs:
+            - "task-verification:202609071413-GESADH"
+            - "git:1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b45664e937223ff9f83245b3"
+          mutation_id: "legacy-finish:202609071413-GESADH:2026-09-07T14:55:56.024Z:1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: "sha256:eddd04ddf88ac4ca96b4d1babe99700d05341a111395514d936c91e0f102199c"
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071413-GESADH:2026-09-07T14:55:56.024Z:1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609071413-GESADH"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+    message: "🚧 GESADH task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -1204,3 +1283,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:deda3109b558b1856b8400df7ce5836d21481de4b8ff1d1d1ae6dcdccd321d95`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T15:00:42.387Z`

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1e9ffe4243b624d5fa9c27e712d748dfd7afb95326b3394cb918a802c6e68b11",
   "pr_number": 5914,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5914",
+  "pre_merge_closure": {
+    "basis_commit": "5d218ad85b2cf2a7c7237a083aa8e9c1763197e4",
+    "branch": "task/202609071413-GESADH/repair-evaluator-review-identity-for-interleaved",
+    "pr_number": 5914,
+    "recorded_at": "2026-09-07T15:00:42.447Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
