@@ -1,0 +1,169 @@
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 44250c125..7fb5fa2a8 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -14,13 +14,13 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+ 
+ import { CliError } from "../../shared/errors.js";
++import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
+ import { cmdCommit } from "../guard/impl/commit.js";
+ import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
+ import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
+ import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
+ 
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+-import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import type {
+   ExternalAgentExchange,
+@@ -45,7 +45,7 @@ import {
+ } from "./external-agent-implementation-recovery.js";
+ import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
+ import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
+-import { loadTaskFromContext } from "../shared/task-backend.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+ import {
+   prepareExternalVerificationCheckpoint,
+   completeExternalVerificationCheckpoint,
+@@ -53,7 +53,7 @@ import {
+ } from "./external-agent-implementation-checkpoint.js";
+ import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+ 
+-function assertExternalImplementationReturnState(opts: {
++export function assertExternalImplementationReturnState(opts: {
+   exchange: ExternalAgentExchange;
+   work_order: AgentWorkOrderV2;
+   current: TaskRouteDecision;
+@@ -190,6 +190,19 @@ function assertScopeExtensionBlockerPreservedBaseline(opts: {
+   }
+ }
+ 
++export function implementationCommitAllowsCi(
++  contract: TaskRouteDecision["task"]["execution_contract"],
++  validatedPaths: readonly string[],
++  workspacePaths: readonly string[],
++): boolean {
++  const ciPaths = workspacePaths.filter((entry) => pathAllowed(entry, CI_PATH_PREFIXES));
++  return (
++    contract?.authority.allowed_repository_effects.includes("ci") === true &&
++    ciPaths.length > 0 &&
++    ciPaths.every((entry) => validatedPaths.includes(entry))
++  );
++}
++
+ export async function applyExternalImplementationResult(opts: {
+   command: CommandContext;
+   decision: TaskRouteDecision;
+@@ -418,7 +431,11 @@ export async function applyExternalImplementationResult(opts: {
+           allowPolicy: false,
+           allowConfig: false,
+           allowHooks: false,
+-          allowCI: false,
++          allowCI: implementationCommitAllowsCi(
++            taskAtReturn.execution_contract,
++            observedChangedPaths,
++            status?.lines.map(pathFromStatusLine) ?? [],
++          ),
+           requireClean: false,
+           quiet: true,
+           closeUnstageOthers: false,
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+index 641b0874a..dc2b69ea6 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -13,6 +13,16 @@ import {
+ } from "./evidence-only-rework-commit.js";
+ import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
+ 
++import {
++  assertExternalImplementationReturnState,
++  implementationCommitAllowsCi,
++} from "./external-agent-implementation-authority.js";
++
++const contract = (effects: string[]) =>
++  ({ authority: { allowed_repository_effects: effects } }) as NonNullable<
++    TaskData["execution_contract"]
++  >;
++
+ const COMMIT = "a".repeat(40);
+ const BASE_CONTEXT = {
+   schema_version: 1,
+@@ -388,3 +398,77 @@ describe("recorded implementation recovery contract", () => {
+     },
+   );
+ });
++
++describe("external implementation CI commit authority", () => {
++  const workflow = ".github/workflows/ci.yml";
++
++  it("passes approved CI changes to the commit guard", () => {
++    expect(implementationCommitAllowsCi(contract(["ci"]), [workflow], [workflow])).toBe(true);
++    expect(
++      implementationCommitAllowsCi(
++        contract(["ci"]),
++        [".github/actions/check/action.yml"],
++        [".github/actions/check/action.yml"],
++      ),
++    ).toBe(true);
++  });
++
++  it("keeps missing CI permission and unrelated protected paths denied", () => {
++    expect(implementationCommitAllowsCi(undefined, [workflow], [workflow])).toBe(false);
++    expect(implementationCommitAllowsCi(contract(["source_code"]), [workflow], [workflow])).toBe(
++      false,
++    );
++    for (const file of [
++      "AGENTS.md",
++      ".agentplane/config.json",
++      "lefthook.yml",
++      ".github/workflows-other/ci.yml",
++    ])
++      expect(implementationCommitAllowsCi(contract(["ci"]), [file], [file])).toBe(false);
++  });
++
++  it("does not admit preexisting CI changes through the family-wide guard flag", () => {
++    expect(
++      implementationCommitAllowsCi(
++        contract(["ci"]),
++        [workflow],
++        [workflow, ".github/workflows/preexisting.yml"],
++      ),
++    ).toBe(false);
++  });
++
++  it("rejects unapproved CI paths before deriving commit permission", () => {
++    const fingerprint = {
++      task_id: "T-1",
++      task_revision: 1,
++      worktree: "/repo",
++      components: {
++        task: { digest: "task" },
++        backend_projection: { digest: "backend" },
++        provider: { digest: "provider" },
++      },
++    };
++    const input = {
++      exchange: {
++        checkout: "/repo",
++        task_id: "T-1",
++        purpose: "implementation",
++        baseline: { head: COMMIT, changed_paths: [] },
++      },
++      work_order: {
++        state_fingerprint: fingerprint,
++        authority: { writable_roots: ["/repo/.github/workflows/ci.yml"] },
++      },
++      current: { workflowStep: { preconditionFingerprint: fingerprint } },
++      current_head: COMMIT,
++      current_status_lines: [" M .github/workflows/unapproved.yml"],
++      require_changes: true,
++    } as unknown as Parameters<typeof assertExternalImplementationReturnState>[0];
++    expect(() => assertExternalImplementationReturnState(input)).toThrow(
++      "escaped semantic authority",
++    );
++    input.current_status_lines = [" M .github/workflows/ci.yml"];
++    const validated = assertExternalImplementationReturnState(input);
++    expect(implementationCommitAllowsCi(contract(["ci"]), validated, validated)).toBe(true);
++  });
++});

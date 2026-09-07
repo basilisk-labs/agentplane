@@ -1,0 +1,111 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071444-7MNJXE Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071444-7MNJXE Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071444-7MNJXE Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071444-7MNJXE Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071444-7MNJXE Verification Contract check task_outcome",
+  "digest": "sha256:268bcb6272ba765f25529c2568f00529b7677daa3f96ff44cecbe5e65ce92053",
+  "implementation_sha": "5cb6963362b19c8e38123b375c7993dec3f7ca7b",
+  "input": {
+    "context": {
+      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:e8aee1038716c9d0b3672d6c2d2bdfd06370477f6a1b722b7d318bb7418c0798",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f7f9b277b5e477e670b1d6e683b624f8fc6c1ba8dc73068209bbfce1afef9efa",
+      "digest": "sha256:037e32d64dfca39a21ce84d9d5f3fd5a911534240a773be380f9aacab72f857a",
+      "references": [
+        {
+          "digest": "sha256:4369f51baf2568d4893340868b08490d5faeaecfeb50df1211f17b65127afbff",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+      "digest": "sha256:ce1fb98ebaf177bdcaba2f652b66e772a0b234a35311dbc6804029b5389efd9b",
+      "primary_task_id": "202609071444-7MNJXE",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071444-7MNJXE"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+      "digest": "sha256:7d1adb5a58a35c21daa2e0d3cedf375bfc9b37ea6e28ff4e027497a83ea24f9f",
+      "strategy": "branch_diff",
+      "target_sha": "5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:ff6819a93cd9d4d6ebda9f7481fec6891b0be2411a67fbb37243f4126504036c",
+    "verify_steps_digest": "sha256:e29adb941626cbceb2bb155fa61fe3e46d58e9cb4b646b58cfa18befd9e9acce"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-07T17:49:31.879Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bunx --no-install vitest run packages/agentplane/src/commands/release/github-ci-plan.test.ts packages/agentplane/src/shared/package-paths.test.ts. Expected: stable CodeQL language/category planning and private temporary asset isolation, reuse, and exit cleanup pass.\n2. Run bun run ci:local:full. Expected: all required repository verification groups pass, including formatting, type checks, lint, build, and critical CLI tests.\n3. Review the saved semantic report against the observed GitHub alerts. Expected: each observed alert has an explicit evidence-based disposition; unresolved findings remain explicit and no alert is dismissed without authority.",
+  "scope_digest": "sha256:e29adb941626cbceb2bb155fa61fe3e46d58e9cb4b646b58cfa18befd9e9acce",
+  "task_id": "202609071444-7MNJXE",
+  "verification_command": "agentplane verify 202609071444-7MNJXE --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

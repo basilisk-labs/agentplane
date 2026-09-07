@@ -1,0 +1,3 @@
+ .../external-agent-implementation-authority.ts     | 25 +++++--
+ .../external-agent-implementation-recovery.test.ts | 84 ++++++++++++++++++++++
+ 2 files changed, 105 insertions(+), 4 deletions(-)

@@ -511,6 +511,8 @@ jobs:
       - name: Analyze source and workflow code
         if: needs.plan.outputs.codeql_languages != ''
         uses: github/codeql-action/analyze@v4
+        with:
+          category: .github/workflows/ci.yml:verify-security
 
   recovery-validate:
     needs: plan

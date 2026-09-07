@@ -274,6 +274,12 @@ export function buildGithubCiCapabilityPlan({
     for (const key of Object.keys(capabilities)) capabilities[key] = false;
   }
 
+  // Keep language coverage stable within the existing CodeQL analysis category.
+  if (capabilities.codeql_javascript || capabilities.codeql_actions) {
+    capabilities.codeql_javascript = true;
+    capabilities.codeql_actions = true;
+  }
+
   const codeqlLanguages = [
     ...(capabilities.codeql_javascript ? ["javascript-typescript"] : []),
     ...(capabilities.codeql_actions ? ["actions"] : []),
