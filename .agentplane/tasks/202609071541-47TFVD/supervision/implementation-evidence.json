@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b7f54944d15489a36e6a5e0ce9b123c9e9c7766e..9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41",
+      "command": "git diff --check 3e70669c1e9f1579d22b13ab58a78e183db2291a..22d93c4efedbb342e900fa6c6999e2c343307cda",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,14 +13,17 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b7f54944d15489a36e6a5e0ce9b123c9e9c7766e..9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e70669c1e9f1579d22b13ab58a78e183db2291a..22d93c4efedbb342e900fa6c6999e2c343307cda",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609071541-47TFVD/README.md",
         "M\t.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609071541-47TFVD/pr/github-body.md",
         "M\t.agentplane/tasks/202609071541-47TFVD/pr/meta.json",
         "M\t.agentplane/tasks/202609071541-47TFVD/pr/review.md",
+        "M\t.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json",
         "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
         "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       ]
@@ -32,29 +35,41 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b7f54944d15489a36e6a5e0ce9b123c9e9c7766e",
-  "implementation_commit": "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41",
+  "execution_base_commit": "3e70669c1e9f1579d22b13ab58a78e183db2291a",
+  "implementation_commit": "22d93c4efedbb342e900fa6c6999e2c343307cda",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-      " M packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+      " M .agentplane/tasks/202609071541-47TFVD/README.md",
+      " M .agentplane/tasks/202609071541-47TFVD/pr/meta.json",
+      " M .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+        "line": " M .agentplane/tasks/202609071541-47TFVD/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+        "line": " M .agentplane/tasks/202609071541-47TFVD/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-      " M packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+      " M .agentplane/tasks/202609071541-47TFVD/README.md",
+      " M .agentplane/tasks/202609071541-47TFVD/pr/meta.json",
+      " M .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
     ],
     "unchanged_from_execution_baseline": []
   },
