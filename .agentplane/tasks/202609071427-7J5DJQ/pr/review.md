@@ -12,8 +12,8 @@ Created: 2026-09-07T14:33:24.150Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -39,10 +39,9 @@ Created: 2026-09-07T14:33:24.150Z
  .github/workflows/workflows-lint.yml               |   2 +-
  package.json                                       |   2 +-
  ...n-cli.core.task-advance.branch-worktree.test.ts | 105 ++++++++++++++++-----
- .../external-agent-implementation-authority.ts     |  44 +++++----
  .../agentplane/src/shared/sqlite-driver.test.ts    | 103 ++++++++++++++++++++
  packages/agentplane/src/shared/sqlite-driver.ts    |   2 +-
- 13 files changed, 234 insertions(+), 58 deletions(-)
+ 12 files changed, 206 insertions(+), 42 deletions(-)
 ```
 
 </details>

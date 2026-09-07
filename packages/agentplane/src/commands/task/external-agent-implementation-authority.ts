@@ -1,4 +1,8 @@
 import {
+  externalReportResultPath,
+  materializeExternalReportResult,
+} from "./external-agent-report-result.js";
+import {
   pathFromStatusLine,
   hasChangedTaskArtifacts,
   finishExternalImplementationVerification,
@@ -9,17 +13,14 @@ import {
   recoverExternalConflictEvidence,
   applyExternalConflictResolution,
 } from "./external-agent-conflict-application.js";
-
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-
 import { CliError } from "../../shared/errors.js";
 import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
-
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type * as ExternalAgent from "./external-agent-exchange.js";
 import {
@@ -102,9 +103,9 @@ export function assertExternalImplementationReturnState(opts: {
   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
   const forbidden = changed.filter((entry) => {
     const taskArtifact = entry.startsWith(taskPrefix);
-    const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
-    if (baselineTaskArtifact) return false;
-    return taskArtifact || !pathAllowed(entry, allowed);
+    if (taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry)) return false;
+    if (taskArtifact) return entry !== externalReportResultPath(opts);
+    return !pathAllowed(entry, allowed);
   });
   if (forbidden.length > 0) {
     throw new CliError({
@@ -160,9 +161,8 @@ export async function applyExternalReadOnlyWorktreeObservation(opts: {
   if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
 }
 
-export function blockingImplementationAuthorityViolations(violations: readonly string[]): string[] {
-  return violations.filter((violation) => !violation.startsWith("verification:"));
-}
+export const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
+  items.filter((violation) => !violation.startsWith("verification:"));
 
 function assertScopeExtensionBlockerPreservedBaseline(opts: {
   exchange: ExternalAgent.ExternalAgentExchange;
@@ -397,6 +397,10 @@ export async function applyExternalImplementationResult(opts: {
         task_id: opts.exchange.task_id,
       });
     } else {
+      observedChangedPaths = await materializeExternalReportResult({
+        ...opts,
+        changed_paths: observedChangedPaths,
+      });
       if (observedChangedPaths.length === 0) {
         throw new CliError({
           code: "E_VALIDATION",
