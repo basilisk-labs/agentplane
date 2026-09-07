@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,39 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T17:05:54.857Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
+  evaluated_sha: "c621332896711f01ef67df757eb934fadc6f5787"
+  blueprint_digest: "8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911"
+  evidence_refs:
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/f801c0b5538085d67bc86c7f4c93c076a0dacf1cb560f725bc20bd7364f15cec.md"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/README.md"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/18c606583881ddc9d05e9e41de00fe527c732695cf356a37a30326a1e95cf69c.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/verification/20260907165504289-ce5610cbecde5f47.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/53fcf1d0956b33eaafa5262f8db61b7427ce0eb080dcce0b375be500c1098492.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "All frozen evidence object digests match their content. The source diff updates the package manager and workflow Bun pins without changing Node engines, default Node Vitest, tsup, dependency resolutions, or distribution behavior."
+    - "The CI commit permission is derived from the approved ci repository effect and observed paths after semantic authority validation. Other protected-path permissions remain false. Three focused integration cases exercise the real commit and reject missing CI effect or an unauthorized workflow path before committing."
+    - "Five SQLite contract tests cover persistence and bindings, transaction arguments and commit, rollback and connection reuse, readonly write rejection, and missing readonly databases. The qualification evidence records all five passing under Node and Bun 1.4.2."
+    - "The supervisor recorded the full CI pass for the current implementation. I additionally ran the full existing CI contract with the task-local Bun 1.4.2 first on PATH on the unchanged source. It exited 0. Runtime, docs-schema, core, all 14 critical CLI chunks, site pipeline, workflow lint, 98 platform-critical tests, 101 guard tests, and the 17-target coverage contract passed."
+    - "The qualification report uses repeated startup measurements with output parity and explicitly limits the performance inference. Its earlier blocker-status sections are historical and superseded by the current verification; they are not evidence of present integration."
+    - "Residual risk: Broader Bun-hosted Vitest import failures remain documented, so Node remains the test default."
+    - "Residual risk: The standalone website lockfile mismatch reproduces with both Bun versions; normal workspace frozen installation and site checks pass without dependency-resolution changes."
+    - "Residual risk: Cross-platform execution remains a separate qualification boundary."
 execution_route:
   frozen: true
   reason_codes:
@@ -797,7 +830,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -1050,9 +1083,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-07T16:55:05.422Z"
+    updated_at: "2026-09-07T16:55:05.425Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -1167,6 +1200,30 @@ extensions:
         mutation_id: "compatibility:sha256:2d2b3eb4c5a4740381f219dcc93cb4975408bafb9ff4da971353adb6297b85a7"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:34738775861d6e79272f8394ae0c03977faae46bbbb1d416ed895d8ae62a3af8:
+        aggregate_digest: "sha256:e42872ed8c59474af3fbdc6b2806ad6889d9fb0fab7f8dca032a5f82a53b7461"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:55:05.425Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a8d028c11bde9abbeb3cef44"
+          mutation_id: "compatibility:sha256:34738775861d6e79272f8394ae0c03977faae46bbbb1d416ed895d8ae62a3af8"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:34738775861d6e79272f8394ae0c03977faae46bbbb1d416ed895d8ae62a3af8"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:3cddb447239e0eea9b40eaaa6108adfbebfe43ce82f25fc83f17fa3b2441e31c:
