@@ -13,7 +13,7 @@ Created: 2026-09-07T13:03:10.143Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,16 @@ Created: 2026-09-07T13:03:10.143Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/agents/PLANNER.json                    | 21 ++++-----
+ packages/agentplane/assets/agents/PLANNER.json     | 21 ++++-----
+ .../agentplane/src/agents/agents-template.test.ts  | 22 ++++++++-
+ .../src/commands/task/agent-action-packet.test.ts  | 33 +++++++++++++
+ .../src/commands/task/agent-action-packet.ts       | 21 +++++----
+ .../src/runner/context/base-prompts.test.ts        | 23 ++++++++-
+ .../runner/context/semantic-prompt-projection.ts   | 11 +++++
+ .../task-run-bootstrap.result-examples.test.ts     | 29 ++++++++++++
+ .../src/runner/usecases/task-run-bootstrap.ts      | 54 ++++++++++++++++++----
+ 9 files changed, 194 insertions(+), 41 deletions(-)
 ```
 
 </details>

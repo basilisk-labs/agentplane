@@ -454,3 +454,36 @@ describe("compact agent action packet", () => {
     );
   });
 });
+
+it.each([
+  "planning",
+  "implementation",
+  "implementation_rework",
+  "quality_review",
+  "verification",
+  "task_worktree_resolution",
+] as const)("delivers the language contract for the external %s episode", (purpose) => {
+  const packet = buildAgentActionPacket({
+    decision: decision(
+      step({
+        kind: "agent_episode",
+        episode: {
+          purpose,
+          role: "CODER",
+          taskId: TASK_ID,
+          objective: "Preserve Пример --flag=exact.",
+        },
+      }),
+    ),
+    work_order: workOrder(),
+  });
+  expect(packet.action.instruction).toContain("simple technical English");
+  expect(packet.action.instruction).toContain(
+    "Write one action, condition, or constraint in each sentence.",
+  );
+  expect(packet.action.instruction).toContain(
+    "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+  );
+  expect(packet.authority.network).toBe("deny");
+  expect(packet.stop.reason).toBe("semantic_boundary");
+});

@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -12,7 +12,9 @@ tags:
   - "process-mechanism-repair"
 task_kind: "code"
 mutation_scope: "code"
-verify: []
+verify:
+  - "bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2"
+  - "bun run typecheck"
 plan_approval:
   state: "approved"
   updated_at: "2026-09-07T13:03:04.818Z"
@@ -175,7 +177,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "707becb8ee4fa4423e41b7b6eb170e8a60c6c51b"
+  message: "♻️ QV0SX9 task: clarify task prompt language and compact results"
 comments:
   -
     author: "CODER"
@@ -186,6 +190,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: .agentplane/agents/PLANNER.json; repository effects: unchanged."
+  -
+    author: "CODER"
+    body: "Progress: recorded the authorized nine-file implementation commit. All 108 focused tests, typecheck, formatting and diff checks passed. Recover this exact commit for supervisor verification; no duplicate implementation changes are needed."
 events:
   -
     type: "status"
@@ -201,9 +208,17 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The existing parity test requires the installed PLANNER profile to match its bundled source. Recommended action: Extend scope by the one installed PLANNER profile. Restore the verified implementation backup after the scope is granted. Requested scope: roots=.agentplane/agents/PLANNER.json; repository effects=unchanged; request digest=sha256:7627edfd120838d8be763be22677dee5bf88712470cc162032b96737706bb406. Agentplane receipt: external-agent-blocker/tr_100e9e98242dc4d87b5adbcdbb467872/sha256:b651e953acd4e742fbdae1ee9aecb6fb9f36fd65a128dee63ded3a51a60799b5/sha256:7627edfd120838d8be763be22677dee5bf88712470cc162032b96737706bb406."
+  -
+    type: "status"
+    at: "2026-09-07T13:36:09.060Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Progress: recorded the authorized nine-file implementation commit. All 108 focused tests, typecheck, formatting and diff checks passed. Recover this exact commit for supervisor verification; no duplicate implementation changes are needed."
+    commit: "707becb8ee4fa4423e41b7b6eb170e8a60c6c51b"
 doc_version: 3
-doc_updated_at: "2026-09-07T13:27:19.676Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T13:36:09.060Z"
+doc_updated_by: "CODER"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
   Summary: |-
@@ -535,7 +550,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 5
+    event_cursor: 7
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -802,9 +817,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 7
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-07T13:27:19.676Z"
+    updated_at: "2026-09-07T13:36:09.060Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 0
@@ -820,6 +835,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:07c015e6d01a1040d5ab57eef94a789007b6160a44b4b0d867a517c89ab62e17:
+        aggregate_digest: "sha256:51b2a8d2d4ef010dc84e9a84ef003c232974b8aa3ad6c9dcd18c6475996e5887"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:36:09.060Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_06f45aeb1c45d327ebd60e41"
+          mutation_id: "compatibility:sha256:07c015e6d01a1040d5ab57eef94a789007b6160a44b4b0d867a517c89ab62e17"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:07c015e6d01a1040d5ab57eef94a789007b6160a44b4b0d867a517c89ab62e17"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
       compatibility:sha256:81b0d0042b77e674113abb0c586d4c9b24985ac98156020dce99bee1b46720c5:
         aggregate_digest: "sha256:14052f76601368d57401bd8b5acfa54f076ead902cb8cdf07bbb622bad49092f"
         event:
@@ -938,6 +977,30 @@ extensions:
         mutation_id: "compatibility:sha256:bed9d42e55e676c44338e8cdba8bba34109ab475572a33ba25af03afbc4a1d9e"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:f9099264a939533a9f2d7b2413548554027e431e700efc66521da38dcc300689:
+        aggregate_digest: "sha256:eb1c22f896741989c8cf11d8d88d2262c17f02794b4dcc5cceaf592b8c6756d4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:36:09.060Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0ddf6e1626dcae8e2e038960"
+          mutation_id: "compatibility:sha256:f9099264a939533a9f2d7b2413548554027e431e700efc66521da38dcc300689"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f9099264a939533a9f2d7b2413548554027e431e700efc66521da38dcc300689"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609071219-QV0SX9"
     pending_effects: []

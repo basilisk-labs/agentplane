@@ -193,7 +193,11 @@ describe("agents-template", () => {
       const repoPath = path.join(repoAgentsDir, entry);
       const repoText = await readFile(repoPath, "utf8");
       expect(repoText).not.toContain(LOCAL_CLI);
-      expect(repoText).toMatch(compactCommandRe);
+      if (entry === "PLANNER.json") {
+        expect(repoText).not.toMatch(/`(?:ap|agentplane) task /u);
+      } else {
+        expect(repoText).toMatch(compactCommandRe);
+      }
     }
   });
 
@@ -317,4 +321,20 @@ describe("agents-template", () => {
     const template = ["# Title", "No workflow sections here."].join("\n");
     expect(filterAgentsByWorkflow(template, "direct")).toBe(`${template}\n`);
   });
+});
+
+it("keeps PLANNER scoped to a read-only proposal with internal WorkItems", async () => {
+  const text = await readFile(
+    path.join(process.cwd(), "packages/agentplane/assets/agents/PLANNER.json"),
+    "utf8",
+  );
+  const planner = JSON.parse(text);
+  expect(planner.role).toContain("one user Task");
+  expect(planner.outputs["task.plan.proposal"]).toContain("TaskPlanProposal");
+  expect(planner.permissions).toEqual({
+    "repository.read": "Inspect the supplied context. Remain read-only.",
+  });
+  expect(planner.workflow.constraints).toContain("Do not create top-level tasks.");
+  expect(planner.workflow.constraints).toContain("Do not mutate task lifecycle state.");
+  expect(text).not.toMatch(/task.management|tasks.updated|backlog.view|ap quickstart/u);
 });
