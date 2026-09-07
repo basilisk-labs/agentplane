@@ -249,8 +249,91 @@ jobs:
             echo "cli_published=$CLI_PUBLISHED"
           } >> "$GITHUB_OUTPUT"
 
-  publish:
+  distribution:
+    name: Build signed release distribution
     needs: detect
+    if: github.event_name == 'workflow_dispatch' && needs.detect.outputs.should_publish == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+          fetch-depth: 0
+          submodules: false
+      - name: Select qualified release source from main history
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ needs.detect.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if [[ ! "${RELEASE_SHA}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Release source must be an exact commit SHA" >&2
+            exit 1
+          fi
+          git merge-base --is-ancestor "${RELEASE_SHA}" origin/main
+          git checkout --detach "${RELEASE_SHA}"
+      - name: Checkout current packaging runtime
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+          path: .agentplane/.release/runtime
+          submodules: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: "1.3.6"
+          no-cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build exact-ref distribution payload
+        run: bun run release:check
+      - name: Generate release distribution assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node .agentplane/.release/runtime/scripts/generate-release-distribution.mjs \
+            --out .agentplane/.release/publish/distribution \
+            --version "${{ needs.detect.outputs.version }}" \
+            --tag "${{ needs.detect.outputs.tag }}" \
+            --sha "${{ needs.detect.outputs.sha }}" \
+            --repo "${{ github.repository }}"
+      - name: Verify signed macOS release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.detect.outputs.version }}"
+          DIST_DIR=".agentplane/.release/publish/distribution"
+          HOST_ARCH="$(node -p 'process.arch')"
+          for arch in arm64 x64; do
+            stage="$(mktemp -d)"
+            artifact="${DIST_DIR}/agentplane-bun-v${VERSION}-darwin-${arch}.tar.gz"
+            tar -xzf "${artifact}" -C "${stage}"
+            codesign --verify --strict "${stage}/bin/agentplane"
+            rm -rf "${stage}"
+          done
+          node scripts/smoke-bun-compiled-cli.mjs \
+            --artifact "${DIST_DIR}/agentplane-bun-v${VERSION}-darwin-${HOST_ARCH}.tar.gz" \
+            --expected-version "${VERSION}"
+      - name: Upload signed release distribution assets
+        uses: actions/upload-artifact@v7
+        with:
+          name: signed-release-distribution
+          path: |
+            .agentplane/.release/publish/distribution/*
+            !.agentplane/.release/publish/distribution/.bun-*/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: [detect, distribution]
     if: github.event_name == 'workflow_dispatch' && needs.detect.outputs.should_publish == 'true'
     environment: npm
     runs-on: ubuntu-24.04
@@ -366,16 +449,52 @@ jobs:
           else
             echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Generate release distribution assets
+      - name: Download signed release distribution assets
+        uses: actions/download-artifact@v8
+        with:
+          name: signed-release-distribution
+          path: .agentplane/.release/publish/distribution
+      - name: Validate signed distribution artifact
         shell: bash
+        env:
+          EXPECTED_SHA: ${{ needs.detect.outputs.sha }}
+          EXPECTED_VERSION: ${{ needs.detect.outputs.version }}
+          EXPECTED_TAG: ${{ needs.detect.outputs.tag }}
         run: |
           set -euo pipefail
-          node scripts/generate-release-distribution.mjs \
-            --out .agentplane/.release/publish/distribution \
-            --version "${{ needs.detect.outputs.version }}" \
-            --tag "${{ needs.detect.outputs.tag }}" \
-            --sha "${{ needs.detect.outputs.sha }}" \
-            --repo "${{ github.repository }}"
+          node - <<'EOF'
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const { createHash } = require("node:crypto");
+          const root = ".agentplane/.release/publish/distribution";
+          const read = name => fs.readFileSync(path.join(root, name));
+          const manifest = JSON.parse(read("release-distribution.json"));
+          const bun = JSON.parse(read("bun-assets.json"));
+          for (const payload of [manifest, bun]) {
+            for (const [key, expected] of Object.entries({
+              sha: process.env.EXPECTED_SHA,
+              version: process.env.EXPECTED_VERSION,
+              tag: process.env.EXPECTED_TAG,
+            })) {
+              if (payload[key] !== expected) throw new Error(`distribution ${key} mismatch`);
+            }
+          }
+          if (manifest.releaseAssets.length !== 10 || bun.assets.length !== 5) {
+            throw new Error("Incomplete release distribution artifact");
+          }
+          for (const asset of [...manifest.releaseAssets, ...bun.assets]) {
+            if (path.basename(asset.name) !== asset.name) throw new Error("Invalid distribution asset name");
+            const actual = createHash("sha256").update(read(asset.name)).digest("hex");
+            if (actual !== asset.sha256) throw new Error(`distribution checksum mismatch: ${asset.name}`);
+          }
+          const tarball = read(`.npm-pack/agentplane-${manifest.version}.tgz`);
+          if (createHash("sha256").update(tarball).digest("hex") !== manifest.packages.agentplane.npmTarballSha256) {
+            throw new Error("distribution npm tarball checksum mismatch");
+          }
+          EOF
+          cd .agentplane/.release/publish/distribution
+          sha256sum --check --strict SHA256SUMS
+          sha256sum --check --strict agentplane-upgrade.tar.gz.sha256
       - name: Smoke Bun release assets
         shell: bash
         run: |

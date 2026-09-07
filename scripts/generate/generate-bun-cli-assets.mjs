@@ -121,6 +121,9 @@ function buildBinary(repoRoot, target, outPath, version, synthetic) {
     chmodSync(outPath, 0o755);
     return;
   }
+  if (target.platform === "darwin" && process.platform !== "darwin") {
+    throw new Error("Darwin release binaries must be signed on macOS before packaging");
+  }
   const entry = path.join(repoRoot, CLI_ENTRY);
   if (!existsSync(entry))
     throw new Error(`Missing built CLI entrypoint: ${CLI_ENTRY}. Run bun run build first.`);
@@ -139,6 +142,10 @@ function buildBinary(repoRoot, target, outPath, version, synthetic) {
     { cwd: repoRoot },
   );
   chmodSync(outPath, 0o755);
+  if (target.platform === "darwin") {
+    run("codesign", ["--force", "--sign", "-", outPath], { cwd: repoRoot });
+    run("codesign", ["--verify", "--strict", outPath], { cwd: repoRoot });
+  }
 }
 
 function archiveTarget(repoRoot, outDir, target, version, binaryPath) {

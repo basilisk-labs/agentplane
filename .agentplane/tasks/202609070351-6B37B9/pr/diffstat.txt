@@ -1,0 +1,7 @@
+ .github/workflows/publish.yml                      | 135 +++++++++++++++-
+ .../release/generate-bun-cli-assets-script.test.ts |  83 +++++++++-
+ .../generate-release-distribution-script.test.ts   |  32 +++-
+ .../release/publish-workflow-contract.test.ts      | 175 ++++++++++++++++++++-
+ scripts/generate/generate-bun-cli-assets.mjs       |   7 +
+ scripts/generate/generate-release-distribution.mjs |   3 +-
+ 6 files changed, 422 insertions(+), 13 deletions(-)

@@ -1,0 +1,124 @@
+{
+  "details": "Check: hosted_integration\nCommand: gh pr view 5907 --repo basilisk-labs/agentplane --json headRefOid,statusCheckRollup\nResult: fail\nEvidence: CodeQL check https://github.com/basilisk-labs/agentplane/runs/101661403344 returned FAILURE for exact head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. The same workflow locations have alerts actions/cache-poisoning/poisonable-step, actions/untrusted-checkout/medium and actions/unpinned-tag.\nScope: .github/workflows/publish.yml macOS distribution job.",
+  "digest": "sha256:8b7f57e5158706e7945f60abc282e715c91949d7623d805c4e4fdb7fc24e40ec",
+  "implementation_sha": "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea",
+  "input": {
+    "context": {
+      "digest": "sha256:f3b7c8b08e66d1705e878943869bb93f395f64a2773866aa4c84f2adba6d24ea",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:8fd6aa147259a5f4488ef9c0c4df617d7c3fbd5a319f919074f52930b52baf77",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:2aaf1757de59f90449c04a3f1ddf400fae258bd307f5c83cda3e5c47bd3ab7d2",
+      "digest": "sha256:08fc01e353c07dc27f74ef89f61ca9f1a8ae06e9a265c67646c27d1648ab5553",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "actions/cache-poisoning/poisonable-step",
+          "reference": "actions/cache-poisoning/poisonable-step",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "actions/unpinned-tag.",
+          "reference": "actions/unpinned-tag.",
+          "source": "missing"
+        },
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "actions/untrusted-checkout/medium",
+          "reference": "actions/untrusted-checkout/medium",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "68b7b240362fe005e4ea5c63ee214c37fc545212",
+      "digest": "sha256:c1271d8aabea5004c87f84e9c6fdbd75823341b3a4cacda633fda8d330b187f5",
+      "primary_task_id": "202609070351-6B37B9",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609070351-6B37B9"
+      ]
+    },
+    "implementation": {
+      "base_sha": "68b7b240362fe005e4ea5c63ee214c37fc545212",
+      "digest": "sha256:2e47ac9264ad1fdf7c694c06fb7c13580bbdfccbf93366e0f04a76df061d68ce",
+      "strategy": "branch_diff",
+      "target_sha": "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:77e2be9136ee270f7435b9d95aa321e752d8dc88417f478d6d27750b568c1590",
+    "verify_steps_digest": "sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require merged-main ancestry before executing the historical distribution source, remove checkout credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the approved workflow and test paths.",
+  "recorded_at": "2026-09-07T07:40:46.333Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts`. Expected: signing order, failure propagation, portable synthetic checks and exact distribution artifact handoff regressions pass.\n2. Run `bun run workflows:lint`. Expected: workflow syntax and repository workflow contracts pass.\n3. Review the final diff. Expected: only the six approved source, workflow and test paths change. The historical release payload, npm versions, tag identity and publication guards remain unchanged.\n4. After integration, recover the same release SHA through the hosted publisher and independently verify both Darwin signatures, native macOS execution and all regenerated checksums before refreshing existing PR #5906. Actual publication remains outside this semantic repair.",
+  "scope_digest": "sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae",
+  "task_id": "202609070351-6B37B9",
+  "verification_command": "agentplane task verify rework 202609070351-6B37B9 --rework --by REVIEWER",
+  "verifier": "REVIEWER"
+}
