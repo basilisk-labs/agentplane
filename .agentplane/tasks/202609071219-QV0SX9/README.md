@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -215,7 +215,9 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e"
+  message: "🚧 QV0SX9 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -232,6 +234,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cdaf72b1fa42. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4e57fd16b874. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -269,8 +274,16 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912."
+  -
+    type: "status"
+    at: "2026-09-07T13:45:58.593Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4e57fd16b874. CLI accepted one state-bound external-agent semantic result."
+    commit: "4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e"
 doc_version: 3
-doc_updated_at: "2026-09-07T13:44:38.258Z"
+doc_updated_at: "2026-09-07T13:45:58.593Z"
 doc_updated_by: "SUPERVISOR"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
@@ -634,7 +647,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 11
+    event_cursor: 13
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -901,9 +914,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 14
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-07T13:44:38.256Z"
+    updated_at: "2026-09-07T13:45:58.593Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1092,6 +1105,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609071219-QV0SX9"
+      compatibility:sha256:899d9ea724d1105d2780eef13a1b125d7b90309533208013fdf824bda33d8ba4:
+        aggregate_digest: "sha256:7ab3426e82febc564bcc6cce37ade9b60755006e4a453a073f774a8018eebc62"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:45:58.593Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4fefbcf998f96333473618c1"
+          mutation_id: "compatibility:sha256:899d9ea724d1105d2780eef13a1b125d7b90309533208013fdf824bda33d8ba4"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:899d9ea724d1105d2780eef13a1b125d7b90309533208013fdf824bda33d8ba4"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
       compatibility:sha256:89bf0ef67cb3d927585993f390f90be291509d4bee2b98d669d5e24197219283:
         aggregate_digest: "sha256:7dc57ede9fd2afef1a871ce2907bed271432e65dafd0608066089fd99d8db72a"
         event:
@@ -1114,6 +1151,30 @@ extensions:
         mutation_id: "compatibility:sha256:89bf0ef67cb3d927585993f390f90be291509d4bee2b98d669d5e24197219283"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:94b53a77fc42742421acbda53bbf61bdf7db38d42b1fa5886ad33aa65ece50cf:
+        aggregate_digest: "sha256:99b181af2f9ccb93ad784bb105b76a4045194f3609003114c03bc4a64085541e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:45:58.593Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_420a4acb57a8e1e7da8e7911"
+          mutation_id: "compatibility:sha256:94b53a77fc42742421acbda53bbf61bdf7db38d42b1fa5886ad33aa65ece50cf"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:94b53a77fc42742421acbda53bbf61bdf7db38d42b1fa5886ad33aa65ece50cf"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:a269f60e4899798dac8c80ece49908247b3b1977c9f30f53fd607667d31f46cb:
@@ -1287,6 +1348,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
