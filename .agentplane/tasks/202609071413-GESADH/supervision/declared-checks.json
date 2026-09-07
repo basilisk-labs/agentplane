@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "review-regression"
+      ],
+      "command": "bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1",
+      "duration_ms": 23848,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:37cf006f1ced150a904531d2f78a0ff0313819b6b71312b17c3e927fd632ad09",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n",
+      "stdout_tail": "0-EV04/quality/objects/sha256/8c69dd6d61f6668344803ecf82aec4d938c7adee7d5922a76451eae58c5af499.md\nopinion: .agentplane/tasks/202605240900-EV04/quality/20260907-142546893-recovery-context/evaluator-opinion.md\nevaluator run 202605240900-EV04\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV04-ed151d645d382e5becf4a44e\nreport: .agentplane/tasks/202605240900-EV04/quality/20260907-142547166-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV04/quality/objects/sha256/4d7a7caa4820eea887d49ebb68fbba066e3560c14071409e3c1d68efffa135c3.md\nopinion: .agentplane/tasks/202605240900-EV04/quality/20260907-142547166-recovery-context/evaluator-opinion.md\n202605240900-EV05\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-uobG0l/.agentplane/tasks/202605240900-EV05/README.md\n202605240900-EV06\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-uobG0l/.agentplane/tasks/202605240900-EV06/README.md\nevaluator run 202605240900-EV05\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV05-857b38359b1619f054e78ebb\nreport: .agentplane/tasks/202605240900-EV05/quality/20260907-142547653-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV05/quality/objects/sha256/fe4534a821d40d80172f161e9b4d84c0f4444e0a49b74ce0170055cb734e7521.md\nopinion: .agentplane/tasks/202605240900-EV05/quality/20260907-142547653-recovery-context/evaluator-opinion.md\n202605240900-EV07\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-1lbQFr/.agentplane/tasks/202605240900-EV07/README.md\n202605240900-EV08\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-1lbQFr/.agentplane/tasks/202605240900-EV08/README.md\nevaluator run 202605240900-EV07\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV07-eb26ca5bb219d99ea4b142e0\nreport: .agentplane/tasks/202605240900-EV07/quality/20260907-142548049-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV07/quality/objects/sha256/c1f5edc7a97f97c185b1f4828d2e6b012d571e1e06b396f1e80c0ea6a071b866.md\nopinion: .agentplane/tasks/202605240900-EV07/quality/20260907-142548049-recovery-context/evaluator-opinion.md\nevaluator run 202605240900-EV07\nprovenance: human_supplied\nverdict: pass\nrecorded: true\nwork order id: evaluator-work-order-202605240900-EV07-fb1778163f1e901a35fea564\nreport: .agentplane/tasks/202605240900-EV07/quality/20260907-142548289-recovery-context/quality-report.json\nprompt: .agentplane/tasks/202605240900-EV07/quality/objects/sha256/aa6ce3a06c50cee4a793f76eb82267032d6a0590f3f19131b21db241815350fd.md\nopinion: .agentplane/tasks/202605240900-EV07/quality/20260907-142548289-recovery-context/evaluator-opinion.md\n202605240900-EV03\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-WEpbfQ/.agentplane/tasks/202605240900-EV03/README.md\n202605240900-EV12\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-VItvhk/.agentplane/tasks/202605240900-EV12/README.md\n202605240900-EV17\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-wEyhxk/.agentplane/tasks/202605240900-EV17/README.md\n202605240900-EV15\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-7CtKIa/.agentplane/tasks/202605240900-EV15/README.md\n202605240900-EV16\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-VhqIx5/.agentplane/tasks/202605240900-EV16/README.md\n202605240900-EV13\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-T7zF53/.agentplane/tasks/202605240900-EV13/README.md\n202605240900-EV14\n/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-LbVlq8/.agentplane/tasks/202605240900-EV14/README.md\n\n Test Files  4 passed (4)\n      Tests  74 passed (74)\n   Start at  17:25:27\n   Duration  23.41s (transform 2.22s, setup 0ms, import 2.16s, tests 21.00s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "typecheck"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 299,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:37cf006f1ced150a904531d2f78a0ff0313819b6b71312b17c3e927fd632ad09",
+        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609071413-GESADH"
+}

@@ -4,7 +4,7 @@ title: "Repair evaluator review identity for interleaved task artifact commits i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -484,22 +484,79 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 6
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-07T14:25:26.467Z"
+    updated_at: "2026-09-07T14:25:51.955Z"
     work_items:
       repair-direct-review-identity:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-direct-review-identity"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:6aee8011815eb9fb9cfa10294ce57340e99dbe69fb5fa5d839625c9b7e9a620c"
+            id: "verified-direct-review-identity-fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071413-GESADH"
+              work_item_id: "repair-direct-review-identity"
+            provenance:
+              - "sha256:688c7b24b7a5fe1d3eb07f65cb5ce6fb02334096d0dbbda45d0b3f233f58dbc1"
+              - ".agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:7736ee86da490260aa2ece2a5b942b45fa932612b159b805b257d34c7f333a0d"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json"
+              check_id: "review-regression"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-07T14:25:51.950Z"
+              repository_snapshot_digest: "sha256:7736ee86da490260aa2ece2a5b942b45fa932612b159b805b257d34c7f333a0d"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-07T14:25:51.950Z"
+              repository_snapshot_digest: "sha256:7736ee86da490260aa2ece2a5b942b45fa932612b159b805b257d34c7f333a0d"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T14:25:51.955Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:31df8b2478a61f7ae2829bd4794100130aedcfb728514036552ebeefc79c6881"
+        entity: "work_item"
+        id: "event_a03949a87cd1aeec712382d4"
+        mutation_id: "external-result:work-order-202609071413-GESADH-executor-0028400ba307f872c411d738"
+        plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071413-GESADH"
+        task_revision: 6
+        work_item_id: "repair-direct-review-identity"
     leases: []
     mutation_receipts:
       compatibility:sha256:35c821056c2a50b20cc91072640b9979284a38771b7db07e57ae13d7a3d02254:
@@ -596,6 +653,30 @@ extensions:
         mutation_id: "compatibility:sha256:e2e17b96c6e41d9e819f4b2d7e8672b6c7ab93de022a8d1b60595de8f9d62822"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609071413-GESADH"
+      external-result:work-order-202609071413-GESADH-executor-0028400ba307f872c411d738:
+        aggregate_digest: "sha256:586f1148074346179a6deed59a0829ef877de1cffb7f47f8e732c41e34aefeae"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:25:51.955Z"
+          cause_refs:
+            - "semantic-result:sha256:31df8b2478a61f7ae2829bd4794100130aedcfb728514036552ebeefc79c6881"
+          entity: "work_item"
+          from: "READY"
+          id: "event_a03949a87cd1aeec712382d4"
+          mutation_id: "external-result:work-order-202609071413-GESADH-executor-0028400ba307f872c411d738"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 6
+          to: "COMPLETED"
+          work_item_id: "repair-direct-review-identity"
+        mutation_id: "external-result:work-order-202609071413-GESADH-executor-0028400ba307f872c411d738"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609071413-GESADH"
     pending_effects: []
