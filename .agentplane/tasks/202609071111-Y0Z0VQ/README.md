@@ -1,10 +1,11 @@
 ---
 id: "202609071111-Y0Z0VQ"
 title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequentially"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -59,6 +60,20 @@ quality_review:
     - "CLI-owned declared-checks and verification record show bun run ci:local:full passed for this frozen implementation. Targeted regressions also cover both successful and rejected recovery paths. Helper moves retain existing behavior and comply with module-size and architecture constraints. No required test gap or unapproved implementation scope expansion was found."
     - "Residual risk: Historical Factory revision divergence is not repaired or attributed to a proven writer; damaged legacy snapshots remain fail-closed."
     - "Residual risk: Legacy ExecutionGrant has no resource-scoped deployment capability equivalent to native kernel authority. Actual Factory execution and deployment remain unverified."
+token_usage:
+  agent_runs: 7
+  input_tokens: null
+  journal_digest: "sha256:3df31ec7e71cd6bbec54168fbce181199c1194781cf9a2e989f8dc143f3c063c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T13:16:09.371Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -318,8 +333,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bf53cac8d9761abf11af4926c6044460902cf3a5"
-  message: "🚧 Y0Z0VQ task: apply external agent result"
+  hash: "849a907ca3db830d9448218f8675a7853c583d91"
+  message: "🚧 Y0Z0VQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -339,6 +354,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: bf53cac8d976. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -393,9 +411,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-07T13:16:09.371Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "849a907ca3db830d9448218f8675a7853c583d91"
 doc_version: 3
-doc_updated_at: "2026-09-07T13:11:26.478Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T13:16:09.371Z"
+doc_updated_by: "CODER"
 description: "Recheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation."
 sections:
   Summary: |-
@@ -860,7 +886,23 @@ extensions:
       schema_version: 1
       task_id: "202609071111-Y0Z0VQ"
     event_cursor: 15
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071111-Y0Z0VQ"
+            - "git:bf53cac8d9761abf11af4926c6044460902cf3a5"
+          check_id: "final-checks"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T13:11:25.505Z"
+          repository_snapshot_digest: "sha256:11336f8af9102f74b16bd1f7b4667ad021edb7e4260916804af218af4858420b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071111-Y0Z0VQ"
     intent:
       acceptance_criteria: []
@@ -871,12 +913,12 @@ extensions:
 
         Recheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation.
       task_id: "202609071111-Y0Z0VQ"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-07T13:11:26.478Z"
+    updated_at: "2026-09-07T13:16:09.371Z"
     work_items:
       canonical-plan-routing:
         attempt: 1
@@ -1641,11 +1683,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
+      legacy-finish:202609071111-Y0Z0VQ:2026-09-07T13:11:25.505Z:bf53cac8d9761abf11af4926c6044460902cf3a5:
+        aggregate_digest: "sha256:b3153c892f965257b267c8102420cc479850e2f9bb145512d02d2f8bb2758b36"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T13:16:09.371Z"
+          cause_refs:
+            - "task-verification:202609071111-Y0Z0VQ"
+            - "git:bf53cac8d9761abf11af4926c6044460902cf3a5"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8916b3f59f73e4c111a3ba95"
+          mutation_id: "legacy-finish:202609071111-Y0Z0VQ:2026-09-07T13:11:25.505Z:bf53cac8d9761abf11af4926c6044460902cf3a5"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: "sha256:11336f8af9102f74b16bd1f7b4667ad021edb7e4260916804af218af4858420b"
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071111-Y0Z0VQ:2026-09-07T13:11:25.505Z:bf53cac8d9761abf11af4926c6044460902cf3a5"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "bf53cac8d9761abf11af4926c6044460902cf3a5"
+    message: "🚧 Y0Z0VQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
@@ -1758,3 +1826,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3df31ec7e71cd6bbec54168fbce181199c1194781cf9a2e989f8dc143f3c063c`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T13:16:09.371Z`
