@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202609071219-QV0SX9/use-simple-technical-english-in-task-prompts-and",
   "created_at": "2026-09-07T13:03:10.143Z",
-  "diffstat_sha256": "sha256:051aed0f4e9cd7ce82f9c9e3c8bb5b46d5f52a0f486172bacd26db53e408c911",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:7600a7db0985f5a88523b4a4a39fc60d67e1d3389cfd9a065a357f827ce20bca",
+  "last_verified_at": "2026-09-07T13:44:37.275Z",
+  "last_verified_diffstat_sha256": "sha256:051aed0f4e9cd7ce82f9c9e3c8bb5b46d5f52a0f486172bacd26db53e408c911",
   "pr_number": 5912,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5912",
   "provider": {
@@ -19,6 +20,6 @@
   "task_id": "202609071219-QV0SX9",
   "updated_at": "2026-09-07T13:38:41.751Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

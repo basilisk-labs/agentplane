@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:ee0369e1e1369eedf4614ac785371d252dcf6f9d6d827933528cff0f98ffbe33"
 verification:
-  state: "pending"
-  updated_at: "2026-09-07T13:27:26.459Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-07T13:44:37.275Z"
+  updated_by: "TESTER"
+  note: "CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -92,16 +92,30 @@ execution_contract:
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
+      - ".agentplane"
       - "packages/agentplane"
     changed_paths:
+      - ".agentplane/agents/PLANNER.json"
+      - "packages/agentplane/assets/agents/PLANNER.json"
+      - "packages/agentplane/src/agents/agents-template.test.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+      - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+      - "packages/agentplane/src/runner/context/base-prompts.test.ts"
+      - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
     external_effects: []
     repository_effects:
       - "repository_write"
+      - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -141,31 +155,46 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:7258ef870e9a8aac1508e553081dfb041fd7e6f7fd9df9392bd16baf5ae1c02e"
-      escalation_reasons: []
+      digest: "sha256:a7c05d44e9eb8ff3926a934360639469a1512b87ad71679ed6a2e20a2b8bfc34"
+      escalation_reasons:
+        - "unknown_path:.agentplane/agents/PLANNER.json"
+        - "unknown_path:packages/agentplane/assets/agents/PLANNER.json"
       execution_groups:
+        - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "packages/agentplane"
         changed_files:
+          - ".agentplane/agents/PLANNER.json"
+          - "packages/agentplane/assets/agents/PLANNER.json"
+          - "packages/agentplane/src/agents/agents-template.test.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+          - "packages/agentplane/src/runner/context/base-prompts.test.ts"
+          - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
         external_effects: []
         repository_effects:
           - "repository_write"
+          - "source_code"
           - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -185,9 +214,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
-  message: "🚧 QV0SX9 task: apply external agent result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -235,8 +263,14 @@ events:
     to: "DOING"
     note: "Implementation committed: cdaf72b1fa42. CLI accepted one state-bound external-agent semantic result."
     commit: "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
+  -
+    type: "verify"
+    at: "2026-09-07T13:44:37.275Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912."
 doc_version: 3
-doc_updated_at: "2026-09-07T13:40:13.101Z"
+doc_updated_at: "2026-09-07T13:44:38.258Z"
 doc_updated_by: "SUPERVISOR"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
@@ -260,13 +294,44 @@ sections:
     Rollback: revert only this WorkItem's implementation diff.
     External writes, commits, publication, and hosted integration require their own explicit operator authority.
   Verify Steps: |-
-    PLANNER fallback scaffold for "Use simple technical English in task prompts and remove redundant prompt context". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Use simple technical English in task prompts and remove redundant prompt context". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.
+    2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.
+    3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.
+    4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.
+    5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.
+    6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T13:44:37.275Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f, input_digest=sha256:1179a09e335f96b75612c284e6f93ef56d9bcbe5d69cf80b9dbac698a47a5ec1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+    - old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -569,7 +634,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -836,9 +901,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-07T13:40:14.462Z"
+    updated_at: "2026-09-07T13:44:38.256Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1051,6 +1116,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609071219-QV0SX9"
+      compatibility:sha256:a269f60e4899798dac8c80ece49908247b3b1977c9f30f53fd607667d31f46cb:
+        aggregate_digest: "sha256:5ea99406757dfda9f763de1621acc69b4ec77d280b0192216cabf284a1fca0a3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:44:11.575Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e8675428751216e87206cd40"
+          mutation_id: "compatibility:sha256:a269f60e4899798dac8c80ece49908247b3b1977c9f30f53fd607667d31f46cb"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a269f60e4899798dac8c80ece49908247b3b1977c9f30f53fd607667d31f46cb"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
       compatibility:sha256:a2c97a0cae9fe59a2601ea60f03af4bc18d43b415e41490ef569c306fa8d96a7:
         aggregate_digest: "sha256:2029b015cbb0174df71642e8c63b5ca6a4834512d62910fb69ae26c968c74cd3"
         event:
@@ -1097,6 +1186,30 @@ extensions:
         mutation_id: "compatibility:sha256:a6294080eadc57ac59f28a365ef1901e1e4513f49dbc17edec4df8895fe4796c"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:b88a4ab4e8458ce0755f4bb40eb5fd3f183f368de33cf67c9583a21ea5a11a92:
+        aggregate_digest: "sha256:f433c81981d640fabd95dbf07921e49f5b093ef4e1bbbcf71d3468e962eff4ce"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:44:38.256Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cbb9890d4521faae3dbfd987"
+          mutation_id: "compatibility:sha256:b88a4ab4e8458ce0755f4bb40eb5fd3f183f368de33cf67c9583a21ea5a11a92"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b88a4ab4e8458ce0755f4bb40eb5fd3f183f368de33cf67c9583a21ea5a11a92"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:bed9d42e55e676c44338e8cdba8bba34109ab475572a33ba25af03afbc4a1d9e:
@@ -1174,8 +1287,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
@@ -1214,15 +1325,46 @@ External writes, commits, publication, and hosted integration require their own 
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Use simple technical English in task prompts and remove redundant prompt context". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Use simple technical English in task prompts and remove redundant prompt context". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.
+2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.
+3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.
+4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.
+5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.
+6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T13:44:37.275Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f, input_digest=sha256:1179a09e335f96b75612c284e6f93ef56d9bcbe5d69cf80b9dbac698a47a5ec1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+- old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

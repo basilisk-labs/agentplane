@@ -12,8 +12,8 @@ Created: 2026-09-07T13:03:10.143Z
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,14 +31,14 @@ Created: 2026-09-07T13:03:10.143Z
 ```text
  .agentplane/agents/PLANNER.json                    | 21 ++++-----
  packages/agentplane/assets/agents/PLANNER.json     | 21 ++++-----
- .../agentplane/src/agents/agents-template.test.ts  | 22 ++++++++-
+ .../agentplane/src/agents/agents-template.test.ts  | 27 ++++++++++-
  .../src/commands/task/agent-action-packet.test.ts  | 52 +++++++++++++++++++++
  .../src/commands/task/agent-action-packet.ts       | 21 +++++----
  .../src/runner/context/base-prompts.test.ts        | 23 ++++++++-
  .../runner/context/semantic-prompt-projection.ts   | 11 +++++
  .../task-run-bootstrap.result-examples.test.ts     | 29 ++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      | 54 ++++++++++++++++++----
- 9 files changed, 213 insertions(+), 41 deletions(-)
+ 9 files changed, 218 insertions(+), 41 deletions(-)
 ```
 
 </details>

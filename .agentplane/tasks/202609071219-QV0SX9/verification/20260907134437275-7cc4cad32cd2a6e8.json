@@ -1,0 +1,101 @@
+{
+  "details": null,
+  "digest": "sha256:7cc4cad32cd2a6e877c5150f5e618b86909189e14bccc3d9e1fa9ed73249f9eb",
+  "implementation_sha": "cdaf72b1fa42660466fe8dd986ff87b2bd093f88",
+  "input": {
+    "context": {
+      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:1179a09e335f96b75612c284e6f93ef56d9bcbe5d69cf80b9dbac698a47a5ec1",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "digest": "sha256:25867726d44b0fe3a60ac5af1aa644bf76d64a502703986223f1e6b3ae189416",
+      "references": []
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+      "digest": "sha256:889fdeb198a76da097d9df076a59a6b61d007ebc9cbf73b2538008cc9ad7d79b",
+      "primary_task_id": "202609071219-QV0SX9",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071219-QV0SX9"
+      ]
+    },
+    "implementation": {
+      "base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+      "digest": "sha256:62f82e6d47cde87f13feebf939389ab3c8c5870195227505424eaf2dfc7c31ae",
+      "strategy": "branch_diff",
+      "target_sha": "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:a7c05d44e9eb8ff3926a934360639469a1512b87ad71679ed6a2e20a2b8bfc34",
+    "verify_steps_digest": "sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f"
+  },
+  "kind": "task_verification_record",
+  "note": "CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun full verification; hosted static check failed on PR #5912.",
+  "recorded_at": "2026-09-07T13:44:37.275Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.\n2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.\n3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.\n4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.\n5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.\n6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations.",
+  "scope_digest": "sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f",
+  "task_id": "202609071219-QV0SX9",
+  "verification_command": "agentplane verify 202609071219-QV0SX9 --rework --by TESTER",
+  "verifier": "TESTER"
+}

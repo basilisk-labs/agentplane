@@ -328,7 +328,12 @@ it("keeps PLANNER scoped to a read-only proposal with internal WorkItems", async
     path.join(process.cwd(), "packages/agentplane/assets/agents/PLANNER.json"),
     "utf8",
   );
-  const planner = JSON.parse(text);
+  const planner = JSON.parse(text) as {
+    role: string;
+    outputs: Record<string, string>;
+    permissions: Record<string, string>;
+    workflow: Record<string, string>;
+  };
   expect(planner.role).toContain("one user Task");
   expect(planner.outputs["task.plan.proposal"]).toContain("TaskPlanProposal");
   expect(planner.permissions).toEqual({
