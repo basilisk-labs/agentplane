@@ -4,7 +4,7 @@ title: "Propagate approved CI scope to external implementation commit guards"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -385,22 +385,69 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T15:48:46.372Z"
+    updated_at: "2026-09-07T15:48:48.642Z"
     work_items:
       ci-permission:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ci-permission"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:800f9031e8502214fd860933a446c82dd4d528ec77b5a73a1c51f9b54821b0cc"
+            id: "ci-permission-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071541-47TFVD"
+              work_item_id: "ci-permission"
+            provenance:
+              - "sha256:5f3a7d1e21cb0f203c32af164ca008a3ce805171efda8aee95ac50895372ebc8"
+              - ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:e9e3ae8a8bcd82361ee8b0cacd93c8f0d9be80a476d7dc13ff88a853467ba340"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
+              check_id: "regression"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-07T15:48:48.638Z"
+              repository_snapshot_digest: "sha256:e9e3ae8a8bcd82361ee8b0cacd93c8f0d9be80a476d7dc13ff88a853467ba340"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T15:48:48.642Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:36932dc2a5d5a03cb04f96fb9dce786a6a8e3da5e49e8d9bba5a8d5e2966091c"
+        entity: "work_item"
+        id: "event_2b1dca21d4b1ec5a59e14481"
+        mutation_id: "external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4"
+        plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
+        task_revision: 7
+        work_item_id: "ci-permission"
     leases: []
     mutation_receipts:
       compatibility:sha256:91325a790beb8ac4da1c7c921b1dbb5de9595063dfe8e237c80f2e76c1a3e922:
@@ -521,6 +568,30 @@ extensions:
         mutation_id: "compatibility:sha256:e91392eeabee066b3c3a63732827cc2caf85d5b85f9cef93d5a43d1b879c83de"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
+      external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4:
+        aggregate_digest: "sha256:bf79f2eaa72a7f2dcce82297b155dfc652c4b8bc9f699e71b8bd42db9b3cfe33"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:48:48.642Z"
+          cause_refs:
+            - "semantic-result:sha256:36932dc2a5d5a03cb04f96fb9dce786a6a8e3da5e49e8d9bba5a8d5e2966091c"
+          entity: "work_item"
+          from: "READY"
+          id: "event_2b1dca21d4b1ec5a59e14481"
+          mutation_id: "external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4"
+          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071541-47TFVD"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "ci-permission"
+        mutation_id: "external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609071541-47TFVD"
     pending_effects: []
