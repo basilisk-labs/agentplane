@@ -70,7 +70,7 @@ describe("package path resolution", () => {
       const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-concurrent-assets-"));
       const script = `
         import fs from "node:fs";
-        import { resolveAgentplaneAssetPath } from ${JSON.stringify(new URL("./package-paths.ts", import.meta.url).href)};
+        import { resolveAgentplaneAssetPath } from ${JSON.stringify(new URL("package-paths.ts", import.meta.url).href)};
         globalThis.__AGENTPLANE_BUILTIN_ASSETS__ = {
           hash: "same-hash",
           assets: [{ path: "probe.txt", base64: Buffer.from("trusted content").toString("base64") }],
@@ -90,7 +90,7 @@ describe("package path resolution", () => {
                 TMP: tempRoot,
                 TEMP: tempRoot,
               },
-              timeout: 15000,
+              timeout: 15_000,
             }),
           ),
         );
@@ -144,7 +144,8 @@ describe("package path resolution", () => {
       await expect(readFile(agentsPath, "utf8")).resolves.toContain("# PURPOSE");
       expect(resolveAgentplaneAssetPath("AGENTS.md")).toBe(agentsPath);
       if (process.platform !== "win32") {
-        expect((await stat(path.dirname(agentsPath))).mode & 0o077).toBe(0);
+        const assetDirectory = await stat(path.dirname(agentsPath));
+        expect(assetDirectory.mode & 0o077).toBe(0);
       }
       await expect(readFile(path.join(sharedAssets, "AGENTS.md"), "utf8")).resolves.toBe(
         "attacker-controlled assets",

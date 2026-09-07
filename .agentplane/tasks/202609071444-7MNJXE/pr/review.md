@@ -31,10 +31,10 @@ Created: 2026-09-07T14:56:49.833Z
 ```text
  .github/workflows/ci.yml                           |  2 +
  .../src/commands/release/github-ci-plan.test.ts    | 16 +++++
- .../agentplane/src/shared/package-paths.test.ts    | 73 +++++++++++++++++++++-
+ .../agentplane/src/shared/package-paths.test.ts    | 74 +++++++++++++++++++++-
  packages/agentplane/src/shared/package-paths.ts    | 32 +++++++---
  scripts/lib/github-ci-capabilities.mjs             |  6 ++
- 5 files changed, 117 insertions(+), 12 deletions(-)
+ 5 files changed, 118 insertions(+), 12 deletions(-)
 ```
 
 </details>
