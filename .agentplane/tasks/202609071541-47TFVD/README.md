@@ -4,7 +4,7 @@ title: "Propagate approved CI scope to external implementation commit guards"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   note: "host_user_decision=sha256:ef146c577485a6b22d161a24a52252ce05f3ec35aca5c11cc4a798c82bc49ce9"
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-07T15:50:50.733Z"
+  updated_at: "2026-09-07T16:00:33.827Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -191,9 +191,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-2"
       - "verification_recovery:verification-record"
-commit:
-  hash: "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41"
-  message: "🚧 47TFVD task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -234,8 +232,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 9c36ce1c6ca5. CLI accepted one state-bound external-agent semantic result."
     commit: "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41"
+  -
+    type: "verify"
+    at: "2026-09-07T16:00:33.827Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-07T15:58:28.384Z"
+doc_updated_at: "2026-09-07T16:00:34.660Z"
 doc_updated_by: "SUPERVISOR"
 description: "User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection."
 sections:
@@ -258,6 +262,46 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:eb521f08f3ac93f0fed4ac196de976aa73cfc495b5a2ebe73cc9c7625179904a
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071541-47TFVD declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071541-47TFVD declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
+    - old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
+    - current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071541-47TFVD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071541-47TFVD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T16:00:33.827Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:9624a0006bdee1df74617fbcf82e73e9c574f5b1c17262eb423c49910baecc80
 
     Details:
 
@@ -435,7 +479,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071541-47TFVD"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609071541-47TFVD"
     intent:
@@ -455,9 +499,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T15:58:28.384Z"
+    updated_at: "2026-09-07T16:00:34.659Z"
     work_items:
       ci-permission:
         attempt: 1
@@ -640,6 +684,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609071541-47TFVD"
+      compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94:
+        aggregate_digest: "sha256:f49ea17dd0b1e94303afc56fac1b4c3e5205e9271724c581d4eb7a24b9903602"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:00:34.659Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0b0252e2e94161992405465b"
+          mutation_id: "compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94"
+          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071541-47TFVD"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
       compatibility:sha256:cb8ddb40bf5b9345b3ed8b5fd210cb44b77a4db1aa6f52427c42e59a9daeaf22:
         aggregate_digest: "sha256:69233f680caffb03d510597acc2f4eda3210f2bd4d20f6c38d3bbce79cc9b5c1"
         event:
@@ -739,8 +807,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
@@ -782,6 +848,46 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:eb521f08f3ac93f0fed4ac196de976aa73cfc495b5a2ebe73cc9c7625179904a
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071541-47TFVD declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071541-47TFVD declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
+- old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
+- current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071541-47TFVD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071541-47TFVD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T16:00:33.827Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:9624a0006bdee1df74617fbcf82e73e9c574f5b1c17262eb423c49910baecc80
 
 Details:
 

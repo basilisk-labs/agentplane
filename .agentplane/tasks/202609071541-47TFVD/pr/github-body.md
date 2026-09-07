@@ -27,9 +27,9 @@ User approved this bounded recovery on 2026-09-07: repair the allowCI false defe
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../external-agent-implementation-authority.ts     | 22 +++++-
- .../external-agent-implementation-recovery.test.ts | 83 ++++++++++++++++++++++
- 2 files changed, 103 insertions(+), 2 deletions(-)
+ .../external-agent-implementation-authority.ts     | 25 +++++--
+ .../external-agent-implementation-recovery.test.ts | 84 ++++++++++++++++++++++
+ 2 files changed, 105 insertions(+), 4 deletions(-)
 ```
 
 </details>
