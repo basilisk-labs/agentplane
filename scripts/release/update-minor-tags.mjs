@@ -28,14 +28,12 @@ export function planMinorTags(releases, remoteOutput) {
       latest.set(series, { patch: version.patch, tag: release.tag_name });
     }
   }
-  return [...latest].flatMap(([series, { tag }]) => {
+  return [...latest].map(([series, { tag }]) => {
     const fullRef = `refs/tags/${tag}`;
     const sha = refs.get(`${fullRef}^{}`) ?? refs.get(fullRef);
     if (!sha) throw new Error(`Published release tag is missing: ${tag}`);
-    return [series, `v${series}`].map((alias) => {
-      const ref = `refs/tags/${alias}`;
-      return { ref, sha, tag, previous: refs.get(ref) ?? "" };
-    });
+    const ref = `refs/tags/v${series}`;
+    return { ref, sha, tag, previous: refs.get(ref) ?? "" };
   });
 }
 
