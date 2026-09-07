@@ -15,14 +15,14 @@ Recheck current code against the Arkady Factory audit. Fix AP-02 premature close
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T11:19:37.618Z
+- Updated: 2026-09-07T13:03:09.416Z
 - Branch: task/202609071111-Y0Z0VQ/repair-confirmed-arkady-factory-compatibility-li
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

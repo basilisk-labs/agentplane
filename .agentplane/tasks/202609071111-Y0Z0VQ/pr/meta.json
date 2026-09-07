@@ -3,7 +3,10 @@
   "branch": "task/202609071111-Y0Z0VQ/repair-confirmed-arkady-factory-compatibility-li",
   "created_at": "2026-09-07T11:19:37.618Z",
   "diffstat_sha256": "sha256:6ba4cf10659adca46deb771bf90b7ee371671087aabae80e5845f0dfcbae6b15",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-07T13:11:25.505Z",
+  "last_verified_diffstat_sha256": "sha256:6ba4cf10659adca46deb771bf90b7ee371671087aabae80e5845f0dfcbae6b15",
+  "pr_number": 5911,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5911",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609071111-Y0Z0VQ",
-  "updated_at": "2026-09-07T11:19:37.618Z",
+  "updated_at": "2026-09-07T13:03:09.416Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

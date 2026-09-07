@@ -4,7 +4,7 @@ title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequenti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:fa8df9000cb82ac6335ab8a723fcacdbc2aacc87b38bcec02c73c3bf65e443c8"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-07T13:11:25.505Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -130,7 +130,22 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -338,8 +353,14 @@ events:
     to: "DOING"
     note: "Implementation committed: bf53cac8d976. CLI accepted one state-bound external-agent semantic result."
     commit: "bf53cac8d9761abf11af4926c6044460902cf3a5"
+  -
+    type: "verify"
+    at: "2026-09-07T13:11:25.505Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-07T12:59:00.513Z"
+doc_updated_at: "2026-09-07T13:11:26.478Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation."
 sections:
@@ -373,6 +394,60 @@ sections:
     5. Review the final diff and git status --short --untracked-files=all. Report non-reproduced historical claims and unverified Factory runtime behavior explicitly.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T13:11:25.505Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:319caeb8dd66736e54135024572a0b94fa9334263bb413bb35d3851bc302dff4, input_digest=sha256:ba3c37f149fdee6f52589df0e1309d9463f98b63fe3d8b6858aa3dd1d1245885
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071111-Y0Z0VQ-repair-confirmed-arkady-factory-compatibility-li/.agentplane/tasks/202609071111-Y0Z0VQ/blueprint/resolved-snapshot.json
+    - old_digest: 85b28705409c43af1231a757e649951365020667c9d902d08719bee6d565de83
+    - current_digest: 85b28705409c43af1231a757e649951365020667c9d902d08719bee6d565de83
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071111-Y0Z0VQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071111-Y0Z0VQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -750,7 +825,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071111-Y0Z0VQ"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609071111-Y0Z0VQ"
     intent:
@@ -765,9 +840,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-07T12:59:01.893Z"
+    updated_at: "2026-09-07T13:11:26.476Z"
     work_items:
       canonical-plan-routing:
         attempt: 1
@@ -1075,6 +1150,30 @@ extensions:
         mutation_id: "compatibility:sha256:14390aacaebef441b3f13b3252eb75af222f335db856f7f72d565ba8ecf4c01d"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+      compatibility:sha256:2779ebf984abf4492b36f58d7127e315e79c11e49de9a8d62d525ae483ed0b83:
+        aggregate_digest: "sha256:1869741d12b8918dce225ed2798ccf6967815a6c58844133ba68b8e2d8d7c821"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:11:26.476Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_03d561578e3562d1dd769d07"
+          mutation_id: "compatibility:sha256:2779ebf984abf4492b36f58d7127e315e79c11e49de9a8d62d525ae483ed0b83"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2779ebf984abf4492b36f58d7127e315e79c11e49de9a8d62d525ae483ed0b83"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
       compatibility:sha256:287a38243314dfef4951301ea90b6cf9ab4456c4a2504b4250fef75b578df1f6:
@@ -1539,6 +1638,60 @@ Completion evidence: Each confirmed defect has a behavior regression and passing
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T13:11:25.505Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:319caeb8dd66736e54135024572a0b94fa9334263bb413bb35d3851bc302dff4, input_digest=sha256:ba3c37f149fdee6f52589df0e1309d9463f98b63fe3d8b6858aa3dd1d1245885
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071111-Y0Z0VQ-repair-confirmed-arkady-factory-compatibility-li/.agentplane/tasks/202609071111-Y0Z0VQ/blueprint/resolved-snapshot.json
+- old_digest: 85b28705409c43af1231a757e649951365020667c9d902d08719bee6d565de83
+- current_digest: 85b28705409c43af1231a757e649951365020667c9d902d08719bee6d565de83
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071111-Y0Z0VQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071111-Y0Z0VQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
