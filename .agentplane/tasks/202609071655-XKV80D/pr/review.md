@@ -30,10 +30,10 @@ Created: 2026-09-07T17:00:24.316Z
 
 ```text
  ...n-cli.core.task-advance.evidence-rework.test.ts |   4 +-
- .../external-agent-implementation-authority.ts     |  11 +-
+ .../external-agent-implementation-authority.ts     |  41 ++-
  .../task/external-agent-report-result.test.ts      | 380 +++++++++++++++++++++
  .../commands/task/external-agent-report-result.ts  |  88 +++++
- 4 files changed, 481 insertions(+), 2 deletions(-)
+ 4 files changed, 491 insertions(+), 22 deletions(-)
 ```
 
 </details>
