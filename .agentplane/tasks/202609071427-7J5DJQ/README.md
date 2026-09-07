@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -850,22 +850,99 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-07T16:02:07.697Z"
+    updated_at: "2026-09-07T16:02:08.973Z"
     work_items:
       upgrade-and-qualify-bun:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "upgrade-and-qualify-bun"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:d913680d2c45a55098d55dbeab1467018eed19ea882201ab12fd7ebaaf092c3c"
+            id: "repository_patch:bun-1.4.2"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609071427-7J5DJQ"
+              work_item_id: "upgrade-and-qualify-bun"
+            provenance:
+              - "sha256:a45c080ec5d12d953483b5045f4e642b52c81423a97411d793e2a2314c95d445"
+              - ".agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4ecdd28b1f1038a0dde1b34ae6ace403a18cab5df933947f429edb0122b1f935"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:9b54e597648c2cbec2c7ab9c96686b13338bed7ef4ec90977fc098b60c753179"
+            id: "test_contract:sqlite-driver"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609071427-7J5DJQ"
+              work_item_id: "upgrade-and-qualify-bun"
+            provenance:
+              - "sha256:a45c080ec5d12d953483b5045f4e642b52c81423a97411d793e2a2314c95d445"
+              - ".agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4ecdd28b1f1038a0dde1b34ae6ace403a18cab5df933947f429edb0122b1f935"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:d01a5b0370d42a49a53db8ab6522575f536dd810fe177afd39bbb6d92b3e2693"
+            id: "qualification_report:node-bun-comparison"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609071427-7J5DJQ"
+              work_item_id: "upgrade-and-qualify-bun"
+            provenance:
+              - "sha256:a45c080ec5d12d953483b5045f4e642b52c81423a97411d793e2a2314c95d445"
+              - ".agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:4ecdd28b1f1038a0dde1b34ae6ace403a18cab5df933947f429edb0122b1f935"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json"
+              check_id: "task-check"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T16:02:08.967Z"
+              repository_snapshot_digest: "sha256:4ecdd28b1f1038a0dde1b34ae6ace403a18cab5df933947f429edb0122b1f935"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T16:02:08.973Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:e263c63219d32af91cecc57116444de8317eb0352c129953cf29bf2c36b60837"
+        entity: "work_item"
+        id: "event_c53ce2bd80d5c5c2ab6bfda4"
+        mutation_id: "external-result:work-order-202609071427-7J5DJQ-executor-b93577c21689465265e5ee37"
+        plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+        task_revision: 12
+        work_item_id: "upgrade-and-qualify-bun"
     leases: []
     mutation_receipts:
       compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d:
@@ -1106,6 +1183,30 @@ extensions:
         mutation_id: "compatibility:sha256:f77f0b1c27a17c34aef9aac54f223cb20905a26e9b86e5e49fa166cc05aef23d"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      external-result:work-order-202609071427-7J5DJQ-executor-b93577c21689465265e5ee37:
+        aggregate_digest: "sha256:07ef91b7ea272284cf498c74bb5c722ba61445dfd8de83c0a7b9a9fdb3c57def"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:02:08.973Z"
+          cause_refs:
+            - "semantic-result:sha256:e263c63219d32af91cecc57116444de8317eb0352c129953cf29bf2c36b60837"
+          entity: "work_item"
+          from: "READY"
+          id: "event_c53ce2bd80d5c5c2ab6bfda4"
+          mutation_id: "external-result:work-order-202609071427-7J5DJQ-executor-b93577c21689465265e5ee37"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 12
+          to: "COMPLETED"
+          work_item_id: "upgrade-and-qualify-bun"
+        mutation_id: "external-result:work-order-202609071427-7J5DJQ-executor-b93577c21689465265e5ee37"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
     pending_effects: []
