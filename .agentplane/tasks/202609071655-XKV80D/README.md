@@ -4,7 +4,7 @@ title: "Accept report-only WorkItem results without requiring source-code change
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -446,22 +446,69 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T17:25:29.642Z"
+    updated_at: "2026-09-07T17:30:04.421Z"
     work_items:
       report-result:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "report-result"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:2870ea1ee46aa3b39b5a5129d18fec39e77d7752b4c295622aebf8832294a611"
+            id: "report-result-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071655-XKV80D"
+              work_item_id: "report-result"
+            provenance:
+              - "sha256:1e9b29849f2af627ec9f5b15e1bfb1fe7b4da69c2821fe36814843ddfdf4aca8"
+              - ".agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5ba72b7e2c73fe4b31dbab9a31eeac8d7e6e8a8a8b65bda4588d147387daaebb"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json"
+              check_id: "regression"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-07T17:30:04.414Z"
+              repository_snapshot_digest: "sha256:5ba72b7e2c73fe4b31dbab9a31eeac8d7e6e8a8a8b65bda4588d147387daaebb"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T17:30:04.421Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:fa6807815b19dad84ec4f7e064983be2f01846885e6b5520c99b2eb4c12704f6"
+        entity: "work_item"
+        id: "event_f37e1b6684279c90dcad02e7"
+        mutation_id: "external-result:work-order-202609071655-XKV80D-executor-190d85835fbfb77f12cd28ff"
+        plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
+        task_revision: 7
+        work_item_id: "report-result"
     leases: []
     mutation_receipts:
       compatibility:sha256:17ae65dff4dd077a6ef445e14a6d8971c350f5881768cbdf0fc49c741f422fc9:
@@ -582,6 +629,30 @@ extensions:
         mutation_id: "compatibility:sha256:a5b4fafa8f7bda0388f42d0c925ae0bb74dd8227aff0c462e7ae8c7c32fade29"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
+      external-result:work-order-202609071655-XKV80D-executor-190d85835fbfb77f12cd28ff:
+        aggregate_digest: "sha256:2415990bcabe9f2bca90bd3afb3930b212704b0ce2736221e7273db1102c65e0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:30:04.421Z"
+          cause_refs:
+            - "semantic-result:sha256:fa6807815b19dad84ec4f7e064983be2f01846885e6b5520c99b2eb4c12704f6"
+          entity: "work_item"
+          from: "READY"
+          id: "event_f37e1b6684279c90dcad02e7"
+          mutation_id: "external-result:work-order-202609071655-XKV80D-executor-190d85835fbfb77f12cd28ff"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "report-result"
+        mutation_id: "external-result:work-order-202609071655-XKV80D-executor-190d85835fbfb77f12cd28ff"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609071655-XKV80D"
     pending_effects: []
