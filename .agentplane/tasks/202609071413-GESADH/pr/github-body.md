@@ -15,14 +15,8 @@ User approved testing and sequential fixes for the seven audited open GitHub iss
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework required: GitHub verify-contract failed because new direct regressions pushed two existing
-test files over the oversized-test budget. Move the direct cases to the already approved
-direct-closeout suite and rerun the unchanged declared checks.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

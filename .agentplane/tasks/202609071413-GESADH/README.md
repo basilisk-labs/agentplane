@@ -4,7 +4,7 @@ title: "Repair evaluator review identity for interleaved task artifact commits i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:3d026da3db1ac74a38f5ad7a304b703a182234a59b9657f5f0764b4b4909c357"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-07T14:36:40.801Z"
-  updated_by: "TESTER"
-  note: "Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-09-07T14:55:56.024Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -89,9 +89,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/finish-quality.ts"
       - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -108,10 +106,37 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -209,8 +234,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit:
   hash: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
   message: "🚧 GESADH task: apply external agent result"
@@ -254,8 +277,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 1bb30cf8640c. CLI accepted one state-bound external-agent semantic result."
     commit: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+  -
+    type: "verify"
+    at: "2026-09-07T14:55:56.024Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T14:38:36.666Z"
+doc_updated_at: "2026-09-07T14:55:57.511Z"
 doc_updated_by: "SUPERVISOR"
 description: "User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them."
 sections:
@@ -288,6 +317,96 @@ sections:
     Result: fail
     Evidence: oversized test baseline rejects evaluator-run.command.test.ts at 1001 lines and quality-review-target.test.ts at 1035 lines; budget count 12 exceeds 10.
     Scope: issue #5892 test placement; no acceptance or implementation behavior change.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071413-GESADH-repair-evaluator-review-identity-for-interleaved/.agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json
+    - old_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+    - current_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071413-GESADH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071413-GESADH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T14:55:56.024Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67c3bdd6046ae8c73d982ef9fef0b85e48aa3241791be3adb79ac959d570c323, input_digest=sha256:7b5d2e10f3c2efa58d64a7d425f8a1425100b956f7046811de5f9854088d3096
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609071413-GESADH Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -529,7 +648,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071413-GESADH"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609071413-GESADH"
     intent:
@@ -544,9 +663,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T14:38:36.666Z"
+    updated_at: "2026-09-07T14:55:57.508Z"
     work_items:
       repair-direct-review-identity:
         attempt: 1
@@ -641,6 +760,30 @@ extensions:
         mutation_id: "compatibility:sha256:1d1c3661dfc5ed14d2e1352ef9febe1f0cffd8314b4bdfce13c76c8b86bbe6c7"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609071413-GESADH"
+      compatibility:sha256:23007fda337d0309e15e23691824720df181fb118d8ca881412c955fe092b975:
+        aggregate_digest: "sha256:5261792de9cda48391282182412d3c07f08ead10b63c9c915df388bed3cfea43"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:55:57.508Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c0e0f0cb6c1bcb32988b6748"
+          mutation_id: "compatibility:sha256:23007fda337d0309e15e23691824720df181fb118d8ca881412c955fe092b975"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:23007fda337d0309e15e23691824720df181fb118d8ca881412c955fe092b975"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202609071413-GESADH"
       compatibility:sha256:31d932c3a09c6ac34438cf8ae6127a84d6030ed7c39184f33a5f824be1993584:
@@ -890,6 +1033,96 @@ Command: GitHub Actions verify-contract, run 34132922617, job 101777228343
 Result: fail
 Evidence: oversized test baseline rejects evaluator-run.command.test.ts at 1001 lines and quality-review-target.test.ts at 1035 lines; budget count 12 exceeds 10.
 Scope: issue #5892 test placement; no acceptance or implementation behavior change.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071413-GESADH-repair-evaluator-review-identity-for-interleaved/.agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json
+- old_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+- current_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071413-GESADH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071413-GESADH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T14:55:56.024Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67c3bdd6046ae8c73d982ef9fef0b85e48aa3241791be3adb79ac959d570c323, input_digest=sha256:7b5d2e10f3c2efa58d64a7d425f8a1425100b956f7046811de5f9854088d3096
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071413-GESADH Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071413-GESADH Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071413-GESADH Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071413-GESADH Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071413-GESADH Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071413-GESADH Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071413-GESADH Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071413-GESADH Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071413-GESADH Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609071413-GESADH Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current
