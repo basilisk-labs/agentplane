@@ -1,10 +1,11 @@
 ---
 id: "202609071541-47TFVD"
 title: "Propagate approved CI scope to external implementation commit guards"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
     - "Frozen diff changes only the two approved implementation/test paths. CI flag derives from current task authority after WorkOrder path validation. All workspace CI paths must belong to the validated delta; preexisting unrelated CI changes remain denied. Other protected-family flags remain false."
     - "Regression cases cover approved workflow/action paths, missing ci permission, absent contract, similarly named non-CI paths, preexisting unrelated CI changes, and rejection before commit permission derivation."
     - "Supervisor observed focused tests and bun run ci:local:full both exit zero; recorded verification state ok at 2026-09-07T16:48:15.916Z. Frozen implementation and checks identity matches evaluated SHA."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:ab630a7a23cc14471f8a68ca11c2551c9990da2ae9a25eaa477f75b6feb980c2"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T16:50:41.773Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -229,8 +244,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "22d93c4efedbb342e900fa6c6999e2c343307cda"
-  message: "🚧 47TFVD task: apply external agent result"
+  hash: "ff1a43f687156efc22d181624dd32a8968bb114a"
+  message: "🚧 47TFVD task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -244,6 +259,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 22d93c4efedb. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -294,9 +312,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T16:50:41.773Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "ff1a43f687156efc22d181624dd32a8968bb114a"
 doc_version: 3
-doc_updated_at: "2026-09-07T16:48:16.866Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T16:50:41.773Z"
+doc_updated_by: "CODER"
 description: "User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection."
 sections:
   Summary: |-
@@ -608,7 +634,23 @@ extensions:
       schema_version: 1
       task_id: "202609071541-47TFVD"
     event_cursor: 13
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071541-47TFVD"
+            - "git:22d93c4efedbb342e900fa6c6999e2c343307cda"
+          check_id: "regression"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T16:48:15.916Z"
+          repository_snapshot_digest: "sha256:341cd9ab3ece6540e4896b2dbd9ecfbaa2ece0612d71bc40c26d2549fc69c27c"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071541-47TFVD"
     intent:
       acceptance_criteria:
@@ -624,12 +666,12 @@ extensions:
 
         User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
       task_id: "202609071541-47TFVD"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-07T16:48:16.866Z"
+    updated_at: "2026-09-07T16:50:41.773Z"
     work_items:
       ci-permission:
         attempt: 1
@@ -1028,11 +1070,37 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609071541-47TFVD"
+      legacy-finish:202609071541-47TFVD:2026-09-07T16:48:15.916Z:22d93c4efedbb342e900fa6c6999e2c343307cda:
+        aggregate_digest: "sha256:b844c2254013b28fc6573f21d95f3b557e1c6e613e1955d468745ad01a72ebb3"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T16:50:41.773Z"
+          cause_refs:
+            - "task-verification:202609071541-47TFVD"
+            - "git:22d93c4efedbb342e900fa6c6999e2c343307cda"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4ae4afe1925ce2e20e074b82"
+          mutation_id: "legacy-finish:202609071541-47TFVD:2026-09-07T16:48:15.916Z:22d93c4efedbb342e900fa6c6999e2c343307cda"
+          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+          plan_revision: 1
+          repository_fingerprint: "sha256:341cd9ab3ece6540e4896b2dbd9ecfbaa2ece0612d71bc40c26d2549fc69c27c"
+          schema_version: 1
+          task_id: "202609071541-47TFVD"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071541-47TFVD:2026-09-07T16:48:15.916Z:22d93c4efedbb342e900fa6c6999e2c343307cda"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "22d93c4efedbb342e900fa6c6999e2c343307cda"
+    message: "🚧 47TFVD task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
@@ -1226,3 +1294,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:ab630a7a23cc14471f8a68ca11c2551c9990da2ae9a25eaa477f75b6feb980c2`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T16:50:41.773Z`
