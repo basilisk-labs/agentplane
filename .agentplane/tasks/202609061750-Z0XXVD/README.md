@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 96
+revision: 97
 origin:
   system: "manual"
 depends_on: []
@@ -8455,19 +8455,49 @@ extensions:
         revision: 16
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 96
+    revision: 97
     schema_version: 1
-    updated_at: "2026-09-07T00:04:02.168Z"
+    updated_at: "2026-09-07T00:04:11.419Z"
     work_items:
       honor-branch-verification-plan:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "honor-branch-verification-plan"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:1adea2612da366356d88d684104c912f7a55ae7ab5235c530b092aedcdb3d6c2"
+            id: "Branch supervisor verification honors the approved Task validation commands and timeout metadata."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 17
+              task_id: "202609061750-Z0XXVD"
+              work_item_id: "honor-branch-verification-plan"
+            provenance:
+              - "sha256:bb667666b4afdf5247087dafc0bd50a9be2ed3185ad41940b2e805905a70b827"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:2f8bef914be9ab8e09ad485110956388208524e425cb44788882ca567b533d4e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+              check_id: "branch-validation-contract"
+              command_identity: "bun run test:fast packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --pool=forks --testTimeout=60000 --hookTimeout=60000"
+              detail: "Observed by bun run test:fast packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --pool=forks --testTimeout=60000 --hookTimeout=60000."
+              exit_code: 0
+              observed_at: "2026-09-07T00:04:11.370Z"
+              repository_snapshot_digest: "sha256:2f8bef914be9ab8e09ad485110956388208524e425cb44788882ca567b533d4e"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       prepare-qualified-078-candidate:
         attempt: 1
         claim_id: null
@@ -9151,6 +9181,22 @@ extensions:
         task_id: "202609061750-Z0XXVD"
         task_revision: 91
         work_item_id: null
+      -
+        at: "2026-09-07T00:04:11.419Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_17ac20d7ff24653ffc2ecc84"
+        mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-4987e872e04a52633b327e33"
+        plan_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
+        plan_revision: 17
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+        task_revision: 96
+        work_item_id: "honor-branch-verification-plan"
     leases: []
     mutation_receipts:
       compatibility:sha256:022834da100df7fc3623c30cc816ea817bf10345a355f2f1c927d82e6bc91348:
@@ -10466,6 +10512,29 @@ extensions:
         mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-37b8a0797519841bcf1ac38a"
         next_revision: 25
         previous_revision: 24
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+      external-result:work-order-202609061750-Z0XXVD-executor-4987e872e04a52633b327e33:
+        aggregate_digest: "sha256:cec1926d871b78f1d65479840d5c086a86da3711dcba29a41fc6682467656dc6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T00:04:11.419Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_17ac20d7ff24653ffc2ecc84"
+          mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-4987e872e04a52633b327e33"
+          plan_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
+          plan_revision: 17
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 96
+          to: "COMPLETED"
+          work_item_id: "honor-branch-verification-plan"
+        mutation_id: "external-result:work-order-202609061750-Z0XXVD-executor-4987e872e04a52633b327e33"
+        next_revision: 97
+        previous_revision: 96
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
       external-result:work-order-202609061750-Z0XXVD-executor-81a9811ba63ed3feb589eb5c:
