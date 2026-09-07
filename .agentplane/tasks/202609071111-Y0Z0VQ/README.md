@@ -4,7 +4,7 @@ title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequenti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -89,10 +89,21 @@ execution_contract:
       - "packages/core/src/tasks"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+      - "packages/core"
+    changed_paths:
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+      - "packages/agentplane/src/commands/task/finish-shared.ts"
+      - "packages/core/src/tasks/task-centric/index.ts"
+      - "packages/core/src/tasks/task-centric/lifecycle.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -119,6 +130,7 @@ execution_contract:
           - "packages/core/src/tasks"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
           - "task_outcome"
@@ -130,20 +142,36 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:0268e66f7a025822eae7f61ca9173c614863a3e9b6ccba5a859fb42a300fd00c"
+      digest: "sha256:e12a06efc257e9110f1591a4b291880fb8f983d00c30cde334e839cb916dcccf"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:packages/core/src/tasks/task-centric/index.ts"
+        - "central_path:packages/core/src/tasks/task-centric/lifecycle.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "packages/core"
+        changed_files:
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+          - "packages/agentplane/src/commands/task/finish-shared.ts"
+          - "packages/core/src/tasks/task-centric/index.ts"
+          - "packages/core/src/tasks/task-centric/lifecycle.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -171,14 +199,20 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "b4e33797aa138d279f72ba825fe5b0c8e7bcce0c"
+  message: "🚧 Y0Z0VQ task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: b4e33797aa13. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -187,9 +221,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T11:25:20.567Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: b4e33797aa13. CLI accepted one state-bound external-agent semantic result."
+    commit: "b4e33797aa138d279f72ba825fe5b0c8e7bcce0c"
 doc_version: 3
-doc_updated_at: "2026-09-07T11:19:37.534Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T11:25:20.567Z"
+doc_updated_by: "SUPERVISOR"
 description: "Recheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation."
 sections:
   Summary: |-
@@ -599,7 +641,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071111-Y0Z0VQ"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609071111-Y0Z0VQ"
     intent:
@@ -614,9 +656,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-07T11:19:37.534Z"
+    updated_at: "2026-09-07T11:25:20.567Z"
     work_items:
       canonical-plan-routing:
         attempt: 0
@@ -692,6 +734,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
+      compatibility:sha256:58f289e66a58e3ddea3c3b84873bf6012716c6c278bb15de7f1a71dc2a0a3ce8:
+        aggregate_digest: "sha256:4daff06f2aeb936c1cd35b2af142ac27bf7764f5a75ea0cc8069c53122f589be"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T11:25:20.567Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_278f9635b0ecc048ad461ed0"
+          mutation_id: "compatibility:sha256:58f289e66a58e3ddea3c3b84873bf6012716c6c278bb15de7f1a71dc2a0a3ce8"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:58f289e66a58e3ddea3c3b84873bf6012716c6c278bb15de7f1a71dc2a0a3ce8"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
       compatibility:sha256:80c1ed5776fcdfc2580b5d0852d199646a5e090f215c72dae32575ce8dfd1ed0:
         aggregate_digest: "sha256:bee5565319e77f67e017938a1398e9b392aff8f3955f9711776641014b707ff5"
         event:
@@ -714,6 +780,30 @@ extensions:
         mutation_id: "compatibility:sha256:80c1ed5776fcdfc2580b5d0852d199646a5e090f215c72dae32575ce8dfd1ed0"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+      compatibility:sha256:8b7cba8fe97a2e021f102965d3a3823e896eddfc6b5f2e7175e1632e5bd265dc:
+        aggregate_digest: "sha256:d3f239daf4c4b7b4e9b5ad344416e462373aacc7b909baf5102297b02ac3988f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T11:25:20.567Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d1200577634cb5515d774509"
+          mutation_id: "compatibility:sha256:8b7cba8fe97a2e021f102965d3a3823e896eddfc6b5f2e7175e1632e5bd265dc"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8b7cba8fe97a2e021f102965d3a3823e896eddfc6b5f2e7175e1632e5bd265dc"
+        next_revision: 6
+        previous_revision: 5
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
       compatibility:sha256:e47c46c5249241f7b00585c94f1470341874f9607917e2793c7f22c6ffbcf5f9:
@@ -743,6 +833,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "b4e33797aa138d279f72ba825fe5b0c8e7bcce0c"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
