@@ -4,7 +4,7 @@ title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequenti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -203,9 +203,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b4e33797aa138d279f72ba825fe5b0c8e7bcce0c"
-  message: "🚧 Y0Z0VQ task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -656,9 +654,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T11:25:20.567Z"
+    updated_at: "2026-09-07T11:25:21.896Z"
     work_items:
       canonical-plan-routing:
         attempt: 0
@@ -670,14 +668,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       completion-route:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "completion-route"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:fee535d40c6402d88f0a5bd1f59ec0319c259a02055a422841095fb42dc318ae"
+            id: "completion-route-result"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071111-Y0Z0VQ"
+              work_item_id: "completion-route"
+            provenance:
+              - "sha256:54575f8ed2609820994f35a9d5b0f6cd2b4f886395eaa17ec68000e4aed29e0f"
+              - ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5b095cd7ab07853e9c6260df17d7f0b161a0991e1889fefbb0271cfff826e6d6"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json"
+              check_id: "completion-route-checks"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T11:25:21.892Z"
+              repository_snapshot_digest: "sha256:5b095cd7ab07853e9c6260df17d7f0b161a0991e1889fefbb0271cfff826e6d6"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       existing-result:
         attempt: 0
         claim_id: null
@@ -707,7 +735,23 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T11:25:21.896Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_88a84ebbf5d1593e21ea74bb"
+        mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-d2d9ab823862076bb998ba9d"
+        plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+        task_revision: 7
+        work_item_id: "completion-route"
     leases: []
     mutation_receipts:
       compatibility:sha256:46ad79fca94e6fd29950befdefcc4116b65ac17c18928c059243a8cb6465d8e4:
@@ -828,6 +872,29 @@ extensions:
         mutation_id: "compatibility:sha256:e47c46c5249241f7b00585c94f1470341874f9607917e2793c7f22c6ffbcf5f9"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+      external-result:work-order-202609071111-Y0Z0VQ-executor-d2d9ab823862076bb998ba9d:
+        aggregate_digest: "sha256:21f68a466d81606a3e36ea9d1246cc0ee9479af064eb8e1bdf1ed82706aef0f5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T11:25:21.896Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_88a84ebbf5d1593e21ea74bb"
+          mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-d2d9ab823862076bb998ba9d"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "completion-route"
+        mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-d2d9ab823862076bb998ba9d"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
     pending_effects: []
