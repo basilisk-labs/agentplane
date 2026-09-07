@@ -11,6 +11,17 @@ import { readContainedStableTextNoFollow } from "../../shared/contained-stable-f
 import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
 
+// Keep this provider contract aligned with the gateway language policy.
+export const AGENT_INSTRUCTION_LANGUAGE = [
+  "Write framework-owned agent-to-agent instructions in simple technical English.",
+  "Write one action, condition, or constraint in each sentence.",
+  "Name the actor if the actor is not clear.",
+  "Put a condition before the action that depends on it.",
+  "Use one term for one concept.",
+  "Do not use idioms, metaphors, or vague references.",
+  "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+].join("\n");
+
 type ProcessChoreographyMatch = {
   id: string;
   match: string;

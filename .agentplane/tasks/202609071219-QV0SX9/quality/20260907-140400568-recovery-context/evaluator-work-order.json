@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071219-QV0SX9-47929eee186f011acdb1640e",
+  "prepared_at": "2026-09-07T14:04:00.568Z",
+  "task": {
+    "id": "202609071219-QV0SX9",
+    "revision": 20,
+    "objective": "Use simple technical English in task prompts and remove redundant prompt context\n\nDeliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement.",
+    "acceptance_criteria": [
+      "bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2",
+      "bun run typecheck",
+      "- In scope: Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement.\n- Out of scope: unrelated refactors not required for \"Use simple technical English in task prompts and remove redundant prompt context\".",
+      "Implement one WorkItem: prompt-language-and-compaction.\n1. Reuse the existing gateway language rules in the semantic projection. Keep lifecycle instructions excluded. Add equivalent language guidance to the external-agent instruction path.\n2. Align the bundled PLANNER profile with TaskPlanProposal and internal WorkItems. Split compound framework instructions into explicit sentences.\n3. Remove duplicate runner prose only when the same constraint remains explicit elsewhere in the final prompt. Keep all authority and stop conditions.\n4. Replace verbose runner result examples with concise schema-valid examples for completed, blocked, needs_context, and failed. Keep test fixtures unchanged unless their existing contract requires an update.\n5. Extend the nearest tests for both prompt routes, exact literal preservation, effective authority, result parsing, and prompt byte reduction.\nValidation: run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2. Run bun run typecheck. Run bunx prettier --check on changed files. Record before/after UTF-8 prompt bytes using fixed fixtures. AgentPlane owns formal verification persistence.\nScope: the eight files listed in the WorkItem. Reuse existing primitives. Do not change schemas, gateway policy files, security enforcement, release metadata, or external systems. Do not minify or abbreviate schema keys in this change.\nRisk: compaction could omit a constraint or a required example field. Regression tests must compare retained semantic contracts and parse every status example.\nRollback: revert only this WorkItem's implementation diff.\nExternal writes, commits, publication, and hosted integration require their own explicit operator authority.",
+      "1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.\n2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.\n3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.\n4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.\n5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.\n6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations."
+    ]
+  },
+  "evaluated_sha": "b847aa915f64886905be06ccfb30e37544f35d25",
+  "diff_base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+  "blueprint_digest": "2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-140400568-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:c55981d2101dc6800fd8ed10f6607695e4ba131c9dda32c3b57fb09a23c6d318",
+    "prompt_path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/a78cc40f63621babe9fbfb45064ae86028ba842d602b4c9ba2d95266427ed3e1.md",
+    "result_schema_path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071219-QV0SX9/README.md",
+      "sha256": "sha256:e20844b9f511e3f22ef8dd742ad29e4aaa246856a56f7ddc01dc921d9ac02587",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch",
+      "sha256": "sha256:d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/4786cd47cb641c3a428dfeae1d21e97b5a9630c3e19af6ce253b7b67611f60fb.json",
+      "sha256": "sha256:4786cd47cb641c3a428dfeae1d21e97b5a9630c3e19af6ce253b7b67611f60fb",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071219-QV0SX9/verification/20260907140352599-f941cbc14f16da04.json",
+      "sha256": "sha256:adad5f940f78688fe97a9dc40af332e01ae5095c08e7932b539124cae7699f4f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/6f016c58a63967e8291105a051182b362e416dacc7fef85bf88124d95209061e.json",
+      "sha256": "sha256:6f016c58a63967e8291105a051182b362e416dacc7fef85bf88124d95209061e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
