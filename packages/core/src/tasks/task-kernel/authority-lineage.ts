@@ -4,12 +4,21 @@ import type {
   CanonicalAuthorityRecord,
   ExecutionAuthority,
   KernelInput,
+  Sha256Digest,
   TaskAggregate,
 } from "./model.js";
 
 export function authorityDigest(authority: Omit<ExecutionAuthority, "digest">) {
   const { digest: _digest, ...contents } = authority as ExecutionAuthority;
   return kernelDigest(contents);
+}
+
+export function authorityDeltaApprovalEvidence(input: {
+  task_id: string;
+  request_digest: Sha256Digest;
+  actor_id: string;
+}) {
+  return kernelDigest({ kind: "canonical_authority_delta_approval", ...input });
 }
 
 export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
@@ -26,9 +35,78 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
       (entry) =>
         entry?.revision === authority.plan_revision && entry.digest === authority.plan_digest,
     );
-    if (plan?.approval_evidence_digest !== authority.provenance.evidence_digest)
+    if (
+      record.observation?.kind !== "authority_delta" &&
+      plan?.approval_evidence_digest !== authority.provenance.evidence_digest
+    )
       issues.push("authority_plan");
-    if (record.approval_mode === null) {
+    if (record.observation?.kind === "authority_delta") {
+      const parent = records[index - 1]?.authority;
+      const observation = record.observation;
+      const immutable = parent
+        ? {
+            ...authority,
+            digest: parent.digest,
+            repository_fingerprint: parent.repository_fingerprint,
+            scope_roots: parent.scope_roots,
+            repository_effects: parent.repository_effects,
+            provenance: parent.provenance,
+          }
+        : null;
+      if (
+        !parent ||
+        record.approval_mode === null ||
+        record.approval_mode !== "manual_operator" ||
+        authority.provenance.kind !== "USER" ||
+        authority.provenance.parent_authority_digest !== parent.digest ||
+        authority.provenance.evidence_digest !== parent.provenance.evidence_digest ||
+        observation.evidence_digest !==
+          authorityDeltaApprovalEvidence({
+            task_id: aggregate.id,
+            request_digest: observation.request_digest!,
+            actor_id: authority.provenance.actor_id,
+          }) ||
+        observation.request_task_revision === undefined ||
+        observation.repository_evidence_digest === undefined ||
+        observation.added_scope_roots === undefined ||
+        observation.added_repository_effects === undefined ||
+        observation.added_scope_roots.length === 0 ||
+        JSON.stringify(observation.changed_paths) !==
+          JSON.stringify([...new Set(observation.changed_paths)].toSorted()) ||
+        JSON.stringify(observation.added_scope_roots) !==
+          JSON.stringify([...new Set(observation.added_scope_roots)].toSorted()) ||
+        JSON.stringify(observation.added_repository_effects) !==
+          JSON.stringify([...new Set(observation.added_repository_effects)].toSorted()) ||
+        observation.added_scope_roots.some((root) => !observation.changed_paths.includes(root)) ||
+        JSON.stringify(authority.scope_roots) !==
+          JSON.stringify(
+            [...new Set([...parent.scope_roots, ...observation.added_scope_roots])].toSorted(),
+          ) ||
+        JSON.stringify(authority.repository_effects) !==
+          JSON.stringify(
+            [
+              ...new Set([...parent.repository_effects, ...observation.added_repository_effects]),
+            ].toSorted(),
+          ) ||
+        !immutable ||
+        kernelDigest(immutable) !== kernelDigest(parent) ||
+        kernelDigest({
+          task_id: aggregate.id,
+          task_revision: observation.request_task_revision,
+          plan_revision: parent.plan_revision,
+          plan_digest: parent.plan_digest,
+          parent_authority_digest: parent.digest,
+          repository_identity: parent.repository_identity,
+          previous_fingerprint: parent.repository_fingerprint,
+          repository_fingerprint: authority.repository_fingerprint,
+          repository_evidence_digest: observation.repository_evidence_digest,
+          changed_paths: observation.changed_paths,
+          added_scope_roots: observation.added_scope_roots,
+          added_repository_effects: observation.added_repository_effects,
+        }) !== observation.request_digest
+      )
+        issues.push("authority_delta");
+    } else if (record.approval_mode === null) {
       const parent = records[index - 1]?.authority;
       if (!parent || !record.observation || continuationIssues(parent, record).length > 0)
         issues.push("authority_continuation");
@@ -81,6 +159,8 @@ export function continuationIssues(
       observation.changed_paths.length > 0
     )
       return ["plan_observation_binding"];
+  } else if (observation.kind === "authority_delta") {
+    return ["authority_delta_requires_user"];
   } else if (
     child.plan_revision !== parent.plan_revision ||
     child.plan_digest !== parent.plan_digest ||

@@ -1,3 +1,7 @@
+import path from "node:path";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { isManagedTaskArtifact } from "../shared/quality-review-target.js";
+import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -47,4 +51,36 @@ export async function commitBranchSupervisorTaskArtifacts(opts: {
   if (exitCode !== 0) {
     throw new Error(`Task artifact commit exited with ${exitCode}.`);
   }
+}
+
+/** Passed checks are already durable. The next evaluator commit can include their artifacts. */
+export async function canCoalesceVerificationArtifacts(opts: {
+  command: CommandContext;
+  cwd: string;
+  task_id: string;
+  next: TaskRouteDecision;
+}): Promise<boolean> {
+  const step = opts.next.workflowStep;
+  if (
+    step.kind !== "agent_episode" ||
+    step.episode.purpose !== "quality_review" ||
+    step.episode.taskId !== opts.task_id ||
+    step.blockers.length > 0 ||
+    !opts.next.executionPacket.mustRunFrom ||
+    path.resolve(opts.next.executionPacket.mustRunFrom) !== path.resolve(opts.cwd)
+  )
+    return false;
+  const status = await readDirectRepositoryStatus(opts.cwd);
+  if (!status) return false;
+  const prefix = `${opts.command.config.paths.workflow_dir.replaceAll("\\", "/").replace(/\/+$/u, "")}/${opts.task_id}/`;
+  return status.lines.every((line) => {
+    // Renames and quoted/ambiguous status paths are not eligible for deferred commits.
+    const relative = line.slice(3).trim();
+    return (
+      !relative.includes(" -> ") &&
+      !relative.startsWith('"') &&
+      relative.startsWith(prefix) &&
+      isManagedTaskArtifact(relative.slice(prefix.length))
+    );
+  });
 }

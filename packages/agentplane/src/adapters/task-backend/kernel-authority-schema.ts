@@ -45,10 +45,15 @@ export const kernelAuthorityRecordSchema = z.strictObject({
     .nullable(),
   observation: z
     .strictObject({
-      kind: z.enum(["plan_amendment", "repository_implementation"]),
+      kind: z.enum(["plan_amendment", "repository_implementation", "authority_delta"]),
       evidence_digest: digest,
       previous_fingerprint: digest,
       changed_paths: strings,
+      request_digest: digest.optional(),
+      added_scope_roots: strings.optional(),
+      added_repository_effects: strings.optional(),
+      request_task_revision: z.number().int().nonnegative().optional(),
+      repository_evidence_digest: digest.optional(),
     })
     .nullable(),
 });

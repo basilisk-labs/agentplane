@@ -52,6 +52,33 @@ export function kernelApprovalReference(context: NativeAuthorityContext, plan: k
   });
 }
 
+export type KernelAuthorityDeltaRequest = Readonly<{
+  task_id: string;
+  task_revision: number;
+  plan_revision: number;
+  plan_digest: k.Sha256Digest;
+  parent_authority_digest: k.Sha256Digest;
+  repository_identity: k.Sha256Digest;
+  previous_fingerprint: k.Sha256Digest;
+  repository_fingerprint: k.Sha256Digest;
+  repository_evidence_digest: k.Sha256Digest;
+  changed_paths: readonly string[];
+  added_scope_roots: readonly string[];
+  added_repository_effects: readonly string[];
+}>;
+
+function uniqueSorted(values: readonly string[]) {
+  return [...new Set(values)].toSorted();
+}
+
+function authorityDeltaApprovalEvidence(input: {
+  task_id: string;
+  request_digest: k.Sha256Digest;
+  actor_id: string;
+}) {
+  return k.kernelDigest({ kind: "canonical_authority_delta_approval", ...input });
+}
+
 /** One production authority resolver. Callers supply task identity, never a grant or USER claim. */
 export class KernelAuthorityResolver {
   constructor(
@@ -270,6 +297,23 @@ export class KernelAuthorityResolver {
       invalid("native_policy_changed");
   }
 
+  private assertLineageCeiling(aggregate: k.TaskAggregate, context: NativeAuthorityContext) {
+    const records = aggregate.authority_lineage ?? [];
+    const first = records[0]?.authority;
+    const latest = records.at(-1)?.authority;
+    if (!first || !latest || k.canonicalAuthorityIssues(aggregate).length > 0)
+      invalid("canonical_authority_lineage_invalid");
+    this.assertCeiling(first, context);
+    this.assertCeiling(latest, {
+      ...context,
+      ceiling: {
+        ...context.ceiling,
+        scope_roots: latest.scope_roots,
+        repository_effects: latest.repository_effects,
+      },
+    });
+  }
+
   async resolve(
     taskId: string,
     workItemId?: string,
@@ -279,7 +323,7 @@ export class KernelAuthorityResolver {
     if (!stored) invalid("canonical_authority_missing");
     const authority = kernelAuthoritySchema.parse(stored);
     assertUnexpired(authority, freshTime(context));
-    this.assertCeiling(authority, context);
+    this.assertLineageCeiling(aggregate, context);
     if (
       aggregate.current_plan?.state !== "APPROVED" ||
       authority.plan_revision !== aggregate.current_plan.revision ||
@@ -303,7 +347,7 @@ export class KernelAuthorityResolver {
     const plan = aggregate.current_plan;
     if (!parent || plan?.state !== "APPROVED") invalid("canonical_authority_missing");
     assertUnexpired(parent, freshTime(context));
-    this.assertCeiling(parent, context);
+    this.assertLineageCeiling(aggregate, context);
     const observation = await this.native.observeContinuation(taskId, parent);
     if (!observation) invalid("native_observation_required");
     const contents = {
@@ -342,5 +386,131 @@ export class KernelAuthorityResolver {
       mutation_id: context.mutation_id,
     };
     return this.adapter.execute(input);
+  }
+
+  async prepareDelta(
+    taskId: string,
+    repositoryEffects: (path: string) => readonly string[],
+  ): Promise<{ request: KernelAuthorityDeltaRequest; request_digest: k.Sha256Digest }> {
+    const { context, aggregate } = await this.context(taskId);
+    const parent = aggregate.authority_lineage?.at(-1)?.authority;
+    const plan = aggregate.current_plan;
+    if (!parent || plan?.state !== "APPROVED") invalid("canonical_authority_missing");
+    assertUnexpired(parent, freshTime(context));
+    this.assertLineageCeiling(aggregate, context);
+    const observation = await this.native.observeContinuation(taskId, parent);
+    if (observation?.kind !== "repository_implementation")
+      invalid("native_repository_observation_required");
+    const outside = uniqueSorted(
+      observation.changed_paths.filter(
+        (changed) =>
+          !parent.scope_roots.some(
+            (root) => root === "." || changed === root || changed.startsWith(`${root}/`),
+          ),
+      ),
+    );
+    if (outside.length === 0) invalid("authority_delta_not_required");
+    const request: KernelAuthorityDeltaRequest = {
+      task_id: taskId,
+      task_revision: aggregate.revision,
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+      parent_authority_digest: parent.digest,
+      repository_identity: context.repository_identity,
+      previous_fingerprint: parent.repository_fingerprint,
+      repository_fingerprint: context.repository_fingerprint,
+      repository_evidence_digest: observation.evidence_digest,
+      changed_paths: uniqueSorted(observation.changed_paths),
+      added_scope_roots: outside,
+      added_repository_effects: uniqueSorted(
+        outside.flatMap((changed) => repositoryEffects(changed)),
+      ),
+    };
+    return { request, request_digest: k.kernelDigest(request) };
+  }
+
+  async approveDelta(opts: {
+    task_id: string;
+    scope_roots: readonly string[];
+    repository_effects: readonly string[];
+    request_digest: k.Sha256Digest;
+    repositoryEffects: (path: string) => readonly string[];
+  }) {
+    const prepared = await this.prepareDelta(opts.task_id, opts.repositoryEffects);
+    if (
+      prepared.request_digest !== opts.request_digest ||
+      JSON.stringify(prepared.request.added_scope_roots) !==
+        JSON.stringify(uniqueSorted(opts.scope_roots)) ||
+      JSON.stringify(prepared.request.added_repository_effects) !==
+        JSON.stringify(uniqueSorted(opts.repository_effects))
+    )
+      invalid("authority_delta_request_mismatch");
+    const { context, aggregate } = await this.context(opts.task_id);
+    const parent = aggregate.authority_lineage?.at(-1)?.authority;
+    if (parent?.digest !== prepared.request.parent_authority_digest)
+      invalid("authority_delta_parent_changed");
+    const approval = await this.native.readApproval(opts.task_id);
+    if (
+      approval?.kind !== "manual_operator" ||
+      !approval.invocation_id ||
+      !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(approval.actor_id)
+    )
+      invalid("explicit_manual_operator_required");
+    if (approval.invocation_id !== prepared.request_digest)
+      invalid("authority_delta_approval_binding");
+    const approvalEvidence = authorityDeltaApprovalEvidence({
+      task_id: opts.task_id,
+      request_digest: prepared.request_digest,
+      actor_id: approval.actor_id,
+    });
+    const scopeRoots = uniqueSorted([...parent.scope_roots, ...prepared.request.added_scope_roots]);
+    const repositoryEffects = uniqueSorted([
+      ...parent.repository_effects,
+      ...prepared.request.added_repository_effects,
+    ]);
+    const contents = {
+      ...parent,
+      repository_fingerprint: context.repository_fingerprint,
+      scope_roots: scopeRoots,
+      repository_effects: repositoryEffects,
+      provenance: {
+        kind: "USER" as const,
+        actor_id: approval.actor_id,
+        evidence_digest: parent.provenance.evidence_digest,
+        parent_authority_digest: parent.digest,
+      },
+    };
+    const record = kernelAuthorityRecordSchema.parse({
+      authority: { ...contents, digest: k.authorityDigest(contents) },
+      approval_mode: approval.kind,
+      observation: {
+        kind: "authority_delta",
+        evidence_digest: approvalEvidence,
+        previous_fingerprint: parent.repository_fingerprint,
+        changed_paths: prepared.request.changed_paths,
+        request_digest: prepared.request_digest,
+        added_scope_roots: prepared.request.added_scope_roots,
+        added_repository_effects: prepared.request.added_repository_effects,
+        request_task_revision: prepared.request.task_revision,
+        repository_evidence_digest: prepared.request.repository_evidence_digest,
+      },
+    });
+    await this.assertFresh(context, parent.expires_at);
+    return this.adapter.execute({
+      command: {
+        kind: "approve_authority_delta",
+        task_id: opts.task_id,
+        expected_task_revision: aggregate.revision,
+        expected_state_fingerprint: context.repository_fingerprint,
+        parent_authority_digest: parent.digest,
+        request_digest: prepared.request_digest,
+        record,
+      },
+      actor: { ...context.actor, id: approval.actor_id, kind: "USER" },
+      authority: null,
+      repository_fingerprint: context.repository_fingerprint,
+      occurred_at: context.occurred_at,
+      mutation_id: context.mutation_id,
+    });
   }
 }

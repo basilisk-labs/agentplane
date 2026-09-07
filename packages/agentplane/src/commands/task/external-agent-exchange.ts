@@ -1,3 +1,7 @@
+import {
+  buildWorkOrderContextManifest,
+  WORK_ORDER_CONTEXT_FILENAME,
+} from "../../runner/context/work-order-context.js";
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -202,6 +206,11 @@ export async function persistExternalAgentExchangeArtifacts(opts: {
       "utf8",
     ),
   ]);
+  await atomicWriteFile(
+    path.join(opts.paths.directory, WORK_ORDER_CONTEXT_FILENAME),
+    `${JSON.stringify(buildWorkOrderContextManifest(opts.work_order, opts.paths.work_order), null, 2)}\n`,
+    "utf8",
+  );
   await writeExternalAgentExchange(opts.paths.exchange, opts.exchange);
 }
 

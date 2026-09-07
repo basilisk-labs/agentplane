@@ -37,10 +37,6 @@ import {
   validateExternalAgentResultEnvelope,
   type ExternalAgentExchange,
 } from "../commands/task/external-agent-exchange.js";
-import {
-  requiresImplementationRecoveryReplacement,
-  requiresPlanningRecoveryReplacement,
-} from "../commands/task/external-agent-supervisor-recovery.js";
 import { blockingImplementationAuthorityViolations } from "../commands/task/external-agent-implementation-authority.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
@@ -128,94 +124,74 @@ describe("task advance effect recovery", () => {
     exerciseIntegrationEffectRecovery(scenario),
   );
 
-  it("requires replacement when a non-planning result predates an explicit PLANNER reset", () => {
-    const stateFingerprint = `sha256:${"a".repeat(64)}`;
-    const planningFingerprint = `sha256:${"b".repeat(64)}`;
-    expect(
-      requiresPlanningRecoveryReplacement({
-        decision: {
-          workflowStep: {
-            kind: "agent_episode",
-            episode: { purpose: "planning" },
-            preconditionFingerprint: { digest: planningFingerprint },
-          },
-        } as never,
-        exchange: {
-          purpose: "implementation",
-          state_fingerprint: stateFingerprint,
-        } as ExternalAgentExchange,
-      }),
-    ).toBe(true);
-  });
-
-  it("requires replacement when plan approval changes pending implementation authority", () => {
-    const taskDigest = `sha256:${"a".repeat(64)}`;
-    const backendDigest = `sha256:${"b".repeat(64)}`;
-    const authorityDigest = `sha256:${"e".repeat(64)}`;
-    const fingerprint = {
-      task_id: "202608171106-XFN696",
-      task_revision: 16,
-      worktree: "/repo/.agentplane/worktrees/task",
-      components: {
-        task: { digest: taskDigest },
-        backend_projection: { digest: backendDigest },
-        provider: { digest: `sha256:${"0".repeat(64)}` },
-        authority: { digest: authorityDigest },
-      },
-    };
-    const decision = {
-      workflowStep: {
-        preconditionFingerprint: {
-          ...fingerprint,
-          task_revision: 19,
-          digest: `sha256:${"c".repeat(64)}`,
-        },
-      },
-    } as never;
-    const exchange = { purpose: "task_worktree_resolution" } as ExternalAgentExchange;
-    const workOrder = { state_fingerprint: fingerprint } as AgentWorkOrderV2;
-
-    expect(
-      requiresImplementationRecoveryReplacement({ decision, exchange, work_order: workOrder }),
-    ).toBe(true);
-    expect(
-      requiresImplementationRecoveryReplacement({
-        decision,
-        exchange: { purpose: "implementation_rework" } as ExternalAgentExchange,
-        work_order: workOrder,
-      }),
-    ).toBe(true);
-    expect(
-      requiresImplementationRecoveryReplacement({
-        decision: {
-          workflowStep: {
-            preconditionFingerprint: {
-              ...fingerprint,
-              digest: `sha256:${"d".repeat(64)}`,
-            },
-          },
-        } as never,
-        exchange,
-        work_order: workOrder,
-      }),
-    ).toBe(false);
-    expect(
-      requiresImplementationRecoveryReplacement({
-        decision: {
-          workflowStep: {
-            preconditionFingerprint: {
-              ...fingerprint,
-              components: {
-                ...fingerprint.components,
-                authority: { digest: `sha256:${"f".repeat(64)}` },
-              },
-            },
-          },
-        } as never,
-        exchange,
-        work_order: workOrder,
-      }),
-    ).toBe(true);
+  it("retires a received stale planning result and issues one repeatable fresh episode", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root);
+    const issued = await readAgentPacket(root, taskId);
+    const resultPath = await writePlanningResult(issued, "Plan against the original snapshot.");
+    await writeFile(path.join(root, "parallel-change.txt"), "new repository input\n");
+    const rejected = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--result",
+      resultPath,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(rejected.code).not.toBe(0);
+    expect(rejected.stderr).toContain("External-agent result is stale");
+    if (!issued.exchange) throw new Error("expected exchange");
+    const exchangePath = path.join(issued.exchange.directory, "exchange.json");
+    const received = JSON.parse(await readFile(exchangePath, "utf8")) as ExternalAgentExchange;
+    expect(received.status).toBe("result_received");
+    const retired = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(retired.code).not.toBe(0);
+    expect(retired.stderr).toContain("retired the stale result");
+    expect(JSON.parse(await readFile(exchangePath, "utf8"))).toMatchObject({
+      status: "retired",
+      result_digest: received.result_digest,
+      result: received.result,
+    });
+    const replacement = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--replacement",
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(replacement.code, replacement.stderr).toBe(0);
+    const fresh = JSON.parse(replacement.stdout) as AgentPacket;
+    expect(fresh).toMatchObject({ action: { kind: "agent_episode" } });
+    expect(fresh.transition_id).not.toBe(issued.transition_id);
+    expect(fresh.state_fingerprint).not.toBe(issued.state_fingerprint);
+    const replay = await readAgentPacket(root, taskId);
+    expect(replay.transition_id).toBe(fresh.transition_id);
+    const oldResult = await captureRecoveryCli([
+      "task",
+      "advance",
+      taskId,
+      "--result",
+      resultPath,
+      "--agent-json",
+      "--root",
+      root,
+    ]);
+    expect(oldResult.code).not.toBe(0);
+    expect(oldResult.stderr).toContain("retired");
   });
 
   it("lets implementation rework proceed past stale verification failures only", () => {

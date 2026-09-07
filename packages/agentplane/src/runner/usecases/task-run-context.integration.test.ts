@@ -475,7 +475,9 @@ describe("context task runner integration", () => {
       plannerProviderPrompt,
       evaluatorProviderPrompt,
     ]) {
-      expect(providerPrompt).toContain("complete provider-facing projection");
+      expect(providerPrompt).toContain(
+        "complete context manifest preserves all required constraints and input references",
+      );
       expect(providerPrompt).toContain("MUST NOT commit secrets, credentials, or private keys.");
       expect(providerPrompt).toContain(
         "MUST NOT access outside-repo files without explicit user approval.",

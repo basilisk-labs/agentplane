@@ -33,6 +33,7 @@ import {
   materializeCodexResultTransport,
   recordCodexProviderUsageForResult,
   renderCodexResultOutputSchemaJson,
+  type CodexProviderUsage,
 } from "./codex-result-transport.js";
 import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
 
@@ -52,7 +53,7 @@ function readOptionalCodexAgentMessage(
 
 function readOptionalCodexUsage(
   collector: ReturnType<typeof createCodexResultEventCollector>,
-): { input_tokens: number; output_tokens: number; total_tokens: number } | null {
+): CodexProviderUsage | null {
   try {
     return collector.readUsage();
   } catch {
@@ -161,12 +162,13 @@ export class CodexRunnerAdapter implements RunnerAdapter {
   async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
     const executionInvocation = structuredClone(invocation);
     const resultEventCollector = createCodexResultEventCollector();
+    let preparedContextBytes: number | undefined;
     const result = await executeSupervisedRunnerAdapter({
       invocation: executionInvocation,
       assertInvocation: assertCodexInvocation,
       observeStdoutLine: (rawLine) => resultEventCollector.observeStdoutLine(rawLine),
-      readStdinText: async (input) =>
-        await readValidatedPreparedRunnerStdin({
+      readStdinText: async (input) => {
+        const stdin = await readValidatedPreparedRunnerStdin({
           invocation: input,
           require_bootstrap: true,
           optional_inputs: input.output_schema_path
@@ -178,7 +180,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 },
               ]
             : [],
-        }),
+        });
+        preparedContextBytes = Buffer.byteLength(stdin, "utf8");
+        return stdin;
+      },
       materializeResult: async ({ invocation: input, processResult }) => {
         if (
           processResult.exit_code !== 0 ||
@@ -284,7 +289,13 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       },
     });
     const providerUsage = readOptionalCodexUsage(resultEventCollector);
-    if (providerUsage) recordCodexProviderUsageForResult(result, providerUsage);
+    if (providerUsage)
+      recordCodexProviderUsageForResult(result, {
+        ...providerUsage,
+        ...(preparedContextBytes === undefined
+          ? {}
+          : { prepared_context_bytes: preparedContextBytes }),
+      });
     return result;
   }
 }

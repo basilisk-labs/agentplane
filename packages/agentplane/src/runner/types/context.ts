@@ -1,3 +1,4 @@
+import type { WorkOrderContextManifest } from "../context/work-order-context.js";
 import type {
   EvaluatorSkepticismLevel,
   RunnerTraceConfig,
@@ -203,6 +204,7 @@ export type RunnerContextBundle = {
   playbook?: RunnerExecutionPlaybookContract;
   /** Canonical V2 work order for the semantic episode; optional for v1 bundles. */
   work_order?: AgentWorkOrderV2;
+  semantic_context?: WorkOrderContextManifest;
   /** Canonical V2 preparation projection paired with `work_order`; optional for v1 bundles. */
   work_order_preparation?: AgentWorkOrderPreparationView;
   /** Internal typed route source retained for runner state-fingerprint observation. */

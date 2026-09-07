@@ -253,7 +253,6 @@ export async function assertEvaluatorPacketCurrent(opts: {
     });
   }
   const names = new Set<string>();
-  const objectPrefix = `${manifest.object_root.replaceAll(/\/+$/gu, "")}/sha256/`;
   for (const artifact of manifest.artifacts) {
     if (names.has(artifact.logical_name)) {
       throw new CliError({
@@ -262,29 +261,12 @@ export async function assertEvaluatorPacketCurrent(opts: {
       });
     }
     names.add(artifact.logical_name);
-    if (!artifact.path.startsWith(objectPrefix)) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: `Evaluator packet object is outside its object root: ${artifact.path}`,
-      });
-    }
-    const artifactPath = resolveRepositoryPath(
-      opts.gitRoot,
-      artifact.path,
-      `Evaluator packet artifact ${artifact.logical_name}`,
-    );
-    const bytes = await readStableEvaluatorEvidenceFile({
+    await readEvaluatorEvidenceObject({
       gitRoot: opts.gitRoot,
-      filePath: artifactPath,
-      label: `Evaluator packet artifact ${artifact.logical_name}`,
-      hook: opts.boundaryHook,
+      objectRoot: manifest.object_root,
+      artifact,
+      boundaryHook: opts.boundaryHook,
     });
-    if (bytes.byteLength !== artifact.size_bytes || sha256(bytes) !== artifact.sha256) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: `Evaluator packet artifact changed after preparation: ${artifact.path}`,
-      });
-    }
   }
   for (const requiredName of [
     "evaluator-diff",
@@ -313,4 +295,39 @@ export async function assertEvaluatorPacketCurrent(opts: {
     });
   }
   return manifest;
+}
+
+/** Resolve one existing immutable object with the same checks used by evaluator packets. */
+export async function readEvaluatorEvidenceObject(opts: {
+  gitRoot: string;
+  objectRoot: string;
+  artifact: unknown;
+  boundaryHook?: EvaluatorEvidenceBoundaryHook;
+}): Promise<{ artifact: EvaluatorPacketArtifact; bytes: Buffer }> {
+  const artifact = EVALUATOR_PACKET_ARTIFACT_SCHEMA.parse(opts.artifact);
+  const objectPrefix = `${opts.objectRoot.replaceAll(/\/+$/gu, "")}/sha256/`;
+  if (!artifact.path.startsWith(objectPrefix)) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Evaluator packet object is outside its object root: ${artifact.path}`,
+    });
+  }
+  const artifactPath = resolveRepositoryPath(
+    opts.gitRoot,
+    artifact.path,
+    `Evaluator packet artifact ${artifact.logical_name}`,
+  );
+  const bytes = await readStableEvaluatorEvidenceFile({
+    gitRoot: opts.gitRoot,
+    filePath: artifactPath,
+    label: `Evaluator packet artifact ${artifact.logical_name}`,
+    hook: opts.boundaryHook,
+  });
+  if (bytes.byteLength !== artifact.size_bytes || sha256(bytes) !== artifact.sha256) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Evaluator packet artifact changed after preparation: ${artifact.path}`,
+    });
+  }
+  return { artifact, bytes };
 }

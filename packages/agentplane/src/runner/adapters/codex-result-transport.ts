@@ -243,6 +243,8 @@ export type CodexProviderUsage = {
   /** Budget-charged output, including reasoning tokens. */
   output_tokens: number;
   total_tokens: number;
+  cached_input_tokens?: number;
+  prepared_context_bytes?: number;
   visible_output_tokens?: number;
   reasoning_tokens?: number;
 };
@@ -279,6 +281,13 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
   if (input === null || output === null || reasoning === null) {
     throw new Error("Codex turn completion contains malformed provider usage.");
   }
+  const cached =
+    providerEvent.usage.cached_input_tokens === undefined
+      ? undefined
+      : nonNegativeInteger(providerEvent.usage.cached_input_tokens);
+  if (cached === null || (cached !== undefined && cached > input)) {
+    throw new Error("Codex turn completion contains malformed cached input usage.");
+  }
   const chargedOutput = output + reasoning;
   const minimumTotal = input + chargedOutput;
   const reportedTotal =
@@ -292,6 +301,7 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
     throw new Error("Codex turn completion total token usage is lower than its components.");
   }
   return {
+    ...(cached === undefined ? {} : { cached_input_tokens: cached }),
     input_tokens: input,
     output_tokens: chargedOutput,
     total_tokens: reportedTotal ?? minimumTotal,

@@ -180,6 +180,37 @@ describe("Codex supervisor semantic result transport", () => {
     });
   });
 
+  it("retains optional cache telemetry without charging cached input twice", () => {
+    const collector = createCodexResultEventCollector();
+    const event = {
+      type: "turn.completed",
+      usage: {
+        input_tokens: 100,
+        cached_input_tokens: 70,
+        output_tokens: 20,
+        reasoning_output_tokens: 0,
+      },
+    };
+    collector.observeStdoutLine(JSON.stringify(event));
+    expect(collector.readUsage()).toMatchObject({ cached_input_tokens: 70, total_tokens: 120 });
+  });
+
+  it("rejects cache counts exceeding observed input", () => {
+    const collector = createCodexResultEventCollector();
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "turn.completed",
+        usage: {
+          input_tokens: 10,
+          cached_input_tokens: 11,
+          output_tokens: 0,
+          reasoning_output_tokens: 0,
+        },
+      }),
+    );
+    expect(() => collector.readUsage()).toThrow(/malformed cached input/u);
+  });
+
   it("rejects malformed completed-turn usage instead of recording zero", () => {
     const collector = createCodexResultEventCollector();
     collector.observeStdoutLine(

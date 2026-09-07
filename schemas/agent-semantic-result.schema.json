@@ -866,6 +866,76 @@
                 "authority_digest"
               ],
               "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "inspection"
+                },
+                "work_item_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attempt": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "claim_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contract_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "authority_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "result_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase",
+                "work_item_id",
+                "attempt",
+                "claim_id",
+                "contract_digest",
+                "authority_digest",
+                "result_digest"
+              ],
+              "additionalProperties": false
             }
           ]
         },
@@ -2167,6 +2237,76 @@
                 "authority_digest"
               ],
               "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "inspection"
+                },
+                "work_item_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attempt": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "claim_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contract_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "authority_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "result_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase",
+                "work_item_id",
+                "attempt",
+                "claim_id",
+                "contract_digest",
+                "authority_digest",
+                "result_digest"
+              ],
+              "additionalProperties": false
             }
           ]
         },
@@ -3466,6 +3606,76 @@
                 "claim_id",
                 "contract_digest",
                 "authority_digest"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repository_identity": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "repository_fingerprint": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "plan_revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "phase": {
+                  "type": "string",
+                  "const": "inspection"
+                },
+                "work_item_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "attempt": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "claim_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contract_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "authority_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "result_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              },
+              "required": [
+                "task_id",
+                "repository_identity",
+                "repository_fingerprint",
+                "plan_revision",
+                "plan_digest",
+                "phase",
+                "work_item_id",
+                "attempt",
+                "claim_id",
+                "contract_digest",
+                "authority_digest",
+                "result_digest"
               ],
               "additionalProperties": false
             }

@@ -58,6 +58,16 @@ export const kernelEpisodeBindingSchema = z.discriminatedUnion("phase", [
     contract_digest: digest,
     authority_digest: digest,
   }),
+  z.strictObject({
+    ...commonBinding,
+    phase: z.literal("inspection"),
+    work_item_id: safeId,
+    attempt: z.number().int().positive(),
+    claim_id: text,
+    contract_digest: digest,
+    authority_digest: digest,
+    result_digest: digest,
+  }),
 ]);
 export const kernelOutputClaimsSchema = z.array(z.strictObject({ id: safeId, kind: text, digest }));
 export type KernelEpisodeBinding = z.infer<typeof kernelEpisodeBindingSchema>;

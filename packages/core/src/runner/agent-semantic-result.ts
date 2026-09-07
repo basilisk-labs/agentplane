@@ -260,11 +260,15 @@ export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z
     if (
       (!binding && (value.canonical_plan || value.canonical_outputs)) ||
       (binding && (value.task_intent || value.task_plan_proposal || value.plan_refinement)) ||
-      (binding?.phase === "planning" && value.canonical_outputs) ||
-      (binding?.phase === "implementation" && value.canonical_plan) ||
+      (binding?.phase !== "implementation" && value.canonical_outputs) ||
+      (binding?.phase !== "planning" && value.canonical_plan) ||
       (binding &&
         value.status === "completed" &&
-        !(binding.phase === "planning" ? value.canonical_plan : value.canonical_outputs))
+        !(binding.phase === "planning"
+          ? value.canonical_plan
+          : binding.phase === "inspection"
+            ? value.review
+            : value.canonical_outputs))
     )
       ctx.addIssue({
         code: "custom",
