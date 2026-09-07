@@ -1,0 +1,111 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071427-7J5DJQ Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071427-7J5DJQ Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071427-7J5DJQ Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071427-7J5DJQ Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071427-7J5DJQ Verification Contract check task_outcome",
+  "digest": "sha256:7a12a67259cb337b62d096ed1d6e1cfaf45e028700bbce66b0ea50fe7a176fc8",
+  "implementation_sha": "c621332896711f01ef67df757eb934fadc6f5787",
+  "input": {
+    "context": {
+      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:81aa8450f533d6cc5b4cef8e21dcabd928fcdfc3b73cf15d66e351cd053c113b",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:c93a4167bfd4955692634fb022f3ea7eb2f2c3d101915a900bb089cf65e7cfc0",
+      "digest": "sha256:e756ced03414839a271b9399b361fefd110c55c2ab7650eaa3697963577846a3",
+      "references": [
+        {
+          "digest": "sha256:1312d626b3ae17d068f11ce64366484c98a79ea5621189ad21b9583b7db668df",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+      "digest": "sha256:9bde58a066e58e630ebe086c4b680bb9597a949c845793c095ba1088553a6d5a",
+      "primary_task_id": "202609071427-7J5DJQ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_ci",
+        "effect_dependencies",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071427-7J5DJQ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+      "digest": "sha256:a62041cb7b61ebc1b9be6daa1d36e010626532245a061f86f1509209d9f29824",
+      "strategy": "branch_diff",
+      "target_sha": "c621332896711f01ef67df757eb934fadc6f5787"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:b1a3398b035e76d560e8d0c96997c4c74f8ed34ad9361e2801522803939d3806",
+    "verify_steps_digest": "sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed.",
+  "recorded_at": "2026-09-07T17:08:21.257Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run bun run ci:local:full with the task-local Bun 1.4.2 binary first on PATH. Expected: exit 0 for the existing full repository contract. Preserve any failed attempt as evidence.\n2. Run node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t \"commits workflow changes\". Expected: all three CI authority cases pass. An approved workflow is committed. Missing ci authority and an unauthorized path are rejected before a commit.\n3. Run the existing SQLite and process-supervision suites under Node. Run the five SQLite driver contract tests under Bun 1.4.2. Expected: persisted reads, parameter bindings, transaction commit and rollback, and readonly behavior pass.\n4. Run frozen root and website workspace installation, build, compiled CLI smoke, workflow lint, site typecheck, and site build checks as listed in the approved Plan. Expected: the supported local checks pass and both lockfiles preserve dependency resolutions.\n5. Review .agentplane/cache/bun-qualification/report.md and its command logs. Expected: the runtime benchmark has repeated samples and output parity, Bun-hosted Vitest incompatibilities and non-host execution gaps remain explicit, and Node support and default tooling are preserved.\n6. Run git diff --check. Expected: no whitespace errors or unrelated source changes. The supervisor records verification before evaluation and merging.",
+  "scope_digest": "sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6",
+  "task_id": "202609071427-7J5DJQ",
+  "verification_command": "agentplane verify 202609071427-7J5DJQ --ok --by TESTER",
+  "verifier": "TESTER"
+}

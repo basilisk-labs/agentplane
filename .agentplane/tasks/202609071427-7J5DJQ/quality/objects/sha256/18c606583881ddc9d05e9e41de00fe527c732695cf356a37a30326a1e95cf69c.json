@@ -1,0 +1,206 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "dependencies",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "network_read"
+      ],
+      "components": [
+        ".agentplane/cache/bun-qualification",
+        ".github/workflows",
+        "bun.lock",
+        "package.json",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "packages/agentplane/src/shared/sqlite-driver.test.ts",
+        "packages/agentplane/src/shared/sqlite-driver.ts",
+        "website/bun.lock"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:dependencies",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "ci",
+        "dependencies",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".github",
+        "package.json",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/docs-ci.yml",
+        ".github/workflows/pages-deploy.yml",
+        ".github/workflows/prepublish.yml",
+        ".github/workflows/publish-distribution-module.yml",
+        ".github/workflows/publish.yml",
+        ".github/workflows/task-hosted-close.yml",
+        ".github/workflows/workflows-lint.yml",
+        "package.json",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "packages/agentplane/src/shared/sqlite-driver.test.ts",
+        "packages/agentplane/src/shared/sqlite-driver.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:.github/workflows",
+      "central_component:bun.lock",
+      "central_component:package.json",
+      "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "central_path:.github/workflows/ci.yml",
+      "central_path:.github/workflows/docs-ci.yml",
+      "central_path:.github/workflows/pages-deploy.yml",
+      "central_path:.github/workflows/prepublish.yml",
+      "central_path:.github/workflows/publish-distribution-module.yml",
+      "central_path:.github/workflows/publish.yml",
+      "central_path:.github/workflows/task-hosted-close.yml",
+      "central_path:.github/workflows/workflows-lint.yml",
+      "central_path:package.json",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "effect_ci",
+      "effect_dependencies"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:b1a3398b035e76d560e8d0c96997c4c74f8ed34ad9361e2801522803939d3806"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-07T16:55:04.289Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609071427-7J5DJQ/verification/20260907165504289-ce5610cbecde5f47.json",
+      "sha256": "sha256:5b57601c1ec574ec0e4d2148bb1209b6aecce246b890b51bdba0d81e95e6ad48"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 69fecc315989dc9cb72b5b0d90a3d96add14ea98..c621332896711f01ef67df757eb934fadc6f5787",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 69fecc315989dc9cb72b5b0d90a3d96add14ea98..c621332896711f01ef67df757eb934fadc6f5787",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609071427-7J5DJQ/README.md",
+          "M\t.agentplane/tasks/202609071427-7J5DJQ/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609071427-7J5DJQ/pr/github-body.md",
+          "M\t.agentplane/tasks/202609071427-7J5DJQ/pr/meta.json",
+          "M\t.agentplane/tasks/202609071427-7J5DJQ/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "69fecc315989dc9cb72b5b0d90a3d96add14ea98",
+    "implementation_commit": "c621332896711f01ef67df757eb934fadc6f5787",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202609071427-7J5DJQ/README.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202609071427-7J5DJQ/README.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202609071427-7J5DJQ/README.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609071427-7J5DJQ",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609071427-7J5DJQ/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
