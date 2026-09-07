@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -93,10 +93,14 @@ execution_contract:
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -137,16 +141,20 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:15d3b02898921fd2b4913a257395c62306f87644a2969550ece357145c9afa20"
+      digest: "sha256:7258ef870e9a8aac1508e553081dfb041fd7e6f7fd9df9392bd16baf5ae1c02e"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -178,8 +186,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "707becb8ee4fa4423e41b7b6eb170e8a60c6c51b"
-  message: "♻️ QV0SX9 task: clarify task prompt language and compact results"
+  hash: "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
+  message: "🚧 QV0SX9 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -193,6 +201,9 @@ comments:
   -
     author: "CODER"
     body: "Progress: recorded the authorized nine-file implementation commit. All 108 focused tests, typecheck, formatting and diff checks passed. Recover this exact commit for supervisor verification; no duplicate implementation changes are needed."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: cdaf72b1fa42. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -216,9 +227,17 @@ events:
     to: "DOING"
     note: "Progress: recorded the authorized nine-file implementation commit. All 108 focused tests, typecheck, formatting and diff checks passed. Recover this exact commit for supervisor verification; no duplicate implementation changes are needed."
     commit: "707becb8ee4fa4423e41b7b6eb170e8a60c6c51b"
+  -
+    type: "status"
+    at: "2026-09-07T13:40:13.101Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: cdaf72b1fa42. CLI accepted one state-bound external-agent semantic result."
+    commit: "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
 doc_version: 3
-doc_updated_at: "2026-09-07T13:36:09.060Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T13:40:13.101Z"
+doc_updated_by: "SUPERVISOR"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
   Summary: |-
@@ -550,7 +569,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 7
+    event_cursor: 9
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -817,9 +836,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-07T13:36:09.060Z"
+    updated_at: "2026-09-07T13:40:13.101Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 0
@@ -859,6 +878,30 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609071219-QV0SX9"
+      compatibility:sha256:423f40c1992f332ed35a56ba44d716b9c9fdb2d1db10cd1b659c53ae66c63919:
+        aggregate_digest: "sha256:c48926a87aa6707db474cf79cb4da27a544823814a1e252d9736627c42267d0b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:40:13.101Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d888eec68d26923f28515e0f"
+          mutation_id: "compatibility:sha256:423f40c1992f332ed35a56ba44d716b9c9fdb2d1db10cd1b659c53ae66c63919"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:423f40c1992f332ed35a56ba44d716b9c9fdb2d1db10cd1b659c53ae66c63919"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
       compatibility:sha256:81b0d0042b77e674113abb0c586d4c9b24985ac98156020dce99bee1b46720c5:
         aggregate_digest: "sha256:14052f76601368d57401bd8b5acfa54f076ead902cb8cdf07bbb622bad49092f"
         event:
@@ -881,6 +924,30 @@ extensions:
         mutation_id: "compatibility:sha256:81b0d0042b77e674113abb0c586d4c9b24985ac98156020dce99bee1b46720c5"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:856614b71f42e145a5e0af4dd224cc586ff3072e69eef549437b07dea21508a8:
+        aggregate_digest: "sha256:74d55f66211a74979ddc3319ab4c9b88c1bb09a5520518f5e890defb2dc0c65a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:40:13.101Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_62e0fbc575c468a7e5fd9d38"
+          mutation_id: "compatibility:sha256:856614b71f42e145a5e0af4dd224cc586ff3072e69eef549437b07dea21508a8"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:856614b71f42e145a5e0af4dd224cc586ff3072e69eef549437b07dea21508a8"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:89bf0ef67cb3d927585993f390f90be291509d4bee2b98d669d5e24197219283:
@@ -1006,6 +1073,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "cdaf72b1fa42660466fe8dd986ff87b2bd093f88"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
