@@ -1,5 +1,6 @@
 import { validateCommitSubject } from "@agentplaneorg/core/commit";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+import { createLegacyTaskAggregate, TASK_CENTRIC_EXTENSION_KEY } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 import { describe, expect, it, vi } from "vitest";
 import * as taskBackend from "../shared/task-backend.js";
@@ -30,80 +31,145 @@ import { agentTransitionId, buildAgentActionPacket } from "./agent-action-packet
 const taskId = "202607310001-BRANCH";
 const branch = `task/${taskId}/branch-supervisor`;
 
-it("freezes the branch verification contract before checks and persists the same snapshot", async () => {
-  const decision = agentDecision(2, "verification");
-  const task = decision.task;
-  const selected = {
-    ...task,
-    execution_contract: {
-      verification: { contract: { selected_checks: ["docs_contract", "task_outcome"] } },
-    },
-  };
-  const snapshot = {
-    execution_contract: selected.execution_contract,
-    evaluated_sha: "frozen-head",
-    changed_paths: ["docs/contract.md"],
-  };
-  const command = {
-    config: { paths: { workflow_dir: ".agentplane/tasks" } },
-    resolvedProject: { gitRoot: "/repo" },
-  };
-  const checks = {
-    status: "passed",
-    artifact_path: "checks.json",
-    reason: null,
-    checks: [
+it.each([false, true])(
+  "freezes branch verification and preserves its planned commands (%s)",
+  async (planned) => {
+    const decision = agentDecision(2, "verification");
+    const plannedCommands = [
       {
-        command: "bun run ci:local:full",
-        check_ids: ["docs_contract", "task_outcome"],
-        exit_code: 0,
+        command: "bun run release:prepublish:check",
+        check_ids: ["prepublish"],
+        timeout_ms: 3_600_000,
       },
-    ],
-  };
-  const spies = [
-    vi.spyOn(conflictRecovery, "recoverProductionBranchConflict").mockResolvedValue(null),
-    vi.spyOn(taskBackend, "loadCommandContext").mockResolvedValue(command as never),
-    vi.spyOn(taskBackend, "loadTaskFromContext").mockResolvedValue(task as never),
-    vi
-      .spyOn(implementationRecovery, "resolveImplementationVerificationTask")
-      .mockResolvedValue({ task: selected, snapshot } as never),
-    vi
-      .spyOn(formalOperation, "recordDirectTaskFormalOperation")
-      .mockImplementation(async (opts) => {
-        await opts.run();
-        return { decision, journal: {}, journal_path: "journal.json" } as never;
-      }),
-    vi.spyOn(declaredVerification, "runDirectTaskVerification").mockResolvedValue(checks as never),
-    vi.spyOn(verificationRecord, "cmdVerifyParsed").mockResolvedValue(0),
-    vi.spyOn(artifactCommit, "commitBranchSupervisorTaskArtifacts").mockResolvedValue(undefined),
-  ];
-  try {
-    const result = await executeProductionBranchEpisode({
-      input: { task_id: taskId } as never,
-      decision,
-      decide: () => Promise.resolve(decision),
+      { command: "bun run release:parity", check_ids: ["parity"], timeout_ms: 60_000 },
+    ];
+    const aggregate = createLegacyTaskAggregate({
+      id: taskId,
+      revision: 2,
+      title: "Branch fixture",
+      description: "",
+      status: "DOING",
+      acceptance_criteria: [],
+      captured_at: "2026-09-07T00:00:00Z",
+      updated_at: "2026-09-07T00:00:00Z",
     });
-    expect(result.status).toBe("completed");
-    expect(implementationRecovery.resolveImplementationVerificationTask).toHaveBeenCalledOnce();
-    expect(declaredVerification.runDirectTaskVerification).toHaveBeenCalledWith(
-      expect.objectContaining({ task: selected }),
-    );
-    expect(verificationRecord.cmdVerifyParsed).toHaveBeenCalledWith(
-      expect.objectContaining({
-        verificationSnapshot: snapshot,
-      }),
-    );
-    expect(vi.mocked(verificationRecord.cmdVerifyParsed).mock.calls[0]?.[0].details).toContain(
-      "Check: docs_contract",
-    );
-    expect(task).not.toHaveProperty("execution_contract.verification.contract.selected_checks", [
-      "docs_contract",
-      "task_outcome",
-    ]);
-  } finally {
-    for (const spy of spies) spy.mockRestore();
-  }
-});
+    const task = {
+      ...decision.task,
+      ...(planned
+        ? {
+            extensions: {
+              [TASK_CENTRIC_EXTENSION_KEY]: {
+                ...aggregate,
+                current_plan: {
+                  task_id: taskId,
+                  revision: 1,
+                  digest: `sha256:${"a".repeat(64)}`,
+                  approval: { state: "approved" },
+                  proposal: {
+                    top_level_validation: {
+                      checks: plannedCommands.map(({ command, check_ids, timeout_ms }) => ({
+                        id: check_ids[0],
+                        command,
+                        timeout_ms,
+                        required: true,
+                      })),
+                      criteria: [],
+                    },
+                  },
+                },
+              },
+            },
+          }
+        : {}),
+    };
+    const selected = {
+      ...task,
+      execution_contract: {
+        verification: { contract: { selected_checks: ["docs_contract", "task_outcome"] } },
+      },
+    };
+    const snapshot = {
+      execution_contract: selected.execution_contract,
+      evaluated_sha: "frozen-head",
+      changed_paths: ["docs/contract.md"],
+    };
+    const command = {
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      resolvedProject: { gitRoot: "/repo" },
+    };
+    const checks = {
+      status: "passed",
+      artifact_path: "checks.json",
+      reason: null,
+      checks: [
+        {
+          command: "bun run ci:local:full",
+          check_ids: ["docs_contract", "task_outcome"],
+          exit_code: 0,
+        },
+      ],
+    };
+    const spies = [
+      vi.spyOn(conflictRecovery, "recoverProductionBranchConflict").mockResolvedValue(null),
+      vi.spyOn(taskBackend, "loadCommandContext").mockResolvedValue(command as never),
+      vi.spyOn(taskBackend, "loadTaskFromContext").mockResolvedValue(task as never),
+      vi
+        .spyOn(implementationRecovery, "resolveImplementationVerificationTask")
+        .mockResolvedValue({ task: selected, snapshot } as never),
+      vi
+        .spyOn(formalOperation, "recordDirectTaskFormalOperation")
+        .mockImplementation(async (opts) => {
+          await opts.run();
+          return { decision, journal: {}, journal_path: "journal.json" } as never;
+        }),
+      vi
+        .spyOn(declaredVerification, "runDirectTaskVerification")
+        .mockResolvedValue(checks as never),
+      vi.spyOn(verificationRecord, "cmdVerifyParsed").mockResolvedValue(0),
+      vi.spyOn(artifactCommit, "commitBranchSupervisorTaskArtifacts").mockResolvedValue(undefined),
+    ];
+    try {
+      const result = await executeProductionBranchEpisode({
+        input: { task_id: taskId } as never,
+        decision,
+        decide: () => Promise.resolve(decision),
+      });
+      expect(result.status).toBe("completed");
+      expect(implementationRecovery.resolveImplementationVerificationTask).toHaveBeenCalledOnce();
+      expect(declaredVerification.runDirectTaskVerification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          task: selected,
+          ...(planned
+            ? {
+                additional_commands: plannedCommands,
+                additional_only: true,
+                map_selected_checks: true,
+              }
+            : {}),
+        }),
+      );
+      if (!planned) {
+        expect(
+          vi.mocked(declaredVerification.runDirectTaskVerification).mock.calls[0]?.[0],
+        ).not.toHaveProperty("additional_only", true);
+      }
+      expect(verificationRecord.cmdVerifyParsed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          verificationSnapshot: snapshot,
+        }),
+      );
+      expect(vi.mocked(verificationRecord.cmdVerifyParsed).mock.calls[0]?.[0].details).toContain(
+        "Check: docs_contract",
+      );
+      expect(task).not.toHaveProperty("execution_contract.verification.contract.selected_checks", [
+        "docs_contract",
+        "task_outcome",
+      ]);
+    } finally {
+      for (const spy of spies) spy.mockRestore();
+    }
+  },
+);
 
 function fingerprint(revision: number) {
   const component = {

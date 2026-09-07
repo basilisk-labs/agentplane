@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 91
+revision: 94
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ verify:
   - "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-06T22:27:26.236Z"
+  updated_at: "2026-09-06T23:59:12.716Z"
   updated_by: "USER"
-  note: "Relay the user explicit authorization to fix all release blockers and override AGENTS permission gates. Approve the bounded atomic repository identity correction; preserve all verification and publication boundaries."
+  note: "Relay the user explicit authorization to fix all release blockers and override AGENTS permission gates. Preserve completed candidate preparation; approve one dependent branch verification contract repair with focused checks and unchanged final release gates."
 verification:
   state: "needs_rework"
   updated_at: "2026-09-06T23:50:46.701Z"
@@ -118,6 +118,8 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.ts"
       - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
@@ -206,6 +208,8 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
       - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
       - "packages/agentplane/src/commands/task/execution-authority-context.ts"
       - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
@@ -225,116 +229,12 @@ execution_contract:
       - "website/static/img/social/manifest.json"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
-    changed_components:
-      - ".agentplane"
-      - "docs"
-      - "packages/agentplane"
-      - "packages/core"
-      - "packages/recipes"
-      - "packages/spec"
-      - "packages/testkit"
-      - "scripts"
-      - "website"
-    changed_paths:
-      - ".agentplane/WORKFLOW.md"
-      - "docs/assets/header.svg"
-      - "docs/assets/readme-headers/adr.svg"
-      - "docs/assets/readme-headers/agentplane-cli.svg"
-      - "docs/assets/readme-headers/agentplane.svg"
-      - "docs/assets/readme-headers/core.svg"
-      - "docs/assets/readme-headers/docs.svg"
-      - "docs/assets/readme-headers/humanizer.svg"
-      - "docs/assets/readme-headers/recipes.svg"
-      - "docs/assets/readme-headers/releases.svg"
-      - "docs/assets/readme-headers/schemas.svg"
-      - "docs/assets/readme-headers/scripts.svg"
-      - "docs/assets/readme-headers/skills.svg"
-      - "docs/assets/readme-headers/spec.svg"
-      - "docs/assets/readme-headers/testkit.svg"
-      - "docs/reference/generated-reference.mdx"
-      - "docs/releases/v0.7.8-evidence/preparation.md"
-      - "docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
-      - "docs/releases/v0.7.8-evidence/release-plan-changes.json"
-      - "docs/releases/v0.7.8-evidence/release-plan-version.json"
-      - "docs/releases/v0.7.8.md"
-      - "packages/agentplane/package.json"
-      - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
-      - "packages/agentplane/src/cli/cli-smoke.test.ts"
-      - "packages/agentplane/src/cli/route-decision.testkit.ts"
-      - "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
-      - "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
-      - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
-      - "packages/agentplane/src/cli/task-continuity.testkit.ts"
-      - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-      - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
-      - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
-      - "packages/agentplane/src/commands/task/execution-authority-context.ts"
-      - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
-      - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
-      - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
-      - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
-      - "packages/core/package.json"
-      - "packages/recipes/package.json"
-      - "packages/recipes/src/index.ts"
-      - "packages/spec/examples/acr.json"
-      - "packages/testkit/package.json"
-      - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
-      - "packages/testkit/src/cli-harness.ts"
-      - "packages/testkit/src/release.ts"
-      - "scripts/baselines/v0.7-compatibility-candidate.json"
-      - "website/static/img/social/docs/releases/v0.7.8-evidence/preparation.png"
-      - "website/static/img/social/docs/releases/v0.7.8.png"
-      - "website/static/img/social/manifest.json"
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "dependencies"
-      - "documentation"
-      - "public_api"
-      - "release_metadata"
-      - "repository_write"
-      - "source_code"
-      - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
-      -
-        id: "verification-record"
-        result: "fail"
+    repository_effects: []
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -403,6 +303,8 @@ execution_contract:
           - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
           - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
           - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
           - "packages/agentplane/src/commands/task/execution-authority-context.ts"
           - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
@@ -446,7 +348,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:5107bf7c8a0667d891581ec38030d15d05e1dc63fa99a3c8c4d7af48e34904fd"
+      digest: "sha256:b371ca5c40f3d679542af0c4f4aa551974478022278353e51291c8d304f7e0b8"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
         - "central_component:packages/agentplane/src/cli/cli-smoke.test.ts"
@@ -489,156 +391,19 @@ execution_contract:
         - "central_component:packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
         - "central_component:packages/core/package.json"
-        - "central_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
-        - "central_path:packages/agentplane/src/cli/cli-smoke.test.ts"
-        - "central_path:packages/agentplane/src/cli/route-decision.testkit.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
-        - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
-        - "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
-        - "central_path:packages/agentplane/src/cli/task-continuity.testkit.ts"
-        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.ts"
-        - "central_path:packages/core/package.json"
         - "effect_dependencies"
         - "effect_public_api"
         - "effect_release_metadata"
-        - "unknown_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
-        - "unknown_path:packages/spec/examples/acr.json"
-        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - ".agentplane"
-          - "docs"
-          - "packages/agentplane"
-          - "packages/core"
-          - "packages/recipes"
-          - "packages/spec"
-          - "packages/testkit"
-          - "scripts"
-          - "website"
-        changed_files:
-          - ".agentplane/WORKFLOW.md"
-          - "docs/assets/header.svg"
-          - "docs/assets/readme-headers/adr.svg"
-          - "docs/assets/readme-headers/agentplane-cli.svg"
-          - "docs/assets/readme-headers/agentplane.svg"
-          - "docs/assets/readme-headers/core.svg"
-          - "docs/assets/readme-headers/docs.svg"
-          - "docs/assets/readme-headers/humanizer.svg"
-          - "docs/assets/readme-headers/recipes.svg"
-          - "docs/assets/readme-headers/releases.svg"
-          - "docs/assets/readme-headers/schemas.svg"
-          - "docs/assets/readme-headers/scripts.svg"
-          - "docs/assets/readme-headers/skills.svg"
-          - "docs/assets/readme-headers/spec.svg"
-          - "docs/assets/readme-headers/testkit.svg"
-          - "docs/reference/generated-reference.mdx"
-          - "docs/releases/v0.7.8-evidence/preparation.md"
-          - "docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
-          - "docs/releases/v0.7.8-evidence/release-plan-changes.json"
-          - "docs/releases/v0.7.8-evidence/release-plan-version.json"
-          - "docs/releases/v0.7.8.md"
-          - "packages/agentplane/package.json"
-          - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
-          - "packages/agentplane/src/cli/cli-smoke.test.ts"
-          - "packages/agentplane/src/cli/route-decision.testkit.ts"
-          - "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
-          - "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
-          - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
-          - "packages/agentplane/src/cli/task-continuity.testkit.ts"
-          - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
-          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
-          - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
-          - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
-          - "packages/agentplane/src/commands/task/execution-authority-context.ts"
-          - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
-          - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
-          - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
-          - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
-          - "packages/core/package.json"
-          - "packages/recipes/package.json"
-          - "packages/recipes/src/index.ts"
-          - "packages/spec/examples/acr.json"
-          - "packages/testkit/package.json"
-          - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
-          - "packages/testkit/src/cli-harness.ts"
-          - "packages/testkit/src/release.ts"
-          - "scripts/baselines/v0.7-compatibility-candidate.json"
-          - "website/static/img/social/docs/releases/v0.7.8-evidence/preparation.png"
-          - "website/static/img/social/docs/releases/v0.7.8.png"
-          - "website/static/img/social/manifest.json"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "dependencies"
-          - "documentation"
-          - "public_api"
-          - "release_metadata"
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -677,8 +442,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -826,7 +589,7 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run release:prepublish"
 doc_version: 3
-doc_updated_at: "2026-09-06T23:50:48.250Z"
+doc_updated_at: "2026-09-06T23:58:47.228Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -837,7 +600,7 @@ sections:
   Scope: |-
     - In scope: Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope.
     - Out of scope: unrelated refactors not required for "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication".
-  Plan: "Make concurrent unborn repository identity initialization publish one complete immutable winner."
+  Plan: "Preserve completed candidate preparation and repair branch supervisor Task validation metadata in one dependent WorkItem."
   Verify Steps: |-
     1. Run `bun run release:prepublish`. Expected: the committed 0.7.8 candidate passes canonical release CI, package checks, active-incident cleanup, version parity and generated-document freshness.
     2. Run `bun run qualification:mixed-scope-lifecycle`. Expected: the installed packed candidate completes the mixed source, test and documentation lifecycle with correct replay, stale-result, projection and cleanup behavior.
@@ -934,12 +697,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:3dd28e0ddacc64658f92645f9f978f02cf04e445bdaf3e4c80fd698719700d88"
-    digest: "sha256:aba2bd80de47d29d8618fe0c556062801e5f61e1dc8c6bcd1db6b28e76b90dcd"
-    grant_id: "16e9ba11-7048-40e1-b7e0-57e198495364"
-    issued_at: "2026-09-06T22:27:26.236Z"
+    digest: "sha256:13bf0cc55c2d25b4632e49502f518d2593ace6bc32d47a831359b4c3ab580592"
+    grant_id: "5bafffd6-0d0a-4f53-b66e-e47bd777c466"
+    issued_at: "2026-09-06T23:59:12.716Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:437701f235caa8602a00a1e96c2351159ab756853fd7fbd7421998f5f0fb6faa"
-    plan_revision: 86
+    plan_digest: "sha256:3f42a501d8472c4e4614e6fa7102a988512a575eadf77bfc800ab9aa11af1a7a"
+    plan_revision: 93
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:dfcf17c2402a7a7ef380f235ab372b7fc8d1cf85896e338299ea8ab45655a3fc"
@@ -948,14 +711,14 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-06T22:27:26.236Z"
+        approved_at: "2026-09-06T23:59:12.716Z"
         approved_by: "USER"
-        approved_digest: "sha256:f4b3b8c5a06ea831a219775360d36d2a9b5e1b01939468fb0f75b82fe6887719"
+        approved_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
         policy_facts:
           - "manual_operator"
         state: "approved"
-      created_at: "2026-09-06T22:27:08.145Z"
-      digest: "sha256:f4b3b8c5a06ea831a219775360d36d2a9b5e1b01939468fb0f75b82fe6887719"
+      created_at: "2026-09-06T23:58:47.171Z"
+      digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
       proposal:
         assumptions:
           - "The operator already approved the exact stable version 0.7.8 and all necessary release actions. Native release plan .agentplane/.release/plan/2026-09-06T17-50-45-857Z fixes base 262da3130bc5628a7641c400c74368ae355000bf and v0.7.7..HEAD, with 1417 changes. Read the original plan from the primary checkout and preserve its exact inputs in task evidence. Do not change the native plan range or its version."
@@ -986,21 +749,22 @@ extensions:
           - "Only the aggregate declared prepublish timeout changes from 1800000 to 3600000 ms. Preserve exact native commands, acceptance assertions, required checks and every individual test/hook/group timeout. No repository check implementation or workflow timeout is changed."
           - "The complete second audit only added three missing-export mock failures. Repair test mocks rather than undoing backend-read tracing. Preserve all 39 affected assertions and existing size/clone baselines."
           - "All prior implementation and fixture changes are committed. Never restore any earlier drafts. The exact bounded new correction is atomic no-overwrite identity publication. Use a private same-directory candidate and hard-link publication as already used by the task README lock implementation. Keep existing duplicate-create assertions and the authority boundary unchanged."
+          - "The original preparation WorkItem is completed with all four native checks passed. Preserve its definition and accepted outputs. Only honor-branch-verification-plan is active after approval. Its focused native test command verifies the new correction; all four final release checks remain mandatory with their exact existing commands and one-hour prepublish deadline."
+          - "The final branch verification currently drops approved plan check metadata. Use the same top-level validation routing as recordDirectTaskVerification, including selected-check mapping. Do not increase the legacy default timeout or change test suite limits. Do not claim a signaled process was successful from its child output."
         planning_baseline:
-          captured_at: "2026-09-06T22:25:56.056Z"
+          captured_at: "2026-09-06T23:56:59.395Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:c72633b475f709fa93587ef79a349376defae5be76aca1214648341cfd423b3f"
+          digest: "sha256:7cb986f75fb3e3fb070bbcdfeedb0b19da2cc66ca5a39cb5b555311d3dc8ff9b"
           dirty_paths:
             - ".agentplane/tasks/202609061750-Z0XXVD/README.md"
-            - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
           git:
             kind: "commit"
             ref: null
-            sha: "72494f26912167513f011d365e061f7eda557431"
+            sha: "00e778df6910dc828c4297228d7c8c8d92a40640"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:85"
+          task_history_cursor: "task-revision:92"
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
         top_level_validation:
@@ -1542,10 +1306,114 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:1b4b6c593fe54409919a6a5d9a57580b3af796e5a8e05b9a3ff01b250819c6e7"
                 schema_version: 1
-      revision: 16
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "branch-validation-contract"
+                  description: "Branch verification forwards every required approved Task check, its identifier and timeout, preserves the frozen verification snapshot, and retains legacy behavior without a structured plan."
+                  id: "branch-validation-contract"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 200000
+                optional_sources:
+                  - "docs/releases/v0.7.7.md"
+                  - "scripts/lib/installed-migration-matrix.mjs"
+                  - "scripts/generate/generate-website-docs.mjs"
+                required_sources:
+                  - "docs/developer/release-and-publishing.mdx"
+                  - "docs/releases/TEMPLATE.md"
+                  - "scripts/release/version-surfaces.json"
+                  - "scripts/release/version-bump.mjs"
+                  - "scripts/lib/qualification-packed-runtime.mjs"
+                  - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                  - ".agentplane/policy/workflow.release.md"
+                  - ".agentplane/policy/workflow.upgrade.md"
+                  - "scripts/generate/generate-readme-header.mjs"
+                  - "website/scripts/generate-social-images.mjs"
+                  - "scripts/bench/capture-compatibility-candidate.mjs"
+                  - "packages/agentplane/src/cli/route-decision.testkit.ts"
+                  - "packages/agentplane/src/cli/task-continuity.testkit.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  - "packages/testkit/src/release.ts"
+                  - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
+                  - "scripts/checks/check-clone-baseline.mjs"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+                  - "packages/testkit/src/cli-harness.ts"
+                  - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+                  - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+                  - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+                  - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+                  - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+                  - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+                  - "packages/agentplane/src/cli/cli-smoke.test.ts"
+                symbol_hints:
+                  - "installPublishedAgentplane"
+                  - "installPackedWorkspace"
+                  - "runPackagedMixedScopeLifecycle"
+              depends_on:
+                - "prepare-qualified-078-candidate"
+              expected_outputs:
+                - "Branch supervisor verification honors the approved Task validation commands and timeout metadata."
+              id: "honor-branch-verification-plan"
+              objective: "Preserve the completed preparation WorkItem and all candidate source changes. Fix executeBranchVerificationEpisode to use the approved Task top_level_validation commands, required check IDs and timeout metadata through existing verification primitives. Preserve the frozen snapshot, selected contract mapping, legacy fallback, failure handling, artifact commits and evaluator boundary. Extend the existing branch verification snapshot test for legacy and structured-plan cases. First prove the planned parameters are missing on unchanged code. Then verify the correction with the branch supervisor and direct verification suites, focused lint and formatting, root types, and unchanged size and clone guards. Update existing release notes and preparation evidence with observed facts. Return for native final release qualification; do not change any top-level release command, deadline, acceptance, individual suite limit, dependency version or publication authority."
+              optional: false
+              priority: 2
+              required_inputs: []
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/releases/v0.7.8.md"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "docs/releases/v0.7.8-evidence"
+              risk: "high"
+              scope_roots:
+                - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+                - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+                - "docs/releases/v0.7.8.md"
+                - "docs/releases/v0.7.8-evidence"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run test:fast packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --pool=forks --testTimeout=60000 --hookTimeout=60000"
+                    id: "branch-validation-contract"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 300000
+                criteria:
+                  -
+                    check_ids:
+                      - "branch-validation-contract"
+                    description: "Branch verification forwards every required approved Task check, its identifier and timeout, preserves the frozen verification snapshot, and retains legacy behavior without a structured plan."
+                    id: "branch-validation-contract"
+                    required: true
+                evidence_fingerprint: "sha256:3fbce777fce4dcc9bbeacc1d0fbaac9f9f9760d37e0f4674ec378d0d5da20bd2"
+                schema_version: 1
+      revision: 17
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 52
+    event_cursor: 53
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -7953,10 +7821,618 @@ extensions:
         revision: 15
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 91
+      -
+        approval:
+          approved_at: "2026-09-06T22:27:26.236Z"
+          approved_by: "USER"
+          approved_digest: "sha256:f4b3b8c5a06ea831a219775360d36d2a9b5e1b01939468fb0f75b82fe6887719"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-06T22:27:08.145Z"
+        digest: "sha256:f4b3b8c5a06ea831a219775360d36d2a9b5e1b01939468fb0f75b82fe6887719"
+        proposal:
+          assumptions:
+            - "The operator already approved the exact stable version 0.7.8 and all necessary release actions. Native release plan .agentplane/.release/plan/2026-09-06T17-50-45-857Z fixes base 262da3130bc5628a7641c400c74368ae355000bf and v0.7.7..HEAD, with 1417 changes. Read the original plan from the primary checkout and preserve its exact inputs in task evidence. Do not change the native plan range or its version."
+            - "Use the existing local version-surface utility for the approved metadata values and current documentation generators. Do not invoke formal release candidate/apply, Git commits, tags, PRs, publication or lifecycle commands inside the semantic episode."
+            - "The semantic WorkItem prepares a reversible local candidate. GitHub publication is a subsequent explicit operator action after native integration and exact-SHA hosted release-ready evidence. Never represent local qualification as a completed publication."
+            - "The user specifically requested two human-readable opening paragraphs above the detailed Release Notes. Explain practical user outcomes without internal task identifiers or implementation jargon in those paragraphs. Keep the artifact in English under repository policy."
+            - "The complete planned change record includes framework evidence commits. Describe their actual recorded evidence or lifecycle purpose; do not inflate them into product features. Keep concise user-facing highlights before the detailed record."
+            - "Use existing qualification helpers and a task-specific script instead of new shared testing infrastructure. Install published 0.7.7 from npm and all three current packed packages into isolated temporary prefixes. Temporary fixture repositories are explicitly authorized test data; do not change global git configuration or real consumer repositories."
+            - "Build packages and run focused version, formatting, notes and generation checks before returning the result. AgentPlane must commit the implementation before running declared full prepublish and installed checks, so a dirty product tree never substitutes for an exact committed candidate."
+            - "Store authored qualification scripts and immutable source evidence only under the allowed task evidence directory. The framework continues to own task README, verification, PR and closure artifacts. Do not hand-edit those artifacts."
+            - "Existing unrelated legacy beta tasks, T4RR70 worktree, provider expansion and new framework refactors remain outside this WorkItem. Any new implementation defect requires an emitted rework/refinement route."
+            - "Native prepublish failed on fourteen stale generated version SVGs, and docs:social:check reports only two missing release images and a stale manifest. Run bun run docs:readme-header:generate and bun run docs:social:generate. Preserve all unrelated existing images and unchanged README content. The generators may rewrite byte-identical README headers; only the named generated artifact roots should appear in the final product diff."
+            - "The native supervisor may amend its implementation evidence commit during recovery. Use current Git and native verification records for exact identity; do not revive the earlier 529e290f identity as the current head."
+            - "Run node scripts/bench/capture-compatibility-candidate.mjs --write. The inspected preview changes only release_version_delta.to_version, surface_sha256 and to_sha256. Do not edit baseline allowances or generator logic."
+            - "Keep the existing clone baseline thresholds and file inclusion rules unchanged. Reuse the existing continuity planner with its explicit approval parameter. Extract a shared fixture proposal constructor only because both continuity and recovery need it. Preserve fixture-specific identifiers, acceptance and task verification commands. Do not introduce shared testing infrastructure or dependencies."
+            - "The local ci:local:full regression suite and static ci:contract are distinct checks. The former baseline passed; clone:check in the latter fails on unchanged main as well as the release candidate. Claim only observed checks."
+            - "The GitHub release body limit is 125000 characters, evidenced by github.com/cli/cli/issues/7815. Preserve the entire main release narrative before Detailed Change Record. Shorten repetitive record descriptions and use unique ten-character commit IDs linked through the immutable full-SHA JSON source list. Verify exact one-to-one mapping, no dropped entries and a margin below the limit."
+            - "Run the nearest existing route-decision, task-continuity, workflow effect recovery, release and task-run query tests for the affected helpers, plus testkit and CLI type checks. Use the unchanged clone guard after edits. Delete only its own generated report after preserving failure evidence when required."
+            - "Inspect and preserve the behavioral purpose of each failing regression. Replace obsolete fixture plan/verification setup with existing native test helpers. An approved canonical plan may project DOING before branch start. Passing verification and closure must be represented in canonical Task state and bound to the tested implementation. Do not change assertions merely to accept an unexplained route."
+            - "All previous drafts are already committed at the issued b7d06ffe4cdce990df62aa244ea6a8bce7bd1ff0 baseline. Do not restore older draft files over these repairs."
+            - "Native release CI groups 1-8 passed. Group 9 readiness failed. A canonical-configuration supplemental audit of groups 10-113 passed 5309 tests and failed 85 tests, with one existing skip. All 86 failures across 25 CLI files reproduce on unchanged main. This audit identifies repair scope and does not replace the unchanged native release gate."
+            - "The four runtime defects now have concrete source-backed reproductions after fixture preconditions are established. The five added paths are the complete bounded correction surface. No unrelated runtime refactor is approved."
+            - "Planning approval projects ACTIVE as DOING. Recovery eligibility must depend on actual untouched WorkItems, execution attempts, claims and receipts while retaining the existing provenance, token, Git, lease, runner and external-effect checks. Do not classify plan approval itself as implementation execution."
+            - "Preserve the root node_modules ownership guard. Keep package-local dependencies usable when the active trusted runtime source is external to the fixture repository. Validate actual CLI invocation and negative foreign-root reuse tests."
+            - "Task dependencies must block approved task-centric execution before WorkItem work starts. Preserve the legacy route behavior and normal continuation after dependencies complete."
+            - "Use the existing measured backend reader for task context loading. Preserve lazy local routes with no provider preparation and the documented trace fields."
+            - "All fixture and runtime drafts are committed, including the incident size repair. Never restore complete-cli-fixture-drafts.json over the current candidate. The sole new path is the protected-base integration test. Preserve its original worktree location and all provider handoff assertions."
+            - "Only the aggregate declared prepublish timeout changes from 1800000 to 3600000 ms. Preserve exact native commands, acceptance assertions, required checks and every individual test/hook/group timeout. No repository check implementation or workflow timeout is changed."
+            - "The complete second audit only added three missing-export mock failures. Repair test mocks rather than undoing backend-read tracing. Preserve all 39 affected assertions and existing size/clone baselines."
+            - "All prior implementation and fixture changes are committed. Never restore any earlier drafts. The exact bounded new correction is atomic no-overwrite identity publication. Use a private same-directory candidate and hard-link publication as already used by the task README lock implementation. Keep existing duplicate-create assertions and the authority boundary unchanged."
+          planning_baseline:
+            captured_at: "2026-09-06T22:25:56.056Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:c72633b475f709fa93587ef79a349376defae5be76aca1214648341cfd423b3f"
+            dirty_paths:
+              - ".agentplane/tasks/202609061750-Z0XXVD/README.md"
+              - ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "72494f26912167513f011d365e061f7eda557431"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:85"
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run release:prepublish"
+                id: "prepublish"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 3600000
+              -
+                capability: "task.verify"
+                command: "bun run qualification:mixed-scope-lifecycle"
+                id: "installed-lifecycle"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+                id: "published-upgrade"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 900000
+              -
+                capability: "task.verify"
+                command: "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
+                id: "release-notes"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "prepublish"
+                description: "All three release packages and exact internal pins are 0.7.8. Existing version surfaces and generated references agree. Frozen dependency graph is preserved. The canonical prepublish gate passes on the committed candidate."
+                id: "stable-candidate"
+                required: true
+              -
+                check_ids:
+                  - "release-notes"
+                  - "prepublish"
+                description: "The release notes start with two ordinary, accessible English prose paragraphs explaining the practical meaning of the entire release. Required template sections and a curated change record cover every one of the 1417 planned commits without claiming publication or unobserved test success."
+                id: "readable-complete-notes"
+                required: true
+              -
+                check_ids:
+                  - "installed-lifecycle"
+                  - "published-upgrade"
+                description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
+                id: "installed-reliability"
+                required: true
+            evidence_fingerprint: "sha256:1b4b6c593fe54409919a6a5d9a57580b3af796e5a8e05b9a3ff01b250819c6e7"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "prepublish"
+                    description: "All three release packages and exact internal pins are 0.7.8. Existing version surfaces and generated references agree. Frozen dependency graph is preserved. The canonical prepublish gate passes on the committed candidate."
+                    id: "stable-candidate"
+                    required: true
+                  -
+                    check_ids:
+                      - "release-notes"
+                      - "prepublish"
+                    description: "The release notes start with two ordinary, accessible English prose paragraphs explaining the practical meaning of the entire release. Required template sections and a curated change record cover every one of the 1417 planned commits without claiming publication or unobserved test success."
+                    id: "readable-complete-notes"
+                    required: true
+                  -
+                    check_ids:
+                      - "installed-lifecycle"
+                      - "published-upgrade"
+                    description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
+                    id: "installed-reliability"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 200000
+                  optional_sources:
+                    - "docs/releases/v0.7.7.md"
+                    - "scripts/lib/installed-migration-matrix.mjs"
+                    - "scripts/generate/generate-website-docs.mjs"
+                  required_sources:
+                    - "docs/developer/release-and-publishing.mdx"
+                    - "docs/releases/TEMPLATE.md"
+                    - "scripts/release/version-surfaces.json"
+                    - "scripts/release/version-bump.mjs"
+                    - "scripts/lib/qualification-packed-runtime.mjs"
+                    - "scripts/qualification/check-packaged-mixed-scope-lifecycle.mjs"
+                    - ".agentplane/policy/workflow.release.md"
+                    - ".agentplane/policy/workflow.upgrade.md"
+                    - "scripts/generate/generate-readme-header.mjs"
+                    - "website/scripts/generate-social-images.mjs"
+                    - "scripts/bench/capture-compatibility-candidate.mjs"
+                    - "packages/agentplane/src/cli/route-decision.testkit.ts"
+                    - "packages/agentplane/src/cli/task-continuity.testkit.ts"
+                    - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                    - "packages/testkit/src/release.ts"
+                    - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
+                    - "scripts/checks/check-clone-baseline.mjs"
+                    - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+                    - "packages/testkit/src/cli-harness.ts"
+                    - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+                    - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+                    - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+                    - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+                    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+                    - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+                    - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+                    - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+                    - "packages/agentplane/src/cli/cli-smoke.test.ts"
+                  symbol_hints:
+                    - "installPublishedAgentplane"
+                    - "installPackedWorkspace"
+                    - "runPackagedMixedScopeLifecycle"
+                depends_on: []
+                expected_outputs:
+                  - "Stable 0.7.8 release metadata and generated references"
+                  - "English release notes with two accessible opening paragraphs and all planned changes"
+                  - "Reproducible published 0.7.7 upgrade verification script and source-backed qualification evidence"
+                  - "Fresh 0.7.8 README header SVGs and generated release-page social images with their manifest"
+                  - "Current generated compatibility candidate snapshot for stable 0.7.8 with unchanged compatibility allowances"
+                  - "Existing test support shares planning, release options and expected run-control formatting without behavior changes"
+                  - "Complete GitHub-compatible release notes below 125000 characters with both original opening paragraphs"
+                  - "Passing route and next-action regression fixtures under current canonical task contracts"
+                  - "Passing recovery fixtures for complete creation identity, required Verify Steps and exact post-verification replay"
+                  - "Passing mandatory CLI fixtures and current help snapshots with a complete baseline-to-candidate qualification report"
+                  - "Runtime regressions pass for dependency materialization, planning-base recovery, task dependency waits and backend tracing"
+                id: "prepare-qualified-078-candidate"
+                objective: "Preserve the committed stable 0.7.8 candidate and all existing repairs. Fix concurrent unborn repository identity creation in execution-authority-context.ts by writing a private complete candidate and atomically publishing it without replacing the winning identity. Clean up the private candidate. Extend the existing authority-context test suite with a controlled overlapping-write regression that fails on the partial-visible writer. Preserve read-only behavior, Git base and repository identity validation. Verify the unchanged cross-process duplicate-create case and original group 55 after rebuilding the CLI, then focused lint, format, types and unchanged size/clone guards. Record actual evidence and return for native committed qualification. Preserve the one-hour aggregate prepublish deadline, all individual limits, commands, guards, assertions, dependencies and publication effects."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: ".agentplane/WORKFLOW.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/core/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/recipes/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/recipes/src/index.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/spec/examples/acr.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/package.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/releases/v0.7.8.md"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/reference/generated-reference.mdx"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/llms-full.txt"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/releases/v0.7.8-evidence"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/assets/header.svg"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "docs/assets/readme-headers"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social/docs/releases"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "website/static/img/social/manifest.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/route-decision.testkit.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/task-continuity.testkit.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src/release.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/testkit/src/cli-harness.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/cli-smoke.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/execution-authority-context.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
+                risk: "high"
+                scope_roots:
+                  - ".agentplane/WORKFLOW.md"
+                  - "packages/agentplane/package.json"
+                  - "packages/core/package.json"
+                  - "packages/recipes/package.json"
+                  - "packages/recipes/src/index.ts"
+                  - "packages/spec/examples/acr.json"
+                  - "packages/testkit/package.json"
+                  - "docs/releases/v0.7.8.md"
+                  - "docs/reference/generated-reference.mdx"
+                  - "website/static/llms-full.txt"
+                  - "docs/releases/v0.7.8-evidence"
+                  - "docs/assets/header.svg"
+                  - "docs/assets/readme-headers"
+                  - "website/static/img/social/docs/releases"
+                  - "website/static/img/social/manifest.json"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                  - "packages/agentplane/src/cli/route-decision.testkit.ts"
+                  - "packages/agentplane/src/cli/task-continuity.testkit.ts"
+                  - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+                  - "packages/testkit/src/release.ts"
+                  - "packages/testkit/src/cli-core-tasks-query.expected-run.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.evaluator-recovery.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.command-session.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.incidents.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-create-planner-intent.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.task-run.test.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts"
+                  - "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap"
+                  - "packages/testkit/src/cli-harness.ts"
+                  - "packages/agentplane/src/cli/task-create-planner-intent.testkit.ts"
+                  - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+                  - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+                  - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+                  - "packages/agentplane/src/runtime/task-execution-context/resolve.ts"
+                  - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts"
+                  - "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/finish.state.unit.test.ts"
+                  - "packages/agentplane/src/commands/task/finish.validation.unit.test.ts"
+                  - "packages/agentplane/src/cli/cli-smoke.test.ts"
+                  - "packages/agentplane/src/commands/task/execution-authority-context.ts"
+                  - "packages/agentplane/src/commands/task/execution-authority-context.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run release:prepublish"
+                      id: "prepublish"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 3600000
+                    -
+                      capability: "task.verify"
+                      command: "bun run qualification:mixed-scope-lifecycle"
+                      id: "installed-lifecycle"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+                      id: "published-upgrade"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 900000
+                    -
+                      capability: "task.verify"
+                      command: "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
+                      id: "release-notes"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "prepublish"
+                      description: "All three release packages and exact internal pins are 0.7.8. Existing version surfaces and generated references agree. Frozen dependency graph is preserved. The canonical prepublish gate passes on the committed candidate."
+                      id: "stable-candidate"
+                      required: true
+                    -
+                      check_ids:
+                        - "release-notes"
+                        - "prepublish"
+                      description: "The release notes start with two ordinary, accessible English prose paragraphs explaining the practical meaning of the entire release. Required template sections and a curated change record cover every one of the 1417 planned commits without claiming publication or unobserved test success."
+                      id: "readable-complete-notes"
+                      required: true
+                    -
+                      check_ids:
+                        - "installed-lifecycle"
+                        - "published-upgrade"
+                      description: "Packed installed lifecycle qualification passes. Published agentplane 0.7.7 initializes separate direct and branch_pr fixtures. Upgrading with packed 0.7.8 preserves existing task identity, content and lifecycle state, records an upgrade commit, passes doctor and policy routing, and is idempotent. Evidence records actual package hashes and outcomes."
+                      id: "installed-reliability"
+                      required: true
+                  evidence_fingerprint: "sha256:1b4b6c593fe54409919a6a5d9a57580b3af796e5a8e05b9a3ff01b250819c6e7"
+                  schema_version: 1
+        revision: 16
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+    revision: 94
     schema_version: 1
-    updated_at: "2026-09-06T23:50:48.240Z"
+    updated_at: "2026-09-06T23:58:47.228Z"
     work_items:
+      honor-branch-verification-plan:
+        attempt: 0
+        claim_id: null
+        id: "honor-branch-verification-plan"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
       prepare-qualified-078-candidate:
         attempt: 1
         claim_id: null
@@ -8621,6 +9097,25 @@ extensions:
         task_id: "202609061750-Z0XXVD"
         task_revision: 89
         work_item_id: "prepare-qualified-078-candidate"
+      -
+        at: "2026-09-06T23:56:57.370Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+          - "outputs_changed"
+          - "dependencies_changed"
+        entity: "task"
+        id: "event_ba9ae07450962b29bdf1781f"
+        mutation_id: "plan-refinement:work-order-202609061750-Z0XXVD-executor-57c9a162f942a4111f19d982"
+        plan_digest: "sha256:f4b3b8c5a06ea831a219775360d36d2a9b5e1b01939468fb0f75b82fe6887719"
+        plan_revision: 16
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
+        task_revision: 91
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:022834da100df7fc3623c30cc816ea817bf10345a355f2f1c927d82e6bc91348:
@@ -9463,6 +9958,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:c6d4b8ae588bc8d2df94d583f22ec8bf4cfbb61d4044e2ddc459124848e63adb:
+        aggregate_digest: "sha256:d93e6056c40edc107529aba2bf28b4842fcdaf5b7edff06c8b1bf3aba1f90375"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-06T23:58:47.228Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_947c25bb34c9a210055c98f1"
+          mutation_id: "compatibility:sha256:c6d4b8ae588bc8d2df94d583f22ec8bf4cfbb61d4044e2ddc459124848e63adb"
+          plan_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
+          plan_revision: 17
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 93
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c6d4b8ae588bc8d2df94d583f22ec8bf4cfbb61d4044e2ddc459124848e63adb"
+        next_revision: 94
+        previous_revision: 93
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       compatibility:sha256:ca455350a9679e96fe52bbd23cd156e73a6c7e9979fc7ee0ea24fe5c5ba2a04f:
         aggregate_digest: "sha256:adee85b7557623c2128f37bc26dc0965ba8a157a4d066da269b234913ca4c51c"
         event:
@@ -10055,6 +10574,32 @@ extensions:
         previous_revision: 84
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      plan-refinement:work-order-202609061750-Z0XXVD-executor-57c9a162f942a4111f19d982:
+        aggregate_digest: "sha256:42d6f6c75133aa2849c146e274e49f47eacea976bc45dceedf414a61fcbdc1d3"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-06T23:56:57.370Z"
+          cause_refs:
+            - "scope_expanded"
+            - "outputs_changed"
+            - "dependencies_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ba9ae07450962b29bdf1781f"
+          mutation_id: "plan-refinement:work-order-202609061750-Z0XXVD-executor-57c9a162f942a4111f19d982"
+          plan_digest: "sha256:f4b3b8c5a06ea831a219775360d36d2a9b5e1b01939468fb0f75b82fe6887719"
+          plan_revision: 16
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 91
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609061750-Z0XXVD-executor-57c9a162f942a4111f19d982"
+        next_revision: 92
+        previous_revision: 91
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       plan-refinement:work-order-202609061750-Z0XXVD-executor-6727cc071bd99cbf1c16bd15:
         aggregate_digest: "sha256:8bea027c19e2865f0c30fdc3cb55b8662b4f5f2f80ca4e7ac11e4d1e0908644b"
         event:
@@ -10402,7 +10947,7 @@ Finalize the explicitly approved stable version 0.7.8 from verified main 262da31
 
 ## Plan
 
-Make concurrent unborn repository identity initialization publish one complete immutable winner.
+Preserve completed candidate preparation and repair branch supervisor Task validation metadata in one dependent WorkItem.
 
 ## Verify Steps
 
