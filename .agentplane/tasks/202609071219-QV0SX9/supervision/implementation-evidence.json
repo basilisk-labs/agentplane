@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 0b3e88e60f2e34030fefc8b61cba391f236b2c55..4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e",
+      "command": "git diff --check b010b904ce131e171ea19346f91334b32d5de8a0..b847aa915f64886905be06ccfb30e37544f35d25",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0b3e88e60f2e34030fefc8b61cba391f236b2c55..4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b010b904ce131e171ea19346f91334b32d5de8a0..b847aa915f64886905be06ccfb30e37544f35d25",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -23,8 +23,8 @@
         "M\t.agentplane/tasks/202609071219-QV0SX9/pr/meta.json",
         "M\t.agentplane/tasks/202609071219-QV0SX9/pr/review.md",
         "M\t.agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202609071219-QV0SX9/verification/20260907134437275-7cc4cad32cd2a6e8.json",
-        "M\tpackages/agentplane/src/agents/agents-template.test.ts"
+        "A\t.agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
       ]
     },
     {
@@ -34,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "0b3e88e60f2e34030fefc8b61cba391f236b2c55",
-  "implementation_commit": "4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e",
+  "execution_base_commit": "b010b904ce131e171ea19346f91334b32d5de8a0",
+  "implementation_commit": "b847aa915f64886905be06ccfb30e37544f35d25",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
@@ -44,7 +44,7 @@
       " M .agentplane/tasks/202609071219-QV0SX9/pr/meta.json",
       " M .agentplane/tasks/202609071219-QV0SX9/pr/review.md",
       " M .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907134437275-7cc4cad32cd2a6e8.json"
+      "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json"
     ],
     "classification": [
       {
@@ -69,7 +69,7 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907134437275-7cc4cad32cd2a6e8.json"
+        "line": "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json"
       }
     ],
     "final": [],
@@ -80,7 +80,7 @@
       " M .agentplane/tasks/202609071219-QV0SX9/pr/meta.json",
       " M .agentplane/tasks/202609071219-QV0SX9/pr/review.md",
       " M .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907134437275-7cc4cad32cd2a6e8.json"
+      "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json"
     ],
     "unchanged_from_execution_baseline": []
   },
