@@ -4,7 +4,7 @@ title: "Repair evaluator review identity for interleaved task artifact commits i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -211,7 +211,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+  message: "🚧 GESADH task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -219,6 +221,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 265e3c4ac88e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1bb30cf8640c. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -241,8 +246,16 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks."
+  -
+    type: "status"
+    at: "2026-09-07T14:38:36.666Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1bb30cf8640c. CLI accepted one state-bound external-agent semantic result."
+    commit: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
 doc_version: 3
-doc_updated_at: "2026-09-07T14:36:41.953Z"
+doc_updated_at: "2026-09-07T14:38:36.666Z"
 doc_updated_by: "SUPERVISOR"
 description: "User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them."
 sections:
@@ -516,7 +529,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071413-GESADH"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609071413-GESADH"
     intent:
@@ -531,9 +544,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-07T14:36:41.952Z"
+    updated_at: "2026-09-07T14:38:36.666Z"
     work_items:
       repair-direct-review-identity:
         attempt: 1
@@ -606,6 +619,30 @@ extensions:
         work_item_id: "repair-direct-review-identity"
     leases: []
     mutation_receipts:
+      compatibility:sha256:1d1c3661dfc5ed14d2e1352ef9febe1f0cffd8314b4bdfce13c76c8b86bbe6c7:
+        aggregate_digest: "sha256:4165e3bb6d79e7cff5d4d75257f1d5809b017c375a911618417da5c5f6151a1f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:38:36.666Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_57522ed92876c9a81c7ec781"
+          mutation_id: "compatibility:sha256:1d1c3661dfc5ed14d2e1352ef9febe1f0cffd8314b4bdfce13c76c8b86bbe6c7"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1d1c3661dfc5ed14d2e1352ef9febe1f0cffd8314b4bdfce13c76c8b86bbe6c7"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609071413-GESADH"
       compatibility:sha256:31d932c3a09c6ac34438cf8ae6127a84d6030ed7c39184f33a5f824be1993584:
         aggregate_digest: "sha256:a7d573eb77f7be424f3593ae47e781c82f9d2c8c5c2eff52559e4cff34c29c6d"
         event:
@@ -652,6 +689,30 @@ extensions:
         mutation_id: "compatibility:sha256:35c821056c2a50b20cc91072640b9979284a38771b7db07e57ae13d7a3d02254"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071413-GESADH"
+      compatibility:sha256:8c57be334e5e2b8174edf07efdf187ce4ffa9131245fdc9e31a66f1e5ee37e4b:
+        aggregate_digest: "sha256:35eeac2a637488f083f198eaaa0d4380bcd80660bab1e70e19476e30561a32af"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:38:36.666Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_966ad40c54e0a7c2c6825ba9"
+          mutation_id: "compatibility:sha256:8c57be334e5e2b8174edf07efdf187ce4ffa9131245fdc9e31a66f1e5ee37e4b"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8c57be334e5e2b8174edf07efdf187ce4ffa9131245fdc9e31a66f1e5ee37e4b"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609071413-GESADH"
       compatibility:sha256:b20b73aaf0dae49b9167ffa95de0e430b338502df14702a513bde3bfb66c68cb:
@@ -777,6 +838,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
