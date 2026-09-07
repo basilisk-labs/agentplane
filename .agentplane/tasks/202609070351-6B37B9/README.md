@@ -2,10 +2,10 @@
 id: "202609070351-6B37B9"
 title: "Sign macOS standalone release binaries before packaging"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -61,9 +61,9 @@ quality_review:
     - "Residual risk: The new hosted CodeQL check must pass before integration; the previous head remains invalid. Local evidence does not establish hosted alert closure."
     - "Residual risk: Actual signed release recovery and external checksum verification remain after integration."
 token_usage:
-  agent_runs: 4
+  agent_runs: 6
   input_tokens: null
-  journal_digest: "sha256:8b57f4fca98c01c82884b28f68e5d82c6c9c9abfb6e2fc3839476a3327aa0138"
+  journal_digest: "sha256:94a89bf3a7b8ef576b95127446c37b417639fb2adb7d3e75eede449ce722e147"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-07T07:33:18.676Z"
+  updated_at: "2026-09-07T07:54:19.350Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -288,8 +288,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f379949d19975562cfe19763a5aed02b1c77b5a7"
-  message: "🚧 6B37B9 task: apply external agent result"
+  hash: "c93cd50fb80cc029dcad675c39cfdbbffbd6e09b"
+  message: "🚧 6B37B9 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -306,6 +306,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f379949d1997. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -370,9 +373,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T07:54:19.350Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "c93cd50fb80cc029dcad675c39cfdbbffbd6e09b"
 doc_version: 3
-doc_updated_at: "2026-09-07T07:54:12.768Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T07:54:19.356Z"
+doc_updated_by: "CODER"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
   Summary: |-
@@ -860,7 +871,34 @@ extensions:
       schema_version: 1
       task_id: "202609070351-6B37B9"
     event_cursor: 15
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609070351-6B37B9"
+            - "git:f379949d19975562cfe19763a5aed02b1c77b5a7"
+          check_id: "release-assets-contract"
+          command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T07:51:50.819Z"
+          repository_snapshot_digest: "sha256:fa2b5e8cf365356d8e53edcf37dfd531b3bb98c9ad502e66f203f13bfcf8f30f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609070351-6B37B9"
+            - "git:f379949d19975562cfe19763a5aed02b1c77b5a7"
+          check_id: "workflow-lint"
+          command_identity: "bun run workflows:lint"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T07:51:50.819Z"
+          repository_snapshot_digest: "sha256:fa2b5e8cf365356d8e53edcf37dfd531b3bb98c9ad502e66f203f13bfcf8f30f"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609070351-6B37B9"
     intent:
       acceptance_criteria:
@@ -881,12 +919,12 @@ extensions:
 
         Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906.
       task_id: "202609070351-6B37B9"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-07T07:51:52.321Z"
+    updated_at: "2026-09-07T07:54:19.350Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -1366,11 +1404,37 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609070351-6B37B9"
+      legacy-finish:202609070351-6B37B9:2026-09-07T07:51:50.819Z:f379949d19975562cfe19763a5aed02b1c77b5a7:
+        aggregate_digest: "sha256:48e8b7eca46a0ab5e827d8045a46d59532621959c6c6b9418fac50ddb9b384a5"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T07:54:19.350Z"
+          cause_refs:
+            - "task-verification:202609070351-6B37B9"
+            - "git:f379949d19975562cfe19763a5aed02b1c77b5a7"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1e9706191386a330b1100482"
+          mutation_id: "legacy-finish:202609070351-6B37B9:2026-09-07T07:51:50.819Z:f379949d19975562cfe19763a5aed02b1c77b5a7"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: "sha256:fa2b5e8cf365356d8e53edcf37dfd531b3bb98c9ad502e66f203f13bfcf8f30f"
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609070351-6B37B9:2026-09-07T07:51:50.819Z:f379949d19975562cfe19763a5aed02b1c77b5a7"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "f379949d19975562cfe19763a5aed02b1c77b5a7"
+    message: "🚧 6B37B9 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "68b7b240362fe005e4ea5c63ee214c37fc545212"
@@ -1680,12 +1744,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/4` agent runs
+- Completeness: `0/6` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:8b57f4fca98c01c82884b28f68e5d82c6c9c9abfb6e2fc3839476a3327aa0138`
+- Journal digest: `sha256:94a89bf3a7b8ef576b95127446c37b417639fb2adb7d3e75eede449ce722e147`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-07T07:33:18.676Z`
+- Updated at: `2026-09-07T07:54:19.350Z`
