@@ -4,7 +4,7 @@ title: "Repair manual release recovery after npm publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T02:58:01.563Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+  blueprint_digest: "4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea"
+  evidence_refs:
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/de0874c83ab352018eeca24c68df2e533d7bd987425edd52c585f155da58f719.md"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609070233-NG368H/README.md"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/f1c8c6d9c0d62f0432bb4f6443d406dd196269e181e0519179b4e8de993d683a.patch"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/bb76baeb9eea69c1bc2b670b7753c64d553854c38944f189f7be748ccaa10574.json"
+    - ".agentplane/tasks/202609070233-NG368H/verification/20260907025519700-8e661c24dd179c65.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/e3b1b5a995ee2a6b8efb245279bfcfc078e50f25ac5654f1feec9a33e8ef8f1d.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Reviewed the actual three-line workflow change and eight behavioral matrix cases in the existing contract suite. The manual branch follows the release-ready guard and does not alter package publication flags or the workflow_dispatch-only publish job condition."
+    - "Verified all frozen evidence digests and read the recorded successful focused contract, workflow lint and full local CI results. The product diff contains only the two approved paths."
+    - "Residual risk: Hosted integration and recovery publication remain separate pending operations. No publication success is inferred from this local review."
 execution_route:
   frozen: true
   reason_codes:
@@ -537,7 +565,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070233-NG368H"
-    event_cursor: 6
+    event_cursor: 7
     final_validation: null
     id: "202609070233-NG368H"
     intent:
@@ -562,9 +590,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-07T02:55:20.715Z"
+    updated_at: "2026-09-07T02:55:20.716Z"
     work_items:
       recover-post-npm-publication:
         attempt: 1
@@ -706,6 +734,30 @@ extensions:
         mutation_id: "compatibility:sha256:7f0c53ca0857668137faa697977a48385d7ca10eb569c99c94c1826d5c644beb"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609070233-NG368H"
+      compatibility:sha256:8fae782910fe70bdd9f587e3391ba83b678d67e5a92f0687d30fc33e417a8d95:
+        aggregate_digest: "sha256:07a5c9750502eff3f447abc9f15fb30da72b730f1803d2ee33a7be4a5c433d3b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T02:55:20.716Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7352091ba8001fbfd27aff7c"
+          mutation_id: "compatibility:sha256:8fae782910fe70bdd9f587e3391ba83b678d67e5a92f0687d30fc33e417a8d95"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8fae782910fe70bdd9f587e3391ba83b678d67e5a92f0687d30fc33e417a8d95"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609070233-NG368H"
       compatibility:sha256:b866dcfed3676c29cad8db9dab0e339701d22344a0df942ac3968bbf151b4b3f:
