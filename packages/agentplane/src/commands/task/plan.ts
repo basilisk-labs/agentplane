@@ -185,6 +185,14 @@ export async function setTaskPlan(opts: {
               if (suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
                 delete next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY];
               } else {
+                const aggregate = taskCentricAggregateFromExtensions(next);
+                if (aggregate?.current_plan) {
+                  next[TASK_CENTRIC_EXTENSION_KEY] = {
+                    ...aggregate,
+                    lifecycle: "PLANNING",
+                    final_validation: null,
+                  };
+                }
                 next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
                   schema_version: 1,
                   reason_code: planChanged ? "plan_changed" : "execution_contract_changed",
@@ -193,8 +201,12 @@ export async function setTaskPlan(opts: {
               return next;
             })()
           : suppliedExtensions;
+        const nextAggregate = taskCentricAggregateFromExtensions(extensions);
         const taskFields = {
           ...(opts.taskFields ?? {}),
+          ...(approvalInvalidated && nextAggregate
+            ? { status: projectTaskLifecycleToLegacyStatus(nextAggregate.lifecycle) }
+            : {}),
           ...(extensions ? { extensions } : {}),
           ...(approvalInvalidated
             ? {

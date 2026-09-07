@@ -160,6 +160,42 @@ function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLE
 }
 
 describe("quality evidence refresh route", () => {
+  it("routes from the accepted canonical plan despite a stale generated Plan projection", () => {
+    const canonical = { ...task, extensions: taskCentricExtensions("READY") };
+    const expected = reduceRouteState(routeState({ task: canonical }));
+    const stale = {
+      ...canonical,
+      doc: "## Plan\n\nPLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.\n",
+    };
+    expect(reduceRouteState(routeState({ task: stale }))).toMatchObject({
+      id: expected.id,
+      kind: expected.kind,
+    });
+    expect(reduceRouteState(routeState({ task: structuredClone(stale) }))).toMatchObject({
+      id: expected.id,
+      kind: expected.kind,
+    });
+    expect(
+      reduceRouteState(routeState({ task: { ...stale, extensions: undefined } })),
+    ).toMatchObject({ id: "agent.planning" });
+    expect(
+      reduceRouteState(
+        routeState({
+          task: {
+            ...stale,
+            extensions: {
+              ...stale.extensions,
+              "agentplane.task_centric_replan_required": {
+                schema_version: 1,
+                reason_code: "acceptance_changed",
+              },
+            },
+          },
+        }),
+      ),
+    ).toMatchObject({ id: "agent.planning" });
+  });
+
   it.each(["READY", "REWORK_READY"] as const)(
     "returns to %s WorkItem execution before downstream closeout",
     (workItemState) => {

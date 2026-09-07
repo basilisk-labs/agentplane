@@ -21,7 +21,12 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
-import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
+import {
+  setMarkdownSection,
+  taskCentricAggregateFromExtensions,
+  taskCentricReplanRequiredFromExtensions,
+  type TaskPlanProposal,
+} from "@agentplaneorg/core/tasks";
 
 import {
   agentTransitionId,
@@ -43,6 +48,7 @@ import {
   validateExternalAgentResultEnvelope,
 } from "../commands/task/external-agent-exchange.js";
 import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
+import { projectTaskCentricCompatibilityMutation } from "../adapters/task-backend/task-centric-backend-projection.js";
 
 installRunCliIntegrationHarness();
 
@@ -386,6 +392,93 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     expect(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), "utf8"),
     ).toContain(plan);
+  });
+
+  it("clears the replan marker on replacement acceptance and ignores a stale textual projection after reload", async () => {
+    const root = await mkGitRepoRootWithMainCommit();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createTask(root, "Canonical replacement route");
+    await planAndApproveTask(root, taskId, "Implement the original bounded scope.");
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        "Replace the implementation plan.",
+        "--updated-by",
+        "PLANNER",
+        "--root",
+        root,
+      ]);
+      expect(code, io.stderr).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const replanning = await ctx.taskBackend.getTask(taskId);
+    expect(taskCentricReplanRequiredFromExtensions(replanning?.extensions)).toBe(true);
+    expect(taskCentricAggregateFromExtensions(replanning?.extensions)?.lifecycle).toBe("PLANNING");
+    expect(replanning?.status).toBe("TODO");
+    const issued = await readAgentPacket(root, taskId);
+    expect(issued.authority.role).toBe("PLANNER");
+    const resultPath = await writeCompletedResult(
+      issued,
+      "Implement the revised bounded scope.",
+      undefined,
+      undefined,
+      true,
+    );
+    const result = await returnAgentResult(root, taskId, resultPath);
+    expect(result.code, result.stderr).toBe(0);
+    const accepted = await ctx.taskBackend.getTask(taskId);
+    expect(taskCentricAggregateFromExtensions(accepted?.extensions)?.current_plan?.revision).toBe(
+      2,
+    );
+    expect(taskCentricReplanRequiredFromExtensions(accepted?.extensions)).toBe(false);
+    const acceptedRoute = await readRoute(root, taskId);
+    expect(acceptedRoute.workflow_step.kind).toBe("approval");
+    if (!accepted) throw new Error("missing accepted task");
+    const stalePlan =
+      "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.";
+    await ctx.taskBackend.writeTask(
+      projectTaskCentricCompatibilityMutation({
+        current: accepted,
+        next: { ...accepted, doc: setMarkdownSection(accepted.doc ?? "", "Plan", stalePlan) },
+      }),
+      { expectedRevision: accepted.revision },
+    );
+    const persisted = await ctx.taskBackend.getTask(taskId);
+    expect(persisted?.doc).toContain(stalePlan);
+    // Each CLI read opens a fresh command context from the persisted task.
+    for (let reload = 0; reload < 2; reload += 1) {
+      const route = await readRoute(root, taskId);
+      expect(route.workflow_step.kind).toBe("approval");
+      expect(route.route_oracle.phase).toBe("needs_plan_approval");
+    }
+    const approvalIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "USER",
+        "--root",
+        root,
+      ]);
+      expect(code, approvalIo.stderr).toBe(0);
+    } finally {
+      approvalIo.restore();
+    }
+    const approvedRoute = await readRoute(root, taskId);
+    expect(approvedRoute.workflow_step.kind).toBe("cli_operation");
   });
 
   it("returns an external wait instead of advertising start-ready for incomplete dependencies", async () => {
