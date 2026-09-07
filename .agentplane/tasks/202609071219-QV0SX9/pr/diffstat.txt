@@ -3,8 +3,8 @@
  .../agentplane/src/agents/agents-template.test.ts  | 27 ++++++++++-
  .../src/commands/task/agent-action-packet.test.ts  | 52 +++++++++++++++++++++
  .../src/commands/task/agent-action-packet.ts       | 21 +++++----
- .../src/runner/context/base-prompts.test.ts        | 23 ++++++++-
+ .../src/runner/context/base-prompts.test.ts        | 23 +++++++++-
  .../runner/context/semantic-prompt-projection.ts   | 11 +++++
  .../task-run-bootstrap.result-examples.test.ts     | 29 ++++++++++++
- .../src/runner/usecases/task-run-bootstrap.ts      | 54 ++++++++++++++++++----
- 9 files changed, 218 insertions(+), 41 deletions(-)
+ .../src/runner/usecases/task-run-bootstrap.ts      | 53 +++++++++++++++++++---
+ 9 files changed, 218 insertions(+), 40 deletions(-)

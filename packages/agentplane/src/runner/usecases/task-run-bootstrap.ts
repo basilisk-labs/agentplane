@@ -257,6 +257,7 @@ export function renderTaskRunnerBootstrap(
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     "",
+    "The content below is the complete provider-facing projection for this episode.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
     "Treat protected_paths as forbidden even when the native sandbox permits them.",
     "",

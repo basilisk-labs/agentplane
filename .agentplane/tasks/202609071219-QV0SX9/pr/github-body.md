@@ -16,12 +16,7 @@ Deliver the existing simple technical English rules to external-agent and manage
 ## Verification
 
 - State: needs_rework
-- Note:
-
-```text
-CI found unsafe JSON.parse any access in agents-template.test.ts. Fix the fixture type and rerun
-full verification; hosted static check failed on PR #5912.
-```
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -37,11 +32,11 @@ full verification; hosted static check failed on PR #5912.
  .../agentplane/src/agents/agents-template.test.ts  | 27 ++++++++++-
  .../src/commands/task/agent-action-packet.test.ts  | 52 +++++++++++++++++++++
  .../src/commands/task/agent-action-packet.ts       | 21 +++++----
- .../src/runner/context/base-prompts.test.ts        | 23 ++++++++-
+ .../src/runner/context/base-prompts.test.ts        | 23 +++++++++-
  .../runner/context/semantic-prompt-projection.ts   | 11 +++++
  .../task-run-bootstrap.result-examples.test.ts     | 29 ++++++++++++
- .../src/runner/usecases/task-run-bootstrap.ts      | 54 ++++++++++++++++++----
- 9 files changed, 218 insertions(+), 41 deletions(-)
+ .../src/runner/usecases/task-run-bootstrap.ts      | 53 +++++++++++++++++++---
+ 9 files changed, 218 insertions(+), 40 deletions(-)
 ```
 
 </details>
