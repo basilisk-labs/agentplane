@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -31,31 +31,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-07T02:58:01.563Z"
+  updated_at: "2026-09-07T03:21:18.966Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 3 typed finding(s)."
-  evaluated_sha: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "44b9d295258f2ec638ab7afd397418d76d425595"
   blueprint_digest: "4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea"
   evidence_refs:
-    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/de0874c83ab352018eeca24c68df2e533d7bd987425edd52c585f155da58f719.md"
-    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-025525550-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-032007043-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-032007043-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/3ea771dffe40ed006a78461c809a610e535802baca0319edbb2300b2a0102b77.md"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-032007043-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-032007043-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/20260907-032007043-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609070233-NG368H/README.md"
-    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/f1c8c6d9c0d62f0432bb4f6443d406dd196269e181e0519179b4e8de993d683a.patch"
-    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/bb76baeb9eea69c1bc2b670b7753c64d553854c38944f189f7be748ccaa10574.json"
-    - ".agentplane/tasks/202609070233-NG368H/verification/20260907025519700-8e661c24dd179c65.json"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972.patch"
+    - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/38927361053ea09d04304639c126f7a032a98b6f80dbd1c14bf0a6624993dbe4.json"
+    - ".agentplane/tasks/202609070233-NG368H/verification/20260907031954048-dcb4f1e266064350.json"
     - ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/e3b1b5a995ee2a6b8efb245279bfcfc078e50f25ac5654f1feec9a33e8ef8f1d.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed the actual three-line workflow change and eight behavioral matrix cases in the existing contract suite. The manual branch follows the release-ready guard and does not alter package publication flags or the workflow_dispatch-only publish job condition."
-    - "Verified all frozen evidence digests and read the recorded successful focused contract, workflow lint and full local CI results. The product diff contains only the two approved paths."
-    - "Residual risk: Hosted integration and recovery publication remain separate pending operations. No publication success is inferred from this local review."
+    - "The temporary output file is unique for each matrix case, is read only after successful Bash completion and is removed in finally. It models the hosted environment file contract without relying on /dev/stdout reopening."
+    - "Reviewed the cumulative two-file diff and verified frozen evidence digests. Manual recovery still follows release-ready validation; automatic publication, prerelease, package skip and exact release identity guards remain intact."
+    - "The new implementation has successful recorded contract tests, workflow lint and full local CI. Generated quality artifacts are supervisor-owned prepared evidence, not additional implementation scope."
+    - "Residual risk: The updated PR still requires successful hosted CI before merge. Actual recovery publication remains pending."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -316,7 +317,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T03:19:55.816Z"
+doc_updated_at: "2026-09-07T03:21:18.973Z"
 doc_updated_by: "SUPERVISOR"
 description: "Publish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release."
 sections:
@@ -698,7 +699,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070233-NG368H"
-    event_cursor: 10
+    event_cursor: 11
     final_validation: null
     id: "202609070233-NG368H"
     intent:
@@ -723,9 +724,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-07T03:19:55.815Z"
+    updated_at: "2026-09-07T03:19:55.816Z"
     work_items:
       recover-post-npm-publication:
         attempt: 1
@@ -915,6 +916,30 @@ extensions:
         mutation_id: "compatibility:sha256:925cf0488a7fd051945a452b38c05e66ebe291a9bc5608bca7d96b6d478e44ff"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609070233-NG368H"
+      compatibility:sha256:b27771f69119253a98677681755006649d90f1ca5563f48989a2d8b9dee0b0e1:
+        aggregate_digest: "sha256:04de0b1a1674d851cb4664aff92bfa80ffc2d5903953696c84f6ce4b40f63dc0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T03:19:55.816Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_093e41c3acbfc3b7815e89f2"
+          mutation_id: "compatibility:sha256:b27771f69119253a98677681755006649d90f1ca5563f48989a2d8b9dee0b0e1"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b27771f69119253a98677681755006649d90f1ca5563f48989a2d8b9dee0b0e1"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609070233-NG368H"
       compatibility:sha256:b866dcfed3676c29cad8db9dab0e339701d22344a0df942ac3968bbf151b4b3f:

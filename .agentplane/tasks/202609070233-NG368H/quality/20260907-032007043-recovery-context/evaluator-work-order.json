@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609070233-NG368H-88bf8a5fd50c31be66eb6d45",
+  "prepared_at": "2026-09-07T03:20:07.043Z",
+  "task": {
+    "id": "202609070233-NG368H",
+    "revision": 15,
+    "objective": "Repair manual release recovery after npm publication\n\nPublish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release.",
+    "acceptance_criteria": [
+      "bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+      "bun run workflows:lint",
+      "- In scope: Publish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release.\n- Out of scope: unrelated refactors not required for \"Repair manual release recovery after npm publication\".",
+      "Propose one bounded workflow recovery WorkItem. Explicit manual recovery must remain available after npm succeeds while other publication channels are incomplete.",
+      "1. Run `bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts`. Expected: behavioral regression coverage passes for manual recovery after all npm packages exist, partial package visibility, automatic event restrictions, prereleases and missing release-ready evidence.\n2. Run `bun run workflows:lint`. Expected: workflow syntax, command contracts and route checks pass.\n3. Review the final diff. Expected: only the approved workflow decision and nearest regression suite change; npm skip guards, exact release SHA, versions, tag identity and canonical publish-result requirements remain intact.\n4. Keep actual recovery publication pending until the repaired workflow is integrated and canonical hosted publication evidence succeeds."
+    ]
+  },
+  "evaluated_sha": "44b9d295258f2ec638ab7afd397418d76d425595",
+  "diff_base_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5",
+  "blueprint_digest": "4ab37a5909ab4dc1d9a6942dcf9bf4066b7988c1aaf2005f74561190d67486ea",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609070233-NG368H/quality/20260907-032007043-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d7de0f4d5203d10c405a44f1daa276ab8345edfd86ae49871757ed14eef9ff08",
+    "prompt_path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/3ea771dffe40ed006a78461c809a610e535802baca0319edbb2300b2a0102b77.md",
+    "result_schema_path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609070233-NG368H/README.md",
+      "sha256": "sha256:217fcef2d03bd2498948cf93dcab2b4bcc3bfab60f5b8fd0ca495e0e250a9af4",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972.patch",
+      "sha256": "sha256:4026b4b4438547662cf0a294d8417486359e56a1e8749d9220f3396f791a2972",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/38927361053ea09d04304639c126f7a032a98b6f80dbd1c14bf0a6624993dbe4.json",
+      "sha256": "sha256:38927361053ea09d04304639c126f7a032a98b6f80dbd1c14bf0a6624993dbe4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609070233-NG368H/verification/20260907031954048-dcb4f1e266064350.json",
+      "sha256": "sha256:738a9ece08737a5473de07d55cbc5f2d09193d1b68295e982a648a102349df6a",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609070233-NG368H/quality/objects/sha256/e3b1b5a995ee2a6b8efb245279bfcfc078e50f25ac5654f1feec9a33e8ef8f1d.json",
+      "sha256": "sha256:e3b1b5a995ee2a6b8efb245279bfcfc078e50f25ac5654f1feec9a33e8ef8f1d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
