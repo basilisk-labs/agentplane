@@ -1,4 +1,8 @@
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
+import {
+  ensureDocSections,
+  setMarkdownSection,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 
 import { backendNotSupportedMessage } from "../../cli/output.js";
 import type { TaskData } from "../../backends/task-backend.js";
@@ -97,7 +101,10 @@ export function assertPlanCanBeApproved(opts: {
 }): void {
   assertPlanSectionPresent(opts.task.id, opts.doc, "approve");
   const plan = extractDocSection(opts.doc, "Plan");
-  if (isPlannerSemanticPlanRequired(plan)) {
+  if (
+    !taskCentricAggregateFromExtensions(opts.task.extensions)?.current_plan &&
+    isPlannerSemanticPlanRequired(plan)
+  ) {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
