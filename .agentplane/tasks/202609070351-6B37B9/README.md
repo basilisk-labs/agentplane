@@ -4,7 +4,7 @@ title: "Sign macOS standalone release binaries before packaging"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T07:33:11.789Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
+  blueprint_digest: "f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33"
+  evidence_refs:
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/b7c3905df18b5040c6fb0db3f921d1217f8f2b1d4111cb0cfdacc59d5e98fd6f.md"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609070351-6B37B9/README.md"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/1d592a4935c391d215bcaa37428c2002bfb760bc71b3477e665de45fbd9c24f8.patch"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/3b4734e92f23f512c19c758350a297a62618c182cf7c0c22aba6040ea1d7fb2d.json"
+    - ".agentplane/tasks/202609070351-6B37B9/verification/20260907073133074-b5256f44f33b4471.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/4ba10ef4ee1d4542d176c9884502bafccad8af09b84a12341e82e0a73043fdfe.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Verified the frozen evaluator work order digest, evidence manifest digest and all nine evidence references. Reviewed the cumulative implementation diff against base 68b7b240362fe005e4ea5c63ee214c37fc545212 and evaluated commit bba14822d1e54bc2b76fbafcb5760e17cd1c49ea."
+    - "The generator preserves portable synthetic mode and rejects real Darwin generation off macOS. Signing and strict verification failures occur before archive creation. Tests cover successful signed archive bytes and hashes, both failure stages and the host guard."
+    - "The macOS workflow checks out the qualified source SHA and separate current packaging runtime. Runtime-relative companion resolution is tested against a historical fixture without generator scripts. Both Darwin archive signatures and native macOS execution are required before upload."
+    - "Ubuntu consumes a same-run signed artifact and checks SHA, version, tag, all manifest hashes, upgrade checksum, SHA256SUMS and the included npm tarball used by GHCR. Existing source readiness, npm skip flags, Linux smoke and stable tag/publish evidence guards remain."
+    - "All required recorded checks passed: 36 focused tests (3992ms), workflow lint (838ms), and ci:local:full (496080ms). No unintended tracked changes remain; generated task and quality artifacts are supervisor-owned."
+    - "Residual risk: Hosted PR CI remains required before integration. Actual signed release assets and external checksums must be verified after recovery publication; this review does not claim publication completion."
+    - "Residual risk: The separate Ubuntu distribution-module workflow is not the signed-asset regeneration route. Use the repaired canonical publisher for this release; external-only module recovery consumes the published manifest."
 execution_route:
   frozen: true
   reason_codes:
@@ -652,7 +684,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609070351-6B37B9"
     intent:
@@ -677,9 +709,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-07T07:31:34.465Z"
+    updated_at: "2026-09-07T07:31:34.466Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -965,6 +997,30 @@ extensions:
         mutation_id: "compatibility:sha256:ef0a990b2b08c7b1e84a9f45c2065290fcd66b8cdaa5c2172b1f977f6a52cc85"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
+      compatibility:sha256:f6d49b382234bcb06c3f66bef8eda1a0ecc35071c81dfb4e65a997ee6ece4f1a:
+        aggregate_digest: "sha256:62e5d41d724ca3f9533bf2b9ee7674514912b581bd90cc3ec5d3c56ef9afbf1c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:31:34.466Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0bbc5a1be962bbf6431e9404"
+          mutation_id: "compatibility:sha256:f6d49b382234bcb06c3f66bef8eda1a0ecc35071c81dfb4e65a997ee6ece4f1a"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f6d49b382234bcb06c3f66bef8eda1a0ecc35071c81dfb4e65a997ee6ece4f1a"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609070351-6B37B9"
       external-result:work-order-202609070351-6B37B9-executor-5902555594aa912a478f4139:
