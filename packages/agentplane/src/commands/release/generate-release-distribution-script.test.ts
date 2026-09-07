@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -161,6 +161,36 @@ describe("generate-release-distribution script", () => {
     expect(installPs1).not.toContain("npm install");
     expect(installPs1).not.toContain('Require-Command "node"');
   }, 90_000);
+
+  it("uses the executing packaging runtime with a historical checkout that has no generator", async () => {
+    const root = await makeTempRoot();
+    const packageDir = path.join(root, "packages/agentplane");
+    await mkdir(path.join(packageDir, "assets"), { recursive: true });
+    await writeFile(
+      path.join(packageDir, "package.json"),
+      JSON.stringify({ name: "agentplane", version: "1.2.3" }),
+    );
+    await writeFile(path.join(packageDir, "assets/fixture.txt"), "historical payload");
+    const outDir = path.join(root, "distribution");
+    await execFileAsync(
+      "node",
+      [SCRIPT_PATH, "--out", outDir, "--sha", "abc123", "--standalone-check-mode"],
+      { cwd: root },
+    );
+    const manifest = JSON.parse(
+      await readFile(path.join(outDir, "release-distribution.json"), "utf8"),
+    ) as { sha: string; version: string; bunAssets: unknown[] };
+    expect(manifest.sha).toBe("abc123");
+    expect(manifest.version).toBe("1.2.3");
+    expect(manifest.bunAssets).toHaveLength(5);
+    expect(existsSync(path.join(root, "scripts"))).toBe(false);
+    const { stdout } = await execFileAsync("tar", [
+      "-xOzf",
+      path.join(outDir, "agentplane-upgrade.tar.gz"),
+      "./fixture.txt",
+    ]);
+    expect(stdout).toBe("historical payload");
+  });
 
   it("validates standalone assets during release distribution check", async () => {
     const { stdout } = await execFileAsync("node", [SCRIPT_PATH, "--check"], {
