@@ -1,10 +1,11 @@
 ---
 id: "202609070233-NG368H"
 title: "Repair manual release recovery after npm publication"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,20 @@ quality_review:
     - "Reviewed the actual three-line workflow change and eight behavioral matrix cases in the existing contract suite. The manual branch follows the release-ready guard and does not alter package publication flags or the workflow_dispatch-only publish job condition."
     - "Verified all frozen evidence digests and read the recorded successful focused contract, workflow lint and full local CI results. The product diff contains only the two approved paths."
     - "Residual risk: Hosted integration and recovery publication remain separate pending operations. No publication success is inferred from this local review."
+token_usage:
+  agent_runs: 3
+  input_tokens: null
+  journal_digest: "sha256:62b5d2e40bc65d12b7df17b16eb45e2967aae505a259590d1e53eb05cb35c2e7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T02:58:08.440Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -241,8 +256,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
-  message: "🚧 NG368H task: apply external agent result"
+  hash: "211d6192e78b782938e64d881c33055d90ec1209"
+  message: "🚧 NG368H task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -250,6 +265,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a0c5a7f80225. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -272,9 +290,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-07T02:58:08.440Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "211d6192e78b782938e64d881c33055d90ec1209"
 doc_version: 3
-doc_updated_at: "2026-09-07T02:55:20.716Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T02:58:08.440Z"
+doc_updated_by: "CODER"
 description: "Publish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release."
 sections:
   Summary: |-
@@ -566,7 +592,34 @@ extensions:
       schema_version: 1
       task_id: "202609070233-NG368H"
     event_cursor: 7
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609070233-NG368H"
+            - "git:a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+          check_id: "publish-contract"
+          command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T02:55:19.700Z"
+          repository_snapshot_digest: "sha256:292388a07a5ab6681cd58242eee6fb15aa4e2c512261f615dbdde8bea9078221"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609070233-NG368H"
+            - "git:a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+          check_id: "workflow-lint"
+          command_identity: "bun run workflows:lint"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T02:55:19.700Z"
+          repository_snapshot_digest: "sha256:292388a07a5ab6681cd58242eee6fb15aa4e2c512261f615dbdde8bea9078221"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609070233-NG368H"
     intent:
       acceptance_criteria:
@@ -587,12 +640,12 @@ extensions:
 
         Publish release run 34076162150 published the 0.7.8 npm packages from exact qualified SHA 81b3fe507426d82ea903d7a63fd6335b583d81b5, then stopped because npm was still processing core and CLI. The existing detect condition skips the entire publish job when all three npm versions exist, which prevents recovery of missing GHCR, tag, GitHub Release and external distribution steps. Make explicit workflow_dispatch recovery continue after exact release-ready validation while preserving per-package skip guards, automatic publish restrictions, stable/version/SHA gates and canonical publish-result evidence. Add focused behavioral regression coverage. Do not change the published 0.7.8 payload, versions, release tag or verification criteria; integrate the workflow repair separately before resuming that exact historical release.
       task_id: "202609070233-NG368H"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T02:55:20.716Z"
+    updated_at: "2026-09-07T02:58:08.440Z"
     work_items:
       recover-post-npm-publication:
         attempt: 1
@@ -855,11 +908,37 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609070233-NG368H"
+      legacy-finish:202609070233-NG368H:2026-09-07T02:55:19.700Z:a0c5a7f8022597cbfb17ee0c8963f1754026e6ab:
+        aggregate_digest: "sha256:844c3cbf5527be87dbd68fc96b283ee03bd56b5e5897dae487f4fc3d3e911d05"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T02:58:08.440Z"
+          cause_refs:
+            - "task-verification:202609070233-NG368H"
+            - "git:a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b97472e129a1cfb1b2c1fe3d"
+          mutation_id: "legacy-finish:202609070233-NG368H:2026-09-07T02:55:19.700Z:a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: "sha256:292388a07a5ab6681cd58242eee6fb15aa4e2c512261f615dbdde8bea9078221"
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609070233-NG368H:2026-09-07T02:55:19.700Z:a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609070233-NG368H"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "a0c5a7f8022597cbfb17ee0c8963f1754026e6ab"
+    message: "🚧 NG368H task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "81b3fe507426d82ea903d7a63fd6335b583d81b5"
@@ -994,3 +1073,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:62b5d2e40bc65d12b7df17b16eb45e2967aae505a259590d1e53eb05cb35c2e7`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T02:58:08.440Z`
