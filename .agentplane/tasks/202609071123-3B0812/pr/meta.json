@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609071123-3B0812/fix-homebrew-executable-links-and-prevent-formul",
+  "created_at": "2026-09-07T11:30:09.703Z",
+  "diffstat_sha256": "sha256:e052016a838f14126ec3b24b8b812d9b11a712be9764da47e908786d1e52ef0e",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609071123-3B0812",
+  "updated_at": "2026-09-07T11:30:09.703Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
