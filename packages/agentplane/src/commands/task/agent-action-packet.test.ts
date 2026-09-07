@@ -1,3 +1,4 @@
+import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
 import { describe, expect, it } from "vitest";
 
 import { computePlanDigest } from "@agentplaneorg/core/tasks";
@@ -54,9 +55,11 @@ function decision(workflowStep: WorkflowStep): TaskRouteDecision {
 }
 
 function workOrder() {
+  const fixture = buildAgentWorkOrderV2ValidFixture("packet");
   return {
+    ...fixture,
     role: "EXECUTOR",
-    authority: { sandbox: "workspace-write", network: "deny" },
+    authority: { ...fixture.authority, sandbox: "workspace-write", network: "deny" },
     required_inputs: [
       {
         id: "task-document",

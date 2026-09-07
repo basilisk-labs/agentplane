@@ -39,6 +39,7 @@ function completeAgent(opts: {
   usage?: {
     input_tokens: number;
     output_tokens: number;
+    cached_input_tokens?: number;
     visible_output_tokens?: number;
     reasoning_tokens?: number;
     total_tokens: number;
@@ -62,7 +63,37 @@ function completeAgent(opts: {
   });
 }
 
+const create = (cached?: number) =>
+  projectTaskTokenUsage({
+    journal: completeAgent({
+      journal: journal(),
+      role: "EXECUTOR",
+      fingerprint: fingerprintA,
+      usage: {
+        input_tokens: 10,
+        output_tokens: 2,
+        total_tokens: 12,
+        ...(cached === undefined ? {} : { cached_input_tokens: cached }),
+      },
+    }),
+  });
+
 describe("completed task token usage projection", () => {
+  it("distinguishes observed zero cached input from missing cache telemetry", () => {
+    expect(create()).toMatchObject({
+      cached_input_tokens: null,
+      cached_input_observed_agent_runs: 0,
+    });
+    expect(create(0)).toMatchObject({
+      cached_input_tokens: 0,
+      cached_input_observed_agent_runs: 1,
+    });
+    expect(create(7)).toMatchObject({
+      cached_input_tokens: 7,
+      cached_input_observed_agent_runs: 1,
+    });
+  });
+
   it("aggregates executor and evaluator provider telemetry exactly once", () => {
     const executor = completeAgent({
       journal: journal(),
@@ -103,6 +134,8 @@ describe("completed task token usage projection", () => {
     ).toEqual({
       schema_version: 1,
       state: "observed",
+      cached_input_tokens: null,
+      cached_input_observed_agent_runs: 0,
       input_tokens: 15,
       output_tokens: 6,
       reasoning_tokens: 7,

@@ -1,8 +1,9 @@
+import { resolveWorkOrderContextBlocks } from "../context/work-order-context.js";
+import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 import { createHash } from "node:crypto";
 
 import { createRunnerInvocationSnapshot } from "../artifacts.js";
 import { readStableRegularFileNoFollow } from "../stable-file.js";
-import type { RunnerInvocation } from "../types.js";
 
 class RunnerPreparedInputError extends Error {
   readonly code = "RUNNER_PREPARED_INPUT";
@@ -86,6 +87,16 @@ export async function readValidatedPreparedRunnerStdin(opts: {
     expected_bytes: preparedInput.bundle_bytes,
     expected_sha256: preparedInput.bundle_sha256,
   });
+
+  const parsedBundle = JSON.parse(bundle.toString("utf8")) as RunnerContextBundle;
+  if (parsedBundle.work_order) {
+    if (!parsedBundle.semantic_context)
+      throw preparedInputError("required context manifest is missing");
+    resolveWorkOrderContextBlocks({
+      order: parsedBundle.work_order,
+      manifest: parsedBundle.semantic_context,
+    });
+  }
 
   if (!opts.invocation.bootstrap_path && opts.require_bootstrap) {
     throw preparedInputError("required bootstrap_path is missing");

@@ -1,4 +1,8 @@
 import {
+  buildWorkOrderContextManifest,
+  workOrderContextManifestDigest,
+} from "../context/work-order-context.js";
+import {
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
   type AgentSemanticResult,
 } from "@agentplaneorg/core/schemas";
@@ -162,6 +166,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     (requirement) => !semanticTextHasProcessChoreography(requirement.description),
   );
   const requiredInputs = workOrder.required_inputs.filter((input) => {
+    if (!input.required) return false;
     if (input.kind === "task_document" || input.kind === "policy_module") return false;
     if (input.kind !== "source_artifact") return true;
     const source = input.path ?? "";
@@ -181,6 +186,17 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     (toolClass) => toolClass !== "workspace_write" || effectiveWritableRoots.length > 0,
   );
   return {
+    context_discovery: {
+      manifest_ref: `${bundle.execution.artifact_paths.bundle_path}#/semantic_context`,
+      manifest_digest: workOrderContextManifestDigest(
+        buildWorkOrderContextManifest(
+          workOrder,
+          `${bundle.execution.artifact_paths.bundle_path}#/work_order`,
+        ),
+      ),
+      required_loading:
+        "Read every required block before semantic work. Validate its digest. Reload after restart or context loss. Read optional blocks only on demand.",
+    },
     work_order_id: workOrder.work_order_id,
     ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
     role: workOrder.role,
@@ -199,8 +215,12 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
       required_knowledge_ref_digests: workOrder.context_intent.required_knowledge_ref_digests,
       require_prepared_evidence: workOrder.context_intent.require_prepared_evidence,
     },
-    knowledge_refs: workOrder.knowledge_refs,
-    prepared_evidence: workOrder.prepared_evidence,
+    knowledge_refs: workOrder.knowledge_refs.filter((ref) =>
+      workOrder.context_intent.required_knowledge_ref_digests.includes(ref.digest),
+    ),
+    prepared_evidence: workOrder.prepared_evidence.filter(
+      (evidence) => evidence.role === workOrder.role,
+    ),
     required_inputs: requiredInputs,
     required_outputs: workOrder.required_outputs,
     semantic_checks: semanticVerificationRequirements.map((requirement) => ({
@@ -248,7 +268,7 @@ export function renderTaskRunnerBootstrap(
     "# agentplane runner bootstrap",
     "",
     "- Use only the supplied context, writable roots, and declared tools.",
-    "- Do not inspect internal orchestration artifacts or invoke undeclared interfaces.",
+    "- Read only declared context references and source artifacts. Do not invoke undeclared interfaces.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
     "",
     `- target: ${targetLabel}`,
@@ -257,7 +277,7 @@ export function renderTaskRunnerBootstrap(
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     "",
-    "The content below is the complete provider-facing projection for this episode.",
+    "The projection below starts this episode. The complete context manifest preserves all required constraints and input references. References do not grant authority.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
     "Treat protected_paths as forbidden even when the native sandbox permits them.",
     "",

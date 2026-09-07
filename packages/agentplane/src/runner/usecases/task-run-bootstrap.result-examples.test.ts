@@ -206,11 +206,13 @@ describe("runner bootstrap result examples", () => {
         id: "semantic-check",
         description: "Confirm the semantic projection preserves the user objective.",
         required: true,
+        observed_by: "agentplane",
       },
       {
         id: "supervisor-check",
         description: "Run agentplane task brief TASK-1 --json.",
         required: true,
+        observed_by: "agentplane",
       },
     ];
     bundle.work_order = workOrder;
@@ -270,6 +272,10 @@ it("reduces fixed prompt baselines while preserving semantic inputs", () => {
     const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
     bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
     bundle.work_order.role = role;
+    bundle.work_order.prepared_evidence = bundle.work_order.prepared_evidence.map((evidence) => ({
+      ...evidence,
+      role,
+    }));
     const bootstrap = renderTaskRunnerBootstrap(bundle);
     // Measured before compaction on ca07204ee with these fixed fixtures.
     const baseline = role === "EXECUTOR" ? 8590 : 9196;
@@ -292,4 +298,21 @@ it("reduces fixed prompt baselines while preserving semantic inputs", () => {
     bundle.work_order.task.objective = literal;
     expect(renderTaskRunnerBootstrap(bundle)).toContain(literal);
   }
+});
+
+it("keeps optional full logs discoverable without copying them into the initial prompt", () => {
+  const bundle = makeRunnerContextBundle({ runId: "optional-context" });
+  const order = buildAgentWorkOrderV2ValidFixture("optional-context");
+  bundle.work_order = order;
+  order.required_inputs.push({
+    id: "successful-history",
+    kind: "source_artifact",
+    description: "full-successful-log".repeat(200),
+    path: "logs/success.json",
+    required: false,
+  });
+  const bootstrap = renderTaskRunnerBootstrap(bundle);
+  expect(bootstrap).not.toContain("full-successful-log");
+  expect(bootstrap).toContain("manifest_ref");
+  expect(bootstrap).toContain("Reload after restart or context loss");
 });

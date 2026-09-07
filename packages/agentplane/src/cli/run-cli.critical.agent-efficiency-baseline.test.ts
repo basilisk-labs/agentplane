@@ -226,6 +226,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608301851-5W3XW6",
           "202609030849-925NNG",
           "202609060720-NZXQ0E",
+          "202609071501-VN1FN4",
         ],
         candidate: {
           surface_sha256: "8ba01d347981b2efb96b0a3645140026934f97f42552d88949bddb07ca78e0e4",
@@ -351,9 +352,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
           agent_work_order_schema: {
             path: "schemas/agent-work-order-v2.schema.json",
-            sha256: "4f57a53b795c054d112b9126a6a06a69ba4e417e6cf5de1dd5b048f14ae73619",
+            sha256: "59ba5559d26e8f70271d78dca89f78a6f82461f16c711d9c9b8031ec150f97f0",
             comparison: "canonical_json_exact",
-            source_task: "202608291006-255K66",
+            source_task: "202609071501-VN1FN4",
           },
           core_agent_work_order_exports: {
             comparison: "required_named_reexports",
@@ -898,6 +899,54 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain("fixture registry is not valid JSON at candidate anchor");
+    },
+    TEST_TIMEOUT_MS,
+  );
+});
+
+describeCritical("repository efficiency snapshots", () => {
+  it(
+    "binds sampling to Git evidence and preserves unavailable usage",
+    async () => {
+      const root = await makeRepoTempRoot();
+      const git = (...args: string[]) => execFileAsync("git", args, { cwd: root });
+      await git("init");
+      await mkdir(path.join(root, "packages/agentplane"), { recursive: true });
+      await mkdir(path.join(root, ".agentplane/tasks/T1"), { recursive: true });
+      await writeFile(path.join(root, "packages/agentplane/package.json"), "{}\n");
+      await writeFile(path.join(root, ".agentplane/tasks/T1/README.md"), "---\nid: T1\n---\n");
+      await git("add", ".");
+      await git(
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.invalid",
+        "commit",
+        "-m",
+        "fixture",
+      );
+      const moduleUrl = pathToFileURL(
+        path.join(REPO_ROOT, "scripts/lib/agent-efficiency-repository-snapshot.mjs"),
+      ).href;
+      const expression = `import { measureRepositoryEfficiency } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(measureRepositoryEfficiency({ repoRoot: ${JSON.stringify(root)} })));`;
+      const first = await runNode(["--input-type=module", "-e", expression]);
+      expect(first.exitCode).toBe(0);
+      const snapshot = JSON.parse(first.stdout) as { totals: unknown; tasks: unknown[] };
+      expect(snapshot.totals).toMatchObject({
+        sampled_tasks: 1,
+        tasks_with_usage: 0,
+        service_commits: 0,
+        input_tokens: { value: null, tasks_observed: 0 },
+      });
+      expect(snapshot.tasks[0]).toMatchObject({
+        work_items: null,
+        roles: null,
+        prepared_context_bytes: null,
+        delivered_context_bytes: null,
+      });
+      await writeFile(path.join(root, ".agentplane/tasks/T1/README.md"), "uncommitted mutation");
+      const repeated = await runNode(["--input-type=module", "-e", expression]);
+      expect(repeated.stdout).toBe(first.stdout);
     },
     TEST_TIMEOUT_MS,
   );

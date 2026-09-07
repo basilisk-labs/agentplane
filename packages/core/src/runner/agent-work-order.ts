@@ -239,9 +239,13 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
     if (
       value.canonical_binding &&
       (value.canonical_binding.task_id !== value.task.id ||
-        (value.canonical_binding.phase === "implementation" &&
+        (value.canonical_binding.phase !== "planning" &&
           value.canonical_binding.work_item_id !== value.task.work_item_id) ||
-        (value.canonical_binding.phase === "planning" && value.role !== "PLANNER"))
+        (value.canonical_binding.phase === "planning" && value.role !== "PLANNER") ||
+        (value.canonical_binding.phase === "inspection" &&
+          (value.role !== "EVALUATOR" ||
+            value.authority.mutation_scope !== "none" ||
+            value.authority.writable_roots.length > 0)))
     )
       ctx.addIssue({
         code: "custom",

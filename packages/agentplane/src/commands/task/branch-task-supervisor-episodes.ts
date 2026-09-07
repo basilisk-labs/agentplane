@@ -43,6 +43,7 @@ import {
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import {
+  canCoalesceVerificationArtifacts,
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
@@ -376,15 +377,24 @@ async function executeBranchVerificationEpisode(opts: {
           quiet: true,
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
-        await commitBranchSupervisorTaskArtifacts({
-          command,
-          cwd: checkout,
-          task_id: opts.input.task_id,
-          message: branchSupervisorArtifactCommitMessage(
-            opts.input.task_id,
-            passed ? "verification_pass" : "verification_rework",
-          ),
-        });
+        const coalesce =
+          passed &&
+          (await canCoalesceVerificationArtifacts({
+            command,
+            cwd: checkout,
+            task_id: opts.input.task_id,
+            next: await opts.decide(),
+          }));
+        if (!coalesce)
+          await commitBranchSupervisorTaskArtifacts({
+            command,
+            cwd: checkout,
+            task_id: opts.input.task_id,
+            message: branchSupervisorArtifactCommitMessage(
+              opts.input.task_id,
+              passed ? "verification_pass" : "verification_rework",
+            ),
+          });
         return {
           verification: passed ? "ok" : "needs_rework",
           declared_checks: checks.artifact_path,

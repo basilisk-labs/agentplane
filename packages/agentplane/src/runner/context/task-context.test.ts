@@ -1,3 +1,8 @@
+import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
+import {
+  buildWorkOrderContextManifest,
+  resolveWorkOrderContextBlocks,
+} from "./work-order-context.js";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -415,5 +420,67 @@ describe("assembleRunnerTaskContext", () => {
     expect(verificationSection).toMatchObject({ name: "Verification", required: false });
     expect(verificationSection?.text).toContain("Formal lifecycle record");
     expect(assembled.task.compaction.sections.truncated).toBe(true);
+  });
+});
+
+describe("lossless WorkOrder context selection", () => {
+  it("keeps oversized discovery manifests complete and optional history out of required loading", () => {
+    const order = buildAgentWorkOrderV2ValidFixture("context-selection");
+    order.required_inputs = Array.from({ length: 500 }, (_, index) => ({
+      id: `history-${index}`,
+      kind: "source_artifact",
+      description: "Optional full historical log",
+      path: `logs/${index}.txt`,
+      required: index === 499,
+    }));
+    const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
+    expect(Buffer.byteLength(JSON.stringify(manifest))).toBeGreaterThan(8192);
+    expect(manifest.blocks.filter((block) => block.id.startsWith("input:"))).toHaveLength(500);
+    const selected = resolveWorkOrderContextBlocks({ order, manifest });
+    expect(selected.some((block) => block.id === "input:history-499")).toBe(true);
+    expect(selected.some((block) => block.id === "input:history-0")).toBe(false);
+    expect(
+      resolveWorkOrderContextBlocks({ order, manifest, optional_ids: ["input:history-0"] }).some(
+        (block) => block.id === "input:history-0",
+      ),
+    ).toBe(true);
+    expect(() =>
+      resolveWorkOrderContextBlocks({
+        order,
+        manifest: { ...manifest, blocks: manifest.blocks.slice(0, -1) },
+      }),
+    ).toThrow(/incomplete or stale/u);
+    expect(() =>
+      resolveWorkOrderContextBlocks({
+        order: { ...order, task: { ...order.task, objective: "Changed" } },
+        manifest,
+      }),
+    ).toThrow(/incomplete or stale/u);
+  });
+
+  it("reloads all required blocks after context loss and binds reuse to source and role", () => {
+    const order = buildAgentWorkOrderV2ValidFixture("context-restart");
+    const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
+    const initial = resolveWorkOrderContextBlocks({ order, manifest });
+    const retained = {
+      source_digest: manifest.source_digest,
+      blocks: new Map(initial.map((block) => [block.id, block.digest])),
+    };
+    expect(resolveWorkOrderContextBlocks({ order, manifest, retained })).toEqual([]);
+    expect(resolveWorkOrderContextBlocks({ order, manifest })).toEqual(initial);
+    const evaluator = {
+      ...order,
+      role: "EVALUATOR" as const,
+      prepared_evidence: order.prepared_evidence.map((evidence) => ({
+        ...evidence,
+        role: "EVALUATOR" as const,
+      })),
+    };
+    const evaluationManifest = buildWorkOrderContextManifest(evaluator, "/run/work-order.json");
+    expect(evaluationManifest.source_digest).not.toBe(manifest.source_digest);
+    expect(
+      resolveWorkOrderContextBlocks({ order: evaluator, manifest: evaluationManifest, retained })
+        .length,
+    ).toBeGreaterThan(0);
   });
 });

@@ -45,7 +45,7 @@ export function requiresPlanningRecoveryReplacement(opts: {
   return (
     step.kind === "agent_episode" &&
     step.episode.purpose === "planning" &&
-    opts.exchange.purpose !== "planning" &&
+    (opts.exchange.purpose !== "planning" || opts.exchange.status === "result_received") &&
     step.preconditionFingerprint.digest !== opts.exchange.state_fingerprint
   );
 }
@@ -446,7 +446,7 @@ export async function recoverPendingExternalAgentResult(opts: {
       code: "E_RUNTIME",
       message:
         (planningRecoveryRequired
-          ? "The task returned to PLANNER after the pending external-agent result was issued. "
+          ? "The planning state changed after the pending external-agent result was issued. "
           : "The task authority changed after the pending external-agent result was issued. ") +
         `AgentPlane retired the stale result; run: agentplane task advance ${opts.task_id} ` +
         "--replacement --agent-json",

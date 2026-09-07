@@ -1,4 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
+import { measureRepositoryEfficiency } from "../lib/agent-efficiency-repository-snapshot.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,6 +35,8 @@ function helpText() {
     "",
     "Options:",
     "  --fixtures <path>  Fixture registry. Default: scripts/bench/agent-efficiency-fixtures.json",
+    "  --repository-snapshot  Measure committed repository evidence instead of historical RF-04 fixtures.",
+    "  --revision <ref>   Immutable source to sample. Default: HEAD.",
     "  --out <path>       Write stable JSON to a file instead of stdout.",
     "  --help             Show this help text.",
   ].join("\n");
@@ -41,8 +44,8 @@ function helpText() {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["fixtures", "out"],
-    booleanFlags: ["help"],
+    valueFlags: ["fixtures", "out", "revision"],
+    booleanFlags: ["help", "repository-snapshot"],
     aliases: { h: "help" },
   });
   if (positionals.length > 0) {
@@ -51,6 +54,8 @@ function parseArgs(argv) {
   return {
     fixturesPath: path.resolve(flags.fixtures ?? DEFAULT_FIXTURES_PATH),
     outputPath: flags.out ? path.resolve(flags.out) : null,
+    repositorySnapshot: flags["repository-snapshot"] === true,
+    revision: flags.revision ?? "HEAD",
     help: flags.help === true,
   };
 }
@@ -75,7 +80,9 @@ export async function runAgentEfficiencyMeasure(argv = process.argv.slice(2), st
     return;
   }
 
-  const measurement = measureAgentEfficiency({ fixturesPath: options.fixturesPath });
+  const measurement = options.repositorySnapshot
+    ? measureRepositoryEfficiency({ repoRoot, revision: options.revision })
+    : measureAgentEfficiency({ fixturesPath: options.fixturesPath });
   const output = `${stableJson(measurement, 2)}\n`;
   if (options.outputPath) {
     mkdirSync(path.dirname(options.outputPath), { recursive: true });

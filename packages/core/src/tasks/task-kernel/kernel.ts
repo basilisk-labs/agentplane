@@ -1,4 +1,9 @@
-import { authorityDigest, continuationAdmissionIssues } from "./authority-lineage.js";
+import {
+  authorityDeltaApprovalEvidence,
+  authorityDigest,
+  canonicalAuthorityIssues,
+  continuationAdmissionIssues,
+} from "./authority-lineage.js";
 import { kernelDigest } from "./digest.js";
 export { kernelDigest } from "./digest.js";
 
@@ -139,6 +144,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
   continue_authority: "authority_continued",
+  approve_authority_delta: "authority_continued",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
   accept_work_item_result: "work_item_result_accepted",
@@ -423,6 +429,83 @@ function preconditions(input: KernelInput): KernelResult | null {
     const issues = continuationAdmissionIssues(input, input.command.record);
     return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
+  if (input.command.kind === "approve_authority_delta") {
+    const command = input.command;
+    const parent = input.aggregate.authority_lineage?.at(-1)?.authority;
+    const record = command.record;
+    const observation = record.observation;
+    const child = record.authority;
+    const immutable = parent
+      ? {
+          ...child,
+          digest: parent.digest,
+          repository_fingerprint: parent.repository_fingerprint,
+          scope_roots: parent.scope_roots,
+          repository_effects: parent.repository_effects,
+          provenance: parent.provenance,
+        }
+      : null;
+    const issues =
+      !parent ||
+      input.actor.kind !== "USER" ||
+      input.actor.transport !== "manual" ||
+      input.authority !== null ||
+      command.parent_authority_digest !== parent.digest ||
+      record.approval_mode !== "manual_operator" ||
+      observation?.kind !== "authority_delta" ||
+      observation.request_digest !== command.request_digest ||
+      observation.request_task_revision !== input.aggregate.revision ||
+      observation.repository_evidence_digest === undefined ||
+      observation.previous_fingerprint !== parent.repository_fingerprint ||
+      child.repository_fingerprint !== input.repository_fingerprint ||
+      child.provenance.kind !== "USER" ||
+      child.provenance.actor_id !== input.actor.id ||
+      child.provenance.parent_authority_digest !== parent.digest ||
+      child.provenance.evidence_digest !== parent.provenance.evidence_digest ||
+      observation.evidence_digest !==
+        authorityDeltaApprovalEvidence({
+          task_id: input.aggregate.id,
+          request_digest: command.request_digest,
+          actor_id: input.actor.id,
+        }) ||
+      child.digest !== authorityDigest(child) ||
+      !immutable ||
+      kernelDigest(immutable) !== kernelDigest(parent) ||
+      JSON.stringify(child.scope_roots) !==
+        JSON.stringify(
+          [
+            ...new Set([...parent.scope_roots, ...(observation.added_scope_roots ?? [])]),
+          ].toSorted(),
+        ) ||
+      JSON.stringify(child.repository_effects) !==
+        JSON.stringify(
+          [
+            ...new Set([
+              ...parent.repository_effects,
+              ...(observation.added_repository_effects ?? []),
+            ]),
+          ].toSorted(),
+        ) ||
+      kernelDigest({
+        task_id: input.aggregate.id,
+        task_revision: input.aggregate.revision,
+        plan_revision: parent.plan_revision,
+        plan_digest: parent.plan_digest,
+        parent_authority_digest: parent.digest,
+        repository_identity: parent.repository_identity,
+        previous_fingerprint: parent.repository_fingerprint,
+        repository_fingerprint: input.repository_fingerprint,
+        repository_evidence_digest: observation.repository_evidence_digest,
+        changed_paths: observation.changed_paths,
+        added_scope_roots: observation.added_scope_roots ?? [],
+        added_repository_effects: observation.added_repository_effects ?? [],
+      }) !== command.request_digest ||
+      canonicalAuthorityIssues({
+        ...input.aggregate,
+        authority_lineage: [...(input.aggregate.authority_lineage ?? []), record],
+      }).length > 0;
+    return issues ? rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_delta_binding"]) : null;
+  }
   const workItemId = authorityWorkItem(input.command);
   if (workItemId !== null) {
     if (input.aggregate.state !== "ACTIVE") {
@@ -701,6 +784,14 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "continue_authority": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
+      };
+      break;
+    }
+    case "approve_authority_delta": {
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,

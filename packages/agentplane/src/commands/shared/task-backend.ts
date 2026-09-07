@@ -1,4 +1,5 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import path from "node:path";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
@@ -238,6 +239,11 @@ export async function resolveTaskOwnerCommandContext(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<CommandContext> {
+  const localTask = await opts.ctx.taskBackend.getTask(opts.taskId);
+  // Canonical tasks bind observations and WorkOrders to the invocation checkout.
+  // They have no legacy task branch; their kernel validates state and authority.
+  if (localTask?.extensions && Object.hasOwn(localTask.extensions, TASK_KERNEL_EXTENSION))
+    return opts.ctx;
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (taskBranch) {
     const owner = await resolveAuthoritativeTaskWorktree({

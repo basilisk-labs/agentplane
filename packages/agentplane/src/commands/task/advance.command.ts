@@ -59,10 +59,14 @@ export function makeRunTaskAdvanceHandler(deps: {
       });
     }
     const initialCommand = await deps.getContext("task advance", { includeRemote: parsed.remote });
-    const command = await resolveTaskOwnerCommandContext({
-      ctx: initialCommand,
-      taskId: parsed.taskId,
-    });
+    const localSource = await initialCommand.taskBackend.getTask(parsed.taskId);
+    const command =
+      localSource?.extensions && Object.hasOwn(localSource.extensions, TASK_KERNEL_EXTENSION)
+        ? initialCommand
+        : await resolveTaskOwnerCommandContext({
+            ctx: initialCommand,
+            taskId: parsed.taskId,
+          });
     const source = await command.taskBackend.getTask(parsed.taskId);
     if (source?.extensions && Object.hasOwn(source.extensions, TASK_KERNEL_EXTENSION)) {
       if (parsed.workflowRecovery)
