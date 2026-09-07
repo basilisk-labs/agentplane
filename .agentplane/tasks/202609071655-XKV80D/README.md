@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -31,31 +31,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-07T17:45:59.253Z"
+  updated_at: "2026-09-07T19:16:32.620Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 5 typed finding(s)."
-  evaluated_sha: "693879a426881d13a1f40f2eb4ab15fd233e25ce"
+  evaluated_sha: "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
   blueprint_digest: "6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f"
   evidence_refs:
-    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-174439338-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-174439338-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/ffad5bae93c68b59e95e60fd11e219e469aa1bf5c33e3c34b030060f191aca5f.md"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-174439338-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-174439338-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-174439338-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-191452471-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-191452471-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/69db9840e2556b9bbe9957c530a5c3208b5247eb19a0389658d0cc77ff1829dd.md"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-191452471-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-191452471-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/20260907-191452471-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609071655-XKV80D/README.md"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/9c26d8c7a3d9f678a60b8027e01e2173e6b8d4658c9465a5d81e5e7924fbd627.patch"
-    - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/cd58f4627d10ad397fce3e1ce167128ae48ab25dd1d0074fa5b1989e952952df.json"
-    - ".agentplane/tasks/202609071655-XKV80D/verification/20260907174430848-1ad06bd68526bf8c.json"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/85c2a60d12c0b3d6821f27e877a175bccc031da4fb03f76cf4bb88a305503a64.patch"
+    - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/27f51fbf12282edc27b363fbbfc1a83d3160601a649936589bfb824ee863e701.json"
+    - ".agentplane/tasks/202609071655-XKV80D/verification/20260907191444795-e4d2398fa9da18dc.json"
     - ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/3bda60532dd146a07df8eb8c779f6c49255b6f356f6ccfe3af5598c489034b02.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "All eight frozen evidence digests match. The diff changes only four approved source and test files."
-    - "The implementation requires accepted result identity, matching WorkItem authority, and report-only task-artifact scope. It persists the exact canonical envelope through contained writes. It rejects unrelated paths, symlink targets, corrupt existing reports, and changed-result replay. The ordinary no-change implementation rejection remains."
-    - "The persisted verification record is tied to evaluated SHA 693879a426881d13a1f40f2eb4ab15fd233e25ce. It records 33 focused regression tests and bun run ci:local:full as passing. Positive completion and interrupted replay are covered."
-    - "Residual risk: The separately run clone guard exceeds an existing repository baseline. All reported duplicate participants are unchanged from HEAD and outside this diff. The required full local CI passed."
-    - "Residual risk: This review does not authorize publication or integration."
+    - "All seven frozen evidence files match the evaluator work-order SHA-256 values."
+    - "Report materialization remains restricted to completed report WorkItems, the exact accepted result digest, and the task-owned artifact root."
+    - "The compatibility rework preserves fail-closed CI path rejection and keeps the combined runtime module below the enforced limit."
+    - "The exact 33-test suite and mandatory full CI passed on implementation commit 36bfc3ba23e0c65466a5b6c172ef58dfd63883c1."
+    - "Residual risk: Hosted checks for the refreshed PR head remain a separate integration gate."
 token_usage:
   agent_runs: 4
   input_tokens: null
@@ -375,7 +375,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T19:14:45.993Z"
+doc_updated_at: "2026-09-07T19:16:32.629Z"
 doc_updated_by: "SUPERVISOR"
 description: "User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority."
 sections:
@@ -780,7 +780,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071655-XKV80D"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609071655-XKV80D"
     intent:
@@ -800,9 +800,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-07T19:14:45.991Z"
+    updated_at: "2026-09-07T19:14:45.993Z"
     work_items:
       report-result:
         attempt: 1
@@ -911,6 +911,30 @@ extensions:
         mutation_id: "compatibility:sha256:17ae65dff4dd077a6ef445e14a6d8971c350f5881768cbdf0fc49c741f422fc9"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
+      compatibility:sha256:36de1c94480f2c540a60f36847ecc901354e2cf81b4bbf8e692ee5ba6a4d4ea8:
+        aggregate_digest: "sha256:12b680f8d0c4d6763890bfccda509f5a584106778e1e4ce85f7b94ed7e7573d2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T19:14:45.993Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ac1fa41058ffd3e0d1c63c45"
+          mutation_id: "compatibility:sha256:36de1c94480f2c540a60f36847ecc901354e2cf81b4bbf8e692ee5ba6a4d4ea8"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:36de1c94480f2c540a60f36847ecc901354e2cf81b4bbf8e692ee5ba6a4d4ea8"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609071655-XKV80D"
       compatibility:sha256:4e3249d03d294806f63df34389a38aac77881cd2faf5265bea485ee7a4788b81:
