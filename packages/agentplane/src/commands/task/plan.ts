@@ -33,6 +33,7 @@ import {
 } from "../shared/task-store.js";
 
 import {
+  projectApprovedTask,
   assertPlanCanBeApproved,
   assertPlanSectionPresent,
   buildPlanDocUpdate,
@@ -42,31 +43,6 @@ import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
-import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
-
-function projectApprovedTask(current: TaskData, next: TaskData): TaskData {
-  const aggregate = taskCentricAggregateFromExtensions(next.extensions);
-  if (!aggregate?.current_plan) return next;
-  const previous = taskCentricAggregateFromExtensions(current.extensions);
-  const revision = current.revision ?? previous?.revision;
-  if (revision === undefined || previous?.revision !== revision) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Plan approval requires synchronized task revisions.",
-    });
-  }
-  return projectTaskCentricCompatibilityMutation({
-    current,
-    next: {
-      ...next,
-      status: projectTaskLifecycleToLegacyStatus(aggregate.lifecycle),
-      extensions: withTaskCentricAggregate(next.extensions, {
-        ...aggregate,
-        revision,
-      }),
-    },
-  });
-}
 
 export type TaskPlanSetResult = {
   taskId: string;

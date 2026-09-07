@@ -45,6 +45,7 @@ import {
   type ExternalAgentExchange,
 } from "./external-agent-exchange.js";
 import {
+  exactChangedPaths,
   completedWorkItemRecoveryReadme,
   resolveEvidenceOnlyReworkCommit,
   selectRecordedImplementationRecoveryCommit,
@@ -288,31 +289,6 @@ export function taskReadmesPreserveRecoveryContract(
   return (
     previous !== null && current !== null && taskReadmesHaveOnlyLifecycleDrift(previous, current)
   );
-}
-
-async function exactChangedPaths(
-  root: string,
-  base: string,
-  head: string,
-): Promise<string[] | null> {
-  const diff = await runProcess({
-    command: "git",
-    args: [
-      "diff",
-      "--no-ext-diff",
-      "--no-textconv",
-      "--no-renames",
-      "--name-only",
-      "-z",
-      base,
-      head,
-      "--",
-    ],
-    cwd: root,
-    env: gitProofEnv(),
-    reject: false,
-  });
-  return diff.exitCode === 0 ? diff.stdout.split("\0").filter(Boolean) : null;
 }
 
 export async function resolveImplementationVerificationTask(opts: {

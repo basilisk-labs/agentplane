@@ -1,3 +1,8 @@
+import {
+  readRecoveryWorkOrder as order,
+  writeRecoveryReport as report,
+  type RecoveryPacket as Packet,
+} from "./run-cli.core.task-advance.testkit.js";
 import { execFile } from "node:child_process";
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -5,7 +10,6 @@ import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import * as processRunner from "@agentplaneorg/core/process";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
@@ -28,13 +32,6 @@ import { runCli } from "./run-cli.js";
 installRunCliIntegrationHarness();
 const git = promisify(execFile);
 
-type Packet = {
-  transition_id: string;
-  state_fingerprint: string;
-  action: { kind: string };
-  exchange: { directory: string; result_path: string; resume_argv: string[] };
-};
-
 async function invoke(root: string, args: string[]) {
   const io = captureStdIO();
   try {
@@ -48,35 +45,6 @@ async function packet(root: string, taskId: string) {
   const result = await invoke(root, ["task", "advance", taskId, "--agent-json"]);
   expect(result.code, result.stderr).toBe(0);
   return JSON.parse(result.stdout) as Packet;
-}
-async function order(p: Packet): Promise<AgentWorkOrderV2> {
-  expect(p.exchange, JSON.stringify(p)).toBeDefined();
-  return JSON.parse(
-    await readFile(path.join(p.exchange.directory, "work-order.json"), "utf8"),
-  ) as AgentWorkOrderV2;
-}
-async function report(p: Packet, summary: string, extra: Record<string, unknown> = {}) {
-  const wo = await order(p);
-  const result = {
-    schema_version: 1,
-    kind: "agent_action_result",
-    task_id: wo.task.id,
-    transition_id: p.transition_id,
-    state_fingerprint: p.state_fingerprint,
-    role: wo.role,
-    result: {
-      schema_version: 2,
-      kind: "agent_semantic_result",
-      work_order_id: wo.work_order_id,
-      status: "completed",
-      summary,
-      findings: [summary],
-      uncertainty: [],
-      ...extra,
-    },
-  };
-  await writeFile(p.exchange.result_path, JSON.stringify(result));
-  return result;
 }
 async function resume(root: string, p: Packet) {
   const result = await invoke(root, p.exchange.resume_argv.slice(1));
