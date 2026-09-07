@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -836,22 +836,99 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T13:40:13.101Z"
+    updated_at: "2026-09-07T13:40:14.462Z"
     work_items:
       prompt-language-and-compaction:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "prompt-language-and-compaction"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:562aa86b6046b5652534a9849a4819cb6b3b4d2a6f5b53101e65edd7162a52ea"
+            id: "prompt-language-implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609071219-QV0SX9"
+              work_item_id: "prompt-language-and-compaction"
+            provenance:
+              - "sha256:e02e0a2835173dfb0b1be63e07e0cf14bbabf318a450d0173c65b38b54698a89"
+              - ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:885647a9c0953aada417789a460e87ccf2fe61e24c2331a26a38284ac2ce0cd5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2ac655471f63a776cac617193aa0cd15c4809de9f2d693b3e41884f62aa34b6e"
+            id: "prompt-regression-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609071219-QV0SX9"
+              work_item_id: "prompt-language-and-compaction"
+            provenance:
+              - "sha256:e02e0a2835173dfb0b1be63e07e0cf14bbabf318a450d0173c65b38b54698a89"
+              - ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:885647a9c0953aada417789a460e87ccf2fe61e24c2331a26a38284ac2ce0cd5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ee0b4f4b3a32d38134c1d5d7674ea1488f85dddfde5f630981501b25dd042ec7"
+            id: "prompt-size-comparison"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609071219-QV0SX9"
+              work_item_id: "prompt-language-and-compaction"
+            provenance:
+              - "sha256:e02e0a2835173dfb0b1be63e07e0cf14bbabf318a450d0173c65b38b54698a89"
+              - ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:885647a9c0953aada417789a460e87ccf2fe61e24c2331a26a38284ac2ce0cd5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json"
+              check_id: "task-outcome"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T13:40:14.456Z"
+              repository_snapshot_digest: "sha256:885647a9c0953aada417789a460e87ccf2fe61e24c2331a26a38284ac2ce0cd5"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T13:40:14.462Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:acc65ba5af330b5b68a826145c46c37105acf33ad56e064b7333c61e14e053dd"
+        entity: "work_item"
+        id: "event_c60a867c3fa9785c96e510d8"
+        mutation_id: "external-result:work-order-202609071219-QV0SX9-executor-748d82211264210e37c31543"
+        plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+        task_revision: 11
+        work_item_id: "prompt-language-and-compaction"
     leases: []
     mutation_receipts:
       compatibility:sha256:07c015e6d01a1040d5ab57eef94a789007b6160a44b4b0d867a517c89ab62e17:
@@ -1068,6 +1145,30 @@ extensions:
         mutation_id: "compatibility:sha256:f9099264a939533a9f2d7b2413548554027e431e700efc66521da38dcc300689"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      external-result:work-order-202609071219-QV0SX9-executor-748d82211264210e37c31543:
+        aggregate_digest: "sha256:21efbe23036a9fe55bf32cca1b7f096a941076c5b14917ea0ee43244c78ae64d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:40:14.462Z"
+          cause_refs:
+            - "semantic-result:sha256:acc65ba5af330b5b68a826145c46c37105acf33ad56e064b7333c61e14e053dd"
+          entity: "work_item"
+          from: "READY"
+          id: "event_c60a867c3fa9785c96e510d8"
+          mutation_id: "external-result:work-order-202609071219-QV0SX9-executor-748d82211264210e37c31543"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 11
+          to: "COMPLETED"
+          work_item_id: "prompt-language-and-compaction"
+        mutation_id: "external-result:work-order-202609071219-QV0SX9-executor-748d82211264210e37c31543"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202609071219-QV0SX9"
     pending_effects: []
