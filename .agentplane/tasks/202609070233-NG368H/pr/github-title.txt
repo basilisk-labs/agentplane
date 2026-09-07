@@ -1,1 +1,1 @@
-🚧 NG368H task: Repair manual release recovery after npm publication [202609070233-NG368H]
+✅ NG368H task: Repair manual release recovery after npm publication [202609070233-NG368H]
