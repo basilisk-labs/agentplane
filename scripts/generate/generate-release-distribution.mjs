@@ -338,7 +338,7 @@ async function writeChecksums(outDir, assets) {
 }
 function generateBunAssets(repoRoot, outDir, context) {
   const args = [
-    fileURLToPath(new URL("./generate-bun-cli-assets.mjs", import.meta.url)),
+    fileURLToPath(new URL("generate-bun-cli-assets.mjs", import.meta.url)),
     "--out",
     outDir,
     "--version",
