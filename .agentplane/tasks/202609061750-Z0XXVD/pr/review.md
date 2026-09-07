@@ -12,8 +12,8 @@ Created: 2026-09-06T17:54:49.525Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run release:prepublish
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
