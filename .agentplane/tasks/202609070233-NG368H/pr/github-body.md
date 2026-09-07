@@ -27,9 +27,9 @@ Publish release run 34076162150 published the 0.7.8 npm packages from exact qual
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .github/workflows/publish.yml                      |  3 ++
- .../release/publish-workflow-contract.test.ts      | 63 ++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
+ .github/workflows/publish.yml                      |  3 +
+ .../release/publish-workflow-contract.test.ts      | 73 +++++++++++++++++++++-
+ 2 files changed, 75 insertions(+), 1 deletion(-)
 ```
 
 </details>
