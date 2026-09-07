@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:603ba56307c6fb0d9158728c02b758b267a37ae8ba96ae044feffe2f1ee923cb"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-07T16:12:00.769Z"
-  updated_by: "TESTER"
-  note: "Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry the full contract after sufficient disk space is available. Verify Steps is now populated with the already approved checks."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-09-07T16:55:04.289Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -96,9 +96,7 @@ execution_contract:
       - "packages/agentplane/src/shared/sqlite-driver.ts"
       - "website/bun.lock"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - ".github"
       - "package.json"
@@ -127,10 +125,22 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -262,8 +272,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit:
   hash: "c621332896711f01ef67df757eb934fadc6f5787"
   message: "🚧 7J5DJQ task: apply external agent result"
@@ -351,8 +359,14 @@ events:
     to: "DOING"
     note: "Implementation committed: c62133289671. CLI accepted one state-bound external-agent semantic result."
     commit: "c621332896711f01ef67df757eb934fadc6f5787"
+  -
+    type: "verify"
+    at: "2026-09-07T16:55:04.289Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T16:46:46.120Z"
+doc_updated_at: "2026-09-07T16:55:05.425Z"
 doc_updated_by: "SUPERVISOR"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
@@ -407,6 +421,66 @@ sections:
     Result: fail
     Evidence: supervision/declared-checks.json records exit_code 1 and No space left on device during critical CLI checkout creation.
     Scope: complete committed Bun upgrade and CI guard repair.
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071427-7J5DJQ-upgrade-bun-to-1-4-2-and-qualify-runtime-migrati/.agentplane/tasks/202609071427-7J5DJQ/blueprint/resolved-snapshot.json
+    - old_digest: 02aef3c0fa9b426398bcfa8733f753d1559e89cbc11a2e8c645357ef09fb1a1f
+    - current_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071427-7J5DJQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071427-7J5DJQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T16:55:04.289Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6, input_digest=sha256:81aa8450f533d6cc5b4cef8e21dcabd928fcdfc3b73cf15d66e351cd053c113b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check task_outcome
 
     BlueprintSnapshotRef:
     - state: stale
@@ -723,7 +797,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -976,9 +1050,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-07T16:46:46.120Z"
+    updated_at: "2026-09-07T16:55:05.422Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -1093,6 +1167,30 @@ extensions:
         mutation_id: "compatibility:sha256:2d2b3eb4c5a4740381f219dcc93cb4975408bafb9ff4da971353adb6297b85a7"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:3cddb447239e0eea9b40eaaa6108adfbebfe43ce82f25fc83f17fa3b2441e31c:
+        aggregate_digest: "sha256:9071a557762433540b84338396340b5572ceb83d4fe74e9fad883e796ffa13b7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:55:05.422Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fd8ee719500414e8b170db36"
+          mutation_id: "compatibility:sha256:3cddb447239e0eea9b40eaaa6108adfbebfe43ce82f25fc83f17fa3b2441e31c"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3cddb447239e0eea9b40eaaa6108adfbebfe43ce82f25fc83f17fa3b2441e31c"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d:
@@ -1555,6 +1653,66 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: supervision/declared-checks.json records exit_code 1 and No space left on device during critical CLI checkout creation.
 Scope: complete committed Bun upgrade and CI guard repair.
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071427-7J5DJQ-upgrade-bun-to-1-4-2-and-qualify-runtime-migrati/.agentplane/tasks/202609071427-7J5DJQ/blueprint/resolved-snapshot.json
+- old_digest: 02aef3c0fa9b426398bcfa8733f753d1559e89cbc11a2e8c645357ef09fb1a1f
+- current_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071427-7J5DJQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071427-7J5DJQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T16:55:04.289Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6, input_digest=sha256:81aa8450f533d6cc5b4cef8e21dcabd928fcdfc3b73cf15d66e351cd053c113b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: stale

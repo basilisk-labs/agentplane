@@ -12,8 +12,8 @@ Created: 2026-09-07T14:33:24.150Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry the full contract after sufficient disk space is available. Verify Steps is now populated with the already approved checks.
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
