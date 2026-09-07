@@ -1,1 +1,1 @@
-🚧 M065D1 task: Keep setup-agentplane installations usable across workflow steps [202609070819-M065D1]
+✅ M065D1 task: Keep setup-agentplane installations usable across workflow steps [202609070819-M065D1]
