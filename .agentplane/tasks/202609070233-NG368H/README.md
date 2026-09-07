@@ -4,7 +4,7 @@ title: "Repair manual release recovery after npm publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -433,22 +433,78 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-07T02:46:48.398Z"
+    updated_at: "2026-09-07T02:46:53.877Z"
     work_items:
       recover-post-npm-publication:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "recover-post-npm-publication"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:5990ce41efdecdabd8f34e439f2bbc828d8e97af77eb2fb8d1f00d702f9fd5a6"
+            id: "Manual post-npm release recovery workflow and behavioral regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609070233-NG368H"
+              work_item_id: "recover-post-npm-publication"
+            provenance:
+              - "sha256:847c684109363b123fb717d616a29f6ebd799ce667296c6c1cabb8707501b709"
+              - ".agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:1569f56e6873b8f555c2c44eec058bf6260cc8273722a06acda96d0d76bee1af"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json"
+              check_id: "publish-contract"
+              command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+              detail: "Observed by bun run test:project agentplane packages/agentplane/src/commands/release/publish-workflow-contract.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-07T02:46:53.873Z"
+              repository_snapshot_digest: "sha256:1569f56e6873b8f555c2c44eec058bf6260cc8273722a06acda96d0d76bee1af"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070233-NG368H/supervision/declared-checks.json"
+              check_id: "workflow-lint"
+              command_identity: "bun run workflows:lint"
+              detail: "Observed by bun run workflows:lint."
+              exit_code: 0
+              observed_at: "2026-09-07T02:46:53.873Z"
+              repository_snapshot_digest: "sha256:1569f56e6873b8f555c2c44eec058bf6260cc8273722a06acda96d0d76bee1af"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T02:46:53.877Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_5e099b37832e59c38a427165"
+        mutation_id: "external-result:work-order-202609070233-NG368H-executor-b16ae49de42094be088fc733"
+        plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609070233-NG368H"
+        task_revision: 8
+        work_item_id: "recover-post-npm-publication"
     leases: []
     mutation_receipts:
       compatibility:sha256:258fc0f7b8ad5fe29365848ca02c861518da454997fd04161da58a7d08ad4875:
@@ -569,6 +625,29 @@ extensions:
         mutation_id: "compatibility:sha256:efd85035dc9cca41e807c420e4a3f725cf2a850536be37076dce97f9c76d43dc"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609070233-NG368H"
+      external-result:work-order-202609070233-NG368H-executor-b16ae49de42094be088fc733:
+        aggregate_digest: "sha256:cba6e66f74862988ab16785d6a5be30f87e03c69d9ef970487b497c5c0e6104f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T02:46:53.877Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_5e099b37832e59c38a427165"
+          mutation_id: "external-result:work-order-202609070233-NG368H-executor-b16ae49de42094be088fc733"
+          plan_digest: "sha256:659002ff6ed9e1584d9e92fb151400f27b2ef444fce592d2197a5d85050c5b07"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070233-NG368H"
+          task_revision: 8
+          to: "COMPLETED"
+          work_item_id: "recover-post-npm-publication"
+        mutation_id: "external-result:work-order-202609070233-NG368H-executor-b16ae49de42094be088fc733"
+        next_revision: 9
+        previous_revision: 8
         schema_version: 1
         task_id: "202609070233-NG368H"
     pending_effects: []
