@@ -18,13 +18,13 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
+import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import type { CommandContext } from "../shared/task-backend.js";
 
 import type {
   ExternalAgentExchange,
@@ -49,7 +49,7 @@ import {
 } from "./external-agent-implementation-recovery.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
 import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
-import { loadTaskFromContext } from "../shared/task-backend.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   prepareExternalVerificationCheckpoint,
   completeExternalVerificationCheckpoint,
@@ -57,7 +57,7 @@ import {
 } from "./external-agent-implementation-checkpoint.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
-function assertExternalImplementationReturnState(opts: {
+export function assertExternalImplementationReturnState(opts: {
   exchange: ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
   current: TaskRouteDecision;
@@ -193,6 +193,19 @@ function assertScopeExtensionBlockerPreservedBaseline(opts: {
       message: "Scope-extension blocker changed the workspace after the episode was issued.",
     });
   }
+}
+
+export function implementationCommitAllowsCi(
+  contract: TaskRouteDecision["task"]["execution_contract"],
+  validatedPaths: readonly string[],
+  workspacePaths: readonly string[],
+): boolean {
+  const ciPaths = workspacePaths.filter((entry) => pathAllowed(entry, CI_PATH_PREFIXES));
+  return (
+    contract?.authority.allowed_repository_effects.includes("ci") === true &&
+    ciPaths.length > 0 &&
+    ciPaths.every((entry) => validatedPaths.includes(entry))
+  );
 }
 
 export async function applyExternalImplementationResult(opts: {
@@ -427,7 +440,11 @@ export async function applyExternalImplementationResult(opts: {
           allowPolicy: false,
           allowConfig: false,
           allowHooks: false,
-          allowCI: false,
+          allowCI: implementationCommitAllowsCi(
+            taskAtReturn.execution_contract,
+            observedChangedPaths,
+            status?.lines.map(pathFromStatusLine) ?? [],
+          ),
           requireClean: false,
           quiet: true,
           closeUnstageOthers: false,
