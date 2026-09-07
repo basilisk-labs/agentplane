@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -23,37 +23,36 @@ plan_approval:
   note: "host_user_decision=sha256:ee0369e1e1369eedf4614ac785371d252dcf6f9d6d827933528cff0f98ffbe33"
 verification:
   state: "ok"
-  updated_at: "2026-09-07T14:13:28.349Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  updated_at: "2026-09-07T15:00:35.746Z"
+  updated_by: "TESTER"
+  note: "Verified: full local CI and hosted CI passed after main synchronization; all nine prompt implementation files remain unchanged from the reviewed implementation."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-07T14:15:28.564Z"
+  updated_at: "2026-09-07T15:01:48.113Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "b847aa915f64886905be06ccfb30e37544f35d25"
   blueprint_digest: "2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909"
   evidence_refs:
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/061b59328677f745039ece2f168b1e3ebf52340f28c68231f3bb5fcacf6df93a.md"
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-150058392-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-150058392-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/3a4221ccc4d808b94e4a8d9fb8bdaada0b164dccbc87ac085d0f9829bea598c1.md"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-150058392-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-150058392-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-150058392-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609071219-QV0SX9/README.md"
     - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch"
-    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/e58c5a4b9d305363542edac3c858f9c8dc6f279fae965c7762a9f8d869769498.json"
-    - ".agentplane/tasks/202609071219-QV0SX9/verification/20260907141328349-a44dd3e2b26c5e1e.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/c2208cb62705dd6c7a431a760c82f8f6cffac3da0608283b57ac6c4cac023b6f.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/verification/20260907150035746-f471327741e244b6.json"
     - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/6f016c58a63967e8291105a051182b362e416dacc7fef85bf88124d95209061e.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff delivers the same language contract on both execution routes, preserves authority and stop constraints, and retains all four schema-valid result statuses. Existing and added tests cover these contracts; the full observed verification passed."
-    - "Residual risk: The measured reduction is in UTF-8 prompt bytes, not tokenizer counts. Hosted integration remains a separate supervisor gate."
+    - "The reviewed prompt implementation is unchanged after both main synchronizations. It supplies identical language rules to both execution routes, retains literal and authority contracts, synchronizes PLANNER profiles, and preserves all four schema-valid result statuses. Fresh full local CI and exact-head hosted CI passed."
 token_usage:
   agent_runs: 12
   input_tokens: null
@@ -158,9 +157,6 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
-        id: "recorded-check-10"
-        result: "pass"
-      -
         id: "recorded-check-2"
         result: "pass"
       -
@@ -168,21 +164,6 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
         result: "pass"
       -
         id: "verification-record"
@@ -392,8 +373,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "082de2c2ca742fd4150dbf7439a2b1fb9f5f79ed"
+  -
+    type: "verify"
+    at: "2026-09-07T15:00:35.746Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: full local CI and hosted CI passed after main synchronization; all nine prompt implementation files remain unchanged from the reviewed implementation."
 doc_version: 3
-doc_updated_at: "2026-09-07T14:15:36.196Z"
+doc_updated_at: "2026-09-07T15:01:48.130Z"
 doc_updated_by: "CODER"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
@@ -674,6 +661,60 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T15:00:35.746Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: full local CI and hosted CI passed after main synchronization; all nine prompt implementation files remain unchanged from the reviewed implementation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:55f75ddd2e03c3936c282d4ccf587b528d0586fbb1384034b0bdb1150cf608b7, input_digest=sha256:4d1286a2b2fcbd8139e34b2a221979e82ca6bf6280ec5c01930345d3f4e86d2e
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass (exit 0)
+    Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+    Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks.
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass (exit 0)
+    Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+    Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass (exit 0)
+    Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+    Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks.
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass (exit 0)
+    Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+    Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks. Hosted CI also passed for this exact head: https://github.com/basilisk-labs/agentplane/actions/runs/34134533038.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+    - old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -982,7 +1023,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 20
+    event_cursor: 22
     final_validation:
       evidence:
         -
@@ -1265,9 +1306,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 24
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-07T14:15:36.196Z"
+    updated_at: "2026-09-07T15:00:40.574Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1382,6 +1423,54 @@ extensions:
         mutation_id: "compatibility:sha256:07c015e6d01a1040d5ab57eef94a789007b6160a44b4b0d867a517c89ab62e17"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:283a0fd1f91acd13db600707e23058d24f5a64009172bd60165ba7419e721e62:
+        aggregate_digest: "sha256:f64ec0d7138391f45b1d993e847a8f8b6d5cd5a76db53744a85a4a5c688f01d9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:00:40.571Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_15e48b48d51a3d33aa7d66d1"
+          mutation_id: "compatibility:sha256:283a0fd1f91acd13db600707e23058d24f5a64009172bd60165ba7419e721e62"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 24
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:283a0fd1f91acd13db600707e23058d24f5a64009172bd60165ba7419e721e62"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:3fcbe50947db70543cc78cdfb79e9cae3cdcc5099ef74b36420fda18e8787610:
+        aggregate_digest: "sha256:1dc8da3e33bed5c6826cb732e47897687b6d45f77b04f7d9c31fcc355552e183"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:00:40.574Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_214efe4c9d782d4c560d8e3a"
+          mutation_id: "compatibility:sha256:3fcbe50947db70543cc78cdfb79e9cae3cdcc5099ef74b36420fda18e8787610"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 25
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3fcbe50947db70543cc78cdfb79e9cae3cdcc5099ef74b36420fda18e8787610"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:423f40c1992f332ed35a56ba44d716b9c9fdb2d1db10cd1b659c53ae66c63919:
@@ -2192,6 +2281,60 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609071219-QV0SX9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T15:00:35.746Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: full local CI and hosted CI passed after main synchronization; all nine prompt implementation files remain unchanged from the reviewed implementation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:55f75ddd2e03c3936c282d4ccf587b528d0586fbb1384034b0bdb1150cf608b7, input_digest=sha256:4d1286a2b2fcbd8139e34b2a221979e82ca6bf6280ec5c01930345d3f4e86d2e
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass (exit 0)
+Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks.
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass (exit 0)
+Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass (exit 0)
+Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks.
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass (exit 0)
+Evidence: /Users/densmirnov/Projects/agentplane/.agentplane/cache/QV0SX9-recovery/post-sync-ci.log
+Scope: Current task branch 23012d5b3ca2a18761ac4cb2a88a25ba7891fcb8 after both main synchronizations. All nine implementation files are unchanged from the evaluated b847aa915f64886905be06ccfb30e37544f35d25. Full regression includes prompt tests, typecheck, formatting, critical CLI and coverage checks. Hosted CI also passed for this exact head: https://github.com/basilisk-labs/agentplane/actions/runs/34134533038.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071219-QV0SX9-use-simple-technical-english-in-task-prompts-and/.agentplane/tasks/202609071219-QV0SX9/blueprint/resolved-snapshot.json
+- old_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- current_digest: 2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071219-QV0SX9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
