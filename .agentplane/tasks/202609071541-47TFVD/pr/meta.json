@@ -3,7 +3,10 @@
   "branch": "task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen",
   "created_at": "2026-09-07T15:46:17.994Z",
   "diffstat_sha256": "sha256:fa897b31a4543c4f9db5223b34a496f02e3b49be9e96c64a28690fcd2ca3702c",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-07T15:50:50.733Z",
+  "last_verified_diffstat_sha256": "sha256:fa897b31a4543c4f9db5223b34a496f02e3b49be9e96c64a28690fcd2ca3702c",
+  "pr_number": 5916,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5916",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609071541-47TFVD",
-  "updated_at": "2026-09-07T15:46:17.994Z",
+  "updated_at": "2026-09-07T15:48:53.177Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }
