@@ -6,7 +6,7 @@ Created: 2026-09-07T02:38:23.049Z
 
 - Task: `202609070233-NG368H`
 - Title: Repair manual release recovery after npm publication
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609070233-NG368H/repair-manual-release-recovery-after-npm-publica`
 - Canonical task record: `.agentplane/tasks/202609070233-NG368H/README.md`
 
