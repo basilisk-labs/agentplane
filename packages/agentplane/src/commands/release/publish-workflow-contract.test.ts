@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -47,28 +48,35 @@ describe("publish workflow contract", () => {
           esac
         }
       `;
-      const output = execFileSync("bash", ["-c", `${stubs}\n${rendered}`], {
-        cwd: process.cwd(),
-        encoding: "utf8",
-        env: {
-          ...process.env,
-          GITHUB_OUTPUT: "/dev/stdout",
-          RELEASE_TEST_VERSION: stable ? "0.7.8" : "0.7.8-beta.1",
-          RELEASE_TEST_CORE: String(published[0]),
-          RELEASE_TEST_RECIPES: String(published[1]),
-          RELEASE_TEST_CLI: String(published[2]),
-        },
-      });
-      const outputs: Record<string, string | undefined> = {};
-      for (const line of output.split("\n")) {
-        const [key, value] = line.split("=", 2);
-        if (key) outputs[key] = value;
-      }
-      expect(outputs.should_publish).toBe(String(expected));
-      if (stable) {
-        expect(outputs.core_published).toBe(String(published[0]));
-        expect(outputs.recipes_published).toBe(String(published[1]));
-        expect(outputs.cli_published).toBe(String(published[2]));
+      const root = await mkdtemp(path.join(tmpdir(), "agentplane-publish-detect-"));
+      const outputPath = path.join(root, "github-output");
+      try {
+        execFileSync("bash", ["-c", `${stubs}\n${rendered}`], {
+          cwd: process.cwd(),
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            GITHUB_OUTPUT: outputPath,
+            RELEASE_TEST_VERSION: stable ? "0.7.8" : "0.7.8-beta.1",
+            RELEASE_TEST_CORE: String(published[0]),
+            RELEASE_TEST_RECIPES: String(published[1]),
+            RELEASE_TEST_CLI: String(published[2]),
+          },
+        });
+        const output = await readFile(outputPath, "utf8");
+        const outputs: Record<string, string | undefined> = {};
+        for (const line of output.split("\n")) {
+          const [key, value] = line.split("=", 2);
+          if (key) outputs[key] = value;
+        }
+        expect(outputs.should_publish).toBe(String(expected));
+        if (stable) {
+          expect(outputs.core_published).toBe(String(published[0]));
+          expect(outputs.recipes_published).toBe(String(published[1]));
+          expect(outputs.cli_published).toBe(String(published[2]));
+        }
+      } finally {
+        await rm(root, { recursive: true, force: true });
       }
     },
   );
