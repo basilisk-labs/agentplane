@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -97,10 +97,14 @@ execution_contract:
       - "website/bun.lock"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -149,12 +153,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:15f5fc6462459e94a60d2a76a16fe28e8b59d83afb6753267d505a10df76f84c"
+      digest: "sha256:07469cda36dcea786f1f319b265d12ab88806f6e6d6d510c5acc9c27c0e9c4b2"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "effect_ci"
         - "effect_dependencies"
       execution_groups:
@@ -163,10 +168,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -203,7 +212,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "80c8bc0a270143160442a52b7b213a85c1fb7081"
+  hash: "6595bab45106c60f0c70889dca8f5800196cfc42"
   message: "🚧 7J5DJQ task: apply external agent result"
 comments:
   -
@@ -218,6 +227,9 @@ comments:
   -
     author: "USER"
     body: "Record the user-authorized implementation commits after the CI guard blocked supervisor commit recovery. Bun upgrade: f359f1ee3057e2727cec81cc6bb06b1445e9bfef. CI guard and regression coverage: 80c8bc0a270143160442a52b7b213a85c1fb7081. Preserve DOING and pending verification. The user explicitly authorized commit, merge, and blocker repair."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6595bab45106. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -241,9 +253,17 @@ events:
     to: "DOING"
     note: "Record the user-authorized implementation commits after the CI guard blocked supervisor commit recovery. Bun upgrade: f359f1ee3057e2727cec81cc6bb06b1445e9bfef. CI guard and regression coverage: 80c8bc0a270143160442a52b7b213a85c1fb7081. Preserve DOING and pending verification. The user explicitly authorized commit, merge, and blocker repair."
     commit: "80c8bc0a270143160442a52b7b213a85c1fb7081"
+  -
+    type: "status"
+    at: "2026-09-07T16:02:07.697Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6595bab45106. CLI accepted one state-bound external-agent semantic result."
+    commit: "6595bab45106c60f0c70889dca8f5800196cfc42"
 doc_version: 3
-doc_updated_at: "2026-09-07T15:58:48.462Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-09-07T16:02:07.697Z"
+doc_updated_by: "SUPERVISOR"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -577,7 +597,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -830,9 +850,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 10
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T15:58:48.462Z"
+    updated_at: "2026-09-07T16:02:07.697Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 0
@@ -1016,6 +1036,54 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:ce0a5396b6996c71382032b72ffebb6c662222f4754cb779cd9fcec5c814239c:
+        aggregate_digest: "sha256:766aaccb19b5ab5b0fae69a1117fdfa0b57827b1f07a361bda1857c9c2b8b688"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:02:07.697Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9aff8681fdf8c06f2eaaeabd"
+          mutation_id: "compatibility:sha256:ce0a5396b6996c71382032b72ffebb6c662222f4754cb779cd9fcec5c814239c"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ce0a5396b6996c71382032b72ffebb6c662222f4754cb779cd9fcec5c814239c"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:ebb525d9f2708660705b790313ad8c0a9e0c14e11db89bfcef8788f0351d737e:
+        aggregate_digest: "sha256:571dc80f98283dcf2d4e81a315a0a4232580a36f869e7ca6f29c0e2845b0a3ca"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:02:07.697Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3cd5a75ce91f69bbae7e6de9"
+          mutation_id: "compatibility:sha256:ebb525d9f2708660705b790313ad8c0a9e0c14e11db89bfcef8788f0351d737e"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ebb525d9f2708660705b790313ad8c0a9e0c14e11db89bfcef8788f0351d737e"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
       compatibility:sha256:f77f0b1c27a17c34aef9aac54f223cb20905a26e9b86e5e49fa166cc05aef23d:
         aggregate_digest: "sha256:e335c8382d4618294eaba38b35409014b2da009ee6d8b89daca13858c311f3d6"
         event:
@@ -1043,6 +1111,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "6595bab45106c60f0c70889dca8f5800196cfc42"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
