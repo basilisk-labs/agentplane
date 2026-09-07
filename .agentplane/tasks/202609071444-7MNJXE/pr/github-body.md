@@ -27,10 +27,12 @@ Investigate GitHub code-scanning setup errors, unstable language coverage and cu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .github/workflows/ci.yml                                 |  2 ++
- .../src/commands/release/github-ci-plan.test.ts          | 16 ++++++++++++++++
- scripts/lib/github-ci-capabilities.mjs                   |  6 ++++++
- 3 files changed, 24 insertions(+)
+ .github/workflows/ci.yml                           |  2 +
+ .../src/commands/release/github-ci-plan.test.ts    | 16 +++++
+ .../agentplane/src/shared/package-paths.test.ts    | 73 +++++++++++++++++++++-
+ packages/agentplane/src/shared/package-paths.ts    | 32 +++++++---
+ scripts/lib/github-ci-capabilities.mjs             |  6 ++
+ 5 files changed, 117 insertions(+), 12 deletions(-)
 ```
 
 </details>
