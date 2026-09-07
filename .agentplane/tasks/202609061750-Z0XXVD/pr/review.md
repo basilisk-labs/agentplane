@@ -6,7 +6,7 @@ Created: 2026-09-06T17:54:49.525Z
 
 - Task: `202609061750-Z0XXVD`
 - Title: Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609061750-Z0XXVD/prepare-and-qualify-agentplane-0-7-8-for-exact-s`
 - Canonical task record: `.agentplane/tasks/202609061750-Z0XXVD/README.md`
 
