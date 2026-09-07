@@ -1,0 +1,140 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: bun run qualification:mixed-scope-lifecycle\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: bun run qualification:mixed-scope-lifecycle\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (5/5)\n\nCheck: docs_contract\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (1/5)\n\nCheck: docs_contract\nCommand: bun run qualification:mixed-scope-lifecycle\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (2/5)\n\nCheck: docs_contract\nCommand: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (3/5)\n\nCheck: docs_contract\nCommand: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (4/5)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (1/5)\n\nCheck: real_e2e\nCommand: bun run qualification:mixed-scope-lifecycle\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (2/5)\n\nCheck: real_e2e\nCommand: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (3/5)\n\nCheck: real_e2e\nCommand: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (4/5)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (5/5)\n\nCheck: task_outcome\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: bun run qualification:mixed-scope-lifecycle\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:6e801547090e99cc16b22a110e7019589f44a46467740a2146e2877914587bb3",
+  "implementation_sha": "89f5d9f78721699f5c1f0b5f822526c721482e71",
+  "input": {
+    "context": {
+      "digest": "sha256:f3b7c8b08e66d1705e878943869bb93f395f64a2773866aa4c84f2adba6d24ea",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:42c55de15061b07b2ea3072b3280f7659936c2dc74982981acecda991a51aaf8",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:fcb13eabe90dd6db0024b48e93966eef18664938c71c954a0c05eb634f1c1e48",
+      "digest": "sha256:b10fe579987fab3b571ee2b0a498a9a1d96d648f6c067072dedc2b54adcb6dcb",
+      "references": [
+        {
+          "digest": "sha256:72ae7b71cc146643ef76c13e79dca11153619a8c26392ddfd0d4d6acc7ba3f55",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:72ae7b71cc146643ef76c13e79dca11153619a8c26392ddfd0d4d6acc7ba3f55",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:72ae7b71cc146643ef76c13e79dca11153619a8c26392ddfd0d4d6acc7ba3f55",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:72ae7b71cc146643ef76c13e79dca11153619a8c26392ddfd0d4d6acc7ba3f55",
+          "fragment": "check-4",
+          "path": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:72ae7b71cc146643ef76c13e79dca11153619a8c26392ddfd0d4d6acc7ba3f55",
+          "fragment": "check-5",
+          "path": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "262da3130bc5628a7641c400c74368ae355000bf",
+      "digest": "sha256:23c9fa632d3e553ce911c39bf1899a19f2b9739d2499140b3ef32417d20af20f",
+      "primary_task_id": "202609061750-Z0XXVD",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_dependencies",
+        "effect_public_api",
+        "effect_release_metadata",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609061750-Z0XXVD"
+      ]
+    },
+    "implementation": {
+      "base_sha": "262da3130bc5628a7641c400c74368ae355000bf",
+      "digest": "sha256:0e8f8a06d05afd7f95ec064ab33b79503bbf43af68940cb3432998e6e253e5fd",
+      "strategy": "branch_diff",
+      "target_sha": "89f5d9f78721699f5c1f0b5f822526c721482e71"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:ba200c07038e62deb0a3b37057a28e05cc8e327746a14505eebd1a2fa06a154a",
+    "verify_steps_digest": "sha256:860a8441b86236b4176982b3b7cc53b92a7cc2d7a60ae35921ca43cf99931621"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-07T00:58:18.558Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun run release:prepublish`. Expected: the committed 0.7.8 candidate passes canonical release CI, package checks, active-incident cleanup, version parity and generated-document freshness.\n2. Run `bun run qualification:mixed-scope-lifecycle`. Expected: the installed packed candidate completes the mixed source, test and documentation lifecycle with correct replay, stale-result, projection and cleanup behavior.\n3. Run `node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs`. Expected: published 0.7.7 direct and branch_pr fixtures upgrade using packed 0.7.8, preserve existing task identity, content and DOING state, produce the dedicated upgrade commit, pass routing and doctor, and make no changes on an actual repeated upgrade.\n4. Run `node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417`. Expected: valid English template sections and complete planned change coverage. Review the first two prose paragraphs for a clear explanation of practical user outcomes.\n5. Review the final diff and observed evidence. Expected: only approved release metadata, notes, generated references and qualification artifacts changed; publication remains explicitly pending until exact-SHA hosted release-ready and canonical publish-result evidence exist.",
+  "scope_digest": "sha256:860a8441b86236b4176982b3b7cc53b92a7cc2d7a60ae35921ca43cf99931621",
+  "task_id": "202609061750-Z0XXVD",
+  "verification_command": "agentplane verify 202609061750-Z0XXVD --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

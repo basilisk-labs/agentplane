@@ -4,7 +4,7 @@ title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 100
+revision: 101
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +28,11 @@ plan_approval:
   updated_by: "USER"
   note: "Relay the user explicit authorization to fix all release blockers and override AGENTS permission gates. Preserve completed candidate preparation; approve one dependent branch verification contract repair with focused checks and unchanged final release gates."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-07T00:07:28.770Z"
+  state: "ok"
+  updated_at: "2026-09-07T00:58:18.558Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run release:prepublish"
-  attempts: 2
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -229,9 +229,7 @@ execution_contract:
       - "website/static/img/social/manifest.json"
       - "website/static/llms-full.txt"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - ".agentplane"
       - "docs"
@@ -337,10 +335,85 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_dependencies"
@@ -687,8 +760,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit:
   hash: "1efcbb680b74583932ad77290f1a26d93783807f"
   message: "🚧 Z0XXVD task: apply external agent result"
@@ -865,8 +936,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 1efcbb680b74. CLI accepted one state-bound external-agent semantic result."
     commit: "1efcbb680b74583932ad77290f1a26d93783807f"
+  -
+    type: "verify"
+    at: "2026-09-07T00:58:18.558Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T00:11:04.791Z"
+doc_updated_at: "2026-09-07T00:58:19.892Z"
 doc_updated_by: "SUPERVISOR"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
@@ -971,6 +1048,192 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202609061750-Z0XXVD declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609061750-Z0XXVD-prepare-and-qualify-agentplane-0-7-8-for-exact-s/.agentplane/tasks/202609061750-Z0XXVD/blueprint/resolved-snapshot.json
+    - old_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+    - current_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609061750-Z0XXVD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609061750-Z0XXVD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T00:58:18.558Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:860a8441b86236b4176982b3b7cc53b92a7cc2d7a60ae35921ca43cf99931621, input_digest=sha256:42c55de15061b07b2ea3072b3280f7659936c2dc74982981acecda991a51aaf8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (5/5)
+
+    Check: docs_contract
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (1/5)
+
+    Check: docs_contract
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (2/5)
+
+    Check: docs_contract
+    Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (3/5)
+
+    Check: docs_contract
+    Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (4/5)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (1/5)
+
+    Check: real_e2e
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (2/5)
+
+    Check: real_e2e
+    Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (3/5)
+
+    Check: real_e2e
+    Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (4/5)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (5/5)
+
+    Check: task_outcome
+    Command: bun run release:prepublish
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run qualification:mixed-scope-lifecycle
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (5/5)
 
     BlueprintSnapshotRef:
     - state: current
@@ -1725,7 +1988,7 @@ extensions:
       revision: 17
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
-    event_cursor: 58
+    event_cursor: 59
     final_validation: null
     id: "202609061750-Z0XXVD"
     intent:
@@ -8732,9 +8995,9 @@ extensions:
         revision: 16
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 100
+    revision: 101
     schema_version: 1
-    updated_at: "2026-09-07T00:11:04.791Z"
+    updated_at: "2026-09-07T00:58:19.880Z"
     work_items:
       honor-branch-verification-plan:
         attempt: 1
@@ -10700,6 +10963,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      compatibility:sha256:f47b42f215e05052b7a2ce2c41e88e2bd07639214bfbe5fd31d10e5f3bdd026b:
+        aggregate_digest: "sha256:7ae940f250fca0cefc810a3b98f7cbee534e78af412854ffc884ac32f3a954ce"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T00:58:19.880Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e368f324616286144bc7a4e6"
+          mutation_id: "compatibility:sha256:f47b42f215e05052b7a2ce2c41e88e2bd07639214bfbe5fd31d10e5f3bdd026b"
+          plan_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
+          plan_revision: 17
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 100
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f47b42f215e05052b7a2ce2c41e88e2bd07639214bfbe5fd31d10e5f3bdd026b"
+        next_revision: 101
+        previous_revision: 100
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       compatibility:sha256:f59dbf3ed8ff428e7debbf65a7acdd519de98d4f5c1b73c03d6ab9dcd52c55fa:
         aggregate_digest: "sha256:1557aaf26aca4f7668aa62c296b1b07d5e05f4859dd214eb1109e4f72d39caf4"
         event:
@@ -11548,6 +11835,192 @@ Command: bun run release:prepublish
 Result: fail
 Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202609061750-Z0XXVD declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609061750-Z0XXVD-prepare-and-qualify-agentplane-0-7-8-for-exact-s/.agentplane/tasks/202609061750-Z0XXVD/blueprint/resolved-snapshot.json
+- old_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+- current_digest: f6bec5868351edb7f16e9c97fcf1dc5a6cb402731f61bcbf310dfa10f5fb3ed2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609061750-Z0XXVD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609061750-Z0XXVD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T00:58:18.558Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:860a8441b86236b4176982b3b7cc53b92a7cc2d7a60ae35921ca43cf99931621, input_digest=sha256:42c55de15061b07b2ea3072b3280f7659936c2dc74982981acecda991a51aaf8
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check critical_paths (5/5)
+
+Check: docs_contract
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (1/5)
+
+Check: docs_contract
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (2/5)
+
+Check: docs_contract
+Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (3/5)
+
+Check: docs_contract
+Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (4/5)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check docs_contract (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (1/5)
+
+Check: real_e2e
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (2/5)
+
+Check: real_e2e
+Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (3/5)
+
+Check: real_e2e
+Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (4/5)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check real_e2e (5/5)
+
+Check: task_outcome
+Command: bun run release:prepublish
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run qualification:mixed-scope-lifecycle
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609061750-Z0XXVD/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609061750-Z0XXVD Verification Contract check task_outcome (5/5)
 
 BlueprintSnapshotRef:
 - state: current
