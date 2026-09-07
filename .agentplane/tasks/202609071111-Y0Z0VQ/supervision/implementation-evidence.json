@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8a466a295633402538003c88f6516219a08ae334..4a79e46389fd5b6ff62357c674f43bb4be3f48a7",
+      "command": "git diff --check ea2f6116022bbacaf1b0283fc0d67260ef779404..02571f0b69dcb3c0adf005c3de7a9f9708ac6237",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8a466a295633402538003c88f6516219a08ae334..4a79e46389fd5b6ff62357c674f43bb4be3f48a7",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ea2f6116022bbacaf1b0283fc0d67260ef779404..02571f0b69dcb3c0adf005c3de7a9f9708ac6237",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,14 +21,12 @@
         "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/github-body.md",
         "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/meta.json",
         "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/review.md",
-        "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
-        "M\tpackages/agentplane/src/cli/route-decision.testkit.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
-        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-centric-external-result.ts"
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+        "M\tpackages/agentplane/src/commands/task/plan-shared.ts",
+        "M\tpackages/agentplane/src/commands/task/plan.ts",
+        "M\tpackages/core/src/tasks/task-centric/compatibility.ts"
       ]
     },
     {
@@ -38,8 +36,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8a466a295633402538003c88f6516219a08ae334",
-  "implementation_commit": "4a79e46389fd5b6ff62357c674f43bb4be3f48a7",
+  "execution_base_commit": "ea2f6116022bbacaf1b0283fc0d67260ef779404",
+  "implementation_commit": "02571f0b69dcb3c0adf005c3de7a9f9708ac6237",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
