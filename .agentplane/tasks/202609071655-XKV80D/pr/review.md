@@ -6,7 +6,7 @@ Created: 2026-09-07T17:00:24.316Z
 
 - Task: `202609071655-XKV80D`
 - Title: Accept report-only WorkItem results without requiring source-code changes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071655-XKV80D/accept-report-only-workitem-results-without-requ`
 - Canonical task record: `.agentplane/tasks/202609071655-XKV80D/README.md`
 
