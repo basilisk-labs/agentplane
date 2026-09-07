@@ -4,7 +4,7 @@ title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:603ba56307c6fb0d9158728c02b758b267a37ae8ba96ae044feffe2f1ee923cb"
 verification:
-  state: "pending"
-  updated_at: "2026-09-07T15:47:19.733Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-07T16:12:00.769Z"
+  updated_by: "TESTER"
+  note: "Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry the full contract after sufficient disk space is available. Verify Steps is now populated with the already approved checks."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -96,16 +96,41 @@ execution_contract:
       - "packages/agentplane/src/shared/sqlite-driver.ts"
       - "website/bun.lock"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
+      - ".github"
+      - "package.json"
       - "packages/agentplane"
     changed_paths:
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/docs-ci.yml"
+      - ".github/workflows/pages-deploy.yml"
+      - ".github/workflows/prepublish.yml"
+      - ".github/workflows/publish-distribution-module.yml"
+      - ".github/workflows/publish.yml"
+      - ".github/workflows/task-hosted-close.yml"
+      - ".github/workflows/workflows-lint.yml"
+      - "package.json"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/shared/sqlite-driver.test.ts"
+      - "packages/agentplane/src/shared/sqlite-driver.ts"
     external_effects: []
     repository_effects:
+      - "ci"
+      - "dependencies"
       - "repository_write"
+      - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -153,12 +178,21 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:07469cda36dcea786f1f319b265d12ab88806f6e6d6d510c5acc9c27c0e9c4b2"
+      digest: "sha256:b1a3398b035e76d560e8d0c96997c4c74f8ed34ad9361e2801522803939d3806"
       escalation_reasons:
         - "central_component:.github/workflows"
         - "central_component:bun.lock"
         - "central_component:package.json"
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+        - "central_path:.github/workflows/ci.yml"
+        - "central_path:.github/workflows/docs-ci.yml"
+        - "central_path:.github/workflows/pages-deploy.yml"
+        - "central_path:.github/workflows/prepublish.yml"
+        - "central_path:.github/workflows/publish-distribution-module.yml"
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:.github/workflows/task-hosted-close.yml"
+        - "central_path:.github/workflows/workflows-lint.yml"
+        - "central_path:package.json"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "effect_ci"
         - "effect_dependencies"
@@ -169,12 +203,29 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".github"
+          - "package.json"
           - "packages/agentplane"
         changed_files:
+          - ".github/workflows/ci.yml"
+          - ".github/workflows/docs-ci.yml"
+          - ".github/workflows/pages-deploy.yml"
+          - ".github/workflows/prepublish.yml"
+          - ".github/workflows/publish-distribution-module.yml"
+          - ".github/workflows/publish.yml"
+          - ".github/workflows/task-hosted-close.yml"
+          - ".github/workflows/workflows-lint.yml"
+          - "package.json"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/shared/sqlite-driver.test.ts"
+          - "packages/agentplane/src/shared/sqlite-driver.ts"
         external_effects: []
         repository_effects:
+          - "ci"
+          - "dependencies"
           - "repository_write"
+          - "source_code"
           - "tests"
       phase: "task"
       policy_floor:
@@ -211,9 +262,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "6595bab45106c60f0c70889dca8f5800196cfc42"
-  message: "🚧 7J5DJQ task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -261,8 +312,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 6595bab45106. CLI accepted one state-bound external-agent semantic result."
     commit: "6595bab45106c60f0c70889dca8f5800196cfc42"
+  -
+    type: "verify"
+    at: "2026-09-07T16:12:00.769Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry the full contract after sufficient disk space is available. Verify Steps is now populated with the already approved checks."
 doc_version: 3
-doc_updated_at: "2026-09-07T16:02:07.697Z"
+doc_updated_at: "2026-09-07T16:12:01.685Z"
 doc_updated_by: "SUPERVISOR"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
@@ -294,13 +351,49 @@ sections:
 
     Rollback: restore only task-owned changes to the prior Bun pins and lockfiles; leave the global runtime untouched. Validation capability: task.verify observes the declared task verification contract. Runtime comparison evidence is supplementary and cannot replace required Node regression checks.
   Verify Steps: |-
-    PLANNER fallback scaffold for "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run bun run ci:local:full with the task-local Bun 1.4.2 binary first on PATH. Expected: exit 0 for the existing full repository contract. Preserve any failed attempt as evidence.
+    2. Run node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t "commits workflow changes". Expected: all three CI authority cases pass. An approved workflow is committed. Missing ci authority and an unauthorized path are rejected before a commit.
+    3. Run the existing SQLite and process-supervision suites under Node. Run the five SQLite driver contract tests under Bun 1.4.2. Expected: persisted reads, parameter bindings, transaction commit and rollback, and readonly behavior pass.
+    4. Run frozen root and website workspace installation, build, compiled CLI smoke, workflow lint, site typecheck, and site build checks as listed in the approved Plan. Expected: the supported local checks pass and both lockfiles preserve dependency resolutions.
+    5. Review .agentplane/cache/bun-qualification/report.md and its command logs. Expected: the runtime benchmark has repeated samples and output parity, Bun-hosted Vitest incompatibilities and non-host execution gaps remain explicit, and Node support and default tooling are preserved.
+    6. Run git diff --check. Expected: no whitespace errors or unrelated source changes. The supervisor records verification before evaluation and merging.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T16:12:00.769Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry the full contract after sufficient disk space is available. Verify Steps is now populated with the already approved checks.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6, input_digest=sha256:33cdf7a5defd295417297cd948aed907bca1039226323a8eaec35aa3c7d94d1c
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: supervision/declared-checks.json records exit_code 1 and No space left on device during critical CLI checkout creation.
+    Scope: complete committed Bun upgrade and CI guard repair.
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071427-7J5DJQ-upgrade-bun-to-1-4-2-and-qualify-runtime-migrati/.agentplane/tasks/202609071427-7J5DJQ/blueprint/resolved-snapshot.json
+    - old_digest: 02aef3c0fa9b426398bcfa8733f753d1559e89cbc11a2e8c645357ef09fb1a1f
+    - current_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071427-7J5DJQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071427-7J5DJQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -597,7 +690,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 10
+    event_cursor: 12
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -850,9 +943,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 13
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-07T16:02:08.973Z"
+    updated_at: "2026-09-07T16:12:01.683Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -945,6 +1038,30 @@ extensions:
         work_item_id: "upgrade-and-qualify-bun"
     leases: []
     mutation_receipts:
+      compatibility:sha256:2d2b3eb4c5a4740381f219dcc93cb4975408bafb9ff4da971353adb6297b85a7:
+        aggregate_digest: "sha256:8022a8633a5c58b0e93bd399796a991801cd31cf40fca06b7f119e86288eb30c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:12:01.683Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_996d441b31155db23efa38db"
+          mutation_id: "compatibility:sha256:2d2b3eb4c5a4740381f219dcc93cb4975408bafb9ff4da971353adb6297b85a7"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2d2b3eb4c5a4740381f219dcc93cb4975408bafb9ff4da971353adb6297b85a7"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
       compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d:
         aggregate_digest: "sha256:ac81b6a91b8ff9b4a221591b1fa3664b46fa4a48f23b6a50a7877bc1ab503d8d"
         event:
@@ -967,6 +1084,30 @@ extensions:
         mutation_id: "compatibility:sha256:3ed597f09ae622f1ee38e08035d064aa3a3738fae5b404ccfe84cd3428750b5d"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:4684e9af5ec40f1d9687718370e9312f81c973fbfdacf22476cf477db387520a:
+        aggregate_digest: "sha256:887c6e43ddfeddf675d337c15b74a8528b5a6f91db033ab2133d5b250d252428"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:10:14.183Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bb3228247117e3b1b1d92f9e"
+          mutation_id: "compatibility:sha256:4684e9af5ec40f1d9687718370e9312f81c973fbfdacf22476cf477db387520a"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4684e9af5ec40f1d9687718370e9312f81c973fbfdacf22476cf477db387520a"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:47e40aa014a3af1cec6a5ca23ba15b5ff61da155c473245c7e37fb414a7e5e6f:
@@ -1212,8 +1353,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "6595bab45106c60f0c70889dca8f5800196cfc42"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -1260,15 +1399,51 @@ Rollback: restore only task-owned changes to the prior Bun pins and lockfiles; l
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run bun run ci:local:full with the task-local Bun 1.4.2 binary first on PATH. Expected: exit 0 for the existing full repository contract. Preserve any failed attempt as evidence.
+2. Run node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t "commits workflow changes". Expected: all three CI authority cases pass. An approved workflow is committed. Missing ci authority and an unauthorized path are rejected before a commit.
+3. Run the existing SQLite and process-supervision suites under Node. Run the five SQLite driver contract tests under Bun 1.4.2. Expected: persisted reads, parameter bindings, transaction commit and rollback, and readonly behavior pass.
+4. Run frozen root and website workspace installation, build, compiled CLI smoke, workflow lint, site typecheck, and site build checks as listed in the approved Plan. Expected: the supported local checks pass and both lockfiles preserve dependency resolutions.
+5. Review .agentplane/cache/bun-qualification/report.md and its command logs. Expected: the runtime benchmark has repeated samples and output parity, Bun-hosted Vitest incompatibilities and non-host execution gaps remain explicit, and Node support and default tooling are preserved.
+6. Run git diff --check. Expected: no whitespace errors or unrelated source changes. The supervisor records verification before evaluation and merging.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T16:12:00.769Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry the full contract after sufficient disk space is available. Verify Steps is now populated with the already approved checks.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6, input_digest=sha256:33cdf7a5defd295417297cd948aed907bca1039226323a8eaec35aa3c7d94d1c
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: supervision/declared-checks.json records exit_code 1 and No space left on device during critical CLI checkout creation.
+Scope: complete committed Bun upgrade and CI guard repair.
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071427-7J5DJQ-upgrade-bun-to-1-4-2-and-qualify-runtime-migrati/.agentplane/tasks/202609071427-7J5DJQ/blueprint/resolved-snapshot.json
+- old_digest: 02aef3c0fa9b426398bcfa8733f753d1559e89cbc11a2e8c645357ef09fb1a1f
+- current_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071427-7J5DJQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071427-7J5DJQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

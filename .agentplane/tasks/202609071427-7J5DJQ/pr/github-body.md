@@ -15,14 +15,22 @@ Implement the staged Bun adoption agreed with the user. Upgrade repository and C
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note:
+
+```text
+Full local CI for the committed CI guard repair exited 1. The persisted command tail shows ENOSPC
+while creating test checkouts. Runtime group passed; docs-schema, core and CLI groups failed. Three
+focused CI authority tests pass. The older recovery test also fails on the unchanged baseline. Retry
+the full contract after sufficient disk space is available. Verify Steps is now populated with the
+already approved checks.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T14:33:24.150Z
+- Updated: 2026-09-07T16:02:15.372Z
 - Branch: task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
