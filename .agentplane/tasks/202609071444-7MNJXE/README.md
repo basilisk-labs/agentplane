@@ -4,7 +4,7 @@ title: "Repair CodeQL configuration consistency and triage current GitHub securi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -214,9 +214,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "ef0fc2bd7edd964a7f4b2c6784fb25526b81103d"
-  message: "🚧 7MNJXE task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -544,9 +542,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T16:00:23.139Z"
+    updated_at: "2026-09-07T16:00:24.811Z"
     work_items:
       alert-triage:
         attempt: 0
@@ -558,14 +556,44 @@ extensions:
         state: "PLANNED"
         validation_result: null
       codeql-config:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "codeql-config"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:3609ceb9a1b4c6cf25f9bcd64959c7fd2adc448439ae400a704a877308531f47"
+            id: "codeql-config-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071444-7MNJXE"
+              work_item_id: "codeql-config"
+            provenance:
+              - "sha256:8aa19e4811b2c61b37ee37ff8273b3c169c58b6e5d84227e6babcd77c7b35b33"
+              - ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:335e18c4b5f03318687252ab0fd3e929c032c92339fbae5fd15d7f95abc7a8d4"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json"
+              check_id: "codeql-config-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T16:00:24.803Z"
+              repository_snapshot_digest: "sha256:335e18c4b5f03318687252ab0fd3e929c032c92339fbae5fd15d7f95abc7a8d4"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       temp-assets:
         attempt: 0
         claim_id: null
@@ -577,7 +605,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T16:00:24.811Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:b00c7e32421bd2023198bf69d3b6d5b374e0d9dc1656cbdb82aa4b6137f704c4"
+        entity: "work_item"
+        id: "event_1b80e7d9011d88a9445830a9"
+        mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af"
+        plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+        task_revision: 7
+        work_item_id: "codeql-config"
     leases: []
     mutation_receipts:
       compatibility:sha256:18eb1940a068fcecdf5a3f96be8a64a24e6bda8d51e01c4a4671942670f6daa8:
@@ -698,6 +743,30 @@ extensions:
         mutation_id: "compatibility:sha256:d61f58f5e9ae8821e27b25ffff0652571a0daa596f4e617ca6ff8e017833f88e"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+      external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af:
+        aggregate_digest: "sha256:f96a8734f3f064e3e8592a85dfab6408e8bac832fca15fb86df382cec96c4cdf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:00:24.811Z"
+          cause_refs:
+            - "semantic-result:sha256:b00c7e32421bd2023198bf69d3b6d5b374e0d9dc1656cbdb82aa4b6137f704c4"
+          entity: "work_item"
+          from: "READY"
+          id: "event_1b80e7d9011d88a9445830a9"
+          mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "codeql-config"
+        mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609071444-7MNJXE"
     pending_effects: []
