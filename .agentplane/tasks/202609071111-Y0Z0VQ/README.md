@@ -4,7 +4,7 @@ title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequenti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -765,9 +765,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-07T12:59:00.513Z"
+    updated_at: "2026-09-07T12:59:01.893Z"
     work_items:
       canonical-plan-routing:
         attempt: 1
@@ -887,14 +887,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       remaining-integrity-qualification:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "remaining-integrity-qualification"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:5af66f0a1fdac3bab8519f01d02a74bcc0d6cbfa85f67384391d3b3eb63c2fd9"
+            id: "remaining-integrity-qualification-result"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071111-Y0Z0VQ"
+              work_item_id: "remaining-integrity-qualification"
+            provenance:
+              - "sha256:0f4a38a2ec35e1000138eefdacff1ff4050e19c883a795c30e2db2891bffc8e7"
+              - ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:c1b72923ae43f23c645ac21fcf5ce432e81d385617cfc3ed2138121802d76674"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json"
+              check_id: "remaining-integrity-qualification-checks"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T12:59:01.886Z"
+              repository_snapshot_digest: "sha256:c1b72923ae43f23c645ac21fcf5ce432e81d385617cfc3ed2138121802d76674"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       task-discovery:
         attempt: 1
         claim_id: null
@@ -1004,6 +1034,23 @@ extensions:
         task_id: "202609071111-Y0Z0VQ"
         task_revision: 16
         work_item_id: "task-discovery"
+      -
+        at: "2026-09-07T12:59:01.893Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:8c3cff34820f0284337b9c3367a1860c6c5fd76d2fd98e765cf2a8c64de4eed6"
+        entity: "work_item"
+        id: "event_466a37658f0c5fd59c62b8a4"
+        mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-7e0466804fb4d42fdab0acda"
+        plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+        task_revision: 19
+        work_item_id: "remaining-integrity-qualification"
     leases: []
     mutation_receipts:
       compatibility:sha256:14390aacaebef441b3f13b3252eb75af222f335db856f7f72d565ba8ecf4c01d:
@@ -1340,6 +1387,30 @@ extensions:
         mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-4235c0a90093927bbab4429d"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+      external-result:work-order-202609071111-Y0Z0VQ-executor-7e0466804fb4d42fdab0acda:
+        aggregate_digest: "sha256:4a4136b59c20947d9edc52c896bfd56f2300d36d993ad7a8a3dc98df2ac6fad8"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T12:59:01.893Z"
+          cause_refs:
+            - "semantic-result:sha256:8c3cff34820f0284337b9c3367a1860c6c5fd76d2fd98e765cf2a8c64de4eed6"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_466a37658f0c5fd59c62b8a4"
+          mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-7e0466804fb4d42fdab0acda"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: "remaining-integrity-qualification"
+        mutation_id: "external-result:work-order-202609071111-Y0Z0VQ-executor-7e0466804fb4d42fdab0acda"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
       external-result:work-order-202609071111-Y0Z0VQ-executor-d2d9ab823862076bb998ba9d:
