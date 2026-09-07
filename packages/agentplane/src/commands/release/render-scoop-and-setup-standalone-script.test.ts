@@ -1,10 +1,13 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
+import { pathToFileURL } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
+import { parse as parseYaml } from "yaml";
 
 const execFileAsync = promisify(execFile);
 const SCOOP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-scoop-manifest.mjs");
@@ -83,7 +86,121 @@ async function writeManifest(root: string) {
   return manifestPath;
 }
 
+async function setupInstallFixture(cliVersion = "0.4.1") {
+  const root = await makeTempRoot();
+  const binDir = path.join(root, "payload", "bin");
+  await mkdir(binDir, { recursive: true });
+  const binary = path.join(binDir, "agentplane");
+  await writeFile(binary, `#!/bin/sh\nprintf '%s\\n' '${cliVersion}'\n`);
+  await chmod(binary, 0o755);
+  const archive = path.join(root, "agentplane.tar.gz");
+  await execFileAsync("tar", ["-czf", archive, "-C", path.dirname(binDir), "bin"]);
+  const manifestPath = await writeManifest(root);
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+    bunAssets: { platform: string; arch: string; url: string; sha256: string }[];
+  };
+  const asset = manifest.bunAssets.find(
+    (entry) => entry.platform === "linux" && entry.arch === "x64",
+  );
+  if (!asset) throw new Error("Missing fixture asset");
+  asset.url = pathToFileURL(archive).href;
+  asset.sha256 = createHash("sha256")
+    .update(await readFile(archive))
+    .digest("hex");
+  await writeFile(manifestPath, JSON.stringify(manifest));
+  const outDir = path.join(root, "action");
+  await execFileAsync("node", [SETUP_SCRIPT_PATH, "--manifest", manifestPath, "--out", outDir]);
+  const action = parseYaml(await readFile(path.join(outDir, "action.yml"), "utf8")) as {
+    runs: { steps: { env: Record<string, string>; run: string }[] };
+  };
+  const step = action.runs.steps[0];
+  expect(step?.env).toEqual({
+    AGENTPLANE_VERSION: "${{ inputs.version }}",
+    AGENTPLANE_VERIFY: "${{ inputs.verify }}",
+  });
+  if (!step) throw new Error("Missing install step");
+  const runnerTemp = path.join(root, "runner temp");
+  await mkdir(runnerTemp);
+  const githubPath = path.join(root, "github-path");
+  await writeFile(githubPath, "");
+  const env = {
+    ...process.env,
+    RUNNER_TEMP: runnerTemp,
+    RUNNER_OS: "Linux",
+    RUNNER_ARCH: "X64",
+    GITHUB_PATH: githubPath,
+    AGENTPLANE_VERSION: "0.4.1",
+    AGENTPLANE_VERIFY: "true",
+  };
+  return { root, archive, githubPath, env, script: step.run };
+}
+
 describe("standalone consumer renderers", () => {
+  it.each(["0.4.1", "v0.4.1"])(
+    "keeps a verified %s installation usable in a later step",
+    async (version) => {
+      const fixture = await setupInstallFixture();
+      await execFileAsync("bash", ["-c", fixture.script], {
+        cwd: fixture.root,
+        env: { ...fixture.env, AGENTPLANE_VERSION: version },
+      });
+      const pathContent = await readFile(fixture.githubPath, "utf8");
+      const installedPath = pathContent.trim();
+      expect(installedPath).not.toBe("");
+      const { stdout } = await execFileAsync("bash", ["-c", "agentplane --version"], {
+        cwd: fixture.root,
+        env: { ...fixture.env, PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}` },
+      });
+      expect(stdout.trim()).toBe("0.4.1");
+    },
+  );
+
+  it.each(["0.4.2", "$(touch injected)"])(
+    "rejects version input %s without executing it",
+    async (version) => {
+      const fixture = await setupInstallFixture();
+      await expect(
+        execFileAsync("bash", ["-c", fixture.script], {
+          cwd: fixture.root,
+          env: { ...fixture.env, AGENTPLANE_VERSION: version },
+        }),
+      ).rejects.toMatchObject({ code: 2 });
+      expect(await readFile(fixture.githubPath, "utf8")).toBe("");
+      await expect(readFile(path.join(fixture.root, "injected"))).rejects.toMatchObject({
+        code: "ENOENT",
+      });
+    },
+  );
+
+  it("does not add a corrupted archive to PATH", async () => {
+    const fixture = await setupInstallFixture();
+    await writeFile(fixture.archive, "corrupted archive");
+    await expect(
+      execFileAsync("bash", ["-c", fixture.script], {
+        cwd: fixture.root,
+        env: fixture.env,
+      }),
+    ).rejects.toMatchObject({ code: 2 });
+    expect(await readFile(fixture.githubPath, "utf8")).toBe("");
+  });
+
+  it("only publishes PATH after the requested CLI verification passes", async () => {
+    const fixture = await setupInstallFixture("0.0.0");
+    await expect(
+      execFileAsync("bash", ["-c", fixture.script], {
+        cwd: fixture.root,
+        env: fixture.env,
+      }),
+    ).rejects.toMatchObject({ code: 1 });
+    expect(await readFile(fixture.githubPath, "utf8")).toBe("");
+    await execFileAsync("bash", ["-c", fixture.script], {
+      cwd: fixture.root,
+      env: { ...fixture.env, AGENTPLANE_VERIFY: "false" },
+    });
+    const pathContent = await readFile(fixture.githubPath, "utf8");
+    expect(pathContent.trim()).not.toBe("");
+  });
+
   it("renders Scoop from the Windows Bun asset without nodejs dependency", async () => {
     const root = await makeTempRoot();
     const manifestPath = await writeManifest(root);

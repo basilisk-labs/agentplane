@@ -27,6 +27,7 @@ function usage() {
     "  --repo-topics <list>    Comma-separated topics to set on target repository",
     "  --repo-description <text>  Repository description to apply",
     "  --repo-homepage <url>   Repository homepage URL to apply",
+    "  --repair-existing-setup-tag  Explicitly replace a stale setup-agentplane tag after main verification",
     "  --out <path>            Evidence JSON path",
     "  --json                  Emit evidence JSON to stdout",
     "  --help, -h              Show this help text",
@@ -65,7 +66,7 @@ function parseArgs(argv, repoRoot) {
       "repo-homepage",
       "out",
     ],
-    booleanFlags: ["json", "help"],
+    booleanFlags: ["json", "help", "repair-existing-setup-tag"],
   });
   return {
     module: String(flags.module ?? "").trim(),
@@ -79,6 +80,7 @@ function parseArgs(argv, repoRoot) {
     topics: parseCommaList(String(flags["repo-topics"] ?? "")),
     description: String(flags["repo-description"] ?? "").trim(),
     homepage: String(flags["repo-homepage"] ?? "").trim(),
+    repairExistingSetupTag: Boolean(flags["repair-existing-setup-tag"]),
     outPath: path.resolve(repoRoot, String(flags.out ?? "")),
     json: Boolean(flags.json),
     help: Boolean(flags.help),
@@ -148,6 +150,14 @@ async function publishExternal(args) {
   requireNonEmpty(args.tokenEnv, "token env");
   requireNonEmpty(args.outPath, "out path");
   if (args.copies.length === 0) throw new Error("At least one --copy is required.");
+  if (
+    args.repairExistingSetupTag &&
+    (args.module !== "setup-agentplane" || args.tag !== `v${args.version}`)
+  ) {
+    throw new Error(
+      "Setup tag repair requires the setup-agentplane module and its exact version tag.",
+    );
+  }
 
   const token = String(process.env[args.tokenEnv] ?? "").trim();
   const baseEvidence = {
@@ -288,7 +298,7 @@ async function publishExternal(args) {
         .trim()
         .split(/\s+/u)
         .find((entry) => /^[0-9a-f]{40}$/iu.test(entry));
-      if (existingSha) {
+      if (existingSha && (existingSha === headSha || !args.repairExistingSetupTag)) {
         return {
           status: existingSha === headSha ? "published" : "failed",
           tag: args.tag,
@@ -299,11 +309,19 @@ async function publishExternal(args) {
               : `setup-agentplane tag ${args.tag} points at ${existingSha}, expected ${headSha}.`,
         };
       }
-      await run("git", ["tag", args.tag], { cwd: cloneDir, env });
-      await run("git", ["push", "origin", `${tagRef}:${tagRef}`], {
-        cwd: cloneDir,
-        env,
-      });
+      if (existingSha) {
+        await run(
+          "git",
+          ["push", `--force-with-lease=${tagRef}:${existingSha}`, "origin", `${headSha}:${tagRef}`],
+          { cwd: cloneDir, env },
+        );
+      } else {
+        await run("git", ["tag", args.tag], { cwd: cloneDir, env });
+        await run("git", ["push", "origin", `${tagRef}:${tagRef}`], {
+          cwd: cloneDir,
+          env,
+        });
+      }
       const { stdout: pushedStdout } = await run("git", ["ls-remote", "--tags", "origin", tagRef], {
         cwd: cloneDir,
         env,
