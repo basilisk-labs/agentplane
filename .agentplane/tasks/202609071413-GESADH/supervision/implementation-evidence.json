@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 2639130b3181867f53fa37121783c67c9ef1d064..265e3c4ac88eece4c99b3d203653b93e93849180",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2639130b3181867f53fa37121783c67c9ef1d064..265e3c4ac88eece4c99b3d203653b93e93849180",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609071413-GESADH/README.md",
+        "A\t.agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609071413-GESADH/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609071413-GESADH/pr/github-body.md",
+        "A\t.agentplane/tasks/202609071413-GESADH/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609071413-GESADH/pr/meta.json",
+        "A\t.agentplane/tasks/202609071413-GESADH/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-apply.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/quality-review-target.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/quality-review-target.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "2639130b3181867f53fa37121783c67c9ef1d064",
+  "implementation_commit": "265e3c4ac88eece4c99b3d203653b93e93849180",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609071413-GESADH/README.md",
+      "?? .agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/github-body.md",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/github-title.txt",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/meta.json",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609071413-GESADH/README.md",
+      "?? .agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/github-body.md",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/github-title.txt",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/meta.json",
+      "?? .agentplane/tasks/202609071413-GESADH/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609071413-GESADH"
+}

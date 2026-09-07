@@ -4,7 +4,7 @@ title: "Repair evaluator review identity for interleaved task artifact commits i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -90,10 +90,19 @@ execution_contract:
       - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+      - "packages/agentplane/src/commands/shared/quality-review-target.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -134,21 +143,33 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:aa9261a1ed1d10056e5c331f3b1e84a86c4fb02e574df15b69c1fefafb713033"
+      digest: "sha256:8ae39b6e221321b881c8f7fd565846d6f03d0921c3186227bbd328b3be171e7b"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/quality-review-target.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/quality-review-target.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/quality-review-target.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+          - "packages/agentplane/src/commands/shared/quality-review-target.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -180,11 +201,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "265e3c4ac88eece4c99b3d203653b93e93849180"
+  message: "🚧 GESADH task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 265e3c4ac88e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -193,9 +219,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T14:25:26.467Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 265e3c4ac88e. CLI accepted one state-bound external-agent semantic result."
+    commit: "265e3c4ac88eece4c99b3d203653b93e93849180"
 doc_version: 3
-doc_updated_at: "2026-09-07T14:17:20.026Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T14:25:26.467Z"
+doc_updated_by: "SUPERVISOR"
 description: "User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them."
 sections:
   Summary: |-
@@ -435,7 +469,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071413-GESADH"
-    event_cursor: 2
+    event_cursor: 4
     final_validation: null
     id: "202609071413-GESADH"
     intent:
@@ -450,9 +484,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 4
+    revision: 6
     schema_version: 1
-    updated_at: "2026-09-07T14:17:20.026Z"
+    updated_at: "2026-09-07T14:25:26.467Z"
     work_items:
       repair-direct-review-identity:
         attempt: 0
@@ -468,6 +502,54 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:35c821056c2a50b20cc91072640b9979284a38771b7db07e57ae13d7a3d02254:
+        aggregate_digest: "sha256:f9b3333886fe965363a6701f7f11f73e63c0f62cbe552159abdefd58bf702b5e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:25:26.467Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_15747149105db6162430785a"
+          mutation_id: "compatibility:sha256:35c821056c2a50b20cc91072640b9979284a38771b7db07e57ae13d7a3d02254"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 4
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:35c821056c2a50b20cc91072640b9979284a38771b7db07e57ae13d7a3d02254"
+        next_revision: 5
+        previous_revision: 4
+        schema_version: 1
+        task_id: "202609071413-GESADH"
+      compatibility:sha256:b20b73aaf0dae49b9167ffa95de0e430b338502df14702a513bde3bfb66c68cb:
+        aggregate_digest: "sha256:66f506b04f1bda10eb9befdc6ff73b2b0b2d8bfd01ea8368f2a8931e7d77b9be"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:25:26.467Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fa1665711434d4c970e700a0"
+          mutation_id: "compatibility:sha256:b20b73aaf0dae49b9167ffa95de0e430b338502df14702a513bde3bfb66c68cb"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b20b73aaf0dae49b9167ffa95de0e430b338502df14702a513bde3bfb66c68cb"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609071413-GESADH"
       compatibility:sha256:b5b7e3f4dcec91a7368cec2e26255d8ab7a7a5fb07c02ed97edca70019dfa18e:
         aggregate_digest: "sha256:5885aa4a41770bf810b46b9619e8f90a67af859c36e1d688b23822b064bedba8"
         event:
@@ -519,6 +601,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "265e3c4ac88eece4c99b3d203653b93e93849180"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
