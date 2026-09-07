@@ -2,10 +2,10 @@
 id: "202609071655-XKV80D"
 title: "Accept report-only WorkItem results without requiring source-code changes"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,9 @@ quality_review:
     - "The exact 33-test suite and mandatory full CI passed on implementation commit 36bfc3ba23e0c65466a5b6c172ef58dfd63883c1."
     - "Residual risk: Hosted checks for the refreshed PR head remain a separate integration gate."
 token_usage:
-  agent_runs: 4
+  agent_runs: 6
   input_tokens: null
-  journal_digest: "sha256:e9440f490659ca7100167d34cf988a45bb5a98bb08d754209e04d48dc84241d3"
+  journal_digest: "sha256:dd4690eef71baed5b3b834fcae47617b680b257beb7f909a6ef6b5b0ef96a93d"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-07T17:46:07.756Z"
+  updated_at: "2026-09-07T19:17:14.055Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -309,8 +309,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
-  message: "🚧 XKV80D task: apply external agent result"
+  hash: "116e12dbfefc52b3084da46d6c7506070c474e3e"
+  message: "🚧 XKV80D task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -324,6 +324,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 36bfc3ba23e0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -374,9 +377,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T19:17:14.055Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "116e12dbfefc52b3084da46d6c7506070c474e3e"
 doc_version: 3
-doc_updated_at: "2026-09-07T19:16:32.629Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T19:17:14.062Z"
+doc_updated_by: "CODER"
 description: "User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority."
 sections:
   Summary: |-
@@ -781,7 +792,23 @@ extensions:
       schema_version: 1
       task_id: "202609071655-XKV80D"
     event_cursor: 12
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071655-XKV80D"
+            - "git:36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
+          check_id: "regression"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T19:14:44.795Z"
+          repository_snapshot_digest: "sha256:dcc4e46947bb7e84c360febf01423c7281e8e7d208692f633befabefea3cb4a5"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071655-XKV80D"
     intent:
       acceptance_criteria:
@@ -797,12 +824,12 @@ extensions:
 
         User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority.
       task_id: "202609071655-XKV80D"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-07T19:14:45.993Z"
+    updated_at: "2026-09-07T19:17:14.055Z"
     work_items:
       report-result:
         attempt: 1
@@ -1202,11 +1229,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609071655-XKV80D"
+      legacy-finish:202609071655-XKV80D:2026-09-07T19:14:44.795Z:36bfc3ba23e0c65466a5b6c172ef58dfd63883c1:
+        aggregate_digest: "sha256:8d2112e3bded6ee19e97f6cf195ae161e60f83c409f5ad17976abc1e72da4e31"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T19:17:14.055Z"
+          cause_refs:
+            - "task-verification:202609071655-XKV80D"
+            - "git:36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b0b69f4d0d61fb525bb8191c"
+          mutation_id: "legacy-finish:202609071655-XKV80D:2026-09-07T19:14:44.795Z:36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: "sha256:dcc4e46947bb7e84c360febf01423c7281e8e7d208692f633befabefea3cb4a5"
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 16
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071655-XKV80D:2026-09-07T19:14:44.795Z:36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "36bfc3ba23e0c65466a5b6c172ef58dfd63883c1"
+    message: "🚧 XKV80D task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
@@ -1448,12 +1501,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/4` agent runs
+- Completeness: `0/6` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e9440f490659ca7100167d34cf988a45bb5a98bb08d754209e04d48dc84241d3`
+- Journal digest: `sha256:dd4690eef71baed5b3b834fcae47617b680b257beb7f909a6ef6b5b0ef96a93d`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-07T17:46:07.756Z`
+- Updated at: `2026-09-07T19:17:14.055Z`

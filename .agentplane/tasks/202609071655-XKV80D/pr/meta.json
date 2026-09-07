@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:8d0a4f2ce743926f149a426221b8de7350fcee5c6f4f94cb00b5291bee933310",
   "pr_number": 5919,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5919",
+  "pre_merge_closure": {
+    "basis_commit": "116e12dbfefc52b3084da46d6c7506070c474e3e",
+    "branch": "task/202609071655-XKV80D/accept-report-only-workitem-results-without-requ",
+    "pr_number": 5919,
+    "recorded_at": "2026-09-07T19:17:14.119Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
