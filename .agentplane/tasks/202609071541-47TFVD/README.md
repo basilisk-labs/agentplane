@@ -4,7 +4,7 @@ title: "Propagate approved CI scope to external implementation commit guards"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -81,10 +81,16 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -121,7 +127,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:dd78233120b87709ee7d3f7371e86d4b901a4d1e47aa007a8da14b540850e661"
+      digest: "sha256:969f43c02b99032aac9c49eeb0b3b3ac4520b706773317fbb3f6117f0d0567ff"
       escalation_reasons:
         - "effect_security_boundary"
       execution_groups:
@@ -130,10 +136,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -166,11 +178,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "3b38084aeb5d993b1e064ecba25c3a6e0dc277ab"
+  message: "🚧 47TFVD task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3b38084aeb5d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -179,9 +196,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T15:48:46.372Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3b38084aeb5d. CLI accepted one state-bound external-agent semantic result."
+    commit: "3b38084aeb5d993b1e064ecba25c3a6e0dc277ab"
 doc_version: 3
-doc_updated_at: "2026-09-07T15:46:17.888Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T15:48:46.372Z"
+doc_updated_by: "SUPERVISOR"
 description: "User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection."
 sections:
   Summary: |-
@@ -340,7 +365,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071541-47TFVD"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609071541-47TFVD"
     intent:
@@ -360,9 +385,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-07T15:46:17.888Z"
+    updated_at: "2026-09-07T15:48:46.372Z"
     work_items:
       ci-permission:
         attempt: 0
@@ -402,6 +427,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609071541-47TFVD"
+      compatibility:sha256:a2449b9ee7109d4b7accba37de3a0812228c58c9c6a0438a37ecb644cb60444f:
+        aggregate_digest: "sha256:72a521eb3996ae30b19b880151060dbfaca0276d659d1a22077f9b627229932e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:48:46.372Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7cac79218d26ba2acb5995fe"
+          mutation_id: "compatibility:sha256:a2449b9ee7109d4b7accba37de3a0812228c58c9c6a0438a37ecb644cb60444f"
+          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071541-47TFVD"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a2449b9ee7109d4b7accba37de3a0812228c58c9c6a0438a37ecb644cb60444f"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
       compatibility:sha256:a499d54dd48fe4ff53cdca71a75ea0ab508463de7f7c8046617fa53fe5b6cc32:
         aggregate_digest: "sha256:9f8c8ed725513fa98e2c5f88aabd9f23c6e83304ee49c3216e4cfbd69b7ee68f"
         event:
@@ -424,6 +473,30 @@ extensions:
         mutation_id: "compatibility:sha256:a499d54dd48fe4ff53cdca71a75ea0ab508463de7f7c8046617fa53fe5b6cc32"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
+      compatibility:sha256:d6844a0a7ebd58cb61c9d098b8fe52aee12ce7b9418c637a6067a1c0193d98c1:
+        aggregate_digest: "sha256:ea466e41c3028bea077365c3e781de2ecb7209806d8594898887452f44a3f696"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:48:46.372Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_416b278001cd0e06f46c7e08"
+          mutation_id: "compatibility:sha256:d6844a0a7ebd58cb61c9d098b8fe52aee12ce7b9418c637a6067a1c0193d98c1"
+          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071541-47TFVD"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d6844a0a7ebd58cb61c9d098b8fe52aee12ce7b9418c637a6067a1c0193d98c1"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609071541-47TFVD"
       compatibility:sha256:e91392eeabee066b3c3a63732827cc2caf85d5b85f9cef93d5a43d1b879c83de:
@@ -453,6 +526,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "3b38084aeb5d993b1e064ecba25c3a6e0dc277ab"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
