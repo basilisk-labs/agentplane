@@ -4,7 +4,7 @@ title: "Accept report-only WorkItem results without requiring source-code change
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -85,10 +85,18 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -127,9 +135,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:887c0bb869d362aa9888369ba31bb8718867d892cab1dd7d200bc68d53983500"
+      digest: "sha256:47b819868005aeb804ef027256aa8bb4835b8e17c7b4f67f478065a69ecfbc7d"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "effect_security_boundary"
       execution_groups:
         - "docs-schema"
@@ -137,10 +146,18 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -173,11 +190,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "693879a426881d13a1f40f2eb4ab15fd233e25ce"
+  message: "🚧 XKV80D task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 693879a42688. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -186,9 +208,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T17:25:29.642Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 693879a42688. CLI accepted one state-bound external-agent semantic result."
+    commit: "693879a426881d13a1f40f2eb4ab15fd233e25ce"
 doc_version: 3
-doc_updated_at: "2026-09-07T17:00:24.141Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T17:25:29.642Z"
+doc_updated_by: "SUPERVISOR"
 description: "User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority."
 sections:
   Summary: |-
@@ -396,7 +426,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071655-XKV80D"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609071655-XKV80D"
     intent:
@@ -416,9 +446,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-07T17:00:24.141Z"
+    updated_at: "2026-09-07T17:25:29.642Z"
     work_items:
       report-result:
         attempt: 0
@@ -434,6 +464,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:17ae65dff4dd077a6ef445e14a6d8971c350f5881768cbdf0fc49c741f422fc9:
+        aggregate_digest: "sha256:e83fcd209132e3f4488e4c3342fe366192dfa89e69ea8d42d35ebe29a3ac6fd4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:25:29.642Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d64a5b21221893bddba816b4"
+          mutation_id: "compatibility:sha256:17ae65dff4dd077a6ef445e14a6d8971c350f5881768cbdf0fc49c741f422fc9"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:17ae65dff4dd077a6ef445e14a6d8971c350f5881768cbdf0fc49c741f422fc9"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
       compatibility:sha256:6294a072685886bb1575b25d7acd35430de18eeee00b9370a34c38ff29d68513:
         aggregate_digest: "sha256:14fcc74bcb8df714131bb0e92dcf855ebba9b3ebec82155e34388e4c2acd89d4"
         event:
@@ -456,6 +510,30 @@ extensions:
         mutation_id: "compatibility:sha256:6294a072685886bb1575b25d7acd35430de18eeee00b9370a34c38ff29d68513"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
+      compatibility:sha256:6a7a52993539e5cbe185a241933f6b0eb3af7c8f81f644bce2e7108a578bf983:
+        aggregate_digest: "sha256:7dd1224e06058e2d7f86be7353c85607601073f748ca151cf90d895b2edddade"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:25:29.642Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4fc4a303fc9288c04f016308"
+          mutation_id: "compatibility:sha256:6a7a52993539e5cbe185a241933f6b0eb3af7c8f81f644bce2e7108a578bf983"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6a7a52993539e5cbe185a241933f6b0eb3af7c8f81f644bce2e7108a578bf983"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609071655-XKV80D"
       compatibility:sha256:9df369b91f02a523926ab8e0f5bb3eb808850616f55c8af96af6bd867bf86b89:
@@ -509,6 +587,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "693879a426881d13a1f40f2eb4ab15fd233e25ce"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
