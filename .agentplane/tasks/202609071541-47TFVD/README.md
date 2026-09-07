@@ -4,7 +4,7 @@ title: "Propagate approved CI scope to external implementation commit guards"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -27,6 +27,32 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T16:49:51.041Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "22d93c4efedbb342e900fa6c6999e2c343307cda"
+  blueprint_digest: "04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae"
+  evidence_refs:
+    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071541-47TFVD/README.md"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json"
+    - ".agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json"
+    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "Frozen diff changes only the two approved implementation/test paths. CI flag derives from current task authority after WorkOrder path validation. All workspace CI paths must belong to the validated delta; preexisting unrelated CI changes remain denied. Other protected-family flags remain false."
+    - "Regression cases cover approved workflow/action paths, missing ci permission, absent contract, similarly named non-CI paths, preexisting unrelated CI changes, and rejection before commit permission derivation."
+    - "Supervisor observed focused tests and bun run ci:local:full both exit zero; recorded verification state ok at 2026-09-07T16:48:15.916Z. Frozen implementation and checks identity matches evaluated SHA."
 execution_route:
   frozen: true
   reason_codes:
@@ -581,7 +607,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071541-47TFVD"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609071541-47TFVD"
     intent:
@@ -601,9 +627,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-07T16:48:16.865Z"
+    updated_at: "2026-09-07T16:48:16.866Z"
     work_items:
       ci-permission:
         attempt: 1
@@ -856,6 +882,30 @@ extensions:
         mutation_id: "compatibility:sha256:a5822c60a1619309653099b293d205f8245cabce7b80597f93f04cf4af17ad23"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609071541-47TFVD"
+      compatibility:sha256:aa6ed093b3d021693d9131194f0ed948c8d664f8ebdf7220ab97f7165b6f89d4:
+        aggregate_digest: "sha256:fb8864edb91e439b5f2d7bd4d402066491aa093e9352edbb76e6cf2111f5f88d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:48:16.866Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_256879f1e145d3a5efcf2031"
+          mutation_id: "compatibility:sha256:aa6ed093b3d021693d9131194f0ed948c8d664f8ebdf7220ab97f7165b6f89d4"
+          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071541-47TFVD"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:aa6ed093b3d021693d9131194f0ed948c8d664f8ebdf7220ab97f7165b6f89d4"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609071541-47TFVD"
       compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94:
