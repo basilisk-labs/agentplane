@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The direct-only history walk requires a commit-resolved ancestor anchor before skipping another task artifact commit; current-task semantic metadata remains eligible as the review snapshot.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The shared persistReview guard rejects a pass with no evaluated SHA before writing result, report, opinion, or task review state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The scoped regression suite exercises repeated interleaving and normal direct finish, while the production change leaves branch_pr selection unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks for the revised PR head and integration remain supervisor-owned lifecycle gates. The historical v0.6.27 package was not rerun; this review applies to the current implementation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

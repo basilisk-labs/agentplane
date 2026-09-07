@@ -4,7 +4,7 @@ title: "Repair evaluator review identity for interleaved task artifact commits i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T15:00:34.238Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6"
+  blueprint_digest: "9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc"
+  evidence_refs:
+    - ".agentplane/tasks/202609071413-GESADH/quality/20260907-145605181-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071413-GESADH/quality/20260907-145605181-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/b9c1c5ea47739864080c1cd0f55400611067a56bc587d13114953c8b1be8a728.md"
+    - ".agentplane/tasks/202609071413-GESADH/quality/20260907-145605181-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071413-GESADH/quality/20260907-145605181-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071413-GESADH/quality/20260907-145605181-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071413-GESADH/README.md"
+    - ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/d12745bf4013744db0b5c0b2d0811071b0395197215b97da2689be883aece1a7.patch"
+    - ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/b1b668e835b2d064660871014c457dbbbcc82740ed8ef0485dadcb0c51cdc27e.json"
+    - ".agentplane/tasks/202609071413-GESADH/verification/20260907145556024-96dac1a26ae064c8.json"
+    - ".agentplane/tasks/202609071413-GESADH/quality/objects/sha256/caa3b4ad34552dd39b20efa311d14d5f4ce0809655b99fa9b1c23675e5a5a998.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The direct-only history walk requires a commit-resolved ancestor anchor before skipping another task artifact commit; current-task semantic metadata remains eligible as the review snapshot."
+    - "The shared persistReview guard rejects a pass with no evaluated SHA before writing result, report, opinion, or task review state."
+    - "The scoped regression suite exercises repeated interleaving and normal direct finish, while the production change leaves branch_pr selection unchanged."
+    - "Residual risk: Hosted checks for the revised PR head and integration remain supervisor-owned lifecycle gates. The historical v0.6.27 package was not rerun; this review applies to the current implementation."
 execution_route:
   frozen: true
   reason_codes:
@@ -648,7 +677,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071413-GESADH"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609071413-GESADH"
     intent:
@@ -663,9 +692,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-07T14:55:57.508Z"
+    updated_at: "2026-09-07T14:55:57.511Z"
     work_items:
       repair-direct-review-identity:
         attempt: 1
@@ -952,6 +981,30 @@ extensions:
         mutation_id: "compatibility:sha256:e45d62746e0120baa1d843f7856b83697d050e7a6e2603004b48e619c803f9b4"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609071413-GESADH"
+      compatibility:sha256:fe22038fe27b2447337b9e438b3ebad92df180613d7f54697902c5291be07a9d:
+        aggregate_digest: "sha256:efda7a3c62039bb7773196247ab6f4f965f6337d379feb352617c23b82932dcf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:55:57.511Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_77ac8f69593e321d921a2c10"
+          mutation_id: "compatibility:sha256:fe22038fe27b2447337b9e438b3ebad92df180613d7f54697902c5291be07a9d"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fe22038fe27b2447337b9e438b3ebad92df180613d7f54697902c5291be07a9d"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609071413-GESADH"
       external-result:work-order-202609071413-GESADH-executor-0028400ba307f872c411d738:
