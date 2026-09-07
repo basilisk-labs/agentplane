@@ -15,8 +15,8 @@ Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 e
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

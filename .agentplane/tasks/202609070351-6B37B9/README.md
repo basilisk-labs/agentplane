@@ -4,7 +4,7 @@ title: "Sign macOS standalone release binaries before packaging"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Relayed existing explicit user authorization for every action required to fix and verify the 0.7.8 release, including the explicit AGENTS permission override. Approves the bounded six-file macOS signing and verified distribution handoff repair; recovery preserves the qualified source SHA and immutable npm packages."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-07T04:07:02.609Z"
+  state: "ok"
+  updated_at: "2026-09-07T07:31:33.074Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -89,9 +89,7 @@ execution_contract:
       - "scripts/generate/generate-bun-cli-assets.mjs"
       - "scripts/generate/generate-release-distribution.mjs"
   observed:
-    authority_violations:
-      - "verification:recorded-check-3:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - ".github"
       - "packages/agentplane"
@@ -114,14 +112,35 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
         id: "recorded-check-3"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -221,8 +240,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-3"
-      - "verification_recovery:verification-record"
 commit:
   hash: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
   message: "🚧 6B37B9 task: apply external agent result"
@@ -266,8 +283,14 @@ events:
     to: "DOING"
     note: "Implementation committed: bba14822d1e5. CLI accepted one state-bound external-agent semantic result."
     commit: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
+  -
+    type: "verify"
+    at: "2026-09-07T07:31:33.074Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T07:23:10.986Z"
+doc_updated_at: "2026-09-07T07:31:34.466Z"
 doc_updated_by: "SUPERVISOR"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
@@ -311,6 +334,96 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
     Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070351-6B37B9-sign-macos-standalone-release-binaries-before-pa/.agentplane/tasks/202609070351-6B37B9/blueprint/resolved-snapshot.json
+    - old_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+    - current_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609070351-6B37B9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609070351-6B37B9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T07:31:33.074Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae, input_digest=sha256:63aae05b887c2391bc7c5ad52ade84828c13dcd92425d482b5f6f520e24b6749
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070351-6B37B9 Verification Contract check task_outcome (3/3)
 
     BlueprintSnapshotRef:
     - state: current
@@ -539,7 +652,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609070351-6B37B9"
     intent:
@@ -564,9 +677,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T07:23:10.986Z"
+    updated_at: "2026-09-07T07:31:34.465Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -830,6 +943,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609070351-6B37B9"
+      compatibility:sha256:ef0a990b2b08c7b1e84a9f45c2065290fcd66b8cdaa5c2172b1f977f6a52cc85:
+        aggregate_digest: "sha256:dd945fb2dff4d3c04222986e8433df7742bc9ffa6d4d983b30f3909b29a0da16"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:31:34.465Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7e445466458fb69af514edae"
+          mutation_id: "compatibility:sha256:ef0a990b2b08c7b1e84a9f45c2065290fcd66b8cdaa5c2172b1f977f6a52cc85"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ef0a990b2b08c7b1e84a9f45c2065290fcd66b8cdaa5c2172b1f977f6a52cc85"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
       external-result:work-order-202609070351-6B37B9-executor-5902555594aa912a478f4139:
         aggregate_digest: "sha256:c0e3c8e61aa8fcd091d2666bf14045255f38d6fcfee845be5a381265c97f733b"
         event:
@@ -919,6 +1056,96 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
 Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070351-6B37B9-sign-macos-standalone-release-binaries-before-pa/.agentplane/tasks/202609070351-6B37B9/blueprint/resolved-snapshot.json
+- old_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+- current_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609070351-6B37B9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609070351-6B37B9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T07:31:33.074Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae, input_digest=sha256:63aae05b887c2391bc7c5ad52ade84828c13dcd92425d482b5f6f520e24b6749
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070351-6B37B9 Verification Contract check task_outcome (3/3)
 
 BlueprintSnapshotRef:
 - state: current
