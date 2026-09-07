@@ -6,7 +6,7 @@ Created: 2026-09-07T11:19:37.618Z
 
 - Task: `202609071111-Y0Z0VQ`
 - Title: Repair confirmed Arkady Factory compatibility lifecycle defects sequentially
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071111-Y0Z0VQ/repair-confirmed-arkady-factory-compatibility-li`
 - Canonical task record: `.agentplane/tasks/202609071111-Y0Z0VQ/README.md`
 
