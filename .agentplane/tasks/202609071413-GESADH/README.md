@@ -4,7 +4,7 @@ title: "Repair evaluator review identity for interleaved task artifact commits i
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:3d026da3db1ac74a38f5ad7a304b703a182234a59b9657f5f0764b4b4909c357"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-07T14:36:40.801Z"
+  updated_by: "TESTER"
+  note: "Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks."
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -89,7 +89,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/finish-quality.ts"
       - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -103,7 +105,13 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -201,9 +209,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "265e3c4ac88eece4c99b3d203653b93e93849180"
-  message: "🚧 GESADH task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -227,8 +235,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 265e3c4ac88e. CLI accepted one state-bound external-agent semantic result."
     commit: "265e3c4ac88eece4c99b3d203653b93e93849180"
+  -
+    type: "verify"
+    at: "2026-09-07T14:36:40.801Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks."
 doc_version: 3
-doc_updated_at: "2026-09-07T14:25:26.467Z"
+doc_updated_at: "2026-09-07T14:36:41.953Z"
 doc_updated_by: "SUPERVISOR"
 description: "User approved testing and sequential fixes for the seven audited open GitHub issues, with issue comments and closure after verified resolution. Handle issue #5892 first. Reproduce a verified direct task A evaluated while HEAD contains only task B artifacts. Define a coherent reviewed SHA contract, prevent a recorded passing review with missing identity, preserve implementation versus review snapshot semantics, and cover evaluator to normal finish behavior without force or fabricated commits. Preserve unrelated work. Other issues remain follow-up work; do not expand this implementation to them."
 sections:
@@ -241,13 +255,46 @@ sections:
     - Out of scope: unrelated refactors not required for "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892".
   Plan: "Plan one bounded implementation WorkItem for direct review SHA identity in issue #5892. Existing target, evaluator, and finish suites pass 66 tests. Add the missing exact direct reproduction before implementation."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1`. Expected: all tests pass, including direct first review and repeated review across A/B artifacts, rejection of pass without SHA, and normal finish with a clean tracked tree.
+    2. Run `bun run typecheck`. Expected: TypeScript build passes.
+    3. Review the scoped diff. Expected: branch_pr target selection remains unchanged and no unrelated implementation changes are present.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T14:36:40.801Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67c3bdd6046ae8c73d982ef9fef0b85e48aa3241791be3adb79ac959d570c323, input_digest=sha256:b3bab0b7958fe848d9663d6f00f341249c296a41866f2506853c329b9b9b4449
+
+    Details:
+
+    Command: GitHub Actions verify-contract, run 34132922617, job 101777228343
+    Result: fail
+    Evidence: oversized test baseline rejects evaluator-run.command.test.ts at 1001 lines and quality-review-target.test.ts at 1035 lines; budget count 12 exceeds 10.
+    Scope: issue #5892 test placement; no acceptance or implementation behavior change.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071413-GESADH-repair-evaluator-review-identity-for-interleaved/.agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json
+    - old_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+    - current_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071413-GESADH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071413-GESADH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -469,7 +516,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071413-GESADH"
-    event_cursor: 4
+    event_cursor: 6
     final_validation: null
     id: "202609071413-GESADH"
     intent:
@@ -484,9 +531,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-07T14:25:51.955Z"
+    updated_at: "2026-09-07T14:36:41.952Z"
     work_items:
       repair-direct-review-identity:
         attempt: 1
@@ -559,6 +606,30 @@ extensions:
         work_item_id: "repair-direct-review-identity"
     leases: []
     mutation_receipts:
+      compatibility:sha256:31d932c3a09c6ac34438cf8ae6127a84d6030ed7c39184f33a5f824be1993584:
+        aggregate_digest: "sha256:a7d573eb77f7be424f3593ae47e781c82f9d2c8c5c2eff52559e4cff34c29c6d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:36:41.952Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6e571afee1710bc067a3d0ed"
+          mutation_id: "compatibility:sha256:31d932c3a09c6ac34438cf8ae6127a84d6030ed7c39184f33a5f824be1993584"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:31d932c3a09c6ac34438cf8ae6127a84d6030ed7c39184f33a5f824be1993584"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609071413-GESADH"
       compatibility:sha256:35c821056c2a50b20cc91072640b9979284a38771b7db07e57ae13d7a3d02254:
         aggregate_digest: "sha256:f9b3333886fe965363a6701f7f11f73e63c0f62cbe552159abdefd58bf702b5e"
         event:
@@ -655,6 +726,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609071413-GESADH"
+      compatibility:sha256:e45d62746e0120baa1d843f7856b83697d050e7a6e2603004b48e619c803f9b4:
+        aggregate_digest: "sha256:26d4d5b4380a2db2b0d85a2ae4266143d28b57779708a0a2ed1ff0cdba9506c9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:35:44.429Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_97c2c2f25c7b308ebfda3d05"
+          mutation_id: "compatibility:sha256:e45d62746e0120baa1d843f7856b83697d050e7a6e2603004b48e619c803f9b4"
+          plan_digest: "sha256:d46cc4b9a3333b97d69187c212e29f935e7aa1eab746ff593ea2055814085716"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071413-GESADH"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e45d62746e0120baa1d843f7856b83697d050e7a6e2603004b48e619c803f9b4"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609071413-GESADH"
       external-result:work-order-202609071413-GESADH-executor-0028400ba307f872c411d738:
         aggregate_digest: "sha256:586f1148074346179a6deed59a0829ef877de1cffb7f47f8e732c41e34aefeae"
         event:
@@ -682,8 +777,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "265e3c4ac88eece4c99b3d203653b93e93849180"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -712,15 +805,48 @@ Plan one bounded implementation WorkItem for direct review SHA identity in issue
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bunx --no-install vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts --maxWorkers=1`. Expected: all tests pass, including direct first review and repeated review across A/B artifacts, rejection of pass without SHA, and normal finish with a clean tracked tree.
+2. Run `bun run typecheck`. Expected: TypeScript build passes.
+3. Review the scoped diff. Expected: branch_pr target selection remains unchanged and no unrelated implementation changes are present.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T14:36:40.801Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework required: GitHub verify-contract failed because new direct regressions pushed two existing test files over the oversized-test budget. Move the direct cases to the already approved direct-closeout suite and rerun the unchanged declared checks.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:67c3bdd6046ae8c73d982ef9fef0b85e48aa3241791be3adb79ac959d570c323, input_digest=sha256:b3bab0b7958fe848d9663d6f00f341249c296a41866f2506853c329b9b9b4449
+
+Details:
+
+Command: GitHub Actions verify-contract, run 34132922617, job 101777228343
+Result: fail
+Evidence: oversized test baseline rejects evaluator-run.command.test.ts at 1001 lines and quality-review-target.test.ts at 1035 lines; budget count 12 exceeds 10.
+Scope: issue #5892 test placement; no acceptance or implementation behavior change.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071413-GESADH-repair-evaluator-review-identity-for-interleaved/.agentplane/tasks/202609071413-GESADH/blueprint/resolved-snapshot.json
+- old_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+- current_digest: 9944f672d9708d6b4936c7da58449fc763ffad14a26e683fb913ec0c355befdc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071413-GESADH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071413-GESADH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -494,42 +494,6 @@ describe("evaluator run command", () => {
     expect(await readEvaluatedSha(root, taskId, 2)).toBe(metadataSha);
   });
 
-  it("does not anchor an unrelated task artifact when the current task has no committed work", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const taskId = "202605240900-EV03";
-    await addTask(root, taskId);
-    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
-    await commitPath(
-      root,
-      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
-      "unrelated task artifact",
-      "chore: unrelated task artifact",
-    );
-
-    await expect(
-      runEvaluatorRun(
-        { cwd: root, rootOverride: undefined },
-        {
-          taskId,
-          evaluator: "recovery-context",
-          provenance: "human_supplied",
-          verdict: "pass",
-          summary: "No current committed work unit",
-          findings: ["Unrelated workflow history is not a valid review target."],
-          evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
-          missingTests: [],
-          hiddenAssumptions: [],
-          residualRisks: [],
-          json: false,
-          record: true,
-        },
-      ),
-    ).rejects.toThrow("passing evaluator review requires a committed review target");
-    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
-    expect(stored.frontmatter.quality_review?.state).not.toBe("pass");
-  });
-
   it("prepares a frozen read-only work order and applies only the matching typed evaluator result", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

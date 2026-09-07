@@ -15,24 +15,29 @@ User approved testing and sequential fixes for the seven audited open GitHub iss
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework required: GitHub verify-contract failed because new direct regressions pushed two existing
+test files over the oversized-test budget. Move the direct cases to the already approved
+direct-closeout suite and rerun the unchanged declared checks.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T14:17:20.145Z
+- Updated: 2026-09-07T14:25:59.378Z
 - Branch: task/202609071413-GESADH/repair-evaluator-review-identity-for-interleaved
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...cli.core.route-decision.direct-closeout.test.ts | 111 +++++++++++++++++++++
- .../commands/evaluator/evaluator-review-apply.ts   |   8 ++
- .../evaluator/evaluator-run.command.test.ts        |  40 ++++----
- .../commands/shared/quality-review-target.test.ts  |  68 +++++++++++++
+ ...cli.core.route-decision.direct-closeout.test.ts | 225 ++++++++++++++++++++-
+ .../commands/evaluator/evaluator-review-apply.ts   |   8 +
+ .../evaluator/evaluator-run.command.test.ts        |  34 ----
  .../src/commands/shared/quality-review-target.ts   |   5 +
- 5 files changed, 213 insertions(+), 19 deletions(-)
+ 4 files changed, 237 insertions(+), 35 deletions(-)
 ```
 
 </details>

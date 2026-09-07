@@ -7,12 +7,20 @@ import { readTask } from "@agentplaneorg/core/tasks";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { applyTaskMutation } from "../commands/shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../commands/shared/task-store.js";
+import { resolveQualityReviewTargetSha } from "../commands/shared/quality-review-target.js";
+import { runEvaluatorRun } from "../commands/evaluator/evaluator.command.js";
+import { addTask, commitPath } from "../commands/evaluator/evaluator-test-helpers.js";
 import {
   approveRouteTaskPlan,
   completeRouteWorkItem,
   recordRouteVerification,
 } from "./route-decision.testkit.js";
-import { mkGitRepoRootWithCommit, withEvaluatorPolicyFixture } from "@agentplane/testkit";
+import {
+  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
+  writeDefaultConfig,
+  withEvaluatorPolicyFixture,
+} from "@agentplane/testkit";
 
 import {
   captureStdIO,
@@ -84,6 +92,110 @@ async function recordEvaluatorReview(root: string, taskId: string): Promise<void
 }
 
 describe("runCli route decision direct closeout", () => {
+  it.each([false, true])(
+    "keeps a recorded direct target across other-task artifacts (metadata=%s)",
+    async (withMetadata) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202609070900-DIRECT";
+      const implementationSha = await commitPath(
+        root,
+        "src/direct.ts",
+        "export const value = 1;\n",
+        "feat: direct implementation",
+      );
+      let expectedSha = implementationSha;
+      if (withMetadata) {
+        expectedSha = await commitPath(
+          root,
+          `.agentplane/tasks/${taskId}/manual-note.md`,
+          "reviewable task metadata\n",
+          "docs: current task metadata",
+        );
+      }
+      await commitPath(
+        root,
+        ".agentplane/tasks/202609070900-OTHER/manual-note.md",
+        "other task metadata\n",
+        "docs: other task metadata",
+      );
+      await expect(
+        resolveQualityReviewTargetSha({
+          gitRoot: root,
+          workflowDir: ".agentplane/tasks",
+          taskId,
+          previousEvaluatedSha: implementationSha,
+          workflowMode: "direct",
+        }),
+      ).resolves.toBe(expectedSha);
+      await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/quality/review.json`,
+        "{}\n",
+        "test: record generated review",
+      );
+      await commitPath(
+        root,
+        ".agentplane/tasks/202609070900-OTHER/manual-note.md",
+        "more other task metadata\n",
+        "docs: update other task metadata",
+      );
+      await expect(
+        resolveQualityReviewTargetSha({
+          gitRoot: root,
+          workflowDir: ".agentplane/tasks",
+          taskId,
+          previousEvaluatedSha: expectedSha,
+          workflowMode: "direct",
+        }),
+      ).resolves.toBe(expectedSha);
+      await expect(
+        resolveQualityReviewTargetSha({
+          gitRoot: root,
+          workflowDir: ".agentplane/tasks",
+          taskId,
+          previousEvaluatedSha: "f".repeat(40),
+          workflowMode: "direct",
+        }),
+      ).resolves.toBeNull();
+    },
+  );
+
+  it("does not anchor an unrelated task artifact when the current task has no committed work", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV03";
+    await addTask(root, taskId);
+    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
+    await commitPath(
+      root,
+      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
+      "unrelated task artifact",
+      "chore: unrelated task artifact",
+    );
+
+    await expect(
+      runEvaluatorRun(
+        { cwd: root, rootOverride: undefined },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          provenance: "human_supplied",
+          verdict: "pass",
+          summary: "No current committed work unit",
+          findings: ["Unrelated workflow history is not a valid review target."],
+          evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      ),
+    ).rejects.toThrow("passing evaluator review requires a committed review target");
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review?.state).not.toBe("pass");
+  });
+
   it("routes approved direct tasks to current-agent start-ready before execution", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
