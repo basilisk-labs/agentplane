@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609070233-NG368H/repair-manual-release-recovery-after-npm-publica",
+  "created_at": "2026-09-07T02:38:23.049Z",
+  "diffstat_sha256": "sha256:a8d396fd291b92166b502d3616f8850267a05facc3b25d85073009994d742caf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609070233-NG368H",
+  "updated_at": "2026-09-07T02:38:23.049Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

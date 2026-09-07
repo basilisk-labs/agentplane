@@ -1,7 +1,9 @@
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
+import { parse as parseYaml } from "yaml";
 
 const PUBLISH_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/publish.yml");
 const DISTRIBUTION_MODULE_WORKFLOW_PATH = path.resolve(
@@ -10,6 +12,67 @@ const DISTRIBUTION_MODULE_WORKFLOW_PATH = path.resolve(
 );
 
 describe("publish workflow contract", () => {
+  // The publish job executes this Bash step on Linux.
+  it.skipIf(process.platform === "win32").each([
+    ["workflow_dispatch", true, true, [true, true, true], true],
+    ["workflow_dispatch", true, true, [false, false, false], true],
+    ["workflow_dispatch", true, true, [true, false, true], true],
+    ["workflow_run", true, true, [true, true, true], false],
+    ["workflow_run", true, true, [true, false, true], true],
+    ["workflow_dispatch", false, true, [true, true, true], false],
+    ["workflow_dispatch", false, true, [false, false, false], false],
+    ["workflow_dispatch", true, false, [true, true, true], false],
+  ] as const)(
+    "detects %s recovery (ready=%s, stable=%s, packages=%j) as %s",
+    async (event, ready, stable, published, expected) => {
+      const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as {
+        jobs: { detect: { steps: { id?: string; run?: string }[] } };
+      };
+      const script = workflow.jobs.detect.steps.find((step) => step.id === "detect")?.run;
+      if (!script) throw new Error("Publish target detection step is missing");
+      const rendered = script
+        .replaceAll("${{ steps.channel.outputs.stable }}", String(stable))
+        .replaceAll("${{ steps.source.outputs.release_ready_ok }}", String(ready))
+        .replaceAll("${{ steps.source.outputs.sha }}", "a".repeat(40))
+        .replaceAll("${{ github.event_name }}", event);
+      const stubs = String.raw`
+        node() { printf '%s\n' "$RELEASE_TEST_VERSION"; }
+        git() { printf '%s\n' aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa; }
+        npm() {
+          case "$2" in
+            @agentplaneorg/core@*) test "$RELEASE_TEST_CORE" = true ;;
+            @agentplaneorg/recipes@*) test "$RELEASE_TEST_RECIPES" = true ;;
+            agentplane@*) test "$RELEASE_TEST_CLI" = true ;;
+            *) return 99 ;;
+          esac
+        }
+      `;
+      const output = execFileSync("bash", ["-c", `${stubs}\n${rendered}`], {
+        cwd: process.cwd(),
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          GITHUB_OUTPUT: "/dev/stdout",
+          RELEASE_TEST_VERSION: stable ? "0.7.8" : "0.7.8-beta.1",
+          RELEASE_TEST_CORE: String(published[0]),
+          RELEASE_TEST_RECIPES: String(published[1]),
+          RELEASE_TEST_CLI: String(published[2]),
+        },
+      });
+      const outputs: Record<string, string | undefined> = {};
+      for (const line of output.split("\n")) {
+        const [key, value] = line.split("=", 2);
+        if (key) outputs[key] = value;
+      }
+      expect(outputs.should_publish).toBe(String(expected));
+      if (stable) {
+        expect(outputs.core_published).toBe(String(published[0]));
+        expect(outputs.recipes_published).toBe(String(published[1]));
+        expect(outputs.cli_published).toBe(String(published[2]));
+      }
+    },
+  );
+
   it("names the primary workflow as a full release publisher", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 

@@ -233,6 +233,9 @@ jobs:
           {
             if [ "${{ steps.source.outputs.release_ready_ok }}" != "true" ]; then
               echo "should_publish=false"
+            elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              # npm completion does not prove the remaining release channels completed.
+              echo "should_publish=true"
             elif [ "$CORE_PUBLISHED" = "true" ] && [ "$RECIPES_PUBLISHED" = "true" ] && [ "$CLI_PUBLISHED" = "true" ]; then
               echo "should_publish=false"
             else
