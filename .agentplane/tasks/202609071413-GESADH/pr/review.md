@@ -6,7 +6,7 @@ Created: 2026-09-07T14:17:20.145Z
 
 - Task: `202609071413-GESADH`
 - Title: Repair evaluator review identity for interleaved task artifact commits in GitHub issue #5892
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071413-GESADH/repair-evaluator-review-identity-for-interleaved`
 - Canonical task record: `.agentplane/tasks/202609071413-GESADH/README.md`
 
