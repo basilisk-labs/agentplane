@@ -402,22 +402,38 @@ describe("external implementation CI commit authority", () => {
     >;
 
   it("passes approved CI changes to the commit guard", () => {
-    expect(implementationCommitAllowsCi(contract(["ci"]), [workflow])).toBe(true);
+    expect(implementationCommitAllowsCi(contract(["ci"]), [workflow], [workflow])).toBe(true);
     expect(
-      implementationCommitAllowsCi(contract(["ci"]), [".github/actions/check/action.yml"]),
+      implementationCommitAllowsCi(
+        contract(["ci"]),
+        [".github/actions/check/action.yml"],
+        [".github/actions/check/action.yml"],
+      ),
     ).toBe(true);
   });
 
   it("keeps missing CI permission and unrelated protected paths denied", () => {
-    expect(implementationCommitAllowsCi(undefined, [workflow])).toBe(false);
-    expect(implementationCommitAllowsCi(contract(["source_code"]), [workflow])).toBe(false);
+    expect(implementationCommitAllowsCi(undefined, [workflow], [workflow])).toBe(false);
+    expect(implementationCommitAllowsCi(contract(["source_code"]), [workflow], [workflow])).toBe(
+      false,
+    );
     for (const file of [
       "AGENTS.md",
       ".agentplane/config.json",
       "lefthook.yml",
       ".github/workflows-other/ci.yml",
     ])
-      expect(implementationCommitAllowsCi(contract(["ci"]), [file])).toBe(false);
+      expect(implementationCommitAllowsCi(contract(["ci"]), [file], [file])).toBe(false);
+  });
+
+  it("does not admit preexisting CI changes through the family-wide guard flag", () => {
+    expect(
+      implementationCommitAllowsCi(
+        contract(["ci"]),
+        [workflow],
+        [workflow, ".github/workflows/preexisting.yml"],
+      ),
+    ).toBe(false);
   });
 
   it("rejects unapproved CI paths before deriving commit permission", () => {
@@ -452,6 +468,6 @@ describe("external implementation CI commit authority", () => {
     );
     input.current_status_lines = [" M .github/workflows/ci.yml"];
     const validated = assertExternalImplementationReturnState(input);
-    expect(implementationCommitAllowsCi(contract(["ci"]), validated)).toBe(true);
+    expect(implementationCommitAllowsCi(contract(["ci"]), validated, validated)).toBe(true);
   });
 });
