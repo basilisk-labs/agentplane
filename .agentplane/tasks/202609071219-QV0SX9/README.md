@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -56,7 +56,7 @@ quality_review:
 token_usage:
   agent_runs: 12
   input_tokens: null
-  journal_digest: "sha256:9a5fb8ed2b354dae54d4214055e62455490c53c93388103329263c4ddbd5e957"
+  journal_digest: "sha256:1ebf7115b4879387c94098bdfd9a21e40b05fd466cd40df6ac1d579ecd318529"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -66,7 +66,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-07T14:15:36.196Z"
+  updated_at: "2026-09-07T15:04:52.952Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -267,8 +267,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "082de2c2ca742fd4150dbf7439a2b1fb9f5f79ed"
-  message: "🚧 QV0SX9 task: record external evaluator result"
+  hash: "3c45166b31d0a9960f52aa11c3259afd472dd691"
+  message: "🚧 QV0SX9 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -294,6 +294,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -379,8 +382,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: full local CI and hosted CI passed after main synchronization; all nine prompt implementation files remain unchanged from the reviewed implementation."
+  -
+    type: "status"
+    at: "2026-09-07T15:04:52.952Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "3c45166b31d0a9960f52aa11c3259afd472dd691"
 doc_version: 3
-doc_updated_at: "2026-09-07T15:01:48.130Z"
+doc_updated_at: "2026-09-07T15:04:52.962Z"
 doc_updated_by: "CODER"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
@@ -1023,7 +1034,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 22
+    event_cursor: 23
     final_validation:
       evidence:
         -
@@ -1306,9 +1317,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-07T15:00:40.574Z"
+    updated_at: "2026-09-07T15:04:52.952Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1423,6 +1434,30 @@ extensions:
         mutation_id: "compatibility:sha256:07c015e6d01a1040d5ab57eef94a789007b6160a44b4b0d867a517c89ab62e17"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:0a02c570c432c00bcb0e39679c46e9cd39360c4184fa09924e01d4cd242020b7:
+        aggregate_digest: "sha256:8bb9ac805bb2694c68a13148ce34df2c3f295807658e3a186efd5995d1c2cd68"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T15:04:52.952Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_8b2449b865cf9a84c64eb397"
+          mutation_id: "compatibility:sha256:0a02c570c432c00bcb0e39679c46e9cd39360c4184fa09924e01d4cd242020b7"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 26
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0a02c570c432c00bcb0e39679c46e9cd39360c4184fa09924e01d4cd242020b7"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:283a0fd1f91acd13db600707e23058d24f5a64009172bd60165ba7419e721e62:
@@ -2359,6 +2394,6 @@ DecisionContextRef:
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:9a5fb8ed2b354dae54d4214055e62455490c53c93388103329263c4ddbd5e957`
+- Journal digest: `sha256:1ebf7115b4879387c94098bdfd9a21e40b05fd466cd40df6ac1d579ecd318529`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-07T14:15:36.196Z`
+- Updated at: `2026-09-07T15:04:52.952Z`
