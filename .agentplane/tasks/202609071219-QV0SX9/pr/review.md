@@ -6,7 +6,7 @@ Created: 2026-09-07T13:03:10.143Z
 
 - Task: `202609071219-QV0SX9`
 - Title: Use simple technical English in task prompts and remove redundant prompt context
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071219-QV0SX9/use-simple-technical-english-in-task-prompts-and`
 - Canonical task record: `.agentplane/tasks/202609071219-QV0SX9/README.md`
 
