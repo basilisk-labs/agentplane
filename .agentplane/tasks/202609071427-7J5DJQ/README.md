@@ -2,10 +2,10 @@
 id: "202609071427-7J5DJQ"
 title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,11 @@ quality_review:
     - "Residual risk: The standalone website lockfile mismatch is pre-existing on both Bun versions; normal workspace installation and site checks pass."
     - "Residual risk: The qualification run does not establish execution on every release target."
 token_usage:
-  agent_runs: 10
+  agent_runs: 18
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:4abc81f6215f737c5725bf77e0ccf86aa2f5af7787c3a11b17c3b9dc1b1b0575"
+  journal_digest: "sha256:99dcacb37e433d0debab4df9fb0f001e4050e56f0f0b945998d05d60393153a6"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-07T17:09:31.186Z"
+  updated_at: "2026-09-07T22:29:51.609Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -549,8 +551,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
-  message: "🚧 7J5DJQ task: apply external agent result"
+  hash: "064123ffbd3bbc2609a60e60eb7ad5bc57db5403"
+  message: "🚧 7J5DJQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -591,6 +593,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 11887ec4e7d9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -710,9 +715,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T22:29:51.609Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "064123ffbd3bbc2609a60e60eb7ad5bc57db5403"
 doc_version: 3
-doc_updated_at: "2026-09-07T22:28:56.608Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T22:29:51.618Z"
+doc_updated_by: "CODER"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -1304,7 +1317,23 @@ extensions:
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
     event_cursor: 28
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071427-7J5DJQ"
+            - "git:11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
+          check_id: "task-check"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T22:17:15.994Z"
+          repository_snapshot_digest: "sha256:dfc8c5a2a224edcc6e1d1c9f86ab39b04a0682df7a49cb3b3a3ce64c7e809d55"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071427-7J5DJQ"
     intent:
       acceptance_criteria: []
@@ -1315,7 +1344,7 @@ extensions:
 
         Implement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes.
       task_id: "202609071427-7J5DJQ"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1556,9 +1585,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 32
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-07T22:17:17.142Z"
+    updated_at: "2026-09-07T22:29:51.609Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -2372,11 +2401,37 @@ extensions:
         previous_revision: 22
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
+      legacy-finish:202609071427-7J5DJQ:2026-09-07T22:17:15.994Z:11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9:
+        aggregate_digest: "sha256:9ff22d44bbeb87aa723fdb13c12206d9540c90d7d610819073f12b641e3c1e36"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T22:29:51.609Z"
+          cause_refs:
+            - "task-verification:202609071427-7J5DJQ"
+            - "git:11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8d760ae713f33b38fc226939"
+          mutation_id: "legacy-finish:202609071427-7J5DJQ:2026-09-07T22:17:15.994Z:11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: "sha256:dfc8c5a2a224edcc6e1d1c9f86ab39b04a0682df7a49cb3b3a3ce64c7e809d55"
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 32
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071427-7J5DJQ:2026-09-07T22:17:15.994Z:11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
+    message: "🚧 7J5DJQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -2701,12 +2756,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/10` agent runs
+- Completeness: `0/18` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:4abc81f6215f737c5725bf77e0ccf86aa2f5af7787c3a11b17c3b9dc1b1b0575`
+- Journal digest: `sha256:99dcacb37e433d0debab4df9fb0f001e4050e56f0f0b945998d05d60393153a6`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-07T17:09:31.186Z`
+- Updated at: `2026-09-07T22:29:51.609Z`
