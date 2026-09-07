@@ -12,8 +12,8 @@ Created: 2026-09-07T15:46:17.994Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-07T15:46:17.994Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T15:46:17.994Z
+- Updated: 2026-09-07T15:48:53.177Z
 - Branch: task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
