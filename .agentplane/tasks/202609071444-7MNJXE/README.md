@@ -1,10 +1,11 @@
 ---
 id: "202609071444-7MNJXE"
 title: "Repair CodeQL configuration consistency and triage current GitHub security findings"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,20 @@ quality_review:
     - "The report is an immutable historical result. Its old disk-space and pending-lint caveats have been superseded by the later successful full verification record."
     - "Residual risk: The remaining alerts require separately scoped investigation and remediation. This result is not a security-clean assessment."
     - "Residual risk: A new hosted CodeQL analysis of the integrated changes is needed to confirm configuration warning and alert resolution. No dismissal, merge, or hosted configuration change is authorized by this review."
+token_usage:
+  agent_runs: 8
+  input_tokens: null
+  journal_digest: "sha256:bcf8a9a93d534a114cd9e47a5ad44d771e11bf0a3c6927385cb1f3c071c5c076"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T17:51:30.639Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -266,8 +281,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5cb6963362b19c8e38123b375c7993dec3f7ca7b"
-  message: "🚧 7MNJXE task: apply external agent result"
+  hash: "2726656f8f1e5fe3adeeddb7c44e1b3a7db3c696"
+  message: "🚧 7MNJXE task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -287,6 +302,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 5cb6963362b1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -344,9 +362,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T17:51:30.639Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "2726656f8f1e5fe3adeeddb7c44e1b3a7db3c696"
 doc_version: 3
-doc_updated_at: "2026-09-07T17:49:32.905Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T17:51:30.639Z"
+doc_updated_by: "CODER"
 description: "Investigate GitHub code-scanning setup errors, unstable language coverage and current open alerts. Produce a bounded evidence-backed remediation plan. Preserve ongoing unrelated work and existing CI checks. Do not dismiss alerts, delete analyses, publish, merge or change hosted settings without explicit operator approval."
 sections:
   Summary: |-
@@ -719,7 +745,23 @@ extensions:
       schema_version: 1
       task_id: "202609071444-7MNJXE"
     event_cursor: 15
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071444-7MNJXE"
+            - "git:5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+          check_id: "task-review"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T17:49:31.879Z"
+          repository_snapshot_digest: "sha256:c2645533cc60ecba4b90e74fe4ed2b3cf4f7b7ca9d21f86962f40f91744cb6d2"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071444-7MNJXE"
     intent:
       acceptance_criteria: []
@@ -730,12 +772,12 @@ extensions:
 
         Investigate GitHub code-scanning setup errors, unstable language coverage and current open alerts. Produce a bounded evidence-backed remediation plan. Preserve ongoing unrelated work and existing CI checks. Do not dismiss alerts, delete analyses, publish, merge or change hosted settings without explicit operator approval.
       task_id: "202609071444-7MNJXE"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history: []
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-07T17:49:32.905Z"
+    updated_at: "2026-09-07T17:51:30.639Z"
     work_items:
       alert-triage:
         attempt: 1
@@ -1342,11 +1384,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609071444-7MNJXE"
+      legacy-finish:202609071444-7MNJXE:2026-09-07T17:49:31.879Z:5cb6963362b19c8e38123b375c7993dec3f7ca7b:
+        aggregate_digest: "sha256:510e4eadbf90a82a577768536cd312ada29c6947ea0c2ae08b9582051d9bd21b"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T17:51:30.639Z"
+          cause_refs:
+            - "task-verification:202609071444-7MNJXE"
+            - "git:5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5a8a867c2d34ab2f24ec66c0"
+          mutation_id: "legacy-finish:202609071444-7MNJXE:2026-09-07T17:49:31.879Z:5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: "sha256:c2645533cc60ecba4b90e74fe4ed2b3cf4f7b7ca9d21f86962f40f91744cb6d2"
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 20
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071444-7MNJXE:2026-09-07T17:49:31.879Z:5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+    message: "🚧 7MNJXE task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -1485,3 +1553,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/8` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:bcf8a9a93d534a114cd9e47a5ad44d771e11bf0a3c6927385cb1f3c071c5c076`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T17:51:30.639Z`
