@@ -1,0 +1,4 @@
+ .github/workflows/ci.yml                                 |  2 ++
+ .../src/commands/release/github-ci-plan.test.ts          | 16 ++++++++++++++++
+ scripts/lib/github-ci-capabilities.mjs                   |  6 ++++++
+ 3 files changed, 24 insertions(+)
