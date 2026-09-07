@@ -4,7 +4,7 @@ title: "Repair CodeQL configuration consistency and triage current GitHub securi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -570,19 +570,49 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-07T17:26:09.030Z"
+    updated_at: "2026-09-07T17:26:10.679Z"
     work_items:
       alert-triage:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "alert-triage"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:1f7a8fcf1afe2bc36b8577cef6e2ce11b61b40c3e44bb35fe75772c7128addcd"
+            id: "alert-triage-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071444-7MNJXE"
+              work_item_id: "alert-triage"
+            provenance:
+              - "sha256:ceb53ff8e5766f99a9d4e4cb95ce9873f7f704d9f0c5c2db12cf4eaf46900135"
+              - ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:174f7958162aabfc19c3464c83c0f6b7e7aa3d9cf0dcb88881fb57391a4c7210"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json"
+              check_id: "alert-triage-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T17:26:10.673Z"
+              repository_snapshot_digest: "sha256:174f7958162aabfc19c3464c83c0f6b7e7aa3d9cf0dcb88881fb57391a4c7210"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       codeql-config:
         attempt: 1
         claim_id: null
@@ -698,6 +728,23 @@ extensions:
         task_id: "202609071444-7MNJXE"
         task_revision: 10
         work_item_id: "temp-assets"
+      -
+        at: "2026-09-07T17:26:10.679Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:95cc4919b55528e6451cd2cd1f3d8da82d6f50ad7e417afab00add60d9c9c73a"
+        entity: "work_item"
+        id: "event_5ef9686b0396ff86a249fb7b"
+        mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-8165113e15105c8e799cd17c"
+        plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+        task_revision: 13
+        work_item_id: "alert-triage"
     leases: []
     mutation_receipts:
       compatibility:sha256:18eb1940a068fcecdf5a3f96be8a64a24e6bda8d51e01c4a4671942670f6daa8:
@@ -938,6 +985,30 @@ extensions:
         mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+      external-result:work-order-202609071444-7MNJXE-executor-8165113e15105c8e799cd17c:
+        aggregate_digest: "sha256:c8dc0e1f001ee1cc4e628892ec53bac3fc80b68c5d9b800243e0d85640467b58"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:26:10.679Z"
+          cause_refs:
+            - "semantic-result:sha256:95cc4919b55528e6451cd2cd1f3d8da82d6f50ad7e417afab00add60d9c9c73a"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_5ef9686b0396ff86a249fb7b"
+          mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-8165113e15105c8e799cd17c"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: "alert-triage"
+        mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-8165113e15105c8e799cd17c"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609071444-7MNJXE"
       external-result:work-order-202609071444-7MNJXE-executor-cfd1eb092c17b0d76ce7e9a9:
