@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071444-7MNJXE-f38f041dd05c913379320c69",
+  "prepared_at": "2026-09-07T17:49:39.201Z",
+  "task": {
+    "id": "202609071444-7MNJXE",
+    "revision": 19,
+    "objective": "Repair CodeQL configuration consistency and triage current GitHub security findings\n\nInvestigate GitHub code-scanning setup errors, unstable language coverage and current open alerts. Produce a bounded evidence-backed remediation plan. Preserve ongoing unrelated work and existing CI checks. Do not dismiss alerts, delete analyses, publish, merge or change hosted settings without explicit operator approval.",
+    "acceptance_criteria": [
+      "- In scope: Investigate GitHub code-scanning setup errors, unstable language coverage and current open alerts. Produce a bounded evidence-backed remediation plan. Preserve ongoing unrelated work and existing CI checks. Do not dismiss alerts, delete analyses, publish, merge or change hosted settings without explicit operator approval.\n- Out of scope: unrelated refactors not required for \"Repair CodeQL configuration consistency and triage current GitHub security findings\".",
+      "Prepared three sequential WorkItems for CodeQL consistency, insecure temporary assets and complete alert triage. Implementation awaits plan approval.",
+      "1. Run bunx --no-install vitest run packages/agentplane/src/commands/release/github-ci-plan.test.ts packages/agentplane/src/shared/package-paths.test.ts. Expected: stable CodeQL language/category planning and private temporary asset isolation, reuse, and exit cleanup pass.\n2. Run bun run ci:local:full. Expected: all required repository verification groups pass, including formatting, type checks, lint, build, and critical CLI tests.\n3. Review the saved semantic report against the observed GitHub alerts. Expected: each observed alert has an explicit evidence-based disposition; unresolved findings remain explicit and no alert is dismissed without authority."
+    ]
+  },
+  "evaluated_sha": "5cb6963362b19c8e38123b375c7993dec3f7ca7b",
+  "diff_base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+  "blueprint_digest": "57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071444-7MNJXE/quality/20260907-174939201-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:3800542ed9422438fb0bf4ac9de499329fe409e3c7b5ad6407925b37485a56d0",
+    "prompt_path": ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/c7598f691198fdc510a88e89d44953343b5c3ac0f008ba4e282e5475ec7f7af8.md",
+    "result_schema_path": ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071444-7MNJXE/README.md",
+      "sha256": "sha256:dd1d5de43a778b4584bccf5e69c0eca29fddb695d1edf1cfcfa1a849bf2a1696",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/116563f095b9bd0882ff4c2919a536f355fce836a33c325784218d1cc4a68a15.patch",
+      "sha256": "sha256:116563f095b9bd0882ff4c2919a536f355fce836a33c325784218d1cc4a68a15",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/54c846be5e759df382bae353ac3e3d8ad68378a68fec191dc00853a571389d50.json",
+      "sha256": "sha256:54c846be5e759df382bae353ac3e3d8ad68378a68fec191dc00853a571389d50",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071444-7MNJXE/verification/20260907174931879-268bcb6272ba765f.json",
+      "sha256": "sha256:eaad88cae393e2664ec192d394ae9bdecb4c9fda4a49228010f6ada7ce82409c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/5e46c6f3de914c325a3b36820998c965623d91ae2e47141ec7d1f62e62a0a5e9.json",
+      "sha256": "sha256:5e46c6f3de914c325a3b36820998c965623d91ae2e47141ec7d1f62e62a0a5e9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}
