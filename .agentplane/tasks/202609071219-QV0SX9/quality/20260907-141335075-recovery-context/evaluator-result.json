@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff delivers the same language contract on both execution routes, preserves authority and stop constraints, and retains all four schema-valid result statuses. Existing and added tests cover these contracts; the full observed verification passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: The measured reduction is in UTF-8 prompt bytes, not tokenizer counts. Hosted integration remains a separate supervisor gate.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

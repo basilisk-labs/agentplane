@@ -264,3 +264,32 @@ describe("runner bootstrap result examples", () => {
     ).toThrow(InvalidRunnerResultManifestError);
   });
 });
+
+it("reduces fixed prompt baselines while preserving semantic inputs", () => {
+  for (const role of ["EXECUTOR", "EVALUATOR"] as const) {
+    const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
+    bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
+    bundle.work_order.role = role;
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+    // Measured before compaction on ca07204ee with these fixed fixtures.
+    const baseline = role === "EXECUTOR" ? 8590 : 9196;
+    expect(Buffer.byteLength(bootstrap, "utf8")).toBeLessThan(baseline);
+    expect(bootstrap).toContain("simple technical English");
+    expect(bootstrap).toContain(
+      "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+    );
+    expect(bootstrap).toContain(
+      "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
+    );
+    expect(bootstrap).toContain(
+      "Stop and return a blocked semantic result when required context is missing or stale.",
+    );
+    for (const raw of extractResultExamples(bootstrap).values()) {
+      expect(() => parseRunnerResultManifestText(raw, "example.json")).not.toThrow();
+      expect(raw).not.toMatch(/legacy claims|release image|schemas:check/u);
+    }
+    const literal = "Preserve Пример --flag=exact and `scope/path.ts` exactly.";
+    bundle.work_order.task.objective = literal;
+    expect(renderTaskRunnerBootstrap(bundle)).toContain(literal);
+  }
+});
