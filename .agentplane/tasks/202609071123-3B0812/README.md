@@ -4,7 +4,7 @@ title: "Fix Homebrew executable links and prevent formula regression"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -31,7 +31,10 @@ verification:
 execution_route:
   frozen: true
   reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_external_write"
     - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
   schema_version: 1
@@ -76,10 +79,14 @@ execution_contract:
     scope_roots: []
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "scripts"
+    changed_paths:
+      - "scripts/generate/render-homebrew-formula.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -116,7 +123,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:5f13b419848d3a6d8b1f0301e15b922c4537bc3c735c32ce87bf818a4ef23787"
+      digest: "sha256:b55f0cd594264ef0ab278035da247da9571ca6f6c19d5926d40f892efea283a1"
       escalation_reasons:
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -126,10 +133,14 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "scripts"
+        changed_files:
+          - "scripts/generate/render-homebrew-formula.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -163,11 +174,16 @@ execution_contract:
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "task_outcome"
-commit: null
+commit:
+  hash: "27ffb5fdc9cb92b6a9db86e9efdbde96b4b7eac2"
+  message: "🚧 3B0812 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 27ffb5fdc9cb. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -176,9 +192,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T11:32:47.481Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 27ffb5fdc9cb. CLI accepted one state-bound external-agent semantic result."
+    commit: "27ffb5fdc9cb92b6a9db86e9efdbde96b4b7eac2"
 doc_version: 3
-doc_updated_at: "2026-09-07T11:30:09.598Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T11:32:47.481Z"
+doc_updated_by: "SUPERVISOR"
 description: "User approved fixing the diagnosed Homebrew 0.7.8 packaging defect and opening PRs. Correct scripts/generate/render-homebrew-formula.mjs and its checks to install the staged agentplane executable and expose agentplane and ap. Update basilisk-labs/homebrew-tap Formula/agentplane.rb with the same fix through a PR. Verify generated formula and both commands after isolated clean install and reinstall where available. No merge, version change, release or publication. Stop after PR handoff."
 sections:
   Summary: |-
@@ -336,7 +360,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071123-3B0812"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609071123-3B0812"
     intent:
@@ -356,9 +380,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-07T11:30:09.598Z"
+    updated_at: "2026-09-07T11:32:47.481Z"
     work_items:
       fix-homebrew-links:
         attempt: 0
@@ -422,6 +446,54 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609071123-3B0812"
+      compatibility:sha256:88a7fbfb884d20b49f62a9d086842a598faf31354451cec9d5ac4783193bd38c:
+        aggregate_digest: "sha256:3b63850648e5bce56d8dd939a4baea019c90729524044dd7944ad272cb103d48"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T11:32:47.481Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6fabfc7e513f186ce9c6b27f"
+          mutation_id: "compatibility:sha256:88a7fbfb884d20b49f62a9d086842a598faf31354451cec9d5ac4783193bd38c"
+          plan_digest: "sha256:bc44d3dac89a592eb633f423599e285163e3ed2dccbd3fec79b6147eced6e660"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071123-3B0812"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:88a7fbfb884d20b49f62a9d086842a598faf31354451cec9d5ac4783193bd38c"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609071123-3B0812"
+      compatibility:sha256:d91dfe7571256598f2b518830e51be14cb9d5959bb1e8bbccb06bdefbf7b45bb:
+        aggregate_digest: "sha256:ec52a6a00d1272b46d9db1ff309b1ccad4031f9cf2c12b6801d92d5029004b02"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T11:32:47.481Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_be45b5fdfa1061182dd0a47a"
+          mutation_id: "compatibility:sha256:d91dfe7571256598f2b518830e51be14cb9d5959bb1e8bbccb06bdefbf7b45bb"
+          plan_digest: "sha256:bc44d3dac89a592eb633f423599e285163e3ed2dccbd3fec79b6147eced6e660"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071123-3B0812"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d91dfe7571256598f2b518830e51be14cb9d5959bb1e8bbccb06bdefbf7b45bb"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609071123-3B0812"
       compatibility:sha256:dac266a5d618df607b94791fcc5e5ce50616ff1867e3769ae4e29524734c625f:
         aggregate_digest: "sha256:c57e79158856e5b5a6e8df8537b3507fe75283451b987500c43ecaaec1c42734"
         event:
@@ -449,6 +521,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "27ffb5fdc9cb92b6a9db86e9efdbde96b4b7eac2"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
