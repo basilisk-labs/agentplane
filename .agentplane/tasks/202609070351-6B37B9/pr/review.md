@@ -12,8 +12,8 @@ Created: 2026-09-07T03:54:12.351Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-07T03:54:12.351Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T03:54:12.351Z
+- Updated: 2026-09-07T04:03:49.611Z
 - Branch: task/202609070351-6B37B9/sign-macos-standalone-release-binaries-before-pa
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
