@@ -2,10 +2,10 @@
 id: "202609071655-XKV80D"
 title: "Accept report-only WorkItem results without requiring source-code changes"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:d81df8f0038c7ad7c2f0a30018c03c69eb6eba37d0f931920fa0799d6efa74e8"
 verification:
-  state: "ok"
-  updated_at: "2026-09-07T17:44:30.848Z"
+  state: "needs_rework"
+  updated_at: "2026-09-07T18:49:41.523Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -127,7 +127,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -146,25 +148,10 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -187,6 +174,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:documentation"
           - "repository_effect:repository_write"
           - "repository_effect:security_boundary"
           - "repository_effect:source_code"
@@ -202,11 +190,28 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:47b819868005aeb804ef027256aa8bb4835b8e17c7b4f67f478065a69ecfbc7d"
+      digest: "sha256:e9a64efe332d6033e6aebf9378ef3f04a0a6774d9696c3997f856319fe0e1a27"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "effect_security_boundary"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
+        - "unknown_path:.agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -214,14 +219,39 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "packages/agentplane"
         changed_files:
+          - ".agentplane/tasks/202609071541-47TFVD/README.md"
+          - ".agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt"
+          - ".agentplane/tasks/202609071541-47TFVD/pr/github-body.md"
+          - ".agentplane/tasks/202609071541-47TFVD/pr/github-title.txt"
+          - ".agentplane/tasks/202609071541-47TFVD/pr/meta.json"
+          - ".agentplane/tasks/202609071541-47TFVD/pr/review.md"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json"
+          - ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json"
+          - ".agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
+          - ".agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-report-result.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-report-result.ts"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -236,6 +266,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "task_outcome"
@@ -252,14 +283,15 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:documentation"
       - "repository_effect:repository_write"
       - "repository_effect:security_boundary"
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "cb62858f19789f4a962be72e6a09045da37bc480"
-  message: "🚧 XKV80D task: record external evaluator result"
+      - "verification_recovery:recorded-check-2"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -300,8 +332,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "cb62858f19789f4a962be72e6a09045da37bc480"
+  -
+    type: "verify"
+    at: "2026-09-07T18:49:41.523Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-07T17:46:07.756Z"
+doc_updated_at: "2026-09-07T18:49:45.551Z"
 doc_updated_by: "CODER"
 description: "User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority."
 sections:
@@ -382,6 +420,46 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609071655-XKV80D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T18:49:41.523Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c2c6825a38b2272e131b3786613e4403290011256c6f51f8de7b340c742f2595, input_digest=sha256:b2f5addc5b27fa0b2db93daaa5376be7f3d0920527910e018cf764793cc8f0dd
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071655-XKV80D declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071655-XKV80D declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071655-XKV80D-accept-report-only-workitem-results-without-requ/.agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json
+    - old_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+    - current_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071655-XKV80D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -582,24 +660,8 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071655-XKV80D"
-    event_cursor: 7
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609071655-XKV80D"
-            - "git:693879a426881d13a1f40f2eb4ab15fd233e25ce"
-          check_id: "regression"
-          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
-          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-          exit_code: 0
-          observed_at: "2026-09-07T17:44:30.848Z"
-          repository_snapshot_digest: "sha256:48ee14a689f9c8077513d110da4181b12c15d8528aebbc553d78651361dd5fd3"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 8
+    final_validation: null
     id: "202609071655-XKV80D"
     intent:
       acceptance_criteria:
@@ -615,12 +677,12 @@ extensions:
 
         User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority.
       task_id: "202609071655-XKV80D"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-07T17:46:07.756Z"
+    updated_at: "2026-09-07T18:49:45.550Z"
     work_items:
       report-result:
         attempt: 1
@@ -779,6 +841,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609071655-XKV80D"
+      compatibility:sha256:93061957eef98c3bb6f229a6c61599bb4558e835d2fce17757de58c8a53b8f7f:
+        aggregate_digest: "sha256:e33508c57f6c06e1a892c87faaa7b759dba5378d5a2acb8679a7f394b8571801"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T18:49:45.550Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_d277d6303084f0b01525ff2c"
+          mutation_id: "compatibility:sha256:93061957eef98c3bb6f229a6c61599bb4558e835d2fce17757de58c8a53b8f7f"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:93061957eef98c3bb6f229a6c61599bb4558e835d2fce17757de58c8a53b8f7f"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
       compatibility:sha256:9df369b91f02a523926ab8e0f5bb3eb808850616f55c8af96af6bd867bf86b89:
         aggregate_digest: "sha256:22ead6e1b2fd7884fcf2327c196ab59339459e821c446a0116309bb0fb69e9d3"
         event:
@@ -903,9 +989,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "693879a426881d13a1f40f2eb4ab15fd233e25ce"
-    message: "🚧 XKV80D task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
@@ -1005,6 +1088,46 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609071655-XKV80D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-07T18:49:41.523Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c2c6825a38b2272e131b3786613e4403290011256c6f51f8de7b340c742f2595, input_digest=sha256:b2f5addc5b27fa0b2db93daaa5376be7f3d0920527910e018cf764793cc8f0dd
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071655-XKV80D declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071655-XKV80D declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071655-XKV80D-accept-report-only-workitem-results-without-requ/.agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json
+- old_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+- current_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071655-XKV80D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

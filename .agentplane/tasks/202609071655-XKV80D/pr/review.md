@@ -6,14 +6,14 @@ Created: 2026-09-07T17:00:24.316Z
 
 - Task: `202609071655-XKV80D`
 - Title: Accept report-only WorkItem results without requiring source-code changes
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609071655-XKV80D/accept-report-only-workitem-results-without-requ`
 - Canonical task record: `.agentplane/tasks/202609071655-XKV80D/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
