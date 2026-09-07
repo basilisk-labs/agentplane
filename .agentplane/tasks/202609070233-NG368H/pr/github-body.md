@@ -15,14 +15,14 @@ Publish release run 34076162150 published the 0.7.8 npm packages from exact qual
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T02:38:23.049Z
+- Updated: 2026-09-07T02:47:00.620Z
 - Branch: task/202609070233-NG368H/repair-manual-release-recovery-after-npm-publica
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
