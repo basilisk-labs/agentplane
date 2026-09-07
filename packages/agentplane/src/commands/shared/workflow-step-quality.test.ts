@@ -160,43 +160,97 @@ function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLE
 }
 
 describe("quality evidence refresh route", () => {
-  it("returns to required WorkItem execution before downstream closeout", () => {
-    const verifiedTask = {
-      ...task,
-      commit: { hash: resume.head_sha, message: "feat: stale implementation evidence" },
-      verification: { state: "ok" as const, updated_at: "2026-07-25T00:10:00.000Z" },
-      quality_review: {
-        state: "pass" as const,
-        reviewed_by: "EVALUATOR",
-        reviewed_at: "2026-07-25T00:11:00.000Z",
-        summary: "The previously observed implementation passed review.",
-        evidence_refs: ["quality-report.json"],
-      },
-    };
-    const incomplete = reduceRouteState(
-      routeState({
-        task: { ...verifiedTask, extensions: taskCentricExtensions("REWORK_READY") },
-        blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
-      }),
-    );
-    expect(incomplete).toMatchObject({
-      kind: "agent_episode",
-      phase: "branch_implementation",
-      episode: { purpose: "implementation", role: "CODER" },
-    });
+  it.each(["READY", "REWORK_READY"] as const)(
+    "returns to %s WorkItem execution before downstream closeout",
+    (workItemState) => {
+      const verifiedTask = {
+        ...task,
+        commit: { hash: resume.head_sha, message: "feat: stale implementation evidence" },
+        verification: { state: "ok" as const, updated_at: "2026-07-25T00:10:00.000Z" },
+        quality_review: {
+          state: "pass" as const,
+          evaluated_sha: resume.head_sha,
+          reviewed_by: "EVALUATOR",
+          reviewed_at: "2026-07-25T00:11:00.000Z",
+          summary: "The previously observed implementation passed review.",
+          evidence_refs: ["quality-report.json"],
+        },
+      };
+      const incomplete = reduceRouteState(
+        routeState({
+          task: { ...verifiedTask, extensions: taskCentricExtensions(workItemState) },
+          blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+        }),
+      );
+      expect(incomplete).toMatchObject({
+        kind: "agent_episode",
+        phase: "branch_implementation",
+        episode: { purpose: "implementation", role: "CODER" },
+      });
 
-    const completed = reduceRouteState(
-      routeState({
-        task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
-        blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
-      }),
-    );
-    expect(completed).toMatchObject({
-      kind: "approval",
-      phase: "side_effect_authority_required",
-      request: { type: "side_effect" },
-    });
-  });
+      const completed = reduceRouteState(
+        routeState({
+          task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
+          blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+        }),
+      );
+      expect(completed).toMatchObject({
+        kind: "approval",
+        phase: "side_effect_authority_required",
+        request: { type: "side_effect" },
+      });
+    },
+  );
+
+  it.each(["READY", "REWORK_READY"] as const)(
+    "returns to %s WorkItem execution before direct closeout",
+    (workItemState) => {
+      const verifiedTask = {
+        ...task,
+        commit: { hash: resume.head_sha, message: "Existing implementation" },
+        verification: { state: "ok" as const },
+        quality_review: { ...deterministicEvidenceGapReview(), state: "pass" as const },
+      };
+      const state = routeState({
+        workflowMode: "direct",
+        task: { ...verifiedTask, extensions: taskCentricExtensions(workItemState) },
+      });
+      expect(reduceRouteState(state)).toMatchObject({
+        kind: "agent_episode",
+        authoritativeCheckout: "current_checkout",
+        episode: { purpose: "implementation", role: "CODER" },
+      });
+      expect(
+        reduceRouteState(
+          routeState({
+            workflowMode: "direct",
+            task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
+          }),
+        ),
+      ).toMatchObject({
+        id: "task.complete.input",
+      });
+      const optional = taskCentricExtensions(workItemState);
+      optional["agentplane.task_centric"].current_plan.proposal.work_items.work_items[0]!.optional =
+        true;
+      expect(
+        reduceRouteState(
+          routeState({
+            workflowMode: "direct",
+            task: { ...verifiedTask, extensions: optional },
+          }),
+        ),
+      ).toMatchObject({ id: "task.complete.input" });
+      expect(
+        reduceRouteState(
+          routeState({
+            workflowMode: "direct",
+            task: verifiedTask,
+          }),
+        ),
+      ).toMatchObject({ id: "task.complete.input" });
+    },
+  );
 
   it("refreshes deterministic evidence after a current EVALUATOR block without changing implementation", () => {
     const step = reduceRouteState(

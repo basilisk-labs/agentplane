@@ -1,3 +1,7 @@
+import {
+  incompleteRequiredWorkItems,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import { isRecord } from "../../shared/guards.js";
@@ -183,6 +187,28 @@ function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runne
 
 export function directStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
+  if (
+    String(state.task.status).toUpperCase() === "DOING" &&
+    !hasUninitializedTaskBaseline(state.task) &&
+    incompleteRequiredWorkItems(taskCentricAggregateFromExtensions(state.task.extensions)).length >
+      0
+  ) {
+    return agentEpisodeStep({
+      state,
+      id: "agent.direct_implementation",
+      code: "continue_direct_implementation",
+      phase: "direct_implementation",
+      checkout: "current_checkout",
+      role: "CODER",
+      purpose: "implementation",
+      summary: "complete the required WorkItem before direct verification and closeout",
+      objective:
+        "Complete the issued WorkItem and return its semantic result for supervisor verification.",
+      semanticMutationAllowed: true,
+      returnControlWhen: "after returning the WorkItem result; request a fresh action packet",
+      selectedBlocker: null,
+    });
+  }
   if (
     state.task.verification?.state === "ok" &&
     String(state.task.status).toUpperCase() === "DOING"

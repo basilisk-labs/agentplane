@@ -1,4 +1,7 @@
-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import {
+  incompleteRequiredWorkItems,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
@@ -475,27 +478,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
-  // A freshly materialized graph is not evidence that compatibility-driven
-  // implementation has entered canonical WorkItem execution. Once a claim or
-  // attempt exists, the canonical graph becomes authoritative for routing.
-  const canonicalWorkItemExecutionStarted = Object.values(taskCentric?.work_items ?? {}).some(
-    (item) => item.attempt > 0 || item.claim_id !== null,
-  );
-  const requiredWorkItemIncomplete =
-    canonicalWorkItemExecutionStarted &&
-    taskCentric?.current_plan?.proposal.work_items.work_items.some(
-      (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
-    );
+  if (incompleteRequiredWorkItems(taskCentric).length > 0) return branchImplementationStep(state);
   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
-  const implementationValidated =
-    Boolean(implementationCommit) &&
-    state.task.verification?.state === "ok" &&
-    state.task.quality_review?.state === "pass" &&
-    state.task.quality_review.evaluated_sha === implementationCommit;
-  if (
-    !implementationCommit &&
-    (requiredWorkItemIncomplete || state.task.verification?.state !== "ok")
-  )
+  if (!implementationCommit && state.task.verification?.state !== "ok")
     return branchImplementationStep(state);
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({
@@ -511,8 +496,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
   }
-  if (requiredWorkItemIncomplete && !implementationValidated)
-    return branchImplementationStep(state);
   if (hasRouteBlocker(state, "verification_required")) {
     return verificationStep(state);
   }
