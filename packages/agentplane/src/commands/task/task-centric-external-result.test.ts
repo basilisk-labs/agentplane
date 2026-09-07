@@ -203,6 +203,132 @@ const semantic = {
 } as const satisfies AgentSemanticResult;
 
 describe("recordTaskCentricExternalResult", () => {
+  it.each([false, true])(
+    "rejects null-ID results without guessing a WorkItem (claimed=%s)",
+    async (claimed) => {
+      const initial = initialTask();
+      const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
+      const backend = memoryBackend({
+        ...initial,
+        extensions: withTaskCentricAggregate(initial.extensions, {
+          ...aggregate,
+          work_items: {
+            ...aggregate.work_items,
+            a: {
+              ...aggregate.work_items.a!,
+              ...(claimed ? { state: "CLAIMED" as const, claim_id: "claim-a" } : {}),
+            },
+          },
+        }),
+      });
+      const before = backend.current();
+      await expect(
+        recordTaskCentricExternalResult({
+          command: { taskBackend: backend } as unknown as CommandContext,
+          expected_task: before,
+          work_order: workOrder(null, "work-a"),
+          semantic,
+          verification: {
+            status: "passed",
+            artifact_path: ".agentplane/checks.json",
+            checks: [],
+            reason: null,
+          },
+          head: HEAD,
+          dirty_paths: [],
+        }),
+      ).rejects.toThrow("requires the explicit WorkItem ID");
+      expect(backend.current()).toEqual(before);
+    },
+  );
+
+  it.each(["plan", "attempt", "claim", "approval", "revision"])(
+    "rejects %s drift after supervisor admission",
+    async (drift) => {
+      const backend = memoryBackend();
+      const admitted = backend.current();
+      const aggregate = taskCentricAggregateFromExtensions(admitted.extensions)!;
+      backend.replace({
+        ...admitted,
+        extensions: withTaskCentricAggregate(admitted.extensions, {
+          ...aggregate,
+          ...(drift === "plan" || drift === "approval"
+            ? {
+                current_plan: {
+                  ...aggregate.current_plan!,
+                  ...(drift === "plan"
+                    ? { revision: 2, digest: taskCentricDigest("changed plan") }
+                    : {
+                        approval: {
+                          ...aggregate.current_plan!.approval,
+                          state: "pending" as const,
+                        },
+                      }),
+                },
+              }
+            : {
+                work_items: {
+                  ...aggregate.work_items,
+                  a: {
+                    ...aggregate.work_items.a!,
+                    ...(drift === "attempt"
+                      ? { attempt: 2 }
+                      : drift === "revision"
+                        ? { revision: aggregate.work_items.a!.revision + 1 }
+                        : { state: "CLAIMED" as const, claim_id: "foreign-claim" }),
+                  },
+                },
+              }),
+        }),
+      });
+      const before = backend.current();
+      await expect(
+        recordTaskCentricExternalResult({
+          command: { taskBackend: backend } as unknown as CommandContext,
+          expected_task: admitted,
+          work_order: workOrder("a", "work-a"),
+          semantic,
+          verification: {
+            status: "passed",
+            artifact_path: ".agentplane/checks.json",
+            checks: [],
+            reason: null,
+          },
+          head: HEAD,
+          dirty_paths: [],
+        }),
+      ).rejects.toThrow("changed after supervisor admission");
+      expect(backend.current()).toEqual(before);
+    },
+  );
+
+  it("rejects a changed semantic payload when replaying a receipt", async () => {
+    const backend = memoryBackend();
+    const args = {
+      command: { taskBackend: backend } as unknown as CommandContext,
+      expected_task: backend.current(),
+      work_order: workOrder("a", "work-a"),
+      semantic,
+      verification: {
+        status: "passed" as const,
+        artifact_path: ".agentplane/checks.json",
+        checks: [],
+        reason: null,
+      },
+      head: HEAD,
+      dirty_paths: [],
+    };
+    await recordTaskCentricExternalResult(args);
+    const before = backend.current();
+    await expect(
+      recordTaskCentricExternalResult({
+        ...args,
+        semantic: { ...semantic, summary: "different result" },
+      }),
+    ).rejects.toThrow("does not match the recorded semantic result");
+    expect(backend.current()).toEqual(before);
+  });
+
   it("rejects an ambiguous null-ID local refinement before mutating the plan", async () => {
     const initial = initialTask(undefined, [
       { id: "a", depends_on: [], required_inputs: [] },
@@ -227,6 +353,7 @@ describe("recordTaskCentricExternalResult", () => {
 
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: workOrder(null, "work-ambiguous-claims"),
         semantic: {
@@ -255,7 +382,7 @@ describe("recordTaskCentricExternalResult", () => {
       }),
     ).rejects.toMatchObject({
       code: "E_VALIDATION",
-      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
+      message: "A WorkItem result requires the explicit WorkItem ID from its issued work order.",
     });
     expect(backend.current().revision).toBe(revision);
     const workItems = taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items;
@@ -271,7 +398,7 @@ describe("recordTaskCentricExternalResult", () => {
     expect(backend.current()).toEqual(taskBeforeResult);
   });
 
-  it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
+  it("replays an explicitly bound result without consuming the next WorkItem", async () => {
     const initial = initialTask();
     const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
     const backend = memoryBackend({
@@ -291,11 +418,12 @@ describe("recordTaskCentricExternalResult", () => {
       checks: [],
       reason: null,
     };
-    const issued = workOrder(null, "work-null-id");
+    const issued = workOrder("a", "work-null-id");
     const result = { ...semantic, work_order_id: "work-null-id" };
 
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: issued,
         semantic: result,
@@ -315,6 +443,7 @@ describe("recordTaskCentricExternalResult", () => {
 
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: issued,
         semantic: result,
@@ -346,6 +475,7 @@ describe("recordTaskCentricExternalResult", () => {
     const result = { ...semantic, work_order_id: "work-stale-receipt" };
 
     await recordTaskCentricExternalResult({
+      expected_task: backend.current(),
       command,
       work_order: issued,
       semantic: result,
@@ -372,6 +502,7 @@ describe("recordTaskCentricExternalResult", () => {
 
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: issued,
         semantic: result,
@@ -395,6 +526,7 @@ describe("recordTaskCentricExternalResult", () => {
       reason: null,
     };
     await recordTaskCentricExternalResult({
+      expected_task: backend.current(),
       command,
       work_order: workOrder("a", "work-original"),
       semantic: { ...semantic, work_order_id: "work-original" },
@@ -405,6 +537,7 @@ describe("recordTaskCentricExternalResult", () => {
 
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: workOrder("a", "work-foreign"),
         semantic: { ...semantic, work_order_id: "work-foreign" },
@@ -429,6 +562,7 @@ describe("recordTaskCentricExternalResult", () => {
     };
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: workOrder("a", "work-a"),
         semantic,
@@ -461,6 +595,7 @@ describe("recordTaskCentricExternalResult", () => {
     });
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command,
         work_order: workOrder("b", "work-b"),
         semantic: { ...semantic, work_order_id: "work-b" },
@@ -487,6 +622,7 @@ describe("recordTaskCentricExternalResult", () => {
   it("records deterministic failure as bounded rework instead of false success", async () => {
     const backend = memoryBackend();
     const projection = await recordTaskCentricExternalResult({
+      expected_task: backend.current(),
       command: { taskBackend: backend } as unknown as CommandContext,
       work_order: workOrder("a", "work-failed"),
       semantic: { ...semantic, work_order_id: "work-failed" },
@@ -508,6 +644,7 @@ describe("recordTaskCentricExternalResult", () => {
   it("requires command-specific evidence for every declared validation command", async () => {
     const backend = memoryBackend(initialTask("bun test --filter task-centric"));
     const projection = await recordTaskCentricExternalResult({
+      expected_task: backend.current(),
       command: { taskBackend: backend } as unknown as CommandContext,
       work_order: workOrder("a", "work-missing-command"),
       semantic: { ...semantic, work_order_id: "work-missing-command" },
@@ -543,6 +680,7 @@ describe("recordTaskCentricExternalResult", () => {
 
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: backend.current(),
         command: { taskBackend: backend } as unknown as CommandContext,
         work_order: workOrder(null, "work-unschedulable-refinement"),
         semantic: {
@@ -591,6 +729,7 @@ describe("recordTaskCentricExternalResult", () => {
     const localBackend = memoryBackend();
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: localBackend.current(),
         command: { taskBackend: localBackend } as unknown as CommandContext,
         work_order: workOrder("a", "work-local-refinement"),
         semantic: {
@@ -621,6 +760,7 @@ describe("recordTaskCentricExternalResult", () => {
     const materialBackend = memoryBackend();
     await expect(
       recordTaskCentricExternalResult({
+        expected_task: materialBackend.current(),
         command: { taskBackend: materialBackend } as unknown as CommandContext,
         work_order: workOrder("a", "work-material-refinement"),
         semantic: {

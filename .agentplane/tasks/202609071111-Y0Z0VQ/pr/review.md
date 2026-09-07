@@ -29,13 +29,21 @@ Created: 2026-09-07T11:19:37.618Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/workflow-step-branch.ts    |  29 +----
- .../src/commands/shared/workflow-step-factory.ts   |  26 +++++
- .../commands/shared/workflow-step-quality.test.ts  | 126 +++++++++++++++------
+ .../task-backend/task-centric-backend-adapter.ts   |   2 +
+ .../agentplane/src/cli/route-decision.testkit.ts   |   1 +
+ ...n-cli.core.task-advance.evidence-rework.test.ts | 186 +++++++++++++--------
+ .../src/commands/shared/workflow-step-branch.ts    |  29 +---
+ .../src/commands/shared/workflow-step-factory.ts   |  26 +++
+ .../commands/shared/workflow-step-quality.test.ts  | 126 ++++++++++----
+ .../external-agent-implementation-authority.ts     |  22 ++-
+ .../external-agent-implementation-finalization.ts  |   1 +
+ .../task/external-agent-implementation-recovery.ts |  50 +++---
  .../agentplane/src/commands/task/finish-shared.ts  |   5 +-
+ .../task/task-centric-external-result.test.ts      | 146 +++++++++++++++-
+ .../commands/task/task-centric-external-result.ts  |  61 +++++--
  packages/core/src/tasks/task-centric/index.ts      |   1 +
- packages/core/src/tasks/task-centric/lifecycle.ts  |  16 ++-
- 6 files changed, 138 insertions(+), 65 deletions(-)
+ packages/core/src/tasks/task-centric/lifecycle.ts  |  16 +-
+ 14 files changed, 498 insertions(+), 174 deletions(-)
 ```
 
 </details>
