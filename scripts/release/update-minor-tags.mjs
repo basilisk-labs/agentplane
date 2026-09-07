@@ -22,7 +22,7 @@ export function planMinorTags(releases, remoteOutput) {
   for (const release of releases) {
     if (release.draft || release.prerelease || !release.tag_name.startsWith("v")) continue;
     const version = parseReleaseSemver(release.tag_name.slice(1));
-    if (!version || version.prerelease.length || version.build.length) continue;
+    if (!version || version.prerelease.length > 0 || version.build.length > 0) continue;
     const series = `${version.major}.${version.minor}`;
     if (!latest.has(series) || version.patch > latest.get(series).patch) {
       latest.set(series, { patch: version.patch, tag: release.tag_name });
@@ -41,7 +41,7 @@ export function planMinorTags(releases, remoteOutput) {
 
 export function applyMinorTags(plan, git) {
   const updates = plan.filter(({ previous, sha }) => previous !== sha);
-  if (!updates.length) return;
+  if (updates.length === 0) return;
   // Exact leases reject a stale snapshot; atomic push prevents partial alias updates.
   git([
     "push",
@@ -72,7 +72,7 @@ const main = defineScript({
       applyMinorTags(plan, git);
       const observed = git(["ls-remote", "--tags", "origin"]);
       for (const { ref, sha } of plan) {
-        if (!observed.split(/\r?\n/u).some((line) => line === `${sha}\t${ref}`)) {
+        if (!observed.split(/\r?\n/u).includes(`${sha}\t${ref}`)) {
           throw new Error(`Remote alias verification failed: ${ref}`);
         }
       }
