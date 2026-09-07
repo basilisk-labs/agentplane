@@ -15,14 +15,14 @@ Investigate GitHub code-scanning setup errors, unstable language coverage and cu
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T14:56:49.833Z
+- Updated: 2026-09-07T17:26:17.479Z
 - Branch: task/202609071444-7MNJXE/repair-codeql-configuration-consistency-and-tria
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
