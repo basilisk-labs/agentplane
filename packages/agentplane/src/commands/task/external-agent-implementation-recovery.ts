@@ -411,6 +411,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
   head: string | null;
   recorded_commit: string | null;
   purpose?: ExternalAgentExchange["purpose"];
+  reassess_current_plan?: boolean;
 }): Promise<{
   commit: string;
   execution_base: string;
@@ -498,28 +499,39 @@ export async function resolveRecordedImplementationRecovery(opts: {
     return null;
   const committedReadme = await gitShowFile(root, commit, `${taskPrefix}README.md`);
   if (!committedReadme) return null;
-  const currentReadmes = await Promise.all([
-    gitShowFile(root, opts.head, `${taskPrefix}README.md`),
-    readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
-  ]);
-  if (
-    currentReadmes.some(
-      (readme) =>
-        readme !== committedReadme &&
-        (scopeRecovery ||
-          !taskReadmesPreserveRecoveryContract(
-            taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
-            taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
-            commit,
-          )),
-    )
-  )
-    return null;
   const frontmatter = parseTaskReadme(committedReadme).frontmatter;
   const recordedPlan = taskCentricAggregateFromExtensions(
     isRecord(frontmatter.extensions) ? frontmatter.extensions : undefined,
   )?.current_plan;
-  if (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision) return null;
+  const samePlan = recordedPlan?.digest === plan.digest && recordedPlan.revision === plan.revision;
+  const reassessment =
+    !samePlan &&
+    opts.reassess_current_plan === true &&
+    workItemId !== null &&
+    recordedPlan != null &&
+    recordedPlan.revision < plan.revision &&
+    opts.work_order.task.revision === opts.task.revision &&
+    opts.work_order.state_fingerprint.git_head === opts.head;
+  if (!samePlan && !reassessment) return null;
+  if (!reassessment) {
+    const currentReadmes = await Promise.all([
+      gitShowFile(root, opts.head, `${taskPrefix}README.md`),
+      readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
+    ]);
+    if (
+      currentReadmes.some(
+        (readme) =>
+          readme !== committedReadme &&
+          (scopeRecovery ||
+            !taskReadmesPreserveRecoveryContract(
+              taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+              taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
+              commit,
+            )),
+      )
+    )
+      return null;
+  }
 
   const base = evidence.execution_base_commit;
   if (!(await gitIsAncestor(root, base, commit)) || base === commit) return null;
@@ -581,7 +593,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
       return {
         commit,
         execution_base: base,
-        semantic: taskLevelRework ? null : original.result,
+        semantic: taskLevelRework || reassessment ? null : original.result,
         exchange,
       };
     }

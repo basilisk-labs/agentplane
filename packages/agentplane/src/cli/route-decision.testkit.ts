@@ -157,6 +157,7 @@ export async function completeRouteWorkItem(root: string, taskId: string): Promi
   const result = await recordTaskCentricExternalResult({
     command: ctx,
     work_order: workOrder,
+    expected_task: task,
     head: await ctx.git.headCommit(),
     dirty_paths: [],
     semantic: {
