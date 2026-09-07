@@ -4,7 +4,7 @@ title: "Sign macOS standalone release binaries before packaging"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -223,7 +223,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-3"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
+  message: "🚧 6B37B9 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -231,6 +233,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7cfd6b281fc7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bba14822d1e5. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -253,8 +258,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-07T07:23:10.986Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bba14822d1e5. CLI accepted one state-bound external-agent semantic result."
+    commit: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
 doc_version: 3
-doc_updated_at: "2026-09-07T04:07:03.576Z"
+doc_updated_at: "2026-09-07T07:23:10.986Z"
 doc_updated_by: "SUPERVISOR"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
@@ -526,7 +539,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609070351-6B37B9"
     intent:
@@ -551,9 +564,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-07T04:07:03.575Z"
+    updated_at: "2026-09-07T07:23:10.986Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -673,6 +686,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609070351-6B37B9"
+      compatibility:sha256:3fe0b77bedf4ce441b7be1b460fef408ee23857f15e53a13ccf84f8570f14738:
+        aggregate_digest: "sha256:f9c61a8fa12dd48f165d71dbc86d8c89efb0ad02329f9b5f1f10d9000bdd4025"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:23:10.986Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7893210565c76dc19363905e"
+          mutation_id: "compatibility:sha256:3fe0b77bedf4ce441b7be1b460fef408ee23857f15e53a13ccf84f8570f14738"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3fe0b77bedf4ce441b7be1b460fef408ee23857f15e53a13ccf84f8570f14738"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
       compatibility:sha256:4ad581bad36e543b6a198e453b10f112cfb63fc0ecabda82e8a378667ab816ec:
         aggregate_digest: "sha256:908ab156c21318b7dd9bd7351af65aee191c13654d09f7f639e568ec10eb2d74"
         event:
@@ -745,6 +782,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609070351-6B37B9"
+      compatibility:sha256:bbfe5926ff3ef8a41cd54e9b2920df0fb2ca6123b53a2b1041bedd946ba458e8:
+        aggregate_digest: "sha256:edec6ef4fbc7cd26fc9762d09ee1bd1c492ecdf8fe29c359b83ec1fa79a767f9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:23:10.986Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_19167970f475b1e7beaf5a19"
+          mutation_id: "compatibility:sha256:bbfe5926ff3ef8a41cd54e9b2920df0fb2ca6123b53a2b1041bedd946ba458e8"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bbfe5926ff3ef8a41cd54e9b2920df0fb2ca6123b53a2b1041bedd946ba458e8"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
       compatibility:sha256:ed658ff86fcfde89ce226b85cb9b5a8c09f28c5edaf42c008ddaf6fe588557c8:
         aggregate_digest: "sha256:a8b4446b76d2541c8f225681dda8737a2d28dc95c1a068aea83f650403dde495"
         event:
@@ -795,6 +856,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
   task_execution_context:
     base_ref: "main"
     base_sha: "68b7b240362fe005e4ea5c63ee214c37fc545212"
