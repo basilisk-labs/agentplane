@@ -1,10 +1,11 @@
 ---
 id: "202609061750-Z0XXVD"
 title: "Prepare and qualify AgentPlane 0.7.8 for exact-SHA hosted publication"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 102
+revision: 103
 origin:
   system: "manual"
 depends_on: []
@@ -66,6 +67,20 @@ quality_review:
     - "Reviewed the frozen deterministic evidence and native result: prepublish passed in 2304413 ms, packed lifecycle in 21808 ms, published 0.7.7 upgrade in 23513 ms, notes in 192 ms, and the separately required full_regression CI in 479835 ms. All 113 release groups, downstream coverage and critical paths completed. These results support candidate acceptance, not a claim of hosted publication."
     - "The upgrade qualification uses an actual published 0.7.7 install and three packed candidate packages in isolated direct and branch_pr projects. It asserts task identity, owner, description, DOING state, project content, dedicated upgrade commit, correct installed runtime, routing, doctor, preserved worktrees, clean final state and a no-change repeated apply. Recovery fixture updates preserve the relevant negative and replay assertions under current canonical semantics."
     - "Residual risk: The reviewed candidate has not yet been published. The operator must use the successfully verified hosted SHA, inspect canonical publish-result and public distribution evidence, and verify the 0.7.9-beta.1 follow-up."
+token_usage:
+  agent_runs: 46
+  input_tokens: null
+  journal_digest: "sha256:9d56022cbb52a72c088d0b1f4fb9f448b96a69d5bd01382acbb38f90d243c317"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T01:01:52.434Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -794,8 +809,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1efcbb680b74583932ad77290f1a26d93783807f"
-  message: "🚧 Z0XXVD task: apply external agent result"
+  hash: "db218e2b5846d84a17a88a7b3dcec8e30c7f29cc"
+  message: "🚧 Z0XXVD task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -839,6 +854,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1efcbb680b74. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -975,9 +993,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-07T01:01:52.434Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "db218e2b5846d84a17a88a7b3dcec8e30c7f29cc"
 doc_version: 3
-doc_updated_at: "2026-09-07T00:58:19.892Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T01:01:52.434Z"
+doc_updated_by: "CODER"
 description: "Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope."
 sections:
   Summary: |-
@@ -2022,7 +2048,56 @@ extensions:
       schema_version: 1
       task_id: "202609061750-Z0XXVD"
     event_cursor: 60
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609061750-Z0XXVD"
+            - "git:1efcbb680b74583932ad77290f1a26d93783807f"
+          check_id: "prepublish"
+          command_identity: "bun run release:prepublish"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T00:58:18.558Z"
+          repository_snapshot_digest: "sha256:6cc503805074333b50afd0c020e964a72c1b52139b800d09a2042d076376e571"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061750-Z0XXVD"
+            - "git:1efcbb680b74583932ad77290f1a26d93783807f"
+          check_id: "installed-lifecycle"
+          command_identity: "bun run qualification:mixed-scope-lifecycle"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T00:58:18.558Z"
+          repository_snapshot_digest: "sha256:6cc503805074333b50afd0c020e964a72c1b52139b800d09a2042d076376e571"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061750-Z0XXVD"
+            - "git:1efcbb680b74583932ad77290f1a26d93783807f"
+          check_id: "published-upgrade"
+          command_identity: "node docs/releases/v0.7.8-evidence/qualify-upgrade-0.7.7.mjs"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T00:58:18.558Z"
+          repository_snapshot_digest: "sha256:6cc503805074333b50afd0c020e964a72c1b52139b800d09a2042d076376e571"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609061750-Z0XXVD"
+            - "git:1efcbb680b74583932ad77290f1a26d93783807f"
+          check_id: "release-notes"
+          command_identity: "node scripts/check-release-notes.mjs --tag v0.7.8 --min-bullets 1417"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-07T00:58:18.558Z"
+          repository_snapshot_digest: "sha256:6cc503805074333b50afd0c020e964a72c1b52139b800d09a2042d076376e571"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609061750-Z0XXVD"
     intent:
       acceptance_criteria:
@@ -2053,7 +2128,7 @@ extensions:
 
         Finalize the explicitly approved stable version 0.7.8 from verified main 262da3130bc5628a7641c400c74368ae355000bf. Prepare release notes from the complete v0.7.7 range, synchronize existing semantic version surfaces and generated references, and qualify packed installed lifecycle plus published 0.7.7 upgrades in direct and branch_pr fixtures. AgentPlane owns commits, verification, review and integration. The operator then dispatches GitHub-only publication from exact release-ready main, verifies canonical publish-result and distribution readback, and confirms the hosted 0.7.9-beta.1 evidence follow-up. Keep unrelated legacy beta tasks and T4RR70 outside scope.
       task_id: "202609061750-Z0XXVD"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -9028,9 +9103,9 @@ extensions:
         revision: 16
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
-    revision: 102
+    revision: 103
     schema_version: 1
-    updated_at: "2026-09-07T00:58:19.892Z"
+    updated_at: "2026-09-07T01:01:52.434Z"
     work_items:
       honor-branch-verification-plan:
         attempt: 1
@@ -11345,6 +11420,31 @@ extensions:
         previous_revision: 46
         schema_version: 1
         task_id: "202609061750-Z0XXVD"
+      legacy-finish:202609061750-Z0XXVD:2026-09-07T00:58:18.558Z:1efcbb680b74583932ad77290f1a26d93783807f:
+        aggregate_digest: "sha256:aab6bee6b2ddef691cb3babfe81869b3b7612700327ce43ddc68a25c5cc9e43b"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T01:01:52.434Z"
+          cause_refs:
+            - "task-verification:202609061750-Z0XXVD"
+            - "git:1efcbb680b74583932ad77290f1a26d93783807f"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f5d6e4eb2c63c71b80121214"
+          mutation_id: "legacy-finish:202609061750-Z0XXVD:2026-09-07T00:58:18.558Z:1efcbb680b74583932ad77290f1a26d93783807f"
+          plan_digest: "sha256:0e92a852121793e7a1aa293875df21a5fbd8a411efa147f43f0f1483e9a3c3cb"
+          plan_revision: 17
+          repository_fingerprint: "sha256:6cc503805074333b50afd0c020e964a72c1b52139b800d09a2042d076376e571"
+          schema_version: 1
+          task_id: "202609061750-Z0XXVD"
+          task_revision: 102
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609061750-Z0XXVD:2026-09-07T00:58:18.558Z:1efcbb680b74583932ad77290f1a26d93783807f"
+        next_revision: 103
+        previous_revision: 102
+        schema_version: 1
+        task_id: "202609061750-Z0XXVD"
       plan-refinement:work-order-202609061750-Z0XXVD-executor-36c80f07144c15c26856b158:
         aggregate_digest: "sha256:279396d1af9b58fd7a04d00fe31b3fffb36565fec339d58c6b1772059718d325"
         event:
@@ -11770,6 +11870,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "1efcbb680b74583932ad77290f1a26d93783807f"
+    message: "🚧 Z0XXVD task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "262da3130bc5628a7641c400c74368ae355000bf"
@@ -12106,3 +12207,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/46` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9d56022cbb52a72c088d0b1f4fb9f448b96a69d5bd01382acbb38f90d243c317`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T01:01:52.434Z`

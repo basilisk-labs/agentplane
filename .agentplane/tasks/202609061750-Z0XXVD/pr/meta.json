@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9de55351886cdce948c32d040b55a4da1592ae18a45458fb7403a68ff9bf6f50",
   "pr_number": 5904,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5904",
+  "pre_merge_closure": {
+    "basis_commit": "db218e2b5846d84a17a88a7b3dcec8e30c7f29cc",
+    "branch": "task/202609061750-Z0XXVD/prepare-and-qualify-agentplane-0-7-8-for-exact-s",
+    "pr_number": 5904,
+    "recorded_at": "2026-09-07T01:01:52.557Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
