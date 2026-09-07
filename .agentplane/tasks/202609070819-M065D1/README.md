@@ -4,7 +4,7 @@ title: "Keep setup-agentplane installations usable across workflow steps"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,38 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T08:44:22.290Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 7 typed finding(s)."
+  evaluated_sha: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+  blueprint_digest: "f58ac25aa75e157577aff348de0d1803ca85a3fd2f428261887a3f2bab1ca358"
+  evidence_refs:
+    - ".agentplane/tasks/202609070819-M065D1/quality/20260907-084239204-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609070819-M065D1/quality/20260907-084239204-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/c2513e67bfbe75bbd287c940a8a8e6aa99bef4291550cf9e18483f008bdbeea7.md"
+    - ".agentplane/tasks/202609070819-M065D1/quality/20260907-084239204-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609070819-M065D1/quality/20260907-084239204-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609070819-M065D1/quality/20260907-084239204-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609070819-M065D1/README.md"
+    - ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/25a382e7b271136e954ebd7c265f2e22845bdba3efbae235b3d8ce2c67e4ae39.patch"
+    - ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/6c2ad5c50f5cdbde531299cd009af44d3536420870fca3e973a6260073f6d2ac.json"
+    - ".agentplane/tasks/202609070819-M065D1/verification/20260907084232616-54a0b5b6188c99d6.json"
+    - ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/97dd8df921f0b5365c357b688ad45d070106d0e91d90c4c648c504daf6237791.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Verified the frozen work order, manifest and all nine evidence digests for evaluated commit d2a97545f436acf2bab742d4ae12ea3ac2771b2e. The actual product diff contains only six approved paths."
+    - "Environment-bound action inputs avoid shell interpolation. Pinned-version rejection precedes download, checksum validation precedes extraction, installation is outside the download cleanup directory, and PATH publication follows optional executable verification. Positive and negative generated-shell tests include a separate later process."
+    - "Setup-tag replacement is opt-in, validates the module/version tag, and remains after main artifact verification. The old tag SHA is supplied to Git force-with-lease and the resulting remote tag is checked. Real Git tests cover creation, default refusal, explicit replacement and a concurrent tag change that is preserved."
+    - "Canonical publication uses workflow-SHA-pinned setup tooling without persisted checkout credentials. Manual recovery defaults to false and the actual shell command is tested with both input values. Other release source, signing, package and tag guards remain intact."
+    - "CLI-owned evidence confirms 8 renderer tests, 43 publisher/workflow tests, workflow lint and full ci:local:full pass. Full verification took 477066ms and includes all critical CLI groups, documentation build/design, platform-critical tests and significant coverage. Supervisor final tracked state is clean."
+    - "Residual risk: Hosted exact-head CI including CodeQL is required before integration."
+    - "Residual risk: Actual publication with repair_setup_tag=true and execution of the published setup action remain separately authorized operator verification after integration. The prior canonical publish result is still incomplete and is not promoted by this source review."
 execution_route:
   frozen: true
   reason_codes:
@@ -647,7 +679,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070819-M065D1"
-    event_cursor: 8
+    event_cursor: 9
     final_validation: null
     id: "202609070819-M065D1"
     intent:
@@ -677,9 +709,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-07T08:42:33.545Z"
+    updated_at: "2026-09-07T08:42:33.547Z"
     work_items:
       repair-setup-install-and-recovery:
         attempt: 1
@@ -927,6 +959,30 @@ extensions:
         mutation_id: "compatibility:sha256:c4b3dcaa912d5b4653c286a77f4c574ae0751ea37172429efa1dad107a5cf967"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609070819-M065D1"
+      compatibility:sha256:f03434ba51a91227b80067b6f2bb933739da5cfdb5929237034c185cc454c1fc:
+        aggregate_digest: "sha256:251563a225a4110e36ccd54209b228f2e758cb760bff2d11a13d0b9fe9643437"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T08:42:33.547Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_afcd74729eb0dc8b65cf471c"
+          mutation_id: "compatibility:sha256:f03434ba51a91227b80067b6f2bb933739da5cfdb5929237034c185cc454c1fc"
+          plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070819-M065D1"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f03434ba51a91227b80067b6f2bb933739da5cfdb5929237034c185cc454c1fc"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609070819-M065D1"
       compatibility:sha256:fad086d763f12059538b7e4f5a69912d3497c27aec56e7282bd90b4ab6e0b46a:
