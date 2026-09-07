@@ -3,10 +3,17 @@
   "branch": "task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati",
   "created_at": "2026-09-07T14:33:24.150Z",
   "diffstat_sha256": "sha256:13781d22a81b7424f5e0764f6abcb99297073f266b8ff9f2694551d55a727b3a",
-  "last_verified_at": "2026-09-07T16:55:04.289Z",
+  "last_verified_at": "2026-09-07T17:08:21.257Z",
   "last_verified_diffstat_sha256": "sha256:13781d22a81b7424f5e0764f6abcb99297073f266b8ff9f2694551d55a727b3a",
   "pr_number": 5917,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5917",
+  "pre_merge_closure": {
+    "basis_commit": "d6f6ed3706d8600a15630c887b8d6807c28d925e",
+    "branch": "task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati",
+    "pr_number": 5917,
+    "recorded_at": "2026-09-07T17:09:31.256Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

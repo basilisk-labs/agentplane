@@ -1,10 +1,11 @@
 ---
 id: "202609071427-7J5DJQ"
 title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +21,9 @@ plan_approval:
   note: "host_user_decision=sha256:603ba56307c6fb0d9158728c02b758b267a37ae8ba96ae044feffe2f1ee923cb"
 verification:
   state: "ok"
-  updated_at: "2026-09-07T16:55:04.289Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-09-07T17:08:21.257Z"
+  updated_by: "TESTER"
+  note: "Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -57,6 +58,22 @@ quality_review:
     - "Residual risk: Broader Bun-hosted Vitest import failures remain documented, so Node remains the test default."
     - "Residual risk: The standalone website lockfile mismatch reproduces with both Bun versions; normal workspace frozen installation and site checks pass without dependency-resolution changes."
     - "Residual risk: Cross-platform execution remains a separate qualification boundary."
+token_usage:
+  agent_runs: 10
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:4abc81f6215f737c5725bf77e0ccf86aa2f5af7787c3a11b17c3b9dc1b1b0575"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T17:09:31.186Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -306,8 +323,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c621332896711f01ef67df757eb934fadc6f5787"
-  message: "🚧 7J5DJQ task: apply external agent result"
+  hash: "d6f6ed3706d8600a15630c887b8d6807c28d925e"
+  message: "🚧 7J5DJQ task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -333,6 +350,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: c62133289671. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -398,9 +418,23 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-09-07T17:08:21.257Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed."
+  -
+    type: "status"
+    at: "2026-09-07T17:09:31.186Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "d6f6ed3706d8600a15630c887b8d6807c28d925e"
 doc_version: 3
-doc_updated_at: "2026-09-07T16:55:05.425Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T17:09:31.186Z"
+doc_updated_by: "CODER"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -528,6 +562,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609071427-7J5DJQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-07T17:08:21.257Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6, input_digest=sha256:81aa8450f533d6cc5b4cef8e21dcabd928fcdfc3b73cf15d66e351cd053c113b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071427-7J5DJQ-upgrade-bun-to-1-4-2-and-qualify-runtime-migrati/.agentplane/tasks/202609071427-7J5DJQ/blueprint/resolved-snapshot.json
+    - old_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+    - current_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071427-7J5DJQ
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -830,8 +924,24 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 18
-    final_validation: null
+    event_cursor: 19
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071427-7J5DJQ"
+            - "git:c621332896711f01ef67df757eb934fadc6f5787"
+          check_id: "task-check"
+          command_identity: "task.verify"
+          detail: "Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed."
+          exit_code: 0
+          observed_at: "2026-09-07T17:08:21.257Z"
+          repository_snapshot_digest: "sha256:659f0e5adb9732f96c97b7e25843a4b1fb527d83aa7e112b384196d2608c2184"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071427-7J5DJQ"
     intent:
       acceptance_criteria: []
@@ -842,7 +952,7 @@ extensions:
 
         Implement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes.
       task_id: "202609071427-7J5DJQ"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1083,9 +1193,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 21
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-07T16:55:05.425Z"
+    updated_at: "2026-09-07T17:09:31.186Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -1442,6 +1552,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:8b96d5776c54181bcd9f5eb78bfefeb32c71572e0073247463a8395b3e0e9996:
+        aggregate_digest: "sha256:cd2490d8f59e833c03195635a2df75709a0491e894d84fc4a3f06fec2b0ea160"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:08:22.376Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bc22e0dcdee0a27f35e1d28d"
+          mutation_id: "compatibility:sha256:8b96d5776c54181bcd9f5eb78bfefeb32c71572e0073247463a8395b3e0e9996"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8b96d5776c54181bcd9f5eb78bfefeb32c71572e0073247463a8395b3e0e9996"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
       compatibility:sha256:a3064513d6cb0e6b2538c1a0386ace845177d7f8ae81b1dca41f883df3b3977e:
         aggregate_digest: "sha256:ea53f503fec0ac474bb9aa8c8884b3547809eabb2563856ee74b705c59088c89"
         event:
@@ -1634,11 +1768,37 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
+      legacy-finish:202609071427-7J5DJQ:2026-09-07T17:08:21.257Z:c621332896711f01ef67df757eb934fadc6f5787:
+        aggregate_digest: "sha256:458da3cf5054b4aad7782c5df54f92f4351877f38765e2c614a970927ffc0502"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T17:09:31.186Z"
+          cause_refs:
+            - "task-verification:202609071427-7J5DJQ"
+            - "git:c621332896711f01ef67df757eb934fadc6f5787"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7e8edbcf30be85e6c33e90d5"
+          mutation_id: "legacy-finish:202609071427-7J5DJQ:2026-09-07T17:08:21.257Z:c621332896711f01ef67df757eb934fadc6f5787"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: "sha256:659f0e5adb9732f96c97b7e25843a4b1fb527d83aa7e112b384196d2608c2184"
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071427-7J5DJQ:2026-09-07T17:08:21.257Z:c621332896711f01ef67df757eb934fadc6f5787"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "c621332896711f01ef67df757eb934fadc6f5787"
+    message: "🚧 7J5DJQ task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -1790,6 +1950,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-09-07T17:08:21.257Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b9642e7b7d1428a7924f3a704cffe098e1e5016e33b57de749c10bc4da191ab6, input_digest=sha256:81aa8450f533d6cc5b4cef8e21dcabd928fcdfc3b73cf15d66e351cd053c113b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071427-7J5DJQ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071427-7J5DJQ Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071427-7J5DJQ-upgrade-bun-to-1-4-2-and-qualify-runtime-migrati/.agentplane/tasks/202609071427-7J5DJQ/blueprint/resolved-snapshot.json
+- old_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+- current_digest: 8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071427-7J5DJQ
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1798,3 +2018,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/10` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:4abc81f6215f737c5725bf77e0ccf86aa2f5af7787c3a11b17c3b9dc1b1b0575`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T17:09:31.186Z`

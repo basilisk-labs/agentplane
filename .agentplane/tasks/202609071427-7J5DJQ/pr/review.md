@@ -6,14 +6,14 @@ Created: 2026-09-07T14:33:24.150Z
 
 - Task: `202609071427-7J5DJQ`
 - Title: Upgrade Bun to 1.4.2 and qualify runtime migration boundaries
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati`
 - Canonical task record: `.agentplane/tasks/202609071427-7J5DJQ/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

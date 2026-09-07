@@ -16,7 +16,13 @@ Implement the staged Bun adoption agreed with the user. Upgrade repository and C
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note:
+
+```text
+Verified: refreshed blueprint only changes the already authorized task description; route and source
+are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first
+on PATH exited 0 at 17:04 UTC. EVALUATOR review passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
