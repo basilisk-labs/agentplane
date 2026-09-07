@@ -2,10 +2,10 @@
 id: "202609071427-7J5DJQ"
 title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -354,6 +354,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The staged resolution is intended, but the prior commit failed before the base merge because its hook runtime was stale. This readonly episode cannot adjust or commit the resolution."
+  -
+    author: "CODER"
+    body: "The user requested completing PR #5917. Reopen the existing task to resolve the current base conflict and failed hosted static check while preserving unrelated work."
 events:
   -
     type: "status"
@@ -438,9 +441,16 @@ events:
     at: "2026-09-07T21:50:21.575Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The staged resolution is intended, but the prior commit failed before the base merge because its hook runtime was stale. This readonly episode cannot adjust or commit the resolution."
+  -
+    type: "status"
+    at: "2026-09-07T21:50:57.451Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "The user requested completing PR #5917. Reopen the existing task to resolve the current base conflict and failed hosted static check while preserving unrelated work."
 doc_version: 3
-doc_updated_at: "2026-09-07T21:50:21.595Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T21:50:57.475Z"
+doc_updated_by: "CODER"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -930,24 +940,8 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 20
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609071427-7J5DJQ"
-            - "git:c621332896711f01ef67df757eb934fadc6f5787"
-          check_id: "task-check"
-          command_identity: "task.verify"
-          detail: "Verified: refreshed blueprint only changes the already authorized task description; route and source are unchanged. Prior supervisor full CI passed. Additional full CI with task-local Bun 1.4.2 first on PATH exited 0 at 17:04 UTC. EVALUATOR review passed."
-          exit_code: 0
-          observed_at: "2026-09-07T17:08:21.257Z"
-          repository_snapshot_digest: "sha256:659f0e5adb9732f96c97b7e25843a4b1fb527d83aa7e112b384196d2608c2184"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 21
+    final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
       acceptance_criteria: []
@@ -958,7 +952,7 @@ extensions:
 
         Implement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes.
       task_id: "202609071427-7J5DJQ"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1199,9 +1193,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 24
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-07T21:50:21.575Z"
+    updated_at: "2026-09-07T21:50:57.451Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -1294,6 +1288,30 @@ extensions:
         work_item_id: "upgrade-and-qualify-bun"
     leases: []
     mutation_receipts:
+      compatibility:sha256:1c634f9e4d528c09affabbc9926b19587c0eeb86b3c9b53ac30304a91bf5e3f8:
+        aggregate_digest: "sha256:ccd940dee8d67629576eec516a543e112dcaa1aa2854872086c3a01e2409a72d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T21:50:57.451Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_abe1926ad8520f957bca4d0d"
+          mutation_id: "compatibility:sha256:1c634f9e4d528c09affabbc9926b19587c0eeb86b3c9b53ac30304a91bf5e3f8"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1c634f9e4d528c09affabbc9926b19587c0eeb86b3c9b53ac30304a91bf5e3f8"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
       compatibility:sha256:2d2b3eb4c5a4740381f219dcc93cb4975408bafb9ff4da971353adb6297b85a7:
         aggregate_digest: "sha256:8022a8633a5c58b0e93bd399796a991801cd31cf40fca06b7f119e86288eb30c"
         event:

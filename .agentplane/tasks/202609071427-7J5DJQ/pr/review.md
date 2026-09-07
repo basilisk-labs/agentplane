@@ -6,7 +6,7 @@ Created: 2026-09-07T14:33:24.150Z
 
 - Task: `202609071427-7J5DJQ`
 - Title: Upgrade Bun to 1.4.2 and qualify runtime migration boundaries
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati`
 - Canonical task record: `.agentplane/tasks/202609071427-7J5DJQ/README.md`
 
@@ -39,10 +39,10 @@ Created: 2026-09-07T14:33:24.150Z
  .github/workflows/workflows-lint.yml               |   2 +-
  package.json                                       |   2 +-
  ...n-cli.core.task-advance.branch-worktree.test.ts | 105 ++++++++++++++++-----
- .../external-agent-implementation-authority.ts     |  18 +++-
+ .../external-agent-implementation-authority.ts     |  22 ++++-
  .../agentplane/src/shared/sqlite-driver.test.ts    | 103 ++++++++++++++++++++
  packages/agentplane/src/shared/sqlite-driver.ts    |   2 +-
- 13 files changed, 222 insertions(+), 44 deletions(-)
+ 13 files changed, 226 insertions(+), 44 deletions(-)
 ```
 
 </details>

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati",
   "created_at": "2026-09-07T14:33:24.150Z",
-  "diffstat_sha256": "sha256:13781d22a81b7424f5e0764f6abcb99297073f266b8ff9f2694551d55a727b3a",
+  "diffstat_sha256": "sha256:71c6d58fe81f40d504e045101913c6505fb98a1185e6050c052bd2402dbc1971",
   "last_verified_at": "2026-09-07T17:08:21.257Z",
   "last_verified_diffstat_sha256": "sha256:13781d22a81b7424f5e0764f6abcb99297073f266b8ff9f2694551d55a727b3a",
   "pr_number": 5917,
