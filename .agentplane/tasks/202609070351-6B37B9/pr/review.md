@@ -6,7 +6,7 @@ Created: 2026-09-07T03:54:12.351Z
 
 - Task: `202609070351-6B37B9`
 - Title: Sign macOS standalone release binaries before packaging
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609070351-6B37B9/sign-macos-standalone-release-binaries-before-pa`
 - Canonical task record: `.agentplane/tasks/202609070351-6B37B9/README.md`
 
