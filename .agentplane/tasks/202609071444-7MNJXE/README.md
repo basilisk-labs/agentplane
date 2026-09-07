@@ -4,7 +4,7 @@ title: "Repair CodeQL configuration consistency and triage current GitHub securi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:6698a8fea7f8817cffeb45569223faaace60fb4218fb374f59d15f5012e7e39f"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-07T17:36:45.918Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -90,7 +90,9 @@ execution_contract:
       - "packages/agentplane/src/shared/package-paths.ts"
       - "scripts/lib/github-ci-capabilities.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - ".github"
       - "packages/agentplane"
@@ -107,7 +109,13 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -218,9 +226,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "7db020ef143d001634e97e3c41773c1d18cefa9f"
-  message: "🚧 7MNJXE task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -274,8 +282,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 7db020ef143d. CLI accepted one state-bound external-agent semantic result."
     commit: "7db020ef143d001634e97e3c41773c1d18cefa9f"
+  -
+    type: "verify"
+    at: "2026-09-07T17:36:45.918Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-07T17:26:09.030Z"
+doc_updated_at: "2026-09-07T17:36:47.705Z"
 doc_updated_by: "SUPERVISOR"
 description: "Investigate GitHub code-scanning setup errors, unstable language coverage and current open alerts. Produce a bounded evidence-backed remediation plan. Preserve ongoing unrelated work and existing CI checks. Do not dismiss alerts, delete analyses, publish, merge or change hosted settings without explicit operator approval."
 sections:
@@ -288,13 +302,46 @@ sections:
     - Out of scope: unrelated refactors not required for "Repair CodeQL configuration consistency and triage current GitHub security findings".
   Plan: "Prepared three sequential WorkItems for CodeQL consistency, insecure temporary assets and complete alert triage. Implementation awaits plan approval."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Repair CodeQL configuration consistency and triage current GitHub security findings". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Repair CodeQL configuration consistency and triage current GitHub security findings". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run bunx --no-install vitest run packages/agentplane/src/commands/release/github-ci-plan.test.ts packages/agentplane/src/shared/package-paths.test.ts. Expected: stable CodeQL language/category planning and private temporary asset isolation, reuse, and exit cleanup pass.
+    2. Run bun run ci:local:full. Expected: all required repository verification groups pass, including formatting, type checks, lint, build, and critical CLI tests.
+    3. Review the saved semantic report against the observed GitHub alerts. Expected: each observed alert has an explicit evidence-based disposition; unresolved findings remain explicit and no alert is dismissed without authority.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T17:36:45.918Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e29adb941626cbceb2bb155fa61fe3e46d58e9cb4b646b58cfa18befd9e9acce, input_digest=sha256:0d38eb936fef4bdd37a7e7fe85bdd3241224f3e93d6472cde8f6142194c775d2
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071444-7MNJXE declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071444-7MNJXE-repair-codeql-configuration-consistency-and-tria/.agentplane/tasks/202609071444-7MNJXE/blueprint/resolved-snapshot.json
+    - old_digest: 57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e
+    - current_digest: 57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071444-7MNJXE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071444-7MNJXE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -555,7 +602,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071444-7MNJXE"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609071444-7MNJXE"
     intent:
@@ -570,9 +617,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-07T17:26:10.679Z"
+    updated_at: "2026-09-07T17:36:47.702Z"
     work_items:
       alert-triage:
         attempt: 1
@@ -867,6 +914,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609071444-7MNJXE"
+      compatibility:sha256:721f75f4e20e068a9ab69d85f5e8a7827bd1c8b2cc4b65e65f8b9554201970a1:
+        aggregate_digest: "sha256:820811cfe88137840f9b37f6e999e5db4311a1a11878d34ac2379e154a6377dc"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:32:01.905Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_98e323236c518a9525c5db62"
+          mutation_id: "compatibility:sha256:721f75f4e20e068a9ab69d85f5e8a7827bd1c8b2cc4b65e65f8b9554201970a1"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:721f75f4e20e068a9ab69d85f5e8a7827bd1c8b2cc4b65e65f8b9554201970a1"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
       compatibility:sha256:8ddd3e76393ab4306f0d5b52d130712d60d421d222f278263dcd56aac6aba2a5:
         aggregate_digest: "sha256:19ba324c034fed51692090caae391e0e6941e45bc522a280f7626730307646e2"
         event:
@@ -913,6 +984,30 @@ extensions:
         mutation_id: "compatibility:sha256:d61f58f5e9ae8821e27b25ffff0652571a0daa596f4e617ca6ff8e017833f88e"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+      compatibility:sha256:e1593e546766fcd7303e35fc8f660f2edfa3a15bcf30a56ee07e55c450fbc27f:
+        aggregate_digest: "sha256:4bfa71b15667324f42e1dd4f5a31bef7d1a85c25c43a1f33b5606dcbeddb4a53"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:36:47.702Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6777fd4624bcb1e7d3272fa0"
+          mutation_id: "compatibility:sha256:e1593e546766fcd7303e35fc8f660f2edfa3a15bcf30a56ee07e55c450fbc27f"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e1593e546766fcd7303e35fc8f660f2edfa3a15bcf30a56ee07e55c450fbc27f"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609071444-7MNJXE"
       compatibility:sha256:eacfc464c5fea23bbbbf81fe5e0d7bdd0f99dc0e890eeda999352859aac38553:
@@ -1038,8 +1133,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "7db020ef143d001634e97e3c41773c1d18cefa9f"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"
@@ -1068,15 +1161,48 @@ Prepared three sequential WorkItems for CodeQL consistency, insecure temporary a
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Repair CodeQL configuration consistency and triage current GitHub security findings". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Repair CodeQL configuration consistency and triage current GitHub security findings". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run bunx --no-install vitest run packages/agentplane/src/commands/release/github-ci-plan.test.ts packages/agentplane/src/shared/package-paths.test.ts. Expected: stable CodeQL language/category planning and private temporary asset isolation, reuse, and exit cleanup pass.
+2. Run bun run ci:local:full. Expected: all required repository verification groups pass, including formatting, type checks, lint, build, and critical CLI tests.
+3. Review the saved semantic report against the observed GitHub alerts. Expected: each observed alert has an explicit evidence-based disposition; unresolved findings remain explicit and no alert is dismissed without authority.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T17:36:45.918Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e29adb941626cbceb2bb155fa61fe3e46d58e9cb4b646b58cfa18befd9e9acce, input_digest=sha256:0d38eb936fef4bdd37a7e7fe85bdd3241224f3e93d6472cde8f6142194c775d2
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071444-7MNJXE declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071444-7MNJXE-repair-codeql-configuration-consistency-and-tria/.agentplane/tasks/202609071444-7MNJXE/blueprint/resolved-snapshot.json
+- old_digest: 57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e
+- current_digest: 57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071444-7MNJXE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071444-7MNJXE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
