@@ -4,7 +4,7 @@ title: "Keep setup-agentplane installations usable across workflow steps"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -521,22 +521,88 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-07T08:33:59.973Z"
+    updated_at: "2026-09-07T08:34:12.308Z"
     work_items:
       repair-setup-install-and-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "repair-setup-install-and-recovery"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a17819f34658a846cfd1f8d21b4c6401b1cde091213e6c46de5eb83fc2d27ac3"
+            id: "Persistent checksum-verified setup action, explicit CAS tag recovery, and behavioral regression evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609070819-M065D1"
+              work_item_id: "repair-setup-install-and-recovery"
+            provenance:
+              - "sha256:c4379cd217d002fb699eb1501008485b45f036500d3dfc17e2481f4a3dfda5c0"
+              - ".agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:0cfd158bf26a6d062e38b6cedbeb09f0ea25017db7d238b9e5ce6a8117ae6872"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json"
+              check_id: "action-install"
+              command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts"
+              detail: "Observed by bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-07T08:34:12.303Z"
+              repository_snapshot_digest: "sha256:0cfd158bf26a6d062e38b6cedbeb09f0ea25017db7d238b9e5ce6a8117ae6872"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json"
+              check_id: "publish-recovery"
+              command_identity: "bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+              detail: "Observed by bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-07T08:34:12.303Z"
+              repository_snapshot_digest: "sha256:0cfd158bf26a6d062e38b6cedbeb09f0ea25017db7d238b9e5ce6a8117ae6872"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609070819-M065D1/supervision/declared-checks.json"
+              check_id: "workflow-lint"
+              command_identity: "bun run workflows:lint"
+              detail: "Observed by bun run workflows:lint."
+              exit_code: 0
+              observed_at: "2026-09-07T08:34:12.303Z"
+              repository_snapshot_digest: "sha256:0cfd158bf26a6d062e38b6cedbeb09f0ea25017db7d238b9e5ce6a8117ae6872"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T08:34:12.308Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_68e01bfdbc76625e5f5f19cb"
+        mutation_id: "external-result:work-order-202609070819-M065D1-executor-9710348c0770741dfe982a88"
+        plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609070819-M065D1"
+        task_revision: 10
+        work_item_id: "repair-setup-install-and-recovery"
     leases: []
     mutation_receipts:
       compatibility:sha256:03688a794c960793aaa52ab0399336474cc50217c92cec0c6cb362a1d62bf2fd:
@@ -705,6 +771,29 @@ extensions:
         mutation_id: "compatibility:sha256:c4b3dcaa912d5b4653c286a77f4c574ae0751ea37172429efa1dad107a5cf967"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609070819-M065D1"
+      external-result:work-order-202609070819-M065D1-executor-9710348c0770741dfe982a88:
+        aggregate_digest: "sha256:8d7c3294b3d87d10cdeb8d3051e7e885d4ef4195a6637a25daf10efbc53e61b9"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T08:34:12.308Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_68e01bfdbc76625e5f5f19cb"
+          mutation_id: "external-result:work-order-202609070819-M065D1-executor-9710348c0770741dfe982a88"
+          plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070819-M065D1"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: "repair-setup-install-and-recovery"
+        mutation_id: "external-result:work-order-202609070819-M065D1-executor-9710348c0770741dfe982a88"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609070819-M065D1"
     pending_effects: []
