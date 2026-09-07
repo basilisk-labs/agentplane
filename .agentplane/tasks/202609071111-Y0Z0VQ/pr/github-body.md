@@ -31,22 +31,27 @@ Recheck current code against the Arkady Factory audit. Fix AP-02 premature close
  .../agentplane/src/cli/route-decision.testkit.ts   |   1 +
  ...n-cli.core.task-advance.evidence-rework.test.ts | 186 +++++++++++++--------
  .../src/cli/run-cli.core.task-advance.test.ts      |  95 ++++++++++-
+ .../shared/task-backend-branch-snapshot.ts         |  67 +++++++-
+ .../src/commands/shared/task-backend.test.ts       |  89 ++++++++++
+ .../agentplane/src/commands/shared/task-backend.ts |  15 +-
  .../src/commands/shared/workflow-step-branch.ts    |  29 +---
  .../src/commands/shared/workflow-step-factory.ts   |  26 +++
  .../commands/shared/workflow-step-quality.test.ts  | 156 +++++++++++++----
  .../src/commands/shared/workflow-step-reducer.ts   |   8 +-
+ .../src/commands/task/active.command.unit.test.ts  |   5 +-
  .../external-agent-implementation-authority.ts     |  22 ++-
  .../external-agent-implementation-finalization.ts  |   1 +
  .../task/external-agent-implementation-recovery.ts |  50 +++---
  .../agentplane/src/commands/task/finish-shared.ts  |   5 +-
  .../agentplane/src/commands/task/plan-shared.ts    |  11 +-
  packages/agentplane/src/commands/task/plan.ts      |  12 ++
+ .../src/commands/task/shared/dependencies.ts       |   9 +
  .../task/task-centric-external-result.test.ts      | 146 +++++++++++++++-
  .../commands/task/task-centric-external-result.ts  |  61 +++++--
  .../core/src/tasks/task-centric/compatibility.ts   |   2 +
  packages/core/src/tasks/task-centric/index.ts      |   1 +
  packages/core/src/tasks/task-centric/lifecycle.ts  |  16 +-
- 19 files changed, 654 insertions(+), 176 deletions(-)
+ 24 files changed, 833 insertions(+), 182 deletions(-)
 ```
 
 </details>

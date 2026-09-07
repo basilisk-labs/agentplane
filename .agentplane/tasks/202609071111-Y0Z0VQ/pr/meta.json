@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609071111-Y0Z0VQ/repair-confirmed-arkady-factory-compatibility-li",
   "created_at": "2026-09-07T11:19:37.618Z",
-  "diffstat_sha256": "sha256:77179f2b5566987c7626122f4bd3ab81b0f05ea1c21e6eb539d1eafce5c00cbe",
+  "diffstat_sha256": "sha256:82e82ceb856a186c5bc9fe288ea2d29a96c0091d131736820eac2a45446a6fec",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
