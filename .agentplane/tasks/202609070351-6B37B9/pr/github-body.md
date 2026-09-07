@@ -15,15 +15,8 @@ Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 e
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: hosted CodeQL failed on PR #5907 head 2bf3828041667ca7a6269d1d1ba3ff867bdd5278. Require
-merged-main ancestry before executing the historical distribution source, remove checkout
-credentials, disable setup caches and pin the new setup-bun action. Keep all changes inside the
-approved workflow and test paths.
-```
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
