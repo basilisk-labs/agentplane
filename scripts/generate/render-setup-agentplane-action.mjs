@@ -73,10 +73,16 @@ runs:
   steps:
     - name: Install AgentPlane
       shell: bash
+      env:
+        AGENTPLANE_VERSION: \${{ inputs.version }}
+        AGENTPLANE_VERIFY: \${{ inputs.verify }}
       run: |
         set -euo pipefail
-        version="\${inputs.version}"
-        version="\${version#v}"
+        version="\${AGENTPLANE_VERSION#v}"
+        if [ "\${version}" != "${version}" ]; then
+          echo "This action installs ${version}; use the matching action tag for another version." >&2
+          exit 2
+        fi
         tmp_dir="$(mktemp -d)"
         trap 'rm -rf "$tmp_dir"' EXIT INT TERM
         case "\${RUNNER_OS}-\${RUNNER_ARCH}" in
@@ -106,23 +112,22 @@ runs:
             ;;
         esac
         archive="\${tmp_dir}/\${asset_url##*/}"
-        install_dir="\${tmp_dir}/agentplane"
-        mkdir -p "\${install_dir}"
         curl -fsSL "\${asset_url}" -o "\${archive}"
         actual_sha256="$(shasum -a 256 "\${archive}" | awk '{print $1}')"
         if [ "\${actual_sha256}" != "\${asset_sha256}" ]; then
           echo "agentplane archive checksum mismatch" >&2
           exit 2
         fi
+        install_dir="$(mktemp -d "\${RUNNER_TEMP:?}/agentplane.XXXXXX")"
         if [[ "\${archive}" == *.zip ]]; then
           powershell -NoProfile -Command "Expand-Archive -LiteralPath '\${archive}' -DestinationPath '\${install_dir}' -Force"
         else
           tar -xzf "\${archive}" -C "\${install_dir}"
         fi
-        echo "\${install_dir}/bin" >> "$GITHUB_PATH"
-        if [ "\${{ inputs.verify }}" = "true" ]; then
+        if [ "\${AGENTPLANE_VERIFY}" = "true" ]; then
           "\${install_dir}/bin/agentplane" --version | grep -Fx "\${version}"
         fi
+        echo "\${install_dir}/bin" >> "$GITHUB_PATH"
 `;
 }
 

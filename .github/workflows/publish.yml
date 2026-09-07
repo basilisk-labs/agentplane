@@ -17,6 +17,11 @@ on:
         description: "Git ref to evaluate only when sha is omitted (default: main)"
         required: false
         default: "main"
+      repair_setup_tag:
+        description: "Replace a stale setup-agentplane version tag after verifying the published action"
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   actions: write
@@ -531,11 +536,17 @@ jobs:
           node scripts/render-scoop-manifest.mjs \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/scoop
+      - name: Checkout current setup publication runtime
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .agentplane/.release/runtime
+          persist-credentials: false
       - name: Render setup-agentplane action
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/render-setup-agentplane-action.mjs \
+          node .agentplane/.release/runtime/scripts/render-setup-agentplane-action.mjs \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/setup-agentplane
       - name: Write npm auth config
@@ -681,9 +692,14 @@ jobs:
         shell: bash
         env:
           SETUP_AGENTPLANE_TOKEN: ${{ secrets.SETUP_AGENTPLANE_TOKEN || '' }}
+          REPAIR_SETUP_TAG: ${{ github.event.inputs.repair_setup_tag || 'false' }}
         run: |
           set -euo pipefail
-          node scripts/publish-external-distribution.mjs \
+          set --
+          if [ "${REPAIR_SETUP_TAG}" = "true" ]; then
+            set -- --repair-existing-setup-tag
+          fi
+          node .agentplane/.release/runtime/scripts/publish-external-distribution.mjs \
             --module setup-agentplane \
             --repo basilisk-labs/setup-agentplane \
             --source .agentplane/.release/publish/setup-agentplane \
@@ -696,7 +712,8 @@ jobs:
             --tag "${{ needs.detect.outputs.tag }}" \
             --sha "${{ needs.detect.outputs.sha }}" \
             --token-env SETUP_AGENTPLANE_TOKEN \
-            --out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json
+            --out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json \
+            "$@"
       - name: Upload release-distribution artifact
         if: always()
         uses: actions/upload-artifact@v7

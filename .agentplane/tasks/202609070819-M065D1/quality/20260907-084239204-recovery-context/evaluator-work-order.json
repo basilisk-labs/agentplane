@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609070819-M065D1-16505de59fe89aaabe827864",
+  "prepared_at": "2026-09-07T08:42:39.204Z",
+  "task": {
+    "id": "202609070819-M065D1",
+    "revision": 12,
+    "objective": "Repair setup-agentplane input handling and installation lifetime, then enable explicit hosted setup-tag recovery for the qualified historical release. Source repair is local; publication and final release evidence remain separately authorized operator work.",
+    "acceptance_criteria": [
+      "bun run test:project agentplane packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts",
+      "bun run test:project agentplane packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts",
+      "bun run workflows:lint",
+      "In scope: scripts/generate/render-setup-agentplane-action.mjs, scripts/release/publish-external-distribution.mjs, .github/workflows/publish.yml, and the three nearest release contract test files named in the structured plan. Preserve normal tag mismatch refusal and all source, signing, npm and release-tag guards. Out of scope: external writes during semantic work, public version changes, unrelated channel changes, and edits to the pending release evidence PR.",
+      "Propose one bounded setup-action and hosted recovery repair with executable install and compare-and-swap tag tests.",
+      "1. Run the declared action renderer test file. Expected: safe version binding, pinned version rejection, checksum validation and installation persistence across a later step pass.\n2. Run the declared external publisher and workflow contract test files. Expected: default tag mismatch refusal, explicit setup-only compare-and-swap recovery, concurrent drift refusal and current-runtime wiring pass.\n3. Run bun run workflows:lint. Expected: syntax and workflow contracts pass.\n4. Review the six-file scope and retain existing payload identity, macOS signature, npm and AgentPlane release-tag guards.\n5. After integration, recover the unchanged release SHA through hosted publication with explicit setup-tag repair, verify the published action in separate install and CLI steps, and refresh the existing release evidence PR. External validation remains outside this semantic repair."
+    ]
+  },
+  "evaluated_sha": "d2a97545f436acf2bab742d4ae12ea3ac2771b2e",
+  "diff_base_sha": "b99c7d87348d22b54cb2a36445fd94cddd732bf5",
+  "blueprint_digest": "f58ac25aa75e157577aff348de0d1803ca85a3fd2f428261887a3f2bab1ca358",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609070819-M065D1/quality/20260907-084239204-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7610ab4fc25fcfd0671ae6bc07a1068c2456adfcc220ee06a59a215a975f1ab5",
+    "prompt_path": ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/c2513e67bfbe75bbd287c940a8a8e6aa99bef4291550cf9e18483f008bdbeea7.md",
+    "result_schema_path": ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609070819-M065D1/README.md",
+      "sha256": "sha256:9c60fac2457b1e812ea3aced14d62e06089bd97b849dd75f2924b37657291739",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/25a382e7b271136e954ebd7c265f2e22845bdba3efbae235b3d8ce2c67e4ae39.patch",
+      "sha256": "sha256:25a382e7b271136e954ebd7c265f2e22845bdba3efbae235b3d8ce2c67e4ae39",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/6c2ad5c50f5cdbde531299cd009af44d3536420870fca3e973a6260073f6d2ac.json",
+      "sha256": "sha256:6c2ad5c50f5cdbde531299cd009af44d3536420870fca3e973a6260073f6d2ac",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609070819-M065D1/verification/20260907084232616-54a0b5b6188c99d6.json",
+      "sha256": "sha256:aee07051cc8f315ab3adb5945d83a8a79690371997ac3fdcf1e08475995cadef",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609070819-M065D1/quality/objects/sha256/97dd8df921f0b5365c357b688ad45d070106d0e91d90c4c648c504daf6237791.json",
+      "sha256": "sha256:97dd8df921f0b5365c357b688ad45d070106d0e91d90c4c648c504daf6237791",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

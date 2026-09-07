@@ -1,0 +1,751 @@
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index ede50f592..f44f7a60a 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -17,6 +17,11 @@ on:
+         description: "Git ref to evaluate only when sha is omitted (default: main)"
+         required: false
+         default: "main"
++      repair_setup_tag:
++        description: "Replace a stale setup-agentplane version tag after verifying the published action"
++        type: boolean
++        required: false
++        default: false
+ 
+ permissions:
+   actions: write
+@@ -531,11 +536,17 @@ jobs:
+           node scripts/render-scoop-manifest.mjs \
+             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
+             --out .agentplane/.release/publish/scoop
++      - name: Checkout current setup publication runtime
++        uses: actions/checkout@v6
++        with:
++          ref: ${{ github.workflow_sha }}
++          path: .agentplane/.release/runtime
++          persist-credentials: false
+       - name: Render setup-agentplane action
+         shell: bash
+         run: |
+           set -euo pipefail
+-          node scripts/render-setup-agentplane-action.mjs \
++          node .agentplane/.release/runtime/scripts/render-setup-agentplane-action.mjs \
+             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
+             --out .agentplane/.release/publish/setup-agentplane
+       - name: Write npm auth config
+@@ -681,9 +692,14 @@ jobs:
+         shell: bash
+         env:
+           SETUP_AGENTPLANE_TOKEN: ${{ secrets.SETUP_AGENTPLANE_TOKEN || '' }}
++          REPAIR_SETUP_TAG: ${{ github.event.inputs.repair_setup_tag || 'false' }}
+         run: |
+           set -euo pipefail
+-          node scripts/publish-external-distribution.mjs \
++          set --
++          if [ "${REPAIR_SETUP_TAG}" = "true" ]; then
++            set -- --repair-existing-setup-tag
++          fi
++          node .agentplane/.release/runtime/scripts/publish-external-distribution.mjs \
+             --module setup-agentplane \
+             --repo basilisk-labs/setup-agentplane \
+             --source .agentplane/.release/publish/setup-agentplane \
+@@ -696,7 +712,8 @@ jobs:
+             --tag "${{ needs.detect.outputs.tag }}" \
+             --sha "${{ needs.detect.outputs.sha }}" \
+             --token-env SETUP_AGENTPLANE_TOKEN \
+-            --out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json
++            --out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json \
++            "$@"
+       - name: Upload release-distribution artifact
+         if: always()
+         uses: actions/upload-artifact@v7
+diff --git a/packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts b/packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts
+index 247f2eeae..78ac8d7ad 100644
+--- a/packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts
++++ b/packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts
+@@ -25,6 +25,46 @@ afterEach(async () => {
+ });
+ 
+ describe("publish-external-distribution script", () => {
++  it.each([
++    { module: "homebrew", tag: "v0.4.2" },
++    { module: "setup-agentplane", tag: "v0.4.1" },
++  ])(
++    "rejects setup-tag repair for $module and $tag before using credentials",
++    async ({ module, tag }) => {
++      const root = await makeTempRoot();
++      await expect(
++        execFileAsync(
++          "node",
++          [
++            SCRIPT_PATH,
++            "--module",
++            module,
++            "--repo",
++            "basilisk-labs/setup-agentplane",
++            "--source",
++            root,
++            "--copy",
++            "action.yml:action.yml",
++            "--version",
++            "0.4.2",
++            "--tag",
++            tag,
++            "--sha",
++            "abc123",
++            "--token-env",
++            "AGENTPLANE_TEST_MISSING_TOKEN",
++            "--out",
++            path.join(root, "result.json"),
++            "--repair-existing-setup-tag",
++          ],
++          { env: { ...process.env, AGENTPLANE_TEST_MISSING_TOKEN: "" } },
++        ),
++      ).rejects.toThrow(
++        "Setup tag repair requires the setup-agentplane module and its exact version tag",
++      );
++    },
++  );
++
+   it("records a skipped evidence file when the target repository token is missing", async () => {
+     const root = await makeTempRoot();
+     await mkdir(path.join(root, "source", "Formula"), { recursive: true });
+@@ -328,105 +368,191 @@ describe("publish-external-distribution script", () => {
+     expect(topicsPayload.names).toEqual(["agentplane", "scoop", "windows", "cli"]);
+   }, 180_000);
+ 
+-  it("creates the setup-agentplane version tag after publishing the action repository", async () => {
+-    const root = await makeTempRoot();
+-    const binDir = path.join(root, "bin");
+-    const originDir = path.join(root, "origin.git");
+-    await mkdir(path.join(root, "source"), { recursive: true });
+-    await mkdir(binDir, { recursive: true });
+-    await writeFile(path.join(root, "source", "action.yml"), "name: setup-agentplane\n");
+-    await writeFile(path.join(root, "source", "README.md"), "# setup-agentplane\n");
+-    await writeFile(
+-      path.join(binDir, "gh"),
+-      [
+-        "#!/usr/bin/env node",
+-        "const fs = require('node:fs');",
+-        "const path = require('node:path');",
+-        "const { execFileSync } = require('node:child_process');",
+-        "const args = process.argv.slice(2);",
+-        `const originDir = ${JSON.stringify(originDir)};`,
+-        "function git(gitArgs, cwd) { execFileSync('git', gitArgs, { cwd, stdio: 'ignore' }); }",
+-        [
+-          "if (args[0] === 'repo' && args[1] === 'clone') {",
+-          "  fs.rmSync(originDir, { recursive: true, force: true });",
+-          "  git(['init', '--bare', originDir]);",
+-          "  git(['clone', originDir, args[3]]);",
+-          "  git(['config', 'user.name', 'test'], args[3]);",
+-          "  git(['config', 'user.email', 'test@example.com'], args[3]);",
+-          "  git(['switch', '-c', 'main'], args[3]);",
+-          "  fs.writeFileSync(path.join(args[3], 'action.yml'), 'name: old setup-agentplane' + String.fromCharCode(10));",
+-          "  fs.writeFileSync(path.join(args[3], 'README.md'), '# old setup-agentplane' + String.fromCharCode(10));",
+-          "  git(['add', '.'], args[3]);",
+-          "  git(['commit', '-m', 'initial'], args[3]);",
+-          "  git(['push', '--set-upstream', 'origin', 'main'], args[3]);",
+-          "  process.exit(0);",
+-          "}",
+-        ].join("\n"),
+-        "if (args[0] === 'auth') process.exit(0);",
+-        "if (args[0] === 'api') process.exit(0);",
+-        "if (args[0] === 'pr' && args[1] === 'list') { process.stdout.write(''); process.exit(0); }",
+-        "if (args[0] === 'pr' && args[1] === 'create') { process.stdout.write('https://github.com/basilisk-labs/setup-agentplane/pull/7' + String.fromCharCode(10)); process.exit(0); }",
++  it.each([
++    {
++      scenario: "creates a missing tag",
++      stale: false,
++      repair: false,
++      race: false,
++      status: "published",
++    },
++    {
++      scenario: "refuses a stale tag by default",
++      stale: true,
++      repair: false,
++      race: false,
++      status: "tag_unverified",
++    },
++    {
++      scenario: "repairs a stale tag explicitly",
++      stale: true,
++      repair: true,
++      race: false,
++      status: "published",
++    },
++    {
++      scenario: "preserves a concurrently changed tag",
++      stale: true,
++      repair: true,
++      race: true,
++      status: "tag_unverified",
++    },
++  ])(
++    "$scenario after publishing setup-agentplane",
++    async ({ stale, repair, race, status }) => {
++      const root = await makeTempRoot();
++      const binDir = path.join(root, "bin");
++      const originDir = path.join(root, "origin.git");
++      await mkdir(path.join(root, "source"), { recursive: true });
++      await mkdir(binDir, { recursive: true });
++      await writeFile(path.join(root, "source", "action.yml"), "name: setup-agentplane\n");
++      await writeFile(path.join(root, "source", "README.md"), "# setup-agentplane\n");
++      await writeFile(
++        path.join(binDir, "gh"),
+         [
+-          "if (args[0] === 'pr' && args[1] === 'merge') {",
+-          "  git(['switch', 'main'], process.cwd());",
+-          "  git(['merge', '--ff-only', 'agentplane/v0.4.2'], process.cwd());",
+-          "  git(['push', 'origin', 'main'], process.cwd());",
+-          "  process.exit(0);",
+-          "}",
++          "#!/usr/bin/env node",
++          "const fs = require('node:fs');",
++          "const path = require('node:path');",
++          "const { execFileSync } = require('node:child_process');",
++          "const args = process.argv.slice(2);",
++          `const originDir = ${JSON.stringify(originDir)};`,
++          "function git(gitArgs, cwd) { execFileSync('git', gitArgs, { cwd, stdio: 'ignore' }); }",
++          [
++            "if (args[0] === 'repo' && args[1] === 'clone') {",
++            "  fs.rmSync(originDir, { recursive: true, force: true });",
++            "  git(['init', '--bare', originDir]);",
++            "  git(['clone', originDir, args[3]]);",
++            "  git(['config', 'user.name', 'test'], args[3]);",
++            "  git(['config', 'user.email', 'test@example.com'], args[3]);",
++            "  git(['switch', '-c', 'main'], args[3]);",
++            "  fs.writeFileSync(path.join(args[3], 'action.yml'), 'name: old setup-agentplane' + String.fromCharCode(10));",
++            "  fs.writeFileSync(path.join(args[3], 'README.md'), '# old setup-agentplane' + String.fromCharCode(10));",
++            "  git(['add', '.'], args[3]);",
++            "  git(['commit', '-m', 'initial'], args[3]);",
++            "  git(['push', '--set-upstream', 'origin', 'main'], args[3]);",
++            ...(stale
++              ? [
++                  "  git(['tag', 'v0.4.2'], args[3]);",
++                  "  git(['push', 'origin', 'refs/tags/v0.4.2'], args[3]);",
++                ]
++              : []),
++            ...(race
++              ? [
++                  "  git(['switch', '-c', 'concurrent'], args[3]);",
++                  "  git(['commit', '--allow-empty', '-m', 'concurrent tag target'], args[3]);",
++                  "  git(['push', 'origin', 'concurrent'], args[3]);",
++                  "  git(['switch', 'main'], args[3]);",
++                ]
++              : []),
++            "  process.exit(0);",
++            "}",
++          ].join("\n"),
++          "if (args[0] === 'auth') process.exit(0);",
++          "if (args[0] === 'api') process.exit(0);",
++          "if (args[0] === 'pr' && args[1] === 'list') { process.stdout.write(''); process.exit(0); }",
++          "if (args[0] === 'pr' && args[1] === 'create') { process.stdout.write('https://github.com/basilisk-labs/setup-agentplane/pull/7' + String.fromCharCode(10)); process.exit(0); }",
++          [
++            "if (args[0] === 'pr' && args[1] === 'merge') {",
++            "  git(['switch', 'main'], process.cwd());",
++            "  git(['merge', '--ff-only', 'agentplane/v0.4.2'], process.cwd());",
++            "  git(['push', 'origin', 'main'], process.cwd());",
++            "  process.exit(0);",
++            "}",
++          ].join("\n"),
++          "console.error('unexpected gh ' + args.join(' '));",
++          "process.exit(2);",
+         ].join("\n"),
+-        "console.error('unexpected gh ' + args.join(' '));",
+-        "process.exit(2);",
+-      ].join("\n"),
+-    );
+-    await chmod(path.join(binDir, "gh"), 0o755);
+-    const outPath = path.join(root, "result.json");
++      );
++      await chmod(path.join(binDir, "gh"), 0o755);
++      if (race) {
++        await writeFile(
++          path.join(binDir, "git"),
++          [
++            "#!/usr/bin/env node",
++            "const { spawnSync } = require('node:child_process');",
++            "const args = process.argv.slice(2);",
++            `const env = { ...process.env, PATH: ${JSON.stringify(process.env.PATH ?? "")} };`,
++            "const result = spawnSync('git', args, { env, encoding: 'utf8' });",
++            "process.stdout.write(result.stdout || '');",
++            "process.stderr.write(result.stderr || '');",
++            "if (result.status === 0 && args[0] === 'ls-remote' && args.includes('refs/tags/v0.4.2')) {",
++            `  const mutation = spawnSync('git', ['--git-dir', ${JSON.stringify(originDir)}, 'update-ref', 'refs/tags/v0.4.2', 'refs/heads/concurrent'], { env, encoding: 'utf8' });`,
++            "  if (mutation.status !== 0) process.exit(mutation.status || 1);",
++            "}",
++            "process.exit(result.status ?? 1);",
++          ].join("\n"),
++        );
++        await chmod(path.join(binDir, "git"), 0o755);
++      }
++      const outPath = path.join(root, "result.json");
+ 
+-    await execFileAsync(
+-      "node",
+-      [
+-        SCRIPT_PATH,
+-        "--module",
+-        "setup-agentplane",
+-        "--repo",
+-        "basilisk-labs/setup-agentplane",
+-        "--source",
+-        path.join(root, "source"),
+-        "--copy",
+-        "action.yml:action.yml",
+-        "--copy",
+-        "README.md:README.md",
+-        "--version",
+-        "0.4.2",
+-        "--tag",
+-        "v0.4.2",
+-        "--sha",
+-        "abc123",
+-        "--token-env",
+-        "AGENTPLANE_TEST_TOKEN",
+-        "--out",
+-        outPath,
+-      ],
+-      {
+-        cwd: process.cwd(),
+-        env: {
+-          ...process.env,
+-          PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
+-          AGENTPLANE_TEST_TOKEN: "token",
++      await execFileAsync(
++        "node",
++        [
++          SCRIPT_PATH,
++          "--module",
++          "setup-agentplane",
++          "--repo",
++          "basilisk-labs/setup-agentplane",
++          "--source",
++          path.join(root, "source"),
++          "--copy",
++          "action.yml:action.yml",
++          "--copy",
++          "README.md:README.md",
++          "--version",
++          "0.4.2",
++          "--tag",
++          "v0.4.2",
++          "--sha",
++          "abc123",
++          "--token-env",
++          "AGENTPLANE_TEST_TOKEN",
++          "--out",
++          outPath,
++          ...(repair ? ["--repair-existing-setup-tag"] : []),
++        ],
++        {
++          cwd: process.cwd(),
++          env: {
++            ...process.env,
++            PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
++            AGENTPLANE_TEST_TOKEN: "token",
++          },
+         },
+-      },
+-    );
++      );
+ 
+-    const payload = JSON.parse(await readFile(outPath, "utf8")) as {
+-      status: string;
+-      setupTag: { status: string; tag: string; sha: string };
+-    };
+-    expect(payload.status).toBe("published");
+-    expect(payload.setupTag).toMatchObject({
+-      status: "published",
+-      tag: "v0.4.2",
+-    });
+-    expect(payload.setupTag.sha).toMatch(/^[0-9a-f]{40}$/u);
+-  }, 180_000);
++      const payload = JSON.parse(await readFile(outPath, "utf8")) as {
++        status: string;
++        setupTag: { status: string; tag: string; sha: string };
++      };
++      expect(payload.status).toBe(status);
++      expect(payload.setupTag).toMatchObject({
++        status: status === "published" ? "published" : "failed",
++        tag: "v0.4.2",
++      });
++      const { stdout: tagSha } = await execFileAsync("git", [
++        "--git-dir",
++        originDir,
++        "rev-parse",
++        "refs/tags/v0.4.2",
++      ]);
++      const expectedRef = race
++        ? "refs/heads/concurrent"
++        : status === "published"
++          ? "refs/heads/main"
++          : "refs/heads/main^";
++      const { stdout: expectedSha } = await execFileAsync("git", [
++        "--git-dir",
++        originDir,
++        "rev-parse",
++        expectedRef,
++      ]);
++      expect(tagSha.trim()).toBe(expectedSha.trim());
++      if (status === "published") expect(payload.setupTag.sha).toBe(tagSha.trim());
++    },
++    180_000,
++  );
+ 
+   it("verifies setup-agentplane tag proof when action files are unchanged", async () => {
+     const root = await makeTempRoot();
+diff --git a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+index 9aa499624..1f5ffed2d 100644
+--- a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
++++ b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+@@ -17,7 +17,13 @@ type WorkflowJob = {
+   "runs-on": string;
+   needs: string | string[];
+   if: string;
+-  steps: { name?: string; uses?: string; run?: string; with?: Record<string, string | boolean> }[];
++  steps: {
++    name?: string;
++    uses?: string;
++    run?: string;
++    env?: Record<string, string>;
++    with?: Record<string, string | boolean>;
++  }[];
+ };
+ type PublishWorkflow = { jobs: { distribution: WorkflowJob; publish: WorkflowJob } };
+ 
+@@ -26,6 +32,53 @@ function step(job: WorkflowJob, name: string) {
+ }
+ 
+ describe("publish workflow contract", () => {
++  it.each(["false", "true"])(
++    "uses current setup tooling and passes tag repair only for %s",
++    async (repair) => {
++      const workflow = parseYaml(
++        await readFile(PUBLISH_WORKFLOW_PATH, "utf8"),
++      ) as PublishWorkflow & {
++        on: {
++          workflow_dispatch: { inputs: { repair_setup_tag: { type: string; default: boolean } } };
++        };
++      };
++      expect(workflow.on.workflow_dispatch.inputs.repair_setup_tag).toMatchObject({
++        type: "boolean",
++        default: false,
++      });
++      const publish = workflow.jobs.publish;
++      const checkout = step(publish, "Checkout current setup publication runtime");
++      expect(checkout).toMatchObject({
++        uses: "actions/checkout@v6",
++        with: {
++          ref: "${{ github.workflow_sha }}",
++          path: ".agentplane/.release/runtime",
++          "persist-credentials": false,
++        },
++      });
++      const render = step(publish, "Render setup-agentplane action");
++      expect(render?.run).toContain(
++        "node .agentplane/.release/runtime/scripts/render-setup-agentplane-action.mjs",
++      );
++      expect(publish.steps.indexOf(checkout!)).toBeLessThan(publish.steps.indexOf(render!));
++      const publication = step(publish, "Publish setup-agentplane PR");
++      expect(publication?.env?.REPAIR_SETUP_TAG).toBe(
++        "${{ github.event.inputs.repair_setup_tag || 'false' }}",
++      );
++      if (!publication?.run) throw new Error("Missing setup publication command");
++      const script = publication.run.replaceAll(/\$\{\{[^}]+\}\}/gu, "fixture");
++      const stdout = execFileSync("bash", ["-c", `node() { printf '%s\\n' "$@"; }\n${script}`], {
++        env: { ...process.env, REPAIR_SETUP_TAG: repair },
++        encoding: "utf8",
++      });
++      const argv = stdout.trim().split("\n");
++      expect(argv[0]).toBe(
++        ".agentplane/.release/runtime/scripts/publish-external-distribution.mjs",
++      );
++      expect(argv.includes("--repair-existing-setup-tag")).toBe(repair === "true");
++    },
++  );
++
+   it("builds signed historical assets on macOS and publishes the same run artifact", async () => {
+     const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
+     const distribution = workflow.jobs.distribution;
+@@ -319,7 +372,9 @@ describe("publish workflow contract", () => {
+     expect(workflow).toContain("Render Scoop bucket manifest");
+     expect(workflow).toContain("node scripts/render-scoop-manifest.mjs");
+     expect(workflow).toContain("Render setup-agentplane action");
+-    expect(workflow).toContain("node scripts/render-setup-agentplane-action.mjs");
++    expect(workflow).toContain(
++      "node .agentplane/.release/runtime/scripts/render-setup-agentplane-action.mjs",
++    );
+     expect(workflow).toContain("Publish Homebrew tap PR");
+     expect(workflow).toContain("continue-on-error: true");
+     expect(workflow).toContain("Publish Scoop bucket PR");
+diff --git a/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts b/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+index a02d04dd3..20eaf38c8 100644
+--- a/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
++++ b/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+@@ -1,10 +1,13 @@
+ import { execFile } from "node:child_process";
+-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { promisify } from "node:util";
++import { pathToFileURL } from "node:url";
+ 
+ import { afterEach, describe, expect, it } from "vitest";
++import { parse as parseYaml } from "yaml";
+ 
+ const execFileAsync = promisify(execFile);
+ const SCOOP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-scoop-manifest.mjs");
+@@ -83,7 +86,121 @@ async function writeManifest(root: string) {
+   return manifestPath;
+ }
+ 
++async function setupInstallFixture(cliVersion = "0.4.1") {
++  const root = await makeTempRoot();
++  const binDir = path.join(root, "payload", "bin");
++  await mkdir(binDir, { recursive: true });
++  const binary = path.join(binDir, "agentplane");
++  await writeFile(binary, `#!/bin/sh\nprintf '%s\\n' '${cliVersion}'\n`);
++  await chmod(binary, 0o755);
++  const archive = path.join(root, "agentplane.tar.gz");
++  await execFileAsync("tar", ["-czf", archive, "-C", path.dirname(binDir), "bin"]);
++  const manifestPath = await writeManifest(root);
++  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
++    bunAssets: { platform: string; arch: string; url: string; sha256: string }[];
++  };
++  const asset = manifest.bunAssets.find(
++    (entry) => entry.platform === "linux" && entry.arch === "x64",
++  );
++  if (!asset) throw new Error("Missing fixture asset");
++  asset.url = pathToFileURL(archive).href;
++  asset.sha256 = createHash("sha256")
++    .update(await readFile(archive))
++    .digest("hex");
++  await writeFile(manifestPath, JSON.stringify(manifest));
++  const outDir = path.join(root, "action");
++  await execFileAsync("node", [SETUP_SCRIPT_PATH, "--manifest", manifestPath, "--out", outDir]);
++  const action = parseYaml(await readFile(path.join(outDir, "action.yml"), "utf8")) as {
++    runs: { steps: { env: Record<string, string>; run: string }[] };
++  };
++  const step = action.runs.steps[0];
++  expect(step?.env).toEqual({
++    AGENTPLANE_VERSION: "${{ inputs.version }}",
++    AGENTPLANE_VERIFY: "${{ inputs.verify }}",
++  });
++  if (!step) throw new Error("Missing install step");
++  const runnerTemp = path.join(root, "runner temp");
++  await mkdir(runnerTemp);
++  const githubPath = path.join(root, "github-path");
++  await writeFile(githubPath, "");
++  const env = {
++    ...process.env,
++    RUNNER_TEMP: runnerTemp,
++    RUNNER_OS: "Linux",
++    RUNNER_ARCH: "X64",
++    GITHUB_PATH: githubPath,
++    AGENTPLANE_VERSION: "0.4.1",
++    AGENTPLANE_VERIFY: "true",
++  };
++  return { root, archive, githubPath, env, script: step.run };
++}
++
+ describe("standalone consumer renderers", () => {
++  it.each(["0.4.1", "v0.4.1"])(
++    "keeps a verified %s installation usable in a later step",
++    async (version) => {
++      const fixture = await setupInstallFixture();
++      await execFileAsync("bash", ["-c", fixture.script], {
++        cwd: fixture.root,
++        env: { ...fixture.env, AGENTPLANE_VERSION: version },
++      });
++      const pathContent = await readFile(fixture.githubPath, "utf8");
++      const installedPath = pathContent.trim();
++      expect(installedPath).not.toBe("");
++      const { stdout } = await execFileAsync("bash", ["-c", "agentplane --version"], {
++        cwd: fixture.root,
++        env: { ...fixture.env, PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}` },
++      });
++      expect(stdout.trim()).toBe("0.4.1");
++    },
++  );
++
++  it.each(["0.4.2", "$(touch injected)"])(
++    "rejects version input %s without executing it",
++    async (version) => {
++      const fixture = await setupInstallFixture();
++      await expect(
++        execFileAsync("bash", ["-c", fixture.script], {
++          cwd: fixture.root,
++          env: { ...fixture.env, AGENTPLANE_VERSION: version },
++        }),
++      ).rejects.toMatchObject({ code: 2 });
++      expect(await readFile(fixture.githubPath, "utf8")).toBe("");
++      await expect(readFile(path.join(fixture.root, "injected"))).rejects.toMatchObject({
++        code: "ENOENT",
++      });
++    },
++  );
++
++  it("does not add a corrupted archive to PATH", async () => {
++    const fixture = await setupInstallFixture();
++    await writeFile(fixture.archive, "corrupted archive");
++    await expect(
++      execFileAsync("bash", ["-c", fixture.script], {
++        cwd: fixture.root,
++        env: fixture.env,
++      }),
++    ).rejects.toMatchObject({ code: 2 });
++    expect(await readFile(fixture.githubPath, "utf8")).toBe("");
++  });
++
++  it("only publishes PATH after the requested CLI verification passes", async () => {
++    const fixture = await setupInstallFixture("0.0.0");
++    await expect(
++      execFileAsync("bash", ["-c", fixture.script], {
++        cwd: fixture.root,
++        env: fixture.env,
++      }),
++    ).rejects.toMatchObject({ code: 1 });
++    expect(await readFile(fixture.githubPath, "utf8")).toBe("");
++    await execFileAsync("bash", ["-c", fixture.script], {
++      cwd: fixture.root,
++      env: { ...fixture.env, AGENTPLANE_VERIFY: "false" },
++    });
++    const pathContent = await readFile(fixture.githubPath, "utf8");
++    expect(pathContent.trim()).not.toBe("");
++  });
++
+   it("renders Scoop from the Windows Bun asset without nodejs dependency", async () => {
+     const root = await makeTempRoot();
+     const manifestPath = await writeManifest(root);
+diff --git a/scripts/generate/render-setup-agentplane-action.mjs b/scripts/generate/render-setup-agentplane-action.mjs
+index 2171d2860..92ac53ba5 100644
+--- a/scripts/generate/render-setup-agentplane-action.mjs
++++ b/scripts/generate/render-setup-agentplane-action.mjs
+@@ -73,10 +73,16 @@ runs:
+   steps:
+     - name: Install AgentPlane
+       shell: bash
++      env:
++        AGENTPLANE_VERSION: \${{ inputs.version }}
++        AGENTPLANE_VERIFY: \${{ inputs.verify }}
+       run: |
+         set -euo pipefail
+-        version="\${inputs.version}"
+-        version="\${version#v}"
++        version="\${AGENTPLANE_VERSION#v}"
++        if [ "\${version}" != "${version}" ]; then
++          echo "This action installs ${version}; use the matching action tag for another version." >&2
++          exit 2
++        fi
+         tmp_dir="$(mktemp -d)"
+         trap 'rm -rf "$tmp_dir"' EXIT INT TERM
+         case "\${RUNNER_OS}-\${RUNNER_ARCH}" in
+@@ -106,23 +112,22 @@ runs:
+             ;;
+         esac
+         archive="\${tmp_dir}/\${asset_url##*/}"
+-        install_dir="\${tmp_dir}/agentplane"
+-        mkdir -p "\${install_dir}"
+         curl -fsSL "\${asset_url}" -o "\${archive}"
+         actual_sha256="$(shasum -a 256 "\${archive}" | awk '{print $1}')"
+         if [ "\${actual_sha256}" != "\${asset_sha256}" ]; then
+           echo "agentplane archive checksum mismatch" >&2
+           exit 2
+         fi
++        install_dir="$(mktemp -d "\${RUNNER_TEMP:?}/agentplane.XXXXXX")"
+         if [[ "\${archive}" == *.zip ]]; then
+           powershell -NoProfile -Command "Expand-Archive -LiteralPath '\${archive}' -DestinationPath '\${install_dir}' -Force"
+         else
+           tar -xzf "\${archive}" -C "\${install_dir}"
+         fi
+-        echo "\${install_dir}/bin" >> "$GITHUB_PATH"
+-        if [ "\${{ inputs.verify }}" = "true" ]; then
++        if [ "\${AGENTPLANE_VERIFY}" = "true" ]; then
+           "\${install_dir}/bin/agentplane" --version | grep -Fx "\${version}"
+         fi
++        echo "\${install_dir}/bin" >> "$GITHUB_PATH"
+ `;
+ }
+ 
+diff --git a/scripts/release/publish-external-distribution.mjs b/scripts/release/publish-external-distribution.mjs
+index 4a8503809..3511dd72f 100644
+--- a/scripts/release/publish-external-distribution.mjs
++++ b/scripts/release/publish-external-distribution.mjs
+@@ -27,6 +27,7 @@ function usage() {
+     "  --repo-topics <list>    Comma-separated topics to set on target repository",
+     "  --repo-description <text>  Repository description to apply",
+     "  --repo-homepage <url>   Repository homepage URL to apply",
++    "  --repair-existing-setup-tag  Explicitly replace a stale setup-agentplane tag after main verification",
+     "  --out <path>            Evidence JSON path",
+     "  --json                  Emit evidence JSON to stdout",
+     "  --help, -h              Show this help text",
+@@ -65,7 +66,7 @@ function parseArgs(argv, repoRoot) {
+       "repo-homepage",
+       "out",
+     ],
+-    booleanFlags: ["json", "help"],
++    booleanFlags: ["json", "help", "repair-existing-setup-tag"],
+   });
+   return {
+     module: String(flags.module ?? "").trim(),
+@@ -79,6 +80,7 @@ function parseArgs(argv, repoRoot) {
+     topics: parseCommaList(String(flags["repo-topics"] ?? "")),
+     description: String(flags["repo-description"] ?? "").trim(),
+     homepage: String(flags["repo-homepage"] ?? "").trim(),
++    repairExistingSetupTag: Boolean(flags["repair-existing-setup-tag"]),
+     outPath: path.resolve(repoRoot, String(flags.out ?? "")),
+     json: Boolean(flags.json),
+     help: Boolean(flags.help),
+@@ -148,6 +150,14 @@ async function publishExternal(args) {
+   requireNonEmpty(args.tokenEnv, "token env");
+   requireNonEmpty(args.outPath, "out path");
+   if (args.copies.length === 0) throw new Error("At least one --copy is required.");
++  if (
++    args.repairExistingSetupTag &&
++    (args.module !== "setup-agentplane" || args.tag !== `v${args.version}`)
++  ) {
++    throw new Error(
++      "Setup tag repair requires the setup-agentplane module and its exact version tag.",
++    );
++  }
+ 
+   const token = String(process.env[args.tokenEnv] ?? "").trim();
+   const baseEvidence = {
+@@ -288,7 +298,7 @@ async function publishExternal(args) {
+         .trim()
+         .split(/\s+/u)
+         .find((entry) => /^[0-9a-f]{40}$/iu.test(entry));
+-      if (existingSha) {
++      if (existingSha && (existingSha === headSha || !args.repairExistingSetupTag)) {
+         return {
+           status: existingSha === headSha ? "published" : "failed",
+           tag: args.tag,
+@@ -299,11 +309,19 @@ async function publishExternal(args) {
+               : `setup-agentplane tag ${args.tag} points at ${existingSha}, expected ${headSha}.`,
+         };
+       }
+-      await run("git", ["tag", args.tag], { cwd: cloneDir, env });
+-      await run("git", ["push", "origin", `${tagRef}:${tagRef}`], {
+-        cwd: cloneDir,
+-        env,
+-      });
++      if (existingSha) {
++        await run(
++          "git",
++          ["push", `--force-with-lease=${tagRef}:${existingSha}`, "origin", `${headSha}:${tagRef}`],
++          { cwd: cloneDir, env },
++        );
++      } else {
++        await run("git", ["tag", args.tag], { cwd: cloneDir, env });
++        await run("git", ["push", "origin", `${tagRef}:${tagRef}`], {
++          cwd: cloneDir,
++          env,
++        });
++      }
+       const { stdout: pushedStdout } = await run("git", ["ls-remote", "--tags", "origin", tagRef], {
+         cwd: cloneDir,
+         env,

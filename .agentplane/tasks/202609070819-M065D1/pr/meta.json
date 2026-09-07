@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609070819-M065D1/keep-setup-agentplane-installations-usable-acros",
+  "created_at": "2026-09-07T08:23:50.856Z",
+  "diffstat_sha256": "sha256:27e7830623324052e262b1c791c07c34e7c2fc2e0f7dfef47e58c62bf67bcaa0",
+  "last_verified_at": "2026-09-07T08:42:32.616Z",
+  "last_verified_diffstat_sha256": "sha256:27e7830623324052e262b1c791c07c34e7c2fc2e0f7dfef47e58c62bf67bcaa0",
+  "pr_number": 5908,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5908",
+  "pre_merge_closure": {
+    "basis_commit": "313c9595f5d328ea78d8c75e9c9f1544cf8db902",
+    "branch": "task/202609070819-M065D1/keep-setup-agentplane-installations-usable-acros",
+    "pr_number": 5908,
+    "recorded_at": "2026-09-07T08:44:29.073Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609070819-M065D1",
+  "updated_at": "2026-09-07T08:34:19.665Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,7 @@
+ .github/workflows/publish.yml                      |  23 +-
+ .../publish-external-distribution-script.test.ts   | 314 +++++++++++++++------
+ .../release/publish-workflow-contract.test.ts      |  59 +++-
+ ...ender-scoop-and-setup-standalone-script.test.ts | 119 +++++++-
+ .../generate/render-setup-agentplane-action.mjs    |  17 +-
+ scripts/release/publish-external-distribution.mjs  |  32 ++-
+ 6 files changed, 451 insertions(+), 113 deletions(-)
