@@ -4,7 +4,7 @@ title: "Sign macOS standalone release binaries before packaging"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Relayed existing explicit user authorization for every action required to fix and verify the 0.7.8 release, including the explicit AGENTS permission override. Approves the bounded six-file macOS signing and verified distribution handoff repair; recovery preserves the qualified source SHA and immutable npm packages."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-07T04:07:02.609Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -89,7 +89,9 @@ execution_contract:
       - "scripts/generate/generate-bun-cli-assets.mjs"
       - "scripts/generate/generate-release-distribution.mjs"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-3:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - ".github"
       - "packages/agentplane"
@@ -107,7 +109,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -207,9 +221,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "7cfd6b281fc79d748e5dc871e7b4d2bdbdd4bcaf"
-  message: "🚧 6B37B9 task: apply external agent result"
+      - "verification_recovery:recorded-check-3"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -233,8 +247,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 7cfd6b281fc7. CLI accepted one state-bound external-agent semantic result."
     commit: "7cfd6b281fc79d748e5dc871e7b4d2bdbdd4bcaf"
+  -
+    type: "verify"
+    at: "2026-09-07T04:07:02.609Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-07T04:03:33.435Z"
+doc_updated_at: "2026-09-07T04:07:03.576Z"
 doc_updated_by: "SUPERVISOR"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
@@ -253,6 +273,51 @@ sections:
     4. After integration, recover the same release SHA through the hosted publisher and independently verify both Darwin signatures, native macOS execution and all regenerated checksums before refreshing existing PR #5906. Actual publication remains outside this semantic repair.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T04:07:02.609Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae, input_digest=sha256:e3f12a1e8401efbcb032090a75c6a38c59df37aeaf2b479716f5a15b2af1fe9d
+
+    Details:
+
+    Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+    Command: bun run workflows:lint
+    Result: pass
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070351-6B37B9-sign-macos-standalone-release-binaries-before-pa/.agentplane/tasks/202609070351-6B37B9/blueprint/resolved-snapshot.json
+    - old_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+    - current_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609070351-6B37B9
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609070351-6B37B9
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -461,7 +526,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609070351-6B37B9"
     intent:
@@ -486,9 +551,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-07T04:03:42.576Z"
+    updated_at: "2026-09-07T04:07:03.575Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -632,6 +697,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609070351-6B37B9"
+      compatibility:sha256:86c566e1bbc41d64f904c7bd21c56e3766373de0ea30dbb4e13f28d0eb33e3dd:
+        aggregate_digest: "sha256:760a55224d46306ffd1159be4e70696500ebabe2de25268687e68ff022652d8e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T04:07:03.575Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2090db7eccf0a3ac75b6184f"
+          mutation_id: "compatibility:sha256:86c566e1bbc41d64f904c7bd21c56e3766373de0ea30dbb4e13f28d0eb33e3dd"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:86c566e1bbc41d64f904c7bd21c56e3766373de0ea30dbb4e13f28d0eb33e3dd"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
       compatibility:sha256:a9f752d5a1d380a475e9f77ae0d85ebb59929f4c5a6cfb0924d5129746890e3e:
         aggregate_digest: "sha256:45dbcc6ed7940766d795cf5ec71c81f451eef9877543d139a3ec69a4349d7ba8"
         event:
@@ -706,8 +795,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "7cfd6b281fc79d748e5dc871e7b4d2bdbdd4bcaf"
   task_execution_context:
     base_ref: "main"
     base_sha: "68b7b240362fe005e4ea5c63ee214c37fc545212"
@@ -744,6 +831,51 @@ Propose one bounded packaging and workflow repair: sign Darwin executables on ma
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T04:07:02.609Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c0ace79dae98f2388f97808141b46e41384993e772e9c40a5fdeb2f5099282ae, input_digest=sha256:e3f12a1e8401efbcb032090a75c6a38c59df37aeaf2b479716f5a15b2af1fe9d
+
+Details:
+
+Command: bun run test:project agentplane packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+Command: bun run workflows:lint
+Result: pass
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609070351-6B37B9/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609070351-6B37B9 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609070351-6B37B9-sign-macos-standalone-release-binaries-before-pa/.agentplane/tasks/202609070351-6B37B9/blueprint/resolved-snapshot.json
+- old_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+- current_digest: f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609070351-6B37B9
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609070351-6B37B9
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
