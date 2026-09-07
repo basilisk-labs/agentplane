@@ -6,7 +6,7 @@ Created: 2026-09-07T08:23:50.856Z
 
 - Task: `202609070819-M065D1`
 - Title: Keep setup-agentplane installations usable across workflow steps
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609070819-M065D1/keep-setup-agentplane-installations-usable-acros`
 - Canonical task record: `.agentplane/tasks/202609070819-M065D1/README.md`
 
