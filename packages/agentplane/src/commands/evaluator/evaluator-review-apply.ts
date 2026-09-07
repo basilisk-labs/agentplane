@@ -41,6 +41,14 @@ async function persistReview(opts: {
   opinion_path: string;
   result_path: string | null;
 }> {
+  if (opts.report.verdict === "pass" && !opts.report.evaluated_sha) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "A passing evaluator review requires a committed review target. Record the task implementation commit through the supported task workflow, then prepare and run evaluator again.",
+      context: { task_id: opts.task.id, reason_code: "evaluated_sha_missing" },
+    });
+  }
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const reviewDir = path.dirname(opts.workOrderPath);
   const paths = reportPaths(reviewDir);

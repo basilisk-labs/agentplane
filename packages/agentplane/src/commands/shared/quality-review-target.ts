@@ -570,6 +570,11 @@ export async function resolveQualityReviewTargetSha(opts: {
     if (touchesCurrentTaskSet) {
       return currentTaskArtifactHead ?? current;
     }
+    if (opts.workflowMode === "direct" && previousEvaluatedSha) {
+      // Shared direct history can interleave task artifacts before a known review target.
+      current = parent;
+      continue;
+    }
     return currentTaskArtifactHead;
   }
 }

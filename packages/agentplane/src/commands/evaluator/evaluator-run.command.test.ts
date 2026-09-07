@@ -507,25 +507,27 @@ describe("evaluator run command", () => {
       "chore: unrelated task artifact",
     );
 
-    await runEvaluatorRun(
-      { cwd: root, rootOverride: undefined },
-      {
-        taskId,
-        evaluator: "recovery-context",
-        provenance: "human_supplied",
-        verdict: "pass",
-        summary: "No current committed work unit",
-        findings: ["Unrelated workflow history is not a valid review target."],
-        evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
-        missingTests: [],
-        hiddenAssumptions: [],
-        residualRisks: [],
-        json: false,
-        record: true,
-      },
-    );
-
-    expect(await readEvaluatedSha(root, taskId)).toBeNull();
+    await expect(
+      runEvaluatorRun(
+        { cwd: root, rootOverride: undefined },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          provenance: "human_supplied",
+          verdict: "pass",
+          summary: "No current committed work unit",
+          findings: ["Unrelated workflow history is not a valid review target."],
+          evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      ),
+    ).rejects.toThrow("passing evaluator review requires a committed review target");
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review?.state).not.toBe("pass");
   });
 
   it("prepares a frozen read-only work order and applies only the matching typed evaluator result", async () => {
