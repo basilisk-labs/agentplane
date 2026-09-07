@@ -4,6 +4,7 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:f
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 
@@ -337,7 +338,7 @@ async function writeChecksums(outDir, assets) {
 }
 function generateBunAssets(repoRoot, outDir, context) {
   const args = [
-    "scripts/generate-bun-cli-assets.mjs",
+    fileURLToPath(new URL("./generate-bun-cli-assets.mjs", import.meta.url)),
     "--out",
     outDir,
     "--version",
