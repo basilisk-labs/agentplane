@@ -487,3 +487,22 @@ it.each([
   expect(packet.authority.network).toBe("deny");
   expect(packet.stop.reason).toBe("semantic_boundary");
 });
+
+it("preserves the language contract on the managed-runner continuation route", () => {
+  const packet = buildAgentActionPacket({
+    decision: decision(
+      step({
+        kind: "cli_operation",
+        operation: { id: "runner.follow", params: { mode: "run" } },
+      }),
+    ),
+    work_order: workOrder(),
+  });
+  expect(packet.action.kind).toBe("agent_episode");
+  expect(packet.action.instruction).toContain("simple technical English");
+  expect(packet.action.instruction).toContain(
+    "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+  );
+  expect(packet.authority.network).toBe("deny");
+  expect(packet.stop).toEqual({ reason: "semantic_boundary", resume: "request_fresh_packet" });
+});
