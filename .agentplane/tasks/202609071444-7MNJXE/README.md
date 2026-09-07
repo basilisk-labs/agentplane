@@ -4,7 +4,7 @@ title: "Repair CodeQL configuration consistency and triage current GitHub securi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -218,9 +218,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "eec513320ad09780ba4cc28885c742782eacac49"
-  message: "🚧 7MNJXE task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -559,9 +557,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-07T16:03:51.985Z"
+    updated_at: "2026-09-07T16:03:53.429Z"
     work_items:
       alert-triage:
         attempt: 0
@@ -612,14 +610,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       temp-assets:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "temp-assets"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:4e5012c0a24c376c85124033499248d1ae5d8f7816dcfba1bde26ee37d497080"
+            id: "temp-assets-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071444-7MNJXE"
+              work_item_id: "temp-assets"
+            provenance:
+              - "sha256:c7bf8d33f5672a2ccb7f86c6fc541f3702c08dae44988c06f3a84c94dfeb242b"
+              - ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5017b6ea1dad55cc44db5d21913b63ed76589348fc4ac8835ac45af231e7b15f"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071444-7MNJXE/supervision/declared-checks.json"
+              check_id: "temp-assets-review"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-07T16:03:53.423Z"
+              repository_snapshot_digest: "sha256:5017b6ea1dad55cc44db5d21913b63ed76589348fc4ac8835ac45af231e7b15f"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -640,6 +668,23 @@ extensions:
         task_id: "202609071444-7MNJXE"
         task_revision: 7
         work_item_id: "codeql-config"
+      -
+        at: "2026-09-07T16:03:53.429Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:a79a4d463f7816f8c95d3fe716c2234ef5c0dae7e8a5e439a6933a7a84754571"
+        entity: "work_item"
+        id: "event_2a796f7b53a6cf82b9c11c90"
+        mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-cfd1eb092c17b0d76ce7e9a9"
+        plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+        task_revision: 10
+        work_item_id: "temp-assets"
     leases: []
     mutation_receipts:
       compatibility:sha256:18eb1940a068fcecdf5a3f96be8a64a24e6bda8d51e01c4a4671942670f6daa8:
@@ -832,6 +877,30 @@ extensions:
         mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+      external-result:work-order-202609071444-7MNJXE-executor-cfd1eb092c17b0d76ce7e9a9:
+        aggregate_digest: "sha256:b48e856c02ea69edece7d4bac0089854f8aedc307caa51e26d02dad4bb6b4473"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:03:53.429Z"
+          cause_refs:
+            - "semantic-result:sha256:a79a4d463f7816f8c95d3fe716c2234ef5c0dae7e8a5e439a6933a7a84754571"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_2a796f7b53a6cf82b9c11c90"
+          mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-cfd1eb092c17b0d76ce7e9a9"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: "temp-assets"
+        mutation_id: "external-result:work-order-202609071444-7MNJXE-executor-cfd1eb092c17b0d76ce7e9a9"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609071444-7MNJXE"
     pending_effects: []
