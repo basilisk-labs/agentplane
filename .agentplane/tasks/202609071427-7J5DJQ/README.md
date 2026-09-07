@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,6 @@ quality_review:
     - "Residual risk: Cross-platform execution remains a separate qualification boundary."
 token_usage:
   agent_runs: 10
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:4abc81f6215f737c5725bf77e0ccf86aa2f5af7787c3a11b17c3b9dc1b1b0575"
   observed_agent_runs: 0
@@ -353,6 +351,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The staged resolution is intended, but the prior commit failed before the base merge because its hook runtime was stale. This readonly episode cannot adjust or commit the resolution."
 events:
   -
     type: "status"
@@ -432,9 +433,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "d6f6ed3706d8600a15630c887b8d6807c28d925e"
+  -
+    type: "comment"
+    at: "2026-09-07T21:50:21.575Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The staged resolution is intended, but the prior commit failed before the base merge because its hook runtime was stale. This readonly episode cannot adjust or commit the resolution."
 doc_version: 3
-doc_updated_at: "2026-09-07T17:09:31.186Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T21:50:21.595Z"
+doc_updated_by: "SUPERVISOR"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -924,7 +930,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 19
+    event_cursor: 20
     final_validation:
       evidence:
         -
@@ -1193,9 +1199,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 23
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-07T17:09:31.186Z"
+    updated_at: "2026-09-07T21:50:21.575Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -1454,6 +1460,30 @@ extensions:
         mutation_id: "compatibility:sha256:5e3c62a6c2087633500ef0c51d05b82968fefe3a5e163214fa358ae22f4f037b"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:633097d0c4693bc03cc4ebecb65e50a33b58bfe9572a5ce1dc902a35e430c527:
+        aggregate_digest: "sha256:929fbcb0f4d7545c7306b69ba33ef8b8fe57750fb4c82c9390c3dcd6a63d8653"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T21:50:21.575Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_49421cff46ff11f6c320f4ce"
+          mutation_id: "compatibility:sha256:633097d0c4693bc03cc4ebecb65e50a33b58bfe9572a5ce1dc902a35e430c527"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 23
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:633097d0c4693bc03cc4ebecb65e50a33b58bfe9572a5ce1dc902a35e430c527"
+        next_revision: 24
+        previous_revision: 23
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:674f824059ea62bf42bd57d915bdee1e97ab2585d17415d322a45b660f482b08:
