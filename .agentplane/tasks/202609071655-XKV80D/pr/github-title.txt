@@ -1,0 +1,1 @@
+✅ XKV80D task: Accept report-only WorkItem results without requiring source-code changes [202609071655-XKV80D]
