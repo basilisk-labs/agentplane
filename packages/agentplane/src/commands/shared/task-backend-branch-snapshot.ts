@@ -17,7 +17,12 @@ import {
   withTaskReadmeFrontmatterDefaults,
 } from "@agentplaneorg/core/schemas";
 
-import { taskRecordToData, type TaskData } from "../../backends/task-backend.js";
+import {
+  taskRecordToData,
+  toTaskSummary,
+  type TaskData,
+  type TaskSummary,
+} from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "./task-backend.js";
 
@@ -215,6 +220,9 @@ function taskDataFromReadmeText(opts: {
           : opts.taskId,
     }),
   );
+  if (frontmatter.id !== opts.taskId) {
+    throw new Error(`Task branch README belongs to ${String(frontmatter.id)}, not ${opts.taskId}.`);
+  }
   return taskRecordToData({
     id: opts.taskId,
     frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
@@ -296,4 +304,61 @@ export async function loadTaskFromBranchSnapshot(opts: {
     }
   }
   return null;
+}
+
+/** Supplement missing local projections without copying task truth between checkouts. */
+export async function supplementTaskProjectionFromWorktrees(opts: {
+  ctx: CommandContext;
+  tasks: TaskSummary[];
+}): Promise<TaskSummary[]> {
+  if (!backendSupportsTaskBranchSnapshots(opts.ctx)) return opts.tasks;
+  opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
+  const worktrees = await opts.ctx.memo.taskWorktreeInventory;
+  const ids = new Set(
+    worktrees.flatMap((entry) => {
+      const id = entry.branch
+        ? parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch)
+        : null;
+      return id ? [id] : [];
+    }),
+  );
+  const known = new Set(opts.tasks.map((task) => task.id));
+  const tasks = [...opts.tasks];
+  for (const taskId of [...ids].toSorted()) {
+    if (known.has(taskId)) continue;
+    try {
+      // A healthy local record can be absent because the caller requested a status filter.
+      if (await opts.ctx.taskBackend.getTask(taskId)) continue;
+    } catch {
+      // A malformed local projection can still have a valid authoritative owner.
+    }
+    const branch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId });
+    if (!branch) continue;
+    const owner = await resolveAuthoritativeTaskWorktree({
+      ctx: opts.ctx,
+      taskId,
+      branch,
+      requireRegistration: true,
+    });
+    if (!owner) continue;
+    const relativeReadme = path.join(opts.ctx.config.paths.workflow_dir, taskId, "README.md");
+    const task = await loadTaskFromBranchSnapshot({
+      ctx: opts.ctx,
+      taskId,
+      branch,
+      readmePath: path.join(opts.ctx.resolvedProject.gitRoot, relativeReadme),
+    });
+    if (!task) continue;
+    tasks.push({
+      ...toTaskSummary(task),
+      extensions: {
+        ...task.extensions,
+        "agentplane.task_projection_source": {
+          state: "local_projection_unavailable",
+          readme_path: path.join(owner.path, relativeReadme),
+        },
+      },
+    });
+  }
+  return tasks;
 }

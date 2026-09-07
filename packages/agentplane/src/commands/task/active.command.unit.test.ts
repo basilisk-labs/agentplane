@@ -62,7 +62,10 @@ describe("task active route evaluation", () => {
       getTask: () => Promise.resolve(task),
     });
     const result = await buildActiveWorkItems({
-      ctx: makeTaskCommandContext({ taskBackend: backend }),
+      ctx: makeTaskCommandContext({
+        taskBackend: backend,
+        overrides: { memo: { taskWorktreeInventory: Promise.resolve([]) } },
+      }),
       cwd: "/repo",
       filters: { status: [], owner: [], tag: [], quiet: false },
     });

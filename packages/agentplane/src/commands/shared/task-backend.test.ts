@@ -9,6 +9,7 @@ import { createTask } from "@agentplaneorg/core/tasks";
 import { describe, expect, it } from "vitest";
 
 import {
+  captureStdIO,
   configureGitUser,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
@@ -25,6 +26,8 @@ import {
   resolveTaskBranchFromContext,
   resolveTaskOwnerCommandContext,
 } from "./task-backend.js";
+
+import { cmdTaskList } from "../task/list.js";
 
 const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
 
@@ -230,6 +233,92 @@ describe(
         id: created.id,
       });
     });
+
+    it.each(["missing", "malformed", "directory_missing"])(
+      "discovers the owner task when the base projection is %s without repairing it",
+      async (projection) => {
+        const root = await mkGitRepoRootWithBranch("main");
+        await writeDefaultConfig(root);
+        await writeLocalBackendConfig(root);
+        const created = await createTask({
+          cwd: root,
+          rootOverride: root,
+          title: "Discoverable owner task",
+          description: "The owner retains task truth.",
+          owner: "TESTER",
+          priority: "med",
+          tags: ["testing"],
+          dependsOn: [],
+          verify: [],
+        });
+        const execFileAsync = promisify(execFile);
+        await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+        await execFileAsync("git", ["commit", "-m", "seed task discovery"], { cwd: root });
+        const owner = path.join(root, ".agentplane/worktrees", `${created.id}-owner`);
+        await execFileAsync("git", ["worktree", "add", "-b", `task/${created.id}/owner`, owner], {
+          cwd: root,
+        });
+        const readme = path.join(root, ".agentplane/tasks", created.id, "README.md");
+        const ownerReadme = await realpath(
+          path.join(owner, ".agentplane/tasks", created.id, "README.md"),
+        );
+        const original = await readFile(ownerReadme, "utf8");
+        const warm = await loadCommandContext({ cwd: root, rootOverride: root });
+        await listTaskSummariesMemo(warm);
+        if (projection === "malformed") await writeFile(readme, "---\nid: [broken\n---\n");
+        else
+          await rm(projection === "directory_missing" ? path.dirname(readme) : readme, {
+            recursive: true,
+          });
+        const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
+        const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+        const tasks = await listTaskSummariesMemo(ctx);
+        expect(tasks.map((task) => task.id)).toContain(created.id);
+        expect(
+          tasks.find((task) => task.id === created.id)?.extensions?.[
+            "agentplane.task_projection_source"
+          ],
+        ).toEqual({ state: "local_projection_unavailable", readme_path: ownerReadme });
+        const ownerCtx = await loadCommandContext({ cwd: owner, rootOverride: owner });
+        const ownerTasks = await listTaskSummariesMemo(ownerCtx);
+        expect(ownerTasks.map((task) => task.id)).toContain(created.id);
+        const io = captureStdIO();
+        try {
+          expect(
+            await cmdTaskList({
+              ctx,
+              cwd: root,
+              filters: { status: [], owner: [], tag: [], quiet: true, all: true },
+            }),
+          ).toBe(0);
+          expect(io.stdout).toContain(created.id);
+          expect(io.stdout).toContain(`source=${ownerReadme}`);
+        } finally {
+          io.restore();
+        }
+        expect(await readFile(ownerReadme, "utf8")).toBe(original);
+        const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
+        expect(after.stdout).toBe(before.stdout);
+        if (projection === "malformed") {
+          await writeFile(ownerReadme, original.replace(created.id, "202609070000-FOREIGN"));
+          try {
+            const foreign = await loadCommandContext({ cwd: root, rootOverride: root });
+            await expect(listTaskSummariesMemo(foreign)).rejects.toThrow(
+              "does not contain a valid README",
+            );
+          } finally {
+            await writeFile(ownerReadme, original);
+          }
+        }
+        if (projection === "missing") {
+          await execFileAsync("git", ["branch", `task/${created.id}/duplicate`], { cwd: root });
+          const ambiguous = await loadCommandContext({ cwd: root, rootOverride: root });
+          await expect(listTaskSummariesMemo(ambiguous)).rejects.toThrow(
+            `Multiple task branches match ${created.id}`,
+          );
+        }
+      },
+    );
 
     it("rejects a local task branch without a registered authoritative worktree", async () => {
       const repo = await tempRepo({ branch: "main" });
