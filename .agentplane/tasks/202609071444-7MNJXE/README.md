@@ -4,7 +4,7 @@ title: "Repair CodeQL configuration consistency and triage current GitHub securi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T17:51:23.664Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "5cb6963362b19c8e38123b375c7993dec3f7ca7b"
+  blueprint_digest: "57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e"
+  evidence_refs:
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/20260907-174939201-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/20260907-174939201-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/c7598f691198fdc510a88e89d44953343b5c3ac0f008ba4e282e5475ec7f7af8.md"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/20260907-174939201-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/20260907-174939201-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/20260907-174939201-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071444-7MNJXE/README.md"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/116563f095b9bd0882ff4c2919a536f355fce836a33c325784218d1cc4a68a15.patch"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/54c846be5e759df382bae353ac3e3d8ad68378a68fec191dc00853a571389d50.json"
+    - ".agentplane/tasks/202609071444-7MNJXE/verification/20260907174931879-268bcb6272ba765f.json"
+    - ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/5e46c6f3de914c325a3b36820998c965623d91ae2e47141ec7d1f62e62a0a5e9.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "All frozen evidence digests match. The complete approved diff contains stable two-language CodeQL planning, an explicit analysis category, private per-process temporary asset materialization, exit cleanup, and focused regressions. Existing CI checks remain."
+    - "The persisted verification record is ok and references bun run ci:local:full with exit 0. The separately observed focused run passed all 31 CodeQL planning and asset tests. The final ESLint rework is included in the evaluated SHA."
+    - "The saved report contains exactly 72 unique alert IDs, matching the 72-alert source snapshot with no missing or unexpected entries. It identifies the temporary-path risk addressed by this change and retains explicit unresolved dispositions for the other alerts."
+    - "The report is an immutable historical result. Its old disk-space and pending-lint caveats have been superseded by the later successful full verification record."
+    - "Residual risk: The remaining alerts require separately scoped investigation and remediation. This result is not a security-clean assessment."
+    - "Residual risk: A new hosted CodeQL analysis of the integrated changes is needed to confirm configuration warning and alert resolution. No dismissal, merge, or hosted configuration change is authorized by this review."
 execution_route:
   frozen: true
   reason_codes:
@@ -689,7 +718,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071444-7MNJXE"
-    event_cursor: 14
+    event_cursor: 15
     final_validation: null
     id: "202609071444-7MNJXE"
     intent:
@@ -704,9 +733,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-07T17:49:32.903Z"
+    updated_at: "2026-09-07T17:49:32.905Z"
     work_items:
       alert-triage:
         attempt: 1
@@ -999,6 +1028,30 @@ extensions:
         mutation_id: "compatibility:sha256:594d15dbbc34f6919cccbca125fe14d9f94d2b2947aa5296ac9ef3a573bdd4c6"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
+      compatibility:sha256:5b91911ff281be445c1e77354eeeb515afbdb1f0d88ccd9c296e4b59a78ab428:
+        aggregate_digest: "sha256:2615824f7fe7eb9b0f647fa083782d4345729440cd333a608a3168c11a75cd41"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:49:32.905Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_705c9a8b7d978857463b4040"
+          mutation_id: "compatibility:sha256:5b91911ff281be445c1e77354eeeb515afbdb1f0d88ccd9c296e4b59a78ab428"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5b91911ff281be445c1e77354eeeb515afbdb1f0d88ccd9c296e4b59a78ab428"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609071444-7MNJXE"
       compatibility:sha256:6c3787dca0cf282b03fbd1efd87db0a4cc6b20d789db2fe5e59e663f1b140b2a:
