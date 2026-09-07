@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -31,35 +31,35 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-07T07:33:11.789Z"
+  updated_at: "2026-09-07T07:54:12.760Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "bba14822d1e54bc2b76fbafcb5760e17cd1c49ea"
+  evaluated_sha: "f379949d19975562cfe19763a5aed02b1c77b5a7"
   blueprint_digest: "f38feac4a9022bd208f52449f378f506d2b8298bc9d5fb82a12be1135bc22e33"
   evidence_refs:
-    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/b7c3905df18b5040c6fb0db3f921d1217f8f2b1d4111cb0cfdacc59d5e98fd6f.md"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-073141390-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-075158767-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-075158767-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/466e9fdb96380fbc4268ab53b1c95b4c9a883115d3c4f8d398354598a26adfcd.md"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-075158767-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-075158767-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/20260907-075158767-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609070351-6B37B9/README.md"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/1d592a4935c391d215bcaa37428c2002bfb760bc71b3477e665de45fbd9c24f8.patch"
-    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/3b4734e92f23f512c19c758350a297a62618c182cf7c0c22aba6040ea1d7fb2d.json"
-    - ".agentplane/tasks/202609070351-6B37B9/verification/20260907073133074-b5256f44f33b4471.json"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+    - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/8d952e373d67ff6764f505850b792228c5e29ad81d34997da60edc39c89a9017.json"
+    - ".agentplane/tasks/202609070351-6B37B9/verification/20260907075150819-5a88cc88182bd67b.json"
     - ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/4ba10ef4ee1d4542d176c9884502bafccad8af09b84a12341e82e0a73043fdfe.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Verified the frozen evaluator work order digest, evidence manifest digest and all nine evidence references. Reviewed the cumulative implementation diff against base 68b7b240362fe005e4ea5c63ee214c37fc545212 and evaluated commit bba14822d1e54bc2b76fbafcb5760e17cd1c49ea."
-    - "The generator preserves portable synthetic mode and rejects real Darwin generation off macOS. Signing and strict verification failures occur before archive creation. Tests cover successful signed archive bytes and hashes, both failure stages and the host guard."
-    - "The macOS workflow checks out the qualified source SHA and separate current packaging runtime. Runtime-relative companion resolution is tested against a historical fixture without generator scripts. Both Darwin archive signatures and native macOS execution are required before upload."
-    - "Ubuntu consumes a same-run signed artifact and checks SHA, version, tag, all manifest hashes, upgrade checksum, SHA256SUMS and the included npm tarball used by GHCR. Existing source readiness, npm skip flags, Linux smoke and stable tag/publish evidence guards remain."
-    - "All required recorded checks passed: 36 focused tests (3992ms), workflow lint (838ms), and ci:local:full (496080ms). No unintended tracked changes remain; generated task and quality artifacts are supervisor-owned."
-    - "Residual risk: Hosted PR CI remains required before integration. Actual signed release assets and external checksums must be verified after recovery publication; this review does not claim publication completion."
-    - "Residual risk: The separate Ubuntu distribution-module workflow is not the signed-asset regeneration route. Use the repaired canonical publisher for this release; external-only module recovery consumes the published manifest."
+    - "Verified the frozen work order, manifest and all nine evidence digests for evaluated commit f379949d19975562cfe19763a5aed02b1c77b5a7. Reviewed the two-file rework and cumulative six-file product diff."
+    - "The job checks out trusted main without persisted credentials. An exact-SHA syntax check and git ancestry proof precede detached checkout and all installation/build execution. The behavior tests reject unmerged commit objects and branch-name inputs while accepting a historical main commit."
+    - "The separate packaging runtime checkout also avoids persisted credentials. The introduced setup-bun action is commit-pinned and its executable cache is disabled; setup-node package-manager caching is disabled. There are no CodeQL suppressions or query-policy changes."
+    - "Recorded evidence proves 39 release tests, workflow lint and full ci:local:full all pass (3940ms, 796ms and 472431ms respectively). Pre-existing task artifacts are correctly classified in supervisor evidence; final tracked state is clean."
+    - "Signed Darwin archive creation, both architecture signature checks, native smoke, exact same-run artifact consumption, npm tarball/asset checksums and all publication identity guards remain intact."
+    - "Residual risk: The new hosted CodeQL check must pass before integration; the previous head remains invalid. Local evidence does not establish hosted alert closure."
+    - "Residual risk: Actual signed release recovery and external checksum verification remain after integration."
 token_usage:
   agent_runs: 4
   input_tokens: null
@@ -371,7 +371,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T07:51:52.321Z"
+doc_updated_at: "2026-09-07T07:54:12.768Z"
 doc_updated_by: "SUPERVISOR"
 description: "Post-publication verification of v0.7.8 found that the downloaded darwin-arm64 executable is terminated with SIGKILL and codesign reports an invalid signature. Ad-hoc signing the identical extracted binary makes it run as 0.7.8. Repair release asset generation so both Darwin binaries are signed and verified on macOS before archive checksums and distribution manifests are finalized. Generate and smoke release distribution assets in a macOS job, then consume those exact artifacts in the Ubuntu publisher while preserving exact historical release-ready SHA validation, npm skip guards, tag identity and canonical publication evidence. Keep source payload 81b3fe507426d82ea903d7a63fd6335b583d81b5 and npm versions unchanged for recovery. Add focused signing and workflow contract regressions; integrate this repair separately before regenerating published assets and refreshing existing release follow-up PR #5906."
 sections:
@@ -859,7 +859,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070351-6B37B9"
-    event_cursor: 14
+    event_cursor: 15
     final_validation: null
     id: "202609070351-6B37B9"
     intent:
@@ -884,9 +884,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-07T07:51:52.320Z"
+    updated_at: "2026-09-07T07:51:52.321Z"
     work_items:
       sign-standalone-release-assets:
         attempt: 1
@@ -1220,6 +1220,30 @@ extensions:
         mutation_id: "compatibility:sha256:bbfe5926ff3ef8a41cd54e9b2920df0fb2ca6123b53a2b1041bedd946ba458e8"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609070351-6B37B9"
+      compatibility:sha256:e5a8a8e9560e7f1b03199ff691d430aff34d76a99b5809c6b1448ba55f4627d4:
+        aggregate_digest: "sha256:24fa9efb030756bda24d3935c321af04058c50be5e6fbd30b1c636ddea7861ed"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T07:51:52.321Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ec6767c0e8dadb0fdc280d2e"
+          mutation_id: "compatibility:sha256:e5a8a8e9560e7f1b03199ff691d430aff34d76a99b5809c6b1448ba55f4627d4"
+          plan_digest: "sha256:bea31431fd97fc321432455b51f603de42ef9dc3c01db4618aff4535278447a0"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070351-6B37B9"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e5a8a8e9560e7f1b03199ff691d430aff34d76a99b5809c6b1448ba55f4627d4"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609070351-6B37B9"
       compatibility:sha256:ed658ff86fcfde89ce226b85cb9b5a8c09f28c5edaf42c008ddaf6fe588557c8:

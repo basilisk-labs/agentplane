@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Verified the frozen work order, manifest and all nine evidence digests for evaluated commit f379949d19975562cfe19763a5aed02b1c77b5a7. Reviewed the two-file rework and cumulative six-file product diff.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The job checks out trusted main without persisted credentials. An exact-SHA syntax check and git ancestry proof precede detached checkout and all installation/build execution. The behavior tests reject unmerged commit objects and branch-name inputs while accepting a historical main commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The separate packaging runtime checkout also avoids persisted credentials. The introduced setup-bun action is commit-pinned and its executable cache is disabled; setup-node package-manager caching is disabled. There are no CodeQL suppressions or query-policy changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Recorded evidence proves 39 release tests, workflow lint and full ci:local:full all pass (3940ms, 796ms and 472431ms respectively). Pre-existing task artifacts are correctly classified in supervisor evidence; final tracked state is clean.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Signed Darwin archive creation, both architecture signature checks, native smoke, exact same-run artifact consumption, npm tarball/asset checksums and all publication identity guards remain intact.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: The new hosted CodeQL check must pass before integration; the previous head remains invalid. Local evidence does not establish hosted alert closure.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Actual signed release recovery and external checksum verification remain after integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609070351-6B37B9/quality/objects/sha256/f0ecd6ca03c4b255561ce189dba5e78b188e2038224105c9e6e53e38fd3a3363.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,552 @@
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index c4607aa46..ede50f592 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -249,9 +249,92 @@ jobs:
+             echo "cli_published=$CLI_PUBLISHED"
+           } >> "$GITHUB_OUTPUT"
+ 
+-  publish:
++  distribution:
++    name: Build signed release distribution
+     needs: detect
+     if: github.event_name == 'workflow_dispatch' && needs.detect.outputs.should_publish == 'true'
++    runs-on: macos-latest
++    timeout-minutes: 30
++    permissions:
++      contents: read
++    steps:
++      - uses: actions/checkout@v6
++        with:
++          ref: main
++          persist-credentials: false
++          fetch-depth: 0
++          submodules: false
++      - name: Select qualified release source from main history
++        shell: bash
++        env:
++          RELEASE_SHA: ${{ needs.detect.outputs.sha }}
++        run: |
++          set -euo pipefail
++          if [[ ! "${RELEASE_SHA}" =~ ^[0-9a-f]{40}$ ]]; then
++            echo "Release source must be an exact commit SHA" >&2
++            exit 1
++          fi
++          git merge-base --is-ancestor "${RELEASE_SHA}" origin/main
++          git checkout --detach "${RELEASE_SHA}"
++      - name: Checkout current packaging runtime
++        uses: actions/checkout@v6
++        with:
++          ref: ${{ github.workflow_sha }}
++          persist-credentials: false
++          path: .agentplane/.release/runtime
++          submodules: false
++      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
++        with:
++          bun-version: "1.3.6"
++          no-cache: true
++      - uses: actions/setup-node@v6
++        with:
++          node-version: "24"
++          package-manager-cache: false
++      - run: bun install --frozen-lockfile --ignore-scripts
++      - name: Build exact-ref distribution payload
++        run: bun run release:check
++      - name: Generate release distribution assets
++        shell: bash
++        run: |
++          set -euo pipefail
++          node .agentplane/.release/runtime/scripts/generate-release-distribution.mjs \
++            --out .agentplane/.release/publish/distribution \
++            --version "${{ needs.detect.outputs.version }}" \
++            --tag "${{ needs.detect.outputs.tag }}" \
++            --sha "${{ needs.detect.outputs.sha }}" \
++            --repo "${{ github.repository }}"
++      - name: Verify signed macOS release assets
++        shell: bash
++        run: |
++          set -euo pipefail
++          VERSION="${{ needs.detect.outputs.version }}"
++          DIST_DIR=".agentplane/.release/publish/distribution"
++          HOST_ARCH="$(node -p 'process.arch')"
++          for arch in arm64 x64; do
++            stage="$(mktemp -d)"
++            artifact="${DIST_DIR}/agentplane-bun-v${VERSION}-darwin-${arch}.tar.gz"
++            tar -xzf "${artifact}" -C "${stage}"
++            codesign --verify --strict "${stage}/bin/agentplane"
++            rm -rf "${stage}"
++          done
++          node scripts/smoke-bun-compiled-cli.mjs \
++            --artifact "${DIST_DIR}/agentplane-bun-v${VERSION}-darwin-${HOST_ARCH}.tar.gz" \
++            --expected-version "${VERSION}"
++      - name: Upload signed release distribution assets
++        uses: actions/upload-artifact@v7
++        with:
++          name: signed-release-distribution
++          path: |
++            .agentplane/.release/publish/distribution/*
++            !.agentplane/.release/publish/distribution/.bun-*/**
++          include-hidden-files: true
++          if-no-files-found: error
++          retention-days: 7
++
++  publish:
++    needs: [detect, distribution]
++    if: github.event_name == 'workflow_dispatch' && needs.detect.outputs.should_publish == 'true'
+     environment: npm
+     runs-on: ubuntu-24.04
+     timeout-minutes: 60
+@@ -366,16 +449,52 @@ jobs:
+           else
+             echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+           fi
+-      - name: Generate release distribution assets
++      - name: Download signed release distribution assets
++        uses: actions/download-artifact@v8
++        with:
++          name: signed-release-distribution
++          path: .agentplane/.release/publish/distribution
++      - name: Validate signed distribution artifact
+         shell: bash
++        env:
++          EXPECTED_SHA: ${{ needs.detect.outputs.sha }}
++          EXPECTED_VERSION: ${{ needs.detect.outputs.version }}
++          EXPECTED_TAG: ${{ needs.detect.outputs.tag }}
+         run: |
+           set -euo pipefail
+-          node scripts/generate-release-distribution.mjs \
+-            --out .agentplane/.release/publish/distribution \
+-            --version "${{ needs.detect.outputs.version }}" \
+-            --tag "${{ needs.detect.outputs.tag }}" \
+-            --sha "${{ needs.detect.outputs.sha }}" \
+-            --repo "${{ github.repository }}"
++          node - <<'EOF'
++          const fs = require("node:fs");
++          const path = require("node:path");
++          const { createHash } = require("node:crypto");
++          const root = ".agentplane/.release/publish/distribution";
++          const read = name => fs.readFileSync(path.join(root, name));
++          const manifest = JSON.parse(read("release-distribution.json"));
++          const bun = JSON.parse(read("bun-assets.json"));
++          for (const payload of [manifest, bun]) {
++            for (const [key, expected] of Object.entries({
++              sha: process.env.EXPECTED_SHA,
++              version: process.env.EXPECTED_VERSION,
++              tag: process.env.EXPECTED_TAG,
++            })) {
++              if (payload[key] !== expected) throw new Error(`distribution ${key} mismatch`);
++            }
++          }
++          if (manifest.releaseAssets.length !== 10 || bun.assets.length !== 5) {
++            throw new Error("Incomplete release distribution artifact");
++          }
++          for (const asset of [...manifest.releaseAssets, ...bun.assets]) {
++            if (path.basename(asset.name) !== asset.name) throw new Error("Invalid distribution asset name");
++            const actual = createHash("sha256").update(read(asset.name)).digest("hex");
++            if (actual !== asset.sha256) throw new Error(`distribution checksum mismatch: ${asset.name}`);
++          }
++          const tarball = read(`.npm-pack/agentplane-${manifest.version}.tgz`);
++          if (createHash("sha256").update(tarball).digest("hex") !== manifest.packages.agentplane.npmTarballSha256) {
++            throw new Error("distribution npm tarball checksum mismatch");
++          }
++          EOF
++          cd .agentplane/.release/publish/distribution
++          sha256sum --check --strict SHA256SUMS
++          sha256sum --check --strict agentplane-upgrade.tar.gz.sha256
+       - name: Smoke Bun release assets
+         shell: bash
+         run: |
+diff --git a/packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts b/packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts
+index e0063b1d7..a5dc9c05c 100644
+--- a/packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts
++++ b/packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts
+@@ -1,6 +1,7 @@
+ import { execFile } from "node:child_process";
++import { createHash } from "node:crypto";
+ import { existsSync } from "node:fs";
+-import { mkdtemp, readFile, rm } from "node:fs/promises";
++import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { promisify } from "node:util";
+@@ -84,6 +85,86 @@ describe("generate-bun-cli-assets script", () => {
+     }
+   }, 90_000);
+ 
++  it.skipIf(process.platform === "win32").each(["success", "sign", "verify", "linux"])(
++    "signs before archiving and propagates failures (%s)",
++    async (scenario) => {
++      const root = await makeTempRoot();
++      const outDir = path.join(root, "out");
++      await mkdir(path.join(root, "packages/agentplane/dist"), { recursive: true });
++      await writeFile(path.join(root, "packages/agentplane/dist/cli-bun.js"), "fixture");
++      const preload = path.join(root, "tools.cjs");
++      await writeFile(
++        preload,
++        `
++        const cp = require("node:child_process");
++        const fs = require("node:fs");
++        const original = cp.execFileSync;
++        Object.defineProperty(process, "platform", { value: ${JSON.stringify(scenario === "linux" ? "linux" : "darwin")} });
++        cp.execFileSync = (command, args, options) => {
++          if (command === "bun") {
++            fs.writeFileSync(args[args.indexOf("--outfile") + 1], "compiled");
++            return "";
++          }
++          if (command === "codesign") {
++            const binary = args.at(-1);
++            const step = args.includes("--verify") ? "verify" : "sign";
++            if (step === ${JSON.stringify(scenario)}) throw new Error("fixture codesign " + step + " failed");
++            if (step === "sign") fs.appendFileSync(binary, " signed");
++            else {
++              if (!args.includes("--strict") || fs.readFileSync(binary, "utf8") !== "compiled signed") {
++                throw new Error("signature was not verified after signing");
++              }
++              fs.appendFileSync(binary, " verified");
++            }
++            return "";
++          }
++          return original(command, args, options);
++        };
++        require("node:module").syncBuiltinESMExports();
++      `,
++      );
++      const run = execFileAsync(
++        "node",
++        [
++          "--require",
++          preload,
++          SCRIPT_PATH,
++          "--out",
++          outDir,
++          "--version",
++          "1.2.3",
++          "--sha",
++          "abc123",
++        ],
++        { cwd: root },
++      );
++      if (scenario !== "success") {
++        await expect(run).rejects.toThrow(
++          scenario === "linux" ? "must be signed on macOS" : `fixture codesign ${scenario} failed`,
++        );
++        expect(existsSync(path.join(outDir, "bun-assets.json"))).toBe(false);
++        expect(existsSync(path.join(outDir, "agentplane-bun-v1.2.3-darwin-arm64.tar.gz"))).toBe(
++          false,
++        );
++        return;
++      }
++      await run;
++      const manifest = JSON.parse(await readFile(path.join(outDir, "bun-assets.json"), "utf8")) as {
++        assets: { name: string; platform: string; sha256: string }[];
++      };
++      for (const asset of manifest.assets.filter((asset) => asset.platform === "darwin")) {
++        const archive = path.join(outDir, asset.name);
++        const { stdout } = await execFileAsync("tar", ["-xOzf", archive, "./bin/agentplane"]);
++        expect(stdout).toBe("compiled signed verified");
++        expect(
++          createHash("sha256")
++            .update(await readFile(archive))
++            .digest("hex"),
++        ).toBe(asset.sha256);
++      }
++    },
++  );
++
+   it("validates Bun executable assets in check mode", async () => {
+     const { stdout } = await execFileAsync("node", [SCRIPT_PATH, "--check"], {
+       cwd: process.cwd(),
+diff --git a/packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts b/packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+index 0448c9188..d4dfa1da1 100644
+--- a/packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
++++ b/packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts
+@@ -1,6 +1,6 @@
+ import { execFile } from "node:child_process";
+ import { existsSync } from "node:fs";
+-import { mkdtemp, readFile, rm } from "node:fs/promises";
++import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { promisify } from "node:util";
+@@ -162,6 +162,36 @@ describe("generate-release-distribution script", () => {
+     expect(installPs1).not.toContain('Require-Command "node"');
+   }, 90_000);
+ 
++  it("uses the executing packaging runtime with a historical checkout that has no generator", async () => {
++    const root = await makeTempRoot();
++    const packageDir = path.join(root, "packages/agentplane");
++    await mkdir(path.join(packageDir, "assets"), { recursive: true });
++    await writeFile(
++      path.join(packageDir, "package.json"),
++      JSON.stringify({ name: "agentplane", version: "1.2.3" }),
++    );
++    await writeFile(path.join(packageDir, "assets/fixture.txt"), "historical payload");
++    const outDir = path.join(root, "distribution");
++    await execFileAsync(
++      "node",
++      [SCRIPT_PATH, "--out", outDir, "--sha", "abc123", "--standalone-check-mode"],
++      { cwd: root },
++    );
++    const manifest = JSON.parse(
++      await readFile(path.join(outDir, "release-distribution.json"), "utf8"),
++    ) as { sha: string; version: string; bunAssets: unknown[] };
++    expect(manifest.sha).toBe("abc123");
++    expect(manifest.version).toBe("1.2.3");
++    expect(manifest.bunAssets).toHaveLength(5);
++    expect(existsSync(path.join(root, "scripts"))).toBe(false);
++    const { stdout } = await execFileAsync("tar", [
++      "-xOzf",
++      path.join(outDir, "agentplane-upgrade.tar.gz"),
++      "./fixture.txt",
++    ]);
++    expect(stdout).toBe("historical payload");
++  });
++
+   it("validates standalone assets during release distribution check", async () => {
+     const { stdout } = await execFileAsync("node", [SCRIPT_PATH, "--check"], {
+       cwd: process.cwd(),
+diff --git a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+index 0faa32063..9aa499624 100644
+--- a/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
++++ b/packages/agentplane/src/commands/release/publish-workflow-contract.test.ts
+@@ -1,5 +1,6 @@
+ import { execFileSync } from "node:child_process";
+-import { mkdtemp, readFile, rm } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ 
+@@ -12,7 +13,175 @@ const DISTRIBUTION_MODULE_WORKFLOW_PATH = path.resolve(
+   ".github/workflows/publish-distribution-module.yml",
+ );
+ 
++type WorkflowJob = {
++  "runs-on": string;
++  needs: string | string[];
++  if: string;
++  steps: { name?: string; uses?: string; run?: string; with?: Record<string, string | boolean> }[];
++};
++type PublishWorkflow = { jobs: { distribution: WorkflowJob; publish: WorkflowJob } };
++
++function step(job: WorkflowJob, name: string) {
++  return job.steps.find((entry) => entry.name === name);
++}
++
+ describe("publish workflow contract", () => {
++  it("builds signed historical assets on macOS and publishes the same run artifact", async () => {
++    const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
++    const distribution = workflow.jobs.distribution;
++    const publish = workflow.jobs.publish;
++    expect(distribution["runs-on"]).toBe("macos-latest");
++    expect(distribution.needs).toBe("detect");
++    expect(distribution.if).toBe(publish.if);
++    expect(publish.needs).toEqual(["detect", "distribution"]);
++    expect(distribution.steps[0]?.with?.ref).toBe("main");
++    expect(distribution.steps[0]?.with?.["persist-credentials"]).toBe(false);
++    const runtime = step(distribution, "Checkout current packaging runtime");
++    expect(runtime?.with?.ref).toBe("${{ github.workflow_sha }}");
++    expect(runtime?.with?.["persist-credentials"]).toBe(false);
++    const bun = distribution.steps.find((entry) => entry.uses?.startsWith("oven-sh/setup-bun@"));
++    expect(bun?.uses).toMatch(/^oven-sh\/setup-bun@[0-9a-f]{40}$/u);
++    expect(bun?.with?.["no-cache"]).toBe(true);
++    const node = distribution.steps.find((entry) => entry.uses?.startsWith("actions/setup-node@"));
++    expect(node?.with?.["package-manager-cache"]).toBe(false);
++    const build = step(distribution, "Generate release distribution assets");
++    expect(build?.run).toContain(
++      ".agentplane/.release/runtime/scripts/generate-release-distribution.mjs",
++    );
++    expect(step(publish, "Generate release distribution assets")).toBeUndefined();
++    const smoke = step(distribution, "Verify signed macOS release assets")?.run;
++    expect(smoke).toContain("for arch in arm64 x64");
++    expect(smoke).toContain("codesign --verify --strict");
++    expect(smoke).toContain("process.arch");
++    expect(smoke).not.toContain("--skip-cli-commands");
++    const upload = step(distribution, "Upload signed release distribution assets");
++    const download = step(publish, "Download signed release distribution assets");
++    expect(upload?.with?.name).toBe(download?.with?.name);
++    expect(download?.with?.["run-id"]).toBeUndefined();
++    expect(upload?.with?.["if-no-files-found"]).toBe("error");
++  });
++
++  it.skipIf(process.platform === "win32").each(["ancestor", "unmerged", "invalid"])(
++    "only builds release commits from main history (%s)",
++    async (scenario) => {
++      const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
++      const script = step(
++        workflow.jobs.distribution,
++        "Select qualified release source from main history",
++      )?.run;
++      if (!script) throw new Error("Release source ancestry check is missing");
++      const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-ancestry-"));
++      try {
++        const git = (...args: string[]) =>
++          execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: "pipe" }).trim();
++        git("init", "--initial-branch=main");
++        git("config", "user.name", "Release fixture");
++        git("config", "user.email", "release-fixture@example.invalid");
++        git("-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "release source");
++        const release = git("rev-parse", "HEAD");
++        git("-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "main successor");
++        const main = git("rev-parse", "HEAD");
++        git("update-ref", "refs/remotes/origin/main", main);
++        git("checkout", "-b", "unmerged", release);
++        git("-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "untrusted side branch");
++        const unmerged = git("rev-parse", "HEAD");
++        git("checkout", "main");
++        const sha = scenario === "ancestor" ? release : scenario === "unmerged" ? unmerged : "main";
++        const run = () =>
++          execFileSync("bash", ["-c", script], {
++            cwd: root,
++            env: { ...process.env, RELEASE_SHA: sha },
++            stdio: "pipe",
++          });
++        if (scenario === "ancestor") {
++          expect(run).not.toThrow();
++          expect(git("rev-parse", "HEAD")).toBe(release);
++        } else {
++          expect(run).toThrow();
++          expect(git("rev-parse", "HEAD")).toBe(main);
++        }
++      } finally {
++        await rm(root, { recursive: true, force: true });
++      }
++    },
++  );
++
++  it
++    .skipIf(process.platform === "win32")
++    .each(["valid", "sha", "version", "tag", "bytes", "checksums", "tarball"])(
++    "validates distribution identity and transferred bytes (%s)",
++    async (scenario) => {
++      const workflow = parseYaml(await readFile(PUBLISH_WORKFLOW_PATH, "utf8")) as PublishWorkflow;
++      const script = step(workflow.jobs.publish, "Validate signed distribution artifact")?.run;
++      if (!script) throw new Error("Distribution validation step is missing");
++      const root = await mkdtemp(path.join(tmpdir(), "agentplane-distribution-handoff-"));
++      const dist = path.join(root, ".agentplane/.release/publish/distribution");
++      try {
++        await mkdir(dist, { recursive: true });
++        const digest = (value: string) => createHash("sha256").update(value).digest("hex");
++        const assets = [];
++        for (let index = 0; index < 8; index += 1) {
++          const name = index === 0 ? "agentplane-upgrade.tar.gz" : `asset-${index}`;
++          await writeFile(path.join(dist, name), "payload");
++          assets.push({ name, sha256: digest("payload") });
++        }
++        const identity = { sha: "abc123", version: "1.2.3", tag: "v1.2.3" };
++        const bun = JSON.stringify({ ...identity, assets: assets.slice(3) });
++        const sums = assets.map((asset) => `${asset.sha256}  ${asset.name}\n`).join("");
++        await writeFile(path.join(dist, "bun-assets.json"), bun);
++        await writeFile(path.join(dist, "SHA256SUMS"), sums);
++        await writeFile(
++          path.join(dist, "agentplane-upgrade.tar.gz.sha256"),
++          `${assets[0]!.sha256}  agentplane-upgrade.tar.gz\n`,
++        );
++        await mkdir(path.join(dist, ".npm-pack"));
++        await writeFile(path.join(dist, ".npm-pack/agentplane-1.2.3.tgz"), "payload");
++        const manifest = {
++          ...identity,
++          packages: { agentplane: { npmTarballSha256: digest("payload") } },
++          releaseAssets: [
++            ...assets,
++            { name: "bun-assets.json", sha256: digest(bun) },
++            { name: "SHA256SUMS", sha256: digest(sums) },
++          ],
++        };
++        if (scenario === "sha" || scenario === "version" || scenario === "tag")
++          manifest[scenario] = "wrong";
++        if (scenario === "tarball")
++          await writeFile(path.join(dist, ".npm-pack/agentplane-1.2.3.tgz"), "corrupt");
++        if (scenario === "bytes") await writeFile(path.join(dist, "asset-1"), "corrupt");
++        if (scenario === "checksums")
++          await writeFile(
++            path.join(dist, "agentplane-upgrade.tar.gz.sha256"),
++            `${"0".repeat(64)}  agentplane-upgrade.tar.gz\n`,
++          );
++        await writeFile(path.join(dist, "release-distribution.json"), JSON.stringify(manifest));
++        const run = () =>
++          execFileSync(
++            "bash",
++            [
++              "-c",
++              `if ! command -v sha256sum >/dev/null; then sha256sum() { shasum -a 256 "$@"; }; fi\n${script}`,
++            ],
++            {
++              cwd: root,
++              env: {
++                ...process.env,
++                EXPECTED_SHA: identity.sha,
++                EXPECTED_VERSION: identity.version,
++                EXPECTED_TAG: identity.tag,
++              },
++              stdio: "pipe",
++            },
++          );
++        if (scenario === "valid") expect(run).not.toThrow();
++        else expect(run).toThrow();
++      } finally {
++        await rm(root, { recursive: true, force: true });
++      }
++    },
++  );
++
+   // The publish job executes this Bash step on Linux.
+   it.skipIf(process.platform === "win32").each([
+     ["workflow_dispatch", true, true, [true, true, true], true],
+@@ -137,7 +306,9 @@ describe("publish workflow contract", () => {
+     expect(workflow).toContain("Fail incomplete publish-result");
+     expect(workflow).toContain("if (!payload.success)");
+     expect(workflow).toContain("Generate release distribution assets");
+-    expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
++    expect(workflow).toContain(
++      "node .agentplane/.release/runtime/scripts/generate-release-distribution.mjs",
++    );
+     expect(workflow).toContain("Smoke Bun release assets");
+     expect(workflow).toContain("scripts/smoke-bun-compiled-cli.mjs");
+     expect(workflow).toContain('--expected-version "${VERSION}"');
+diff --git a/scripts/generate/generate-bun-cli-assets.mjs b/scripts/generate/generate-bun-cli-assets.mjs
+index 87b7f217c..441964ffa 100644
+--- a/scripts/generate/generate-bun-cli-assets.mjs
++++ b/scripts/generate/generate-bun-cli-assets.mjs
+@@ -121,6 +121,9 @@ function buildBinary(repoRoot, target, outPath, version, synthetic) {
+     chmodSync(outPath, 0o755);
+     return;
+   }
++  if (target.platform === "darwin" && process.platform !== "darwin") {
++    throw new Error("Darwin release binaries must be signed on macOS before packaging");
++  }
+   const entry = path.join(repoRoot, CLI_ENTRY);
+   if (!existsSync(entry))
+     throw new Error(`Missing built CLI entrypoint: ${CLI_ENTRY}. Run bun run build first.`);
+@@ -139,6 +142,10 @@ function buildBinary(repoRoot, target, outPath, version, synthetic) {
+     { cwd: repoRoot },
+   );
+   chmodSync(outPath, 0o755);
++  if (target.platform === "darwin") {
++    run("codesign", ["--force", "--sign", "-", outPath], { cwd: repoRoot });
++    run("codesign", ["--verify", "--strict", outPath], { cwd: repoRoot });
++  }
+ }
+ 
+ function archiveTarget(repoRoot, outDir, target, version, binaryPath) {
+diff --git a/scripts/generate/generate-release-distribution.mjs b/scripts/generate/generate-release-distribution.mjs
+index d46d37449..2275dc29f 100644
+--- a/scripts/generate/generate-release-distribution.mjs
++++ b/scripts/generate/generate-release-distribution.mjs
+@@ -4,6 +4,7 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:f
+ import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
++import { fileURLToPath } from "node:url";
+ 
+ import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+ 
+@@ -337,7 +338,7 @@ async function writeChecksums(outDir, assets) {
+ }
+ function generateBunAssets(repoRoot, outDir, context) {
+   const args = [
+-    "scripts/generate-bun-cli-assets.mjs",
++    fileURLToPath(new URL("generate-bun-cli-assets.mjs", import.meta.url)),
+     "--out",
+     outDir,
+     "--version",
