@@ -44,11 +44,11 @@ already approved checks.
  .github/workflows/task-hosted-close.yml            |   2 +-
  .github/workflows/workflows-lint.yml               |   2 +-
  package.json                                       |   2 +-
- ...n-cli.core.task-advance.branch-worktree.test.ts |  98 +++++++++++++++++++-
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 105 ++++++++++++++++-----
  .../external-agent-implementation-authority.ts     |  18 +++-
- .../agentplane/src/shared/sqlite-driver.test.ts    | 103 +++++++++++++++++++++
+ .../agentplane/src/shared/sqlite-driver.test.ts    | 103 ++++++++++++++++++++
  packages/agentplane/src/shared/sqlite-driver.ts    |   2 +-
- 13 files changed, 232 insertions(+), 27 deletions(-)
+ 13 files changed, 222 insertions(+), 44 deletions(-)
 ```
 
 </details>

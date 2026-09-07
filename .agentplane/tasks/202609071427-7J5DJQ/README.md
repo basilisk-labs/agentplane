@@ -1,10 +1,10 @@
 ---
 id: "202609071427-7J5DJQ"
 title: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -284,6 +284,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The Bun upgrade and CI commit authority repair are committed. The current full CI cannot complete in the available disk space. The CLI retained the failed verification. No source edits were made in this rework episode. Recommended action: Free sufficient disk space, then resume this existing task and rerun its full verification contract. Preserve the committed implementation and recorded failures. The user has already authorized commit, merge and the CI blocker fix. Agentplane receipt: external-agent-blocker/tr_2ce7d49ba9a689cf1e5e484844056b3c/sha256:39c671b87a8e1557c080e2af96c8c70727af0ce9e7109b8c0c73d327216f8772."
+  -
+    author: "USER"
+    body: "The user reports that disk space has been freed. Current filesystem check confirms 8.2 GiB available. Resume the existing committed Bun upgrade, rerun required verification, and continue the previously authorized merge."
 events:
   -
     type: "status"
@@ -328,9 +331,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The Bun upgrade and CI commit authority repair are committed. The current full CI cannot complete in the available disk space. The CLI retained the failed verification. No source edits were made in this rework episode. Recommended action: Free sufficient disk space, then resume this existing task and rerun its full verification contract. Preserve the committed implementation and recorded failures. The user has already authorized commit, merge and the CI blocker fix. Agentplane receipt: external-agent-blocker/tr_2ce7d49ba9a689cf1e5e484844056b3c/sha256:39c671b87a8e1557c080e2af96c8c70727af0ce9e7109b8c0c73d327216f8772."
+  -
+    type: "status"
+    at: "2026-09-07T16:31:47.489Z"
+    author: "USER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "The user reports that disk space has been freed. Current filesystem check confirms 8.2 GiB available. Resume the existing committed Bun upgrade, rerun required verification, and continue the previously authorized merge."
 doc_version: 3
-doc_updated_at: "2026-09-07T16:14:11.639Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T16:31:47.489Z"
+doc_updated_by: "USER"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
   Summary: |-
@@ -700,7 +710,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -712,7 +722,7 @@ extensions:
 
         Implement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes.
       task_id: "202609071427-7J5DJQ"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -953,9 +963,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-07T16:14:11.639Z"
+    updated_at: "2026-09-07T16:31:47.489Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -1310,6 +1320,30 @@ extensions:
         mutation_id: "compatibility:sha256:ce0a5396b6996c71382032b72ffebb6c662222f4754cb779cd9fcec5c814239c"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:e12666f0635c3f8ce2113a37af085dce22cafb46ebcd2c756c1ffe10b600c569:
+        aggregate_digest: "sha256:c3813c09d61f5ac5324c14709100a8755a0e660b740fbca1b516b3cea16adb31"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:31:47.489Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_f695cd6685b7e34f074304b5"
+          mutation_id: "compatibility:sha256:e12666f0635c3f8ce2113a37af085dce22cafb46ebcd2c756c1ffe10b600c569"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e12666f0635c3f8ce2113a37af085dce22cafb46ebcd2c756c1ffe10b600c569"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:ebb525d9f2708660705b790313ad8c0a9e0c14e11db89bfcef8788f0351d737e:

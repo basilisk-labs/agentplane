@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import { gitShowFile } from "@agentplaneorg/core/git";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   taskCentricAggregateFromExtensions,
@@ -252,6 +253,24 @@ async function approveStructuredPlan(
   ).toBe(0);
 }
 
+const resultFor = (p: AgentPacket, order: AgentWorkOrderV2) => ({
+  schema_version: 1,
+  kind: "agent_action_result",
+  task_id: order.task.id,
+  transition_id: p.transition_id,
+  state_fingerprint: p.state_fingerprint,
+  role: "EXECUTOR",
+  result: {
+    schema_version: 2,
+    kind: "agent_semantic_result",
+    work_order_id: order.work_order_id,
+    status: "completed",
+    summary: "The recorded implementation satisfies the approved WorkItem.",
+    findings: ["The original implementation claim."],
+    uncertainty: ["The original implementation limitation."],
+  },
+});
+
 describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
   it.each([
     { allowed: true, scope: ".github/workflows/allowed.yml", passes: true },
@@ -259,18 +278,15 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
     { allowed: true, scope: ".github/workflows/other.yml", passes: false },
   ])("commits workflow changes only with CI effect and path authority: %j", async (ci) => {
     const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
+    await writeConfig(root, { ...defaultConfig(), workflow_mode: "branch_pr" });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const taskId = await createTask(root);
-    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     const ignore = await readFile(path.join(root, ".gitignore"), "utf8");
     await writeFile(
       path.join(root, ".gitignore"),
       `${ignore}\n.agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n`,
     );
-    await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
+    await execFileAsync("git", ["add", ".agentplane", ".gitignore"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: seed CI authority task"], { cwd: root });
     await approveStructuredPlan(root, taskId, ci);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
@@ -281,30 +297,11 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
     ) as AgentWorkOrderV2;
     const checkout = workOrder.state_fingerprint.worktree;
-    const before = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
     await mkdir(path.join(checkout, ".github/workflows"), { recursive: true });
+    const workflowPath = ".github/workflows/allowed.yml";
     const workflow = "name: approved\non: workflow_dispatch\njobs: {}\n";
-    await writeFile(path.join(checkout, ".github/workflows/allowed.yml"), workflow);
-    await writeFile(
-      packet.exchange.result_path,
-      JSON.stringify({
-        schema_version: 1,
-        kind: "agent_action_result",
-        task_id: taskId,
-        transition_id: packet.transition_id,
-        state_fingerprint: packet.state_fingerprint,
-        role: "EXECUTOR",
-        result: {
-          schema_version: 2,
-          kind: "agent_semantic_result",
-          work_order_id: workOrder.work_order_id,
-          status: "completed",
-          summary: "Update the authorized workflow.",
-          findings: [],
-          uncertainty: [],
-        },
-      }),
-    );
+    await writeFile(path.join(checkout, workflowPath), workflow);
+    await writeFile(packet.exchange.result_path, JSON.stringify(resultFor(packet, workOrder)));
     const interruption = vi
       .spyOn(verification, "recordDirectTaskVerification")
       .mockRejectedValueOnce(new Error("stop after implementation commit"));
@@ -315,20 +312,13 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       if (ci.passes) {
         expect(io.stderr).toContain("stop after implementation commit");
         expect(interruption).toHaveBeenCalledOnce();
-        expect(after.stdout).not.toBe(before.stdout);
-        const committed = await execFileAsync(
-          "git",
-          ["show", "HEAD:.github/workflows/allowed.yml"],
-          { cwd: checkout },
-        );
-        expect(committed.stdout).toBe(workflow);
+        expect(await gitShowFile(checkout, "HEAD", workflowPath)).toBe(workflow);
       } else {
         expect(interruption).not.toHaveBeenCalled();
-        expect(after.stdout).toBe(before.stdout);
+        expect(after.stdout.trim()).toBe(workOrder.state_fingerprint.git_head);
+        expect(io.stderr).toContain(workflowPath);
         expect(io.stderr).toContain(
-          ci.allowed
-            ? "External-agent changes escaped semantic authority: .github/workflows/allowed.yml"
-            : "Staged file is protected by default: .github/workflows/allowed.yml",
+          ci.allowed ? "escaped semantic authority" : "protected by default",
         );
       }
     } finally {
@@ -379,23 +369,6 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
       ) as AgentWorkOrderV2;
       const checkout = workOrder.state_fingerprint.worktree;
       await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
-      const resultFor = (p: AgentPacket, order: AgentWorkOrderV2) => ({
-        schema_version: 1,
-        kind: "agent_action_result",
-        task_id: taskId,
-        transition_id: p.transition_id,
-        state_fingerprint: p.state_fingerprint,
-        role: "EXECUTOR",
-        result: {
-          schema_version: 2,
-          kind: "agent_semantic_result",
-          work_order_id: order.work_order_id,
-          status: "completed",
-          summary: "The recorded implementation satisfies the approved WorkItem.",
-          findings: ["The original implementation claim."],
-          uncertainty: ["The original implementation limitation."],
-        },
-      });
       await writeFile(packet.exchange.result_path, JSON.stringify(resultFor(packet, workOrder)));
       const interruption =
         boundary === "before verification"
