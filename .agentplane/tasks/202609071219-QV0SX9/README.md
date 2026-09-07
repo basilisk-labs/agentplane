@@ -4,7 +4,7 @@ title: "Use simple technical English in task prompts and remove redundant prompt
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -26,6 +26,33 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-07T14:15:28.564Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "b847aa915f64886905be06ccfb30e37544f35d25"
+  blueprint_digest: "2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909"
+  evidence_refs:
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/061b59328677f745039ece2f168b1e3ebf52340f28c68231f3bb5fcacf6df93a.md"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/20260907-141335075-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/README.md"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/e58c5a4b9d305363542edac3c858f9c8dc6f279fae965c7762a9f8d869769498.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/verification/20260907141328349-a44dd3e2b26c5e1e.json"
+    - ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/6f016c58a63967e8291105a051182b362e416dacc7fef85bf88124d95209061e.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen diff delivers the same language contract on both execution routes, preserves authority and stop constraints, and retains all four schema-valid result statuses. Existing and added tests cover these contracts; the full observed verification passed."
+    - "Residual risk: The measured reduction is in UTF-8 prompt bytes, not tokenizer counts. Hosted integration remains a separate supervisor gate."
 execution_route:
   frozen: true
   reason_codes:
@@ -929,7 +956,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 19
+    event_cursor: 20
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -1196,9 +1223,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-07T14:13:29.524Z"
+    updated_at: "2026-09-07T14:13:29.526Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1697,6 +1724,30 @@ extensions:
         mutation_id: "compatibility:sha256:c5e136d306717b8baa78a79c5988337aad2a981f9c4d2bb9425e1ae7881aada1"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:cd2e689cb245fd9a89bca959363d92ffc2413d20ab04a74e34eceda62e793a37:
+        aggregate_digest: "sha256:ab5e5f11630720b4a8f06a429f8ade3fc04748e280c12ef2cd5ff48cf449b95d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T14:13:29.526Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_20cf0e2f58583f166a3ee3c6"
+          mutation_id: "compatibility:sha256:cd2e689cb245fd9a89bca959363d92ffc2413d20ab04a74e34eceda62e793a37"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cd2e689cb245fd9a89bca959363d92ffc2413d20ab04a74e34eceda62e793a37"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609071219-QV0SX9"
       compatibility:sha256:d6dec8b23a2b0f40b5b80415107050c8602c8f672d5ea820b47d5213794388d6:
