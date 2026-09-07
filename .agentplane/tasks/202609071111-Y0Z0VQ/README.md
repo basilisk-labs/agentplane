@@ -4,7 +4,7 @@ title: "Repair confirmed Arkady Factory compatibility lifecycle defects sequenti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -93,18 +93,25 @@ execution_contract:
       - "packages/agentplane"
       - "packages/core"
     changed_paths:
+      - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
       - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
       - "packages/agentplane/src/cli/route-decision.testkit.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+      - "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts"
+      - "packages/agentplane/src/commands/shared/reconcile-check.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-common.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
       - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
+      - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -114,6 +121,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/shared/dependencies.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
       - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+      - "packages/agentplane/src/runner/usecases/kernel-authority.test.ts"
       - "packages/core/src/tasks/task-centric/compatibility.ts"
       - "packages/core/src/tasks/task-centric/index.ts"
       - "packages/core/src/tasks/task-centric/lifecycle.ts"
@@ -160,17 +168,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:a2f4abeb1986747d7bcdbd4ed18c3caa5d5538a2d380c622bc862019371182dc"
+      digest: "sha256:994f54c9833f92baf0115deccf6e22ca7a015dff07bd78d7688078504f04bd88"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/tasks"
         - "central_path:packages/agentplane/src/cli/route-decision.testkit.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/reconcile-check.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-common.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
@@ -187,18 +200,25 @@ execution_contract:
           - "packages/agentplane"
           - "packages/core"
         changed_files:
+          - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
           - "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
           - "packages/agentplane/src/cli/route-decision.testkit.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+          - "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts"
+          - "packages/agentplane/src/commands/shared/reconcile-check.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
           - "packages/agentplane/src/commands/shared/task-backend.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/shared/task-mutation.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-common.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
           - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
+          - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
@@ -208,6 +228,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/shared/dependencies.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.test.ts"
           - "packages/agentplane/src/commands/task/task-centric-external-result.ts"
+          - "packages/agentplane/src/runner/usecases/kernel-authority.test.ts"
           - "packages/core/src/tasks/task-centric/compatibility.ts"
           - "packages/core/src/tasks/task-centric/index.ts"
           - "packages/core/src/tasks/task-centric/lifecycle.ts"
@@ -247,7 +268,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "bf53cac8d9761abf11af4926c6044460902cf3a5"
+  message: "🚧 Y0Z0VQ task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -264,6 +287,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9bbd4e9804a6. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: bf53cac8d976. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -304,8 +330,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 9bbd4e9804a6. CLI accepted one state-bound external-agent semantic result."
     commit: "9bbd4e9804a6089028734e2e9722962718156234"
+  -
+    type: "status"
+    at: "2026-09-07T12:59:00.513Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bf53cac8d976. CLI accepted one state-bound external-agent semantic result."
+    commit: "bf53cac8d9761abf11af4926c6044460902cf3a5"
 doc_version: 3
-doc_updated_at: "2026-09-07T12:24:42.512Z"
+doc_updated_at: "2026-09-07T12:59:00.513Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recheck current code against the Arkady Factory audit. Fix AP-02 premature closeout first, then AP-04 existing-result acceptance with AP-05 strict WorkItem result binding, AP-06 stale legacy plan routing, and AP-09 missing README discovery. Reproduce AP-01 revision divergence and AP-08 scoped deploy authority before changing them. Preserve existing AP-03 and AP-07 fixes. Add focused behavioral regressions for each confirmed defect. Do not modify Factory, fabricate product diffs, weaken verification, or publish externally. User requested sequential verification and fixes in the current conversation."
 sections:
@@ -716,7 +750,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071111-Y0Z0VQ"
-    event_cursor: 11
+    event_cursor: 13
     final_validation: null
     id: "202609071111-Y0Z0VQ"
     intent:
@@ -731,9 +765,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-07T12:24:43.859Z"
+    updated_at: "2026-09-07T12:59:00.513Z"
     work_items:
       canonical-plan-routing:
         attempt: 1
@@ -1092,6 +1126,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
+      compatibility:sha256:75bb5c85cdec016f1f0a71c22f19407d8a470200fe686d7e3aa61ef3970a004e:
+        aggregate_digest: "sha256:ec58859a4bea01516f62d2c7f2da5f2ba17d50d8ba03fe2973c8282d3944745a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T12:59:00.513Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e3e149668e427dccf65bce67"
+          mutation_id: "compatibility:sha256:75bb5c85cdec016f1f0a71c22f19407d8a470200fe686d7e3aa61ef3970a004e"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:75bb5c85cdec016f1f0a71c22f19407d8a470200fe686d7e3aa61ef3970a004e"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
       compatibility:sha256:80c1ed5776fcdfc2580b5d0852d199646a5e090f215c72dae32575ce8dfd1ed0:
         aggregate_digest: "sha256:bee5565319e77f67e017938a1398e9b392aff8f3955f9711776641014b707ff5"
         event:
@@ -1138,6 +1196,30 @@ extensions:
         mutation_id: "compatibility:sha256:8b7cba8fe97a2e021f102965d3a3823e896eddfc6b5f2e7175e1632e5bd265dc"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609071111-Y0Z0VQ"
+      compatibility:sha256:b6fa7d21a435cfaee9ae55819a0d7adc019414c6f5757dc0cd80b1f0201893e3:
+        aggregate_digest: "sha256:652d9e1b90863c0ed57e86cea4d001ae80ea1cde8edc636eef649178b99acc49"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T12:59:00.513Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_eeaa5ad5ecba1b7f8e2bebae"
+          mutation_id: "compatibility:sha256:b6fa7d21a435cfaee9ae55819a0d7adc019414c6f5757dc0cd80b1f0201893e3"
+          plan_digest: "sha256:f62d6b4243b03500a561eed616f62fa95217e0a869442190a6db42e110af47b7"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071111-Y0Z0VQ"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b6fa7d21a435cfaee9ae55819a0d7adc019414c6f5757dc0cd80b1f0201893e3"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609071111-Y0Z0VQ"
       compatibility:sha256:cfd717d596847bab6e2cb9810c181347f332ec599399527d7cc799a65e5d06ac:
@@ -1335,7 +1417,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "9bbd4e9804a6089028734e2e9722962718156234"
+    hash: "bf53cac8d9761abf11af4926c6044460902cf3a5"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
