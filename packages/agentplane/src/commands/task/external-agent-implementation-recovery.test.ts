@@ -18,6 +18,11 @@ import {
   implementationCommitAllowsCi,
 } from "./external-agent-implementation-authority.js";
 
+const contract = (effects: string[]) =>
+  ({ authority: { allowed_repository_effects: effects } }) as NonNullable<
+    TaskData["execution_contract"]
+  >;
+
 const COMMIT = "a".repeat(40);
 const BASE_CONTEXT = {
   schema_version: 1,
@@ -396,10 +401,6 @@ describe("recorded implementation recovery contract", () => {
 
 describe("external implementation CI commit authority", () => {
   const workflow = ".github/workflows/ci.yml";
-  const contract = (effects: string[]) =>
-    ({ authority: { allowed_repository_effects: effects } }) as NonNullable<
-      TaskData["execution_contract"]
-    >;
 
   it("passes approved CI changes to the commit guard", () => {
     expect(implementationCommitAllowsCi(contract(["ci"]), [workflow], [workflow])).toBe(true);

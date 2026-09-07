@@ -21,7 +21,6 @@ import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semant
 import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import type { CommandContext } from "../shared/task-backend.js";
 
 import type {
   ExternalAgentExchange,
@@ -46,7 +45,7 @@ import {
 } from "./external-agent-implementation-recovery.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
 import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
-import { loadTaskFromContext } from "../shared/task-backend.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   prepareExternalVerificationCheckpoint,
   completeExternalVerificationCheckpoint,
