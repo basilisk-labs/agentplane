@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -28,36 +28,36 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-07T17:05:54.857Z"
+  updated_at: "2026-09-07T22:28:56.593Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "c621332896711f01ef67df757eb934fadc6f5787"
+  evaluated_sha: "11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9"
   blueprint_digest: "8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911"
   evidence_refs:
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/f801c0b5538085d67bc86c7f4c93c076a0dacf1cb560f725bc20bd7364f15cec.md"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-165511916-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-222809897-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-222809897-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/3620b8d9345816e13f2a3e5befb47e9e16932687693425e46a14324ef6dd4427.md"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-222809897-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-222809897-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-222809897-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609071427-7J5DJQ/README.md"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
-    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/18c606583881ddc9d05e9e41de00fe527c732695cf356a37a30326a1e95cf69c.json"
-    - ".agentplane/tasks/202609071427-7J5DJQ/verification/20260907165504289-ce5610cbecde5f47.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/cac6265406627c38f0b435313a398226cd2545d275475bd55c5201eaca3a545c.patch"
+    - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/1909bab07e8b6ec9530e265b3255f1cd2c047a11da8a53fedf86bac0741c09d6.json"
+    - ".agentplane/tasks/202609071427-7J5DJQ/verification/20260907221715994-1ca167368ecbd76d.json"
     - ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/53fcf1d0956b33eaafa5262f8db61b7427ce0eb080dcce0b375be500c1098492.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "All frozen evidence object digests match their content. The source diff updates the package manager and workflow Bun pins without changing Node engines, default Node Vitest, tsup, dependency resolutions, or distribution behavior."
-    - "The CI commit permission is derived from the approved ci repository effect and observed paths after semantic authority validation. Other protected-path permissions remain false. Three focused integration cases exercise the real commit and reject missing CI effect or an unauthorized workflow path before committing."
-    - "Five SQLite contract tests cover persistence and bindings, transaction arguments and commit, rollback and connection reuse, readonly write rejection, and missing readonly databases. The qualification evidence records all five passing under Node and Bun 1.4.2."
-    - "The supervisor recorded the full CI pass for the current implementation. I additionally ran the full existing CI contract with the task-local Bun 1.4.2 first on PATH on the unchanged source. It exited 0. Runtime, docs-schema, core, all 14 critical CLI chunks, site pipeline, workflow lint, 98 platform-critical tests, 101 guard tests, and the 17-target coverage contract passed."
-    - "The qualification report uses repeated startup measurements with output parity and explicitly limits the performance inference. Its earlier blocker-status sections are historical and superseded by the current verification; they are not evidence of present integration."
-    - "Residual risk: Broader Bun-hosted Vitest import failures remain documented, so Node remains the test default."
-    - "Residual risk: The standalone website lockfile mismatch reproduces with both Bun versions; normal workspace frozen installation and site checks pass without dependency-resolution changes."
-    - "Residual risk: Cross-platform execution remains a separate qualification boundary."
+    - "Every frozen evidence checksum matches. Current base be191576fba25d700157a962b14b887fe3c6a42e is an ancestor of the evaluated source 11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9. The larger frozen diff includes inherited main work, while the net task source delta is limited to Bun pins, SQLite tests/comment, and CI authority integration tests."
+    - "The final implementation-authority module equals current main byte-for-byte. The conflict repair preserves report-only output materialization, existing authority checks, and the stricter validation of every workspace CI path. The two report regressions seen during intermediate recovery are absent in the final tested source."
+    - "The three real-commit integration cases verify that approved workflow changes commit, missing ci authority rejects before committing, and an out-of-scope workflow rejects before committing. The five SQLite contract tests cover persisted bindings and results, commit, rollback, readonly rejection, and missing readonly databases."
+    - "Bun pins change consistently to 1.4.2. Node engines, Node-based Vitest, tsup, distribution defaults and both dependency lockfiles remain unchanged. Existing migration limits are preserved in the qualification evidence."
+    - "The frozen formal verification records full CI exit 0 in 733711 ms using executable digest 35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5, the qualified Bun 1.4.2 binary. Additional observed checks pass: Knip CLI budget 0/0, 52 report/recovery tests, and all 3 CI authority integration cases."
+    - "Residual risk: Broader Bun-hosted Vitest import incompatibility remains documented; Node stays the default test runtime."
+    - "Residual risk: The standalone website lockfile mismatch is pre-existing on both Bun versions; normal workspace installation and site checks pass."
+    - "Residual risk: The qualification run does not establish execution on every release target."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -711,7 +711,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-07T22:17:17.142Z"
+doc_updated_at: "2026-09-07T22:28:56.608Z"
 doc_updated_by: "SUPERVISOR"
 description: "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries while preserving Node support, Vitest, tsup, dependency versions, and unrelated changes. The user now explicitly authorizes committing and merging this task and fixing the AgentPlane blocker that ignores approved CI authority during the automatic implementation commit. Extend the bounded task scope through the supported protocol if required. Add regression coverage for honoring CI authority while rejecting unauthorized workflow changes. Preserve completed qualification evidence. Do not publish a release or replace global runtimes."
 sections:
@@ -1303,7 +1303,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609071427-7J5DJQ"
-    event_cursor: 27
+    event_cursor: 28
     final_validation: null
     id: "202609071427-7J5DJQ"
     intent:
@@ -1556,9 +1556,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
-    revision: 31
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-07T22:17:17.140Z"
+    updated_at: "2026-09-07T22:17:17.142Z"
     work_items:
       upgrade-and-qualify-bun:
         attempt: 1
@@ -2057,6 +2057,30 @@ extensions:
         mutation_id: "compatibility:sha256:a3064513d6cb0e6b2538c1a0386ace845177d7f8ae81b1dca41f883df3b3977e"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609071427-7J5DJQ"
+      compatibility:sha256:b5196d8706961ff901f51ecb09a4160ed2a035311b826e7cf57748a25bf8dec3:
+        aggregate_digest: "sha256:8a3c207a97c947edf0c281c057cd3c2416d76772d413359cbda3ef835a3ed7ff"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T22:17:17.142Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5e39a6fbb2e6aa9719ac30f4"
+          mutation_id: "compatibility:sha256:b5196d8706961ff901f51ecb09a4160ed2a035311b826e7cf57748a25bf8dec3"
+          plan_digest: "sha256:6df24333ded989fed28faa45541d0fed4c6bb0415d23271566a5c506c88cdb28"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071427-7J5DJQ"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b5196d8706961ff901f51ecb09a4160ed2a035311b826e7cf57748a25bf8dec3"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609071427-7J5DJQ"
       compatibility:sha256:b565b8231129d48fe7cf04d9072625e96a25a084d0d7a5393055bbbc7db9e991:
