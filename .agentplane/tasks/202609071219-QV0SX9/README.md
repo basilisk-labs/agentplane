@@ -1,10 +1,10 @@
 ---
 id: "202609071219-QV0SX9"
 title: "Use simple technical English in task prompts and remove redundant prompt context"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: "host_user_decision=sha256:ee0369e1e1369eedf4614ac785371d252dcf6f9d6d827933528cff0f98ffbe33"
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-07T13:27:26.459Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -56,6 +56,7 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
+      - ".agentplane/agents/PLANNER.json"
       - "packages/agentplane/assets/agents/PLANNER.json"
       - "packages/agentplane/src/agents/agents-template.test.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
@@ -70,6 +71,7 @@ execution_contract:
     preferred_mode: "branch_pr"
     rationale:
       - "Apply the repository branch_pr floor to a bounded prompt implementation with regression tests."
+      - "USER-approved blocked-result scope extension: roots=.agentplane/agents/PLANNER.json"
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -78,6 +80,7 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
+      - ".agentplane/agents/PLANNER.json"
       - "packages/agentplane/assets/agents/PLANNER.json"
       - "packages/agentplane/src/agents/agents-template.test.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
@@ -108,6 +111,7 @@ execution_contract:
     contract:
       declared:
         components:
+          - ".agentplane/agents/PLANNER.json"
           - "packages/agentplane/assets/agents/PLANNER.json"
           - "packages/agentplane/src/agents/agents-template.test.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
@@ -131,7 +135,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:21d9a20059301da87fad1a8509bde383d2f55996722763f5b4196d2123ec29e3"
+      digest: "sha256:15d3b02898921fd2b4913a257395c62306f87644a2969550ece357145c9afa20"
       escalation_reasons: []
       execution_groups:
         - "core"
@@ -179,6 +183,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The existing parity test requires the installed PLANNER profile to match its bundled source. Recommended action: Extend scope by the one installed PLANNER profile. Restore the verified implementation backup after the scope is granted. Requested scope: roots=.agentplane/agents/PLANNER.json; repository effects=unchanged; request digest=sha256:7627edfd120838d8be763be22677dee5bf88712470cc162032b96737706bb406. Agentplane receipt: external-agent-blocker/tr_100e9e98242dc4d87b5adbcdbb467872/sha256:b651e953acd4e742fbdae1ee9aecb6fb9f36fd65a128dee63ded3a51a60799b5/sha256:7627edfd120838d8be763be22677dee5bf88712470cc162032b96737706bb406."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: .agentplane/agents/PLANNER.json; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -256,6 +263,8 @@ extensions:
     status: "active"
     task_id: "202609071219-QV0SX9"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-07T13:27:26.459Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:b651e953acd4e742fbdae1ee9aecb6fb9f36fd65a128dee63ded3a51a60799b5"
     kind: "task_scope_extension_request"
     request:
@@ -266,19 +275,19 @@ extensions:
         - ".agentplane/agents/PLANNER.json"
     request_digest: "sha256:7627edfd120838d8be763be22677dee5bf88712470cc162032b96737706bb406"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_100e9e98242dc4d87b5adbcdbb467872"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-07T13:03:04.818Z"
-        approved_by: "HOST:local:USER"
-        approved_digest: "sha256:5616b01d5b975af1c5bd390b7f9a41530722e988ba44010122d0f799c7ef579b"
+        approved_at: "2026-09-07T13:27:26.459Z"
+        approved_by: "USER"
+        approved_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
         policy_facts:
-          - "host_user_decision"
+          - "state_bound_scope_extension:sha256:7627edfd120838d8be763be22677dee5bf88712470cc162032b96737706bb406"
         state: "approved"
-      created_at: "2026-09-07T12:21:57.751Z"
-      digest: "sha256:5616b01d5b975af1c5bd390b7f9a41530722e988ba44010122d0f799c7ef579b"
+      created_at: "2026-09-07T13:27:26.459Z"
+      digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
       proposal:
         assumptions:
           - "One owner and one verification boundary suffice."
@@ -462,16 +471,21 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/agents/agents-template.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: ".agentplane/agents/PLANNER.json"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
-                - "packages/agentplane/src/runner/context/base-prompts.test.ts"
-                - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
-                - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
-                - "packages/agentplane/src/commands/task/agent-action-packet.ts"
-                - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+                - ".agentplane/agents/PLANNER.json"
                 - "packages/agentplane/assets/agents/PLANNER.json"
                 - "packages/agentplane/src/agents/agents-template.test.ts"
+                - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+                - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+                - "packages/agentplane/src/runner/context/base-prompts.test.ts"
+                - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+                - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+                - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
               validation:
                 checks:
                   -
@@ -518,10 +532,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:014ced2a5c6361621cd8424c306f49b384dce29fd89579ddd7d92330b8d3615f"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609071219-QV0SX9"
-    event_cursor: 4
+    event_cursor: 5
     final_validation: null
     id: "202609071219-QV0SX9"
     intent:
@@ -533,10 +547,262 @@ extensions:
 
         Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement.
       task_id: "202609071219-QV0SX9"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 6
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-07T13:03:04.818Z"
+          approved_by: "HOST:local:USER"
+          approved_digest: "sha256:5616b01d5b975af1c5bd390b7f9a41530722e988ba44010122d0f799c7ef579b"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-07T12:21:57.751Z"
+        digest: "sha256:5616b01d5b975af1c5bd390b7f9a41530722e988ba44010122d0f799c7ef579b"
+        proposal:
+          assumptions:
+            - "One owner and one verification boundary suffice."
+            - "The existing gateway language policy can be reused without modifying protected policy assets."
+            - "Validation uses the supported task.verify capability; no undeclared deterministic Task command binding is fabricated."
+          planning_baseline:
+            captured_at: "2026-09-07T12:19:48.419Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:014ced2a5c6361621cd8424c306f49b384dce29fd89579ddd7d92330b8d3615f"
+            dirty_paths:
+              - ".agentplane/tasks/202609071219-QV0SX9/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                id: "task-outcome"
+                kind: "semantic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "task-outcome"
+                description: "External-agent instructions and managed-runner prompts include the existing simple technical English rules. Each generated sentence expresses one action or constraint. Commands, paths, identifiers, user input, and evidence remain unchanged."
+                id: "prompt-1"
+                required: true
+              -
+                check_ids:
+                  - "task-outcome"
+                description: "The PLANNER profile requests one TaskPlanProposal for one user Task with internal WorkItems. It grants no task lifecycle mutation authority."
+                id: "prompt-2"
+                required: true
+              -
+                check_ids:
+                  - "task-outcome"
+                description: "The managed prompt retains effective writable roots, protected paths, network authority, declared tools, missing-context handling, and all stop conditions after removing duplicate prose."
+                id: "prompt-3"
+                required: true
+              -
+                check_ids:
+                  - "task-outcome"
+                description: "All four result examples pass the production result parser. Examples contain no unrelated legacy or release claims. Required status fields and the current work_order_id remain present."
+                id: "prompt-4"
+                required: true
+              -
+                check_ids:
+                  - "task-outcome"
+                description: "Rendered UTF-8 prompt bytes decrease for representative fixed runner fixtures against the pre-change baseline. Report measured bytes and semantic coverage. Do not infer token savings from byte counts."
+                id: "prompt-5"
+                required: true
+              -
+                check_ids:
+                  - "task-outcome"
+                description: "Focused tests, typecheck, and formatting checks pass. Final diff contains only approved prompt and regression-test changes."
+                id: "prompt-6"
+                required: true
+            evidence_fingerprint: "sha256:014ced2a5c6361621cd8424c306f49b384dce29fd89579ddd7d92330b8d3615f"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "task-outcome"
+                    description: "External-agent instructions and managed-runner prompts include the existing simple technical English rules. Each generated sentence expresses one action or constraint. Commands, paths, identifiers, user input, and evidence remain unchanged."
+                    id: "prompt-1"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-outcome"
+                    description: "The PLANNER profile requests one TaskPlanProposal for one user Task with internal WorkItems. It grants no task lifecycle mutation authority."
+                    id: "prompt-2"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-outcome"
+                    description: "The managed prompt retains effective writable roots, protected paths, network authority, declared tools, missing-context handling, and all stop conditions after removing duplicate prose."
+                    id: "prompt-3"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-outcome"
+                    description: "All four result examples pass the production result parser. Examples contain no unrelated legacy or release claims. Required status fields and the current work_order_id remain present."
+                    id: "prompt-4"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-outcome"
+                    description: "Rendered UTF-8 prompt bytes decrease for representative fixed runner fixtures against the pre-change baseline. Report measured bytes and semantic coverage. Do not infer token savings from byte counts."
+                    id: "prompt-5"
+                    required: true
+                  -
+                    check_ids:
+                      - "task-outcome"
+                    description: "Focused tests, typecheck, and formatting checks pass. Final diff contains only approved prompt and regression-test changes."
+                    id: "prompt-6"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 100000
+                  optional_sources:
+                    - "packages/agentplane/assets/AGENTS.md"
+                    - "packages/core/src/runner/agent-semantic-result.ts"
+                  required_sources:
+                    - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+                    - "packages/agentplane/src/runner/context/base-prompts.test.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+                    - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+                    - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+                    - "packages/agentplane/assets/agents/PLANNER.json"
+                    - "packages/agentplane/src/agents/agents-template.test.ts"
+                  symbol_hints:
+                    - "projectRunnerPromptsForSemanticEpisode"
+                    - "renderTaskRunnerBootstrap"
+                    - "semanticInstruction"
+                depends_on: []
+                expected_outputs:
+                  - "prompt-language-implementation"
+                  - "prompt-regression-evidence"
+                  - "prompt-size-comparison"
+                id: "prompt-language-and-compaction"
+                objective: |-
+                  Implement one WorkItem: prompt-language-and-compaction.
+                  1. Reuse the existing gateway language rules in the semantic projection. Keep lifecycle instructions excluded. Add equivalent language guidance to the external-agent instruction path.
+                  2. Align the bundled PLANNER profile with TaskPlanProposal and internal WorkItems. Split compound framework instructions into explicit sentences.
+                  3. Remove duplicate runner prose only when the same constraint remains explicit elsewhere in the final prompt. Keep all authority and stop conditions.
+                  4. Replace verbose runner result examples with concise schema-valid examples for completed, blocked, needs_context, and failed. Keep test fixtures unchanged unless their existing contract requires an update.
+                  5. Extend the nearest tests for both prompt routes, exact literal preservation, effective authority, result parsing, and prompt byte reduction.
+                  Validation: run bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2. Run bun run typecheck. Run bunx prettier --check on changed files. Record before/after UTF-8 prompt bytes using fixed fixtures. AgentPlane owns formal verification persistence.
+                  Scope: the eight files listed in the WorkItem. Reuse existing primitives. Do not change schemas, gateway policy files, security enforcement, release metadata, or external systems. Do not minify or abbreviate schema keys in this change.
+                  Risk: compaction could omit a constraint or a required example field. Regression tests must compare retained semantic contracts and parse every status example.
+                  Rollback: revert only this WorkItem's implementation diff.
+                  External writes, commits, publication, and hosted integration require their own explicit operator authority.
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner/context/base-prompts.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/agent-action-packet.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/assets/agents/PLANNER.json"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/agents/agents-template.test.ts"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/runner/context/semantic-prompt-projection.ts"
+                  - "packages/agentplane/src/runner/context/base-prompts.test.ts"
+                  - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+                  - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+                  - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+                  - "packages/agentplane/src/commands/task/agent-action-packet.test.ts"
+                  - "packages/agentplane/assets/agents/PLANNER.json"
+                  - "packages/agentplane/src/agents/agents-template.test.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      id: "task-outcome"
+                      kind: "semantic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "task-outcome"
+                      description: "External-agent instructions and managed-runner prompts include the existing simple technical English rules. Each generated sentence expresses one action or constraint. Commands, paths, identifiers, user input, and evidence remain unchanged."
+                      id: "prompt-1"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-outcome"
+                      description: "The PLANNER profile requests one TaskPlanProposal for one user Task with internal WorkItems. It grants no task lifecycle mutation authority."
+                      id: "prompt-2"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-outcome"
+                      description: "The managed prompt retains effective writable roots, protected paths, network authority, declared tools, missing-context handling, and all stop conditions after removing duplicate prose."
+                      id: "prompt-3"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-outcome"
+                      description: "All four result examples pass the production result parser. Examples contain no unrelated legacy or release claims. Required status fields and the current work_order_id remain present."
+                      id: "prompt-4"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-outcome"
+                      description: "Rendered UTF-8 prompt bytes decrease for representative fixed runner fixtures against the pre-change baseline. Report measured bytes and semantic coverage. Do not infer token savings from byte counts."
+                      id: "prompt-5"
+                      required: true
+                    -
+                      check_ids:
+                        - "task-outcome"
+                      description: "Focused tests, typecheck, and formatting checks pass. Final diff contains only approved prompt and regression-test changes."
+                      id: "prompt-6"
+                      required: true
+                  evidence_fingerprint: "sha256:014ced2a5c6361621cd8424c306f49b384dce29fd89579ddd7d92330b8d3615f"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+    revision: 7
     schema_version: 1
     updated_at: "2026-09-07T13:27:19.676Z"
     work_items:
@@ -648,6 +914,30 @@ extensions:
         mutation_id: "compatibility:sha256:a6294080eadc57ac59f28a365ef1901e1e4513f49dbc17edec4df8895fe4796c"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
+      compatibility:sha256:bed9d42e55e676c44338e8cdba8bba34109ab475572a33ba25af03afbc4a1d9e:
+        aggregate_digest: "sha256:c55ca8c5138be50737f33d0fb7cdc43a37ca7e94d052a0a3bc2184b9bf8bab93"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T13:27:19.676Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_a714636ba7a9d4bd6e29378a"
+          mutation_id: "compatibility:sha256:bed9d42e55e676c44338e8cdba8bba34109ab475572a33ba25af03afbc4a1d9e"
+          plan_digest: "sha256:5616b01d5b975af1c5bd390b7f9a41530722e988ba44010122d0f799c7ef579b"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bed9d42e55e676c44338e8cdba8bba34109ab475572a33ba25af03afbc4a1d9e"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609071219-QV0SX9"
     pending_effects: []
