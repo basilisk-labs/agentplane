@@ -4,7 +4,7 @@ title: "Fix Homebrew executable links and prevent formula regression"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -380,22 +380,113 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-07T11:32:47.481Z"
+    updated_at: "2026-09-07T11:32:50.839Z"
     work_items:
       fix-homebrew-links:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "fix-homebrew-links"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:affd5b022cc5e2ce3704f4ddff1f1ef38baf43d3eab1d2b6257600c0e66bf72f"
+            id: "Corrected formula generator and regression checks"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071123-3B0812"
+              work_item_id: "fix-homebrew-links"
+            provenance:
+              - "sha256:21d9eac96f923ff1abdb9c0812aa380c5a4ee28d96a00f5eca3b2e023d5cb716"
+              - ".agentplane/tasks/202609071123-3B0812/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9ba73ea5a2b68b19bc763c13287c851bc9249c468ce5f411cc95b768d48e0d04"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:3c2509b1121e632c2c71932e5cfa3674fbf629b8409f7a82e243319b6ec5b2a1"
+            id: "Matching tap formula patch"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071123-3B0812"
+              work_item_id: "fix-homebrew-links"
+            provenance:
+              - "sha256:21d9eac96f923ff1abdb9c0812aa380c5a4ee28d96a00f5eca3b2e023d5cb716"
+              - ".agentplane/tasks/202609071123-3B0812/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9ba73ea5a2b68b19bc763c13287c851bc9249c468ce5f411cc95b768d48e0d04"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:1a07a047162972b647e824aea69b6aa081c48993f76cb1414fd670e62d65a7b6"
+            id: "Clean-install and reinstall evidence for both command names"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071123-3B0812"
+              work_item_id: "fix-homebrew-links"
+            provenance:
+              - "sha256:21d9eac96f923ff1abdb9c0812aa380c5a4ee28d96a00f5eca3b2e023d5cb716"
+              - ".agentplane/tasks/202609071123-3B0812/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9ba73ea5a2b68b19bc763c13287c851bc9249c468ce5f411cc95b768d48e0d04"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:7276e24532dc612d57a55ccc72f4e20203d52fccbc54c2eff30a4daa666e944c"
+            id: "PR handoff for agentplane and homebrew-tap"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609071123-3B0812"
+              work_item_id: "fix-homebrew-links"
+            provenance:
+              - "sha256:21d9eac96f923ff1abdb9c0812aa380c5a4ee28d96a00f5eca3b2e023d5cb716"
+              - ".agentplane/tasks/202609071123-3B0812/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:9ba73ea5a2b68b19bc763c13287c851bc9249c468ce5f411cc95b768d48e0d04"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609071123-3B0812/supervision/declared-checks.json"
+              check_id: "homebrew-check"
+              command_identity: "bun run release:homebrew:check"
+              detail: "Observed by bun run release:homebrew:check."
+              exit_code: 0
+              observed_at: "2026-09-07T11:32:50.836Z"
+              repository_snapshot_digest: "sha256:9ba73ea5a2b68b19bc763c13287c851bc9249c468ce5f411cc95b768d48e0d04"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-07T11:32:50.839Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_c52a1467b258d9e76550fdae"
+        mutation_id: "external-result:work-order-202609071123-3B0812-executor-f6daa183ced1dfeb63b7d13e"
+        plan_digest: "sha256:bc44d3dac89a592eb633f423599e285163e3ed2dccbd3fec79b6147eced6e660"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609071123-3B0812"
+        task_revision: 7
+        work_item_id: "fix-homebrew-links"
     leases: []
     mutation_receipts:
       compatibility:sha256:78363a5a654dafaa4fb01bd6312d2fa0fb7efbc265f4bd0cbb3838b39f962be1:
@@ -516,6 +607,29 @@ extensions:
         mutation_id: "compatibility:sha256:dac266a5d618df607b94791fcc5e5ce50616ff1867e3769ae4e29524734c625f"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609071123-3B0812"
+      external-result:work-order-202609071123-3B0812-executor-f6daa183ced1dfeb63b7d13e:
+        aggregate_digest: "sha256:8dfb37ed9629551705763fe675d2248f9afc8d104538f51f04047cd6ba9737be"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T11:32:50.839Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_c52a1467b258d9e76550fdae"
+          mutation_id: "external-result:work-order-202609071123-3B0812-executor-f6daa183ced1dfeb63b7d13e"
+          plan_digest: "sha256:bc44d3dac89a592eb633f423599e285163e3ed2dccbd3fec79b6147eced6e660"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071123-3B0812"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "fix-homebrew-links"
+        mutation_id: "external-result:work-order-202609071123-3B0812-executor-f6daa183ced1dfeb63b7d13e"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609071123-3B0812"
     pending_effects: []
