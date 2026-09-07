@@ -15,14 +15,14 @@ User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7M
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-07T17:00:24.316Z
+- Updated: 2026-09-07T17:30:12.031Z
 - Branch: task/202609071655-XKV80D/accept-report-only-workitem-results-without-requ
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

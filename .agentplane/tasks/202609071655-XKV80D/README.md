@@ -4,7 +4,7 @@ title: "Accept report-only WorkItem results without requiring source-code change
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "HOST:local:USER"
   note: "host_user_decision=sha256:d81df8f0038c7ad7c2f0a30018c03c69eb6eba37d0f931920fa0799d6efa74e8"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-07T17:44:30.848Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -97,7 +97,31 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -216,8 +240,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 693879a42688. CLI accepted one state-bound external-agent semantic result."
     commit: "693879a426881d13a1f40f2eb4ab15fd233e25ce"
+  -
+    type: "verify"
+    at: "2026-09-07T17:44:30.848Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-07T17:25:29.642Z"
+doc_updated_at: "2026-09-07T17:44:32.422Z"
 doc_updated_by: "SUPERVISOR"
 description: "User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority."
 sections:
@@ -232,6 +262,78 @@ sections:
   Verify Steps: "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts. Expect report-only completion and exact replay to pass. Expect no-change code results, escaped paths, stale identity, and changed result replay to fail. Run git diff --check and focused ESLint. Preserve the required full CI verification floor."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-07T17:44:30.848Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c2c6825a38b2272e131b3786613e4403290011256c6f51f8de7b340c742f2595, input_digest=sha256:d7b1cedc820047cf9fcb39fb8a8adcf8851c238bdca9587e8f6608291ac5d752
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609071655-XKV80D Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071655-XKV80D-accept-report-only-workitem-results-without-requ/.agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json
+    - old_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+    - current_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609071655-XKV80D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609071655-XKV80D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -426,7 +528,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071655-XKV80D"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609071655-XKV80D"
     intent:
@@ -446,9 +548,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-07T17:30:04.421Z"
+    updated_at: "2026-09-07T17:44:32.420Z"
     work_items:
       report-result:
         attempt: 1
@@ -631,6 +733,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609071655-XKV80D"
+      compatibility:sha256:eb588eda90c48957b1321b89adecc1cba8225019233661fcb497765cb82444ac:
+        aggregate_digest: "sha256:f070bbac3408805e0e03d2e2035a6e374b5ae92385049f0c5b910183a2079fc2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T17:44:32.420Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2e2e8ef3d2225c71e997869d"
+          mutation_id: "compatibility:sha256:eb588eda90c48957b1321b89adecc1cba8225019233661fcb497765cb82444ac"
+          plan_digest: "sha256:8df45f2d90bd5e18f1d1374ce71fc4358748027152024a9ff72bf3530739e181"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071655-XKV80D"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:eb588eda90c48957b1321b89adecc1cba8225019233661fcb497765cb82444ac"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609071655-XKV80D"
       external-result:work-order-202609071655-XKV80D-executor-190d85835fbfb77f12cd28ff:
         aggregate_digest: "sha256:2415990bcabe9f2bca90bd3afb3930b212704b0ce2736221e7273db1102c65e0"
         event:
@@ -693,6 +819,78 @@ Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-07T17:44:30.848Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c2c6825a38b2272e131b3786613e4403290011256c6f51f8de7b340c742f2595, input_digest=sha256:d7b1cedc820047cf9fcb39fb8a8adcf8851c238bdca9587e8f6608291ac5d752
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609071655-XKV80D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609071655-XKV80D Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071655-XKV80D-accept-report-only-workitem-results-without-requ/.agentplane/tasks/202609071655-XKV80D/blueprint/resolved-snapshot.json
+- old_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+- current_digest: 6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609071655-XKV80D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609071655-XKV80D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
