@@ -14,6 +14,7 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../shared/errors.js";
+import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
@@ -53,7 +54,7 @@ import {
 } from "./external-agent-implementation-checkpoint.js";
 import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 
-function assertExternalImplementationReturnState(opts: {
+export function assertExternalImplementationReturnState(opts: {
   exchange: ExternalAgentExchange;
   work_order: AgentWorkOrderV2;
   current: TaskRouteDecision;
@@ -188,6 +189,16 @@ function assertScopeExtensionBlockerPreservedBaseline(opts: {
       message: "Scope-extension blocker changed the workspace after the episode was issued.",
     });
   }
+}
+
+export function implementationCommitAllowsCi(
+  contract: TaskRouteDecision["task"]["execution_contract"],
+  validatedPaths: readonly string[],
+): boolean {
+  return (
+    contract?.authority.allowed_repository_effects.includes("ci") === true &&
+    validatedPaths.some((entry) => pathAllowed(entry, CI_PATH_PREFIXES))
+  );
 }
 
 export async function applyExternalImplementationResult(opts: {
@@ -418,7 +429,10 @@ export async function applyExternalImplementationResult(opts: {
           allowPolicy: false,
           allowConfig: false,
           allowHooks: false,
-          allowCI: false,
+          allowCI: implementationCommitAllowsCi(
+            taskAtReturn.execution_contract,
+            observedChangedPaths,
+          ),
           requireClean: false,
           quiet: true,
           closeUnstageOthers: false,
