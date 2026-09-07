@@ -60,27 +60,24 @@ export function buildWorkOrderContextManifest(
     order.state_fingerprint_policy,
   );
   add("planning", "planning_context", "/planning_context", order.planning_context);
-  order.required_inputs.forEach((input, index) =>
-    add(`input:${input.id}`, input.kind, `/required_inputs/${index}`, input, input.required),
-  );
-  order.knowledge_refs.forEach((input, index) =>
+  for (const [index, input] of order.required_inputs.entries())
+    add(`input:${input.id}`, input.kind, `/required_inputs/${index}`, input, input.required);
+  for (const [index, input] of order.knowledge_refs.entries())
     add(
       `knowledge:${index}`,
       "knowledge_ref",
       `/knowledge_refs/${index}`,
       input,
       order.context_intent.required_knowledge_ref_digests.includes(input.digest),
-    ),
-  );
-  order.prepared_evidence.forEach((input, index) =>
+    );
+  for (const [index, input] of order.prepared_evidence.entries())
     add(
       `evidence:${index}`,
       "prepared_evidence",
       `/prepared_evidence/${index}`,
       input,
       input.role === order.role,
-    ),
-  );
+    );
   return {
     schema_version: 1,
     kind: "agentplane.work_order_context",
@@ -107,20 +104,18 @@ export function resolveWorkOrderContextBlocks(opts: {
   const expected = buildWorkOrderContextManifest(opts.order, opts.manifest.source_ref);
   if (digest(expected) !== digest(opts.manifest))
     throw new Error("WorkOrder context manifest is incomplete or stale");
-  const requested = new Set(opts.optional_ids ?? []);
+  const requested = new Set(opts.optional_ids);
   if ([...requested].some((id) => !expected.blocks.some((block) => block.id === id)))
     throw new Error("Requested context block is not in the complete manifest");
   return expected.blocks
     .filter((block) => block.required || requested.has(block.id))
     .flatMap((block) => {
-      const content = block.pointer
-        .split("/")
-        .slice(1)
-        .reduce<unknown>((value, key) => {
-          if (!value || typeof value !== "object" || !Object.hasOwn(value, key))
-            throw new Error(`Required context block missing: ${block.id}`);
-          return (value as Record<string, unknown>)[key];
-        }, opts.order);
+      let content: unknown = opts.order;
+      for (const key of block.pointer.split("/").slice(1)) {
+        if (!content || typeof content !== "object" || !Object.hasOwn(content, key))
+          throw new Error(`Required context block missing: ${block.id}`);
+        content = (content as Record<string, unknown>)[key];
+      }
       if (digest(content) !== block.digest)
         throw new Error(`Required context block changed: ${block.id}`);
       if (

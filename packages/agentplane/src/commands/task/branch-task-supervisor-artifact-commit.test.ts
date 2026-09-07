@@ -37,24 +37,25 @@ describe("commitBranchSupervisorTaskArtifacts", () => {
   });
 });
 
+const opts = () => ({
+  command: {
+    config: {
+      paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
+    },
+  } as never,
+  cwd: "/repo",
+  task_id: "TASK",
+  next: {
+    workflowStep: {
+      kind: "agent_episode",
+      episode: { purpose: "quality_review", taskId: "TASK" },
+      blockers: [],
+    },
+    executionPacket: { mustRunFrom: "/repo" },
+  } as never,
+});
+
 describe("verification artifact coalescing", () => {
-  const opts = () => ({
-    command: {
-      config: {
-        paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
-      },
-    } as never,
-    cwd: "/repo",
-    task_id: "TASK",
-    next: {
-      workflowStep: {
-        kind: "agent_episode",
-        episode: { purpose: "quality_review", taskId: "TASK" },
-        blockers: [],
-      },
-      executionPacket: { mustRunFrom: "/repo" },
-    } as never,
-  });
   it("defers only durable same-task artifacts to the evaluator boundary, including restart", async () => {
     mocks.status.mockResolvedValue({
       lines: [

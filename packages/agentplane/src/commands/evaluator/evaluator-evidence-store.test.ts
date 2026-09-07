@@ -465,11 +465,13 @@ it("shares canonical result schemas across new exchanges and preserves historica
   expect(await readFile(firstPath, "utf8")).toBe(renderAgentSemanticResultSchemaJson());
   expect(await readdir(path.dirname(firstPath))).toHaveLength(1);
   expect(await readdir(first.exchange.directory)).not.toContain("result-schema.json");
-  const bytes = (await readFile(firstPath)).byteLength;
+  const contents = await readFile(firstPath);
+  const bytes = contents.byteLength;
   expect(bytes).toBeGreaterThan(1000);
-  expect(
-    (await readFile(path.join(first.exchange.directory, "result-schema-object.json"))).byteLength,
-  ).toBeLessThan(bytes);
+  const descriptor = await readFile(
+    path.join(first.exchange.directory, "result-schema-object.json"),
+  );
+  expect(descriptor.byteLength).toBeLessThan(bytes);
   // An interrupted publication with a durable object and no descriptor reuses the object.
   await rm(path.join(first.exchange.directory, "result-schema-object.json"));
   const replay = await issueKernelExchange(command, order, "host");
@@ -488,7 +490,7 @@ it("shares canonical result schemas across new exchanges and preserves historica
   });
   expect(path.join(root, changed.path)).not.toBe(firstPath);
   expect(await readdir(path.dirname(firstPath))).toHaveLength(2);
-  expect((await readFile(firstPath)).byteLength).toBe(bytes);
+  expect(await readFile(firstPath)).toHaveLength(bytes);
   // A historical exchange keeps its original copy and never migrates it implicitly.
   await writeFile(
     path.join(first.exchange.directory, "result-schema.json"),

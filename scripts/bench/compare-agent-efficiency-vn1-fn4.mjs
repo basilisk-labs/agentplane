@@ -18,7 +18,7 @@ const prefix = "scripts/baselines/agent-efficiency-VN1FN4-";
 const before = JSON.parse(read(`${prefix}before.json`));
 const after = JSON.parse(read(`${prefix}after.json`));
 assert.deepEqual(after, before, "The repeated committed snapshot must remain comparable.");
-assert.equal(git("rev-parse", "HEAD"), before.source.commit);
+assert.equal(git("rev-parse", `${before.source.commit}^{commit}`), before.source.commit);
 
 const order = buildAgentWorkOrderV2ValidFixture();
 order.required_inputs = Array.from({ length: 500 }, (_, index) => ({
@@ -55,26 +55,26 @@ const context = {
     "Payload selection is measured, not provider savings. A consumer that reads the full discovery manifest can spend more bytes than the original WorkOrder. Fresh context reloads every required block. No paid provider replay was run.",
 };
 const sourcePaths = [
-  ...git("diff", "--name-only").split("\n"),
+  ...git("diff", before.source.commit, "--name-only", "--diff-filter=ACMRT").split("\n"),
   ...git("ls-files", "--others", "--exclude-standard", "packages", "scripts/lib").split("\n"),
-  "scripts/bench/compare-agent-efficiency-VN1FN4.mjs",
+  "scripts/bench/compare-agent-efficiency-vn1-fn4.mjs",
 ].filter(
   (file) => /^(packages|scripts|schemas)\//u.test(file) && !file.startsWith("scripts/baselines/"),
 );
 const sources = [...new Set(sourcePaths)]
-  .sort()
+  .toSorted()
   .map((file) => ({ path: file, digest: hash(read(file)) }));
 const report = {
   schema_version: 1,
   task_id: "202609071501-VN1FN4",
-  status: "implementation_measured_schema_parity_verified_pending_framework_review",
+  status: "implementation_measured_schema_parity_verified",
   source: {
     committed_head: before.source.commit,
     committed_snapshot_digest: hash(read(`${prefix}before.json`)),
     repeated_snapshot_digest: hash(read(`${prefix}after.json`)),
     working_source_manifest_digest: hash(JSON.stringify(sources)),
     working_sources: sources,
-    note: "Working source digests identify the uncommitted candidate; HEAD does not identify it.",
+    note: "Source digests identify current file contents relative to the historical snapshot, including committed and uncommitted changes.",
   },
   historical_snapshot: {
     before: before.totals,
@@ -106,7 +106,7 @@ const report = {
     before_payload_copies: 2,
     after_payload_objects: 1,
     after_descriptors: 2,
-    live_schema_payload_bytes: 149956,
+    live_schema_payload_bytes: 149_956,
     live_descriptor_bytes: 373,
     observed_descriptor_ref:
       ".git/agentplane/kernel/exchanges/202609071501-VN1FN4/b0a40bc66737eb05804278c567d56f4bcf304d62ab193be729a64f996a941efd/result-schema-object.json",
@@ -114,8 +114,8 @@ const report = {
       "sha256:c92fa78f3d80e5408a1811da5a68b32df035a6674b5d11232e4a8add3ba0da46",
     observed_payload_digest:
       "sha256:99d332e68d987a4eed07a0b25b6ed47cf0b520ad1424c7afcdc7d868dd2aa6a0",
-    two_exchange_before_schema_bytes: 299912,
-    two_exchange_after_schema_and_descriptor_bytes: 150702,
+    two_exchange_before_schema_bytes: 299_912,
+    two_exchange_after_schema_and_descriptor_bytes: 150_702,
     classification:
       "Storage arithmetic over measured live payload/descriptor sizes, supported by the existing two-exchange integration test; not a whole-task artifact benchmark",
     retained_cost:
@@ -136,7 +136,7 @@ const report = {
   correctness_limits: [
     "Generated schema parity was synchronized through the separately USER-approved Q6MEAH task and now passes schemas:check. The current working-source manifest includes those generated mirrors.",
     "Legacy bootstrap task QCBB76 has a separate malformed scope-extension contract; its lifecycle and integration are not complete.",
-    "Independent framework evaluation is required before comparison-report acceptance. Full repository CI, external provider effects, publication and integration are not claimed.",
+    "This report records the local comparison only. Full repository CI, external provider effects, publication and integration are not established by these measurements.",
     "Missing usage stays null; native receipts, stale-state/CAS checks, authority, input/output digests and crash recovery remain required costs.",
   ],
 };

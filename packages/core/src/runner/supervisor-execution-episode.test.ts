@@ -269,9 +269,8 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       },
       now: NOW,
     });
-    const reloaded = validateSupervisorExecutionEpisodeJournal(
-      JSON.parse(JSON.stringify(completed)),
-    );
+    const serialized = JSON.stringify(completed);
+    const reloaded = validateSupervisorExecutionEpisodeJournal(JSON.parse(serialized));
     expect(reloaded.usage).toMatchObject({
       cached_input_tokens: 0,
       cached_input_observed_agent_runs: 1,

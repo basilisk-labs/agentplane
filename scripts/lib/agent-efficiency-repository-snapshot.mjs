@@ -40,7 +40,7 @@ export function measureRepositoryEfficiency({
   const taskEntries = entries.filter((entry) => entry.path.startsWith(".agentplane/tasks/"));
   const readmes = taskEntries
     .filter((entry) => /^\.agentplane\/tasks\/[^/]+\/README\.md$/u.test(entry.path))
-    .sort((a, b) => b.path.localeCompare(a.path))
+    .toSorted((a, b) => b.path.localeCompare(a.path))
     .slice(0, sampleSize);
   const commitIds = git(["rev-list", "--no-merges", `--max-count=${commitLimit}`, source])
     .trim()
@@ -57,7 +57,7 @@ export function measureRepositoryEfficiency({
         ...new Set(
           files.flatMap((file) => /^\.agentplane\/tasks\/([^/]+)\//u.exec(file)?.[1] ?? []),
         ),
-      ].sort(),
+      ].toSorted(),
     };
   });
   const objects = new Map();

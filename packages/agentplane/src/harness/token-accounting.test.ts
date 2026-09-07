@@ -43,7 +43,8 @@ describe("harness/token-accounting", () => {
       },
     });
     const first = applyTokenUsageEvent(createTokenAccumulator(), event(7));
-    const restored = JSON.parse(JSON.stringify(first.state));
+    const serialized = JSON.stringify(first.state);
+    const restored = JSON.parse(serialized) as typeof first.state;
     const duplicate = applyTokenUsageEvent(restored, event());
     expect(duplicate.state.global).toMatchObject({ totalTokens: 15, cachedInputTokens: 7 });
     const advancedWithoutCache = applyTokenUsageEvent(duplicate.state, event(undefined, 16));

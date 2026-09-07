@@ -7,6 +7,7 @@ import {
   WORK_ORDER_CONTEXT_FILENAME,
   workOrderContextManifestDigest,
 } from "../../runner/context/work-order-context.js";
+import type { KernelValidationEvidence } from "./kernel-inspection.js";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -105,7 +106,7 @@ async function withKernelReworkEvidence(
   const binding = order.canonical_binding;
   if (binding?.phase !== "implementation" || binding.attempt === 1) return order;
   const inputs: AgentWorkOrderV2["required_inputs"] = [];
-  for (const mutationId of Object.keys(record?.aggregate.mutation_receipts ?? {}).sort()) {
+  for (const mutationId of Object.keys(record?.aggregate.mutation_receipts ?? {}).toSorted()) {
     if (!/^validation:sha256:[a-f0-9]{64}$/u.test(mutationId)) continue;
     const name = mutationId.slice("validation:sha256:".length);
     const source = path.join(path.dirname(directory), name);
@@ -127,7 +128,7 @@ async function withKernelReworkEvidence(
       const validationPath = path.join(source, "validation.json");
       const validation = JSON.parse(
         await readStableRegularTextNoFollow(validationPath, "rework validation"),
-      );
+      ) as KernelValidationEvidence;
       if (
         validation.repository_fingerprint !== previous.repository_fingerprint ||
         validation.review_digest !== k.kernelDigest(review) ||
@@ -159,7 +160,7 @@ async function withKernelReworkEvidence(
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   }
-  if (!inputs.length)
+  if (inputs.length === 0)
     throw new Error(
       "Canonical rework requires retained evaluator findings and failed-check evidence",
     );

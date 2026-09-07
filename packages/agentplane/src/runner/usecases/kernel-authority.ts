@@ -422,7 +422,9 @@ export class KernelAuthorityResolver {
       repository_evidence_digest: observation.evidence_digest,
       changed_paths: uniqueSorted(observation.changed_paths),
       added_scope_roots: outside,
-      added_repository_effects: uniqueSorted(outside.flatMap(repositoryEffects)),
+      added_repository_effects: uniqueSorted(
+        outside.flatMap((changed) => repositoryEffects(changed)),
+      ),
     };
     return { request, request_digest: k.kernelDigest(request) };
   }
@@ -445,7 +447,7 @@ export class KernelAuthorityResolver {
       invalid("authority_delta_request_mismatch");
     const { context, aggregate } = await this.context(opts.task_id);
     const parent = aggregate.authority_lineage?.at(-1)?.authority;
-    if (!parent || parent.digest !== prepared.request.parent_authority_digest)
+    if (parent?.digest !== prepared.request.parent_authority_digest)
       invalid("authority_delta_parent_changed");
     const approval = await this.native.readApproval(opts.task_id);
     if (

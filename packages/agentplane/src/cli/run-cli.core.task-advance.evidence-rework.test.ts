@@ -212,7 +212,7 @@ async function completedFixture(initialized = true) {
     ["show", `HEAD:.agentplane/tasks/${taskId}/supervision/declared-checks.json`],
     { cwd: checkout },
   );
-  expect(JSON.parse(committedChecks.stdout).status).toBe("passed");
+  expect(JSON.parse(committedChecks.stdout)).toMatchObject({ status: "passed" });
   const combinedCommit = await git("git", ["log", "-1", "--format=%s"], { cwd: checkout });
   expect(combinedCommit.stdout).toContain("record external evaluator result");
 

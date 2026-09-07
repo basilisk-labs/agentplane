@@ -192,6 +192,8 @@ async function fixture(
   };
 }
 
+const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
+
 describe("canonical native authority", () => {
   it.each(["manual_operator", "signed_user_receipt", "host_user_decision"] as const)(
     "persists exact %s approval and delegates without USER provenance",
@@ -378,7 +380,6 @@ describe("canonical native authority", () => {
       evidence_digest: k.kernelDigest("schema-observation"),
       changed_paths: ["schemas/generated.json", "src/implementation.ts"],
     });
-    const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
     const prepared = await f.resolver.prepareDelta(f.taskId, effects);
     expect(prepared.request).toMatchObject({
       parent_authority_digest: parent.digest,

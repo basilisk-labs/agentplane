@@ -5,10 +5,12 @@ import {
   type AgentSemanticResult,
 } from "@agentplaneorg/core/schemas";
 import { taskKernel as k, type KernelEpisodeBinding } from "@agentplaneorg/core/tasks";
+import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
-import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+import type { createKernelRuntime } from "./kernel-runtime-context.js";
+import { requireKernelCommit } from "./kernel-runtime-context.js";
 import { buildKernelStateFingerprint } from "./kernel-work-order.js";
 import {
   issueKernelExchange,
@@ -18,6 +20,13 @@ import {
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+export type KernelValidationEvidence = {
+  repository_fingerprint: string;
+  result_digest: string;
+  review_digest: string;
+  checks: Awaited<ReturnType<typeof runDirectTaskVerification>>;
+};
+
 type InspectionBinding = Extract<KernelEpisodeBinding, { phase: "inspection" }>;
 
 export async function issueKernelInspection(
@@ -28,7 +37,7 @@ export async function issueKernelInspection(
 ) {
   const item = record.aggregate.work_items[workItemId];
   const plan = record.aggregate.current_plan;
-  const contract = record.documents?.contracts[item?.definition.contract_digest ?? ""];
+  const contract = record.documents?.contracts[String(item?.definition.contract_digest ?? "")];
   if (
     !item?.claim_id ||
     !item.result_digest ||
@@ -55,14 +64,14 @@ export async function issueKernelInspection(
   let resultPath: string | undefined;
   for (const mutationId of Object.keys(record.aggregate.mutation_receipts)
     .filter((id) => /^result:sha256:[a-f0-9]{64}$/u.test(id))
-    .reverse()) {
+    .toReversed()) {
     const directory = await kernelExchangeDirectory(
       command,
       record.aggregate.id,
       mutationId.slice("result:".length),
     );
     const candidate = path.join(directory, "received-result.json");
-    const semantic = JSON.parse(
+    const semantic: unknown = JSON.parse(
       await readStableRegularTextNoFollow(candidate, "canonical received result"),
     );
     if (k.kernelDigest(semantic) === item.result_digest) {
@@ -183,8 +192,7 @@ export async function acceptKernelInspection(
   const context = await runtime.native.readContext(binding.task_id);
   const plan = read.record.aggregate.current_plan;
   if (
-    !item ||
-    item.result_digest !== binding.result_digest ||
+    item?.result_digest !== binding.result_digest ||
     item.attempt !== binding.attempt ||
     item.claim_id !== binding.claim_id ||
     item.definition.contract_digest !== binding.contract_digest ||
@@ -205,18 +213,13 @@ export async function acceptKernelInspection(
       reason: "canonical_inspection_requires_attention",
       summary: semantic.summary,
     };
-  const contract = read.record.documents!.contracts[binding.contract_digest]!;
+  const contract = read.record.documents!.contracts[String(binding.contract_digest)]!;
   const evidencePath = path.join(directory, "validation.json");
-  let evidence: {
-    repository_fingerprint: string;
-    result_digest: string;
-    review_digest: string;
-    checks: Awaited<ReturnType<typeof runDirectTaskVerification>>;
-  };
+  let evidence: KernelValidationEvidence;
   try {
     evidence = JSON.parse(
       await readStableRegularTextNoFollow(evidencePath, "canonical validation"),
-    );
+    ) as KernelValidationEvidence;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     const checks =
@@ -244,7 +247,8 @@ export async function acceptKernelInspection(
       review_digest: k.kernelDigest(semantic),
       checks,
     };
-    if ((await runtime.observe()).fingerprint !== binding.repository_fingerprint)
+    const observed = await runtime.observe();
+    if (observed.fingerprint !== binding.repository_fingerprint)
       throw new Error("Canonical repository changed during validation");
     await writeKernelArtifact(directory, "validation.json", evidence);
   }
@@ -280,11 +284,11 @@ export async function acceptKernelInspection(
   };
   // Save the native command input before CAS. A restart replays the same observation timestamp.
   const inputPath = path.join(directory, "validation-command.json");
-  let input;
+  let input: KernelCommandInput;
   try {
     input = JSON.parse(
       await readStableRegularTextNoFollow(inputPath, "canonical validation command"),
-    );
+    ) as KernelCommandInput;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     input = await runtime.input(
@@ -322,14 +326,11 @@ export async function resumeKernelInspection(
   workItemId: string,
 ) {
   const item = record.aggregate.work_items[workItemId];
-  if (
-    !item?.validation ||
-    item.validation.identity.check_id !== "canonical-contract-and-inspection"
-  )
+  if (item?.validation?.identity.check_id !== "canonical-contract-and-inspection")
     return { kind: "human_required", reason: "canonical_native_validation_evidence_required" };
   for (const mutationId of Object.keys(record.aggregate.mutation_receipts)
     .filter((id) => /^validation:sha256:[a-f0-9]{64}$/u.test(id))
-    .reverse()) {
+    .toReversed()) {
     const directory = await kernelExchangeDirectory(
       command,
       record.aggregate.id,

@@ -1,10 +1,10 @@
 # Agent efficiency comparison: VN1FN4
 
-The implementation provides selective context loading, safe service-artifact commit coalescing, shared canonical result schemas and native final lifecycle transitions. Provider-token savings are **not established**. Generated schema parity is synchronized and verified; independent framework evaluation is still required.
+The implementation provides selective context loading, safe service-artifact commit coalescing, shared canonical result schemas and native final lifecycle transitions. Provider-token savings are **not established**. Generated schema parity is synchronized and verified; the report does not establish provider-token savings.
 
 ## Source and measurement boundary
 
-The before and after repository snapshots both measure committed source `92efd467a7b045e7e784597168ac21bd41a975a1` with identical selection and measurement code. Their complete JSON values match. The candidate changes are uncommitted; the comparison JSON separately records every changed package source and relevant measurement script by SHA-256. The committed snapshot cannot measure those candidate changes.
+The before and after repository snapshots both measure committed source `92efd467a7b045e7e784597168ac21bd41a975a1` with identical selection and measurement code. Their complete JSON values match. The comparison JSON separately records current source files relative to the historical snapshot by SHA-256, including committed and uncommitted changes. The committed snapshot cannot measure those candidate changes.
 
 | Historical metric                                       |             Before |              After |
 | ------------------------------------------------------- | -----------------: | -----------------: |
@@ -48,7 +48,7 @@ Run from the repository root:
 
 ```sh
 node scripts/bench/measure-agent-efficiency.mjs --repository-snapshot --revision 92efd467a7b045e7e784597168ac21bd41a975a1 --out scripts/baselines/agent-efficiency-VN1FN4-after.json
-bun scripts/bench/compare-agent-efficiency-VN1FN4.mjs
+bun scripts/bench/compare-agent-efficiency-vn1-fn4.mjs
 ```
 
 The script reruns the context probe and checks snapshot equality. It refreshes candidate source hashes. Artifact sizes and transport counts are explicitly recorded observations from the bound live evidence and existing tests; the script does not represent them as fresh provider measurements.

@@ -63,22 +63,23 @@ function completeAgent(opts: {
   });
 }
 
+const create = (cached?: number) =>
+  projectTaskTokenUsage({
+    journal: completeAgent({
+      journal: journal(),
+      role: "EXECUTOR",
+      fingerprint: fingerprintA,
+      usage: {
+        input_tokens: 10,
+        output_tokens: 2,
+        total_tokens: 12,
+        ...(cached === undefined ? {} : { cached_input_tokens: cached }),
+      },
+    }),
+  });
+
 describe("completed task token usage projection", () => {
   it("distinguishes observed zero cached input from missing cache telemetry", () => {
-    const create = (cached?: number) =>
-      projectTaskTokenUsage({
-        journal: completeAgent({
-          journal: journal(),
-          role: "EXECUTOR",
-          fingerprint: fingerprintA,
-          usage: {
-            input_tokens: 10,
-            output_tokens: 2,
-            total_tokens: 12,
-            ...(cached === undefined ? {} : { cached_input_tokens: cached }),
-          },
-        }),
-      });
     expect(create()).toMatchObject({
       cached_input_tokens: null,
       cached_input_observed_agent_runs: 0,

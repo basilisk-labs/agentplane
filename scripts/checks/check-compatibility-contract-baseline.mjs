@@ -402,6 +402,7 @@ function validateReviewedCandidate({
     "202608301851-5W3XW6",
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
+    "202609071501-VN1FN4",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -749,7 +750,7 @@ function validateReviewedCandidate({
     "AgentWorkOrder contract artifact comparison drift",
   );
   assert(
-    agentWorkOrderArtifact.source_task === "202608291006-255K66",
+    agentWorkOrderArtifact.source_task === "202609071501-VN1FN4",
     "AgentWorkOrder contract artifact source task drift",
   );
   const agentWorkOrderSchema = JSON.parse(

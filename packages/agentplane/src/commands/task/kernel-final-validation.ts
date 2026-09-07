@@ -5,7 +5,8 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
-import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+import type { createKernelRuntime } from "./kernel-runtime-context.js";
+import { requireKernelCommit } from "./kernel-runtime-context.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
@@ -32,7 +33,7 @@ export async function runKernelFinalValidation(
             record.aggregate.work_items[definition.id]?.state === "COMPLETED",
         )
         .flatMap((definition) => {
-          const contract = record.documents!.contracts[definition.contract_digest ?? ""];
+          const contract = record.documents!.contracts[String(definition.contract_digest ?? "")];
           if (!contract) throw new Error("Canonical final validation contract is missing");
           return contract.verification_commands;
         }),
@@ -70,10 +71,11 @@ export async function runKernelFinalValidation(
     allow_empty: true,
   });
   const current = await runtime.adapter.read(taskId);
+  const observed = await runtime.observe();
   if (
     current.kind !== "canonical" ||
     current.record.digest !== record.digest ||
-    (await runtime.observe()).fingerprint !== binding.repository_fingerprint ||
+    observed.fingerprint !== binding.repository_fingerprint ||
     k.kernelDigest(verificationChildEnv()) !== environmentDigest
   )
     throw new Error("Canonical final validation inputs changed during checks");

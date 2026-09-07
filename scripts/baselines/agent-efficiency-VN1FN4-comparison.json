@@ -1,44 +1,52 @@
 {
   "schema_version": 1,
   "task_id": "202609071501-VN1FN4",
-  "status": "implementation_measured_schema_parity_verified_pending_framework_review",
+  "status": "implementation_measured_schema_parity_verified",
   "source": {
     "committed_head": "92efd467a7b045e7e784597168ac21bd41a975a1",
-    "committed_snapshot_digest": "sha256:6daf20729a4383c5e63e20b3663e81fc2060c0c7416f0c2ec5958665949834ea",
-    "repeated_snapshot_digest": "sha256:6daf20729a4383c5e63e20b3663e81fc2060c0c7416f0c2ec5958665949834ea",
-    "working_source_manifest_digest": "sha256:f73d4b087e863bb00b78d3d4e69c2fa485252d1a0bfea095718c88d55337e4cb",
+    "committed_snapshot_digest": "sha256:8b95e82e98352def1770dc337b06e8cae932ba43b7f1642073c563b741bfe75f",
+    "repeated_snapshot_digest": "sha256:8b95e82e98352def1770dc337b06e8cae932ba43b7f1642073c563b741bfe75f",
+    "working_source_manifest_digest": "sha256:6b0de1ae904a9ced0a146c7eda3a89d84a5dd0f8c0e8fb1a57b3797f6dc3ec06",
     "working_sources": [
       {
         "path": "packages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts",
-        "digest": "sha256:7658d80c8c06380b7bd210406d03671ee4639f7327e0a690a415f4fd91e2c2e2"
+        "digest": "sha256:fd42e3c9e48b39ad71f81a0c9ca08242b1d968b313c71ee3643c7fdbdf0dab0e"
       },
       {
         "path": "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
-        "digest": "sha256:b1692e989a5dcaabf298707d92edff6094d7fb40e454dceacc95271b650fcd00"
+        "digest": "sha256:3b5493c625a40107959f0c0170bc26a880bece8b2654eb3452c8617aa8ea194f"
       },
       {
         "path": "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
-        "digest": "sha256:cb96171b86a69e566652f5542340e3f2eb738dec5e35b2d131260492f2b6ca48"
+        "digest": "sha256:753e656f5db56c1b5265371b4655068d182474627c230efb5861b8803ae232c5"
       },
       {
         "path": "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
-        "digest": "sha256:82a697849e7d8e8b99d2f50e51ba62d1a2058e73c2d15af72821c3ce903928ea"
+        "digest": "sha256:6de03299362007bad52cc9dab2e42430b382bc88e5203564acd204087c6f1b32"
       },
       {
         "path": "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
-        "digest": "sha256:ffdfa8cd7ca6de62713fad72d83e2ab332887bf62a6391bd98c31206e9d2227c"
+        "digest": "sha256:5c07a4344def40d2c4689e39cb890125ffe5893a2c228ec96d2737fa64f52276"
       },
       {
         "path": "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
-        "digest": "sha256:ce60d71e9576889b622e771d01a26198bf01fd0d6503d8e3990ff9b68b4dc4c3"
+        "digest": "sha256:e3d0afb547a71607ec2cd3a6efa154565dfa73e33a7e8a61fe9d4103593d4ed8"
       },
       {
         "path": "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
         "digest": "sha256:79c3afa22aae902c8141a6eaeb9da3f926736000d9220d361b4d5691dcb2afbf"
       },
       {
+        "path": "packages/agentplane/src/commands/release/github-ci-plan.test.ts",
+        "digest": "sha256:978d24986c2875b51e36b964151457eeb82ff4f2fafc83e2e2d4acb621e247d7"
+      },
+      {
         "path": "packages/agentplane/src/commands/shared/quality-review-target.ts",
         "digest": "sha256:384f50ae031d04b69b3e18822886fccd05cfe1d386a97489e4849edcddc7599b"
+      },
+      {
+        "path": "packages/agentplane/src/commands/shared/task-backend.ts",
+        "digest": "sha256:ac69f2c5822deb056d2114eec9fecca5cf1096dc2222b80eb17be2f7366110f7"
       },
       {
         "path": "packages/agentplane/src/commands/task/advance.command.ts",
@@ -54,7 +62,7 @@
       },
       {
         "path": "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.test.ts",
-        "digest": "sha256:3f052e9b5cd2e48e167fd7ce94bc62ac1fb63ab12881ab8d90a4eb8c4f6a1f29"
+        "digest": "sha256:3fad9f358ec5fcb2d992bef20564ff5202d382a04466ecf1b583a61bae3150ea"
       },
       {
         "path": "packages/agentplane/src/commands/task/branch-task-supervisor-artifact-commit.ts",
@@ -69,8 +77,24 @@
         "digest": "sha256:bb697f351ee72a416084cf32aee17390b5686bf09cc74677fa4978369f628af0"
       },
       {
+        "path": "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "digest": "sha256:cca7361d879b6362c3e3fba47049091f2bc59f405cb32549a6bea3054ee58dc8"
+      },
+      {
         "path": "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
         "digest": "sha256:7e66d3935ef3b585d628a7b107d2d2ed252bde9aab041e302f59c9ddd7e58ac4"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
+        "digest": "sha256:1d9bf5ea0a1dd6ec0b390b2a568a0dd0915f88249d63bc48e9b4e1201b28afd8"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/external-agent-report-result.test.ts",
+        "digest": "sha256:742a067c8aeb14dd08f5f578763f9e0d61552c1d7b1af63cda67980d0a7091f5"
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/external-agent-report-result.ts",
+        "digest": "sha256:fe4db2105f7413196f56d8386241f549641a8e8b14c36c56cae0aef5a4989f62"
       },
       {
         "path": "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
@@ -82,15 +106,15 @@
       },
       {
         "path": "packages/agentplane/src/commands/task/kernel-exchange.ts",
-        "digest": "sha256:62ceb5a23aec3c2e3bb51d1470d5d68088947d4d6d21a5804203ab290fd0eae6"
+        "digest": "sha256:a60fbafc3340327aaed78ec42f747eb3563737b58255fda332dafc57199404f5"
       },
       {
         "path": "packages/agentplane/src/commands/task/kernel-final-validation.ts",
-        "digest": "sha256:2ad62f2cd9da41c4edf68cda2eb0bc4ff7fdca0624bc71f79040df94b91200f8"
+        "digest": "sha256:fa960a6bc43e14ab26827c54608870a6e25db1434bc4c71d13bf6c0c5d29c405"
       },
       {
         "path": "packages/agentplane/src/commands/task/kernel-inspection.ts",
-        "digest": "sha256:bd0265d4b4fde547282d8dde667342a6b4f1e18d77f3caf195b45931b2faf09a"
+        "digest": "sha256:8be7578db43024c1e8aa98c7ca2aa7b70cb6f6aa68b610dc07f22ccb601491eb"
       },
       {
         "path": "packages/agentplane/src/commands/task/kernel-run.ts",
@@ -102,7 +126,7 @@
       },
       {
         "path": "packages/agentplane/src/commands/task/task-token-usage.test.ts",
-        "digest": "sha256:11e24c4bd314a2a6ff21fd5537e7a1772b409c526fc11e3dd3890a966b3f43c8"
+        "digest": "sha256:c0bb25ccf5098262a6ab099e1662c4662963c6096ea510ae036ba46482791172"
       },
       {
         "path": "packages/agentplane/src/commands/task/task-token-usage.ts",
@@ -110,7 +134,7 @@
       },
       {
         "path": "packages/agentplane/src/harness/token-accounting.test.ts",
-        "digest": "sha256:b49a79b66ddcac97642bd05bcea44600d45fe49b0f470fa7817b4f58fb50302c"
+        "digest": "sha256:04c1ee668418f41426409739af12d895a4441eec3d34bfbe174d60158199c3c9"
       },
       {
         "path": "packages/agentplane/src/harness/token-accounting.ts",
@@ -134,7 +158,7 @@
       },
       {
         "path": "packages/agentplane/src/runner/adapters/prepared-input.ts",
-        "digest": "sha256:d1cf56ddf05eadc65a1a3638fdd17540c5e4cb3036544e1550e927dd0c479ad0"
+        "digest": "sha256:f818d22cda7d83db62894fffb4c4931fcec115630909bc2222d5f7838b25ed5c"
       },
       {
         "path": "packages/agentplane/src/runner/artifacts.ts",
@@ -146,15 +170,15 @@
       },
       {
         "path": "packages/agentplane/src/runner/context/work-order-context.ts",
-        "digest": "sha256:64e462bc014a7531a4ed7df46a2828988322830475a18742173f1e07f90e5f33"
+        "digest": "sha256:a857743b0fa9ee1e8d9e76f574c5789b94294389430238af3f21a79add4fcacf"
       },
       {
         "path": "packages/agentplane/src/runner/observation/git-snapshot.test.ts",
-        "digest": "sha256:937c84b323bfd100228e778790273137497a1b148377d72e82f18ed1159339b5"
+        "digest": "sha256:2e70d4615213639fa6c54e893233707cc591b05335a3bfee119db78764316c8c"
       },
       {
         "path": "packages/agentplane/src/runner/observation/kernel-repository.ts",
-        "digest": "sha256:e523c859ff9029c8f6e8a2184268e0a0dfe562087f4143203bb1e54b1029192d"
+        "digest": "sha256:e38db1c7662b34e1a2bda78eed4ed2cf0c5b8a8db234442fa03630bf39bcda1f"
       },
       {
         "path": "packages/agentplane/src/runner/types/context.ts",
@@ -162,11 +186,11 @@
       },
       {
         "path": "packages/agentplane/src/runner/usecases/kernel-authority.test.ts",
-        "digest": "sha256:50d7cb99d5105160ed503272aa65548d4116345085af10142cd4d918a6bdf4d1"
+        "digest": "sha256:ce002003b999081a92231f5841dd752066896f7f04bb6eb9cd7e8af6f1f505a7"
       },
       {
         "path": "packages/agentplane/src/runner/usecases/kernel-authority.ts",
-        "digest": "sha256:6a0e990725fdf9e6b3fd1402617eda44ea3aff44d860a9fe366277a8a14551fd"
+        "digest": "sha256:da665a36ca17e9afe7725147cf53172b39b798286c32775019b501dea3bb4b2b"
       },
       {
         "path": "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
@@ -179,6 +203,14 @@
       {
         "path": "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts",
         "digest": "sha256:55f858303c0e8692313750a1ce031e12e8cadf07afb58580f79c887363c1acc3"
+      },
+      {
+        "path": "packages/agentplane/src/shared/package-paths.test.ts",
+        "digest": "sha256:4b48c615481eb3c95be681685066c032804158dbd268afec27f22e2fda635ee5"
+      },
+      {
+        "path": "packages/agentplane/src/shared/package-paths.ts",
+        "digest": "sha256:0f73c9a11c471087ce80ba069d14fec6314676de0d02118bfd100470859575fc"
       },
       {
         "path": "packages/core/schemas/agent-work-order-v2.schema.json",
@@ -206,7 +238,7 @@
       },
       {
         "path": "packages/core/src/runner/supervisor-execution-episode.test.ts",
-        "digest": "sha256:110a4a5a90f94addd815d5d28e92e96163ed2d0f6f9068d749f3fa9b54c3d5be"
+        "digest": "sha256:525a81a74005b2f501f0b8a119c4eb446c8494ead0e60ff1ac3c7660742ec351"
       },
       {
         "path": "packages/core/src/runner/supervisor-execution-episode.ts",
@@ -222,19 +254,19 @@
       },
       {
         "path": "packages/core/src/tasks/task-kernel/authority-lineage.ts",
-        "digest": "sha256:921525ecf69efecdb1c894e8e154dcfb209ac098d5b61111e95d6bcdefca6041"
+        "digest": "sha256:bada1e81b019f5f3fa3939d0d184e8234f78d71627e1a203c0ea14360a6880a4"
       },
       {
         "path": "packages/core/src/tasks/task-kernel/kernel.test.ts",
-        "digest": "sha256:96250577db20891a8d39df91b026229778147cbed9ba66e53aff558d9530d712"
+        "digest": "sha256:6a8538bcdde5cd01cc1fd4644e30e9610954736dc328a92242011cfa92694ff7"
       },
       {
         "path": "packages/core/src/tasks/task-kernel/kernel.ts",
-        "digest": "sha256:71ec7417fb4f78bf2e11d8f32613ac0997ad05655b2588c917f48ef10c4006e9"
+        "digest": "sha256:61199adc9d9526eee1b0934a57fe0dcc7695b26a4038a09388b5f23a4ddb893c"
       },
       {
         "path": "packages/core/src/tasks/task-kernel/model.ts",
-        "digest": "sha256:24e2d2bc530e64c6aa7bf19f19c8f41df747dbf0c0e67c195db2c950d8854204"
+        "digest": "sha256:276c59976aab3a7528852b26795ec4ccc5e8e4da643b43d843ebad82153b8049"
       },
       {
         "path": "packages/core/src/tasks/task-store.ts",
@@ -269,19 +301,27 @@
         "digest": "sha256:c2baee7b89798b2646367e066ec7b447546395b9b019244cc21e950680fac523"
       },
       {
-        "path": "scripts/bench/compare-agent-efficiency-VN1FN4.mjs",
-        "digest": "sha256:3ca187359e42b88baec8c6cad1218818219cb82445fd461ee8013c9410c560a1"
+        "path": "scripts/bench/compare-agent-efficiency-vn1-fn4.mjs",
+        "digest": "sha256:fb80181d5e3febf659cd47b0cde7320f3963e41c2294dc527857ee2d423b8829"
       },
       {
         "path": "scripts/bench/measure-agent-efficiency.mjs",
         "digest": "sha256:fc25f2ba66c4cc15d9b54f06c2f83439f7315c3c596b97a929d0dd6f52c191b4"
       },
       {
+        "path": "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "digest": "sha256:bc5dd5ab6d868b1db6bf624a4dd342184d664d7a5e02812f6dbf292139100f4f"
+      },
+      {
         "path": "scripts/lib/agent-efficiency-repository-snapshot.mjs",
-        "digest": "sha256:d761bbeb4bbdbef49347e90467e97ae9ca64d22b04c3911a0a8efe340511dbb4"
+        "digest": "sha256:37d97731a9b55ac7e61243e99592842763ed1cdd59915023404ea03f8b86fda7"
+      },
+      {
+        "path": "scripts/lib/github-ci-capabilities.mjs",
+        "digest": "sha256:d61eb212dd1b55d244947260356b446d20072cc8cb9e6f57beb009be4f8505f1"
       }
     ],
-    "note": "Working source digests identify the uncommitted candidate; HEAD does not identify it."
+    "note": "Source digests identify current file contents relative to the historical snapshot, including committed and uncommitted changes."
   },
   "historical_snapshot": {
     "before": {
@@ -425,7 +465,7 @@
   "correctness_limits": [
     "Generated schema parity was synchronized through the separately USER-approved Q6MEAH task and now passes schemas:check. The current working-source manifest includes those generated mirrors.",
     "Legacy bootstrap task QCBB76 has a separate malformed scope-extension contract; its lifecycle and integration are not complete.",
-    "Independent framework evaluation is required before comparison-report acceptance. Full repository CI, external provider effects, publication and integration are not claimed.",
+    "This report records the local comparison only. Full repository CI, external provider effects, publication and integration are not established by these measurements.",
     "Missing usage stays null; native receipts, stale-state/CAS checks, authority, input/output digests and crash recovery remain required costs."
   ]
 }

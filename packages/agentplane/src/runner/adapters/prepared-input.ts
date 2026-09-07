@@ -1,10 +1,9 @@
 import { resolveWorkOrderContextBlocks } from "../context/work-order-context.js";
-import type { RunnerContextBundle } from "../types.js";
+import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 import { createHash } from "node:crypto";
 
 import { createRunnerInvocationSnapshot } from "../artifacts.js";
 import { readStableRegularFileNoFollow } from "../stable-file.js";
-import type { RunnerInvocation } from "../types.js";
 
 class RunnerPreparedInputError extends Error {
   readonly code = "RUNNER_PREPARED_INPUT";

@@ -226,6 +226,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202608301851-5W3XW6",
           "202609030849-925NNG",
           "202609060720-NZXQ0E",
+          "202609071501-VN1FN4",
         ],
         candidate: {
           surface_sha256: "8ba01d347981b2efb96b0a3645140026934f97f42552d88949bddb07ca78e0e4",
@@ -351,9 +352,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           },
           agent_work_order_schema: {
             path: "schemas/agent-work-order-v2.schema.json",
-            sha256: "4f57a53b795c054d112b9126a6a06a69ba4e417e6cf5de1dd5b048f14ae73619",
+            sha256: "59ba5559d26e8f70271d78dca89f78a6f82461f16c711d9c9b8031ec150f97f0",
             comparison: "canonical_json_exact",
-            source_task: "202608291006-255K66",
+            source_task: "202609071501-VN1FN4",
           },
           core_agent_work_order_exports: {
             comparison: "required_named_reexports",
@@ -930,7 +931,7 @@ describeCritical("repository efficiency snapshots", () => {
       const expression = `import { measureRepositoryEfficiency } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(measureRepositoryEfficiency({ repoRoot: ${JSON.stringify(root)} })));`;
       const first = await runNode(["--input-type=module", "-e", expression]);
       expect(first.exitCode).toBe(0);
-      const snapshot = JSON.parse(first.stdout);
+      const snapshot = JSON.parse(first.stdout) as { totals: unknown; tasks: unknown[] };
       expect(snapshot.totals).toMatchObject({
         sampled_tasks: 1,
         tasks_with_usage: 0,

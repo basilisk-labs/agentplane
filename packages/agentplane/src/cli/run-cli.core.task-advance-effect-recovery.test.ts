@@ -226,7 +226,7 @@ describe("task advance effect recovery", () => {
     ]);
     expect(replacement.code, replacement.stderr).toBe(0);
     const fresh = JSON.parse(replacement.stdout) as AgentPacket;
-    expect(fresh.action.kind).toBe("agent_episode");
+    expect(fresh).toMatchObject({ action: { kind: "agent_episode" } });
     expect(fresh.transition_id).not.toBe(issued.transition_id);
     expect(fresh.state_fingerprint).not.toBe(issued.state_fingerprint);
     const replay = await readAgentPacket(root, taskId);

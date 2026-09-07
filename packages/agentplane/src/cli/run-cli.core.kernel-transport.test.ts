@@ -24,10 +24,7 @@ import {
   loadCommandContext,
   resolveTaskOwnerCommandContext,
 } from "../commands/shared/task-backend.js";
-import {
-  requireKernelCommit,
-  createKernelRuntime,
-} from "../commands/task/kernel-runtime-context.js";
+import { createKernelRuntime } from "../commands/task/kernel-runtime-context.js";
 
 import { makeTaskBackendDouble } from "@agentplane/testkit/task";
 import * as taskBackend from "../backends/task-backend.js";
@@ -121,16 +118,16 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     });
     const before = await runtime.observe();
     await writeFile(path.join(root, "unrelated-primary.txt"), "primary change");
-    expect((await runtime.observe()).fingerprint).toBe(before.fingerprint);
+    expect(await runtime.observe()).toMatchObject({ fingerprint: before.fingerprint });
     const packet = await runJson(linked, ["task", "advance", taskId, "--agent-json"]);
     const exchange = packet.exchange as { directory: string };
-    const order = JSON.parse(
-      await readFile(path.join(exchange.directory, "work-order.json"), "utf8"),
+    const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
     );
     expect(order.state_fingerprint.worktree).toBe(initial.resolvedProject.gitRoot);
-    expect(order.canonical_binding.repository_fingerprint).toBe(before.fingerprint);
+    expect(order.canonical_binding?.repository_fingerprint).toBe(before.fingerprint);
     await writeFile(path.join(linked, "local-change.txt"), "local change");
-    expect((await runtime.observe()).fingerprint).not.toBe(before.fingerprint);
+    expect(await runtime.observe()).not.toMatchObject({ fingerprint: before.fingerprint });
   });
   it.each(["local", "cloud"] as const)(
     "canonical first-write and host lifecycle on %s storage",
@@ -404,7 +401,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
 
       const evidence = JSON.parse(
         await readFile(path.join(inspectionExchange.directory, "validation.json"), "utf8"),
-      );
+      ) as { checks: unknown };
       expect(evidence.checks).toMatchObject({
         status: "passed",
         checks: [{ command: "node --version", exit_code: 0 }],
@@ -576,6 +573,8 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         }
         await writeFile(path.join(root, "result.txt"), "managed implementation");
       } else {
+        // The captured method is invoked with its original receiver through apply below.
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         const apply = KernelTaskLifecycle.prototype.apply;
         const crash = vi
           .spyOn(KernelTaskLifecycle.prototype, "apply")

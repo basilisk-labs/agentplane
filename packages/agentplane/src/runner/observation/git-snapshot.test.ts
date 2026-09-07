@@ -313,6 +313,12 @@ describe("Git execution snapshot observation", () => {
   });
 });
 
+async function addSubmodule(root: string, source: string, name = "module"): Promise<string> {
+  await git(root, ["-c", "protocol.file.allow=always", "submodule", "add", "-q", source, name]);
+  await git(root, ["commit", "-qm", "add submodule"]);
+  return path.join(root, name);
+}
+
 describe("canonical implementation identity", () => {
   const identity = k.kernelDigest("logical-repository");
   const observe = (root: string) =>
@@ -321,12 +327,6 @@ describe("canonical implementation identity", () => {
       repository_identity: identity,
       operational_paths: [".agentplane/tasks", ".agentplane/tasks.json"],
     });
-
-  async function addSubmodule(root: string, source: string, name = "module"): Promise<string> {
-    await git(root, ["-c", "protocol.file.allow=always", "submodule", "add", "-q", source, name]);
-    await git(root, ["commit", "-qm", "add submodule"]);
-    return path.join(root, name);
-  }
 
   it("separates expected gitlink identity from actual clean HEAD", async () => {
     const source = await createRepository();
@@ -342,7 +342,7 @@ describe("canonical implementation identity", () => {
       tracked_dirty: false,
       untracked_dirty: false,
     });
-    expect((await observe(root)).fingerprint).toBe(clean.fingerprint);
+    expect(await observe(root)).toMatchObject({ fingerprint: clean.fingerprint });
     await git(module, [
       "-c",
       "user.name=AgentPlane",
@@ -365,7 +365,7 @@ describe("canonical implementation identity", () => {
     const staged = await observe(root);
     expect(staged.fingerprint).not.toBe(different.fingerprint);
     await git(root, ["commit", "-qm", "record gitlink"]);
-    expect((await observe(root)).fingerprint).toBe(staged.fingerprint);
+    expect(await observe(root)).toMatchObject({ fingerprint: staged.fingerprint });
   });
 
   it("fingerprints repeated tracked, hidden and untracked submodule writes", async () => {
@@ -385,14 +385,14 @@ describe("canonical implementation identity", () => {
     await git(module, ["update-index", "--assume-unchanged", "tracked.txt"]);
     const hidden = await observe(root);
     await writeRepoFile(module, "tracked.txt", "hidden dirty");
-    expect((await observe(root)).fingerprint).not.toBe(hidden.fingerprint);
+    expect(await observe(root)).not.toMatchObject({ fingerprint: hidden.fingerprint });
     await writeRepoFile(module, "untracked.txt", "first");
     const untracked = await observe(root);
     expect(untracked.files.find((file) => file.path === "module")).toMatchObject({
       untracked_dirty: true,
     });
     await writeRepoFile(module, "untracked.txt", "second");
-    expect((await observe(root)).fingerprint).not.toBe(untracked.fingerprint);
+    expect(await observe(root)).not.toMatchObject({ fingerprint: untracked.fingerprint });
   });
 
   it("represents uninitialized submodules without claiming an observed working tree", async () => {
@@ -414,7 +414,7 @@ describe("canonical implementation identity", () => {
     });
     expect(kernelRepositoryChangedPaths(initialized, empty)).toEqual(["module"]);
     await rm(module, { recursive: true });
-    expect((await observe(root)).fingerprint).toBe(empty.fingerprint);
+    expect(await observe(root)).toMatchObject({ fingerprint: empty.fingerprint });
     await git(root, [
       "-c",
       "protocol.file.allow=always",
@@ -423,7 +423,7 @@ describe("canonical implementation identity", () => {
       "--init",
       "module",
     ]);
-    expect((await observe(root)).fingerprint).toBe(initialized.fingerprint);
+    expect(await observe(root)).toMatchObject({ fingerprint: initialized.fingerprint });
   });
 
   it("recursively observes nested submodule checkout and content changes", async () => {
@@ -446,7 +446,7 @@ describe("canonical implementation identity", () => {
     const dirty = await observe(root);
     expect(kernelRepositoryChangedPaths(initialized, dirty)).toEqual(["module"]);
     await writeRepoFile(path.join(module, "nested"), "tracked.txt", "another nested change");
-    expect((await observe(root)).fingerprint).not.toBe(dirty.fingerprint);
+    expect(await observe(root)).not.toMatchObject({ fingerprint: dirty.fingerprint });
   });
 
   it("fails closed for populated uninitialized paths and invalid Git metadata", async () => {
@@ -473,14 +473,12 @@ describe("canonical implementation identity", () => {
     expect(excluded.files.some((file) => file.path === "module")).toBe(false);
     await writeRepoFile(module, "tracked.txt", "excluded change");
     expect(
-      (
-        await observeKernelRepository({
-          repository_root: root,
-          repository_identity: identity,
-          operational_paths: ["module"],
-        })
-      ).fingerprint,
-    ).toBe(excluded.fingerprint);
+      await observeKernelRepository({
+        repository_root: root,
+        repository_identity: identity,
+        operational_paths: ["module"],
+      }),
+    ).toMatchObject({ fingerprint: excluded.fingerprint });
     await rm(module, { recursive: true });
     await symlink(source, module);
     await expect(observe(root)).rejects.toThrow();

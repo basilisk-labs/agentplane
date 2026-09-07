@@ -77,7 +77,8 @@ async function observeSubmodule(
     throw error;
   });
   if (marker === null) {
-    if ((await readdir(root)).length === 0) return uninitialized();
+    const entries = await readdir(root);
+    if (entries.length === 0) return uninitialized();
     unavailable("uninitialized_submodule_has_content");
   }
   if (!marker.isFile() && !marker.isDirectory()) unavailable("invalid_submodule_git_directory");
