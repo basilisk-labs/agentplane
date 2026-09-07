@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:ca71b7aa9d4f41e228951b16fcc85eb301b802e492164f633ff0c95acdd702f8",
   "pr_number": 5912,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5912",
+  "pre_merge_closure": {
+    "basis_commit": "082de2c2ca742fd4150dbf7439a2b1fb9f5f79ed",
+    "branch": "task/202609071219-QV0SX9/use-simple-technical-english-in-task-prompts-and",
+    "pr_number": 5912,
+    "recorded_at": "2026-09-07T14:15:36.279Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

@@ -1,10 +1,11 @@
 ---
 id: "202609071219-QV0SX9"
 title: "Use simple technical English in task prompts and remove redundant prompt context"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -53,6 +54,20 @@ quality_review:
   findings:
     - "The frozen diff delivers the same language contract on both execution routes, preserves authority and stop constraints, and retains all four schema-valid result statuses. Existing and added tests cover these contracts; the full observed verification passed."
     - "Residual risk: The measured reduction is in UTF-8 prompt bytes, not tokenizer counts. Hosted integration remains a separate supervisor gate."
+token_usage:
+  agent_runs: 12
+  input_tokens: null
+  journal_digest: "sha256:9a5fb8ed2b354dae54d4214055e62455490c53c93388103329263c4ddbd5e957"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-07T14:15:36.196Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -271,8 +286,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b847aa915f64886905be06ccfb30e37544f35d25"
-  message: "🚧 QV0SX9 task: apply external agent result"
+  hash: "082de2c2ca742fd4150dbf7439a2b1fb9f5f79ed"
+  message: "🚧 QV0SX9 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -295,6 +310,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b847aa915f64. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -366,9 +384,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-07T14:15:36.196Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "082de2c2ca742fd4150dbf7439a2b1fb9f5f79ed"
 doc_version: 3
-doc_updated_at: "2026-09-07T14:13:29.526Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-07T14:15:36.196Z"
+doc_updated_by: "CODER"
 description: "Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement."
 sections:
   Summary: |-
@@ -957,7 +983,23 @@ extensions:
       schema_version: 1
       task_id: "202609071219-QV0SX9"
     event_cursor: 20
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609071219-QV0SX9"
+            - "git:b847aa915f64886905be06ccfb30e37544f35d25"
+          check_id: "task-outcome"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-07T14:13:28.349Z"
+          repository_snapshot_digest: "sha256:a184c7e11478ab69ce1b041e628effbce0df8b46d1a499946233b20c293c5e9a"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609071219-QV0SX9"
     intent:
       acceptance_criteria: []
@@ -968,7 +1010,7 @@ extensions:
 
         Deliver the existing simple technical English rules to external-agent and managed-runner episodes. Align the PLANNER profile with one user Task and internal WorkItems. Rewrite framework-owned instructions as explicit single-action sentences. Remove repeated prompt instructions and replace verbose result examples with concise schema-valid examples for every supported status. Preserve authority, protected paths, stop rules, typed schemas, exact user input, identifiers, evidence, approval gates, and all outcome branches. Add focused regression tests for both prompt routes, semantic coverage, example validity, and prompt-size reduction. Do not change release versions or publish. Measure rendered prompt size; do not claim token savings without a tokenizer measurement.
       task_id: "202609071219-QV0SX9"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1223,9 +1265,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609071219-QV0SX9"
-    revision: 23
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-07T14:13:29.526Z"
+    updated_at: "2026-09-07T14:15:36.196Z"
     work_items:
       prompt-language-and-compaction:
         attempt: 1
@@ -1822,11 +1864,37 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609071219-QV0SX9"
+      legacy-finish:202609071219-QV0SX9:2026-09-07T14:13:28.349Z:b847aa915f64886905be06ccfb30e37544f35d25:
+        aggregate_digest: "sha256:f88d27c27089f5c40c014e9344266c54f2f5c54b036c049f073c5f47d7d99cb0"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-07T14:15:36.196Z"
+          cause_refs:
+            - "task-verification:202609071219-QV0SX9"
+            - "git:b847aa915f64886905be06ccfb30e37544f35d25"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_848f24424e2310bf59564fae"
+          mutation_id: "legacy-finish:202609071219-QV0SX9:2026-09-07T14:13:28.349Z:b847aa915f64886905be06ccfb30e37544f35d25"
+          plan_digest: "sha256:371d72418b49a68883836ccf43d01034ab7100ac028a08d5f0f1422b552261d4"
+          plan_revision: 2
+          repository_fingerprint: "sha256:a184c7e11478ab69ce1b041e628effbce0df8b46d1a499946233b20c293c5e9a"
+          schema_version: 1
+          task_id: "202609071219-QV0SX9"
+          task_revision: 23
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609071219-QV0SX9:2026-09-07T14:13:28.349Z:b847aa915f64886905be06ccfb30e37544f35d25"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609071219-QV0SX9"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "b847aa915f64886905be06ccfb30e37544f35d25"
+    message: "🚧 QV0SX9 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ca07204eed841a1aa245e3bb8d14832d7ea3ac30"
@@ -2138,3 +2206,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/12` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9a5fb8ed2b354dae54d4214055e62455490c53c93388103329263c4ddbd5e957`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-07T14:15:36.196Z`
