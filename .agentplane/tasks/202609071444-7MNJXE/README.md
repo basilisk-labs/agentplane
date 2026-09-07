@@ -4,7 +4,7 @@ title: "Repair CodeQL configuration consistency and triage current GitHub securi
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -98,6 +98,8 @@ execution_contract:
     changed_paths:
       - ".github/workflows/ci.yml"
       - "packages/agentplane/src/commands/release/github-ci-plan.test.ts"
+      - "packages/agentplane/src/shared/package-paths.test.ts"
+      - "packages/agentplane/src/shared/package-paths.ts"
       - "scripts/lib/github-ci-capabilities.mjs"
     external_effects: []
     repository_effects:
@@ -150,7 +152,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:bded16d1909a8b41ad7def441d98835cc1aa85fcb3d8d2767b485110517fbbb0"
+      digest: "sha256:ff6819a93cd9d4d6ebda9f7481fec6891b0be2411a67fbb37243f4126504036c"
       escalation_reasons:
         - "central_component:.github/codeql/codeql-config.yml"
         - "central_component:.github/workflows/ci.yml"
@@ -172,6 +174,8 @@ execution_contract:
         changed_files:
           - ".github/workflows/ci.yml"
           - "packages/agentplane/src/commands/release/github-ci-plan.test.ts"
+          - "packages/agentplane/src/shared/package-paths.test.ts"
+          - "packages/agentplane/src/shared/package-paths.ts"
           - "scripts/lib/github-ci-capabilities.mjs"
         external_effects: []
         repository_effects:
@@ -214,7 +218,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "eec513320ad09780ba4cc28885c742782eacac49"
+  message: "🚧 7MNJXE task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -225,6 +231,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ef0fc2bd7edd. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: eec513320ad0. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -246,8 +255,16 @@ events:
     to: "DOING"
     note: "Implementation committed: ef0fc2bd7edd. CLI accepted one state-bound external-agent semantic result."
     commit: "ef0fc2bd7edd964a7f4b2c6784fb25526b81103d"
+  -
+    type: "status"
+    at: "2026-09-07T16:03:51.985Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: eec513320ad0. CLI accepted one state-bound external-agent semantic result."
+    commit: "eec513320ad09780ba4cc28885c742782eacac49"
 doc_version: 3
-doc_updated_at: "2026-09-07T16:00:23.139Z"
+doc_updated_at: "2026-09-07T16:03:51.985Z"
 doc_updated_by: "SUPERVISOR"
 description: "Investigate GitHub code-scanning setup errors, unstable language coverage and current open alerts. Produce a bounded evidence-backed remediation plan. Preserve ongoing unrelated work and existing CI checks. Do not dismiss alerts, delete analyses, publish, merge or change hosted settings without explicit operator approval."
 sections:
@@ -527,7 +544,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609071444-7MNJXE"
-    event_cursor: 5
+    event_cursor: 7
     final_validation: null
     id: "202609071444-7MNJXE"
     intent:
@@ -542,9 +559,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-07T16:00:24.811Z"
+    updated_at: "2026-09-07T16:03:51.985Z"
     work_items:
       alert-triage:
         attempt: 0
@@ -673,6 +690,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609071444-7MNJXE"
+      compatibility:sha256:513d21697403392efcefb6cd82cc7c4c379229ba775f1c659694b18a19a52b33:
+        aggregate_digest: "sha256:fe6c36039982e9422fc4745cb376c40a6a0ead20bb03f32044d279cc90042b26"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:03:51.985Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b292ca217c3a355faae45cbb"
+          mutation_id: "compatibility:sha256:513d21697403392efcefb6cd82cc7c4c379229ba775f1c659694b18a19a52b33"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:513d21697403392efcefb6cd82cc7c4c379229ba775f1c659694b18a19a52b33"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
       compatibility:sha256:6c3787dca0cf282b03fbd1efd87db0a4cc6b20d789db2fe5e59e663f1b140b2a:
         aggregate_digest: "sha256:f6fdb1e1f45cd8d4432ef4c692089a4c3b41f927beaefe721d42f7c39b447822"
         event:
@@ -745,6 +786,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609071444-7MNJXE"
+      compatibility:sha256:f45370eb99549d64846540774a72506d67f98908405ee36ad3e70aad59cb52a0:
+        aggregate_digest: "sha256:b59a43fc6095bd864e70bbd8efbefaf3b0b0a5966b92b40226302b8a2ea498d5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T16:03:51.985Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_124a0d537166136f162f7fb3"
+          mutation_id: "compatibility:sha256:f45370eb99549d64846540774a72506d67f98908405ee36ad3e70aad59cb52a0"
+          plan_digest: "sha256:a0c34dc9c722f66f96ef59d30139696ccb691302d61bbd374a677a368df8a051"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609071444-7MNJXE"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f45370eb99549d64846540774a72506d67f98908405ee36ad3e70aad59cb52a0"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609071444-7MNJXE"
       external-result:work-order-202609071444-7MNJXE-executor-20b1d68d9ee051482a3579af:
         aggregate_digest: "sha256:f96a8734f3f064e3e8592a85dfab6408e8bac832fca15fb86df382cec96c4cdf"
         event:
@@ -773,7 +838,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "ef0fc2bd7edd964a7f4b2c6784fb25526b81103d"
+    hash: "eec513320ad09780ba4cc28885c742782eacac49"
   task_execution_context:
     base_ref: "main"
     base_sha: "2639130b3181867f53fa37121783c67c9ef1d064"

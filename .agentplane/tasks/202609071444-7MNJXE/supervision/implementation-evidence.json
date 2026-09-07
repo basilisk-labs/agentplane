@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2639130b3181867f53fa37121783c67c9ef1d064..ef0fc2bd7edd964a7f4b2c6784fb25526b81103d",
+      "command": "git diff --check d50cdc019a609e2a8917dc44ad903a98dbf63f8c..eec513320ad09780ba4cc28885c742782eacac49",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2639130b3181867f53fa37121783c67c9ef1d064..ef0fc2bd7edd964a7f4b2c6784fb25526b81103d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d50cdc019a609e2a8917dc44ad903a98dbf63f8c..eec513320ad09780ba4cc28885c742782eacac49",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609071444-7MNJXE/README.md",
-        "A\t.agentplane/tasks/202609071444-7MNJXE/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202609071444-7MNJXE/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609071444-7MNJXE/pr/github-body.md",
-        "A\t.agentplane/tasks/202609071444-7MNJXE/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609071444-7MNJXE/pr/meta.json",
-        "A\t.agentplane/tasks/202609071444-7MNJXE/pr/review.md",
-        "M\t.github/workflows/ci.yml",
-        "M\tpackages/agentplane/src/commands/release/github-ci-plan.test.ts",
-        "M\tscripts/lib/github-ci-capabilities.mjs"
+        "M\t.agentplane/tasks/202609071444-7MNJXE/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609071444-7MNJXE/pr/github-body.md",
+        "M\t.agentplane/tasks/202609071444-7MNJXE/pr/meta.json",
+        "M\t.agentplane/tasks/202609071444-7MNJXE/pr/review.md",
+        "M\tpackages/agentplane/src/shared/package-paths.test.ts",
+        "M\tpackages/agentplane/src/shared/package-paths.ts"
       ]
     },
     {
@@ -36,78 +32,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2639130b3181867f53fa37121783c67c9ef1d064",
-  "implementation_commit": "ef0fc2bd7edd964a7f4b2c6784fb25526b81103d",
+  "execution_base_commit": "d50cdc019a609e2a8917dc44ad903a98dbf63f8c",
+  "implementation_commit": "eec513320ad09780ba4cc28885c742782eacac49",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      "AM .agentplane/tasks/202609071444-7MNJXE/README.md",
-      "A  .agentplane/tasks/202609071444-7MNJXE/blueprint/resolved-snapshot.json",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/diffstat.txt",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/github-body.md",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/github-title.txt",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/meta.json",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/review.md",
-      "M  .github/workflows/ci.yml",
-      "M  packages/agentplane/src/commands/release/github-ci-plan.test.ts",
-      "M  scripts/lib/github-ci-capabilities.mjs"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": "AM .agentplane/tasks/202609071444-7MNJXE/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609071444-7MNJXE/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609071444-7MNJXE/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609071444-7MNJXE/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609071444-7MNJXE/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609071444-7MNJXE/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "A  .agentplane/tasks/202609071444-7MNJXE/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  .github/workflows/ci.yml"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  packages/agentplane/src/commands/release/github-ci-plan.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  scripts/lib/github-ci-capabilities.mjs"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      "AM .agentplane/tasks/202609071444-7MNJXE/README.md",
-      "A  .agentplane/tasks/202609071444-7MNJXE/blueprint/resolved-snapshot.json",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/diffstat.txt",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/github-body.md",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/github-title.txt",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/meta.json",
-      "A  .agentplane/tasks/202609071444-7MNJXE/pr/review.md",
-      "M  .github/workflows/ci.yml",
-      "M  packages/agentplane/src/commands/release/github-ci-plan.test.ts",
-      "M  scripts/lib/github-ci-capabilities.mjs"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
