@@ -4,7 +4,7 @@ title: "Keep setup-agentplane installations usable across workflow steps"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -91,10 +91,23 @@ execution_contract:
       - "scripts/release/publish-external-distribution.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".github"
+      - "packages/agentplane"
+      - "scripts"
+    changed_paths:
+      - ".github/workflows/publish.yml"
+      - "packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts"
+      - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts"
+      - "scripts/generate/render-setup-agentplane-action.mjs"
+      - "scripts/release/publish-external-distribution.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "ci"
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -135,10 +148,12 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1e86886d57a628be4360d96235c376a2fa2183f5b78273cd3873a03dc5287816"
+      digest: "sha256:842129df1c3af12c3e896b34f31ca272a7da7872640131dd62fb0a27af52f58a"
       escalation_reasons:
         - "central_component:.github/workflows/publish.yml"
         - "central_component:scripts/release/publish-external-distribution.mjs"
+        - "central_path:.github/workflows/publish.yml"
+        - "central_path:scripts/release/publish-external-distribution.mjs"
         - "effect_ci"
       execution_groups:
         - "docs-schema"
@@ -146,10 +161,23 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".github"
+          - "packages/agentplane"
+          - "scripts"
+        changed_files:
+          - ".github/workflows/publish.yml"
+          - "packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts"
+          - "packages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts"
+          - "scripts/generate/render-setup-agentplane-action.mjs"
+          - "scripts/release/publish-external-distribution.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -182,11 +210,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
+  message: "🚧 M065D1 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: d2a97545f436. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -195,9 +228,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-07T08:33:59.973Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: d2a97545f436. CLI accepted one state-bound external-agent semantic result."
+    commit: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
 doc_version: 3
-doc_updated_at: "2026-09-07T08:23:50.772Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-07T08:33:59.973Z"
+doc_updated_by: "SUPERVISOR"
 description: "Release 0.7.8 verification found invalid Bash input interpolation, deletion of the installed CLI by download cleanup, and a setup-agentplane version tag still naming the previous checksum bundle. Repair the existing action renderer and prove installation remains usable in a subsequent workflow step. Add an explicit opt-in hosted setup-tag repair that uses a compare-and-swap Git push after verified main publication. Canonical recovery must use the current tested renderer for the qualified historical payload. Keep normal tag mismatch fail-closed behavior, the release source SHA, AgentPlane release tag, npm packages, signed archive checksums and unrelated channels unchanged. External publication is a separately authorized operator action after integration."
 sections:
   Summary: "Repair setup-agentplane input handling and installation lifetime, then enable explicit hosted setup-tag recovery for the qualified historical release. Source repair is local; publication and final release evidence remain separately authorized operator work."
@@ -450,7 +491,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609070819-M065D1"
-    event_cursor: 5
+    event_cursor: 7
     final_validation: null
     id: "202609070819-M065D1"
     intent:
@@ -480,9 +521,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-07T08:23:50.772Z"
+    updated_at: "2026-09-07T08:33:59.973Z"
     work_items:
       repair-setup-install-and-recovery:
         attempt: 0
@@ -570,6 +611,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609070819-M065D1"
+      compatibility:sha256:8e226930142b002389f96b28fae80f1f1dda9858b55021d558ea980d420ccdd1:
+        aggregate_digest: "sha256:4d8808b9aba23dddaeccd5cb4a0d4d89086a076d01e066281c6f46df4af14c78"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T08:33:59.973Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_811567b8808dbf4d68228603"
+          mutation_id: "compatibility:sha256:8e226930142b002389f96b28fae80f1f1dda9858b55021d558ea980d420ccdd1"
+          plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070819-M065D1"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8e226930142b002389f96b28fae80f1f1dda9858b55021d558ea980d420ccdd1"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609070819-M065D1"
       compatibility:sha256:a0738a546b1a9bbe98d5ec90270edf836c6da79413e3fbeb358ab9ecea27b62f:
         aggregate_digest: "sha256:5e1fc9cbddb88350231ecd111fea0f689e32704b277fab84ce9abfbb5f08eb3e"
         event:
@@ -618,9 +683,35 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609070819-M065D1"
+      compatibility:sha256:c4b3dcaa912d5b4653c286a77f4c574ae0751ea37172429efa1dad107a5cf967:
+        aggregate_digest: "sha256:b8f0b56d04c12ca99152b5035e02e34cb321d7a47d8eda380d440f961ec5662e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-07T08:33:59.973Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b4baa771885f1249af38dff8"
+          mutation_id: "compatibility:sha256:c4b3dcaa912d5b4653c286a77f4c574ae0751ea37172429efa1dad107a5cf967"
+          plan_digest: "sha256:aa782efc0c2372af7e0d88ece80a19924edca3f9686b86822b5a9ffd375330f8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609070819-M065D1"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c4b3dcaa912d5b4653c286a77f4c574ae0751ea37172429efa1dad107a5cf967"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609070819-M065D1"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "d2a97545f436acf2bab742d4ae12ea3ac2771b2e"
   task_execution_context:
     base_ref: "main"
     base_sha: "b99c7d87348d22b54cb2a36445fd94cddd732bf5"
