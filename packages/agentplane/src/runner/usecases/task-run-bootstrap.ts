@@ -1,9 +1,12 @@
 import {
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
-  buildAgentSemanticResultV2ValidFixtures,
+  type AgentSemanticResult,
 } from "@agentplaneorg/core/schemas";
 
-import { semanticTextHasProcessChoreography } from "../context/semantic-prompt-projection.js";
+import {
+  AGENT_INSTRUCTION_LANGUAGE,
+  semanticTextHasProcessChoreography,
+} from "../context/semantic-prompt-projection.js";
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
 type EvaluatorSkepticismLevel = NonNullable<
@@ -64,9 +67,45 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
 }
 
 function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
-  const fixtures = buildAgentSemanticResultV2ValidFixtures(workOrderId);
+  const base = {
+    schema_version: 2 as const,
+    kind: "agent_semantic_result" as const,
+    work_order_id: workOrderId,
+    findings: [],
+    uncertainty: [],
+  };
+  const examples: Record<
+    (typeof AGENT_SEMANTIC_RESULT_STATUS_VALUES)[number],
+    AgentSemanticResult
+  > = {
+    completed: { ...base, status: "completed", summary: "Describe the completed outcome." },
+    blocked: {
+      ...base,
+      status: "blocked",
+      summary: "Describe the blocker.",
+      blocker: {
+        summary: "State the unmet requirement.",
+        recommended_action: "State the required action.",
+      },
+    },
+    needs_context: {
+      ...base,
+      status: "needs_context",
+      summary: "State the context gap.",
+      knowledge_request: {
+        schema_version: 1,
+        kind: "knowledge_request",
+        scope: "task_context",
+        query: "Name the missing context.",
+        reason: "Explain why it is required.",
+        desired_kind: "any",
+        blocking: true,
+      },
+    },
+    failed: { ...base, status: "failed", summary: "Describe the failed attempt." },
+  };
   return AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(
-    (status) => `- ${status}: ${JSON.stringify(fixtures[status])}`,
+    (status) => `- ${status}: ${JSON.stringify(examples[status])}`,
   );
 }
 
@@ -208,11 +247,9 @@ export function renderTaskRunnerBootstrap(
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
     "",
-    "Work only on the semantic objective and authority projected below.",
     "- Use only the supplied context, writable roots, and declared tools.",
     "- Do not inspect internal orchestration artifacts or invoke undeclared interfaces.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
-    "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
     "",
     `- target: ${targetLabel}`,
     `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
@@ -223,6 +260,8 @@ export function renderTaskRunnerBootstrap(
     "The content below is the complete provider-facing projection for this episode.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
     "Treat protected_paths as forbidden even when the native sandbox permits them.",
+    "",
+    AGENT_INSTRUCTION_LANGUAGE,
     "",
     "## Semantic policy and role context",
     "",
@@ -254,7 +293,7 @@ export function renderTaskRunnerBootstrap(
         ]
       : []),
     "Return one AgentSemanticResult v2 object through the configured result channel.",
-    "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
+    "Select the example matching the semantic outcome. Keep work_order_id unchanged. Replace placeholder text with observed facts. Include claimed_checks when checks were attempted.",
     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
   ].join("\n");
 }

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "prompt-contract-preserved",
+      "severity": "medium",
+      "summary": "The reviewed prompt implementation is unchanged after both main synchronizations. It supplies identical language rules to both execution routes, retains literal and authority contracts, synchronizes PLANNER profiles, and preserves all four schema-valid result statuses. Fresh full local CI and exact-head hosted CI passed.",
+      "broken_invariant": "None. The acceptance criteria are satisfied by the unchanged implementation and fresh verification evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch"
+        },
+        {
+          "path": ".agentplane/tasks/202609071219-QV0SX9/verification/20260907150035746-f471327741e244b6.json"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
