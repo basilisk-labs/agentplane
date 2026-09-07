@@ -3,8 +3,8 @@
   "branch": "task/202609070233-NG368H/repair-manual-release-recovery-after-npm-publica",
   "created_at": "2026-09-07T02:38:23.049Z",
   "diffstat_sha256": "sha256:c7aac7de3a096773649587deb52a730474a8059111f74b784d09424e7be27710",
-  "last_verified_at": "2026-09-07T02:55:19.700Z",
-  "last_verified_diffstat_sha256": "sha256:a8d396fd291b92166b502d3616f8850267a05facc3b25d85073009994d742caf",
+  "last_verified_at": "2026-09-07T03:19:54.048Z",
+  "last_verified_diffstat_sha256": "sha256:c7aac7de3a096773649587deb52a730474a8059111f74b784d09424e7be27710",
   "pr_number": 5905,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5905",
   "pre_merge_closure": {
