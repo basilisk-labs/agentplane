@@ -4,7 +4,7 @@ import {
   isGitObjectId,
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
-  WorkItemScheduler,
+  classifyPlanChange,
   type SemanticWorkResult,
   type PlanRefinement,
   type RepositorySnapshot,
@@ -102,6 +102,7 @@ function evidenceForCheck(opts: {
 export async function recordTaskCentricExternalResult(opts: {
   command: CommandContext;
   work_order: AgentWorkOrderV2;
+  expected_task: TaskData;
   semantic: AgentSemanticResult;
   verification: DirectTaskVerificationResult;
   head: string | null;
@@ -123,10 +124,27 @@ export async function recordTaskCentricExternalResult(opts: {
       message: "Task-centric WorkItem result requires a valid observed Git HEAD.",
     });
   }
+  const requestedId = opts.work_order.task.work_item_id ?? null;
+  if (opts.semantic.work_order_id !== opts.work_order.work_order_id) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Semantic result does not match its issued work order.",
+    });
+  }
+  const resultDigest = taskCentricDigest(opts.semantic);
   const idempotencyKey = `external-result:${opts.work_order.work_order_id}`;
   const priorReceipt = runtimeFrom(raw).mutation_receipts[idempotencyKey];
   const priorWorkItemId = priorReceipt?.event.work_item_id ?? null;
   if (priorReceipt?.event.entity === "work_item" && priorWorkItemId) {
+    if (
+      requestedId !== priorWorkItemId ||
+      !priorReceipt.event.cause_refs.includes(`semantic-result:${resultDigest}`)
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "WorkItem replay does not match the recorded semantic result.",
+      });
+    }
     if (
       priorReceipt.event.plan_revision !== currentPlan.revision ||
       priorReceipt.event.plan_digest !== currentPlan.digest ||
@@ -147,14 +165,27 @@ export async function recordTaskCentricExternalResult(opts: {
       remaining_required_work_items: remaining,
     };
   }
-  const requestedId = opts.work_order.task.work_item_id ?? null;
-  const claimedIds = Object.values(aggregate.work_items)
-    .filter((item) => item.state === "CLAIMED")
-    .map((item) => item.id);
-  if (!requestedId && claimedIds.length > 1) {
+  const expectedAggregate = taskCentricAggregateFromExtensions(opts.expected_task.extensions);
+  if (
+    opts.expected_task.id !== raw.id ||
+    !expectedAggregate?.current_plan ||
+    taskCentricDigest(expectedAggregate.current_plan) !== taskCentricDigest(currentPlan) ||
+    (requestedId &&
+      taskCentricDigest(expectedAggregate.work_items[requestedId] ?? null) !==
+        taskCentricDigest(aggregate.work_items[requestedId] ?? null))
+  ) {
     throw new CliError({
       code: "E_VALIDATION",
-      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
+      message: "The issued WorkItem or plan changed after supervisor admission.",
+    });
+  }
+  if (
+    !requestedId &&
+    !(opts.semantic.plan_refinement && classifyPlanChange(opts.semantic.plan_refinement).material)
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "A WorkItem result requires the explicit WorkItem ID from its issued work order.",
     });
   }
   const repository = createRepositorySnapshot({
@@ -175,6 +206,7 @@ export async function recordTaskCentricExternalResult(opts: {
   if (opts.semantic.plan_refinement) {
     const refinement = await adapter.recordPlanRefinement({
       task_id: aggregate.id,
+      expected_revision: expectedRevision,
       refinement: opts.semantic.plan_refinement,
       actor_id: `external:${opts.work_order.role}`,
       at: repository.captured_at,
@@ -201,15 +233,9 @@ export async function recordTaskCentricExternalResult(opts: {
     aggregate = refinedAggregate;
     currentPlan = refinedAggregate.current_plan;
   }
-  const selected = requestedId
-    ? currentPlan.proposal.work_items.work_items.find((item) => item.id === requestedId)
-    : claimedIds.length === 1
-      ? currentPlan.proposal.work_items.work_items.find((item) => item.id === claimedIds[0])
-      : new WorkItemScheduler(1).select({
-          graph: currentPlan.proposal.work_items,
-          runtime: aggregate.work_items,
-          active_leases: [],
-        })[0];
+  const selected = currentPlan.proposal.work_items.work_items.find(
+    (item) => item.id === requestedId,
+  );
   if (!selected) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -262,7 +288,7 @@ export async function recordTaskCentricExternalResult(opts: {
       task_id: aggregate.id,
       plan_revision: currentPlan.revision,
       work_item_id: selected.id,
-      attempt: runtime.attempt + 1,
+      attempt: runtime.state === "CLAIMED" ? runtime.attempt : runtime.attempt + 1,
     },
     repository_snapshot_digest: repository.digest,
     provenance: [result.context_digest, opts.verification.artifact_path],
@@ -272,6 +298,7 @@ export async function recordTaskCentricExternalResult(opts: {
     expected_revision: expectedRevision,
     work_item_id: selected.id,
     semantic_result: result,
+    result_digest: resultDigest,
     outputs,
     validation: evidence,
     idempotency_key: idempotencyKey,

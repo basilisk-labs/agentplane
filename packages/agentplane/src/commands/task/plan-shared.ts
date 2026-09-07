@@ -1,4 +1,11 @@
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
+import {
+  projectTaskLifecycleToLegacyStatus,
+  withTaskCentricAggregate,
+  ensureDocSections,
+  setMarkdownSection,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 
 import { backendNotSupportedMessage } from "../../cli/output.js";
 import type { TaskData } from "../../backends/task-backend.js";
@@ -97,7 +104,10 @@ export function assertPlanCanBeApproved(opts: {
 }): void {
   assertPlanSectionPresent(opts.task.id, opts.doc, "approve");
   const plan = extractDocSection(opts.doc, "Plan");
-  if (isPlannerSemanticPlanRequired(plan)) {
+  if (
+    !taskCentricAggregateFromExtensions(opts.task.extensions)?.current_plan &&
+    isPlannerSemanticPlanRequired(plan)
+  ) {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",
@@ -150,4 +160,28 @@ export function assertPlanCanBeApproved(opts: {
         "(include Findings/Decision/Next Steps)",
     });
   }
+}
+
+export function projectApprovedTask(current: TaskData, next: TaskData): TaskData {
+  const aggregate = taskCentricAggregateFromExtensions(next.extensions);
+  if (!aggregate?.current_plan) return next;
+  const previous = taskCentricAggregateFromExtensions(current.extensions);
+  const revision = current.revision ?? previous?.revision;
+  if (revision === undefined || previous?.revision !== revision) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Plan approval requires synchronized task revisions.",
+    });
+  }
+  return projectTaskCentricCompatibilityMutation({
+    current,
+    next: {
+      ...next,
+      status: projectTaskLifecycleToLegacyStatus(aggregate.lifecycle),
+      extensions: withTaskCentricAggregate(next.extensions, {
+        ...aggregate,
+        revision,
+      }),
+    },
+  });
 }

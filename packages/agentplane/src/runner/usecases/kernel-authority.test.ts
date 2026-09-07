@@ -23,7 +23,10 @@ const keys = generateKeyPairSync("ed25519");
 const now = "2026-08-31T10:00:00.000Z";
 const expiry = "2026-08-31T10:10:00.000Z";
 
-async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
+async function fixture(
+  mode: k.CanonicalApprovalMode = "manual_operator",
+  requirements: Partial<k.ExecutionRequirements> = {},
+) {
   const journey = kernelReplayJourney("direct");
   const seed = journey.steps[0]!.input;
   let saved: TaskData | null = null;
@@ -47,7 +50,11 @@ async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
   if (proposal.command.kind !== "propose_plan") throw new Error("plan fixture missing");
   const definitions = proposal.command.plan.work_items.map((item) => ({
     ...item,
-    execution_requirements: { ...item.execution_requirements, scope_roots: ["src"] },
+    execution_requirements: {
+      ...item.execution_requirements,
+      scope_roots: ["src"],
+      ...requirements,
+    },
   }));
   const plan = {
     ...proposal.command.plan,
@@ -208,6 +215,46 @@ describe("canonical native authority", () => {
       expect(child.plan_digest).toBe(f.plan.digest);
     },
   );
+
+  it("delegates an approved disposable deploy with its exact resource scope", async () => {
+    const requirements = {
+      external_effects: ["deploy"],
+      capabilities: ["deploy"],
+      resources: ["environment:disposable/qualification"],
+    };
+    const f = await fixture("manual_operator", requirements);
+    f.values.ceiling = { ...f.values.ceiling, ...requirements };
+    expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
+    const { authority } = await f.resolver.resolve(f.taskId, "build");
+    expect(authority).toMatchObject({
+      ...requirements,
+      task_id: f.taskId,
+      plan_revision: f.plan.revision,
+      plan_digest: f.plan.digest,
+      work_item_id: "build",
+    });
+    f.values.ceiling = { ...f.values.ceiling, resources: ["environment:production"] };
+    await expect(f.resolver.resolve(f.taskId, "build")).rejects.toThrow("native_policy_changed");
+  });
+
+  it("refuses a production deploy under a disposable-only native approval", async () => {
+    const requirements = {
+      external_effects: ["deploy"],
+      capabilities: ["deploy"],
+      resources: ["environment:production"],
+    };
+    const f = await fixture("manual_operator", requirements);
+    f.values.ceiling = {
+      ...f.values.ceiling,
+      ...requirements,
+      resources: ["environment:disposable/qualification"],
+    };
+    const before = await f.adapter.read(f.taskId);
+    await expect(f.resolver.approve(f.taskId)).rejects.toThrow(
+      "plan_exceeds_native_approval_scope",
+    );
+    expect(await f.adapter.read(f.taskId)).toEqual(before);
+  });
 
   it.each(["issuer", "signature", "plan", "fingerprint", "expired"] as const)(
     "rejects a signed receipt with invalid %s without persisting approval",

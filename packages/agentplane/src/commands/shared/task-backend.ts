@@ -22,6 +22,7 @@ import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
 import {
   loadTaskFromBranchSnapshot,
+  supplementTaskProjectionFromWorktrees,
   resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
   taskBranchHasLocalRef,
@@ -413,8 +414,11 @@ export async function listTaskSummariesMemo(
       });
     }
     const projected = await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
-    if (projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true) return projected;
-    return filterByProjectionStatus(await canonicalSummaries());
+    const tasks =
+      projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true
+        ? projected
+        : await canonicalSummaries();
+    return filterByProjectionStatus(await supplementTaskProjectionFromWorktrees({ ctx, tasks }));
   }
   ctx.memo.taskProjection ??= (async () => {
     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
@@ -425,9 +429,12 @@ export async function listTaskSummariesMemo(
           message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
         });
       }
-      return await ctx.taskBackend.listProjectionTasks();
+      return await supplementTaskProjectionFromWorktrees({
+        ctx,
+        tasks: await ctx.taskBackend.listProjectionTasks(),
+      });
     }
-    return await canonicalSummaries();
+    return await supplementTaskProjectionFromWorktrees({ ctx, tasks: await canonicalSummaries() });
   })();
   return filterByProjectionStatus(await ctx.memo.taskProjection);
 }

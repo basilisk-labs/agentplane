@@ -1,0 +1,2546 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+index 91521d546..118cea69e 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+@@ -214,6 +214,41 @@ function event(
+ }
+ 
+ describe("TaskCentricBackendAdapter", () => {
++  it("retains the winning revision when concurrent writers share a snapshot", async () => {
++    const initial = taskData(approvedAggregate());
++    const backend = memoryBackend(initial);
++    const adapter = new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.resolve(repository()),
++    });
++    const snapshot = (await adapter.readTask(TASK_ID))!;
++    const outcomes = await Promise.allSettled(
++      ["writer-a", "writer-b"].map((mutationId) =>
++        adapter.compareAndSwap({
++          task_id: TASK_ID,
++          expected_revision: snapshot.revision,
++          next: { ...snapshot, lifecycle: "ACTIVE" },
++          mutation_id: mutationId,
++          event: event(snapshot, mutationId, "ACTIVE"),
++        }),
++      ),
++    );
++    expect(outcomes.filter((result) => result.status === "fulfilled")).toHaveLength(1);
++    expect(outcomes.filter((result) => result.status === "rejected")).toHaveLength(1);
++    const stored = backend.current();
++    const aggregate = taskCentricAggregateFromExtensions(stored.extensions)!;
++    expect(stored.revision).toBe(snapshot.revision + 1);
++    expect(aggregate.revision).toBe(stored.revision);
++    expect(aggregate.current_plan).toEqual(snapshot.current_plan);
++    expect(aggregate.work_items).toEqual(snapshot.work_items);
++    const runtime = stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as {
++      events: DomainEvent[];
++      mutation_receipts: Record<string, unknown>;
++    };
++    expect(runtime.events).toHaveLength(1);
++    expect(Object.keys(runtime.mutation_receipts)).toHaveLength(1);
++  });
++
+   it("atomically projects an accepted verification clarification and replays idempotently", async () => {
+     const fallback = "PLANNER fallback scaffold. Replace with task-specific acceptance checks.";
+     const aggregate = approvedAggregate();
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+index 17b838801..0bf22de7c 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+@@ -393,6 +393,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+     expected_revision: number;
+     work_item_id: string;
+     semantic_result: SemanticWorkResult;
++    result_digest?: `sha256:${string}`;
+     outputs: readonly OutputManifest[];
+     validation: readonly ValidationEvidence[];
+     idempotency_key: string;
+@@ -414,6 +415,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+       work_item_id: item.id,
+       from: current.state,
+       to: nextState,
++      cause_refs: opts.result_digest ? [`semantic-result:${opts.result_digest}`] : [],
+     });
+     const runtime = runtimeFrom(raw);
+     return await this.persist({
+diff --git a/packages/agentplane/src/cli/route-decision.testkit.ts b/packages/agentplane/src/cli/route-decision.testkit.ts
+index 4e6dd501f..dc51b8496 100644
+--- a/packages/agentplane/src/cli/route-decision.testkit.ts
++++ b/packages/agentplane/src/cli/route-decision.testkit.ts
+@@ -157,6 +157,7 @@ export async function completeRouteWorkItem(root: string, taskId: string): Promi
+   const result = await recordTaskCentricExternalResult({
+     command: ctx,
+     work_order: workOrder,
++    expected_task: task,
+     head: await ctx.git.headCommit(),
+     dirty_paths: [],
+     semantic: {
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index 6c0cd8ccc..17c356671 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -1,3 +1,8 @@
++import {
++  readRecoveryWorkOrder as order,
++  writeRecoveryReport as report,
++  type RecoveryPacket as Packet,
++} from "./run-cli.core.task-advance.testkit.js";
+ import { execFile } from "node:child_process";
+ import { cp, readFile, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+@@ -5,7 +10,6 @@ import { promisify } from "node:util";
+ import { describe, expect, it, vi } from "vitest";
+ import * as processRunner from "@agentplaneorg/core/process";
+ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ import {
+   captureStdIO,
+   installRunCliIntegrationHarness,
+@@ -28,13 +32,6 @@ import { runCli } from "./run-cli.js";
+ installRunCliIntegrationHarness();
+ const git = promisify(execFile);
+ 
+-type Packet = {
+-  transition_id: string;
+-  state_fingerprint: string;
+-  action: { kind: string };
+-  exchange: { directory: string; result_path: string; resume_argv: string[] };
+-};
+-
+ async function invoke(root: string, args: string[]) {
+   const io = captureStdIO();
+   try {
+@@ -49,35 +46,6 @@ async function packet(root: string, taskId: string) {
+   expect(result.code, result.stderr).toBe(0);
+   return JSON.parse(result.stdout) as Packet;
+ }
+-async function order(p: Packet): Promise<AgentWorkOrderV2> {
+-  expect(p.exchange, JSON.stringify(p)).toBeDefined();
+-  return JSON.parse(
+-    await readFile(path.join(p.exchange.directory, "work-order.json"), "utf8"),
+-  ) as AgentWorkOrderV2;
+-}
+-async function report(p: Packet, summary: string, extra: Record<string, unknown> = {}) {
+-  const wo = await order(p);
+-  const result = {
+-    schema_version: 1,
+-    kind: "agent_action_result",
+-    task_id: wo.task.id,
+-    transition_id: p.transition_id,
+-    state_fingerprint: p.state_fingerprint,
+-    role: wo.role,
+-    result: {
+-      schema_version: 2,
+-      kind: "agent_semantic_result",
+-      work_order_id: wo.work_order_id,
+-      status: "completed",
+-      summary,
+-      findings: [summary],
+-      uncertainty: [],
+-      ...extra,
+-    },
+-  };
+-  await writeFile(p.exchange.result_path, JSON.stringify(result));
+-  return result;
+-}
+ async function resume(root: string, p: Packet) {
+   const result = await invoke(root, p.exchange.resume_argv.slice(1));
+   expect(result.code, result.stderr).toBe(0);
+@@ -815,74 +783,124 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
+     expect(after.work_items).toEqual(before.work_items);
+     expect(after.work_items["exercise-recovery"]?.state).toBe("COMPLETED");
+   });
+-  it("reissues only the command-changed WorkItem after replacement-plan approval", async () => {
+-    const f = await completedFixture();
+-    const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
+-    const headResult = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
+-    const headBefore = headResult.stdout.trim();
+-    await report(f.rework, "Replace only the unsupported qualification command.", {
+-      plan_refinement: planRefinement(true),
+-    });
+-    const planner = await resume(f.checkout, f.rework);
+-    const plannerOrder = await order(planner);
+-    expect(plannerOrder.role).toBe("PLANNER");
+-    const baseline = plannerOrder.planning_context?.repository_snapshot;
+-    if (!baseline) throw new Error("missing replacement planning baseline");
+-    const previousProposal = before.current_plan!.proposal;
+-    const replacement = {
+-      ...previousProposal,
+-      planning_baseline: baseline,
+-      work_items: {
+-        ...previousProposal.work_items,
+-        work_items: previousProposal.work_items.work_items.map((workItem) => ({
+-          ...workItem,
+-          validation: {
+-            ...workItem.validation,
+-            checks: workItem.validation.checks.map((check) => ({
+-              ...check,
+-              command: "agentplane task lint",
+-            })),
+-            evidence_fingerprint: baseline.digest,
+-          },
+-        })),
+-      },
+-      top_level_validation: {
+-        ...previousProposal.top_level_validation,
+-        checks: previousProposal.top_level_validation.checks.map((check) => ({
+-          ...check,
+-          command: "agentplane task lint",
+-        })),
+-        evidence_fingerprint: baseline.digest,
+-      },
+-    };
+-    await report(planner, "Use the repository-wide task lint command.", {
+-      task_plan_proposal: replacement,
+-    });
+-    const approval = await resume(f.checkout, planner);
+-    expect(approval.action.kind).toBe("approval_required");
+-    expect(
+-      await runCliSilent([
+-        "task",
+-        "plan",
+-        "approve",
+-        f.taskId,
+-        "--by",
+-        "USER",
+-        "--root",
+-        f.checkout,
+-      ]),
+-    ).toBe(0);
+-    const next = await packet(f.checkout, f.taskId);
+-    const nextOrder = await order(next);
+-    expect(nextOrder.role).toBe("EXECUTOR");
+-    expect(nextOrder.task.work_item_id).toBe("exercise-recovery");
+-    expect(nextOrder.state_fingerprint.git_head).toBe(headBefore);
+-    const status = await git("git", ["status", "--porcelain"], { cwd: f.checkout });
+-    const nonTaskChanges = status.stdout
+-      .split("\n")
+-      .filter((line) => line && !line.slice(3).startsWith(".agentplane/"));
+-    expect(nonTaskChanges).toEqual([]);
+-  });
++  it.each([false, true])(
++    "reassesses the existing commit under replacement-plan checks (failing=%s)",
++    async (failing) => {
++      const replacementCommand = failing
++        ? "agentplane task lint --unexpected-option"
++        : "agentplane task lint";
++      const f = await completedFixture();
++      const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
++      const headResult = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
++      const headBefore = headResult.stdout.trim();
++      await report(f.rework, "Replace only the unsupported qualification command.", {
++        plan_refinement: planRefinement(true),
++      });
++      const planner = await resume(f.checkout, f.rework);
++      const plannerOrder = await order(planner);
++      expect(plannerOrder.role).toBe("PLANNER");
++      const baseline = plannerOrder.planning_context?.repository_snapshot;
++      if (!baseline) throw new Error("missing replacement planning baseline");
++      const previousProposal = before.current_plan!.proposal;
++      const replacement = {
++        ...previousProposal,
++        planning_baseline: baseline,
++        work_items: {
++          ...previousProposal.work_items,
++          work_items: previousProposal.work_items.work_items.map((workItem) => ({
++            ...workItem,
++            validation: {
++              ...workItem.validation,
++              checks: workItem.validation.checks.map((check) => ({
++                ...check,
++                command: replacementCommand,
++              })),
++              evidence_fingerprint: baseline.digest,
++            },
++          })),
++        },
++        top_level_validation: {
++          ...previousProposal.top_level_validation,
++          checks: previousProposal.top_level_validation.checks.map((check) => ({
++            ...check,
++            command: replacementCommand,
++          })),
++          evidence_fingerprint: baseline.digest,
++        },
++      };
++      await report(planner, "Use the repository-wide task lint command.", {
++        task_plan_proposal: replacement,
++      });
++      const approval = await resume(f.checkout, planner);
++      expect(approval.action.kind).toBe("approval_required");
++      expect(
++        await runCliSilent([
++          "task",
++          "plan",
++          "approve",
++          f.taskId,
++          "--by",
++          "USER",
++          "--root",
++          f.checkout,
++        ]),
++      ).toBe(0);
++      const next = await packet(f.checkout, f.taskId);
++      const nextOrder = await order(next);
++      expect(nextOrder.role).toBe("EXECUTOR");
++      expect(nextOrder.task.work_item_id).toBe("exercise-recovery");
++      expect(nextOrder.state_fingerprint.git_head).toBe(headBefore);
++      const status = await git("git", ["status", "--porcelain"], { cwd: f.checkout });
++      const nonTaskChanges = status.stdout
++        .split("\n")
++        .filter((line) => line && !line.slice(3).startsWith(".agentplane/"));
++      expect(nonTaskChanges).toEqual([]);
++      const originalEvidence = await readFile(
++        path.join(
++          f.checkout,
++          ".agentplane/tasks",
++          f.taskId,
++          "supervision/implementation-evidence.json",
++        ),
++        "utf8",
++      );
++      await report(
++        next,
++        "The existing source satisfies the replacement plan; run its current checks.",
++      );
++      await resume(f.checkout, next);
++      const reassessed = await f.ctx.taskBackend.getTask(f.taskId);
++      const aggregate = taskCentricAggregateFromExtensions(reassessed!.extensions)!;
++      expect(aggregate.work_items["exercise-recovery"]?.state).toBe(
++        failing ? "REWORK_READY" : "COMPLETED",
++      );
++      expect(aggregate.work_items["exercise-recovery"]?.validation_result?.evidence).toEqual(
++        expect.arrayContaining([
++          expect.objectContaining({
++            command_identity: replacementCommand,
++            status: failing ? "failed" : "passed",
++          }),
++        ]),
++      );
++      expect(
++        await readFile(
++          path.join(
++            f.checkout,
++            ".agentplane/tasks",
++            f.taskId,
++            "supervision/implementation-evidence.json",
++          ),
++          "utf8",
++        ),
++      ).toBe(originalEvidence);
++      const productDiff = await git(
++        "git",
++        ["diff", headBefore, "HEAD", "--", "feature.ts", "package.json"],
++        { cwd: f.checkout },
++      );
++      expect(productDiff.stdout).toBe("");
++    },
++  );
+   it("rejects agent-created Git history for a pure refinement", async () => {
+     const f = await implementationFixture();
+     await report(f.implementation, "Refinement after forbidden history change.", {
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index 4dc53ac4b..862cbd93c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -8,7 +8,6 @@ import {
+   createSupervisorExecutionEpisodeJournal,
+   startSupervisorExecutionEpisode,
+   validateSupervisorExecutionEpisodeJournal,
+-  type AgentSemanticResultTaskIntent,
+   type AgentWorkOrderV2,
+ } from "@agentplaneorg/core/schemas";
+ 
+@@ -21,7 +20,11 @@ import {
+   runCliSilent,
+   writeConfig,
+ } from "@agentplane/testkit";
+-import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
++import {
++  setMarkdownSection,
++  taskCentricAggregateFromExtensions,
++  taskCentricReplanRequiredFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ 
+ import {
+   agentTransitionId,
+@@ -29,7 +32,12 @@ import {
+ } from "../commands/task/agent-action-packet.js";
+ import { defaultConfig } from "./core-imports.js";
+ import { runCli } from "./run-cli.js";
+-import { readRoute, readRouteFingerprint } from "./run-cli.core.task-advance.testkit.js";
++import {
++  readRoute,
++  readRouteFingerprint,
++  writeCompletedResult,
++  type AgentPacket,
++} from "./run-cli.core.task-advance.testkit.js";
+ import {
+   createSupervisorEpisodeStore,
+   resolveSupervisorExecutionEpisodePath,
+@@ -43,45 +51,12 @@ import {
+   validateExternalAgentResultEnvelope,
+ } from "../commands/task/external-agent-exchange.js";
+ import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
++import { applyTaskMutation } from "../commands/shared/task-mutation.js";
+ 
+ installRunCliIntegrationHarness();
+ 
+ const execFileAsync = promisify(execFile);
+ 
+-type AgentPacket = {
+-  schema_version: number;
+-  task_id: string;
+-  transition_id: string;
+-  state_fingerprint: string;
+-  action: { kind: string; instruction: string };
+-  authority: {
+-    role: string;
+-    mutation: string;
+-    network: string;
+-    required: boolean;
+-    reference: string | null;
+-  };
+-  context_refs: { kind: string; ref: string; digest?: string }[];
+-  operator_action?: {
+-    kind: string;
+-    required_role: string;
+-    cwd: string | null;
+-    argv: string[] | null;
+-    authority_reference: string;
+-  };
+-  exchange?: {
+-    directory: string;
+-    work_order_ref: string;
+-    result_schema_ref: string;
+-    result_ref: string;
+-    return_invocation: string;
+-    result_path: string;
+-    resume_argv: string[];
+-  };
+-  recovery?: { reason: string; evidence_digest: string };
+-  stop: { reason: string; resume: string };
+-};
+-
+ async function createTask(
+   root: string,
+   title: string,
+@@ -128,104 +103,6 @@ async function readAgentPacket(root: string, taskId: string): Promise<AgentPacke
+   }
+ }
+ 
+-async function writeCompletedResult(
+-  packet: AgentPacket,
+-  summary: string,
+-  review?: {
+-    verdict: "pass" | "rework" | "blocked" | "human_review";
+-    missing_tests: string[];
+-    hidden_assumptions: string[];
+-    residual_risks: string[];
+-  },
+-  taskIntent?: AgentSemanticResultTaskIntent,
+-  structuredPlan = false,
+-): Promise<string> {
+-  if (!packet.exchange) throw new Error("expected an external-agent exchange");
+-  const workOrder = JSON.parse(
+-    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
+-  ) as AgentWorkOrderV2;
+-  const routeCriterion = {
+-    id: "route-converges",
+-    description: "The requested external-agent route converges through its expected boundary.",
+-    required: true,
+-    check_ids: ["task-check"],
+-  } as const;
+-  const routeValidation = {
+-    schema_version: 1,
+-    criteria: [routeCriterion],
+-    checks: [
+-      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
+-    ],
+-    evidence_fingerprint: "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+-  } as const;
+-  const taskPlanProposal: TaskPlanProposal | undefined = structuredPlan
+-    ? {
+-        schema_version: 1,
+-        task_id: packet.task_id,
+-        planning_baseline: workOrder.planning_context!.repository_snapshot,
+-        work_items: {
+-          schema_version: 1,
+-          work_items: [
+-            {
+-              id: "exercise-external-agent-route",
+-              objective: "Exercise the compact external-agent route under the approved test plan.",
+-              depends_on: [],
+-              required_inputs: [],
+-              expected_outputs: ["external-agent-route-result"],
+-              scope_roots: ["."],
+-              acceptance_criteria: [routeCriterion],
+-              validation: routeValidation,
+-              context: {
+-                required_sources: [],
+-                optional_sources: [],
+-                symbol_hints: [],
+-                max_bytes: 65_536,
+-              },
+-              risk: "low",
+-              capabilities: ["task.verify"],
+-              resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
+-              optional: false,
+-              priority: 1,
+-            },
+-          ],
+-        },
+-        assumptions: [],
+-        unresolved_questions: [],
+-        top_level_validation: routeValidation,
+-      }
+-    : undefined;
+-  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
+-  await writeFile(
+-    resultPath,
+-    `${JSON.stringify(
+-      {
+-        schema_version: 1,
+-        kind: "agent_action_result",
+-        task_id: packet.task_id,
+-        transition_id: packet.transition_id,
+-        state_fingerprint: packet.state_fingerprint,
+-        role: workOrder.role,
+-        result: {
+-          schema_version: 2,
+-          kind: "agent_semantic_result",
+-          work_order_id: workOrder.work_order_id,
+-          status: "completed",
+-          summary,
+-          findings: review ? ["The frozen diff satisfies the approved task intent."] : [],
+-          uncertainty: [],
+-          ...(taskIntent ? { task_intent: taskIntent } : {}),
+-          ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
+-          ...(review ? { review } : {}),
+-        },
+-      },
+-      null,
+-      2,
+-    )}\n`,
+-    "utf8",
+-  );
+-  return resultPath;
+-}
+-
+ async function planAndApproveTask(root: string, taskId: string, plan: string): Promise<void> {
+   const command = await loadCommandContext({ cwd: root, rootOverride: root });
+   const task = await command.taskBackend.getTask(taskId);
+@@ -388,6 +265,93 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     ).toContain(plan);
+   });
+ 
++  it("clears the replan marker on replacement acceptance and ignores a stale textual projection after reload", async () => {
++    const root = await mkGitRepoRootWithMainCommit();
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    const taskId = await createTask(root, "Canonical replacement route");
++    await planAndApproveTask(root, taskId, "Implement the original bounded scope.");
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "plan",
++        "set",
++        taskId,
++        "--text",
++        "Replace the implementation plan.",
++        "--updated-by",
++        "PLANNER",
++        "--root",
++        root,
++      ]);
++      expect(code, io.stderr).toBe(0);
++    } finally {
++      io.restore();
++    }
++
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const replanning = await ctx.taskBackend.getTask(taskId);
++    expect(taskCentricReplanRequiredFromExtensions(replanning?.extensions)).toBe(true);
++    expect(taskCentricAggregateFromExtensions(replanning?.extensions)?.lifecycle).toBe("PLANNING");
++    expect(replanning?.status).toBe("TODO");
++    const issued = await readAgentPacket(root, taskId);
++    expect(issued.authority.role).toBe("PLANNER");
++    const resultPath = await writeCompletedResult(
++      issued,
++      "Implement the revised bounded scope.",
++      undefined,
++      undefined,
++      true,
++    );
++    const result = await returnAgentResult(root, taskId, resultPath);
++    expect(result.code, result.stderr).toBe(0);
++    const accepted = await ctx.taskBackend.getTask(taskId);
++    expect(taskCentricAggregateFromExtensions(accepted?.extensions)?.current_plan?.revision).toBe(
++      2,
++    );
++    expect(taskCentricReplanRequiredFromExtensions(accepted?.extensions)).toBe(false);
++    const acceptedRoute = await readRoute(root, taskId);
++    expect(acceptedRoute.workflow_step.kind).toBe("approval");
++    if (!accepted) throw new Error("missing accepted task");
++    const stalePlan =
++      "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.";
++    await applyTaskMutation({
++      ctx,
++      taskId,
++      build: (current) => ({
++        nextTask: { ...current, doc: setMarkdownSection(current.doc ?? "", "Plan", stalePlan) },
++      }),
++    });
++    const persisted = await ctx.taskBackend.getTask(taskId);
++    expect(persisted?.doc).toContain(stalePlan);
++    // Each CLI read opens a fresh command context from the persisted task.
++    for (let reload = 0; reload < 2; reload += 1) {
++      const route = await readRoute(root, taskId);
++      expect(route.workflow_step.kind).toBe("approval");
++      expect(route.route_oracle.phase).toBe("needs_plan_approval");
++    }
++    const approvalIo = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "plan",
++        "approve",
++        taskId,
++        "--by",
++        "USER",
++        "--root",
++        root,
++      ]);
++      expect(code, approvalIo.stderr).toBe(0);
++    } finally {
++      approvalIo.restore();
++    }
++    const approvedRoute = await readRoute(root, taskId);
++    expect(approvedRoute.workflow_step.kind).toBe("cli_operation");
++  });
++
+   it("returns an external wait instead of advertising start-ready for incomplete dependencies", async () => {
+     const root = await mkGitRepoRootWithMainCommit();
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts
+index 5233feb52..d93e03bc1 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts
+@@ -1,3 +1,7 @@
++import { readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import type { AgentSemanticResultTaskIntent, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import type { TaskPlanProposal } from "@agentplaneorg/core/tasks";
+ import { expect } from "vitest";
+ 
+ import { captureStdIO } from "@agentplane/testkit";
+@@ -57,3 +61,176 @@ export async function readRoute(
+     io.restore();
+   }
+ }
++
++export type AgentPacket = {
++  schema_version: number;
++  task_id: string;
++  transition_id: string;
++  state_fingerprint: string;
++  action: { kind: string; instruction: string };
++  authority: {
++    role: string;
++    mutation: string;
++    network: string;
++    required: boolean;
++    reference: string | null;
++  };
++  context_refs: { kind: string; ref: string; digest?: string }[];
++  operator_action?: {
++    kind: string;
++    required_role: string;
++    cwd: string | null;
++    argv: string[] | null;
++    authority_reference: string;
++  };
++  exchange?: {
++    directory: string;
++    work_order_ref: string;
++    result_schema_ref: string;
++    result_ref: string;
++    return_invocation: string;
++    result_path: string;
++    resume_argv: string[];
++  };
++  recovery?: { reason: string; evidence_digest: string };
++  stop: { reason: string; resume: string };
++};
++
++export async function writeCompletedResult(
++  packet: AgentPacket,
++  summary: string,
++  review?: {
++    verdict: "pass" | "rework" | "blocked" | "human_review";
++    missing_tests: string[];
++    hidden_assumptions: string[];
++    residual_risks: string[];
++  },
++  taskIntent?: AgentSemanticResultTaskIntent,
++  structuredPlan = false,
++): Promise<string> {
++  if (!packet.exchange) throw new Error("expected an external-agent exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const routeCriterion = {
++    id: "route-converges",
++    description: "The requested external-agent route converges through its expected boundary.",
++    required: true,
++    check_ids: ["task-check"],
++  } as const;
++  const routeValidation = {
++    schema_version: 1,
++    criteria: [routeCriterion],
++    checks: [
++      { id: "task-check", kind: "deterministic", required: true, capability: "task.verify" },
++    ],
++    evidence_fingerprint: "sha256:0000000000000000000000000000000000000000000000000000000000000000",
++  } as const;
++  const taskPlanProposal: TaskPlanProposal | undefined = structuredPlan
++    ? {
++        schema_version: 1,
++        task_id: packet.task_id,
++        planning_baseline: workOrder.planning_context!.repository_snapshot,
++        work_items: {
++          schema_version: 1,
++          work_items: [
++            {
++              id: "exercise-external-agent-route",
++              objective: "Exercise the compact external-agent route under the approved test plan.",
++              depends_on: [],
++              required_inputs: [],
++              expected_outputs: ["external-agent-route-result"],
++              scope_roots: ["."],
++              acceptance_criteria: [routeCriterion],
++              validation: routeValidation,
++              context: {
++                required_sources: [],
++                optional_sources: [],
++                symbol_hints: [],
++                max_bytes: 65_536,
++              },
++              risk: "low",
++              capabilities: ["task.verify"],
++              resource_claims: [{ kind: "workspace", resource: ".", mode: "write" }],
++              optional: false,
++              priority: 1,
++            },
++          ],
++        },
++        assumptions: [],
++        unresolved_questions: [],
++        top_level_validation: routeValidation,
++      }
++    : undefined;
++  const resultPath = path.join(packet.exchange.directory, packet.exchange.result_ref);
++  await writeFile(
++    resultPath,
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        kind: "agent_action_result",
++        task_id: packet.task_id,
++        transition_id: packet.transition_id,
++        state_fingerprint: packet.state_fingerprint,
++        role: workOrder.role,
++        result: {
++          schema_version: 2,
++          kind: "agent_semantic_result",
++          work_order_id: workOrder.work_order_id,
++          status: "completed",
++          summary,
++          findings: review ? ["The frozen diff satisfies the approved task intent."] : [],
++          uncertainty: [],
++          ...(taskIntent ? { task_intent: taskIntent } : {}),
++          ...(taskPlanProposal ? { task_plan_proposal: taskPlanProposal } : {}),
++          ...(review ? { review } : {}),
++        },
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++  return resultPath;
++}
++
++export type RecoveryPacket = {
++  transition_id: string;
++  state_fingerprint: string;
++  action: { kind: string };
++  exchange: { directory: string; result_path: string; resume_argv: string[] };
++};
++
++export async function readRecoveryWorkOrder(p: RecoveryPacket): Promise<AgentWorkOrderV2> {
++  expect(p.exchange, JSON.stringify(p)).toBeDefined();
++  return JSON.parse(
++    await readFile(path.join(p.exchange.directory, "work-order.json"), "utf8"),
++  ) as AgentWorkOrderV2;
++}
++export async function writeRecoveryReport(
++  p: RecoveryPacket,
++  summary: string,
++  extra: Record<string, unknown> = {},
++) {
++  const wo = await readRecoveryWorkOrder(p);
++  const result = {
++    schema_version: 1,
++    kind: "agent_action_result",
++    task_id: wo.task.id,
++    transition_id: p.transition_id,
++    state_fingerprint: p.state_fingerprint,
++    role: wo.role,
++    result: {
++      schema_version: 2,
++      kind: "agent_semantic_result",
++      work_order_id: wo.work_order_id,
++      status: "completed",
++      summary,
++      findings: [summary],
++      uncertainty: [],
++      ...extra,
++    },
++  };
++  await writeFile(p.exchange.result_path, JSON.stringify(result));
++  return result;
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts
+index 5ce2f28f1..100d6a56e 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts
+@@ -16,7 +16,13 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ import { describe, expect, it, vi } from "vitest";
+ import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
+-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
++import {
++  createLegacyTaskAggregate,
++  taskCentricAggregateFromExtensions,
++  withTaskCentricAggregate,
++  readTask,
++  renderTaskReadme,
++} from "@agentplaneorg/core/tasks";
+ import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
+ 
+ import { runCli } from "./run-cli.js";
+@@ -111,6 +117,78 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+     expect(task.frontmatter.verify).toEqual(["bun run test"]);
+   });
+ 
++  it.each([7, 10])(
++    "replace-verify preserves canonical revision coherence at revision %s",
++    async (revision) => {
++      const root = await mkGitRepoRoot();
++      const io = captureStdIO();
++      try {
++        expect(
++          await runCli([
++            "task",
++            "new",
++            "--title",
++            "Replace canonical verification",
++            "--description",
++            "Verify revision coherence",
++            "--owner",
++            "CODER",
++            "--tag",
++            "code",
++            "--verify",
++            "bun run lint",
++            "--root",
++            root,
++          ]),
++        ).toBe(0);
++        const taskId = io.stdout.trim();
++        const before = await readTask({ cwd: root, rootOverride: root, taskId });
++        const aggregate = createLegacyTaskAggregate({
++          id: taskId,
++          revision,
++          title: before.frontmatter.title,
++          description: "Verify revision coherence",
++          status: "TODO",
++          acceptance_criteria: ["Revisions remain coherent"],
++          captured_at: "2026-09-07T00:00:00.000Z",
++          updated_at: "2026-09-07T00:00:00.000Z",
++        });
++        await writeFile(
++          before.readmePath,
++          renderTaskReadme(
++            {
++              ...before.frontmatter,
++              revision,
++              extensions: withTaskCentricAggregate(before.frontmatter.extensions, aggregate),
++            },
++            before.body,
++          ),
++        );
++        expect(
++          await runCli([
++            "task",
++            "update",
++            taskId,
++            "--replace-verify",
++            "--verify",
++            "bun run test",
++            "--root",
++            root,
++          ]),
++        ).toBe(0);
++        const after = await readTask({ cwd: root, rootOverride: root, taskId });
++        const projected = taskCentricAggregateFromExtensions(after.frontmatter.extensions)!;
++        expect(after.frontmatter.verify).toEqual(["bun run test"]);
++        expect(after.frontmatter.revision).toBe(revision + 1);
++        expect(projected.revision).toBe(after.frontmatter.revision);
++        expect(projected.current_plan).toEqual(aggregate.current_plan);
++        expect(projected.work_items).toEqual(aggregate.work_items);
++      } finally {
++        io.restore();
++      }
++    },
++  );
++
+   it("task update allows code primary without verify commands", async () => {
+     const root = await mkGitRepoRoot();
+     const ioNew = captureStdIO();
+diff --git a/packages/agentplane/src/commands/shared/reconcile-check.test.ts b/packages/agentplane/src/commands/shared/reconcile-check.test.ts
+index 9f84f1bee..a50681b25 100644
+--- a/packages/agentplane/src/commands/shared/reconcile-check.test.ts
++++ b/packages/agentplane/src/commands/shared/reconcile-check.test.ts
+@@ -27,7 +27,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
+     git: {
+       statusChangedPaths: vi.fn().mockResolvedValue([]),
+     } as unknown as CommandContext["git"],
+-    memo: {},
++    memo: { taskWorktreeInventory: Promise.resolve([]) },
+   };
+   return { ...ctx, ...overrides };
+ }
+diff --git a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
+index 806434472..363ce846c 100644
+--- a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
++++ b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
+@@ -17,7 +17,12 @@ import {
+   withTaskReadmeFrontmatterDefaults,
+ } from "@agentplaneorg/core/schemas";
+ 
+-import { taskRecordToData, type TaskData } from "../../backends/task-backend.js";
++import {
++  taskRecordToData,
++  toTaskSummary,
++  type TaskData,
++  type TaskSummary,
++} from "../../backends/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+ import type { CommandContext } from "./task-backend.js";
+ 
+@@ -215,6 +220,9 @@ function taskDataFromReadmeText(opts: {
+           : opts.taskId,
+     }),
+   );
++  if (frontmatter.id !== opts.taskId) {
++    throw new Error(`Task branch README belongs to ${String(frontmatter.id)}, not ${opts.taskId}.`);
++  }
+   return taskRecordToData({
+     id: opts.taskId,
+     frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
+@@ -297,3 +305,60 @@ export async function loadTaskFromBranchSnapshot(opts: {
+   }
+   return null;
+ }
++
++/** Supplement missing local projections without copying task truth between checkouts. */
++export async function supplementTaskProjectionFromWorktrees(opts: {
++  ctx: CommandContext;
++  tasks: TaskSummary[];
++}): Promise<TaskSummary[]> {
++  if (!backendSupportsTaskBranchSnapshots(opts.ctx)) return opts.tasks;
++  opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
++  const worktrees = await opts.ctx.memo.taskWorktreeInventory;
++  const ids = new Set(
++    worktrees.flatMap((entry) => {
++      const id = entry.branch
++        ? parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch)
++        : null;
++      return id ? [id] : [];
++    }),
++  );
++  const known = new Set(opts.tasks.map((task) => task.id));
++  const tasks = [...opts.tasks];
++  for (const taskId of [...ids].toSorted()) {
++    if (known.has(taskId)) continue;
++    try {
++      // A healthy local record can be absent because the caller requested a status filter.
++      if (await opts.ctx.taskBackend.getTask(taskId)) continue;
++    } catch {
++      // A malformed local projection can still have a valid authoritative owner.
++    }
++    const branch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId });
++    if (!branch) continue;
++    const owner = await resolveAuthoritativeTaskWorktree({
++      ctx: opts.ctx,
++      taskId,
++      branch,
++      requireRegistration: true,
++    });
++    if (!owner) continue;
++    const relativeReadme = path.join(opts.ctx.config.paths.workflow_dir, taskId, "README.md");
++    const task = await loadTaskFromBranchSnapshot({
++      ctx: opts.ctx,
++      taskId,
++      branch,
++      readmePath: path.join(opts.ctx.resolvedProject.gitRoot, relativeReadme),
++    });
++    if (!task) continue;
++    tasks.push({
++      ...toTaskSummary(task),
++      extensions: {
++        ...task.extensions,
++        "agentplane.task_projection_source": {
++          state: "local_projection_unavailable",
++          readme_path: path.join(owner.path, relativeReadme),
++        },
++      },
++    });
++  }
++  return tasks;
++}
+diff --git a/packages/agentplane/src/commands/shared/task-backend.test.ts b/packages/agentplane/src/commands/shared/task-backend.test.ts
+index 2493a055a..f290b12e8 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.test.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.test.ts
+@@ -9,6 +9,7 @@ import { createTask } from "@agentplaneorg/core/tasks";
+ import { describe, expect, it } from "vitest";
+ 
+ import {
++  captureStdIO,
+   configureGitUser,
+   mkGitRepoRoot,
+   mkGitRepoRootWithBranch,
+@@ -26,6 +27,8 @@ import {
+   resolveTaskOwnerCommandContext,
+ } from "./task-backend.js";
+ 
++import { cmdTaskList } from "../task/list.js";
++
+ const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
+ 
+ async function writeLocalBackendConfig(root: string): Promise<void> {
+@@ -231,6 +234,92 @@ describe(
+       });
+     });
+ 
++    it.each(["missing", "malformed", "directory_missing"])(
++      "discovers the owner task when the base projection is %s without repairing it",
++      async (projection) => {
++        const root = await mkGitRepoRootWithBranch("main");
++        await writeDefaultConfig(root);
++        await writeLocalBackendConfig(root);
++        const created = await createTask({
++          cwd: root,
++          rootOverride: root,
++          title: "Discoverable owner task",
++          description: "The owner retains task truth.",
++          owner: "TESTER",
++          priority: "med",
++          tags: ["testing"],
++          dependsOn: [],
++          verify: [],
++        });
++        const execFileAsync = promisify(execFile);
++        await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
++        await execFileAsync("git", ["commit", "-m", "seed task discovery"], { cwd: root });
++        const owner = path.join(root, ".agentplane/worktrees", `${created.id}-owner`);
++        await execFileAsync("git", ["worktree", "add", "-b", `task/${created.id}/owner`, owner], {
++          cwd: root,
++        });
++        const readme = path.join(root, ".agentplane/tasks", created.id, "README.md");
++        const ownerReadme = await realpath(
++          path.join(owner, ".agentplane/tasks", created.id, "README.md"),
++        );
++        const original = await readFile(ownerReadme, "utf8");
++        const warm = await loadCommandContext({ cwd: root, rootOverride: root });
++        await listTaskSummariesMemo(warm);
++        if (projection === "malformed") await writeFile(readme, "---\nid: [broken\n---\n");
++        else
++          await rm(projection === "directory_missing" ? path.dirname(readme) : readme, {
++            recursive: true,
++          });
++        const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
++        const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++        const tasks = await listTaskSummariesMemo(ctx);
++        expect(tasks.map((task) => task.id)).toContain(created.id);
++        expect(
++          tasks.find((task) => task.id === created.id)?.extensions?.[
++            "agentplane.task_projection_source"
++          ],
++        ).toEqual({ state: "local_projection_unavailable", readme_path: ownerReadme });
++        const ownerCtx = await loadCommandContext({ cwd: owner, rootOverride: owner });
++        const ownerTasks = await listTaskSummariesMemo(ownerCtx);
++        expect(ownerTasks.map((task) => task.id)).toContain(created.id);
++        const io = captureStdIO();
++        try {
++          expect(
++            await cmdTaskList({
++              ctx,
++              cwd: root,
++              filters: { status: [], owner: [], tag: [], quiet: true, all: true },
++            }),
++          ).toBe(0);
++          expect(io.stdout).toContain(created.id);
++          expect(io.stdout).toContain(`source=${ownerReadme}`);
++        } finally {
++          io.restore();
++        }
++        expect(await readFile(ownerReadme, "utf8")).toBe(original);
++        const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
++        expect(after.stdout).toBe(before.stdout);
++        if (projection === "malformed") {
++          await writeFile(ownerReadme, original.replace(created.id, "202609070000-FOREIGN"));
++          try {
++            const foreign = await loadCommandContext({ cwd: root, rootOverride: root });
++            await expect(listTaskSummariesMemo(foreign)).rejects.toThrow(
++              "does not contain a valid README",
++            );
++          } finally {
++            await writeFile(ownerReadme, original);
++          }
++        }
++        if (projection === "missing") {
++          await execFileAsync("git", ["branch", `task/${created.id}/duplicate`], { cwd: root });
++          const ambiguous = await loadCommandContext({ cwd: root, rootOverride: root });
++          await expect(listTaskSummariesMemo(ambiguous)).rejects.toThrow(
++            `Multiple task branches match ${created.id}`,
++          );
++        }
++      },
++    );
++
+     it("rejects a local task branch without a registered authoritative worktree", async () => {
+       const repo = await tempRepo({ branch: "main" });
+       const root = repo.root;
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index b5c9583ae..76aa0909f 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -22,6 +22,7 @@ import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
+ import { resolveCommonGitDirectory } from "../../shared/env.js";
+ import {
+   loadTaskFromBranchSnapshot,
++  supplementTaskProjectionFromWorktrees,
+   resolveAuthoritativeTaskWorktree,
+   resolveTaskBranchFromContext,
+   taskBranchHasLocalRef,
+@@ -413,8 +414,11 @@ export async function listTaskSummariesMemo(
+       });
+     }
+     const projected = await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
+-    if (projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true) return projected;
+-    return filterByProjectionStatus(await canonicalSummaries());
++    const tasks =
++      projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true
++        ? projected
++        : await canonicalSummaries();
++    return filterByProjectionStatus(await supplementTaskProjectionFromWorktrees({ ctx, tasks }));
+   }
+   ctx.memo.taskProjection ??= (async () => {
+     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
+@@ -425,9 +429,12 @@ export async function listTaskSummariesMemo(
+           message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
+         });
+       }
+-      return await ctx.taskBackend.listProjectionTasks();
++      return await supplementTaskProjectionFromWorktrees({
++        ctx,
++        tasks: await ctx.taskBackend.listProjectionTasks(),
++      });
+     }
+-    return await canonicalSummaries();
++    return await supplementTaskProjectionFromWorktrees({ ctx, tasks: await canonicalSummaries() });
+   })();
+   return filterByProjectionStatus(await ctx.memo.taskProjection);
+ }
+diff --git a/packages/agentplane/src/commands/shared/task-mutation.test.ts b/packages/agentplane/src/commands/shared/task-mutation.test.ts
+index 699e683ea..6543622eb 100644
+--- a/packages/agentplane/src/commands/shared/task-mutation.test.ts
++++ b/packages/agentplane/src/commands/shared/task-mutation.test.ts
+@@ -253,6 +253,50 @@ describe("applyTaskMutation", () => {
+     expect(Object.keys(replayRuntime.mutation_receipts)).toEqual(receiptIds);
+   });
+ 
++  it("refuses a damaged 10/7 revision snapshot without rewriting its evidence", async () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "T-1",
++      revision: 7,
++      title: "Task",
++      description: "Damaged revision snapshot",
++      status: "DOING",
++      acceptance_criteria: ["done"],
++      captured_at: "2026-03-31T00:00:00.000Z",
++      updated_at: "2026-03-31T00:00:00.000Z",
++    });
++    const original = mkTask({
++      id: "T-1",
++      revision: 10,
++      status: "DOING",
++      verification: { state: "ok", attempts: 1 },
++      extensions: withTaskCentricAggregate({}, aggregate),
++    });
++    let saved = cloneTask(original);
++    const store = {
++      update: vi.fn(async (_id: string, updater: (task: TaskData) => Promise<TaskData>) => {
++        saved = cloneTask(await updater(cloneTask(saved)));
++        return { changed: true, task: cloneTask(saved) };
++      }),
++    };
++    vi.doMock("./task-store.js", async () => ({
++      ...(await vi.importActual("./task-store.js")),
++      getTaskStore: () => store,
++    }));
++    vi.doMock("./task-backend.js", async () => ({
++      ...(await vi.importActual("./task-backend.js")),
++      backendUsesLocalTaskStore: () => true,
++    }));
++    const { applyTaskMutation } = await import("./task-mutation.js");
++    await expect(
++      applyTaskMutation({
++        ctx: mkCtx(mkBackend()),
++        taskId: "T-1",
++        build: (current) => ({ nextTask: { ...current, verify: ["bun run test"] } }),
++      }),
++    ).rejects.toThrow(/revision mismatch/iu);
++    expect(saved).toEqual(original);
++  });
++
+   it("atomically reopens a completed task-centric projection for verification rework", async () => {
+     const aggregate = createLegacyTaskAggregate({
+       id: "T-1",
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 8c29d9027..9407906f6 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -1,4 +1,7 @@
+-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
++import {
++  incompleteRequiredWorkItems,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+ import type { RouteBlocker } from "./route-oracle.js";
+@@ -475,27 +478,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+     });
+   }
+   const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
+-  // A freshly materialized graph is not evidence that compatibility-driven
+-  // implementation has entered canonical WorkItem execution. Once a claim or
+-  // attempt exists, the canonical graph becomes authoritative for routing.
+-  const canonicalWorkItemExecutionStarted = Object.values(taskCentric?.work_items ?? {}).some(
+-    (item) => item.attempt > 0 || item.claim_id !== null,
+-  );
+-  const requiredWorkItemIncomplete =
+-    canonicalWorkItemExecutionStarted &&
+-    taskCentric?.current_plan?.proposal.work_items.work_items.some(
+-      (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
+-    );
++  if (incompleteRequiredWorkItems(taskCentric).length > 0) return branchImplementationStep(state);
+   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
+-  const implementationValidated =
+-    Boolean(implementationCommit) &&
+-    state.task.verification?.state === "ok" &&
+-    state.task.quality_review?.state === "pass" &&
+-    state.task.quality_review.evaluated_sha === implementationCommit;
+-  if (
+-    !implementationCommit &&
+-    (requiredWorkItemIncomplete || state.task.verification?.state !== "ok")
+-  )
++  if (!implementationCommit && state.task.verification?.state !== "ok")
+     return branchImplementationStep(state);
+   if (state.prFlow?.pr.state === "not_found") {
+     return cliOperationStep({
+@@ -511,8 +496,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
+     });
+   }
+-  if (requiredWorkItemIncomplete && !implementationValidated)
+-    return branchImplementationStep(state);
+   if (hasRouteBlocker(state, "verification_required")) {
+     return verificationStep(state);
+   }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-common.ts b/packages/agentplane/src/commands/shared/workflow-step-common.ts
+index 0e5d19670..f7b5794dd 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-common.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-common.ts
+@@ -2,7 +2,12 @@ import type { StateFingerprint } from "@agentplaneorg/core/schemas";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { RouteBlocker, RouteExecutionPacket } from "./route-oracle.js";
+-import type { WorkflowRole, WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
++import type {
++  WorkflowOperationParams,
++  WorkflowRole,
++  WorkflowRouteState,
++  WorkflowStep,
++} from "./workflow-step.js";
+ 
+ export function routeBlockerSnapshot(state: WorkflowRouteState): readonly RouteBlocker[] {
+   return state.blockers.map((blocker) => ({ ...blocker }));
+@@ -73,3 +78,20 @@ export function commonExecution(opts: {
+     needsVerificationRecord: opts.needsVerificationRecord === true,
+   };
+ }
++
++export function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runner.follow"] {
++  const id = state.task.id;
++  const action = state.resume.runner.next_action;
++  if (action === "cancel_then_resume") {
++    return {
++      mode: "reclaim",
++      taskId: id,
++      author: state.task.owner,
++      reason: "stale runner pid is no longer alive",
++    };
++  }
++  if (action === "wait") {
++    return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
++  }
++  return { mode: "run", taskId: id };
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-factory.ts b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+index 05785bf03..64811a03f 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-factory.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+@@ -1,3 +1,7 @@
++import {
++  incompleteRequiredWorkItems,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
+ import { isRecord } from "../../shared/guards.js";
+@@ -8,6 +12,7 @@ import {
+ } from "./route-decision-verification.js";
+ import { cliOperationStep } from "./workflow-step-authority.js";
+ import {
++  runnerParams,
+   authorityRef,
+   commonExecution,
+   routeBlockerFor,
+@@ -16,7 +21,6 @@ import {
+ } from "./workflow-step-common.js";
+ import {
+   type WorkflowCheckout,
+-  type WorkflowOperationParams,
+   type WorkflowRole,
+   type WorkflowRouteState,
+   type WorkflowStep,
+@@ -164,25 +168,31 @@ export function approvalStep(opts: {
+   };
+ }
+ 
+-function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runner.follow"] {
+-  const id = state.task.id;
+-  const action = state.resume.runner.next_action;
+-  if (action === "cancel_then_resume") {
+-    return {
+-      mode: "reclaim",
+-      taskId: id,
+-      author: state.task.owner,
+-      reason: "stale runner pid is no longer alive",
+-    };
+-  }
+-  if (action === "wait") {
+-    return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
+-  }
+-  return { mode: "run", taskId: id };
+-}
+-
+ export function directStep(state: WorkflowRouteState): WorkflowStep {
+   const id = state.task.id;
++  if (
++    String(state.task.status).toUpperCase() === "DOING" &&
++    state.task.verification?.state === "ok" &&
++    !hasUninitializedTaskBaseline(state.task) &&
++    incompleteRequiredWorkItems(taskCentricAggregateFromExtensions(state.task.extensions)).length >
++      0
++  ) {
++    return agentEpisodeStep({
++      state,
++      id: "agent.direct_implementation",
++      code: "continue_direct_implementation",
++      phase: "direct_implementation",
++      checkout: "current_checkout",
++      role: "CODER",
++      purpose: "implementation",
++      summary: "complete the required WorkItem before direct verification and closeout",
++      objective:
++        "Complete the issued WorkItem and return its semantic result for supervisor verification.",
++      semanticMutationAllowed: true,
++      returnControlWhen: "after returning the WorkItem result; request a fresh action packet",
++      selectedBlocker: null,
++    });
++  }
+   if (
+     state.task.verification?.state === "ok" &&
+     String(state.task.status).toUpperCase() === "DOING"
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts b/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+index 595c19cf9..a537e2048 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+@@ -160,44 +160,134 @@ function taskCentricExtensions(workItemState: "READY" | "REWORK_READY" | "COMPLE
+ }
+ 
+ describe("quality evidence refresh route", () => {
+-  it("returns to required WorkItem execution before downstream closeout", () => {
+-    const verifiedTask = {
+-      ...task,
+-      commit: { hash: resume.head_sha, message: "feat: stale implementation evidence" },
+-      verification: { state: "ok" as const, updated_at: "2026-07-25T00:10:00.000Z" },
+-      quality_review: {
+-        state: "pass" as const,
+-        reviewed_by: "EVALUATOR",
+-        reviewed_at: "2026-07-25T00:11:00.000Z",
+-        summary: "The previously observed implementation passed review.",
+-        evidence_refs: ["quality-report.json"],
+-      },
++  it("routes from the accepted canonical plan despite a stale generated Plan projection", () => {
++    const canonical = { ...task, extensions: taskCentricExtensions("READY") };
++    const expected = reduceRouteState(routeState({ task: canonical }));
++    const stale = {
++      ...canonical,
++      doc: "## Plan\n\nPLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.\n",
+     };
+-    const incomplete = reduceRouteState(
+-      routeState({
+-        task: { ...verifiedTask, extensions: taskCentricExtensions("REWORK_READY") },
+-        blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+-      }),
+-    );
+-    expect(incomplete).toMatchObject({
+-      kind: "agent_episode",
+-      phase: "branch_implementation",
+-      episode: { purpose: "implementation", role: "CODER" },
++    expect(reduceRouteState(routeState({ task: stale }))).toMatchObject({
++      id: expected.id,
++      kind: expected.kind,
+     });
+-
+-    const completed = reduceRouteState(
+-      routeState({
+-        task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
+-        blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
+-      }),
+-    );
+-    expect(completed).toMatchObject({
+-      kind: "approval",
+-      phase: "side_effect_authority_required",
+-      request: { type: "side_effect" },
++    expect(reduceRouteState(routeState({ task: structuredClone(stale) }))).toMatchObject({
++      id: expected.id,
++      kind: expected.kind,
+     });
++    expect(
++      reduceRouteState(routeState({ task: { ...stale, extensions: undefined } })),
++    ).toMatchObject({ id: "agent.planning" });
++    expect(
++      reduceRouteState(
++        routeState({
++          task: {
++            ...stale,
++            extensions: {
++              ...stale.extensions,
++              "agentplane.task_centric_replan_required": {
++                schema_version: 1,
++                reason_code: "acceptance_changed",
++              },
++            },
++          },
++        }),
++      ),
++    ).toMatchObject({ id: "agent.planning" });
+   });
+ 
++  it.each(["READY", "REWORK_READY"] as const)(
++    "returns to %s WorkItem execution before downstream closeout",
++    (workItemState) => {
++      const verifiedTask = {
++        ...task,
++        commit: { hash: resume.head_sha, message: "feat: stale implementation evidence" },
++        verification: { state: "ok" as const, updated_at: "2026-07-25T00:10:00.000Z" },
++        quality_review: {
++          state: "pass" as const,
++          evaluated_sha: resume.head_sha,
++          reviewed_by: "EVALUATOR",
++          reviewed_at: "2026-07-25T00:11:00.000Z",
++          summary: "The previously observed implementation passed review.",
++          evidence_refs: ["quality-report.json"],
++        },
++      };
++      const incomplete = reduceRouteState(
++        routeState({
++          task: { ...verifiedTask, extensions: taskCentricExtensions(workItemState) },
++          blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
++        }),
++      );
++      expect(incomplete).toMatchObject({
++        kind: "agent_episode",
++        phase: "branch_implementation",
++        episode: { purpose: "implementation", role: "CODER" },
++      });
++
++      const completed = reduceRouteState(
++        routeState({
++          task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
++          blockers: [{ code: "pre_merge_closure_missing", summary: "closure is pending" }],
++        }),
++      );
++      expect(completed).toMatchObject({
++        kind: "approval",
++        phase: "side_effect_authority_required",
++        request: { type: "side_effect" },
++      });
++    },
++  );
++
++  it.each(["READY", "REWORK_READY"] as const)(
++    "returns to %s WorkItem execution before direct closeout",
++    (workItemState) => {
++      const verifiedTask = {
++        ...task,
++        commit: { hash: resume.head_sha, message: "Existing implementation" },
++        verification: { state: "ok" as const },
++        quality_review: { ...deterministicEvidenceGapReview(), state: "pass" as const },
++      };
++      const state = routeState({
++        workflowMode: "direct",
++        task: { ...verifiedTask, extensions: taskCentricExtensions(workItemState) },
++      });
++      expect(reduceRouteState(state)).toMatchObject({
++        kind: "agent_episode",
++        authoritativeCheckout: "current_checkout",
++        episode: { purpose: "implementation", role: "CODER" },
++      });
++      expect(
++        reduceRouteState(
++          routeState({
++            workflowMode: "direct",
++            task: { ...verifiedTask, extensions: taskCentricExtensions("COMPLETED") },
++          }),
++        ),
++      ).toMatchObject({
++        id: "task.complete.input",
++      });
++      const optional = taskCentricExtensions(workItemState);
++      optional["agentplane.task_centric"].current_plan.proposal.work_items.work_items[0]!.optional =
++        true;
++      expect(
++        reduceRouteState(
++          routeState({
++            workflowMode: "direct",
++            task: { ...verifiedTask, extensions: optional },
++          }),
++        ),
++      ).toMatchObject({ id: "task.complete.input" });
++      expect(
++        reduceRouteState(
++          routeState({
++            workflowMode: "direct",
++            task: verifiedTask,
++          }),
++        ),
++      ).toMatchObject({ id: "task.complete.input" });
++    },
++  );
++
+   it("refreshes deterministic evidence after a current EVALUATOR block without changing implementation", () => {
+     const step = reduceRouteState(
+       routeState({
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+index b99be4a68..9e0228ac2 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+@@ -1,7 +1,10 @@
+ import { getHumanInputState, humanInputAnswerCommand } from "../task/human-input.js";
+ import { isPlannerSemanticPlanRequired } from "../task/doc-template.js";
+ import { extractDocSection } from "../task/shared.js";
+-import { taskCentricReplanRequiredFromExtensions } from "@agentplaneorg/core/tasks";
++import {
++  taskCentricAggregateFromExtensions,
++  taskCentricReplanRequiredFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ import { branchStep, doneBranchStep } from "./workflow-step-branch.js";
+ import {
+   approvalStep,
+@@ -86,7 +89,8 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
+   }
+   if (
+     taskCentricReplanRequiredFromExtensions(state.task.extensions) ||
+-    isPlannerSemanticPlanRequired(extractDocSection(String(state.task.doc ?? ""), "Plan"))
++    (!taskCentricAggregateFromExtensions(state.task.extensions)?.current_plan &&
++      isPlannerSemanticPlanRequired(extractDocSection(String(state.task.doc ?? ""), "Plan")))
+   ) {
+     return agentEpisodeStep({
+       state,
+diff --git a/packages/agentplane/src/commands/task/active.command.unit.test.ts b/packages/agentplane/src/commands/task/active.command.unit.test.ts
+index 24846feaf..04eb91e7b 100644
+--- a/packages/agentplane/src/commands/task/active.command.unit.test.ts
++++ b/packages/agentplane/src/commands/task/active.command.unit.test.ts
+@@ -62,7 +62,10 @@ describe("task active route evaluation", () => {
+       getTask: () => Promise.resolve(task),
+     });
+     const result = await buildActiveWorkItems({
+-      ctx: makeTaskCommandContext({ taskBackend: backend }),
++      ctx: makeTaskCommandContext({
++        taskBackend: backend,
++        overrides: { memo: { taskWorktreeInventory: Promise.resolve([]) } },
++      }),
+       cwd: "/repo",
+       filters: { status: [], owner: [], tag: [], quiet: false },
+     });
+diff --git a/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts b/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts
+index b1bb50fb5..2686af508 100644
+--- a/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts
++++ b/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts
+@@ -1,3 +1,5 @@
++import { gitProofEnv } from "@agentplaneorg/core/git";
++import { runProcess } from "@agentplaneorg/core/process";
+ import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
+ import { isRecord } from "../../shared/guards.js";
+ 
+@@ -71,3 +73,28 @@ export function selectRecordedImplementationRecoveryCommit(opts: {
+     ? opts.evidence_commit
+     : (opts.recorded_commit ?? opts.evidence_commit);
+ }
++
++export async function exactChangedPaths(
++  root: string,
++  base: string,
++  head: string,
++): Promise<string[] | null> {
++  const diff = await runProcess({
++    command: "git",
++    args: [
++      "diff",
++      "--no-ext-diff",
++      "--no-textconv",
++      "--no-renames",
++      "--name-only",
++      "-z",
++      base,
++      head,
++      "--",
++    ],
++    cwd: root,
++    env: gitProofEnv(),
++    reject: false,
++  });
++  return diff.exitCode === 0 ? diff.stdout.split("\0").filter(Boolean) : null;
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 19605dad3..44250c125 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -280,6 +280,19 @@ export async function applyExternalImplementationResult(opts: {
+     ctx: opts.command,
+     taskId: opts.exchange.task_id,
+   });
++  const admittedAggregate = taskCentricAggregateFromExtensions(taskAtReturn.extensions);
++  if (
++    admittedAggregate?.current_plan &&
++    !opts.work_order.task.work_item_id &&
++    admittedAggregate.current_plan.proposal.work_items.work_items.some(
++      (item) => !item.optional && admittedAggregate.work_items[item.id]?.state !== "COMPLETED",
++    )
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "A WorkItem result requires the explicit WorkItem ID from its issued work order.",
++    });
++  }
+   let implementationCommit =
+     !conflictContext && recoversRecordedImplementationCommit(opts.exchange.purpose)
+       ? opts.decision.task.commit
+@@ -313,11 +326,16 @@ export async function applyExternalImplementationResult(opts: {
+       work_order: opts.work_order,
+       head,
+       recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
++      // The current packet passed authority checks against an unchanged source baseline.
++      reassess_current_plan:
++        head === opts.exchange.baseline.head && observedChangedPaths?.length === 0,
+     });
+     if (recovery) {
+       implementationCommit = recovery.commit;
+       recoveredExecutionBase = recovery.execution_base;
+-      semantic = recovery.semantic ?? semantic;
++      if (recovery.semantic?.work_order_id === opts.work_order.work_order_id) {
++        semantic = recovery.semantic;
++      }
+       reusedRecordedImplementation = true;
+     }
+   }
+@@ -557,7 +575,7 @@ export async function applyExternalImplementationResult(opts: {
+   await finishExternalImplementationVerification({
+     ...opts,
+     semantic,
+-    task: reconciliation.task,
++    task: taskAtReturn,
+     verification,
+     conflict: conflictContext !== null,
+   });
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts b/packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts
+index a5f370661..aab6c8807 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts
+@@ -70,6 +70,7 @@ export async function finishExternalImplementationVerification(opts: {
+       : await recordTaskCentricExternalResult({
+           command: opts.command,
+           work_order: opts.work_order,
++          expected_task: opts.task,
+           semantic,
+           verification,
+           head: postVerificationHead,
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+index ce8a41677..77df59b3a 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+@@ -45,6 +45,7 @@ import {
+   type ExternalAgentExchange,
+ } from "./external-agent-exchange.js";
+ import {
++  exactChangedPaths,
+   completedWorkItemRecoveryReadme,
+   resolveEvidenceOnlyReworkCommit,
+   selectRecordedImplementationRecoveryCommit,
+@@ -290,31 +291,6 @@ export function taskReadmesPreserveRecoveryContract(
+   );
+ }
+ 
+-async function exactChangedPaths(
+-  root: string,
+-  base: string,
+-  head: string,
+-): Promise<string[] | null> {
+-  const diff = await runProcess({
+-    command: "git",
+-    args: [
+-      "diff",
+-      "--no-ext-diff",
+-      "--no-textconv",
+-      "--no-renames",
+-      "--name-only",
+-      "-z",
+-      base,
+-      head,
+-      "--",
+-    ],
+-    cwd: root,
+-    env: gitProofEnv(),
+-    reject: false,
+-  });
+-  return diff.exitCode === 0 ? diff.stdout.split("\0").filter(Boolean) : null;
+-}
+-
+ export async function resolveImplementationVerificationTask(opts: {
+   command: CommandContext;
+   checkout: string;
+@@ -411,6 +387,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
+   head: string | null;
+   recorded_commit: string | null;
+   purpose?: ExternalAgentExchange["purpose"];
++  reassess_current_plan?: boolean;
+ }): Promise<{
+   commit: string;
+   execution_base: string;
+@@ -498,28 +475,39 @@ export async function resolveRecordedImplementationRecovery(opts: {
+     return null;
+   const committedReadme = await gitShowFile(root, commit, `${taskPrefix}README.md`);
+   if (!committedReadme) return null;
+-  const currentReadmes = await Promise.all([
+-    gitShowFile(root, opts.head, `${taskPrefix}README.md`),
+-    readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
+-  ]);
+-  if (
+-    currentReadmes.some(
+-      (readme) =>
+-        readme !== committedReadme &&
+-        (scopeRecovery ||
+-          !taskReadmesPreserveRecoveryContract(
+-            taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+-            taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
+-            commit,
+-          )),
+-    )
+-  )
+-    return null;
+   const frontmatter = parseTaskReadme(committedReadme).frontmatter;
+   const recordedPlan = taskCentricAggregateFromExtensions(
+     isRecord(frontmatter.extensions) ? frontmatter.extensions : undefined,
+   )?.current_plan;
+-  if (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision) return null;
++  const samePlan = recordedPlan?.digest === plan.digest && recordedPlan.revision === plan.revision;
++  const reassessment =
++    !samePlan &&
++    opts.reassess_current_plan === true &&
++    workItemId !== null &&
++    recordedPlan != null &&
++    recordedPlan.revision < plan.revision &&
++    opts.work_order.task.revision === opts.task.revision &&
++    opts.work_order.state_fingerprint.git_head === opts.head;
++  if (!samePlan && !reassessment) return null;
++  if (!reassessment) {
++    const currentReadmes = await Promise.all([
++      gitShowFile(root, opts.head, `${taskPrefix}README.md`),
++      readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
++    ]);
++    if (
++      currentReadmes.some(
++        (readme) =>
++          readme !== committedReadme &&
++          (scopeRecovery ||
++            !taskReadmesPreserveRecoveryContract(
++              taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
++              taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
++              commit,
++            )),
++      )
++    )
++      return null;
++  }
+ 
+   const base = evidence.execution_base_commit;
+   if (!(await gitIsAncestor(root, base, commit)) || base === commit) return null;
+@@ -581,7 +569,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
+       return {
+         commit,
+         execution_base: base,
+-        semantic: taskLevelRework ? null : original.result,
++        semantic: taskLevelRework || reassessment ? null : original.result,
+         exchange,
+       };
+     }
+diff --git a/packages/agentplane/src/commands/task/finish-shared.ts b/packages/agentplane/src/commands/task/finish-shared.ts
+index 7f0e35233..ab2ac15d3 100644
+--- a/packages/agentplane/src/commands/task/finish-shared.ts
++++ b/packages/agentplane/src/commands/task/finish-shared.ts
+@@ -2,6 +2,7 @@ import {
+   createRepositorySnapshot,
+   ensureDocSections,
+   isGitObjectId,
++  incompleteRequiredWorkItems,
+   normalizeTaskStatus,
+   taskCentricAggregateFromExtensions,
+ } from "@agentplaneorg/core/tasks";
+@@ -121,9 +122,7 @@ function assertTaskCanFinish(opts: {
+ 
+   ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
+   const canonical = taskCentricAggregateFromExtensions(opts.task.extensions);
+-  const incomplete = canonical?.current_plan?.proposal.work_items.work_items.filter(
+-    (item) => !item.optional && canonical.work_items[item.id]?.state !== "COMPLETED",
+-  );
++  const incomplete = incompleteRequiredWorkItems(canonical);
+   if (incomplete?.length) {
+     throw new CliError({
+       code: "E_VALIDATION",
+diff --git a/packages/agentplane/src/commands/task/plan-shared.ts b/packages/agentplane/src/commands/task/plan-shared.ts
+index 4d1e58eea..e4341df92 100644
+--- a/packages/agentplane/src/commands/task/plan-shared.ts
++++ b/packages/agentplane/src/commands/task/plan-shared.ts
+@@ -1,4 +1,11 @@
+-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
++import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
++import {
++  projectTaskLifecycleToLegacyStatus,
++  withTaskCentricAggregate,
++  ensureDocSections,
++  setMarkdownSection,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ 
+ import { backendNotSupportedMessage } from "../../cli/output.js";
+ import type { TaskData } from "../../backends/task-backend.js";
+@@ -97,7 +104,10 @@ export function assertPlanCanBeApproved(opts: {
+ }): void {
+   assertPlanSectionPresent(opts.task.id, opts.doc, "approve");
+   const plan = extractDocSection(opts.doc, "Plan");
+-  if (isPlannerSemanticPlanRequired(plan)) {
++  if (
++    !taskCentricAggregateFromExtensions(opts.task.extensions)?.current_plan &&
++    isPlannerSemanticPlanRequired(plan)
++  ) {
+     throw new CliError({
+       exitCode: 3,
+       code: "E_VALIDATION",
+@@ -151,3 +161,27 @@ export function assertPlanCanBeApproved(opts: {
+     });
+   }
+ }
++
++export function projectApprovedTask(current: TaskData, next: TaskData): TaskData {
++  const aggregate = taskCentricAggregateFromExtensions(next.extensions);
++  if (!aggregate?.current_plan) return next;
++  const previous = taskCentricAggregateFromExtensions(current.extensions);
++  const revision = current.revision ?? previous?.revision;
++  if (revision === undefined || previous?.revision !== revision) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Plan approval requires synchronized task revisions.",
++    });
++  }
++  return projectTaskCentricCompatibilityMutation({
++    current,
++    next: {
++      ...next,
++      status: projectTaskLifecycleToLegacyStatus(aggregate.lifecycle),
++      extensions: withTaskCentricAggregate(next.extensions, {
++        ...aggregate,
++        revision,
++      }),
++    },
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/plan.ts b/packages/agentplane/src/commands/task/plan.ts
+index 9ec0dd0b9..d34ed4ec0 100644
+--- a/packages/agentplane/src/commands/task/plan.ts
++++ b/packages/agentplane/src/commands/task/plan.ts
+@@ -33,6 +33,7 @@ import {
+ } from "../shared/task-store.js";
+ 
+ import {
++  projectApprovedTask,
+   assertPlanCanBeApproved,
+   assertPlanSectionPresent,
+   buildPlanDocUpdate,
+@@ -42,31 +43,6 @@ import { decodeEscapedTaskTextNewlines, nowIso } from "./shared.js";
+ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+ import { TaskCentricBackendAdapter } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+ import { assertCanonicalPlanCanBeApproved } from "./plan-approval-guard.js";
+-import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
+-
+-function projectApprovedTask(current: TaskData, next: TaskData): TaskData {
+-  const aggregate = taskCentricAggregateFromExtensions(next.extensions);
+-  if (!aggregate?.current_plan) return next;
+-  const previous = taskCentricAggregateFromExtensions(current.extensions);
+-  const revision = current.revision ?? previous?.revision;
+-  if (revision === undefined || previous?.revision !== revision) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Plan approval requires synchronized task revisions.",
+-    });
+-  }
+-  return projectTaskCentricCompatibilityMutation({
+-    current,
+-    next: {
+-      ...next,
+-      status: projectTaskLifecycleToLegacyStatus(aggregate.lifecycle),
+-      extensions: withTaskCentricAggregate(next.extensions, {
+-        ...aggregate,
+-        revision,
+-      }),
+-    },
+-  });
+-}
+ 
+ export type TaskPlanSetResult = {
+   taskId: string;
+@@ -185,6 +161,14 @@ export async function setTaskPlan(opts: {
+               if (suppliedExtensions?.[TASK_CENTRIC_EXTENSION_KEY]) {
+                 delete next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY];
+               } else {
++                const aggregate = taskCentricAggregateFromExtensions(next);
++                if (aggregate?.current_plan) {
++                  next[TASK_CENTRIC_EXTENSION_KEY] = {
++                    ...aggregate,
++                    lifecycle: "PLANNING",
++                    final_validation: null,
++                  };
++                }
+                 next[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY] = {
+                   schema_version: 1,
+                   reason_code: planChanged ? "plan_changed" : "execution_contract_changed",
+@@ -193,8 +177,12 @@ export async function setTaskPlan(opts: {
+               return next;
+             })()
+           : suppliedExtensions;
++        const nextAggregate = taskCentricAggregateFromExtensions(extensions);
+         const taskFields = {
+           ...(opts.taskFields ?? {}),
++          ...(approvalInvalidated && nextAggregate
++            ? { status: projectTaskLifecycleToLegacyStatus(nextAggregate.lifecycle) }
++            : {}),
+           ...(extensions ? { extensions } : {}),
+           ...(approvalInvalidated
+             ? {
+diff --git a/packages/agentplane/src/commands/task/shared/dependencies.ts b/packages/agentplane/src/commands/task/shared/dependencies.ts
+index 0a8fcddc1..0907dde95 100644
+--- a/packages/agentplane/src/commands/task/shared/dependencies.ts
++++ b/packages/agentplane/src/commands/task/shared/dependencies.ts
+@@ -6,6 +6,7 @@ import {
+   type TaskData,
+   type TaskSummary,
+ } from "../../../backends/task-backend.js";
++import { isRecord } from "../../../shared/guards.js";
+ import { CliError } from "../../../shared/errors.js";
+ import { dedupeStrings } from "../../../shared/strings.js";
+ import { taskListBranchPrExtraFields, taskListStatusLabel } from "./branch-pr-list-state.js";
+@@ -201,6 +202,14 @@ export function formatTaskLine(
+     ...taskListBranchPrExtraFields(task),
+     ...extraFields.filter((field) => field.trim().length > 0),
+   );
++  const projectionSource = task.extensions?.["agentplane.task_projection_source"];
++  if (
++    isRecord(projectionSource) &&
++    projectionSource.state === "local_projection_unavailable" &&
++    typeof projectionSource.readme_path === "string"
++  ) {
++    extras.push(`projection=local_unavailable`, `source=${projectionSource.readme_path}`);
++  }
+   const suffix = extras.length > 0 ? ` (${extras.join(", ")})` : "";
+   return `${task.id} [${status}] ${task.title?.trim() || "(untitled task)"}${suffix}`;
+ }
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+index 2e6be5d70..5c70b423f 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.test.ts
+@@ -203,6 +203,132 @@ const semantic = {
+ } as const satisfies AgentSemanticResult;
+ 
+ describe("recordTaskCentricExternalResult", () => {
++  it.each([false, true])(
++    "rejects null-ID results without guessing a WorkItem (claimed=%s)",
++    async (claimed) => {
++      const initial = initialTask();
++      const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
++      const backend = memoryBackend({
++        ...initial,
++        extensions: withTaskCentricAggregate(initial.extensions, {
++          ...aggregate,
++          work_items: {
++            ...aggregate.work_items,
++            a: {
++              ...aggregate.work_items.a!,
++              ...(claimed ? { state: "CLAIMED" as const, claim_id: "claim-a" } : {}),
++            },
++          },
++        }),
++      });
++      const before = backend.current();
++      await expect(
++        recordTaskCentricExternalResult({
++          command: { taskBackend: backend } as unknown as CommandContext,
++          expected_task: before,
++          work_order: workOrder(null, "work-a"),
++          semantic,
++          verification: {
++            status: "passed",
++            artifact_path: ".agentplane/checks.json",
++            checks: [],
++            reason: null,
++          },
++          head: HEAD,
++          dirty_paths: [],
++        }),
++      ).rejects.toThrow("requires the explicit WorkItem ID");
++      expect(backend.current()).toEqual(before);
++    },
++  );
++
++  it.each(["plan", "attempt", "claim", "approval", "revision"])(
++    "rejects %s drift after supervisor admission",
++    async (drift) => {
++      const backend = memoryBackend();
++      const admitted = backend.current();
++      const aggregate = taskCentricAggregateFromExtensions(admitted.extensions)!;
++      backend.replace({
++        ...admitted,
++        extensions: withTaskCentricAggregate(admitted.extensions, {
++          ...aggregate,
++          ...(drift === "plan" || drift === "approval"
++            ? {
++                current_plan: {
++                  ...aggregate.current_plan!,
++                  ...(drift === "plan"
++                    ? { revision: 2, digest: taskCentricDigest("changed plan") }
++                    : {
++                        approval: {
++                          ...aggregate.current_plan!.approval,
++                          state: "pending" as const,
++                        },
++                      }),
++                },
++              }
++            : {
++                work_items: {
++                  ...aggregate.work_items,
++                  a: {
++                    ...aggregate.work_items.a!,
++                    ...(drift === "attempt"
++                      ? { attempt: 2 }
++                      : drift === "revision"
++                        ? { revision: aggregate.work_items.a!.revision + 1 }
++                        : { state: "CLAIMED" as const, claim_id: "foreign-claim" }),
++                  },
++                },
++              }),
++        }),
++      });
++      const before = backend.current();
++      await expect(
++        recordTaskCentricExternalResult({
++          command: { taskBackend: backend } as unknown as CommandContext,
++          expected_task: admitted,
++          work_order: workOrder("a", "work-a"),
++          semantic,
++          verification: {
++            status: "passed",
++            artifact_path: ".agentplane/checks.json",
++            checks: [],
++            reason: null,
++          },
++          head: HEAD,
++          dirty_paths: [],
++        }),
++      ).rejects.toThrow("changed after supervisor admission");
++      expect(backend.current()).toEqual(before);
++    },
++  );
++
++  it("rejects a changed semantic payload when replaying a receipt", async () => {
++    const backend = memoryBackend();
++    const args = {
++      command: { taskBackend: backend } as unknown as CommandContext,
++      expected_task: backend.current(),
++      work_order: workOrder("a", "work-a"),
++      semantic,
++      verification: {
++        status: "passed" as const,
++        artifact_path: ".agentplane/checks.json",
++        checks: [],
++        reason: null,
++      },
++      head: HEAD,
++      dirty_paths: [],
++    };
++    await recordTaskCentricExternalResult(args);
++    const before = backend.current();
++    await expect(
++      recordTaskCentricExternalResult({
++        ...args,
++        semantic: { ...semantic, summary: "different result" },
++      }),
++    ).rejects.toThrow("does not match the recorded semantic result");
++    expect(backend.current()).toEqual(before);
++  });
++
+   it("rejects an ambiguous null-ID local refinement before mutating the plan", async () => {
+     const initial = initialTask(undefined, [
+       { id: "a", depends_on: [], required_inputs: [] },
+@@ -227,6 +353,7 @@ describe("recordTaskCentricExternalResult", () => {
+ 
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: workOrder(null, "work-ambiguous-claims"),
+         semantic: {
+@@ -255,7 +382,7 @@ describe("recordTaskCentricExternalResult", () => {
+       }),
+     ).rejects.toMatchObject({
+       code: "E_VALIDATION",
+-      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
++      message: "A WorkItem result requires the explicit WorkItem ID from its issued work order.",
+     });
+     expect(backend.current().revision).toBe(revision);
+     const workItems = taskCentricAggregateFromExtensions(backend.current().extensions)?.work_items;
+@@ -271,7 +398,7 @@ describe("recordTaskCentricExternalResult", () => {
+     expect(backend.current()).toEqual(taskBeforeResult);
+   });
+ 
+-  it("replays a null-ID result against its claimed WorkItem instead of the next item", async () => {
++  it("replays an explicitly bound result without consuming the next WorkItem", async () => {
+     const initial = initialTask();
+     const aggregate = taskCentricAggregateFromExtensions(initial.extensions)!;
+     const backend = memoryBackend({
+@@ -291,11 +418,12 @@ describe("recordTaskCentricExternalResult", () => {
+       checks: [],
+       reason: null,
+     };
+-    const issued = workOrder(null, "work-null-id");
++    const issued = workOrder("a", "work-null-id");
+     const result = { ...semantic, work_order_id: "work-null-id" };
+ 
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: issued,
+         semantic: result,
+@@ -315,6 +443,7 @@ describe("recordTaskCentricExternalResult", () => {
+ 
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: issued,
+         semantic: result,
+@@ -346,6 +475,7 @@ describe("recordTaskCentricExternalResult", () => {
+     const result = { ...semantic, work_order_id: "work-stale-receipt" };
+ 
+     await recordTaskCentricExternalResult({
++      expected_task: backend.current(),
+       command,
+       work_order: issued,
+       semantic: result,
+@@ -372,6 +502,7 @@ describe("recordTaskCentricExternalResult", () => {
+ 
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: issued,
+         semantic: result,
+@@ -395,6 +526,7 @@ describe("recordTaskCentricExternalResult", () => {
+       reason: null,
+     };
+     await recordTaskCentricExternalResult({
++      expected_task: backend.current(),
+       command,
+       work_order: workOrder("a", "work-original"),
+       semantic: { ...semantic, work_order_id: "work-original" },
+@@ -405,6 +537,7 @@ describe("recordTaskCentricExternalResult", () => {
+ 
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: workOrder("a", "work-foreign"),
+         semantic: { ...semantic, work_order_id: "work-foreign" },
+@@ -429,6 +562,7 @@ describe("recordTaskCentricExternalResult", () => {
+     };
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: workOrder("a", "work-a"),
+         semantic,
+@@ -461,6 +595,7 @@ describe("recordTaskCentricExternalResult", () => {
+     });
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command,
+         work_order: workOrder("b", "work-b"),
+         semantic: { ...semantic, work_order_id: "work-b" },
+@@ -487,6 +622,7 @@ describe("recordTaskCentricExternalResult", () => {
+   it("records deterministic failure as bounded rework instead of false success", async () => {
+     const backend = memoryBackend();
+     const projection = await recordTaskCentricExternalResult({
++      expected_task: backend.current(),
+       command: { taskBackend: backend } as unknown as CommandContext,
+       work_order: workOrder("a", "work-failed"),
+       semantic: { ...semantic, work_order_id: "work-failed" },
+@@ -508,6 +644,7 @@ describe("recordTaskCentricExternalResult", () => {
+   it("requires command-specific evidence for every declared validation command", async () => {
+     const backend = memoryBackend(initialTask("bun test --filter task-centric"));
+     const projection = await recordTaskCentricExternalResult({
++      expected_task: backend.current(),
+       command: { taskBackend: backend } as unknown as CommandContext,
+       work_order: workOrder("a", "work-missing-command"),
+       semantic: { ...semantic, work_order_id: "work-missing-command" },
+@@ -543,6 +680,7 @@ describe("recordTaskCentricExternalResult", () => {
+ 
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: backend.current(),
+         command: { taskBackend: backend } as unknown as CommandContext,
+         work_order: workOrder(null, "work-unschedulable-refinement"),
+         semantic: {
+@@ -591,6 +729,7 @@ describe("recordTaskCentricExternalResult", () => {
+     const localBackend = memoryBackend();
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: localBackend.current(),
+         command: { taskBackend: localBackend } as unknown as CommandContext,
+         work_order: workOrder("a", "work-local-refinement"),
+         semantic: {
+@@ -621,6 +760,7 @@ describe("recordTaskCentricExternalResult", () => {
+     const materialBackend = memoryBackend();
+     await expect(
+       recordTaskCentricExternalResult({
++        expected_task: materialBackend.current(),
+         command: { taskBackend: materialBackend } as unknown as CommandContext,
+         work_order: workOrder("a", "work-material-refinement"),
+         semantic: {
+diff --git a/packages/agentplane/src/commands/task/task-centric-external-result.ts b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+index f016cadc2..65a47f132 100644
+--- a/packages/agentplane/src/commands/task/task-centric-external-result.ts
++++ b/packages/agentplane/src/commands/task/task-centric-external-result.ts
+@@ -4,7 +4,7 @@ import {
+   isGitObjectId,
+   taskCentricAggregateFromExtensions,
+   taskCentricDigest,
+-  WorkItemScheduler,
++  classifyPlanChange,
+   type SemanticWorkResult,
+   type PlanRefinement,
+   type RepositorySnapshot,
+@@ -102,6 +102,7 @@ function evidenceForCheck(opts: {
+ export async function recordTaskCentricExternalResult(opts: {
+   command: CommandContext;
+   work_order: AgentWorkOrderV2;
++  expected_task: TaskData;
+   semantic: AgentSemanticResult;
+   verification: DirectTaskVerificationResult;
+   head: string | null;
+@@ -123,10 +124,27 @@ export async function recordTaskCentricExternalResult(opts: {
+       message: "Task-centric WorkItem result requires a valid observed Git HEAD.",
+     });
+   }
++  const requestedId = opts.work_order.task.work_item_id ?? null;
++  if (opts.semantic.work_order_id !== opts.work_order.work_order_id) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Semantic result does not match its issued work order.",
++    });
++  }
++  const resultDigest = taskCentricDigest(opts.semantic);
+   const idempotencyKey = `external-result:${opts.work_order.work_order_id}`;
+   const priorReceipt = runtimeFrom(raw).mutation_receipts[idempotencyKey];
+   const priorWorkItemId = priorReceipt?.event.work_item_id ?? null;
+   if (priorReceipt?.event.entity === "work_item" && priorWorkItemId) {
++    if (
++      requestedId !== priorWorkItemId ||
++      !priorReceipt.event.cause_refs.includes(`semantic-result:${resultDigest}`)
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "WorkItem replay does not match the recorded semantic result.",
++      });
++    }
+     if (
+       priorReceipt.event.plan_revision !== currentPlan.revision ||
+       priorReceipt.event.plan_digest !== currentPlan.digest ||
+@@ -147,14 +165,27 @@ export async function recordTaskCentricExternalResult(opts: {
+       remaining_required_work_items: remaining,
+     };
+   }
+-  const requestedId = opts.work_order.task.work_item_id ?? null;
+-  const claimedIds = Object.values(aggregate.work_items)
+-    .filter((item) => item.state === "CLAIMED")
+-    .map((item) => item.id);
+-  if (!requestedId && claimedIds.length > 1) {
++  const expectedAggregate = taskCentricAggregateFromExtensions(opts.expected_task.extensions);
++  if (
++    opts.expected_task.id !== raw.id ||
++    !expectedAggregate?.current_plan ||
++    taskCentricDigest(expectedAggregate.current_plan) !== taskCentricDigest(currentPlan) ||
++    (requestedId &&
++      taskCentricDigest(expectedAggregate.work_items[requestedId] ?? null) !==
++        taskCentricDigest(aggregate.work_items[requestedId] ?? null))
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "The issued WorkItem or plan changed after supervisor admission.",
++    });
++  }
++  if (
++    !requestedId &&
++    !(opts.semantic.plan_refinement && classifyPlanChange(opts.semantic.plan_refinement).material)
++  ) {
+     throw new CliError({
+       code: "E_VALIDATION",
+-      message: "A null-ID WorkItem result is ambiguous because multiple WorkItems are claimed.",
++      message: "A WorkItem result requires the explicit WorkItem ID from its issued work order.",
+     });
+   }
+   const repository = createRepositorySnapshot({
+@@ -175,6 +206,7 @@ export async function recordTaskCentricExternalResult(opts: {
+   if (opts.semantic.plan_refinement) {
+     const refinement = await adapter.recordPlanRefinement({
+       task_id: aggregate.id,
++      expected_revision: expectedRevision,
+       refinement: opts.semantic.plan_refinement,
+       actor_id: `external:${opts.work_order.role}`,
+       at: repository.captured_at,
+@@ -201,15 +233,9 @@ export async function recordTaskCentricExternalResult(opts: {
+     aggregate = refinedAggregate;
+     currentPlan = refinedAggregate.current_plan;
+   }
+-  const selected = requestedId
+-    ? currentPlan.proposal.work_items.work_items.find((item) => item.id === requestedId)
+-    : claimedIds.length === 1
+-      ? currentPlan.proposal.work_items.work_items.find((item) => item.id === claimedIds[0])
+-      : new WorkItemScheduler(1).select({
+-          graph: currentPlan.proposal.work_items,
+-          runtime: aggregate.work_items,
+-          active_leases: [],
+-        })[0];
++  const selected = currentPlan.proposal.work_items.work_items.find(
++    (item) => item.id === requestedId,
++  );
+   if (!selected) {
+     throw new CliError({
+       code: "E_VALIDATION",
+@@ -262,7 +288,7 @@ export async function recordTaskCentricExternalResult(opts: {
+       task_id: aggregate.id,
+       plan_revision: currentPlan.revision,
+       work_item_id: selected.id,
+-      attempt: runtime.attempt + 1,
++      attempt: runtime.state === "CLAIMED" ? runtime.attempt : runtime.attempt + 1,
+     },
+     repository_snapshot_digest: repository.digest,
+     provenance: [result.context_digest, opts.verification.artifact_path],
+@@ -272,6 +298,7 @@ export async function recordTaskCentricExternalResult(opts: {
+     expected_revision: expectedRevision,
+     work_item_id: selected.id,
+     semantic_result: result,
++    result_digest: resultDigest,
+     outputs,
+     validation: evidence,
+     idempotency_key: idempotencyKey,
+diff --git a/packages/agentplane/src/runner/usecases/kernel-authority.test.ts b/packages/agentplane/src/runner/usecases/kernel-authority.test.ts
+index 32518fa8e..663286cf9 100644
+--- a/packages/agentplane/src/runner/usecases/kernel-authority.test.ts
++++ b/packages/agentplane/src/runner/usecases/kernel-authority.test.ts
+@@ -23,7 +23,10 @@ const keys = generateKeyPairSync("ed25519");
+ const now = "2026-08-31T10:00:00.000Z";
+ const expiry = "2026-08-31T10:10:00.000Z";
+ 
+-async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
++async function fixture(
++  mode: k.CanonicalApprovalMode = "manual_operator",
++  requirements: Partial<k.ExecutionRequirements> = {},
++) {
+   const journey = kernelReplayJourney("direct");
+   const seed = journey.steps[0]!.input;
+   let saved: TaskData | null = null;
+@@ -47,7 +50,11 @@ async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
+   if (proposal.command.kind !== "propose_plan") throw new Error("plan fixture missing");
+   const definitions = proposal.command.plan.work_items.map((item) => ({
+     ...item,
+-    execution_requirements: { ...item.execution_requirements, scope_roots: ["src"] },
++    execution_requirements: {
++      ...item.execution_requirements,
++      scope_roots: ["src"],
++      ...requirements,
++    },
+   }));
+   const plan = {
+     ...proposal.command.plan,
+@@ -209,6 +216,46 @@ describe("canonical native authority", () => {
+     },
+   );
+ 
++  it("delegates an approved disposable deploy with its exact resource scope", async () => {
++    const requirements = {
++      external_effects: ["deploy"],
++      capabilities: ["deploy"],
++      resources: ["environment:disposable/qualification"],
++    };
++    const f = await fixture("manual_operator", requirements);
++    f.values.ceiling = { ...f.values.ceiling, ...requirements };
++    expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
++    const { authority } = await f.resolver.resolve(f.taskId, "build");
++    expect(authority).toMatchObject({
++      ...requirements,
++      task_id: f.taskId,
++      plan_revision: f.plan.revision,
++      plan_digest: f.plan.digest,
++      work_item_id: "build",
++    });
++    f.values.ceiling = { ...f.values.ceiling, resources: ["environment:production"] };
++    await expect(f.resolver.resolve(f.taskId, "build")).rejects.toThrow("native_policy_changed");
++  });
++
++  it("refuses a production deploy under a disposable-only native approval", async () => {
++    const requirements = {
++      external_effects: ["deploy"],
++      capabilities: ["deploy"],
++      resources: ["environment:production"],
++    };
++    const f = await fixture("manual_operator", requirements);
++    f.values.ceiling = {
++      ...f.values.ceiling,
++      ...requirements,
++      resources: ["environment:disposable/qualification"],
++    };
++    const before = await f.adapter.read(f.taskId);
++    await expect(f.resolver.approve(f.taskId)).rejects.toThrow(
++      "plan_exceeds_native_approval_scope",
++    );
++    expect(await f.adapter.read(f.taskId)).toEqual(before);
++  });
++
+   it.each(["issuer", "signature", "plan", "fingerprint", "expired"] as const)(
+     "rejects a signed receipt with invalid %s without persisting approval",
+     async (kind) => {
+diff --git a/packages/core/src/tasks/task-centric/compatibility.ts b/packages/core/src/tasks/task-centric/compatibility.ts
+index 800359c0a..4e63f0a79 100644
+--- a/packages/core/src/tasks/task-centric/compatibility.ts
++++ b/packages/core/src/tasks/task-centric/compatibility.ts
+@@ -149,6 +149,8 @@ export function withTaskCentricAggregate(
+ export function taskCentricReplanRequiredFromExtensions(
+   extensions: Readonly<Record<string, unknown>> | undefined,
+ ): boolean {
++  const aggregate = taskCentricAggregateFromExtensions(extensions);
++  if (aggregate?.current_plan && aggregate.lifecycle === "PLANNING") return true;
+   const marker = record(extensions?.[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]);
+   return marker?.schema_version === 1 && typeof marker.reason_code === "string";
+ }
+diff --git a/packages/core/src/tasks/task-centric/index.ts b/packages/core/src/tasks/task-centric/index.ts
+index bc6976d76..f2d0fbc56 100644
+--- a/packages/core/src/tasks/task-centric/index.ts
++++ b/packages/core/src/tasks/task-centric/index.ts
+@@ -39,6 +39,7 @@ export {
+   assertTaskTransition,
+   assertWorkItemTransition,
+   evaluateTaskCompletion,
++  incompleteRequiredWorkItems,
+   LifecycleEngine,
+   type CompletionEvaluation,
+ } from "./lifecycle.js";
+diff --git a/packages/core/src/tasks/task-centric/lifecycle.ts b/packages/core/src/tasks/task-centric/lifecycle.ts
+index c41e66cf4..0c8b322d8 100644
+--- a/packages/core/src/tasks/task-centric/lifecycle.ts
++++ b/packages/core/src/tasks/task-centric/lifecycle.ts
+@@ -74,6 +74,14 @@ export type CompletionEvaluation = Readonly<{
+   reason_codes: readonly string[];
+ }>;
+ 
++export function incompleteRequiredWorkItems(task: TaskAggregate | null): readonly WorkItem[] {
++  return (
++    task?.current_plan?.proposal.work_items.work_items.filter(
++      (item) => !item.optional && task.work_items[item.id]?.state !== "COMPLETED",
++    ) ?? []
++  );
++}
++
+ export function evaluateTaskCompletion(opts: {
+   task: TaskAggregate;
+   repository_digest: Sha256Digest;
+@@ -85,12 +93,14 @@ export function evaluateTaskCompletion(opts: {
+   else if (plan.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
+     reasons.push("current_plan_not_approved");
+   }
++  reasons.push(
++    ...incompleteRequiredWorkItems(opts.task).map(
++      (item) => `required_work_item_incomplete:${item.id}`,
++    ),
++  );
+   if (plan) {
+     for (const item of plan.proposal.work_items.work_items) {
+       const runtime = opts.task.work_items[item.id];
+-      if (!item.optional && runtime?.state !== "COMPLETED") {
+-        reasons.push(`required_work_item_incomplete:${item.id}`);
+-      }
+       if (
+         runtime?.state === "COMPLETED" &&
+         !requiredOutputManifestsPresent(item, runtime.output_manifests)

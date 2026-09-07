@@ -149,6 +149,8 @@ export function withTaskCentricAggregate(
 export function taskCentricReplanRequiredFromExtensions(
   extensions: Readonly<Record<string, unknown>> | undefined,
 ): boolean {
+  const aggregate = taskCentricAggregateFromExtensions(extensions);
+  if (aggregate?.current_plan && aggregate.lifecycle === "PLANNING") return true;
   const marker = record(extensions?.[TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY]);
   return marker?.schema_version === 1 && typeof marker.reason_code === "string";
 }

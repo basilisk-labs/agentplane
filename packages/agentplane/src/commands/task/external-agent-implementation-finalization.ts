@@ -70,6 +70,7 @@ export async function finishExternalImplementationVerification(opts: {
       : await recordTaskCentricExternalResult({
           command: opts.command,
           work_order: opts.work_order,
+          expected_task: opts.task,
           semantic,
           verification,
           head: postVerificationHead,

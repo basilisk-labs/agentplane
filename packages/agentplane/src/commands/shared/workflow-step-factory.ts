@@ -1,3 +1,7 @@
+import {
+  incompleteRequiredWorkItems,
+  taskCentricAggregateFromExtensions,
+} from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import { isRecord } from "../../shared/guards.js";
@@ -8,6 +12,7 @@ import {
 } from "./route-decision-verification.js";
 import { cliOperationStep } from "./workflow-step-authority.js";
 import {
+  runnerParams,
   authorityRef,
   commonExecution,
   routeBlockerFor,
@@ -16,7 +21,6 @@ import {
 } from "./workflow-step-common.js";
 import {
   type WorkflowCheckout,
-  type WorkflowOperationParams,
   type WorkflowRole,
   type WorkflowRouteState,
   type WorkflowStep,
@@ -164,25 +168,31 @@ export function approvalStep(opts: {
   };
 }
 
-function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runner.follow"] {
-  const id = state.task.id;
-  const action = state.resume.runner.next_action;
-  if (action === "cancel_then_resume") {
-    return {
-      mode: "reclaim",
-      taskId: id,
-      author: state.task.owner,
-      reason: "stale runner pid is no longer alive",
-    };
-  }
-  if (action === "wait") {
-    return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
-  }
-  return { mode: "run", taskId: id };
-}
-
 export function directStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
+  if (
+    String(state.task.status).toUpperCase() === "DOING" &&
+    state.task.verification?.state === "ok" &&
+    !hasUninitializedTaskBaseline(state.task) &&
+    incompleteRequiredWorkItems(taskCentricAggregateFromExtensions(state.task.extensions)).length >
+      0
+  ) {
+    return agentEpisodeStep({
+      state,
+      id: "agent.direct_implementation",
+      code: "continue_direct_implementation",
+      phase: "direct_implementation",
+      checkout: "current_checkout",
+      role: "CODER",
+      purpose: "implementation",
+      summary: "complete the required WorkItem before direct verification and closeout",
+      objective:
+        "Complete the issued WorkItem and return its semantic result for supervisor verification.",
+      semanticMutationAllowed: true,
+      returnControlWhen: "after returning the WorkItem result; request a fresh action packet",
+      selectedBlocker: null,
+    });
+  }
   if (
     state.task.verification?.state === "ok" &&
     String(state.task.status).toUpperCase() === "DOING"

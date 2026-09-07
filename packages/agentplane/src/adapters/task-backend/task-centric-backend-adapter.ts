@@ -393,6 +393,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
     expected_revision: number;
     work_item_id: string;
     semantic_result: SemanticWorkResult;
+    result_digest?: `sha256:${string}`;
     outputs: readonly OutputManifest[];
     validation: readonly ValidationEvidence[];
     idempotency_key: string;
@@ -414,6 +415,7 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
       work_item_id: item.id,
       from: current.state,
       to: nextState,
+      cause_refs: opts.result_digest ? [`semantic-result:${opts.result_digest}`] : [],
     });
     const runtime = runtimeFrom(raw);
     return await this.persist({

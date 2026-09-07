@@ -1,3 +1,8 @@
+import {
+  readRecoveryWorkOrder as order,
+  writeRecoveryReport as report,
+  type RecoveryPacket as Packet,
+} from "./run-cli.core.task-advance.testkit.js";
 import { execFile } from "node:child_process";
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -5,7 +10,6 @@ import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import * as processRunner from "@agentplaneorg/core/process";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
@@ -28,13 +32,6 @@ import { runCli } from "./run-cli.js";
 installRunCliIntegrationHarness();
 const git = promisify(execFile);
 
-type Packet = {
-  transition_id: string;
-  state_fingerprint: string;
-  action: { kind: string };
-  exchange: { directory: string; result_path: string; resume_argv: string[] };
-};
-
 async function invoke(root: string, args: string[]) {
   const io = captureStdIO();
   try {
@@ -48,35 +45,6 @@ async function packet(root: string, taskId: string) {
   const result = await invoke(root, ["task", "advance", taskId, "--agent-json"]);
   expect(result.code, result.stderr).toBe(0);
   return JSON.parse(result.stdout) as Packet;
-}
-async function order(p: Packet): Promise<AgentWorkOrderV2> {
-  expect(p.exchange, JSON.stringify(p)).toBeDefined();
-  return JSON.parse(
-    await readFile(path.join(p.exchange.directory, "work-order.json"), "utf8"),
-  ) as AgentWorkOrderV2;
-}
-async function report(p: Packet, summary: string, extra: Record<string, unknown> = {}) {
-  const wo = await order(p);
-  const result = {
-    schema_version: 1,
-    kind: "agent_action_result",
-    task_id: wo.task.id,
-    transition_id: p.transition_id,
-    state_fingerprint: p.state_fingerprint,
-    role: wo.role,
-    result: {
-      schema_version: 2,
-      kind: "agent_semantic_result",
-      work_order_id: wo.work_order_id,
-      status: "completed",
-      summary,
-      findings: [summary],
-      uncertainty: [],
-      ...extra,
-    },
-  };
-  await writeFile(p.exchange.result_path, JSON.stringify(result));
-  return result;
 }
 async function resume(root: string, p: Packet) {
   const result = await invoke(root, p.exchange.resume_argv.slice(1));
@@ -815,74 +783,124 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
     expect(after.work_items).toEqual(before.work_items);
     expect(after.work_items["exercise-recovery"]?.state).toBe("COMPLETED");
   });
-  it("reissues only the command-changed WorkItem after replacement-plan approval", async () => {
-    const f = await completedFixture();
-    const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
-    const headResult = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
-    const headBefore = headResult.stdout.trim();
-    await report(f.rework, "Replace only the unsupported qualification command.", {
-      plan_refinement: planRefinement(true),
-    });
-    const planner = await resume(f.checkout, f.rework);
-    const plannerOrder = await order(planner);
-    expect(plannerOrder.role).toBe("PLANNER");
-    const baseline = plannerOrder.planning_context?.repository_snapshot;
-    if (!baseline) throw new Error("missing replacement planning baseline");
-    const previousProposal = before.current_plan!.proposal;
-    const replacement = {
-      ...previousProposal,
-      planning_baseline: baseline,
-      work_items: {
-        ...previousProposal.work_items,
-        work_items: previousProposal.work_items.work_items.map((workItem) => ({
-          ...workItem,
-          validation: {
-            ...workItem.validation,
-            checks: workItem.validation.checks.map((check) => ({
-              ...check,
-              command: "agentplane task lint",
-            })),
-            evidence_fingerprint: baseline.digest,
-          },
-        })),
-      },
-      top_level_validation: {
-        ...previousProposal.top_level_validation,
-        checks: previousProposal.top_level_validation.checks.map((check) => ({
-          ...check,
-          command: "agentplane task lint",
-        })),
-        evidence_fingerprint: baseline.digest,
-      },
-    };
-    await report(planner, "Use the repository-wide task lint command.", {
-      task_plan_proposal: replacement,
-    });
-    const approval = await resume(f.checkout, planner);
-    expect(approval.action.kind).toBe("approval_required");
-    expect(
-      await runCliSilent([
-        "task",
-        "plan",
-        "approve",
-        f.taskId,
-        "--by",
-        "USER",
-        "--root",
-        f.checkout,
-      ]),
-    ).toBe(0);
-    const next = await packet(f.checkout, f.taskId);
-    const nextOrder = await order(next);
-    expect(nextOrder.role).toBe("EXECUTOR");
-    expect(nextOrder.task.work_item_id).toBe("exercise-recovery");
-    expect(nextOrder.state_fingerprint.git_head).toBe(headBefore);
-    const status = await git("git", ["status", "--porcelain"], { cwd: f.checkout });
-    const nonTaskChanges = status.stdout
-      .split("\n")
-      .filter((line) => line && !line.slice(3).startsWith(".agentplane/"));
-    expect(nonTaskChanges).toEqual([]);
-  });
+  it.each([false, true])(
+    "reassesses the existing commit under replacement-plan checks (failing=%s)",
+    async (failing) => {
+      const replacementCommand = failing
+        ? "agentplane task lint --unexpected-option"
+        : "agentplane task lint";
+      const f = await completedFixture();
+      const before = taskCentricAggregateFromExtensions(f.current.extensions)!;
+      const headResult = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
+      const headBefore = headResult.stdout.trim();
+      await report(f.rework, "Replace only the unsupported qualification command.", {
+        plan_refinement: planRefinement(true),
+      });
+      const planner = await resume(f.checkout, f.rework);
+      const plannerOrder = await order(planner);
+      expect(plannerOrder.role).toBe("PLANNER");
+      const baseline = plannerOrder.planning_context?.repository_snapshot;
+      if (!baseline) throw new Error("missing replacement planning baseline");
+      const previousProposal = before.current_plan!.proposal;
+      const replacement = {
+        ...previousProposal,
+        planning_baseline: baseline,
+        work_items: {
+          ...previousProposal.work_items,
+          work_items: previousProposal.work_items.work_items.map((workItem) => ({
+            ...workItem,
+            validation: {
+              ...workItem.validation,
+              checks: workItem.validation.checks.map((check) => ({
+                ...check,
+                command: replacementCommand,
+              })),
+              evidence_fingerprint: baseline.digest,
+            },
+          })),
+        },
+        top_level_validation: {
+          ...previousProposal.top_level_validation,
+          checks: previousProposal.top_level_validation.checks.map((check) => ({
+            ...check,
+            command: replacementCommand,
+          })),
+          evidence_fingerprint: baseline.digest,
+        },
+      };
+      await report(planner, "Use the repository-wide task lint command.", {
+        task_plan_proposal: replacement,
+      });
+      const approval = await resume(f.checkout, planner);
+      expect(approval.action.kind).toBe("approval_required");
+      expect(
+        await runCliSilent([
+          "task",
+          "plan",
+          "approve",
+          f.taskId,
+          "--by",
+          "USER",
+          "--root",
+          f.checkout,
+        ]),
+      ).toBe(0);
+      const next = await packet(f.checkout, f.taskId);
+      const nextOrder = await order(next);
+      expect(nextOrder.role).toBe("EXECUTOR");
+      expect(nextOrder.task.work_item_id).toBe("exercise-recovery");
+      expect(nextOrder.state_fingerprint.git_head).toBe(headBefore);
+      const status = await git("git", ["status", "--porcelain"], { cwd: f.checkout });
+      const nonTaskChanges = status.stdout
+        .split("\n")
+        .filter((line) => line && !line.slice(3).startsWith(".agentplane/"));
+      expect(nonTaskChanges).toEqual([]);
+      const originalEvidence = await readFile(
+        path.join(
+          f.checkout,
+          ".agentplane/tasks",
+          f.taskId,
+          "supervision/implementation-evidence.json",
+        ),
+        "utf8",
+      );
+      await report(
+        next,
+        "The existing source satisfies the replacement plan; run its current checks.",
+      );
+      await resume(f.checkout, next);
+      const reassessed = await f.ctx.taskBackend.getTask(f.taskId);
+      const aggregate = taskCentricAggregateFromExtensions(reassessed!.extensions)!;
+      expect(aggregate.work_items["exercise-recovery"]?.state).toBe(
+        failing ? "REWORK_READY" : "COMPLETED",
+      );
+      expect(aggregate.work_items["exercise-recovery"]?.validation_result?.evidence).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            command_identity: replacementCommand,
+            status: failing ? "failed" : "passed",
+          }),
+        ]),
+      );
+      expect(
+        await readFile(
+          path.join(
+            f.checkout,
+            ".agentplane/tasks",
+            f.taskId,
+            "supervision/implementation-evidence.json",
+          ),
+          "utf8",
+        ),
+      ).toBe(originalEvidence);
+      const productDiff = await git(
+        "git",
+        ["diff", headBefore, "HEAD", "--", "feature.ts", "package.json"],
+        { cwd: f.checkout },
+      );
+      expect(productDiff.stdout).toBe("");
+    },
+  );
   it("rejects agent-created Git history for a pure refinement", async () => {
     const f = await implementationFixture();
     await report(f.implementation, "Refinement after forbidden history change.", {

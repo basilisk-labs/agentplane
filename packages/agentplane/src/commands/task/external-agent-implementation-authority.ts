@@ -280,6 +280,19 @@ export async function applyExternalImplementationResult(opts: {
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
+  const admittedAggregate = taskCentricAggregateFromExtensions(taskAtReturn.extensions);
+  if (
+    admittedAggregate?.current_plan &&
+    !opts.work_order.task.work_item_id &&
+    admittedAggregate.current_plan.proposal.work_items.work_items.some(
+      (item) => !item.optional && admittedAggregate.work_items[item.id]?.state !== "COMPLETED",
+    )
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "A WorkItem result requires the explicit WorkItem ID from its issued work order.",
+    });
+  }
   let implementationCommit =
     !conflictContext && recoversRecordedImplementationCommit(opts.exchange.purpose)
       ? opts.decision.task.commit
@@ -313,11 +326,16 @@ export async function applyExternalImplementationResult(opts: {
       work_order: opts.work_order,
       head,
       recorded_commit: recordedTaskImplementationCommitSha(taskAtReturn),
+      // The current packet passed authority checks against an unchanged source baseline.
+      reassess_current_plan:
+        head === opts.exchange.baseline.head && observedChangedPaths?.length === 0,
     });
     if (recovery) {
       implementationCommit = recovery.commit;
       recoveredExecutionBase = recovery.execution_base;
-      semantic = recovery.semantic ?? semantic;
+      if (recovery.semantic?.work_order_id === opts.work_order.work_order_id) {
+        semantic = recovery.semantic;
+      }
       reusedRecordedImplementation = true;
     }
   }
@@ -557,7 +575,7 @@ export async function applyExternalImplementationResult(opts: {
   await finishExternalImplementationVerification({
     ...opts,
     semantic,
-    task: reconciliation.task,
+    task: taskAtReturn,
     verification,
     conflict: conflictContext !== null,
   });
