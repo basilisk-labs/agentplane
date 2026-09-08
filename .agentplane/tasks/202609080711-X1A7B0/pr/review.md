@@ -24,7 +24,7 @@ Created: 2026-09-08T07:39:38.454Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-08T07:39:38.454Z
+- Updated: 2026-09-08T12:53:14.312Z
 - Branch: task/202609080711-X1A7B0/remove-ap-task-run-from-standard-route-recommend
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -54,11 +54,11 @@ Created: 2026-09-08T07:39:38.454Z
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
- packages/spec/examples/acr.json                    |  22 +++++++++----
+ packages/spec/examples/acr.json                    |   4 +--
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.28.png    | Bin 0 -> 54193 bytes
  website/static/img/social/manifest.json            |   8 +++++
- 29 files changed, 122 insertions(+), 65 deletions(-)
+ 29 files changed, 108 insertions(+), 61 deletions(-)
 ```
 
 </details>
