@@ -4,7 +4,7 @@ title: "Reduce redundant recovery episodes and exchange data"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -821,22 +821,99 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-08T20:43:20.609Z"
+    updated_at: "2026-09-08T20:43:23.813Z"
     work_items:
       reduce-redundant-protocol-work:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "reduce-redundant-protocol-work"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:c9076ac93234f35f1c344ca560dc3d39100e75fd6720e5f0b521148689792cdd"
+            id: "qualified implementation"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609081927-P1MJV7"
+              work_item_id: "reduce-redundant-protocol-work"
+            provenance:
+              - "sha256:2288062fcd8fa1a5e376341d0d479cea6fcfb2376eb159cc0c5ca300acb99ae6"
+              - ".agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:52f4c6878b0ce976ae565cb06053287436277485eea1f327cf520d36f702da6b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:b3865e88b0e0e93deed543a68accd771da6d0d57574f7e3290625a7052ae983a"
+            id: "regression tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609081927-P1MJV7"
+              work_item_id: "reduce-redundant-protocol-work"
+            provenance:
+              - "sha256:2288062fcd8fa1a5e376341d0d479cea6fcfb2376eb159cc0c5ca300acb99ae6"
+              - ".agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:52f4c6878b0ce976ae565cb06053287436277485eea1f327cf520d36f702da6b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ecf453007ff1a948f1ce9c50d8f2a03c9662aefd7d7adc2a9835b644a244b051"
+            id: "measurement evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609081927-P1MJV7"
+              work_item_id: "reduce-redundant-protocol-work"
+            provenance:
+              - "sha256:2288062fcd8fa1a5e376341d0d479cea6fcfb2376eb159cc0c5ca300acb99ae6"
+              - ".agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:52f4c6878b0ce976ae565cb06053287436277485eea1f327cf520d36f702da6b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json"
+              check_id: "task-check"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-08T20:43:23.803Z"
+              repository_snapshot_digest: "sha256:52f4c6878b0ce976ae565cb06053287436277485eea1f327cf520d36f702da6b"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-08T20:43:23.813Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:bbed6cbbafee7907d6d799e861a7ec8443c38c821e893dbcdc1a9b96bd9499b4"
+        entity: "work_item"
+        id: "event_535ac695f35e5b001f5ada58"
+        mutation_id: "external-result:work-order-202609081927-P1MJV7-executor-b59774472eb0fa2fdca0fe2b"
+        plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+        task_revision: 15
+        work_item_id: "reduce-redundant-protocol-work"
     leases: []
     mutation_receipts:
       compatibility:sha256:208c1e784545b5c70fd5d361ca37e2545c55d148762f07c82c724351a158dbba:
@@ -1125,6 +1202,30 @@ extensions:
         mutation_id: "compatibility:sha256:b807aaa6c06e5b4800808aa634dd43201a4c0534f7a4f030b5e54912ceb4c425"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+      external-result:work-order-202609081927-P1MJV7-executor-b59774472eb0fa2fdca0fe2b:
+        aggregate_digest: "sha256:e89a9c44fddc5adae4b0c84c627f323b60f624fa85b92337bd1d244ebe42b692"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T20:43:23.813Z"
+          cause_refs:
+            - "semantic-result:sha256:bbed6cbbafee7907d6d799e861a7ec8443c38c821e893dbcdc1a9b96bd9499b4"
+          entity: "work_item"
+          from: "READY"
+          id: "event_535ac695f35e5b001f5ada58"
+          mutation_id: "external-result:work-order-202609081927-P1MJV7-executor-b59774472eb0fa2fdca0fe2b"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 15
+          to: "COMPLETED"
+          work_item_id: "reduce-redundant-protocol-work"
+        mutation_id: "external-result:work-order-202609081927-P1MJV7-executor-b59774472eb0fa2fdca0fe2b"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609081927-P1MJV7"
     pending_effects: []
