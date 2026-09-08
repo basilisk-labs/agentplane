@@ -12,8 +12,8 @@ Created: 2026-09-08T19:31:00.077Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -56,8 +56,9 @@ Created: 2026-09-08T19:31:00.077Z
  .../src/runner/context/task-context.test.ts        |  59 ++++++-
  .../src/runner/context/work-order-context.ts       |  35 +++-
  .../src/runner/usecases/task-run-bootstrap.ts      |  35 +++-
+ packages/agentplane/tsup.config.ts                 |  36 ++--
  scripts/baselines/protocol-followup-P1MJV7.json    |  61 +++++++
- 28 files changed, 1150 insertions(+), 355 deletions(-)
+ 29 files changed, 1175 insertions(+), 366 deletions(-)
 ```
 
 </details>
