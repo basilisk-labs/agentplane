@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -29,30 +29,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-08T21:08:52.710Z"
+  updated_at: "2026-09-08T22:03:32.238Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "666124058321eeb280100a3dfc6222c1388e3d84"
+  evaluated_sha: "438ef52d9e8f9cd8e0c3d1c757a81ebcbffba376"
   blueprint_digest: "2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc"
   evidence_refs:
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-210725017-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-210725017-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/0edbf95a4c344e9f0ec981c6f92ed2afabff4ca1244704f9c9205b4882cb333a.md"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-210725017-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-210725017-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-210725017-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-220154343-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-220154343-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/137701f47fdba65247bc48ffaed812b50d14f58256e657c84a4a3f4bdd4829b7.md"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-220154343-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-220154343-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-220154343-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609081927-P1MJV7/README.md"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/8b6ae791a7c40818f4657bdd0eb9b644abda3aca51c1f048738d506aed9552b4.patch"
-    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/521ba074d1715c691684ce7e0090ed2971ec589b090ae9bd0347ed7533ad50d0.json"
-    - ".agentplane/tasks/202609081927-P1MJV7/verification/20260908210712984-d1ba920700927851.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/1cb20fe7cc77fc52abad63bdb6adc6fa4e5ee96efbc8c3006a2d6967606c7408.patch"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/30e4ec625cc4e878820b950def6f998d3f6f91133de058124442182ca83ee82a.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/verification/20260908220143703-cced7f648803f29d.json"
     - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/19d943594f6be086a90dd44bc23aaabf9fa4218050b199e01eeefe455d8a9a77.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The retry predicate now rejects renamed, quoted, and unmanaged task paths. It permits only recognized task artifacts. Regression tests cover these boundaries. Review of the unchanged retry, context-selection, schema-store, and cleanup changes found no remaining scoped defect."
-    - "Residual risk: Managed adapters start fresh processes. Context delta measurements require explicit acknowledgement within the same live session. Provider token usage and latency were not measured."
-    - "Residual risk: Hosted CI and integration remain outside this local review and require separate publication authority."
-    - "Residual risk: Merged-worktree cleanup runs on the next lifecycle invocation. No background watcher was added."
+    - "Compared the current source with the previously reviewed implementation. Direct verification imports remove the cycle without changing verification behavior. The recovery test now checks current reassessment claims while retaining stale-plan, altered-evidence, and receipt-digest rejection. The Bun entry preserves identifiers during rebundling. Other build entries retain their existing options. All frozen evidence digests match. No source changed after the evaluated commit."
+    - "Residual risk: Provider token usage and latency were not measured. Context deltas require explicit retention acknowledgement in the same live session."
+    - "Residual risk: Hosted CI and integration remain pending outside this read-only review."
+    - "Residual risk: The measured compiled Bun binary is approximately 1.9 percent larger."
 token_usage:
   agent_runs: 9
   input_tokens: null
@@ -643,7 +643,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-08T22:01:44.973Z"
+doc_updated_at: "2026-09-08T22:03:32.252Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
@@ -1150,7 +1150,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 28
+    event_cursor: 29
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -1359,9 +1359,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 33
+    revision: 34
     schema_version: 1
-    updated_at: "2026-09-08T22:01:44.970Z"
+    updated_at: "2026-09-08T22:01:44.973Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 1
@@ -1836,6 +1836,30 @@ extensions:
         mutation_id: "compatibility:sha256:6c9e13401db05997d7dbf856b0e119406ce9ad712efe9ee8a31f43629844a2bb"
         next_revision: 31
         previous_revision: 30
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+      compatibility:sha256:6d69838413a2f4c53579ac89b81c2eef359e539c220dd08ef3890a8f928ba0bb:
+        aggregate_digest: "sha256:3d002cf8cdb020dee23d73c6c3168c409bded7662408bd4e5037c2ae6671b6f6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T22:01:44.973Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_72e59d82458798e1baa06842"
+          mutation_id: "compatibility:sha256:6d69838413a2f4c53579ac89b81c2eef359e539c220dd08ef3890a8f928ba0bb"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 33
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6d69838413a2f4c53579ac89b81c2eef359e539c220dd08ef3890a8f928ba0bb"
+        next_revision: 34
+        previous_revision: 33
         schema_version: 1
         task_id: "202609081927-P1MJV7"
       compatibility:sha256:75bf634b22feced6dd320ea32305638db77097798bacbde04063bd4f08af2045:
