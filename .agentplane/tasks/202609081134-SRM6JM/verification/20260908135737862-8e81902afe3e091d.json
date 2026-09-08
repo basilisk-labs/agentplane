@@ -1,0 +1,113 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609081134-SRM6JM Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609081134-SRM6JM Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609081134-SRM6JM Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609081134-SRM6JM Verification Contract check real_e2e\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609081134-SRM6JM Verification Contract check task_outcome",
+  "digest": "sha256:8e81902afe3e091dadae8ebd14111a3ee48c29033cf17c8cb926034e03ea1f3d",
+  "implementation_sha": "4005ad7a1c494e516248e8b3e975340de70a034e",
+  "input": {
+    "context": {
+      "digest": "sha256:20dddbaf4e87fde843f53aec54dc59500d42d14038f2306350a4a19fabf2a0aa",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:dc97a15c6cd4a97b6391d9fb579ab419bb39b0b5566cb4d9079085e51a16c9d0",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:f838edb4d3345136fb798268ba7f3aac5d3bfb3da4636091419f0721091225a4",
+      "digest": "sha256:01e904cbfe54efe62bbcccaa6eb7e10163feb111cce706efc835bd0a0e98bb45",
+      "references": [
+        {
+          "digest": "sha256:670ebfb6d3b4ec7054e51301de3827a5af842628108b887e8aa82eadff5474ce",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "33e106d611fe92603cb836bdcd500a1c624d206b",
+      "digest": "sha256:85e18ff0a9076a18423ea7b9a03a4559a54e53a30247a2b042c559fa107325c8",
+      "primary_task_id": "202609081134-SRM6JM",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_public_api",
+        "effect_schema",
+        "effect_security_boundary",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609081134-SRM6JM"
+      ]
+    },
+    "implementation": {
+      "base_sha": "33e106d611fe92603cb836bdcd500a1c624d206b",
+      "digest": "sha256:a8bb96bff68404da00eb966c61957bc9331d4169957f0b4b609d8919538eecea",
+      "strategy": "branch_diff",
+      "target_sha": "4005ad7a1c494e516248e8b3e975340de70a034e"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:62335e55cf1ff78fb41ea51d45307c3db0e05d7ad65233a3edb3f009366a9bee",
+    "verify_steps_digest": "sha256:4f28e9196c2f5767b07db719c78c79f6620a97c2b5700990c2fa7bb4458806e4"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-08T13:57:37.862Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run the one-condition protocol-cost fixture with matched before and after reports. Require at least 70 percent fewer required schema bytes and 50 percent fewer generated result bytes. Report model tokens and provider time as unmeasured when no provider run exists.\n2. Run focused compact payload and plan normalization tests, historical exchange compatibility, stale-result, cross-role, scope, authority, interrupted execution and recovery tests. Record failures explicitly; do not weaken identity checks.\n3. Run bun run typecheck, schema parity, affected lint and formatting checks, and bun run ci:local:full. Require passing results for qualification and preserve evidence of any baseline failures.\n4. Review the final diff against approved roots, preserve unrelated work, and verify that no dependency or historical artifact changes were introduced. Stop before external publication, push or merge.",
+  "scope_digest": "sha256:4f28e9196c2f5767b07db719c78c79f6620a97c2b5700990c2fa7bb4458806e4",
+  "task_id": "202609081134-SRM6JM",
+  "verification_command": "agentplane verify 202609081134-SRM6JM --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
