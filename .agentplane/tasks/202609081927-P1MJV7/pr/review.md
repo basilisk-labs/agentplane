@@ -13,7 +13,7 @@ Created: 2026-09-08T19:31:00.077Z
 ## Verification
 
 - State: needs_rework
-- Note: Hosted verify-static found a circular dependency between direct-task-verification.ts and direct-task-verification-record.ts. Remove the reverse re-export and update direct consumers. Preserve the verification and retry behavior.
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
