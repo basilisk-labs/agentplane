@@ -48,14 +48,23 @@
       "Hotspot and oversized-test limits",
       "112 contract, canonical transport and blocker-backend tests",
       "100 of 101 expanded task-advance, rework, interruption and recovery tests",
-      "Three final threshold-enforcing CLI cycles with three semantic roles and no retries"
+      "Three final threshold-enforcing CLI cycles with three semantic roles and no retries",
+      "Knip CLI unused-code budget: 0/0 after removing five unused internal exports; core compatibility budget remains 21/21",
+      "Candidate staging cleanup regression: 13 tests passed after removal of disposable test Bun caches"
     ],
     "failed": [
       {
         "evidence": "protocol-cost-SRM6JM-recovery-baseline.json",
         "description": "One recovery assertion fails identically on the original source revision and current implementation. Current-WorkOrder binding conflicts with preservation of the original semantic report."
       }
-    ]
+    ],
+    "environment_recovery": {
+      "failure": "The required candidate checkout failed with No space left on device.",
+      "cleanup": "USER-authorized removal of Bun caches from isolated AgentPlane critical-test HOME directories.",
+      "removed_logical_bytes": 744240700,
+      "available_disk_gib_after": 1.3,
+      "failed_suite_rerun": "13 tests passed; full verification still required."
+    }
   },
   "limitations": [
     "Byte measurements are not provider token counts.",

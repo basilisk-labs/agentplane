@@ -62,8 +62,8 @@ Implement the user-approved optimization plan in dependency order: establish a r
  .../protocol-cost-SRM6JM-profile-after.json        | 551 ++++++++++++++++++++
  .../protocol-cost-SRM6JM-profile-before-03.json    | 575 +++++++++++++++++++++
  .../protocol-cost-SRM6JM-recovery-baseline.json    |  29 ++
- .../baselines/protocol-cost-SRM6JM-summary.json    |  67 +++
- 36 files changed, 3350 insertions(+), 109 deletions(-)
+ .../baselines/protocol-cost-SRM6JM-summary.json    |  76 +++
+ 36 files changed, 3359 insertions(+), 109 deletions(-)
 ```
 
 </details>
