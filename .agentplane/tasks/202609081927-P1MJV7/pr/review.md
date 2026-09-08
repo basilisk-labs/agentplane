@@ -6,7 +6,7 @@ Created: 2026-09-08T19:31:00.077Z
 
 - Task: `202609081927-P1MJV7`
 - Title: Reduce redundant recovery episodes and exchange data
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609081927-P1MJV7/reduce-redundant-recovery-episodes-and-exchange`
 - Canonical task record: `.agentplane/tasks/202609081927-P1MJV7/README.md`
 
