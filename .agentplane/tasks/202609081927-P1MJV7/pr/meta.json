@@ -1,10 +1,13 @@
 {
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "GitHub PR mutation failed: ExecaError\nCommand failed with exit code 1: gh api repos/basilisk-labs/agentplane/pulls/5924 -X PATCH --input /var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-github-pr-update-NLjSq4/payload.json\n\nunexpected end of JSON input\nunexpected end of JSON input\n",
+  "artifact_state_updated_at": "2026-09-08T21:07:14.385Z",
   "base": "main",
   "branch": "task/202609081927-P1MJV7/reduce-redundant-recovery-episodes-and-exchange",
   "created_at": "2026-09-08T19:31:00.077Z",
   "diffstat_sha256": "sha256:f970f9bcb713b87744ac60aac0b37532c20902289e79af03a1ed3288e0bfaa7a",
-  "last_verified_at": "2026-09-08T20:52:11.965Z",
-  "last_verified_diffstat_sha256": "sha256:91b9b64baac2ae3c58a8feab7c08530432628ad742d0e261656df33250b0ffdf",
+  "last_verified_at": "2026-09-08T21:07:12.984Z",
+  "last_verified_diffstat_sha256": "sha256:f970f9bcb713b87744ac60aac0b37532c20902289e79af03a1ed3288e0bfaa7a",
   "pr_number": 5924,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5924",
   "provider": {
