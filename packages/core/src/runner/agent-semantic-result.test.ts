@@ -246,6 +246,36 @@ describe("agent semantic result contract", () => {
     ).not.toEqual([]);
   });
 
+  it.each([
+    { role: "PLANNER" },
+    { role: "EXECUTOR" },
+    { role: "EVALUATOR" },
+    { role: "PLANNER", phase: "planning" },
+    { role: "EXECUTOR", phase: "implementation" },
+    { role: "EVALUATOR", phase: "inspection" },
+  ] as const)("renders a closed role schema with resolvable shared definitions: %j", (context) => {
+    const text = renderAgentSemanticResultSchemaJson(context);
+    const schema = JSON.parse(text) as Record<string, unknown>;
+    expect(schema.additionalProperties).toBe(false);
+    expect(text.length).toBeLessThan(renderAgentSemanticResultSchemaJson().length * 0.3);
+    function visit(value: unknown) {
+      if (!value || typeof value !== "object") return;
+      const ref = (value as { $ref?: string }).$ref;
+      if (ref) {
+        expect(ref.startsWith("#/"), ref).toBe(true);
+        let resolved: unknown = schema;
+        for (const segment of ref.slice(2).split("/")) {
+          resolved = (resolved as Record<string, unknown>)[
+            segment.replaceAll("~1", "/").replaceAll("~0", "~")
+          ];
+        }
+        expect(resolved, ref).toBeDefined();
+      }
+      for (const child of Object.values(value)) visit(child);
+    }
+    visit(schema);
+  });
+
   it("renders a strict public schema with the status requirements", () => {
     const rendered = JSON.parse(renderAgentSemanticResultSchemaJson()) as {
       oneOf?: {

@@ -84,6 +84,7 @@ export type AgentPacket = {
     authority_reference: string;
   };
   exchange?: {
+    result_format?: "semantic_payload_v1";
     directory: string;
     work_order_ref: string;
     result_schema_ref: string;

@@ -567,41 +567,51 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     );
   });
 
-  it("rejects a stale planning result before applying semantic task state", async () => {
-    const root = await mkGitRepoRootWithMainCommit();
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    const taskId = await createTask(root, "Stale planning result");
-    const issued = await readAgentPacket(root, taskId);
-    const resultPath = await writeCompletedResult(
-      issued,
-      "This stale plan must not be applied.",
-      undefined,
-      undefined,
-      true,
-    );
-    await runCliSilent([
-      "task",
-      "comment",
-      taskId,
-      "--author",
-      "USER",
-      "--body",
-      "Concurrent scope clarification.",
-      "--root",
-      root,
-    ]);
+  it.each(["envelope", "compact"])(
+    "rejects a stale %s planning result before applying semantic task state",
+    async (format) => {
+      const root = await mkGitRepoRootWithMainCommit();
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      const taskId = await createTask(root, "Stale planning result");
+      const issued = await readAgentPacket(root, taskId);
+      const resultPath = await writeCompletedResult(
+        issued,
+        "This stale plan must not be applied.",
+        undefined,
+        undefined,
+        true,
+      );
+      if (format === "compact") {
+        const envelope = JSON.parse(
+          await readFile(resultPath, "utf8"),
+        ) as ExternalAgentResultEnvelope;
+        const { schema_version: _version, kind: _kind, ...payload } = envelope.result;
+        await writeFile(resultPath, JSON.stringify(payload));
+      }
+      await runCliSilent([
+        "task",
+        "comment",
+        taskId,
+        "--author",
+        "USER",
+        "--body",
+        "Concurrent scope clarification.",
+        "--root",
+        root,
+      ]);
 
-    const stale = await returnAgentResult(root, taskId, resultPath);
-    expect(stale.code).not.toBe(0);
-    expect(stale.stderr).toContain("stale");
-    const readme = await readFile(
-      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
-      "utf8",
-    );
-    expect(readme).not.toContain("This stale plan must not be applied.");
-  });
+      const stale = await returnAgentResult(root, taskId, resultPath);
+      expect(stale.code).not.toBe(0);
+      expect(stale.stderr).toContain("stale");
+      const readme = await readFile(
+        path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+        "utf8",
+      );
+      expect(readme).not.toContain("This stale plan must not be applied.");
+    },
+  );
 
   it("rejects a read-only evaluator result after a concurrent commit transition", async () => {
     const root = await mkGitRepoRootWithCommit();

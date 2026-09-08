@@ -14,6 +14,7 @@ import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   renderAgentSemanticResultSchemaJson,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
+  validateAgentSemanticResultForWorkOrder,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
@@ -67,14 +68,20 @@ export async function readKernelOrderResult(
   taskId: string,
   resultPath: string,
 ) {
-  const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
-    JSON.parse(
-      await readStableRegularTextNoFollow(resultPath, "canonical semantic result", {
-        max_bytes: 4 * 1024 * 1024,
-      }),
-    ),
+  const raw: unknown = JSON.parse(
+    await readStableRegularTextNoFollow(resultPath, "canonical semantic result", {
+      max_bytes: 4 * 1024 * 1024,
+    }),
   );
-  const directory = await kernelExchangeDirectory(ctx, taskId, semantic.work_order_id);
+  if (
+    !raw ||
+    typeof raw !== "object" ||
+    Array.isArray(raw) ||
+    !("work_order_id" in raw) ||
+    typeof raw.work_order_id !== "string"
+  )
+    throw new Error("Canonical result requires its issued work_order_id");
+  const directory = await kernelExchangeDirectory(ctx, taskId, raw.work_order_id);
   if (path.resolve(resultPath) !== path.join(directory, "result.json"))
     throw new Error("Canonical result path mismatch");
   const workOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
@@ -85,6 +92,27 @@ export async function readKernelOrderResult(
       ),
     ),
   );
+  const compact = !("kind" in raw);
+  if (compact) {
+    const owner = JSON.parse(
+      await readStableRegularTextNoFollow(
+        path.join(directory, "transport-owner.json"),
+        "canonical transport owner",
+      ),
+    );
+    if (
+      owner.result_format !== "semantic_payload_v1" ||
+      owner.work_order_id !== workOrder.work_order_id
+    )
+      throw new Error("This canonical exchange does not accept compact results");
+  }
+  const semantic = compact
+    ? validateAgentSemanticResultForWorkOrder({
+        work_order: workOrder,
+        semantic_result: raw,
+        format: "semantic_payload_v1",
+      })
+    : AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(raw);
   if (
     workOrder.task.id !== taskId ||
     workOrder.work_order_id !== semantic.work_order_id ||
@@ -178,10 +206,30 @@ export async function issueKernelExchange(
 ) {
   const directory = await kernelExchangeDirectory(ctx, order.task.id, order.work_order_id);
   order = await withKernelReworkEvidence(order, directory, record);
-  await writeKernelArtifact(directory, "transport-owner.json", {
-    transport,
-    work_order_id: order.work_order_id,
-  });
+  let resultFormat: "semantic_payload_v1" | undefined;
+  try {
+    const owner = JSON.parse(
+      await readStableRegularTextNoFollow(
+        path.join(directory, "transport-owner.json"),
+        "canonical transport owner",
+      ),
+    );
+    if (
+      owner.transport !== transport ||
+      owner.work_order_id !== order.work_order_id ||
+      (owner.result_format !== undefined && owner.result_format !== "semantic_payload_v1")
+    )
+      throw new Error("Canonical transport owner mismatch");
+    resultFormat = owner.result_format;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    resultFormat = "semantic_payload_v1";
+    await writeKernelArtifact(directory, "transport-owner.json", {
+      transport,
+      work_order_id: order.work_order_id,
+      result_format: resultFormat,
+    });
+  }
   await writeKernelArtifact(directory, "work-order.json", order);
   const qualityRoot = path.join(
     ctx.resolvedProject.gitRoot,
@@ -215,7 +263,14 @@ export async function issueKernelExchange(
         kind: "result_schema",
         extension: ".json",
         mediaType: "application/schema+json",
-        contents: renderAgentSemanticResultSchemaJson(),
+        contents: renderAgentSemanticResultSchemaJson(
+          resultFormat
+            ? {
+                role: order.role,
+                phase: order.canonical_binding?.phase,
+              }
+            : undefined,
+        ),
       });
       // Publish the descriptor after its object. Interrupted publication reuses verified bytes.
       await writeKernelArtifact(directory, "result-schema-object.json", stored);
@@ -264,6 +319,7 @@ export async function issueKernelExchange(
           : null,
     },
     exchange: {
+      ...(resultFormat ? { result_format: resultFormat } : {}),
       directory,
       work_order_ref: "work-order.json",
       result_schema_ref: resultSchemaRef,

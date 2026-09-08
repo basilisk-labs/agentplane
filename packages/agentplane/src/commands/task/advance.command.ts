@@ -386,6 +386,9 @@ export function makeRunTaskAdvanceHandler(deps: {
       ...(exchange
         ? {
             exchange: {
+              ...(exchange.exchange.result_format
+                ? { result_format: exchange.exchange.result_format }
+                : {}),
               directory: exchange.paths.directory,
               work_order_ref: "work-order.json",
               result_schema_ref: "result-schema.json",
