@@ -4,7 +4,7 @@ title: "Measure provider token usage and align Bun runtime qualification"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -250,7 +250,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "0533fbca8d7b7cc50c569f991c539d1ee6be0aa6"
+  message: "🚧 ZYASFT task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -261,6 +263,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0533fbca8d7b. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -276,8 +281,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. Provider accounting, the measured context comparison and Bun qualification are implemented. One evaluator test fixture requires an additional writable path before full CI can pass. Recommended action: Obtain authorization for the exact additional test path and native local commits. Submit this scope-extension result, follow the emitted scope recovery route, apply /tmp/agentplane-ZYASFT-evaluator-usage.patch, rerun full local CI, and return the completed result. Do not push, publish or merge. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; repository effects=tests; request digest=sha256:5e5faf5d8d856ffeeda01c52d0f8403a024349ed08fa17f966c708425887fbe4. Agentplane receipt: external-agent-blocker/tr_fdc8378a09bf2b39dcb2ed05bba07869/sha256:87660a4f42de9abcddbf93297598e02444be23981781bbb2b6072e1fd06e2b77/sha256:5e5faf5d8d856ffeeda01c52d0f8403a024349ed08fa17f966c708425887fbe4."
+  -
+    type: "status"
+    at: "2026-09-08T23:27:28.606Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0533fbca8d7b. CLI accepted one state-bound external-agent semantic result."
+    commit: "0533fbca8d7b7cc50c569f991c539d1ee6be0aa6"
 doc_version: 3
-doc_updated_at: "2026-09-08T23:24:41.956Z"
+doc_updated_at: "2026-09-08T23:27:28.606Z"
 doc_updated_by: "SUPERVISOR"
 description: "USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval."
 sections:
@@ -530,7 +543,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609082225-ZYASFT"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609082225-ZYASFT"
     intent:
@@ -737,9 +750,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609082225-ZYASFT"
-    revision: 8
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-08T23:24:41.956Z"
+    updated_at: "2026-09-08T23:27:28.606Z"
     work_items:
       measured-runtime:
         attempt: 0
@@ -875,6 +888,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609082225-ZYASFT"
+      compatibility:sha256:97afac242a473b84341a06e1eb62bacda5b761828909506d005a501ea30026c8:
+        aggregate_digest: "sha256:7c1d918ffde5b4b3dbb120b7b647cefe63b1f96c7088fdcf1cdac713be1c5303"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T23:27:28.606Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_89788e785a3450a3c717d415"
+          mutation_id: "compatibility:sha256:97afac242a473b84341a06e1eb62bacda5b761828909506d005a501ea30026c8"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:97afac242a473b84341a06e1eb62bacda5b761828909506d005a501ea30026c8"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
       compatibility:sha256:f7556e5abe5ebf620cabd3353a168d1838b421128ce125a51aade7b739a04342:
         aggregate_digest: "sha256:9ac0be6f2daca5c668d2bfb7d4c86712a944bf9458ed059585560447582a3ec3"
         event:
@@ -899,9 +936,35 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609082225-ZYASFT"
+      compatibility:sha256:fae8e9c2ed79d84ef36ed228fd2ef00ffc3030fc9a41c5add6f0b4168c364bba:
+        aggregate_digest: "sha256:9c01cf953824080cecbca97ea6a296a96724d526ae2870c92c258e712343b47d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T23:27:28.606Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b6794e4180101a1004665119"
+          mutation_id: "compatibility:sha256:fae8e9c2ed79d84ef36ed228fd2ef00ffc3030fc9a41c5add6f0b4168c364bba"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fae8e9c2ed79d84ef36ed228fd2ef00ffc3030fc9a41c5add6f0b4168c364bba"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "0533fbca8d7b7cc50c569f991c539d1ee6be0aa6"
   task_execution_context:
     base_ref: "main"
     base_sha: "edbb9f694c30db1fd678e5f642ffdaa14df6dc3b"
