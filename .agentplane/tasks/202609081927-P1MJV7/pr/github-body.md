@@ -15,14 +15,14 @@ Implement the three USER-approved follow-up optimizations: classify confirmed ve
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-08T19:31:00.077Z
+- Updated: 2026-09-08T20:43:34.610Z
 - Branch: task/202609081927-P1MJV7/reduce-redundant-recovery-episodes-and-exchange
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
