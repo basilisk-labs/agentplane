@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check be477c4ee587c661070c69bb517e26e5762d7154..8944b1e5df333b3c49e4b19fe0574634b125db10",
+      "command": "git diff --check 389e1f2f2126f26ea885c341bad37fdab19424a1..f4faee773fb4e14aec08111f6052278a4af68a0f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB be477c4ee587c661070c69bb517e26e5762d7154..8944b1e5df333b3c49e4b19fe0574634b125db10",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 389e1f2f2126f26ea885c341bad37fdab19424a1..f4faee773fb4e14aec08111f6052278a4af68a0f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,13 +21,25 @@
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/github-body.md",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/meta.json",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
         "M\tpackages/agentplane/src/commands/task/agent-action-packet.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-purpose.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
         "M\tpackages/core/src/runner/agent-semantic-result.ts",
         "M\tpackages/core/src/runner/agent-work-order.ts",
-        "M\tpackages/core/src/tasks/task-centric/schema.ts",
+        "M\tpackages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts",
         "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts",
-        "A\tscripts/baselines/protocol-cost-SRM6JM-plan-01.json"
+        "A\tscripts/baselines/protocol-cost-SRM6JM-after-01.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-after-02.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-after-03.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-profile-after.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-profile-before-03.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-recovery-baseline.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-summary.json"
       ]
     },
     {
@@ -37,8 +49,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "be477c4ee587c661070c69bb517e26e5762d7154",
-  "implementation_commit": "8944b1e5df333b3c49e4b19fe0574634b125db10",
+  "execution_base_commit": "389e1f2f2126f26ea885c341bad37fdab19424a1",
+  "implementation_commit": "f4faee773fb4e14aec08111f6052278a4af68a0f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
