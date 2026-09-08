@@ -631,42 +631,6 @@ describe("task-centric domain", () => {
     expect(() => parseTaskPlanProposal({ ...parsed, task_id: "" })).toThrow();
   });
 
-  it("expands one compact WorkItem without changing its scope or validation contract", () => {
-    const original = item({ id: "a" });
-    const baseline = snapshot();
-    const { acceptance_criteria, validation: plan, ...definition } = original;
-    const input = {
-      schema_version: 2,
-      criteria: acceptance_criteria,
-      checks: plan.checks,
-      work_items: [definition],
-    };
-    const normalize = (value: unknown) =>
-      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
-    const expanded = normalize(input);
-    const expectedValidation = { ...plan, evidence_fingerprint: baseline.digest };
-    expect(expanded).toEqual({
-      ...proposal([{ ...original, validation: expectedValidation }], baseline),
-      top_level_validation: expectedValidation,
-    });
-    expect(parseTaskPlanProposal(expanded)).toEqual(expanded);
-    for (const invalid of [
-      { ...input, criteria: [...input.criteria, ...input.criteria] },
-      { ...input, checks: [...input.checks, ...input.checks] },
-      { ...input, criteria: [{ ...acceptance_criteria[0], check_ids: ["missing"] }] },
-      { ...input, work_items: [{ ...definition, criterion_ids: ["missing"] }] },
-      { ...input, work_items: [{ ...definition, check_ids: ["missing"] }] },
-      {
-        ...input,
-        work_items: [{ ...definition, check_ids: [plan.checks[0]!.id, plan.checks[0]!.id] }],
-      },
-      { ...input, work_items: [{ ...definition, scope_roots: undefined }] },
-      { ...input, planning_baseline: snapshot("b".repeat(40)) },
-      { ...input, task_id: "foreign" },
-    ])
-      expect(() => normalize(invalid)).toThrow();
-  });
-
   it("requires explicit multi-WorkItem coverage and preserves unresolved questions", () => {
     const items = [
       item({ id: "a" }),

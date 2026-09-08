@@ -391,20 +391,29 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       };
       if (backendKind === "compact") {
         await writeFile(inspectionExchange.result_path, wireResult(review));
-        expect(
-          (await readKernelOrderResult(command, taskId, inspectionExchange.result_path)).semantic,
-        ).toEqual(review);
+        const compactReview = await readKernelOrderResult(
+          command,
+          taskId,
+          inspectionExchange.result_path,
+        );
+        expect(compactReview.semantic).toEqual(review);
         const ownerPath = path.join(inspectionExchange.directory, "transport-owner.json");
         const ownerText = await readFile(ownerPath, "utf8");
-        const { result_format: _format, ...historicalOwner } = JSON.parse(ownerText);
+        const { result_format: _format, ...historicalOwner } = JSON.parse(ownerText) as Record<
+          string,
+          unknown
+        >;
         await writeFile(ownerPath, JSON.stringify(historicalOwner));
         await expect(
           readKernelOrderResult(command, taskId, inspectionExchange.result_path),
         ).rejects.toThrow("does not accept compact");
         await writeFile(inspectionExchange.result_path, JSON.stringify(review));
-        expect(
-          (await readKernelOrderResult(command, taskId, inspectionExchange.result_path)).semantic,
-        ).toEqual(review);
+        const historicalReview = await readKernelOrderResult(
+          command,
+          taskId,
+          inspectionExchange.result_path,
+        );
+        expect(historicalReview.semantic).toEqual(review);
         await writeFile(ownerPath, ownerText);
       }
       await writeFile(path.join(root, "result.txt"), "changed after inspection");

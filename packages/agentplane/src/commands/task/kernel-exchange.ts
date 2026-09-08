@@ -1,3 +1,4 @@
+import { isRecord } from "../../shared/guards.js";
 import {
   putEvaluatorEvidenceObject,
   readEvaluatorEvidenceObject,
@@ -94,13 +95,14 @@ export async function readKernelOrderResult(
   );
   const compact = !("kind" in raw);
   if (compact) {
-    const owner = JSON.parse(
+    const owner: unknown = JSON.parse(
       await readStableRegularTextNoFollow(
         path.join(directory, "transport-owner.json"),
         "canonical transport owner",
       ),
     );
     if (
+      !isRecord(owner) ||
       owner.result_format !== "semantic_payload_v1" ||
       owner.work_order_id !== workOrder.work_order_id
     )
@@ -208,13 +210,14 @@ export async function issueKernelExchange(
   order = await withKernelReworkEvidence(order, directory, record);
   let resultFormat: "semantic_payload_v1" | undefined;
   try {
-    const owner = JSON.parse(
+    const owner: unknown = JSON.parse(
       await readStableRegularTextNoFollow(
         path.join(directory, "transport-owner.json"),
         "canonical transport owner",
       ),
     );
     if (
+      !isRecord(owner) ||
       owner.transport !== transport ||
       owner.work_order_id !== order.work_order_id ||
       (owner.result_format !== undefined && owner.result_format !== "semantic_payload_v1")

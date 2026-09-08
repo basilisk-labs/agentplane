@@ -48,6 +48,7 @@ import { buildObservedGithubPrMeta, buildOpenedPrMeta } from "../commands/shared
 import {
   externalAgentResultDigest,
   type ExternalAgentExchange,
+  type ExternalAgentResultEnvelope,
   validateExternalAgentResultEnvelope,
 } from "../commands/task/external-agent-exchange.js";
 import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";

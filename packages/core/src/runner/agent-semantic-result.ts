@@ -495,6 +495,7 @@ export function renderAgentSemanticResultSchemaJson(context?: SemanticPayloadCon
       : context.phase === "implementation"
         ? "canonical_outputs"
         : null;
+  /* eslint-disable unicorn/no-thenable -- JSON Schema conditionals require the then keyword. */
   schema.allOf = [
     { if: { properties: { status: { const: "blocked" } } }, then: { required: ["blocker"] } },
     {
@@ -524,6 +525,7 @@ export function renderAgentSemanticResultSchemaJson(context?: SemanticPayloadCon
         ]
       : []),
   ];
+  /* eslint-enable unicorn/no-thenable */
   schema.examples = [
     {
       work_order_id: "copy-the-issued-work-order-id",

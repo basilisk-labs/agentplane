@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task_id": "202609081134-SRM6JM",
+  "measurement": "Three matched scripted one-condition CLI cycles per revision; no model/provider calls.",
+  "groups": {
+    "before": {
+      "reports": [
+        "protocol-cost-SRM6JM-before-01.json",
+        "protocol-cost-SRM6JM-before-02.json",
+        "protocol-cost-SRM6JM-before-03.json"
+      ],
+      "fixture_digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747",
+      "schema_bytes": [452556, 452556, 452556],
+      "result_bytes": [6244, 6244, 6244],
+      "cli_protocol_ms": [3738.1554189999983, 3574.8632909999997, 3889.957999999999],
+      "median_cli_protocol_ms": 3738.1554189999983
+    },
+    "after": {
+      "reports": [
+        "protocol-cost-SRM6JM-after-01.json",
+        "protocol-cost-SRM6JM-after-02.json",
+        "protocol-cost-SRM6JM-after-03.json"
+      ],
+      "fixture_digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747",
+      "schema_bytes": [44683, 44683, 44683],
+      "result_bytes": [2746, 2746, 2746],
+      "cli_protocol_ms": [3523.1057079999996, 3485.028834000002, 3339.530167],
+      "median_cli_protocol_ms": 3485.028834000002
+    }
+  },
+  "reductions_percent": {
+    "required_schema_bytes": 90.12652577802525,
+    "agent_result_bytes": 56.02178090967329,
+    "median_cli_protocol_ms": 6.771430200933448
+  },
+  "profiling": {
+    "before": "protocol-cost-SRM6JM-profile-before-03.json",
+    "after": "protocol-cost-SRM6JM-profile-after.json",
+    "route_calls_before": 19,
+    "route_calls_after": 16,
+    "note": "Profiling uses wrappers that call the real implementation and is separate from uninstrumented timings. The change reuses the just-observed direct route; native mutations still force fresh observations."
+  },
+  "validation": {
+    "passed": [
+      "Targeted ESLint",
+      "TypeScript build",
+      "Schema artifact parity",
+      "Hotspot and oversized-test limits",
+      "112 contract, canonical transport and blocker-backend tests",
+      "100 of 101 expanded task-advance, rework, interruption and recovery tests",
+      "Three final threshold-enforcing CLI cycles with three semantic roles and no retries"
+    ],
+    "failed": [
+      {
+        "evidence": "protocol-cost-SRM6JM-recovery-baseline.json",
+        "description": "One recovery assertion fails identically on the original source revision and current implementation. Current-WorkOrder binding conflicts with preservation of the original semantic report."
+      }
+    ]
+  },
+  "limitations": [
+    "Byte measurements are not provider token counts.",
+    "No paid provider run or end-to-end model timing was performed.",
+    "Timing has three samples per version on one machine and includes native CLI checks; it is not a production latency guarantee.",
+    "Baseline failure remains unresolved; safety/qualification is not fully green.",
+    "Active reliability task 202609080727-BAWTEE covers the related admission and recovery work."
+  ]
+}
