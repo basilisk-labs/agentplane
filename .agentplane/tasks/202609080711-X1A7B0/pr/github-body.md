@@ -27,10 +27,20 @@ On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...cli.core.route-decision.direct-closeout.test.ts | 26 ++++++++++++----------
- .../commands/shared/route-decision-next-action.ts  | 10 ++++-----
- .../agentplane/src/commands/task/task.command.ts   |  4 ++--
- 3 files changed, 21 insertions(+), 19 deletions(-)
+ .agentplane/WORKFLOW.md                            | 23 ++++++++++++++-
+ .agentplane/workflows/last-known-good.md           | 24 ++++++++++++++-
+ docs/reference/generated-reference.mdx             |  6 ++--
+ docs/releases/v0.6.28.md                           | 34 ++++++++++++++++++++++
+ packages/agentplane/package.json                   |  6 ++--
+ ...cli.core.route-decision.direct-closeout.test.ts | 26 +++++++++--------
+ .../commands/shared/route-decision-next-action.ts  | 10 +++----
+ .../agentplane/src/commands/task/task.command.ts   |  4 +--
+ packages/core/package.json                         |  2 +-
+ packages/recipes/package.json                      |  2 +-
+ packages/recipes/src/index.ts                      |  2 +-
+ packages/spec/examples/acr.json                    | 22 ++++++++++----
+ packages/testkit/package.json                      |  2 +-
+ 13 files changed, 126 insertions(+), 37 deletions(-)
 ```
 
 </details>
