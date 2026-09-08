@@ -4,7 +4,7 @@ title: "Measure provider token usage and align Bun runtime qualification"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -750,22 +750,114 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609082225-ZYASFT"
-    revision: 10
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-08T23:27:28.606Z"
+    updated_at: "2026-09-08T23:36:14.157Z"
     work_items:
       measured-runtime:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "measured-runtime"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:e4498dcf98cff13f1d02212687b998a392e5cddde94213a407b32567e381b601"
+            id: "verified source changes"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609082225-ZYASFT"
+              work_item_id: "measured-runtime"
+            provenance:
+              - "sha256:4767ce6ece6230961b37337108508d72ac47fcf432155526daac0bfa84dd60db"
+              - ".agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:658ecc53be1459ca35ef42d41a381f8ed9c564bb3ed5a34bb89bd3c3b702d3df"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:315b3aa4a5fee66a941115e0ee8e38d788ad85dd7737b6092d9f9a863a282f3e"
+            id: "focused regression tests"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609082225-ZYASFT"
+              work_item_id: "measured-runtime"
+            provenance:
+              - "sha256:4767ce6ece6230961b37337108508d72ac47fcf432155526daac0bfa84dd60db"
+              - ".agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:658ecc53be1459ca35ef42d41a381f8ed9c564bb3ed5a34bb89bd3c3b702d3df"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:66e03026eb38bd57650a083fb0ccb7bde22c994ba74f30e756ae4670fd5aebd2"
+            id: "reproducible provider measurement evidence with coverage and quality limits"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609082225-ZYASFT"
+              work_item_id: "measured-runtime"
+            provenance:
+              - "sha256:4767ce6ece6230961b37337108508d72ac47fcf432155526daac0bfa84dd60db"
+              - ".agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:658ecc53be1459ca35ef42d41a381f8ed9c564bb3ed5a34bb89bd3c3b702d3df"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:2ce8197f87e22f48c90de753fe09ac7893d82a492f8a68275bf98c76847f718c"
+            id: "Bun build qualification evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609082225-ZYASFT"
+              work_item_id: "measured-runtime"
+            provenance:
+              - "sha256:4767ce6ece6230961b37337108508d72ac47fcf432155526daac0bfa84dd60db"
+              - ".agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:658ecc53be1459ca35ef42d41a381f8ed9c564bb3ed5a34bb89bd3c3b702d3df"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json"
+              check_id: "full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-08T23:36:14.145Z"
+              repository_snapshot_digest: "sha256:658ecc53be1459ca35ef42d41a381f8ed9c564bb3ed5a34bb89bd3c3b702d3df"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-08T23:36:14.157Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:5c34afe442a0b71ae6212924ad4c9985faabacca46ed30c8c4a4a10f242daff0"
+        entity: "work_item"
+        id: "event_69dd9fa83645fef0ace8f0a7"
+        mutation_id: "external-result:work-order-202609082225-ZYASFT-executor-a99ddb552ace8976bf9a01ad"
+        plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
+        task_revision: 10
+        work_item_id: "measured-runtime"
     leases: []
     mutation_receipts:
       compatibility:sha256:0640fda6706822537c117dd49dec13cf80f19a75ce1333fdcbaca671c7d23162:
@@ -958,6 +1050,30 @@ extensions:
         mutation_id: "compatibility:sha256:fae8e9c2ed79d84ef36ed228fd2ef00ffc3030fc9a41c5add6f0b4168c364bba"
         next_revision: 9
         previous_revision: 8
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
+      external-result:work-order-202609082225-ZYASFT-executor-a99ddb552ace8976bf9a01ad:
+        aggregate_digest: "sha256:a8e15c9123a95494b21b8ea2766b0a5ecc5a80e51d58f08db2519a9fab050f58"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T23:36:14.157Z"
+          cause_refs:
+            - "semantic-result:sha256:5c34afe442a0b71ae6212924ad4c9985faabacca46ed30c8c4a4a10f242daff0"
+          entity: "work_item"
+          from: "READY"
+          id: "event_69dd9fa83645fef0ace8f0a7"
+          mutation_id: "external-result:work-order-202609082225-ZYASFT-executor-a99ddb552ace8976bf9a01ad"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 10
+          to: "COMPLETED"
+          work_item_id: "measured-runtime"
+        mutation_id: "external-result:work-order-202609082225-ZYASFT-executor-a99ddb552ace8976bf9a01ad"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609082225-ZYASFT"
     pending_effects: []

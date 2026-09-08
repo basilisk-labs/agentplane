@@ -16,7 +16,7 @@ USER approved implementation of factual provider-token accounting and a reproduc
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
