@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,37 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-08T13:59:30.362Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 8 typed finding(s)."
+  evaluated_sha: "4005ad7a1c494e516248e8b3e975340de70a034e"
+  blueprint_digest: "baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5"
+  evidence_refs:
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/d1ac7f3018b756a757b6bf23023f2da08cb6a57e53784ed4cb8b3673336c5b37.md"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/README.md"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/4106516aaf17f4b9884482a195ebf3ddcb32ce5c1d36e81b28f59efeb31e3fcf.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908135737862-8e81902afe3e091d.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac8ee9e94898dc99774784bae63bbc0da680c8062f6d60d488514d81a250c824.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The frozen diff and all seven frozen evidence digests match the evaluated implementation. Changes remain inside the approved source roots and task-owned artifacts. No dependency changes or historical exchange rewrites were introduced."
+    - "Three matched scripted cycles reduce required schema bytes from 452556 to 44683 (90.1 percent) and agent result bytes from 6244 to 2746 (56.0 percent). Both acceptance thresholds pass. Median measured CLI protocol time changes from 3738.2 to 3485.0 ms. No model-token or provider-latency claim is made."
+    - "Compact payloads require the issued WorkOrder id and an exchange that explicitly enables the new format. The CLI supplies service identity only after validation. Existing stale, role, scope, lease, canonical-binding and historical-envelope checks remain enforced. Compact plans normalize to the existing full persisted contract."
+    - "Focused positive and negative transport, plan, authority and recovery tests cover the changed paths. The schema-store correction retains historical-copy, object integrity and interrupted-publication assertions. Both known schema identifiers retain the same backend hash and no-symlink checks."
+    - "The latest verification record for implementation 4005ad7a1c494e516248e8b3e975340de70a034e records bun run ci:local:full as passed. Typecheck, targeted lint, formatting and 27 focused correction tests also pass."
+    - "The additional original-claims recovery assertion previously failed on both the original source and current implementation. Its three relevant source identities are unchanged. This is a documented pre-existing limitation in the separate reliability work, not a waived identity check or a claim that all recovery behavior is proven."
+    - "Residual risk: The pre-existing interrupted-implementation original-claims recovery inconsistency remains documented in protocol-cost-SRM6JM-recovery-baseline.json."
+    - "Residual risk: No paid provider comparison or hosted integration validation was performed."
 execution_route:
   frozen: true
   reason_codes:
@@ -1144,7 +1175,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 21
+    event_cursor: 22
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1694,9 +1725,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 27
+    revision: 28
     schema_version: 1
-    updated_at: "2026-09-08T13:57:39.172Z"
+    updated_at: "2026-09-08T13:57:39.175Z"
     work_items:
       baseline:
         attempt: 1
@@ -2429,6 +2460,30 @@ extensions:
         mutation_id: "compatibility:sha256:e8b7deaf2a40489ea2f19da7cff796e7d6f6c660ff17d18e5c6a2c31c8ef2d7f"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:f4ebeef4d2249b705ab88e37913e482150392e673cda5675fbbb976681eb924b:
+        aggregate_digest: "sha256:d13340462958a785f7dd193e07a46f72aed3b98ef49cb154fd0be41a37be8d36"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:57:39.175Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_605053343154ccf23d9eb1cf"
+          mutation_id: "compatibility:sha256:f4ebeef4d2249b705ab88e37913e482150392e673cda5675fbbb976681eb924b"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 27
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f4ebeef4d2249b705ab88e37913e482150392e673cda5675fbbb976681eb924b"
+        next_revision: 28
+        previous_revision: 27
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       external-result:work-order-202609081134-SRM6JM-executor-0c479114a89e4d5d1e1056b2:
