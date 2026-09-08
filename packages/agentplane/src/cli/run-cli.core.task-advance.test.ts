@@ -201,9 +201,12 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
     });
     expect(first.state_fingerprint).toBe(await readRouteFingerprint(root, taskId));
     expect(first.context_refs.length).toBeGreaterThan(0);
+    expect(first.exchange?.result_schema_ref).toMatch(
+      /^\.\.\/\.\.\/\.\.\/schemas\/objects\/sha256\/[a-f0-9]{64}\.json$/u,
+    );
     expect(first.exchange).toMatchObject({
       work_order_ref: "work-order.json",
-      result_schema_ref: "result-schema.json",
+
       result_ref: "result.json",
       return_invocation:
         "agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json",

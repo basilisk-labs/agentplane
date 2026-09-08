@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "task_id": "202609081927-P1MJV7",
+  "runtime": {
+    "bun": "1.3.6",
+    "provider_calls": 0
+  },
+  "source_sha256": {
+    "src/runner/context/work-order-context.ts": "0ecbc678f9652fbe1a7d23b2140086d8a6410d02de04fbe0a6de9975718d3672",
+    "src/runner/context/task-context.test.ts": "48a717cfa1f5cab5120ed9c8c1c7eaff0e6035353c5eb73edda0117988efd9d7",
+    "src/commands/task/external-agent-exchange.ts": "f5998c5f1e1bfdf1db3cbd93454a26cf4e05dc922512d3a3acf9593a896c43e6",
+    "src/commands/task/external-agent-exchange.test.ts": "1f3ba54038fbe181f882582460facf847128a0ce2a7a48f34e65131a591b64fb",
+    "src/commands/task/verification-infrastructure.ts": "044fc6fb628f6d11ef55124c149b3c997ef6fb39038b2108934a99c0ac7783c5",
+    "src/commands/task/verification-infrastructure.test.ts": "a9001017fd377acc4f31a9ba4aed3907af3555b32626f70503d0562014aa86bf",
+    "src/commands/task/branch-task-supervisor-episodes.ts": "36bef4d78ef11bbda44e059064e746c00b6d113d92d863eecc914cfe255ad842",
+    "src/commands/task/branch-task-supervisor.test.ts": "2fefdb85e622f4b22be178d77318e1dfb319c9b8688d5a2a029289bf0e45d278",
+    "src/commands/task/direct-task-verification-record.ts": "00bb6c270649d9286c1fb5f2806fa06dab2158a763e05f41c85508eb5c159dcb",
+    "src/commands/task/branch-task-verification.test.ts": "5aa23521012589646f58fc127381d4292e4db5da1045dc6a825577474ee409c8",
+    "src/cli/run-cli.core.task-advance.clean-verification.test.ts": "a6a8b48071b76c4681226c2ff4cd29fcdf3ddc44e7894e6078a9b10cc32d097b",
+    "src/runner/usecases/task-run-bootstrap.ts": "9b48633fef2309858fe7ebae9a747960b2b09be2d9c1f0a7f5d1518a7e71ed01",
+    "src/runner/adapters/prepared-input.ts": "28d4d1aec017936aaba6ed2efbdaaf304cf25c581a328e4d0699e1a065c77fff"
+  },
+  "context": {
+    "fixture": "acknowledged-live-session-single-objective-change",
+    "fresh_blocks": 11,
+    "delta_blocks": 1,
+    "fresh_bytes": 7453,
+    "delta_bytes": 466,
+    "managed_transport_retention": false,
+    "limitation": "The managed adapters start fresh processes. Delta bytes measure the context resolver with explicit live-session acknowledgement, not repeated managed model invocations."
+  },
+  "schemas": {
+    "fixture": "two same-role external exchanges",
+    "same_role_exchanges": 2,
+    "old_objects": 2,
+    "new_objects": 1,
+    "old_schema_bytes": 15720,
+    "new_schema_bytes": 7860,
+    "limitation": "Schema object bytes exclude per-exchange identity descriptors. Deduplication and recovery are asserted by external-agent-exchange.test.ts."
+  },
+  "verification": {
+    "fixture": "real runCli branch_pr implementation result replay with an injected native ENOSPC in the declared check",
+    "new_implementation_episodes": 0,
+    "work_item_after_retry": "COMPLETED",
+    "same_resume_argv": true,
+    "implementation_sha_preserved": true,
+    "source_file_history_preserved": true,
+    "failed_attempt_preserved": true,
+    "retry_limit_total_attempts": 3,
+    "scope": "Independent retry budgets for each WorkItem and task-level verification. The managed top-level branch episode is also covered by branch-task-verification.test.ts.",
+    "limitation": "The process error is injected locally. No paid provider or remote latency was measured."
+  },
+  "provider_tokens": null,
+  "provider_latency_ms": null
+}

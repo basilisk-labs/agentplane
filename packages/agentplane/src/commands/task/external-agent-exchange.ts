@@ -17,6 +17,12 @@ import {
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
+import {
+  putEvaluatorEvidenceObject,
+  readEvaluatorEvidenceObject,
+} from "../evaluator/evaluator-evidence-store.js";
+import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+
 import { CliError } from "../../shared/errors.js";
 
 export type ExternalAgentResultEnvelope = {
@@ -46,6 +52,7 @@ export type ExternalAgentExchange = {
   work_order_id: string;
   work_order_ref: string;
   result_schema_ref: string;
+  result_schema_object?: Awaited<ReturnType<typeof putEvaluatorEvidenceObject>>;
   result_ref: string;
   evaluator_work_order_ref: string | null;
   baseline: {
@@ -133,12 +140,40 @@ export async function resolveExternalAgentExchangePaths(opts: {
 export async function readExternalAgentExchange(
   filePath: string,
 ): Promise<ExternalAgentExchange | null> {
+  let exchange: ExternalAgentExchange;
   try {
-    return JSON.parse(await readFile(filePath, "utf8")) as ExternalAgentExchange;
+    exchange = JSON.parse(
+      await readStableRegularTextNoFollow(filePath, "external exchange"),
+    ) as ExternalAgentExchange;
   } catch (error) {
     if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
     throw error;
   }
+  if (exchange.result_schema_object)
+    await validateExternalSchemaObject(path.dirname(filePath), exchange);
+  return exchange;
+}
+
+function externalSchemaRoot(directory: string): string {
+  return path.resolve(directory, "../../..");
+}
+
+async function validateExternalSchemaObject(
+  directory: string,
+  exchange: ExternalAgentExchange,
+): Promise<void> {
+  const root = externalSchemaRoot(directory);
+  const { artifact } = await readEvaluatorEvidenceObject({
+    gitRoot: root,
+    objectRoot: "schemas/objects",
+    artifact: exchange.result_schema_object,
+  });
+  if (
+    artifact.kind !== "result_schema" ||
+    artifact.logical_name !== "external-result-schema" ||
+    path.resolve(exchange.result_schema_ref) !== path.join(root, artifact.path)
+  )
+    throw new Error("External result schema object does not match the exchange identity.");
 }
 
 export async function writeExternalAgentExchange(
@@ -188,37 +223,61 @@ export async function persistExternalAgentExchangeArtifacts(opts: {
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
   exchange: ExternalAgentExchange;
-}): Promise<void> {
+}): Promise<ExternalAgentExchange> {
   await mkdir(opts.paths.directory, { recursive: true, mode: 0o700 });
-  await Promise.all([
-    atomicWriteFile(
-      opts.paths.work_order,
-      `${JSON.stringify(validateAgentWorkOrderV2(opts.work_order), null, 2)}\n`,
-      "utf8",
-    ),
-    atomicWriteFile(
-      opts.paths.result_schema,
-      opts.exchange.result_format === "semantic_payload_v1"
-        ? renderAgentSemanticResultSchemaJson({ role: opts.work_order.role })
-        : `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
-      "utf8",
-    ),
-    ...(opts.exchange.result_format === "semantic_payload_v1"
-      ? []
-      : [
-          atomicWriteFile(
-            opts.paths.semantic_result_schema,
-            renderAgentSemanticResultSchemaJson(),
-            "utf8",
-          ),
-        ]),
-  ]);
+  await atomicWriteFile(
+    opts.paths.work_order,
+    `${JSON.stringify(validateAgentWorkOrderV2(opts.work_order), null, 2)}\n`,
+    "utf8",
+  );
   await atomicWriteFile(
     path.join(opts.paths.directory, WORK_ORDER_CONTEXT_FILENAME),
     `${JSON.stringify(buildWorkOrderContextManifest(opts.work_order, opts.paths.work_order), null, 2)}\n`,
     "utf8",
   );
-  await writeExternalAgentExchange(opts.paths.exchange, opts.exchange);
+  let exchange = opts.exchange;
+  let historical = false;
+  try {
+    await readStableRegularTextNoFollow(
+      opts.paths.result_schema,
+      "historical external result schema",
+    );
+    historical = true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (!historical && exchange.result_format === "semantic_payload_v1") {
+    const root = externalSchemaRoot(opts.paths.directory);
+    const artifact = await putEvaluatorEvidenceObject({
+      gitRoot: root,
+      taskQualityRoot: path.join(root, "schemas"),
+      logicalName: "external-result-schema",
+      kind: "result_schema",
+      extension: ".json",
+      mediaType: "application/schema+json",
+      contents: renderAgentSemanticResultSchemaJson({ role: opts.work_order.role }),
+    });
+    exchange = {
+      ...exchange,
+      result_schema_ref: path.join(root, artifact.path),
+      result_schema_object: artifact,
+    };
+    await validateExternalSchemaObject(opts.paths.directory, exchange);
+  } else if (!historical) {
+    await atomicWriteFile(
+      opts.paths.result_schema,
+      `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
+      "utf8",
+    );
+    await atomicWriteFile(
+      opts.paths.semantic_result_schema,
+      renderAgentSemanticResultSchemaJson(),
+      "utf8",
+    );
+  }
+  // Publish the exchange only after the immutable schema object is readable.
+  await writeExternalAgentExchange(opts.paths.exchange, exchange);
+  return exchange;
 }
 
 function exactKeys(value: Record<string, unknown>, expected: readonly string[]): boolean {
@@ -318,6 +377,9 @@ export function externalAgentIssueDigest(opts: {
     work_order_id: exchange.work_order_id,
     work_order_ref: exchange.work_order_ref,
     result_schema_ref: exchange.result_schema_ref,
+    ...(exchange.result_schema_object
+      ? { result_schema_object: exchange.result_schema_object }
+      : {}),
     result_ref: exchange.result_ref,
     evaluator_work_order_ref: exchange.evaluator_work_order_ref,
     baseline: exchange.baseline,
