@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -303,9 +303,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "8944b1e5df333b3c49e4b19fe0574634b125db10"
-  message: "🚧 SRM6JM task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1526,9 +1524,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-08T13:00:13.785Z"
+    updated_at: "2026-09-08T13:00:16.846Z"
     work_items:
       baseline:
         attempt: 1
@@ -1609,14 +1607,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       compact-plan:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "compact-plan"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:136c3b8019672d65fbb6320c7f81ffe5e41cf446944d7a1bfa75d579cc16df52"
+            id: "compact-plan-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609081134-SRM6JM"
+              work_item_id: "compact-plan"
+            provenance:
+              - "sha256:8824e3655a87b50fbadb9f4bee420e29fd5199e1da9646beb0a8a3293557ad29"
+              - ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5e4799b3ec8cfec0f1e7d879c9e7a99ec3611fc6ef19c695120fa7910a416398"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json"
+              check_id: "task-check"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-08T13:00:16.832Z"
+              repository_snapshot_digest: "sha256:5e4799b3ec8cfec0f1e7d879c9e7a99ec3611fc6ef19c695120fa7910a416398"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       profile-and-qualify:
         attempt: 0
         claim_id: null
@@ -1663,6 +1691,23 @@ extensions:
         task_id: "202609081134-SRM6JM"
         task_revision: 12
         work_item_id: "compact-exchange"
+      -
+        at: "2026-09-08T13:00:16.846Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:f7384a0c8ffe815f7c4d78001de57eaba04f6822cbacea2bcfd63d00c0b67be7"
+        entity: "work_item"
+        id: "event_f9b7f32a9eeba854acd54c41"
+        mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-1afefedd6a2c53fa94dc2065"
+        plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+        task_revision: 15
+        work_item_id: "compact-plan"
     leases: []
     mutation_receipts:
       compatibility:sha256:0bbaf829ec0396f3c910327ed4d2193f72d2a0f1f1c9e17015b841d896a050e1:
@@ -1951,6 +1996,30 @@ extensions:
         mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-0c479114a89e4d5d1e1056b2"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      external-result:work-order-202609081134-SRM6JM-executor-1afefedd6a2c53fa94dc2065:
+        aggregate_digest: "sha256:c52b5f73d1c3ce3790423ab5e207a27d6fd6d6b55ca46dd331ff9b0c184cc95f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:00:16.846Z"
+          cause_refs:
+            - "semantic-result:sha256:f7384a0c8ffe815f7c4d78001de57eaba04f6822cbacea2bcfd63d00c0b67be7"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_f9b7f32a9eeba854acd54c41"
+          mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-1afefedd6a2c53fa94dc2065"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 15
+          to: "COMPLETED"
+          work_item_id: "compact-plan"
+        mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-1afefedd6a2c53fa94dc2065"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       external-result:work-order-202609081134-SRM6JM-executor-d99cafa918a2682d5a5bb746:
