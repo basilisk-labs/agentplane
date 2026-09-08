@@ -1,4 +1,3 @@
-import { normalizeCompactTaskPlanProposal } from "../tasks/task-centric/schema.js";
 import { z } from "zod";
 import { kernelEpisodeBindingSchema } from "../tasks/kernel-semantic.js";
 
@@ -24,7 +23,10 @@ import {
   type StateFingerprint,
   type StateFingerprintPreconditionDiagnostic,
 } from "./state-fingerprint.js";
-import { REPOSITORY_SNAPSHOT_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
+import {
+  normalizeCompactTaskPlanProposal,
+  REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
+} from "../tasks/task-centric/schema.js";
 import { taskCentricDigest } from "../tasks/task-centric/digest.js";
 
 export const AGENT_WORK_ORDER_SCHEMA_VERSION = 2 as const;

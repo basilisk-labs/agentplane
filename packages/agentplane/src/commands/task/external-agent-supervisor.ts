@@ -44,7 +44,7 @@ import {
   assertExternalAgentSupervisorIntent,
   finalizeCompletedExternalAgentExchange,
 } from "./external-agent-exchange-authority.js";
-import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+import { semanticPurpose, usesExternalImplementationAuthority } from "./external-agent-purpose.js";
 import {
   bindPreparedEvaluatorState,
   evaluatorReturnFingerprint,
@@ -69,19 +69,6 @@ export type IssuedExternalAgentExchange = {
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
-
-function semanticPurpose(decision: TaskRouteDecision): ExternalAgentExchange["purpose"] | null {
-  const step = decision.workflowStep;
-  if (step.kind === "agent_episode") return step.episode.purpose;
-  if (
-    step.kind === "cli_operation" &&
-    step.operation.id === "runner.follow" &&
-    step.operation.params.mode === "run"
-  ) {
-    return "implementation";
-  }
-  return null;
-}
 
 function digestText(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;

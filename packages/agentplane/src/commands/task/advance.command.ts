@@ -120,15 +120,21 @@ export function makeRunTaskAdvanceHandler(deps: {
         result_path: parsed.result,
         include_remote: parsed.remote,
       });
-      const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
-      const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
-      current = await buildTaskRouteDecision({
-        ctx: refreshedCommand,
-        cwd: checkout,
-        rootOverride: null,
-        includeRemote: parsed.remote,
-        taskId: parsed.taskId,
-      });
+      if (accepted.workflowMode === "direct") {
+        // Admission observed the route after semantic mutation. Its subsequent journal
+        // bookkeeping does not change direct route inputs; native transitions refresh below.
+        current = accepted;
+      } else {
+        const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
+        const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+        current = await buildTaskRouteDecision({
+          ctx: refreshedCommand,
+          cwd: checkout,
+          rootOverride: null,
+          includeRemote: parsed.remote,
+          taskId: parsed.taskId,
+        });
+      }
     } else {
       const routed = await decide();
       current =

@@ -455,7 +455,7 @@ export function buildAgentActionPacket(opts: {
   if (packet.exchange?.result_format === "semantic_payload_v1") {
     packet.action.instruction =
       packet.action.instruction
-        .replace(/\bresult\./gu, "")
+        .replaceAll(/\bresult\./gu, "")
         .replace(
           "Copy work_order.planning_context.repository_snapshot exactly into planning_baseline.",
           "Use the issued result schema for the plan representation. Keep summary short; do not repeat the plan.",
