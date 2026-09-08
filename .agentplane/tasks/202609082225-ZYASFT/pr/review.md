@@ -29,7 +29,22 @@ Created: 2026-09-08T22:29:07.319Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   43 +-
+ .../evaluator/evaluator-execute.command.test.ts    |    2 +-
+ .../shared/supervisor-execution-episode.test.ts    |  122 +-
+ .../shared/supervisor-execution-episode.ts         |   15 +
+ .../src/commands/task/task-token-usage.test.ts     |   91 +-
+ .../runner/adapters/codex-result-transport.test.ts |   94 +-
+ .../src/runner/adapters/codex-result-transport.ts  |   74 +-
+ .../agentplane/src/runner/adapters/codex.test.ts   |   13 +-
+ packages/agentplane/tsup.config.ts                 |   36 +-
+ .../src/runner/supervisor-execution-episode.ts     |   29 +
+ scripts/baselines/bun-runtime-ZYASFT.json          |   30 +
+ .../baselines/context-provider-usage-ZYASFT.json   | 4276 ++++++++++++++++++++
+ scripts/bench/measure-context-provider-usage.mjs   |  421 ++
+ scripts/checks/run-local-ci.mjs                    |    3 +
+ scripts/lib/bun-runtime.mjs                        |   22 +
+ 15 files changed, 5168 insertions(+), 103 deletions(-)
 ```
 
 </details>
