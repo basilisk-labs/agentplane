@@ -13,7 +13,7 @@ Created: 2026-09-08T11:38:53.832Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,13 @@ Created: 2026-09-08T11:38:53.832Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../backends/task-backend.local-handoff.test.ts    |  46 +++-
+ .../backends/task-backend/local-backend-read.ts    |  38 +++-
+ ...run-cli.core.task-advance.protocol-cost.test.ts | 251 +++++++++++++++++++++
+ .../baselines/protocol-cost-SRM6JM-before-01.json  | 110 +++++++++
+ .../baselines/protocol-cost-SRM6JM-before-02.json  | 110 +++++++++
+ .../baselines/protocol-cost-SRM6JM-before-03.json  | 110 +++++++++
+ 6 files changed, 661 insertions(+), 4 deletions(-)
 ```
 
 </details>

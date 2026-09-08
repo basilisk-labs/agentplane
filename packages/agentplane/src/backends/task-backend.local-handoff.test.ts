@@ -1,4 +1,5 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -56,4 +57,47 @@ describe("LocalBackend handoff artifacts", () => {
     expect(warnings).not.toContain("skip:202601300000-EMPTY: missing_or_unreadable_readme");
     expect(warnings).not.toContain("skip:202601300000-HANDOF: missing_or_unreadable_readme");
   });
+
+  it.each(["valid", "tampered", "not_schema", "mixed", "symlink", "readme"])(
+    "recognizes only intact result-schema-only directories: %s",
+    async (scenario) => {
+      const backend = new LocalBackend({ dir: tempDir });
+      const taskId = "202601300000-SCHEMA";
+      const directory = path.join(tempDir, taskId);
+      const objectRoot = path.join(directory, "quality", "objects", "sha256");
+      await mkdir(objectRoot, { recursive: true });
+      const contents = JSON.stringify(
+        scenario === "not_schema"
+          ? { kind: "task", status: "DOING" }
+          : {
+              $id: "https://agentplane.org/schemas/agent-semantic-result.schema.json",
+              $schema: "http://json-schema.org/draft-07/schema#",
+              type: "object",
+            },
+      );
+      const objectPath = path.join(
+        objectRoot,
+        `${createHash("sha256").update(contents).digest("hex")}.json`,
+      );
+      if (scenario === "symlink") {
+        const target = path.join(tempDir, "schema.json");
+        await writeFile(target, contents);
+        await symlink(target, objectPath);
+      } else await writeFile(objectPath, scenario === "tampered" ? "{}" : contents);
+      if (scenario === "mixed") await writeFile(path.join(directory, "task-state.json"), "{}");
+      if (scenario === "readme") await mkdir(path.join(directory, "README.md"));
+
+      expect(await backend.listTasks()).toEqual([]);
+      const warnings = backend.getLastListWarnings();
+      if (scenario === "valid") expect(warnings).toEqual([]);
+      else expect(warnings).toContain(`skip:${taskId}: missing_or_unreadable_readme`);
+      // A warm projection must not erase a scan warning.
+      await backend.listProjectionTasks();
+      if (scenario === "valid") expect(backend.getLastListWarnings()).toEqual([]);
+      else
+        expect(backend.getLastListWarnings()).toContain(
+          `skip:${taskId}: missing_or_unreadable_readme`,
+        );
+    },
+  );
 });

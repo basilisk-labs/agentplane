@@ -1,0 +1,7 @@
+ .../backends/task-backend.local-handoff.test.ts    |  46 +++-
+ .../backends/task-backend/local-backend-read.ts    |  38 +++-
+ ...run-cli.core.task-advance.protocol-cost.test.ts | 251 +++++++++++++++++++++
+ .../baselines/protocol-cost-SRM6JM-before-01.json  | 110 +++++++++
+ .../baselines/protocol-cost-SRM6JM-before-02.json  | 110 +++++++++
+ .../baselines/protocol-cost-SRM6JM-before-03.json  | 110 +++++++++
+ 6 files changed, 661 insertions(+), 4 deletions(-)
