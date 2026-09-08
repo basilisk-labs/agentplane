@@ -34,6 +34,7 @@ Implement the user-approved optimization plan in dependency order: establish a r
  .../src/cli/run-cli.core.task-advance.test.ts      |  79 +--
  .../src/cli/run-cli.core.task-advance.testkit.ts   |   1 +
  .../evaluator/evaluator-evidence-store.test.ts     |   7 +-
+ .../agentplane/src/commands/shared/task-backend.ts |   8 +-
  .../src/commands/task/advance.command.ts           |  27 +-
  .../src/commands/task/agent-action-packet.ts       |  11 +
  .../commands/task/external-agent-exchange.test.ts  | 103 +++-
@@ -62,7 +63,7 @@ Implement the user-approved optimization plan in dependency order: establish a r
  .../protocol-cost-SRM6JM-profile-before-03.json    | 575 +++++++++++++++++++++
  .../protocol-cost-SRM6JM-recovery-baseline.json    |  29 ++
  .../baselines/protocol-cost-SRM6JM-summary.json    |  67 +++
- 35 files changed, 3347 insertions(+), 104 deletions(-)
+ 36 files changed, 3350 insertions(+), 109 deletions(-)
 ```
 
 </details>

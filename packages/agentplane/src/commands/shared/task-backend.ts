@@ -31,12 +31,10 @@ import {
 
 export {
   loadTaskFromBranchSnapshot,
-  resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
-  taskBranchHasLocalRef,
 } from "./task-backend-branch-snapshot.js";
 
-export type CommandMemo = {
+type CommandMemo = {
   tasks?: Promise<TaskData[]>;
   taskProjection?: Promise<TaskSummary[]>;
   taskBranchInventory?: Promise<{
@@ -163,11 +161,11 @@ export function getTaskBackendCapabilities(ctx: CommandContext) {
   } satisfies TaskBackendCapabilities;
 }
 
-export function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
+function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
   return getTaskBackendCapabilities(ctx).canonical_source === "local";
 }
 
-export function backendWritesTaskReadmes(ctx: CommandContext): boolean {
+function backendWritesTaskReadmes(ctx: CommandContext): boolean {
   return getTaskBackendCapabilities(ctx).writes_task_readmes === true;
 }
 
