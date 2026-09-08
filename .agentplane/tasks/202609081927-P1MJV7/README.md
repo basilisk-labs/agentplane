@@ -1,10 +1,10 @@
 ---
 id: "202609081927-P1MJV7"
 title: "Reduce redundant recovery episodes and exchange data"
-status: "DOING"
+status: "BLOCKED"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -235,6 +235,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/branch; repository effects: source_code, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The added USER request requires the branch cleanup implementation and its tests. Requested scope: roots=packages/agentplane/src/commands/branch; repository effects=source_code,tests; request digest=sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65. Agentplane receipt: external-agent-blocker/tr_9f3424827f0fced23b814230b3bda09e/sha256:16eb6e765612cbebd6df63f7dad3f3ea3a503dab88c8b4cc3d7edba568966e35/sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65."
 events:
   -
     type: "comment"
@@ -255,8 +258,15 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. USER requested automatic post-merge worktree cleanup in addition to the three approved optimizations. The task checkout also needs reconciliation to merged prerequisite PR 5923. Recommended action: Grant the USER-requested cleanup scope and fast-forward the unmodified task checkout to base main before issuing a fresh implementation packet. Requested scope: roots=packages/agentplane/src/commands/branch; repository effects=source_code,tests; request digest=sha256:b46c06d9486aa372a98db32a7bd246a64f8f947b27095a56c1f9a692f3c5cbaa. Agentplane receipt: external-agent-blocker/tr_4b32ff99bad1fb38731fbd3d2d1f29fd/sha256:2ee53ffb0f8ce33a54689a067e49700830183d5cdc1fdbfbb4f6678f23dab97a/sha256:b46c06d9486aa372a98db32a7bd246a64f8f947b27095a56c1f9a692f3c5cbaa."
+  -
+    type: "status"
+    at: "2026-09-08T19:43:46.844Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The added USER request requires the branch cleanup implementation and its tests. Requested scope: roots=packages/agentplane/src/commands/branch; repository effects=source_code,tests; request digest=sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65. Agentplane receipt: external-agent-blocker/tr_9f3424827f0fced23b814230b3bda09e/sha256:16eb6e765612cbebd6df63f7dad3f3ea3a503dab88c8b4cc3d7edba568966e35/sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65."
 doc_version: 3
-doc_updated_at: "2026-09-08T19:42:22.484Z"
+doc_updated_at: "2026-09-08T19:43:46.844Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
@@ -306,22 +316,20 @@ extensions:
     status: "active"
     task_id: "202609081927-P1MJV7"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-08T19:43:15.429Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:2ee53ffb0f8ce33a54689a067e49700830183d5cdc1fdbfbb4f6678f23dab97a"
+    blocker_state_fingerprint: "sha256:16eb6e765612cbebd6df63f7dad3f3ea3a503dab88c8b4cc3d7edba568966e35"
     kind: "task_scope_extension_request"
     request:
-      rationale: "USER explicitly requested automatic removal of task worktrees after merge into main. The cleanup probe currently blocks before base synchronization."
+      rationale: "USER explicitly requested automatic cleanup after merge while retaining the original three optimizations."
       repository_effects:
         - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
         - "packages/agentplane/src/commands/branch"
-    request_digest: "sha256:b46c06d9486aa372a98db32a7bd246a64f8f947b27095a56c1f9a692f3c5cbaa"
+    request_digest: "sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_4b32ff99bad1fb38731fbd3d2d1f29fd"
+    status: "pending"
+    transition_id: "tr_9f3424827f0fced23b814230b3bda09e"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -522,7 +530,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 7
+    event_cursor: 9
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -534,7 +542,7 @@ extensions:
 
         Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval.
       task_id: "202609081927-P1MJV7"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -731,9 +739,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 10
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-08T19:42:22.484Z"
+    updated_at: "2026-09-08T19:43:46.844Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 0
@@ -771,6 +779,30 @@ extensions:
         mutation_id: "compatibility:sha256:36a2682b4ab0e2b8ee75a9c765219190c416e90f9b243ad48d690c8ce022ecd5"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+      compatibility:sha256:500911d00e8b0365ef2f2a05bd95108d7f05912c4705b90de69c251095e7f7a4:
+        aggregate_digest: "sha256:02ba42420e221650563ee6d598159ebb5315762156b7d63c73fa1528f15551ee"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T19:43:46.844Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_69fb95ec12e62e5a213dc62c"
+          mutation_id: "compatibility:sha256:500911d00e8b0365ef2f2a05bd95108d7f05912c4705b90de69c251095e7f7a4"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 10
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:500911d00e8b0365ef2f2a05bd95108d7f05912c4705b90de69c251095e7f7a4"
+        next_revision: 11
+        previous_revision: 10
         schema_version: 1
         task_id: "202609081927-P1MJV7"
       compatibility:sha256:56aee1c372734e0d5f7b0f5f626e513fcb1132fc6c7a86a8963a4212a9fc3613:
@@ -843,6 +875,30 @@ extensions:
         mutation_id: "compatibility:sha256:61773081e0094e63803facbc0691f6c864048a574653f7db22e7ce7ac7516c46"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+      compatibility:sha256:6aed368168f9faa9156d05750e292437ab76ef6f3fc044fa41c608cc98e9e1d9:
+        aggregate_digest: "sha256:2cbd19867912b1b71882d263f7bb8e35b2361e6f14524f0143efe082d2cca82d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T19:43:46.844Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_18e0b1dcb9e860e8b86f71af"
+          mutation_id: "compatibility:sha256:6aed368168f9faa9156d05750e292437ab76ef6f3fc044fa41c608cc98e9e1d9"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 11
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6aed368168f9faa9156d05750e292437ab76ef6f3fc044fa41c608cc98e9e1d9"
+        next_revision: 12
+        previous_revision: 11
         schema_version: 1
         task_id: "202609081927-P1MJV7"
       compatibility:sha256:825ac1d30f65396a0e7bda9c2d01bdf3fe675b187f48137e4193c765b29233fb:
