@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2aa1f680862f9816bfafd438ac262df0327666be..4edd59e252d347fae27355c178c81e0f4533d999",
+      "command": "git diff --check bb065ce482025e8c3cc4502e87d68a9a9c6b76f9..f33d994a331fa73f30292b8735c44b0c9fb2730f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,15 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2aa1f680862f9816bfafd438ac262df0327666be..4edd59e252d347fae27355c178c81e0f4533d999",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB bb065ce482025e8c3cc4502e87d68a9a9c6b76f9..f33d994a331fa73f30292b8735c44b0c9fb2730f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609081134-SRM6JM/README.md",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/github-body.md",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/meta.json",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/task-backend.ts"
+        "M\tscripts/baselines/protocol-cost-SRM6JM-summary.json"
       ]
     },
     {
@@ -31,15 +32,30 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2aa1f680862f9816bfafd438ac262df0327666be",
-  "implementation_commit": "4edd59e252d347fae27355c178c81e0f4533d999",
+  "execution_base_commit": "bb065ce482025e8c3cc4502e87d68a9a9c6b76f9",
+  "implementation_commit": "f33d994a331fa73f30292b8735c44b0c9fb2730f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202609081134-SRM6JM/README.md",
+      " M scripts/baselines/protocol-cost-SRM6JM-summary.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609081134-SRM6JM/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/baselines/protocol-cost-SRM6JM-summary.json"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609081134-SRM6JM/README.md",
+      " M scripts/baselines/protocol-cost-SRM6JM-summary.json"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,

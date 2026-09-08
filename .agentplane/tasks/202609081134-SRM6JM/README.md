@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -394,7 +394,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "f33d994a331fa73f30292b8735c44b0c9fb2730f"
+  message: "🚧 SRM6JM task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -438,6 +440,9 @@ comments:
   -
     author: "CODER"
     body: "Resumed: USER authorized temporary test-cache cleanup. Removed only disposable Bun caches from isolated AgentPlane critical-test HOME directories. Available disk space increased from about 0.5 GiB to 1.3 GiB. Repeat the failed checkout test and verification before the authorized merge."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: f33d994a331f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -548,9 +553,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resumed: USER authorized temporary test-cache cleanup. Removed only disposable Bun caches from isolated AgentPlane critical-test HOME directories. Available disk space increased from about 0.5 GiB to 1.3 GiB. Repeat the failed checkout test and verification before the authorized merge."
+  -
+    type: "status"
+    at: "2026-09-08T17:32:40.358Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: f33d994a331f. CLI accepted one state-bound external-agent semantic result."
+    commit: "f33d994a331fa73f30292b8735c44b0c9fb2730f"
 doc_version: 3
-doc_updated_at: "2026-09-08T17:29:24.304Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-08T17:32:40.450Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
   Summary: |-
@@ -1266,7 +1279,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 27
+    event_cursor: 29
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1816,9 +1829,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 34
+    revision: 36
     schema_version: 1
-    updated_at: "2026-09-08T17:29:24.278Z"
+    updated_at: "2026-09-08T17:32:40.379Z"
     work_items:
       baseline:
         attempt: 1
@@ -2505,6 +2518,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:b5fc77b78a89e1925645f2a632899de8bdefc61f8c7c27c7b53994ffc73e46a5:
+        aggregate_digest: "sha256:987bf03c4fc2876c4b1b1e4a9cbcf11cd2f0aa0d6375ed613fdd39b91862028e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T17:32:40.358Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3e0f7b368d371dfb0e1c3493"
+          mutation_id: "compatibility:sha256:b5fc77b78a89e1925645f2a632899de8bdefc61f8c7c27c7b53994ffc73e46a5"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 34
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b5fc77b78a89e1925645f2a632899de8bdefc61f8c7c27c7b53994ffc73e46a5"
+        next_revision: 35
+        previous_revision: 34
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:bc9f755a566326ee3951598742f61e9754964b3d4200e79cb0aa84acfae888c0:
         aggregate_digest: "sha256:60539ff2c1e9c6a2bbd3702d30be83bb688b4d534e251c8f77bc032ffbef2bbd"
         event:
@@ -2623,6 +2660,30 @@ extensions:
         mutation_id: "compatibility:sha256:de4ae291e7a1adb7556022d037b90449f6dd81ef1aadfa6d0124dc4223488df2"
         next_revision: 27
         previous_revision: 26
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:e5557cb300e9833d29e9896ab2ab3ec36ae6c356ddf1ecbba2b5186b02f9c051:
+        aggregate_digest: "sha256:51d75387aaf0eeedc492dcdccf2a237fcae664fb607b8169a276d3e9314a82e4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T17:32:40.379Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e0b8d3ce9a45b7958480f1e9"
+          mutation_id: "compatibility:sha256:e5557cb300e9833d29e9896ab2ab3ec36ae6c356ddf1ecbba2b5186b02f9c051"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 35
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e5557cb300e9833d29e9896ab2ab3ec36ae6c356ddf1ecbba2b5186b02f9c051"
+        next_revision: 36
+        previous_revision: 35
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:e8b7deaf2a40489ea2f19da7cff796e7d6f6c660ff17d18e5c6a2c31c8ef2d7f:
@@ -2821,6 +2882,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "f33d994a331fa73f30292b8735c44b0c9fb2730f"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
