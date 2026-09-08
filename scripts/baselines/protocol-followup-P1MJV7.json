@@ -10,8 +10,8 @@
     "src/runner/context/task-context.test.ts": "48a717cfa1f5cab5120ed9c8c1c7eaff0e6035353c5eb73edda0117988efd9d7",
     "src/commands/task/external-agent-exchange.ts": "f5998c5f1e1bfdf1db3cbd93454a26cf4e05dc922512d3a3acf9593a896c43e6",
     "src/commands/task/external-agent-exchange.test.ts": "1f3ba54038fbe181f882582460facf847128a0ce2a7a48f34e65131a591b64fb",
-    "src/commands/task/verification-infrastructure.ts": "044fc6fb628f6d11ef55124c149b3c997ef6fb39038b2108934a99c0ac7783c5",
-    "src/commands/task/verification-infrastructure.test.ts": "a9001017fd377acc4f31a9ba4aed3907af3555b32626f70503d0562014aa86bf",
+    "src/commands/task/verification-infrastructure.ts": "0c5c5c1c7fbe678533785c7b7eb37ee281e0ab7c43261d1d9775f66d4eb05a19",
+    "src/commands/task/verification-infrastructure.test.ts": "9eb00b0d791f758b62c1535cdb78a6db919d045926f29ae9df779408263d8cbe",
     "src/commands/task/branch-task-supervisor-episodes.ts": "36bef4d78ef11bbda44e059064e746c00b6d113d92d863eecc914cfe255ad842",
     "src/commands/task/branch-task-supervisor.test.ts": "2fefdb85e622f4b22be178d77318e1dfb319c9b8688d5a2a029289bf0e45d278",
     "src/commands/task/direct-task-verification-record.ts": "00bb6c270649d9286c1fb5f2806fa06dab2158a763e05f41c85508eb5c159dcb",
@@ -48,7 +48,13 @@
     "failed_attempt_preserved": true,
     "retry_limit_total_attempts": 3,
     "scope": "Independent retry budgets for each WorkItem and task-level verification. The managed top-level branch episode is also covered by branch-task-verification.test.ts.",
-    "limitation": "The process error is injected locally. No paid provider or remote latency was measured."
+    "limitation": "The process error is injected locally. No paid provider or remote latency was measured.",
+    "source_status_regressions": [
+      "Reject a rename from task metadata to source code.",
+      "Reject quoted or ambiguous status paths.",
+      "Reject unknown source files under the task directory.",
+      "Allow only recognized task metadata changes."
+    ]
   },
   "provider_tokens": null,
   "provider_latency_ms": null

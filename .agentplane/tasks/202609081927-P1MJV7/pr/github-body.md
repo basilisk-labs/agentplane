@@ -42,14 +42,14 @@ Implement the three USER-approved follow-up optimizations: classify confirmed ve
  .../commands/task/external-agent-exchange.test.ts  |  94 +++++++++-
  .../src/commands/task/external-agent-exchange.ts   | 114 +++++++++---
  .../src/commands/task/external-agent-supervisor.ts |   4 +-
- .../task/verification-infrastructure.test.ts       | 114 ++++++++++++
- .../commands/task/verification-infrastructure.ts   | 135 ++++++++++++++
+ .../task/verification-infrastructure.test.ts       | 144 +++++++++++++++
+ .../commands/task/verification-infrastructure.ts   | 144 +++++++++++++++
  .../src/runner/adapters/prepared-input.ts          |   7 +-
  .../src/runner/context/task-context.test.ts        |  59 ++++++-
  .../src/runner/context/work-order-context.ts       |  35 +++-
  .../src/runner/usecases/task-run-bootstrap.ts      |  35 +++-
- scripts/baselines/protocol-followup-P1MJV7.json    |  55 ++++++
- 22 files changed, 1089 insertions(+), 337 deletions(-)
+ scripts/baselines/protocol-followup-P1MJV7.json    |  61 +++++++
+ 22 files changed, 1134 insertions(+), 337 deletions(-)
 ```
 
 </details>

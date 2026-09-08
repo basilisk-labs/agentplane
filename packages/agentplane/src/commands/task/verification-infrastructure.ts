@@ -1,4 +1,5 @@
 import path from "node:path";
+import { isManagedTaskArtifact } from "../shared/quality-review-target.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { mkdir } from "node:fs/promises";
 import { taskCentricDigest } from "@agentplaneorg/core/tasks";
@@ -128,7 +129,15 @@ export async function prepareInfrastructureVerificationForCheckout(
         !head ||
         (await readDirectTaskHead(opts.checkout)) !== head ||
         !status ||
-        status.lines.some((line) => !line.slice(3).startsWith(prefix))
+        status.lines.some((line) => {
+          const relative = line.slice(3).trim();
+          return (
+            relative.includes(" -> ") ||
+            relative.startsWith('"') ||
+            !relative.startsWith(prefix) ||
+            !isManagedTaskArtifact(relative.slice(prefix.length))
+          );
+        })
       );
     },
   });
