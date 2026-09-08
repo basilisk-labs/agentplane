@@ -4,7 +4,7 @@ title: "Reduce redundant recovery episodes and exchange data"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -108,10 +108,37 @@ execution_contract:
       - "scripts/bench"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+      - "scripts"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification-record.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange-authority.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      - "packages/agentplane/src/commands/task/verification-infrastructure.test.ts"
+      - "packages/agentplane/src/commands/task/verification-infrastructure.ts"
+      - "packages/agentplane/src/runner/adapters/prepared-input.ts"
+      - "packages/agentplane/src/runner/context/task-context.test.ts"
+      - "packages/agentplane/src/runner/context/work-order-context.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      - "scripts/baselines/protocol-followup-P1MJV7.json"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -166,26 +193,58 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:bc2879ad4a78c293b620fe8eb0b80a30e3bba339004c86c778d53910a7c5558a"
+      digest: "sha256:567d418854f63067cdc5597d3af8448c9754e502b5542a36ff626082309a8864"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/protocol-followup-P1MJV7.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "scripts"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification-record.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange-authority.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/verification-infrastructure.test.ts"
+          - "packages/agentplane/src/commands/task/verification-infrastructure.ts"
+          - "packages/agentplane/src/runner/adapters/prepared-input.ts"
+          - "packages/agentplane/src/runner/context/task-context.test.ts"
+          - "packages/agentplane/src/runner/context/work-order-context.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+          - "scripts/baselines/protocol-followup-P1MJV7.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -221,7 +280,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "08c3612fc4637a7a2ba881fca2779616d977b662"
+  message: "🚧 P1MJV7 task: apply external agent result"
 comments:
   -
     author: "PLANNER"
@@ -241,6 +302,9 @@ comments:
   -
     author: "CODER"
     body: "Resumed: USER-approved branch cleanup scope is already present in the execution contract. The task checkout is synchronized with merged prerequisite 7563d84a4 and disk space is restored. Continue all approved optimizations."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 08c3612fc463. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "comment"
@@ -275,9 +339,17 @@ events:
     from: "BLOCKED"
     to: "DOING"
     note: "Resumed: USER-approved branch cleanup scope is already present in the execution contract. The task checkout is synchronized with merged prerequisite 7563d84a4 and disk space is restored. Continue all approved optimizations."
+  -
+    type: "status"
+    at: "2026-09-08T20:43:20.609Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 08c3612fc463. CLI accepted one state-bound external-agent semantic result."
+    commit: "08c3612fc4637a7a2ba881fca2779616d977b662"
 doc_version: 3
-doc_updated_at: "2026-09-08T19:45:24.055Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-08T20:43:20.609Z"
+doc_updated_by: "SUPERVISOR"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
   Summary: |-
@@ -540,7 +612,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 10
+    event_cursor: 12
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -749,9 +821,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 13
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-08T19:45:24.055Z"
+    updated_at: "2026-09-08T20:43:20.609Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 0
@@ -935,6 +1007,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609081927-P1MJV7"
+      compatibility:sha256:7ccee731f17522648d6ff98170e347437ecd710ce6cbb9bbea1411552b7b909e:
+        aggregate_digest: "sha256:48fe4e673ff8bd3e4dccf31516c33445ecda910455ea1fb757a7e7caf1f2c5b6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T20:43:20.609Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_80dae4c75c551077f3d0ef9d"
+          mutation_id: "compatibility:sha256:7ccee731f17522648d6ff98170e347437ecd710ce6cbb9bbea1411552b7b909e"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7ccee731f17522648d6ff98170e347437ecd710ce6cbb9bbea1411552b7b909e"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
       compatibility:sha256:825ac1d30f65396a0e7bda9c2d01bdf3fe675b187f48137e4193c765b29233fb:
         aggregate_digest: "sha256:cf0d0b0f86ec47b4a8ad4deea5afa5e01e1867c6e7511abae6e7f9957e2e6d3f"
         event:
@@ -983,6 +1079,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609081927-P1MJV7"
+      compatibility:sha256:a443dfb4a61d27e65d46ea1f8935c322fd2831865670b5b61d68d2e16b77ca29:
+        aggregate_digest: "sha256:0dfcb9716c606600e4ae5b8e5882f06f524ab264c5bcd625f63d6b807258fb7e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T20:43:20.609Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_712b13a0dba36a88a27700b1"
+          mutation_id: "compatibility:sha256:a443dfb4a61d27e65d46ea1f8935c322fd2831865670b5b61d68d2e16b77ca29"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a443dfb4a61d27e65d46ea1f8935c322fd2831865670b5b61d68d2e16b77ca29"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
       compatibility:sha256:b807aaa6c06e5b4800808aa634dd43201a4c0534f7a4f030b5e54912ceb4c425:
         aggregate_digest: "sha256:2bf4b160b1549847c92e0e6e999593a3810e1dad53fc00e374ebfd9ee21c15b8"
         event:
@@ -1010,6 +1130,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "08c3612fc4637a7a2ba881fca2779616d977b662"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
