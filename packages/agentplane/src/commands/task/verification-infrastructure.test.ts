@@ -2,9 +2,11 @@ import { mkdtemp, readFile, rm, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, expect, it, vi } from "vitest";
+import * as finalization from "./direct-task-finalization.js";
 import * as backend from "../shared/task-backend.js";
 import {
   prepareInfrastructureVerification,
+  prepareInfrastructureVerificationForCheckout,
   isInfrastructureVerification,
 } from "./verification-infrastructure.js";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
@@ -111,4 +113,32 @@ it("isolates work-item retries from task verification and contains arbitrary Wor
   expect(workItemArtifact).not.toBe(taskArtifact);
   expect(path.relative(root, workItemArtifact).startsWith("..")).toBe(false);
   expect(path.basename(path.dirname(workItemArtifact))).toMatch(/^work-item-[a-f0-9]{64}$/u);
+});
+
+it.each([
+  "R  .agentplane/tasks/T-RETRY/README.md -> source.ts",
+  ' M ".agentplane/tasks/T-RETRY/README.md"',
+  "?? .agentplane/tasks/T-RETRY/unexpected-source.ts",
+])("refuses source retry for ambiguous or unmanaged status %s", async (line) => {
+  const { options, run, root } = await fixture();
+  await run(true);
+  vi.spyOn(finalization, "readDirectTaskHead").mockResolvedValue(options.implementation_commit);
+  vi.spyOn(finalization, "readDirectRepositoryStatus").mockResolvedValue({
+    lines: [line],
+  } as never);
+  await expect(
+    prepareInfrastructureVerificationForCheckout({ ...options, checkout: root }),
+  ).rejects.toThrow("unchanged source");
+});
+
+it("permits only recognized task metadata drift during infrastructure recovery", async () => {
+  const { options, run, root } = await fixture();
+  await run(true);
+  vi.spyOn(finalization, "readDirectTaskHead").mockResolvedValue(options.implementation_commit);
+  vi.spyOn(finalization, "readDirectRepositoryStatus").mockResolvedValue({
+    lines: [" M .agentplane/tasks/T-RETRY/README.md", "?? .agentplane/tasks/T-RETRY/pr/meta.json"],
+  } as never);
+  await expect(
+    prepareInfrastructureVerificationForCheckout({ ...options, checkout: root }),
+  ).resolves.toBeTypeOf("function");
 });
