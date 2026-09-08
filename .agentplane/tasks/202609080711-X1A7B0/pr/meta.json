@@ -2,7 +2,7 @@
   "base": "0.6.x",
   "branch": "task/202609080711-X1A7B0/remove-ap-task-run-from-standard-route-recommend",
   "created_at": "2026-09-08T07:39:38.454Z",
-  "diffstat_sha256": "sha256:0ddb7aecfdc1cadafa009cad7f9c5e44a356ba7bd8f93055499f9b873994c1c7",
+  "diffstat_sha256": "sha256:eef4ce97682229ceb6d18aedef4c00500ac10a57a3e1a47be22be0fa9aea10ee",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
