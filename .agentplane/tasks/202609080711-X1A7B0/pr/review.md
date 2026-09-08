@@ -30,11 +30,9 @@ Created: 2026-09-08T07:39:38.454Z
 
 ```text
  ...cli.core.route-decision.direct-closeout.test.ts | 26 ++++++++++++----------
- .../src/cli/run-cli.core.task-guided.test.ts       |  2 +-
  .../commands/shared/route-decision-next-action.ts  | 10 ++++-----
- .../agentplane/src/commands/task/begin.command.ts  |  2 +-
  .../agentplane/src/commands/task/task.command.ts   |  4 ++--
- 5 files changed, 23 insertions(+), 21 deletions(-)
+ 3 files changed, 21 insertions(+), 19 deletions(-)
 ```
 
 </details>

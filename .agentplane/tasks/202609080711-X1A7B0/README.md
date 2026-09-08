@@ -4,7 +4,7 @@ title: "Remove ap task run from standard route recommendations and release Agent
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -239,9 +239,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "83675d44dd9d14c22a6c8038eb7d77e52667f417"
-  message: "🚧 X1A7B0 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -762,9 +760,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-08T07:39:41.137Z"
+    updated_at: "2026-09-08T07:39:43.115Z"
     work_items:
       hosted-release:
         attempt: 0
@@ -785,17 +783,104 @@ extensions:
         state: "PLANNED"
         validation_result: null
       route-contract:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "route-contract"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "route-1"
+            - "route-2"
+            - "route-3"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Changed the v0.6 direct-task route so ordinary guidance keeps execution with the current coding agent, routes into the declared Verify Steps, and no longer recommends launching or resuming task run. Updated task-begin and task-help guidance plus focused regression coverage while retaining the explicit runner implementation and its operator-only surfaces."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:692a5beaf2e3195dce70861b01ae7e58619977e949f8d4c1570f89a4dc3eca76"
+            id: "route-contract-complete"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609080711-X1A7B0"
+              work_item_id: "route-contract"
+            provenance:
+              - "sha256:ba1a75eae22833303547ccbd8acb383629d750e4d02794f45a5c705fd75d4b56"
+              - ".agentplane/tasks/202609080711-X1A7B0/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:5020cf91497caa19e44425993d1c36ba2edfc3228d090e31ffa3eefd0e97b7d5"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609080711-X1A7B0/supervision/declared-checks.json"
+              check_id: "route-scan"
+              command_identity: "rg -n 'task run|task advance|managed runner' AGENTS.md .agentplane/policy packages/agentplane/assets packages/agentplane/src docs"
+              detail: "Declared check could not run: rg -n 'task run|task advance|managed runner' AGENTS.md .agentplane/policy packages/agentplane/assets packages/agentplane/src docs"
+              exit_code: 1
+              observed_at: "2026-09-08T07:39:43.108Z"
+              repository_snapshot_digest: "sha256:5020cf91497caa19e44425993d1c36ba2edfc3228d090e31ffa3eefd0e97b7d5"
+              status: "failed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609080711-X1A7B0/supervision/declared-checks.json"
+              check_id: "focused-tests"
+              command_identity: "Run the focused route decision, task handoff, prompt/policy projection, and help snapshot tests selected from the changed implementation files."
+              detail: "Declared validation command Run the focused route decision, task handoff, prompt/policy projection, and help snapshot tests selected from the changed implementation files. was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-08T07:39:43.108Z"
+              repository_snapshot_digest: "sha256:5020cf91497caa19e44425993d1c36ba2edfc3228d090e31ffa3eefd0e97b7d5"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609080711-X1A7B0/supervision/declared-checks.json"
+              check_id: "routing-check"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Declared validation command node .agentplane/policy/check-routing.mjs was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-08T07:39:43.108Z"
+              repository_snapshot_digest: "sha256:5020cf91497caa19e44425993d1c36ba2edfc3228d090e31ffa3eefd0e97b7d5"
+              status: "unsupported"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609080711-X1A7B0/supervision/declared-checks.json"
+              check_id: "diff-review"
+              command_identity: "Review the complete diff from v0.6.27 for scope, generated projection parity, and absence of historical artifact rewrites."
+              detail: "Declared validation command Review the complete diff from v0.6.27 for scope, generated projection parity, and absence of historical artifact rewrites. was not observed by AgentPlane."
+              exit_code: null
+              observed_at: "2026-09-08T07:39:43.108Z"
+              repository_snapshot_digest: "sha256:5020cf91497caa19e44425993d1c36ba2edfc3228d090e31ffa3eefd0e97b7d5"
+              status: "unsupported"
+          schema_version: 1
+          stale_evidence: []
+          status: "blocked"
+          unsatisfied_criteria:
+            - "route-1"
+            - "route-2"
+            - "route-3"
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-08T07:39:43.115Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_804feb93315b8f22ae40e56f"
+        mutation_id: "external-result:work-order-202609080711-X1A7B0-executor-51f87e08372335b16afcd608"
+        plan_digest: "sha256:ee8766d7be36ae715443ba1dc25633466ee77f568405149733f6330bd398cd1f"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609080711-X1A7B0"
+        task_revision: 7
+        work_item_id: "route-contract"
     leases: []
     mutation_receipts:
       compatibility:sha256:004abbb5fa94d8f2a383ee57459aae462ab55a16f29a6691100a76947e03f5ae:
@@ -916,6 +1001,29 @@ extensions:
         mutation_id: "compatibility:sha256:f47315f777d4fb48912b5ae5668d65540c2a8ae34e8cb92a4f78f18035990b62"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609080711-X1A7B0"
+      external-result:work-order-202609080711-X1A7B0-executor-51f87e08372335b16afcd608:
+        aggregate_digest: "sha256:676a2ebd138172bb558c9f699c8cf763067fa00851fc323a0afd654ad254cc89"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T07:39:43.115Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_804feb93315b8f22ae40e56f"
+          mutation_id: "external-result:work-order-202609080711-X1A7B0-executor-51f87e08372335b16afcd608"
+          plan_digest: "sha256:ee8766d7be36ae715443ba1dc25633466ee77f568405149733f6330bd398cd1f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609080711-X1A7B0"
+          task_revision: 7
+          to: "REWORK_READY"
+          work_item_id: "route-contract"
+        mutation_id: "external-result:work-order-202609080711-X1A7B0-executor-51f87e08372335b16afcd608"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609080711-X1A7B0"
     pending_effects: []
