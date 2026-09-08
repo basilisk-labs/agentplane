@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -124,6 +124,7 @@ execution_contract:
       - "packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
       - "packages/agentplane/src/commands/task/agent-action-packet.ts"
       - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
@@ -214,7 +215,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:fd0fa675e1e218c75d1514ade932ef9acf0eb07e66a2a0561214401eda148bc4"
+      digest: "sha256:62335e55cf1ff78fb41ea51d45307c3db0e05d7ad65233a3edb3f009366a9bee"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
@@ -265,6 +266,7 @@ execution_contract:
           - "packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
           - "packages/agentplane/src/commands/task/agent-action-packet.ts"
           - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
@@ -333,7 +335,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4005ad7a1c494e516248e8b3e975340de70a034e"
+  message: "🚧 SRM6JM task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -362,6 +366,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository effects: tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4005ad7a1c49. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -422,8 +429,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The full verification run exposed an obsolete schema assertion outside the issued writable roots. A one-file scope extension is required. Recommended action: Authorize the exact test-file scope extension, then issue a fresh EXECUTOR episode for the schema-store assertion and the in-scope compact-schema artifact classifier. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository effects=tests; request digest=sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d. Agentplane receipt: external-agent-blocker/tr_cecb34b21466551802305cc3e68f6e6e/sha256:291c75fa83070e06b0d3b59fee4f49a5cdca1d6fd5d85612da8302e7a8a77bb1/sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d."
+  -
+    type: "status"
+    at: "2026-09-08T13:49:30.974Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4005ad7a1c49. CLI accepted one state-bound external-agent semantic result."
+    commit: "4005ad7a1c494e516248e8b3e975340de70a034e"
 doc_version: 3
-doc_updated_at: "2026-09-08T13:45:31.121Z"
+doc_updated_at: "2026-09-08T13:49:30.974Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -1045,7 +1060,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 18
+    event_cursor: 20
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1595,9 +1610,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 24
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-08T13:45:31.121Z"
+    updated_at: "2026-09-08T13:49:30.974Z"
     work_items:
       baseline:
         attempt: 1
@@ -1900,6 +1915,30 @@ extensions:
         previous_revision: 19
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:17953d08a5a40550b7bfd56d0124bb7bdeb163c3ea83e79a1c9009d076ad9e9e:
+        aggregate_digest: "sha256:249025c76b7e9096d1eb4c55aab128cbd2a8e3bb70cb6ec994241df2b79eab61"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:49:30.974Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_94fcb4f2f6621e3c22ff44a0"
+          mutation_id: "compatibility:sha256:17953d08a5a40550b7bfd56d0124bb7bdeb163c3ea83e79a1c9009d076ad9e9e"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 25
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:17953d08a5a40550b7bfd56d0124bb7bdeb163c3ea83e79a1c9009d076ad9e9e"
+        next_revision: 26
+        previous_revision: 25
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:17ff4402a6ec04395e22ab95f40770dce436b2437f38a4bd5fc097e28d7f67fd:
         aggregate_digest: "sha256:28b641ac6470c513d9b86c6037aa200d71f684e997fcb12d5094c1adeb1f0ee5"
         event:
@@ -2018,6 +2057,30 @@ extensions:
         mutation_id: "compatibility:sha256:6d186f31489b5e7f15187fdc37c419740365a825da9e5089cf935fcd69fbc946"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:730aab640bc175f813a695152cd3be6d7c3b64dc38ca800530f69dcb5853510e:
+        aggregate_digest: "sha256:164bb1cf8429f869cde0e041929c4832443dcba15c46ad78d09799bfa65d3198"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:49:30.974Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_02a8973aa77c2d743a2e5d93"
+          mutation_id: "compatibility:sha256:730aab640bc175f813a695152cd3be6d7c3b64dc38ca800530f69dcb5853510e"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:730aab640bc175f813a695152cd3be6d7c3b64dc38ca800530f69dcb5853510e"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:9b6964b87f25437c13a6b4b0219095d6df8ea7435c3a77f1acf3b9a6ad6c85f9:
@@ -2359,6 +2422,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "4005ad7a1c494e516248e8b3e975340de70a034e"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
