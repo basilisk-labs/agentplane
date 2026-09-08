@@ -5,7 +5,7 @@
         "route-scan"
       ],
       "command": "rg -n 'task run|task advance|managed runner' AGENTS.md .agentplane/policy packages/agentplane/assets packages/agentplane/src docs",
-      "duration_ms": 295,
+      "duration_ms": 282,
       "exit_code": null,
       "runtime": {
         "environment_digest": "sha256:d65ed485ea45b23fa331a985fcef2c701c1900ddcd2d52339f39f95809d3ed8a",
