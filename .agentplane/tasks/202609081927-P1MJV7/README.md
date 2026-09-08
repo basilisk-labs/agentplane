@@ -4,7 +4,7 @@ title: "Reduce redundant recovery episodes and exchange data"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -25,6 +25,32 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-08T20:54:46.817Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "08c3612fc4637a7a2ba881fca2779616d977b662"
+  blueprint_digest: "2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc"
+  evidence_refs:
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/775b50dce2180e05b30236662ae4112a2da3484980a94224e22e171dfd98582f.md"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/README.md"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/fcd00b08c0b4cf1c47f17bd7226ca020feb8f79ca5caf99afc6280cbb05c5338.patch"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/94d390a6a90740239a55578e6437ab7820eecbf1f92f3d62796cfcd9669673b5.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/verification/20260908205211965-22103f4d4b03bc26.json"
+    - ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/19d943594f6be086a90dd44bc23aaabf9fa4218050b199e01eeefe455d8a9a77.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "P2: verification-infrastructure.ts:131 exempts every status line beginning with the task artifact prefix. A staged rename from .agentplane/tasks/<task>/README.md to source.ts begins with that prefix, so retry can run after a source change while preserving the old implementation identity. Restrict exemptions to known managed artifacts and reject rename or quoted/ambiguous status records. The frozen actual-diff artifact contains this predicate."
+    - "Residual risk: Managed adapters still start fresh processes; resolver delta measurements are not provider-session savings."
 execution_route:
   frozen: true
   reason_codes:
@@ -821,7 +847,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 13
+    event_cursor: 14
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -1030,9 +1056,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-08T20:52:13.024Z"
+    updated_at: "2026-09-08T20:52:13.026Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 1
@@ -1411,6 +1437,30 @@ extensions:
         mutation_id: "compatibility:sha256:a443dfb4a61d27e65d46ea1f8935c322fd2831865670b5b61d68d2e16b77ca29"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+      compatibility:sha256:b202d9d3f8f9bfc6c78c7fa0fb06c5f708044607ad6133f58a414582a981bdfb:
+        aggregate_digest: "sha256:570ccebe572c375793f67f290b02098b139c2eeb371dc37761784d16d0c3c4f1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T20:52:13.026Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9149a18c8a75ed86585de989"
+          mutation_id: "compatibility:sha256:b202d9d3f8f9bfc6c78c7fa0fb06c5f708044607ad6133f58a414582a981bdfb"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b202d9d3f8f9bfc6c78c7fa0fb06c5f708044607ad6133f58a414582a981bdfb"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609081927-P1MJV7"
       compatibility:sha256:b807aaa6c06e5b4800808aa634dd43201a4c0534f7a4f030b5e54912ceb4c425:
