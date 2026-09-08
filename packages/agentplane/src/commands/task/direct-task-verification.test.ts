@@ -24,9 +24,9 @@ import {
   isTaskLevelVerificationReworkState,
   parseDirectTaskCheck,
   renderDirectTaskVerificationDetails,
-  recordDirectTaskVerification,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
+import { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { resolveEvidenceOnlyReworkCommit } from "./evidence-only-rework-commit.js";
 import "./direct-task-verification.sequence.cases.js";
 

@@ -3,7 +3,7 @@ import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import * as verification from "../commands/task/direct-task-verification.js";
+import * as verification from "../commands/task/direct-task-verification-record.js";
 import * as scopeExtension from "../commands/shared/task-scope-extension-request.js";
 import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
 import {

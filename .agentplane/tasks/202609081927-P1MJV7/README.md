@@ -2,10 +2,10 @@
 id: "202609081927-P1MJV7"
 title: "Reduce redundant recovery episodes and exchange data"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-09-08T21:07:12.984Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-08T21:19:39.049Z"
+  updated_by: "CODER"
+  note: "Hosted verify-static found a circular dependency between direct-task-verification.ts and direct-task-verification-record.ts. Remove the reverse re-export and update direct consumers. Preserve the verification and retry behavior."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -55,8 +55,6 @@ quality_review:
     - "Residual risk: Merged-worktree cleanup runs on the next lifecycle invocation. No background watcher was added."
 token_usage:
   agent_runs: 9
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:8c035d05c686a94e0a040910e119fdf4893611a22d84cf273d49c0497014b3b9"
   observed_agent_runs: 0
@@ -151,7 +149,8 @@ execution_contract:
       - "scripts/baselines"
       - "scripts/bench"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
       - "scripts"
@@ -185,26 +184,8 @@ execution_contract:
       - "tests"
     verification_results:
       -
-        id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -461,9 +442,8 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f53b4d70c38d9909b64ec72269e3cf270d167e3b"
-  message: "🚧 P1MJV7 task: record external evaluator result"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "PLANNER"
@@ -562,8 +542,14 @@ events:
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
     commit: "f53b4d70c38d9909b64ec72269e3cf270d167e3b"
+  -
+    type: "verify"
+    at: "2026-09-08T21:19:39.049Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Hosted verify-static found a circular dependency between direct-task-verification.ts and direct-task-verification-record.ts. Remove the reverse re-export and update direct consumers. Preserve the verification and retry behavior."
 doc_version: 3
-doc_updated_at: "2026-09-08T21:11:56.030Z"
+doc_updated_at: "2026-09-08T21:19:43.906Z"
 doc_updated_by: "CODER"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
@@ -709,6 +695,38 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609081927-P1MJV7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-08T21:19:39.049Z — VERIFY — needs_rework
+
+    By: CODER
+
+    Note: Hosted verify-static found a circular dependency between direct-task-verification.ts and direct-task-verification-record.ts. Remove the reverse re-export and update direct consumers. Preserve the verification and retry behavior.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ca4c0c73a8278acecb12db6e7e972214d9dcf7144f058f5899f954e3de60fb11, input_digest=sha256:080c250829b08cba04c087f0ff4a2a85fc12f02e55b7415f65d2f9d0b0c2dfc6
+
+    Details:
+
+    GitHub run 34279425032 job 102240476200 failed arch:deps with no-circular. Local ci:local:full passed but did not cover this static architecture gate.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081927-P1MJV7-reduce-redundant-recovery-episodes-and-exchange/.agentplane/tasks/202609081927-P1MJV7/blueprint/resolved-snapshot.json
+    - old_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+    - current_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609081927-P1MJV7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -959,24 +977,8 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 18
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609081927-P1MJV7"
-            - "git:666124058321eeb280100a3dfc6222c1388e3d84"
-          check_id: "task-check"
-          command_identity: "task.verify"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-08T21:07:12.984Z"
-          repository_snapshot_digest: "sha256:1ddb27e269aff9afa7b9fd2ea1a09f568b177066eeae8586216e95375b23c575"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 19
+    final_validation: null
     id: "202609081927-P1MJV7"
     intent:
       acceptance_criteria: []
@@ -987,7 +989,7 @@ extensions:
 
         Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval.
       task_id: "202609081927-P1MJV7"
-    lifecycle: "COMPLETED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1184,9 +1186,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 23
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-08T21:11:56.030Z"
+    updated_at: "2026-09-08T21:19:43.904Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 1
@@ -1543,6 +1545,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609081927-P1MJV7"
+      compatibility:sha256:75bf634b22feced6dd320ea32305638db77097798bacbde04063bd4f08af2045:
+        aggregate_digest: "sha256:2383e9cbefd680a47827ab594164d74c944f09400905567822eb52ba0743b758"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T21:19:43.904Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_143b762d0027dcd32147c0a8"
+          mutation_id: "compatibility:sha256:75bf634b22feced6dd320ea32305638db77097798bacbde04063bd4f08af2045"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:75bf634b22feced6dd320ea32305638db77097798bacbde04063bd4f08af2045"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
       compatibility:sha256:7ccee731f17522648d6ff98170e347437ecd710ce6cbb9bbea1411552b7b909e:
         aggregate_digest: "sha256:48fe4e673ff8bd3e4dccf31516c33445ecda910455ea1fb757a7e7caf1f2c5b6"
         event:
@@ -1763,9 +1789,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "666124058321eeb280100a3dfc6222c1388e3d84"
-    message: "🚧 P1MJV7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
@@ -1929,6 +1952,38 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202609081927-P1MJV7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-08T21:19:39.049Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Hosted verify-static found a circular dependency between direct-task-verification.ts and direct-task-verification-record.ts. Remove the reverse re-export and update direct consumers. Preserve the verification and retry behavior.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ca4c0c73a8278acecb12db6e7e972214d9dcf7144f058f5899f954e3de60fb11, input_digest=sha256:080c250829b08cba04c087f0ff4a2a85fc12f02e55b7415f65d2f9d0b0c2dfc6
+
+Details:
+
+GitHub run 34279425032 job 102240476200 failed arch:deps with no-circular. Local ci:local:full passed but did not cover this static architecture gate.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081927-P1MJV7-reduce-redundant-recovery-episodes-and-exchange/.agentplane/tasks/202609081927-P1MJV7/blueprint/resolved-snapshot.json
+- old_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+- current_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609081927-P1MJV7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

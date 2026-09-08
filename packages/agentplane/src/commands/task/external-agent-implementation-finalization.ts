@@ -13,7 +13,7 @@ import type { CommandContext, loadTaskFromContext } from "../shared/task-backend
 import type { ExternalAgentExchange } from "./external-agent-exchange.js";
 
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
-import type { recordDirectTaskVerification } from "./direct-task-verification.js";
+import type { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { isTaskLevelVerificationReworkState } from "./direct-task-verification.js";
 
 import {
