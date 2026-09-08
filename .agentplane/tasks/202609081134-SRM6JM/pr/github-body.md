@@ -15,8 +15,8 @@ Implement the user-approved optimization plan in dependency order: establish a r
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,12 +27,13 @@ Implement the user-approved optimization plan in dependency order: establish a r
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../backends/task-backend.local-handoff.test.ts    |  46 +-
- .../backends/task-backend/local-backend-read.ts    |  38 +-
+ .../backends/task-backend.local-handoff.test.ts    |  49 +-
+ .../backends/task-backend/local-backend-read.ts    |  39 +-
  .../src/cli/run-cli.core.kernel-transport.test.ts  |  48 +-
  ...run-cli.core.task-advance.protocol-cost.test.ts | 353 +++++++++++++
  .../src/cli/run-cli.core.task-advance.test.ts      |  79 +--
  .../src/cli/run-cli.core.task-advance.testkit.ts   |   1 +
+ .../evaluator/evaluator-evidence-store.test.ts     |   7 +-
  .../src/commands/task/advance.command.ts           |  27 +-
  .../src/commands/task/agent-action-packet.ts       |  11 +
  .../commands/task/external-agent-exchange.test.ts  | 103 +++-
@@ -61,7 +62,7 @@ Implement the user-approved optimization plan in dependency order: establish a r
  .../protocol-cost-SRM6JM-profile-before-03.json    | 575 +++++++++++++++++++++
  .../protocol-cost-SRM6JM-recovery-baseline.json    |  29 ++
  .../baselines/protocol-cost-SRM6JM-summary.json    |  67 +++
- 34 files changed, 3337 insertions(+), 103 deletions(-)
+ 35 files changed, 3347 insertions(+), 104 deletions(-)
 ```
 
 </details>
