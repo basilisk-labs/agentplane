@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "route-scan"
+      ],
+      "command": "rg -n 'task run|task advance|managed runner' AGENTS.md .agentplane/policy packages/agentplane/assets packages/agentplane/src docs",
+      "duration_ms": 282,
+      "exit_code": null,
+      "runtime": {
+        "environment_digest": "sha256:d65ed485ea45b23fa331a985fcef2c701c1900ddcd2d52339f39f95809d3ed8a",
+        "executable_digest": "sha256:1c57905960cd69dbb5b05492560957f4a57cdd4d39137e20de23981c6e1f4423",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:453820ffa845a4394a3fb1a9b1a45800ec0621b55cc49f8dd9f23e1982ab6d4d"
+      },
+      "script": null,
+      "stderr_tail": "process command is not in the allowed executable set: rg",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check could not run: rg -n 'task run|task advance|managed runner' AGENTS.md .agentplane/policy packages/agentplane/assets packages/agentplane/src docs",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202609080711-X1A7B0"
+}

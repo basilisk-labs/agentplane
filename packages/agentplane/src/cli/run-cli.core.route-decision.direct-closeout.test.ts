@@ -105,7 +105,7 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
-  it("routes a tracked DOING direct task without runner state into the task runner", async () => {
+  it("keeps a tracked DOING direct task without runner state on the current-agent route", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
@@ -157,14 +157,15 @@ describe("runCli route decision direct closeout", () => {
       };
       expect(parsed.route_oracle.phase).toBe("direct_execution");
       expect(parsed.next_action).toMatchObject({
-        code: "run",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
-      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task verify-show ${taskId}`);
+      expect(parsed.next_action.command).not.toContain("task run");
       expect(parsed.operator_guidance.runner_context).toMatchObject({
-        runner_is_required: true,
-        runner_is_allowed_now: true,
-        runner_failure_means: "runner_infrastructure_or_task_unknown",
+        runner_is_required: false,
+        runner_is_allowed_now: false,
+        runner_failure_means: "not_runner_route",
       });
     } finally {
       nextIo.restore();
@@ -180,10 +181,10 @@ describe("runCli route decision direct closeout", () => {
         next_action: { code: string; command: string | null };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "resume",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
-      expect(parsed.next_action.command).not.toContain("verify-show");
+      expect(parsed.next_action.command).not.toContain("task run");
     } finally {
       recomputeIo.restore();
     }
@@ -280,9 +281,10 @@ describe("runCli route decision direct closeout", () => {
         next_action: { code: string; command: string | null };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "run",
-        command: `agentplane task run ${taskId}`,
+        code: "continue_direct",
+        command: `agentplane task verify-show ${taskId}`,
       });
+      expect(parsed.next_action.command).not.toContain("task run");
     } finally {
       recomputeIo.restore();
     }

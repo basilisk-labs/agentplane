@@ -1,0 +1,16 @@
+{
+  "artifact_state": "remote_staged",
+  "artifact_state_reason": "task branch task/202609080711-X1A7B0/remove-ap-task-run-from-standard-route-recommend is not yet published on origin; push it with `git push -u origin task/202609080711-X1A7B0/remove-ap-task-run-from-standard-route-recommend` and rerun `agentplane pr open`",
+  "artifact_state_updated_at": "2026-09-08T12:53:18.896Z",
+  "base": "codex/release-v0.6.27-reclaim-fix",
+  "branch": "task/202609080711-X1A7B0/remove-ap-task-run-from-standard-route-recommend",
+  "created_at": "2026-09-08T07:39:38.454Z",
+  "diffstat_sha256": "sha256:1b1c96035b8027daf57af323321a24ebf7ef251b2508a91ac0631a51019fb4a8",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202609080711-X1A7B0",
+  "updated_at": "2026-09-08T12:53:14.312Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
