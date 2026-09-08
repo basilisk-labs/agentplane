@@ -237,6 +237,7 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     schema_version: 1,
     kind: "external_agent_exchange",
     issue_digest_version: 2,
+    result_format: "semantic_payload_v1",
     status: "prepared",
     task_id: opts.decision.task.id,
     transition_id: transitionId,
@@ -347,15 +348,20 @@ export async function acceptExternalAgentResult(opts: {
   result_path: string;
   include_remote: boolean;
 }): Promise<TaskRouteDecision> {
-  const raw = await readExternalAgentResult(path.resolve(opts.ctx.cwd, opts.result_path));
-  const identity = externalAgentResultIdentity(raw);
+  const resultPath = path.resolve(opts.ctx.cwd, opts.result_path);
+  const raw = await readExternalAgentResult(resultPath);
+  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+  const identity = externalAgentResultIdentity(raw, {
+    task_id: opts.task_id,
+    exchange_root: path.join(commonGitDir, "agentplane", "external-agent"),
+    result_path: resultPath,
+  });
   if (identity.task_id !== opts.task_id) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Result task_id does not match command task id.",
     });
   }
-  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const paths = await resolveExternalAgentExchangePaths({
     git_root: opts.command.resolvedProject.gitRoot,
     common_git_dir: commonGitDir,

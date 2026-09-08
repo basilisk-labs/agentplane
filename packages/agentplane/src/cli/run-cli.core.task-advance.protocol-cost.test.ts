@@ -152,6 +152,13 @@ it("measures a one-condition protocol round trip without claiming model telemetr
         item.acceptance_criteria[0].description;
       await writeFile(resultPath, `${JSON.stringify(result, null, 2)}\n`);
     }
+    if (exchange.result_format === "semantic_payload_v1") {
+      const payload = JSON.parse(await readFile(resultPath, "utf8")).result;
+      delete payload.schema_version;
+      delete payload.kind;
+      delete payload.canonical_binding;
+      await writeFile(resultPath, `${JSON.stringify(payload, null, 2)}\n`);
+    }
     exchanges.push({
       role: packet.authority.role,
       schema: await schemaClosure(path.join(exchange.directory, exchange.result_schema_ref)),

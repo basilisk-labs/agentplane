@@ -36,6 +36,7 @@ export type ExternalAgentExchange = {
   kind: "external_agent_exchange";
   status: "prepared" | "issued" | "result_received" | "accepted" | "consumed" | "retired";
   issue_digest_version?: 2;
+  result_format?: "semantic_payload_v1";
   task_id: string;
   transition_id: string;
   state_fingerprint: string;
@@ -197,14 +198,20 @@ export async function persistExternalAgentExchangeArtifacts(opts: {
     ),
     atomicWriteFile(
       opts.paths.result_schema,
-      `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
+      opts.exchange.result_format === "semantic_payload_v1"
+        ? renderAgentSemanticResultSchemaJson({ role: opts.work_order.role })
+        : `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
       "utf8",
     ),
-    atomicWriteFile(
-      opts.paths.semantic_result_schema,
-      renderAgentSemanticResultSchemaJson(),
-      "utf8",
-    ),
+    ...(opts.exchange.result_format === "semantic_payload_v1"
+      ? []
+      : [
+          atomicWriteFile(
+            opts.paths.semantic_result_schema,
+            renderAgentSemanticResultSchemaJson(),
+            "utf8",
+          ),
+        ]),
   ]);
   await atomicWriteFile(
     path.join(opts.paths.directory, WORK_ORDER_CONTEXT_FILENAME),
@@ -231,8 +238,10 @@ export function validateExternalAgentResultEnvelope(opts: {
     });
   }
   const raw = opts.raw as Record<string, unknown>;
+  const compact = opts.exchange.result_format === "semantic_payload_v1" && raw.kind === undefined;
   if (
-    !exactKeys(raw, [
+    !compact &&
+    (!exactKeys(raw, [
       "kind",
       "result",
       "role",
@@ -241,8 +250,8 @@ export function validateExternalAgentResultEnvelope(opts: {
       "task_id",
       "transition_id",
     ]) ||
-    raw.schema_version !== 1 ||
-    raw.kind !== "agent_action_result"
+      raw.schema_version !== 1 ||
+      raw.kind !== "agent_action_result")
   ) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -255,7 +264,7 @@ export function validateExternalAgentResultEnvelope(opts: {
     ["state_fingerprint", opts.exchange.state_fingerprint],
     ["role", opts.exchange.role],
   ] as const) {
-    if (raw[field] !== expected) {
+    if (!compact && raw[field] !== expected) {
       throw new CliError({
         code: "E_VALIDATION",
         message: `External-agent result ${field} does not match the issued exchange.`,
@@ -266,7 +275,8 @@ export function validateExternalAgentResultEnvelope(opts: {
   try {
     result = validateAgentSemanticResultForWorkOrder({
       work_order: opts.work_order,
-      semantic_result: raw.result,
+      semantic_result: compact ? raw : raw.result,
+      ...(compact ? { format: "semantic_payload_v1" } : {}),
     });
   } catch (error) {
     throw new CliError({
@@ -312,6 +322,7 @@ export function externalAgentIssueDigest(opts: {
     evaluator_work_order_ref: exchange.evaluator_work_order_ref,
     baseline: exchange.baseline,
     work_order: validateAgentWorkOrderV2(opts.work_order),
+    ...(exchange.result_format ? { result_format: exchange.result_format } : {}),
   };
   return sha256(
     JSON.stringify(

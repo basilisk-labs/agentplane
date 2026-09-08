@@ -8,6 +8,7 @@ import {
 } from "../tasks/task-artifact-schema.shared.js";
 import {
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
+  buildAgentSemanticPayloadSchema,
   type AgentSemanticResult,
 } from "./agent-semantic-result.js";
 import {
@@ -492,9 +493,28 @@ export function assertAgentWorkOrderReadyForInvocation(opts: {
 export function validateAgentSemanticResultForWorkOrder(opts: {
   work_order: unknown;
   semantic_result: unknown;
+  format?: "semantic_payload_v1";
 }): AgentSemanticResult {
   const workOrder = validateAgentWorkOrderV2(opts.work_order);
-  const semanticResult = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(opts.semantic_result);
+  const payload =
+    opts.format === "semantic_payload_v1"
+      ? buildAgentSemanticPayloadSchema({
+          role: workOrder.role,
+          phase: workOrder.canonical_binding?.phase,
+        }).parse(opts.semantic_result)
+      : null;
+  const semanticResult = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
+    payload
+      ? {
+          ...payload,
+          schema_version: 2,
+          kind: "agent_semantic_result",
+          ...(workOrder.canonical_binding
+            ? { canonical_binding: workOrder.canonical_binding }
+            : {}),
+        }
+      : opts.semantic_result,
+  );
   if (semanticResult.work_order_id !== workOrder.work_order_id) {
     throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
   }

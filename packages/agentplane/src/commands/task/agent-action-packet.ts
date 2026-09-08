@@ -84,6 +84,7 @@ export type AgentActionPacket = {
     };
   };
   exchange?: {
+    result_format?: "semantic_payload_v1";
     directory: string;
     work_order_ref: string;
     result_schema_ref: string;
@@ -451,6 +452,11 @@ export function buildAgentActionPacket(opts: {
     ...(opts.recovery ? { recovery: opts.recovery } : {}),
   };
 
+  if (packet.exchange?.result_format === "semantic_payload_v1") {
+    packet.action.instruction =
+      packet.action.instruction.replace(/\bresult\./gu, "") +
+      "\nReturn only the semantic payload described by result_schema_ref. Copy work_order_id from the issued WorkOrder.";
+  }
   if (packet.exchange) {
     const manifest = buildWorkOrderContextManifest(
       opts.work_order,
