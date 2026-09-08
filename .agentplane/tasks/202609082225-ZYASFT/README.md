@@ -1,10 +1,11 @@
 ---
 id: "202609082225-ZYASFT"
 title: "Measure provider token usage and align Bun runtime qualification"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +57,22 @@ quality_review:
     - "The frozen verification record .agentplane/tasks/202609082225-ZYASFT/verification/20260908235602054-cbd79f041fdf2e4b.json binds successful bun run ci:local:full to the actual implementation SHA. This supersedes recovery-baseline evidence for this review."
     - "Residual risk: Do not generalize the contract microbenchmark to full engineering tasks."
     - "Residual risk: Hosted CI, publication and integration have not been performed or authorized."
+token_usage:
+  agent_runs: 6
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:335bb9a788e6b2e40102c02a7567b32218af4312f79a2615efd1995c497ebeff"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-08T23:59:02.919Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -352,8 +369,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
-  message: "🚧 ZYASFT task: apply external agent result"
+  hash: "01de48827b7975069cd4b5e14dfd4715d40b8f8e"
+  message: "🚧 ZYASFT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -370,6 +387,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: b026d6113ea9. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -413,9 +433,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-08T23:59:02.919Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "01de48827b7975069cd4b5e14dfd4715d40b8f8e"
 doc_version: 3
-doc_updated_at: "2026-09-08T23:56:03.844Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-08T23:59:02.919Z"
+doc_updated_by: "CODER"
 description: "USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval."
 sections:
   Summary: |-
@@ -800,7 +828,23 @@ extensions:
       schema_version: 1
       task_id: "202609082225-ZYASFT"
     event_cursor: 14
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609082225-ZYASFT"
+            - "git:b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-08T23:56:02.054Z"
+          repository_snapshot_digest: "sha256:1f2975176b5e939697fdd31f210e5232d81da7a81043527c9fca82fa4303bfc7"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609082225-ZYASFT"
     intent:
       acceptance_criteria:
@@ -816,7 +860,7 @@ extensions:
 
         USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval.
       task_id: "202609082225-ZYASFT"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1006,9 +1050,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609082225-ZYASFT"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-08T23:56:03.844Z"
+    updated_at: "2026-09-08T23:59:02.919Z"
     work_items:
       measured-runtime:
         attempt: 1
@@ -1476,11 +1520,37 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609082225-ZYASFT"
+      legacy-finish:202609082225-ZYASFT:2026-09-08T23:56:02.054Z:b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f:
+        aggregate_digest: "sha256:05492c444113b4177d29183f5efaae54867991fb9f05be633f3764416bcf3715"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-08T23:59:02.919Z"
+          cause_refs:
+            - "task-verification:202609082225-ZYASFT"
+            - "git:b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f4860f822fe6decd4819e0ee"
+          mutation_id: "legacy-finish:202609082225-ZYASFT:2026-09-08T23:56:02.054Z:b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: "sha256:1f2975176b5e939697fdd31f210e5232d81da7a81043527c9fca82fa4303bfc7"
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609082225-ZYASFT:2026-09-08T23:56:02.054Z:b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+    message: "🚧 ZYASFT task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "edbb9f694c30db1fd678e5f642ffdaa14df6dc3b"
@@ -1654,3 +1724,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:335bb9a788e6b2e40102c02a7567b32218af4312f79a2615efd1995c497ebeff`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-08T23:59:02.919Z`
