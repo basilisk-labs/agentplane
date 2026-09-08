@@ -11,7 +11,10 @@ import {
   buildJsonSchemaDocument,
   schemaErrors,
 } from "../tasks/task-artifact-schema.shared.js";
-import { TASK_PLAN_PROPOSAL_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
+import {
+  COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+  TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+} from "../tasks/task-centric/schema.js";
 
 export const AGENT_SEMANTIC_RESULT_SCHEMA_VERSION = 2 as const;
 export const AGENT_SEMANTIC_RESULT_KIND = "agent_semantic_result" as const;
@@ -462,7 +465,12 @@ export function buildAgentSemanticPayloadSchema(context: SemanticPayloadContext)
     fields.canonical_outputs = kernelOutputClaimsSchema.optional();
   else if (!context.phase && context.role === "PLANNER") {
     fields.task_intent = AGENT_SEMANTIC_RESULT_BASE_SHAPE.task_intent;
-    fields.task_plan_proposal = AGENT_SEMANTIC_RESULT_BASE_SHAPE.task_plan_proposal;
+    fields.task_plan_proposal = z
+      .union([COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA, TASK_PLAN_PROPOSAL_ZOD_SCHEMA])
+      .describe(
+        "Prefer compact schema_version 2. Version 1 remains accepted for previously issued results.",
+      )
+      .optional();
   } else if (!context.phase && context.role === "EXECUTOR")
     fields.plan_refinement = AGENT_SEMANTIC_RESULT_BASE_SHAPE.plan_refinement;
   if (context.role === "EVALUATOR") fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA;
