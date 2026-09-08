@@ -1,10 +1,10 @@
 ---
 id: "202609081134-SRM6JM"
 title: "Reduce agent protocol overhead for small code changes"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-08T13:44:13.266Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
+  state: "pending"
+  updated_at: "2026-09-08T13:47:22.425Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 1
 execution_route:
   frozen: true
@@ -63,6 +63,7 @@ execution_contract:
       - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
       - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
       - "packages/agentplane/src/runner"
@@ -81,6 +82,7 @@ execution_contract:
     preferred_mode: "branch_pr"
     rationale:
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/backends/task-backend.local-handoff.test.ts,packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository_effects=tests"
       - "Use an isolated checkout for protocol changes. Preserve existing admission guarantees and historical artifacts. The approved scope includes identity assembly and negative authority tests."
     repository_effects:
       - "public_api"
@@ -96,6 +98,7 @@ execution_contract:
       - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
       - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
       - "packages/agentplane/src/runner"
@@ -109,9 +112,7 @@ execution_contract:
       - "scripts/checks"
       - "scripts/lib"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
       - "packages/core"
@@ -156,13 +157,7 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results:
-      -
-        id: "recorded-check-1"
-        result: "fail"
-      -
-        id: "verification-record"
-        result: "fail"
+    verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -185,6 +180,7 @@ execution_contract:
           - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
           - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
           - "packages/agentplane/src/cli"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
           - "packages/agentplane/src/commands/shared"
           - "packages/agentplane/src/commands/task"
           - "packages/agentplane/src/runner"
@@ -218,7 +214,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:d802ed450bc816e90d7682adc050c05b1d37165176aa1bffb9fa4ae4bad2a25f"
+      digest: "sha256:fd0fa675e1e218c75d1514ade932ef9acf0eb07e66a2a0561214401eda148bc4"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
@@ -337,8 +333,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -365,6 +359,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The full verification run exposed an obsolete schema assertion outside the issued writable roots. A one-file scope extension is required. Recommended action: Authorize the exact test-file scope extension, then issue a fresh EXECUTOR episode for the schema-store assertion and the in-scope compact-schema artifact classifier. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository effects=tests; request digest=sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d. Agentplane receipt: external-agent-blocker/tr_cecb34b21466551802305cc3e68f6e6e/sha256:291c75fa83070e06b0d3b59fee4f49a5cdca1d6fd5d85612da8302e7a8a77bb1/sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository effects: tests."
 events:
   -
     type: "status"
@@ -486,30 +483,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
-  agentplane.execution_grant:
-    actor: "USER"
-    approval_evidence_digest: null
-    approval_kind: "manual_operator"
-    capabilities:
-      - "provider.merge"
-      - "provider.pr"
-      - "repository.integrate"
-      - "repository.write"
-      - "task.lifecycle"
-      - "task.scope.extend"
-    completion_contract_digest: "sha256:4790f7c008d40156e1f3a1e6446c3a8825dd50a5966d7b428b15776e3e64eeee"
-    digest: "sha256:b0df4f2fbee35d1fbf3d9ba75b95913fb25e5f9a0432b101a173e654543b2af9"
-    grant_id: "1f684bed-a3d2-40a7-b432-eb043e77775e"
-    issued_at: "2026-09-08T11:38:37.528Z"
-    kind: "agentplane.execution_grant"
-    plan_digest: "sha256:74669df26c181bcb9005db5d7cf5ce40013d7311a08a6d9bb6fd327f0b5a497e"
-    plan_revision: 2
-    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
-    schema_version: 1
-    scope_digest: "sha256:286235e1c1a66f137f7b576d3f1dffbb5ddd7bff04538a12c18e10b8d5fea439"
-    status: "active"
-    task_id: "202609081134-SRM6JM"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-08T13:47:22.425Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:291c75fa83070e06b0d3b59fee4f49a5cdca1d6fd5d85612da8302e7a8a77bb1"
     kind: "task_scope_extension_request"
     request:
@@ -521,7 +497,7 @@ extensions:
         - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
     request_digest: "sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_cecb34b21466551802305cc3e68f6e6e"
   agentplane.task_centric:
     current_plan:
@@ -1069,7 +1045,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1081,7 +1057,7 @@ extensions:
 
         Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings.
       task_id: "202609081134-SRM6JM"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1619,7 +1595,7 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 23
+    revision: 24
     schema_version: 1
     updated_at: "2026-09-08T13:45:31.121Z"
     work_items:
@@ -1922,6 +1898,30 @@ extensions:
         mutation_id: "compatibility:sha256:16e0c1d5c13a4aee3fbee2b4c1c5e4d80b157225bcc5da7bbd6069bc021a7316"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:17ff4402a6ec04395e22ab95f40770dce436b2437f38a4bd5fc097e28d7f67fd:
+        aggregate_digest: "sha256:28b641ac6470c513d9b86c6037aa200d71f684e997fcb12d5094c1adeb1f0ee5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:45:31.121Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_86e731b2ad2120fd50c40d60"
+          mutation_id: "compatibility:sha256:17ff4402a6ec04395e22ab95f40770dce436b2437f38a4bd5fc097e28d7f67fd"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:17ff4402a6ec04395e22ab95f40770dce436b2437f38a4bd5fc097e28d7f67fd"
+        next_revision: 24
+        previous_revision: 23
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:258797012983d0ad50e56ae0eea3327b3b04f03c6d010a143ea80914617dbe4d:
