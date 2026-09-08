@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -133,10 +133,13 @@ execution_contract:
       - "packages/core/src/runner/agent-work-order.test.ts"
       - "packages/core/src/runner/agent-work-order.ts"
       - "packages/core/src/tasks/task-artifact-schema.shared.ts"
+      - "packages/core/src/tasks/task-centric/schema.ts"
+      - "packages/core/src/tasks/task-centric/task-centric.test.ts"
       - "scripts/baselines/protocol-cost-SRM6JM-before-01.json"
       - "scripts/baselines/protocol-cost-SRM6JM-before-02.json"
       - "scripts/baselines/protocol-cost-SRM6JM-before-03.json"
       - "scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
+      - "scripts/baselines/protocol-cost-SRM6JM-plan-01.json"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -198,7 +201,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:b73375fd1145fcab1549c71485287a3b4f8591a8d9218ed3267234c006542ccf"
+      digest: "sha256:a9ef4d2c74b7cd9132472fc4726abf0f10a11b37020491da3b769c5115ed6e75"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
@@ -212,6 +215,8 @@ execution_contract:
         - "central_path:packages/core/src/runner/agent-work-order.test.ts"
         - "central_path:packages/core/src/runner/agent-work-order.ts"
         - "central_path:packages/core/src/tasks/task-artifact-schema.shared.ts"
+        - "central_path:packages/core/src/tasks/task-centric/schema.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -221,6 +226,7 @@ execution_contract:
         - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-02.json"
         - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-03.json"
         - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-plan-01.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -250,10 +256,13 @@ execution_contract:
           - "packages/core/src/runner/agent-work-order.test.ts"
           - "packages/core/src/runner/agent-work-order.ts"
           - "packages/core/src/tasks/task-artifact-schema.shared.ts"
+          - "packages/core/src/tasks/task-centric/schema.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
           - "scripts/baselines/protocol-cost-SRM6JM-before-01.json"
           - "scripts/baselines/protocol-cost-SRM6JM-before-02.json"
           - "scripts/baselines/protocol-cost-SRM6JM-before-03.json"
           - "scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-plan-01.json"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -294,7 +303,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "8944b1e5df333b3c49e4b19fe0574634b125db10"
+  message: "🚧 SRM6JM task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -311,6 +322,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 443a5aafbab7. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 8944b1e5df33. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -342,8 +356,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 443a5aafbab7. CLI accepted one state-bound external-agent semantic result."
     commit: "443a5aafbab7af51de9b380ba49126c28f96c267"
+  -
+    type: "status"
+    at: "2026-09-08T13:00:13.785Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 8944b1e5df33. CLI accepted one state-bound external-agent semantic result."
+    commit: "8944b1e5df333b3c49e4b19fe0574634b125db10"
 doc_version: 3
-doc_updated_at: "2026-09-08T12:53:50.910Z"
+doc_updated_at: "2026-09-08T13:00:13.785Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -954,7 +976,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 9
+    event_cursor: 11
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1504,9 +1526,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 13
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-08T12:53:53.931Z"
+    updated_at: "2026-09-08T13:00:13.785Z"
     work_items:
       baseline:
         attempt: 1
@@ -1787,6 +1809,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:a22a08d4fc7513309d818115555df04cf155753ea3adff33f06494ddd27aec80:
+        aggregate_digest: "sha256:9d9252ac2ced545aba48813656ebef0987ebe6f486e59b2f369338b89ddd071e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:00:13.785Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7fdf8cea686f5ebbe4dd42e5"
+          mutation_id: "compatibility:sha256:a22a08d4fc7513309d818115555df04cf155753ea3adff33f06494ddd27aec80"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a22a08d4fc7513309d818115555df04cf155753ea3adff33f06494ddd27aec80"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:b2ccd4c290c62f76bfe8cbdda3ee5cdda533d72b72e1c5124b9dd9bda53a1641:
         aggregate_digest: "sha256:49017a8d6fc6683bd7964583118204ca33df1bf44c17950e47fb57a49f5cdd97"
         event:
@@ -1859,6 +1905,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:e8b7deaf2a40489ea2f19da7cff796e7d6f6c660ff17d18e5c6a2c31c8ef2d7f:
+        aggregate_digest: "sha256:721c33dd38ab8c430fddfbb51f8688d85853054ceb2e659b3a5bb2d19a4d8013"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:00:13.785Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b976ff006a6b182d1caadb0f"
+          mutation_id: "compatibility:sha256:e8b7deaf2a40489ea2f19da7cff796e7d6f6c660ff17d18e5c6a2c31c8ef2d7f"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e8b7deaf2a40489ea2f19da7cff796e7d6f6c660ff17d18e5c6a2c31c8ef2d7f"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       external-result:work-order-202609081134-SRM6JM-executor-0c479114a89e4d5d1e1056b2:
         aggregate_digest: "sha256:0d8cd031a56f5899718837f20d7b370a742cb4b48e2ca6bb49f717b55d5ec5f1"
         event:
@@ -1911,7 +1981,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "443a5aafbab7af51de9b380ba49126c28f96c267"
+    hash: "8944b1e5df333b3c49e4b19fe0574634b125db10"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f34f2829cfbfc5a2f3645da325ea016e68ac5162..443a5aafbab7af51de9b380ba49126c28f96c267",
+      "command": "git diff --check be477c4ee587c661070c69bb517e26e5762d7154..8944b1e5df333b3c49e4b19fe0574634b125db10",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f34f2829cfbfc5a2f3645da325ea016e68ac5162..443a5aafbab7af51de9b380ba49126c28f96c267",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB be477c4ee587c661070c69bb517e26e5762d7154..8944b1e5df333b3c49e4b19fe0574634b125db10",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,23 +21,13 @@
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/github-body.md",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/meta.json",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
         "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
         "M\tpackages/agentplane/src/commands/task/agent-action-packet.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-result-routing.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
-        "M\tpackages/core/src/runner/agent-semantic-result.test.ts",
         "M\tpackages/core/src/runner/agent-semantic-result.ts",
-        "M\tpackages/core/src/runner/agent-work-order.test.ts",
         "M\tpackages/core/src/runner/agent-work-order.ts",
-        "M\tpackages/core/src/tasks/task-artifact-schema.shared.ts",
-        "A\tscripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
+        "M\tpackages/core/src/tasks/task-centric/schema.ts",
+        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-plan-01.json"
       ]
     },
     {
@@ -47,8 +37,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f34f2829cfbfc5a2f3645da325ea016e68ac5162",
-  "implementation_commit": "443a5aafbab7af51de9b380ba49126c28f96c267",
+  "execution_base_commit": "be477c4ee587c661070c69bb517e26e5762d7154",
+  "implementation_commit": "8944b1e5df333b3c49e4b19fe0574634b125db10",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
