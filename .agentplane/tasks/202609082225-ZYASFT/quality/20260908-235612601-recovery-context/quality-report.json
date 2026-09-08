@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202609082225-ZYASFT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-08T23:58:51.703Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 7 typed finding(s).",
+  "evaluated_sha": "b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f",
+  "blueprint_digest": "912163f09da761cc1febac2e92d0eae427f1f1d8393d116299bdf4252a9f7939",
+  "findings": [
+    "The evaluated implementation b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f contains the 15 intended source, test, benchmark and baseline files. All 14 restored files match their reviewed SHA-256 manifest; the additional evaluator fixture has the approved one-line usage correction.",
+    "Provider output includes reasoning exactly once. Transport tests cover valid usage after semantic failure, duplicate and conflicting completion events, cache subsets and identity. Persisted journal tests cover failed attempts, role projection and replay deduplication. Missing external-agent usage remains explicit.",
+    "Bun and bunx resolve to 1.4.2. Runtime preflight tests cover mismatch rejection before CI. Compiled macOS ARM64 smoke supports removal of the identifier-minification workaround.",
+    "The 54-turn provider artifact reports raw usage and paired comparisons without claiming end-to-end engineering savings. Retained-turn reduction is 1.6737 percent; the measured two-turn sequence increases 0.7397 percent.",
+    "The frozen verification record .agentplane/tasks/202609082225-ZYASFT/verification/20260908235602054-cbd79f041fdf2e4b.json binds successful bun run ci:local:full to the actual implementation SHA. This supersedes recovery-baseline evidence for this review.",
+    "Residual risk: Do not generalize the contract microbenchmark to full engineering tasks.",
+    "Residual risk: Hosted CI, publication and integration have not been performed or authorized."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
