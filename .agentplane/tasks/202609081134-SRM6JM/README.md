@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -112,14 +112,31 @@ execution_contract:
     authority_violations: []
     changed_components:
       - "packages/agentplane"
+      - "packages/core"
       - "scripts"
     changed_paths:
       - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
       - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+      - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
       - "packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+      - "packages/agentplane/src/commands/task/external-agent-result-routing.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+      - "packages/core/src/runner/agent-semantic-result.test.ts"
+      - "packages/core/src/runner/agent-semantic-result.ts"
+      - "packages/core/src/runner/agent-work-order.test.ts"
+      - "packages/core/src/runner/agent-work-order.ts"
+      - "packages/core/src/tasks/task-artifact-schema.shared.ts"
       - "scripts/baselines/protocol-cost-SRM6JM-before-01.json"
       - "scripts/baselines/protocol-cost-SRM6JM-before-02.json"
       - "scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+      - "scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -181,12 +198,20 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:98ad4873e1f01039d5103b301ca66021b7303ea0fba6338a147ea6b06462dd4b"
+      digest: "sha256:b73375fd1145fcab1549c71485287a3b4f8591a8d9218ed3267234c006542ccf"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.test.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.ts"
+        - "central_path:packages/core/src/runner/agent-work-order.test.ts"
+        - "central_path:packages/core/src/runner/agent-work-order.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.shared.ts"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
@@ -195,6 +220,7 @@ execution_contract:
         - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-01.json"
         - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-02.json"
         - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
       execution_groups:
         - "docs-schema"
         - "core"
@@ -203,14 +229,31 @@ execution_contract:
       observed:
         changed_components:
           - "packages/agentplane"
+          - "packages/core"
           - "scripts"
         changed_files:
           - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
           - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+          - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+          - "packages/agentplane/src/commands/task/external-agent-result-routing.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+          - "packages/core/src/runner/agent-semantic-result.test.ts"
+          - "packages/core/src/runner/agent-semantic-result.ts"
+          - "packages/core/src/runner/agent-work-order.test.ts"
+          - "packages/core/src/runner/agent-work-order.ts"
+          - "packages/core/src/tasks/task-artifact-schema.shared.ts"
           - "scripts/baselines/protocol-cost-SRM6JM-before-01.json"
           - "scripts/baselines/protocol-cost-SRM6JM-before-02.json"
           - "scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -251,7 +294,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "443a5aafbab7af51de9b380ba49126c28f96c267"
+  message: "🚧 SRM6JM task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -265,6 +310,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 18464555cfce. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 443a5aafbab7. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -288,8 +336,16 @@ events:
     to: "DOING"
     note: "Implementation committed: 18464555cfce. CLI accepted one state-bound external-agent semantic result."
     commit: "18464555cfce9c2578c1ed75bba1de25b56e8598"
+  -
+    type: "status"
+    at: "2026-09-08T12:53:50.910Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 443a5aafbab7. CLI accepted one state-bound external-agent semantic result."
+    commit: "443a5aafbab7af51de9b380ba49126c28f96c267"
 doc_version: 3
-doc_updated_at: "2026-09-08T12:36:05.160Z"
+doc_updated_at: "2026-09-08T12:53:50.910Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -900,7 +956,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 7
+    event_cursor: 9
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1450,9 +1506,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 10
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-08T12:36:08.256Z"
+    updated_at: "2026-09-08T12:53:50.910Z"
     work_items:
       baseline:
         attempt: 1
@@ -1686,6 +1742,54 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:b2ccd4c290c62f76bfe8cbdda3ee5cdda533d72b72e1c5124b9dd9bda53a1641:
+        aggregate_digest: "sha256:49017a8d6fc6683bd7964583118204ca33df1bf44c17950e47fb57a49f5cdd97"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T12:53:50.910Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_57483aa511add88af255d2ef"
+          mutation_id: "compatibility:sha256:b2ccd4c290c62f76bfe8cbdda3ee5cdda533d72b72e1c5124b9dd9bda53a1641"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b2ccd4c290c62f76bfe8cbdda3ee5cdda533d72b72e1c5124b9dd9bda53a1641"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:bc9f755a566326ee3951598742f61e9754964b3d4200e79cb0aa84acfae888c0:
+        aggregate_digest: "sha256:60539ff2c1e9c6a2bbd3702d30be83bb688b4d534e251c8f77bc032ffbef2bbd"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T12:53:50.910Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3502022af9fae68b0db51ec5"
+          mutation_id: "compatibility:sha256:bc9f755a566326ee3951598742f61e9754964b3d4200e79cb0aa84acfae888c0"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:bc9f755a566326ee3951598742f61e9754964b3d4200e79cb0aa84acfae888c0"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:db12f5ae7215bdd69e42b6bd6b70871516017a632570a679afea51e4c6ddd04e:
         aggregate_digest: "sha256:dd572bf7ec996b005331625f28b3a7cfa7a8c9be41a7ca7de8a23e5015b364b8"
         event:
@@ -1738,7 +1842,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "18464555cfce9c2578c1ed75bba1de25b56e8598"
+    hash: "443a5aafbab7af51de9b380ba49126c28f96c267"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
