@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -28,34 +28,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-08T13:59:30.362Z"
+  updated_at: "2026-09-08T17:41:48.432Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 8 typed finding(s)."
-  evaluated_sha: "4005ad7a1c494e516248e8b3e975340de70a034e"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "f33d994a331fa73f30292b8735c44b0c9fb2730f"
   blueprint_digest: "baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5"
   evidence_refs:
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/d1ac7f3018b756a757b6bf23023f2da08cb6a57e53784ed4cb8b3673336c5b37.md"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c121dadb60df656c4034b7a9a9801db1f7cd1c78ec4f7d5eaa4d360173fd810d.md"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609081134-SRM6JM/README.md"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
-    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/4106516aaf17f4b9884482a195ebf3ddcb32ce5c1d36e81b28f59efeb31e3fcf.json"
-    - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908135737862-8e81902afe3e091d.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+    - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/a341134ab70f42dc4760b45eedc255f689f95844a17af51bd42dcf663536dbeb.json"
+    - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908174050240-1bc8dc22066a8477.json"
     - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac8ee9e94898dc99774784bae63bbc0da680c8062f6d60d488514d81a250c824.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The frozen diff and all seven frozen evidence digests match the evaluated implementation. Changes remain inside the approved source roots and task-owned artifacts. No dependency changes or historical exchange rewrites were introduced."
-    - "Three matched scripted cycles reduce required schema bytes from 452556 to 44683 (90.1 percent) and agent result bytes from 6244 to 2746 (56.0 percent). Both acceptance thresholds pass. Median measured CLI protocol time changes from 3738.2 to 3485.0 ms. No model-token or provider-latency claim is made."
-    - "Compact payloads require the issued WorkOrder id and an exchange that explicitly enables the new format. The CLI supplies service identity only after validation. Existing stale, role, scope, lease, canonical-binding and historical-envelope checks remain enforced. Compact plans normalize to the existing full persisted contract."
-    - "Focused positive and negative transport, plan, authority and recovery tests cover the changed paths. The schema-store correction retains historical-copy, object integrity and interrupted-publication assertions. Both known schema identifiers retain the same backend hash and no-symlink checks."
-    - "The latest verification record for implementation 4005ad7a1c494e516248e8b3e975340de70a034e records bun run ci:local:full as passed. Typecheck, targeted lint, formatting and 27 focused correction tests also pass."
-    - "The additional original-claims recovery assertion previously failed on both the original source and current implementation. Its three relevant source identities are unchanged. This is a documented pre-existing limitation in the separate reliability work, not a waived identity check or a claim that all recovery behavior is proven."
-    - "Residual risk: The pre-existing interrupted-implementation original-claims recovery inconsistency remains documented in protocol-cost-SRM6JM-recovery-baseline.json."
-    - "Residual risk: No paid provider comparison or hosted integration validation was performed."
+    - "All frozen evidence digests match. The only additional production change removes five unused internal exports; function bodies and callers remain unchanged. Knip passes with unchanged budgets."
+    - "The required full local CI passed for f33d994a331fa73f30292b8735c44b0c9fb2730f. The previously failing staging suite separately passed all 13 tests after authorized cleanup of disposable test caches."
+    - "The existing summary now records the environmental failure and recovery. Raw measurements remain unchanged: schema bytes reduced by 90.1 percent and result bytes by 56.0 percent. Existing compact transport, plan, identity, stale, role, scope and historical compatibility coverage remains valid."
+    - "The previously documented original-claims recovery inconsistency predates this change and remains explicitly recorded. No identity checks or CI budgets were relaxed."
+    - "Residual risk: Pre-existing original-claims recovery inconsistency remains documented."
+    - "Residual risk: No provider-level latency or token measurement was performed."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -576,7 +574,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-08T17:40:51.274Z"
+doc_updated_at: "2026-09-08T17:41:48.449Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -1353,7 +1351,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 30
+    event_cursor: 31
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1903,9 +1901,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 37
+    revision: 38
     schema_version: 1
-    updated_at: "2026-09-08T17:40:51.271Z"
+    updated_at: "2026-09-08T17:40:51.274Z"
     work_items:
       baseline:
         attempt: 1
@@ -2302,6 +2300,30 @@ extensions:
         mutation_id: "compatibility:sha256:17ff4402a6ec04395e22ab95f40770dce436b2437f38a4bd5fc097e28d7f67fd"
         next_revision: 24
         previous_revision: 23
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:22f738325e41baeecbab21079baa0dc957b5a81fffcc36f5cb617652ad2318c0:
+        aggregate_digest: "sha256:d48d7bbdf0ce9388e8b2df6dec19ce03c490753841cb30688f1a8ae7491f6d89"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T17:40:51.274Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f979a78f855553b0e1668358"
+          mutation_id: "compatibility:sha256:22f738325e41baeecbab21079baa0dc957b5a81fffcc36f5cb617652ad2318c0"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 37
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:22f738325e41baeecbab21079baa0dc957b5a81fffcc36f5cb617652ad2318c0"
+        next_revision: 38
+        previous_revision: 37
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:258797012983d0ad50e56ae0eea3327b3b04f03c6d010a143ea80914617dbe4d:
