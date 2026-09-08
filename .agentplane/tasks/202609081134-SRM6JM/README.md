@@ -1,10 +1,11 @@
 ---
 id: "202609081134-SRM6JM"
 title: "Reduce agent protocol overhead for small code changes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,22 @@ quality_review:
     - "The additional original-claims recovery assertion previously failed on both the original source and current implementation. Its three relevant source identities are unchanged. This is a documented pre-existing limitation in the separate reliability work, not a waived identity check or a claim that all recovery behavior is proven."
     - "Residual risk: The pre-existing interrupted-implementation original-claims recovery inconsistency remains documented in protocol-cost-SRM6JM-recovery-baseline.json."
     - "Residual risk: No paid provider comparison or hosted integration validation was performed."
+token_usage:
+  agent_runs: 10
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:88a99f1e69c8dab0ff683c8e31fba912afa69e3b33ad37051d311a1f9335db09"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-08T14:02:24.847Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -385,8 +402,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4005ad7a1c494e516248e8b3e975340de70a034e"
-  message: "🚧 SRM6JM task: apply external agent result"
+  hash: "a944475a4904aeafad41819b2b935b7d775abcf0"
+  message: "🚧 SRM6JM task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -418,6 +435,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4005ad7a1c49. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -492,9 +512,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-08T14:02:24.847Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "a944475a4904aeafad41819b2b935b7d775abcf0"
 doc_version: 3
-doc_updated_at: "2026-09-08T13:57:39.175Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-08T14:02:24.847Z"
+doc_updated_by: "CODER"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
   Summary: |-
@@ -1176,7 +1204,23 @@ extensions:
       schema_version: 1
       task_id: "202609081134-SRM6JM"
     event_cursor: 22
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609081134-SRM6JM"
+            - "git:4005ad7a1c494e516248e8b3e975340de70a034e"
+          check_id: "task-check"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-08T13:57:37.862Z"
+          repository_snapshot_digest: "sha256:53957a6747bff495da0750a02ea623b0f8dc3127905a19e7d31567e3735e96bb"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609081134-SRM6JM"
     intent:
       acceptance_criteria: []
@@ -1187,7 +1231,7 @@ extensions:
 
         Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings.
       task_id: "202609081134-SRM6JM"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1725,9 +1769,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 28
+    revision: 29
     schema_version: 1
-    updated_at: "2026-09-08T13:57:39.175Z"
+    updated_at: "2026-09-08T14:02:24.847Z"
     work_items:
       baseline:
         attempt: 1
@@ -2582,11 +2626,37 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      legacy-finish:202609081134-SRM6JM:2026-09-08T13:57:37.862Z:4005ad7a1c494e516248e8b3e975340de70a034e:
+        aggregate_digest: "sha256:1dd170286d4101ce4e92d4504f17240f317a43bfab0d3e9e991240bda4af73d7"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-08T14:02:24.847Z"
+          cause_refs:
+            - "task-verification:202609081134-SRM6JM"
+            - "git:4005ad7a1c494e516248e8b3e975340de70a034e"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0562a312b4d04487c0f73ba5"
+          mutation_id: "legacy-finish:202609081134-SRM6JM:2026-09-08T13:57:37.862Z:4005ad7a1c494e516248e8b3e975340de70a034e"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: "sha256:53957a6747bff495da0750a02ea623b0f8dc3127905a19e7d31567e3735e96bb"
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 28
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609081134-SRM6JM:2026-09-08T13:57:37.862Z:4005ad7a1c494e516248e8b3e975340de70a034e"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "4005ad7a1c494e516248e8b3e975340de70a034e"
+    message: "🚧 SRM6JM task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
@@ -2726,3 +2796,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/10` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:88a99f1e69c8dab0ff683c8e31fba912afa69e3b33ad37051d311a1f9335db09`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-08T14:02:24.847Z`

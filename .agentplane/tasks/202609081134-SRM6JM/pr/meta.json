@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:04a2a960da9821f8710cc3a6279cb36ae596266cc7891ec9021008b1c23d5118",
   "pr_number": 5923,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5923",
+  "pre_merge_closure": {
+    "basis_commit": "a944475a4904aeafad41819b2b935b7d775abcf0",
+    "branch": "task/202609081134-SRM6JM/reduce-agent-protocol-overhead-for-small-code-ch",
+    "pr_number": 5923,
+    "recorded_at": "2026-09-08T14:02:24.921Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
