@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 06fadda2e878d6c3faa63bbd48b3d4c125d449ab..4005ad7a1c494e516248e8b3e975340de70a034e",
+      "command": "git diff --check 2aa1f680862f9816bfafd438ac262df0327666be..4edd59e252d347fae27355c178c81e0f4533d999",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 06fadda2e878d6c3faa63bbd48b3d4c125d449ab..4005ad7a1c494e516248e8b3e975340de70a034e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2aa1f680862f9816bfafd438ac262df0327666be..4edd59e252d347fae27355c178c81e0f4533d999",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,9 +21,7 @@
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/github-body.md",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/meta.json",
         "M\t.agentplane/tasks/202609081134-SRM6JM/pr/review.md",
-        "M\tpackages/agentplane/src/backends/task-backend.local-handoff.test.ts",
-        "M\tpackages/agentplane/src/backends/task-backend/local-backend-read.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+        "M\tpackages/agentplane/src/commands/shared/task-backend.ts"
       ]
     },
     {
@@ -33,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "06fadda2e878d6c3faa63bbd48b3d4c125d449ab",
-  "implementation_commit": "4005ad7a1c494e516248e8b3e975340de70a034e",
+  "execution_base_commit": "2aa1f680862f9816bfafd438ac262df0327666be",
+  "implementation_commit": "4edd59e252d347fae27355c178c81e0f4533d999",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
