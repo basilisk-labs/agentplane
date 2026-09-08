@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 30
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -186,6 +186,7 @@ execution_contract:
       - "packages/agentplane/src/runner/context/task-context.test.ts"
       - "packages/agentplane/src/runner/context/work-order-context.ts"
       - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      - "packages/agentplane/tsup.config.ts"
       - "scripts/baselines/protocol-followup-P1MJV7.json"
     external_effects: []
     repository_effects:
@@ -250,7 +251,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:a409d47b467a29e77f5a281783316c04114b57ae1fe9a253bca43ef4b5c25d02"
+      digest: "sha256:9cbd3f9657baa1c2f81d196e1b322c13d591e17eeac8e32a2627147067873c8f"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
@@ -307,6 +308,7 @@ execution_contract:
           - "packages/agentplane/src/runner/context/task-context.test.ts"
           - "packages/agentplane/src/runner/context/work-order-context.ts"
           - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+          - "packages/agentplane/tsup.config.ts"
           - "scripts/baselines/protocol-followup-P1MJV7.json"
         external_effects: []
         repository_effects:
@@ -349,7 +351,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "438ef52d9e8f9cd8e0c3d1c757a81ebcbffba376"
+  message: "🚧 P1MJV7 task: apply external agent result"
 comments:
   -
     author: "PLANNER"
@@ -387,6 +391,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/tsup.config.ts; repository effects: ci."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 438ef52d9e8f. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "comment"
@@ -484,8 +491,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The import-cycle repair passes architecture and 88 focused tests. Full CI exposed a Bun 1.3.6 rebundling identifier collision. A tested build-config correction needs an additional writable path. Recommended action: Approve the build-config scope extension, apply the prepared one-file patch, run the full static and local verification gates, then complete the already authorized PR merge. Requested scope: roots=packages/agentplane/tsup.config.ts; repository effects=ci; request digest=sha256:85a87bf65f49aeb908bb269b155a0769ddb47db24d72742c161fa1593eedee0e. Agentplane receipt: external-agent-blocker/tr_e91199b88e6bf7775c21b1ae932b0098/sha256:489c18054b6a6a8a3bf84c3a44ecb9fcb031917b4daf55e504146f6c4f9eefa3/sha256:85a87bf65f49aeb908bb269b155a0769ddb47db24d72742c161fa1593eedee0e."
+  -
+    type: "status"
+    at: "2026-09-08T21:53:18.887Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 438ef52d9e8f. CLI accepted one state-bound external-agent semantic result."
+    commit: "438ef52d9e8f9cd8e0c3d1c757a81ebcbffba376"
 doc_version: 3
-doc_updated_at: "2026-09-08T21:45:45.731Z"
+doc_updated_at: "2026-09-08T21:53:18.960Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
@@ -926,7 +941,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 25
+    event_cursor: 27
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -1135,9 +1150,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 30
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-08T21:45:45.731Z"
+    updated_at: "2026-09-08T21:53:18.904Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 1
@@ -1590,6 +1605,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609081927-P1MJV7"
+      compatibility:sha256:6c9e13401db05997d7dbf856b0e119406ce9ad712efe9ee8a31f43629844a2bb:
+        aggregate_digest: "sha256:4ce02b8c49f2dd8dfaaabd1420bc3f0950a1e08d11c5d2c4fb4718e75bb529b2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T21:53:18.887Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c5e293a00bde8bad5f2773f4"
+          mutation_id: "compatibility:sha256:6c9e13401db05997d7dbf856b0e119406ce9ad712efe9ee8a31f43629844a2bb"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6c9e13401db05997d7dbf856b0e119406ce9ad712efe9ee8a31f43629844a2bb"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
       compatibility:sha256:75bf634b22feced6dd320ea32305638db77097798bacbde04063bd4f08af2045:
         aggregate_digest: "sha256:2383e9cbefd680a47827ab594164d74c944f09400905567822eb52ba0743b758"
         event:
@@ -1708,6 +1747,30 @@ extensions:
         mutation_id: "compatibility:sha256:a443dfb4a61d27e65d46ea1f8935c322fd2831865670b5b61d68d2e16b77ca29"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
+      compatibility:sha256:afcbe05110fbd3355d941c3333a86c8c9ce1bc68e883e2a6e4ac5e7ed88c02fe:
+        aggregate_digest: "sha256:dc233cd493d5c5350c2b21f5f1ca546d8bdce10c13ade62ded93cc4252a0fe87"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T21:53:18.904Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_add3d7285c8ef3b48f94a1f4"
+          mutation_id: "compatibility:sha256:afcbe05110fbd3355d941c3333a86c8c9ce1bc68e883e2a6e4ac5e7ed88c02fe"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:afcbe05110fbd3355d941c3333a86c8c9ce1bc68e883e2a6e4ac5e7ed88c02fe"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609081927-P1MJV7"
       compatibility:sha256:b202d9d3f8f9bfc6c78c7fa0fb06c5f708044607ad6133f58a414582a981bdfb:
@@ -1882,6 +1945,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "438ef52d9e8f9cd8e0c3d1c757a81ebcbffba376"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
