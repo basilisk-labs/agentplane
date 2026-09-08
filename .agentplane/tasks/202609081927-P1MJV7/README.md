@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: "2026-09-08T21:50:15.450Z"
-  updated_by: "USER"
-  note: "Invalidated by USER-approved execution scope extension."
-  attempts: 2
+  state: "ok"
+  updated_at: "2026-09-08T22:01:43.703Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -193,7 +193,28 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -231,6 +252,7 @@ execution_contract:
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:ci"
+          - "repository_effect:documentation"
           - "repository_effect:public_api"
           - "repository_effect:repository_write"
           - "repository_effect:schema"
@@ -251,25 +273,73 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:9cbd3f9657baa1c2f81d196e1b322c13d591e17eeac8e32a2627147067873c8f"
+      digest: "sha256:5d27d18207489c3cf06914b0cffbe6f0464a7274322742c814bc909c9efa9b93"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
         - "central_path:packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.test.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.ts"
+        - "central_path:packages/core/src/runner/agent-work-order.test.ts"
+        - "central_path:packages/core/src/runner/agent-work-order.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.shared.ts"
+        - "central_path:packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts"
+        - "central_path:packages/core/src/tasks/task-centric/schema.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.test.ts"
         - "effect_ci"
         - "effect_public_api"
         - "effect_schema"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/blueprint/resolved-snapshot.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/pr/diffstat.txt"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/pr/github-title.txt"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/pr/meta.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-evidence-manifest.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-result.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-work-order.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/quality-report.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/4106516aaf17f4b9884482a195ebf3ddcb32ce5c1d36e81b28f59efeb31e3fcf.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/a341134ab70f42dc4760b45eedc255f689f95844a17af51bd42dcf663536dbeb.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac8ee9e94898dc99774784bae63bbc0da680c8062f6d60d488514d81a250c824.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/supervision/implementation-evidence.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/verification/20260908134413266-ee9f7d94d4a89d7a.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/verification/20260908135737862-8e81902afe3e091d.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/verification/20260908142427945-81d66802d5b3a3b9.json"
+        - "unknown_path:.agentplane/tasks/202609081134-SRM6JM/verification/20260908174050240-1bc8dc22066a8477.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-after-01.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-after-02.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-after-03.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-01.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-02.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-plan-01.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-profile-after.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-profile-before-03.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-recovery-baseline.json"
+        - "unknown_path:scripts/baselines/protocol-cost-SRM6JM-summary.json"
         - "unknown_path:scripts/baselines/protocol-followup-P1MJV7.json"
       execution_groups:
         - "docs-schema"
@@ -278,18 +348,59 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - ".agentplane"
           - "packages/agentplane"
+          - "packages/core"
           - "scripts"
         changed_files:
+          - ".agentplane/tasks/202609081134-SRM6JM/README.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/blueprint/resolved-snapshot.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/pr/diffstat.txt"
+          - ".agentplane/tasks/202609081134-SRM6JM/pr/github-body.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/pr/github-title.txt"
+          - ".agentplane/tasks/202609081134-SRM6JM/pr/meta.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/pr/review.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-evidence-manifest.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-opinion.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-result.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/evaluator-work-order.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-174100553-recovery-context/quality-report.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/4106516aaf17f4b9884482a195ebf3ddcb32ce5c1d36e81b28f59efeb31e3fcf.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/a341134ab70f42dc4760b45eedc255f689f95844a17af51bd42dcf663536dbeb.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac8ee9e94898dc99774784bae63bbc0da680c8062f6d60d488514d81a250c824.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c121dadb60df656c4034b7a9a9801db1f7cd1c78ec4f7d5eaa4d360173fd810d.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+          - ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/d1ac7f3018b756a757b6bf23023f2da08cb6a57e53784ed4cb8b3673336c5b37.md"
+          - ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/supervision/implementation-evidence.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908134413266-ee9f7d94d4a89d7a.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908135737862-8e81902afe3e091d.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908142427945-81d66802d5b3a3b9.json"
+          - ".agentplane/tasks/202609081134-SRM6JM/verification/20260908174050240-1bc8dc22066a8477.json"
+          - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
+          - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+          - "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.blocked-result.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.clean-verification.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
           - "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts"
           - "packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-branch.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-hosted-close.test.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/agent-action-packet.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
           - "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts"
           - "packages/agentplane/src/commands/task/branch-task-verification.test.ts"
@@ -301,7 +412,10 @@ execution_contract:
           - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+          - "packages/agentplane/src/commands/task/external-agent-purpose.ts"
+          - "packages/agentplane/src/commands/task/external-agent-result-routing.ts"
           - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/kernel-exchange.ts"
           - "packages/agentplane/src/commands/task/verification-infrastructure.test.ts"
           - "packages/agentplane/src/commands/task/verification-infrastructure.ts"
           - "packages/agentplane/src/runner/adapters/prepared-input.ts"
@@ -309,9 +423,30 @@ execution_contract:
           - "packages/agentplane/src/runner/context/work-order-context.ts"
           - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
           - "packages/agentplane/tsup.config.ts"
+          - "packages/core/src/runner/agent-semantic-result.test.ts"
+          - "packages/core/src/runner/agent-semantic-result.ts"
+          - "packages/core/src/runner/agent-work-order.test.ts"
+          - "packages/core/src/runner/agent-work-order.ts"
+          - "packages/core/src/tasks/task-artifact-schema.shared.ts"
+          - "packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts"
+          - "packages/core/src/tasks/task-centric/schema.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.test.ts"
+          - "scripts/baselines/protocol-cost-SRM6JM-after-01.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-after-02.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-after-03.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-before-01.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-before-02.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-exchange-01.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-plan-01.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-profile-after.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-profile-before-03.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-recovery-baseline.json"
+          - "scripts/baselines/protocol-cost-SRM6JM-summary.json"
           - "scripts/baselines/protocol-followup-P1MJV7.json"
         external_effects: []
         repository_effects:
+          - "documentation"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -326,6 +461,7 @@ execution_contract:
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "docs_contract"
         - "full_regression"
         - "hosted_integration"
         - "real_e2e"
@@ -344,6 +480,7 @@ execution_contract:
     required_evidence:
       - "hosted_integration"
       - "repository_effect:ci"
+      - "repository_effect:documentation"
       - "repository_effect:public_api"
       - "repository_effect:repository_write"
       - "repository_effect:schema"
@@ -499,8 +636,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 438ef52d9e8f. CLI accepted one state-bound external-agent semantic result."
     commit: "438ef52d9e8f9cd8e0c3d1c757a81ebcbffba376"
+  -
+    type: "verify"
+    at: "2026-09-08T22:01:43.703Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-08T21:53:18.960Z"
+doc_updated_at: "2026-09-08T22:01:44.973Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
@@ -699,6 +842,72 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202609081927-P1MJV7 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081927-P1MJV7-reduce-redundant-recovery-episodes-and-exchange/.agentplane/tasks/202609081927-P1MJV7/blueprint/resolved-snapshot.json
+    - old_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+    - current_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609081927-P1MJV7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609081927-P1MJV7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-08T22:01:43.703Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ca4c0c73a8278acecb12db6e7e972214d9dcf7144f058f5899f954e3de60fb11, input_digest=sha256:f476c5997bb7223ce30d0322ba1593df447891a27734333e0b66979f11d3dba3
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check task_outcome
 
     BlueprintSnapshotRef:
     - state: current
@@ -941,7 +1150,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 27
+    event_cursor: 28
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -1150,9 +1359,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 32
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-08T21:53:18.904Z"
+    updated_at: "2026-09-08T22:01:44.970Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 1
@@ -1845,6 +2054,30 @@ extensions:
         previous_revision: 24
         schema_version: 1
         task_id: "202609081927-P1MJV7"
+      compatibility:sha256:ccbbf289fbbcc5c177854bb586ac7c2efe9393118a737c87f4594a5eecf06a03:
+        aggregate_digest: "sha256:f21a751b5efb9ba75c2ffc6e15b6ddfc9a3fc8d0c8e924d49cd44a16e0a47625"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T22:01:44.970Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2a68e625c30d4c3728d06661"
+          mutation_id: "compatibility:sha256:ccbbf289fbbcc5c177854bb586ac7c2efe9393118a737c87f4594a5eecf06a03"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 32
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ccbbf289fbbcc5c177854bb586ac7c2efe9393118a737c87f4594a5eecf06a03"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
       compatibility:sha256:ebc62671686f6a2219ecfe98f0c25654ba2f2a2a7066874d4ab0a8bf06a97d02:
         aggregate_digest: "sha256:0af48330a4207df528c44a55b4768a35f3267e8d7615e8bf4569c1274d2620ae"
         event:
@@ -2163,6 +2396,72 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202609081927-P1MJV7 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081927-P1MJV7-reduce-redundant-recovery-episodes-and-exchange/.agentplane/tasks/202609081927-P1MJV7/blueprint/resolved-snapshot.json
+- old_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+- current_digest: 2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609081927-P1MJV7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609081927-P1MJV7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-08T22:01:43.703Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ca4c0c73a8278acecb12db6e7e972214d9dcf7144f058f5899f954e3de60fb11, input_digest=sha256:f476c5997bb7223ce30d0322ba1593df447891a27734333e0b66979f11d3dba3
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081927-P1MJV7/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081927-P1MJV7 Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: current
