@@ -1,0 +1,91 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 395ab5764e6626cdaec3a223c9353466ba41aebd..18464555cfce9c2578c1ed75bba1de25b56e8598",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 395ab5764e6626cdaec3a223c9353466ba41aebd..18464555cfce9c2578c1ed75bba1de25b56e8598",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609081134-SRM6JM/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609081134-SRM6JM/pr/github-body.md",
+        "M\t.agentplane/tasks/202609081134-SRM6JM/pr/meta.json",
+        "M\t.agentplane/tasks/202609081134-SRM6JM/pr/review.md",
+        "M\tpackages/agentplane/src/backends/task-backend.local-handoff.test.ts",
+        "M\tpackages/agentplane/src/backends/task-backend/local-backend-read.ts",
+        "A\tpackages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-before-01.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-before-02.json",
+        "A\tscripts/baselines/protocol-cost-SRM6JM-before-03.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "395ab5764e6626cdaec3a223c9353466ba41aebd",
+  "implementation_commit": "18464555cfce9c2578c1ed75bba1de25b56e8598",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/backends/task-backend.local-handoff.test.ts",
+      " M packages/agentplane/src/backends/task-backend/local-backend-read.ts",
+      "?? packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts",
+      "?? scripts/baselines/protocol-cost-SRM6JM-before-01.json",
+      "?? scripts/baselines/protocol-cost-SRM6JM-before-02.json",
+      "?? scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend/local-backend-read.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/baselines/protocol-cost-SRM6JM-before-01.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/baselines/protocol-cost-SRM6JM-before-02.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/backends/task-backend.local-handoff.test.ts",
+      " M packages/agentplane/src/backends/task-backend/local-backend-read.ts",
+      "?? packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts",
+      "?? scripts/baselines/protocol-cost-SRM6JM-before-01.json",
+      "?? scripts/baselines/protocol-cost-SRM6JM-before-02.json",
+      "?? scripts/baselines/protocol-cost-SRM6JM-before-03.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609081134-SRM6JM"
+}
