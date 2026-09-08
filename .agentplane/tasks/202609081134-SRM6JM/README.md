@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -19,11 +19,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-08T13:44:13.266Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -109,7 +109,9 @@ execution_contract:
       - "scripts/checks"
       - "scripts/lib"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
       - "packages/core"
@@ -154,7 +156,13 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -329,9 +337,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "f4faee773fb4e14aec08111f6052278a4af68a0f"
-  message: "🚧 SRM6JM task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -401,8 +409,14 @@ events:
     to: "DOING"
     note: "Implementation committed: f4faee773fb4. CLI accepted one state-bound external-agent semantic result."
     commit: "f4faee773fb4e14aec08111f6052278a4af68a0f"
+  -
+    type: "verify"
+    at: "2026-09-08T13:44:13.266Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-08T13:25:50.160Z"
+doc_updated_at: "2026-09-08T13:44:14.300Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -415,13 +429,47 @@ sections:
     - Out of scope: unrelated refactors not required for "Reduce agent protocol overhead for small code changes".
   Plan: "Execute four sequential WorkItems: establish matched measurements, compact the result exchange, compact planning, then profile and qualify. Preserve immutable episode authority and historical exchanges. Stop before external publication."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Reduce agent protocol overhead for small code changes". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Reduce agent protocol overhead for small code changes". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run the one-condition protocol-cost fixture with matched before and after reports. Require at least 70 percent fewer required schema bytes and 50 percent fewer generated result bytes. Report model tokens and provider time as unmeasured when no provider run exists.
+    2. Run focused compact payload and plan normalization tests, historical exchange compatibility, stale-result, cross-role, scope, authority, interrupted execution and recovery tests. Record failures explicitly; do not weaken identity checks.
+    3. Run bun run typecheck, schema parity, affected lint and formatting checks, and bun run ci:local:full. Require passing results for qualification and preserve evidence of any baseline failures.
+    4. Review the final diff against approved roots, preserve unrelated work, and verify that no dependency or historical artifact changes were introduced. Stop before external publication, push or merge.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-08T13:44:13.266Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4f28e9196c2f5767b07db719c78c79f6620a97c2b5700990c2fa7bb4458806e4, input_digest=sha256:dce146295895078d9e6574b496b6d205eacd3e36b3dd7d082daeb39f36d72e44
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081134-SRM6JM declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081134-SRM6JM-reduce-agent-protocol-overhead-for-small-code-ch/.agentplane/tasks/202609081134-SRM6JM/blueprint/resolved-snapshot.json
+    - old_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+    - current_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609081134-SRM6JM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609081134-SRM6JM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1013,7 +1061,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 13
+    event_cursor: 15
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1563,9 +1611,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 19
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-08T13:25:53.212Z"
+    updated_at: "2026-09-08T13:44:14.298Z"
     work_items:
       baseline:
         attempt: 1
@@ -1820,6 +1868,30 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:16e0c1d5c13a4aee3fbee2b4c1c5e4d80b157225bcc5da7bbd6069bc021a7316:
+        aggregate_digest: "sha256:071c9b4ddca927bb5c4d4cd6f1c1df5ac3e9c598c9bc71102c77fd43138922df"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:36:08.465Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6e4d3baf511d83f0ed084f27"
+          mutation_id: "compatibility:sha256:16e0c1d5c13a4aee3fbee2b4c1c5e4d80b157225bcc5da7bbd6069bc021a7316"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:16e0c1d5c13a4aee3fbee2b4c1c5e4d80b157225bcc5da7bbd6069bc021a7316"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:258797012983d0ad50e56ae0eea3327b3b04f03c6d010a143ea80914617dbe4d:
         aggregate_digest: "sha256:c2c709427de89e04dc19bb04431cb0f68d4f93daaf673df8f97d719d3e8ce609"
         event:
@@ -2060,6 +2132,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609081134-SRM6JM"
+      compatibility:sha256:c4089fda7b63d2ce0c1294e29ea899651b722e908af78652e49a8b18608924df:
+        aggregate_digest: "sha256:131aac6ad4fdda41c29a2ca8db14dfc33a2203a031ccf800a3b358ee351836de"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:44:14.298Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d3eb983162588f53d82362a9"
+          mutation_id: "compatibility:sha256:c4089fda7b63d2ce0c1294e29ea899651b722e908af78652e49a8b18608924df"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c4089fda7b63d2ce0c1294e29ea899651b722e908af78652e49a8b18608924df"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:db12f5ae7215bdd69e42b6bd6b70871516017a632570a679afea51e4c6ddd04e:
         aggregate_digest: "sha256:dd572bf7ec996b005331625f28b3a7cfa7a8c9be41a7ca7de8a23e5015b364b8"
         event:
@@ -2207,8 +2303,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "f4faee773fb4e14aec08111f6052278a4af68a0f"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
@@ -2237,15 +2331,49 @@ Execute four sequential WorkItems: establish matched measurements, compact the r
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Reduce agent protocol overhead for small code changes". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Reduce agent protocol overhead for small code changes". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run the one-condition protocol-cost fixture with matched before and after reports. Require at least 70 percent fewer required schema bytes and 50 percent fewer generated result bytes. Report model tokens and provider time as unmeasured when no provider run exists.
+2. Run focused compact payload and plan normalization tests, historical exchange compatibility, stale-result, cross-role, scope, authority, interrupted execution and recovery tests. Record failures explicitly; do not weaken identity checks.
+3. Run bun run typecheck, schema parity, affected lint and formatting checks, and bun run ci:local:full. Require passing results for qualification and preserve evidence of any baseline failures.
+4. Review the final diff against approved roots, preserve unrelated work, and verify that no dependency or historical artifact changes were introduced. Stop before external publication, push or merge.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-08T13:44:13.266Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4f28e9196c2f5767b07db719c78c79f6620a97c2b5700990c2fa7bb4458806e4, input_digest=sha256:dce146295895078d9e6574b496b6d205eacd3e36b3dd7d082daeb39f36d72e44
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081134-SRM6JM declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081134-SRM6JM-reduce-agent-protocol-overhead-for-small-code-ch/.agentplane/tasks/202609081134-SRM6JM/blueprint/resolved-snapshot.json
+- old_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+- current_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609081134-SRM6JM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609081134-SRM6JM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

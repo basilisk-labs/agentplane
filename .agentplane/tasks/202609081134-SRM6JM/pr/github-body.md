@@ -15,14 +15,14 @@ Implement the user-approved optimization plan in dependency order: establish a r
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-08T11:38:53.832Z
+- Updated: 2026-09-08T13:26:03.396Z
 - Branch: task/202609081134-SRM6JM/reduce-agent-protocol-overhead-for-small-code-ch
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
