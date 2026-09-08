@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 505982020fdaf55e3c634fb0edc04627b9f408d0..83675d44dd9d14c22a6c8038eb7d77e52667f417",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 505982020fdaf55e3c634fb0edc04627b9f408d0..83675d44dd9d14c22a6c8038eb7d77e52667f417",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609080711-X1A7B0/README.md",
+        "A\t.agentplane/tasks/202609080711-X1A7B0/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609080711-X1A7B0/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609080711-X1A7B0/pr/github-body.md",
+        "A\t.agentplane/tasks/202609080711-X1A7B0/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609080711-X1A7B0/pr/meta.json",
+        "A\t.agentplane/tasks/202609080711-X1A7B0/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-next-action.ts",
+        "M\tpackages/agentplane/src/commands/task/begin.command.ts",
+        "M\tpackages/agentplane/src/commands/task/task.command.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "505982020fdaf55e3c634fb0edc04627b9f408d0",
+  "implementation_commit": "83675d44dd9d14c22a6c8038eb7d77e52667f417",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609080711-X1A7B0/README.md",
+      "?? .agentplane/tasks/202609080711-X1A7B0/blueprint/resolved-snapshot.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609080711-X1A7B0/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609080711-X1A7B0/blueprint/resolved-snapshot.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609080711-X1A7B0/README.md",
+      "?? .agentplane/tasks/202609080711-X1A7B0/blueprint/resolved-snapshot.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609080711-X1A7B0"
+}

@@ -4,7 +4,7 @@ title: "Remove ap task run from standard route recommendations and release Agent
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -107,10 +107,19 @@ execution_contract:
       - "scripts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+      - "packages/agentplane/src/commands/task/begin.command.ts"
+      - "packages/agentplane/src/commands/task/task.command.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -165,8 +174,11 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:818f096078db4a9fb25b39abcaad07c278fbb69d921bae324032689b3b8a2924"
+      digest: "sha256:e4a31c0f9293b50ab452344f61ea1aec4c1a5c2b0acb368b7601753ff11bdf16"
       escalation_reasons:
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-next-action.ts"
         - "effect_release_metadata"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
@@ -176,10 +188,19 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-next-action.ts"
+          - "packages/agentplane/src/commands/task/begin.command.ts"
+          - "packages/agentplane/src/commands/task/task.command.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -218,11 +239,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "83675d44dd9d14c22a6c8038eb7d77e52667f417"
+  message: "🚧 X1A7B0 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 83675d44dd9d. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -231,9 +257,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-08T07:39:41.137Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 83675d44dd9d. CLI accepted one state-bound external-agent semantic result."
+    commit: "83675d44dd9d14c22a6c8038eb7d77e52667f417"
 doc_version: 3
-doc_updated_at: "2026-09-08T07:21:45.247Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-08T07:39:41.137Z"
+doc_updated_by: "SUPERVISOR"
 description: "On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes."
 sections:
   Summary: |-
@@ -698,7 +732,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609080711-X1A7B0"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609080711-X1A7B0"
     intent:
@@ -728,9 +762,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-08T07:21:45.247Z"
+    updated_at: "2026-09-08T07:39:41.137Z"
     work_items:
       hosted-release:
         attempt: 0
@@ -764,6 +798,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:004abbb5fa94d8f2a383ee57459aae462ab55a16f29a6691100a76947e03f5ae:
+        aggregate_digest: "sha256:0d9e184d18befc9c265570387c4a0f330496b07616701dda3e94bcc53ce89763"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T07:39:41.137Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f0102206a4583ae281448d13"
+          mutation_id: "compatibility:sha256:004abbb5fa94d8f2a383ee57459aae462ab55a16f29a6691100a76947e03f5ae"
+          plan_digest: "sha256:ee8766d7be36ae715443ba1dc25633466ee77f568405149733f6330bd398cd1f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609080711-X1A7B0"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:004abbb5fa94d8f2a383ee57459aae462ab55a16f29a6691100a76947e03f5ae"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609080711-X1A7B0"
       compatibility:sha256:3debc4cbffcd5357933758803cf80cbbe0c2cabfdb093ec19b664ee03173848f:
         aggregate_digest: "sha256:838f50d9008213f00e72b54a2058accdcac806187ef9efcfe98100673e6aed59"
         event:
@@ -812,6 +870,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609080711-X1A7B0"
+      compatibility:sha256:ca70972d802add68794e7910d33e9627a89efed94ef969181c393a334db074ee:
+        aggregate_digest: "sha256:22d5434e0b215eb27780184368254d179fe7e863ee537f65d0c365eea4437696"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T07:39:41.137Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_df9fe9e6c51a140604d05b2c"
+          mutation_id: "compatibility:sha256:ca70972d802add68794e7910d33e9627a89efed94ef969181c393a334db074ee"
+          plan_digest: "sha256:ee8766d7be36ae715443ba1dc25633466ee77f568405149733f6330bd398cd1f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609080711-X1A7B0"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ca70972d802add68794e7910d33e9627a89efed94ef969181c393a334db074ee"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609080711-X1A7B0"
       compatibility:sha256:f47315f777d4fb48912b5ae5668d65540c2a8ae34e8cb92a4f78f18035990b62:
         aggregate_digest: "sha256:4ef70121024bb7223f1f2ea8457a15fc6d0b92e52cc67c3d290ed3d4832df95d"
         event:
@@ -839,6 +921,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "83675d44dd9d14c22a6c8038eb7d77e52667f417"
   task_execution_context:
     base_ref: "0.6.x"
     base_sha: "505982020fdaf55e3c634fb0edc04627b9f408d0"
