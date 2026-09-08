@@ -109,26 +109,6 @@ timeouts:
   stall_seconds: 900
 in_scope_paths:
   - "**"
-execution:
-  profile: standard
-  reasoning_effort: medium
-  text_verbosity: medium
-  tool_budget:
-    discovery: 6
-    implementation: 10
-    verification: 6
-  stop_conditions:
-    - Missing required input blocks correctness.
-    - Requested action expands scope or risk beyond approved plan.
-    - Verification fails and remediation changes scope.
-  handoff_conditions:
-    - Role boundary reached (for example CODER -> TESTER/REVIEWER).
-    - Task depends_on prerequisites are incomplete.
-    - Specialized agent is required.
-  unsafe_actions_requiring_explicit_user_ok:
-    - Destructive git history operations.
-    - Outside-repo read/write.
-    - Credential, keychain, or SSH material changes.
 ---
 
 
