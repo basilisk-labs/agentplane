@@ -1,10 +1,10 @@
 ---
 id: "202609081134-SRM6JM"
 title: "Reduce agent protocol overhead for small code changes"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -362,6 +362,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: f4faee773fb4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The full verification run exposed an obsolete schema assertion outside the issued writable roots. A one-file scope extension is required. Recommended action: Authorize the exact test-file scope extension, then issue a fresh EXECUTOR episode for the schema-store assertion and the in-scope compact-schema artifact classifier. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository effects=tests; request digest=sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d. Agentplane receipt: external-agent-blocker/tr_cecb34b21466551802305cc3e68f6e6e/sha256:291c75fa83070e06b0d3b59fee4f49a5cdca1d6fd5d85612da8302e7a8a77bb1/sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d."
 events:
   -
     type: "status"
@@ -415,8 +418,15 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-08T13:45:31.121Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The full verification run exposed an obsolete schema assertion outside the issued writable roots. A one-file scope extension is required. Recommended action: Authorize the exact test-file scope extension, then issue a fresh EXECUTOR episode for the schema-store assertion and the in-scope compact-schema artifact classifier. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts; repository effects=tests; request digest=sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d. Agentplane receipt: external-agent-blocker/tr_cecb34b21466551802305cc3e68f6e6e/sha256:291c75fa83070e06b0d3b59fee4f49a5cdca1d6fd5d85612da8302e7a8a77bb1/sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d."
 doc_version: 3
-doc_updated_at: "2026-09-08T13:44:14.300Z"
+doc_updated_at: "2026-09-08T13:45:31.121Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -500,21 +510,19 @@ extensions:
     status: "active"
     task_id: "202609081134-SRM6JM"
   agentplane.scope_extension_request:
-    applied_at: "2026-09-08T12:35:05.231Z"
-    applied_by: "USER"
-    blocker_state_fingerprint: "sha256:6bf44050cc513549c7ec3c153b32bc61ddd2480b10f6b527ba0ebd4b117bb8da"
+    blocker_state_fingerprint: "sha256:291c75fa83070e06b0d3b59fee4f49a5cdca1d6fd5d85612da8302e7a8a77bb1"
     kind: "task_scope_extension_request"
     request:
-      rationale: "The user explicitly approved the narrowly scoped blocker repair after reviewing its cause. Extend the existing task to fix artifact-only directory recognition and add regression tests."
-      repository_effects: []
+      rationale: "Update the existing canonical schema-store regression test for the approved role-specific payload schema. Preserve historical schemas, object integrity and interrupted-publication coverage. No production evaluator changes or external actions are requested."
+      repository_effects:
+        - "tests"
       schema_version: 1
       scope_roots:
-        - "packages/agentplane/src/backends/task-backend.local-handoff.test.ts"
-        - "packages/agentplane/src/backends/task-backend/local-backend-read.ts"
-    request_digest: "sha256:db3a36e16345db4c49dd300d9235abc949c08030af5e4112432621a64db978e0"
+        - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+    request_digest: "sha256:5edccb1d9da01c62f8d83a8b729c4abcd3d31689469773260572a01ecc30f24d"
     schema_version: 1
-    status: "applied"
-    transition_id: "tr_0862032d662671bc90e0f388392fe8cf"
+    status: "pending"
+    transition_id: "tr_cecb34b21466551802305cc3e68f6e6e"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1061,7 +1069,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 15
+    event_cursor: 17
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1073,7 +1081,7 @@ extensions:
 
         Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings.
       task_id: "202609081134-SRM6JM"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history:
       -
@@ -1611,9 +1619,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 21
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-08T13:44:14.298Z"
+    updated_at: "2026-09-08T13:45:31.121Z"
     work_items:
       baseline:
         attempt: 1
@@ -1844,6 +1852,30 @@ extensions:
         work_item_id: "profile-and-qualify"
     leases: []
     mutation_receipts:
+      compatibility:sha256:01f48e0a6e316194a1313e5f0e92de2331d2bb5353c84d3775371cf2a62463d3:
+        aggregate_digest: "sha256:64e2b905d69c023f69df9e29e74f0be47f15ba29eef9002e1a0d9d8c340d6599"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:45:31.121Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c5b5fc4d0b37ce826f7c3d67"
+          mutation_id: "compatibility:sha256:01f48e0a6e316194a1313e5f0e92de2331d2bb5353c84d3775371cf2a62463d3"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 21
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:01f48e0a6e316194a1313e5f0e92de2331d2bb5353c84d3775371cf2a62463d3"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
       compatibility:sha256:0bbaf829ec0396f3c910327ed4d2193f72d2a0f1f1c9e17015b841d896a050e1:
         aggregate_digest: "sha256:3eb380e0404aeaec93a37e49bbd9f09508c5d8efd1f4b90d677550ea3fde4af2"
         event:
@@ -2154,6 +2186,30 @@ extensions:
         mutation_id: "compatibility:sha256:c4089fda7b63d2ce0c1294e29ea899651b722e908af78652e49a8b18608924df"
         next_revision: 21
         previous_revision: 20
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:ce8e310d99fb7005bb2d40d8507ad048eea81055a9327affa66dc6ee1c609510:
+        aggregate_digest: "sha256:73692301fd2d57cc58f2c76cf89e347da60c0c8ed578cee418e3df3d92f0d89f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:45:31.121Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_f6f9532dc4940f3f941efe37"
+          mutation_id: "compatibility:sha256:ce8e310d99fb7005bb2d40d8507ad048eea81055a9327affa66dc6ee1c609510"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 22
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ce8e310d99fb7005bb2d40d8507ad048eea81055a9327affa66dc6ee1c609510"
+        next_revision: 23
+        previous_revision: 22
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:db12f5ae7215bdd69e42b6bd6b70871516017a632570a679afea51e4c6ddd04e:
