@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609081134-SRM6JM-ef46820b5978d796c296009b",
+  "prepared_at": "2026-09-08T13:57:48.309Z",
+  "task": {
+    "id": "202609081134-SRM6JM",
+    "revision": 27,
+    "objective": "Reduce agent protocol overhead for small code changes\n\nImplement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings.",
+    "acceptance_criteria": [
+      "- In scope: Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings.\n- Out of scope: unrelated refactors not required for \"Reduce agent protocol overhead for small code changes\".",
+      "Execute four sequential WorkItems: establish matched measurements, compact the result exchange, compact planning, then profile and qualify. Preserve immutable episode authority and historical exchanges. Stop before external publication.",
+      "1. Run the one-condition protocol-cost fixture with matched before and after reports. Require at least 70 percent fewer required schema bytes and 50 percent fewer generated result bytes. Report model tokens and provider time as unmeasured when no provider run exists.\n2. Run focused compact payload and plan normalization tests, historical exchange compatibility, stale-result, cross-role, scope, authority, interrupted execution and recovery tests. Record failures explicitly; do not weaken identity checks.\n3. Run bun run typecheck, schema parity, affected lint and formatting checks, and bun run ci:local:full. Require passing results for qualification and preserve evidence of any baseline failures.\n4. Review the final diff against approved roots, preserve unrelated work, and verify that no dependency or historical artifact changes were introduced. Stop before external publication, push or merge."
+    ]
+  },
+  "evaluated_sha": "4005ad7a1c494e516248e8b3e975340de70a034e",
+  "diff_base_sha": "33e106d611fe92603cb836bdcd500a1c624d206b",
+  "blueprint_digest": "baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609081134-SRM6JM/quality/20260908-135748309-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:49fc73e5281a72a27c0dc9ff0bf2914e290d136969e5c356ce2bf0060f41d82e",
+    "prompt_path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/d1ac7f3018b756a757b6bf23023f2da08cb6a57e53784ed4cb8b3673336c5b37.md",
+    "result_schema_path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609081134-SRM6JM/README.md",
+      "sha256": "sha256:913d81bab9abb06aaf23475328dd9cabe2e0147a00b5a5bba29ca6240ac0f33d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch",
+      "sha256": "sha256:c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/4106516aaf17f4b9884482a195ebf3ddcb32ce5c1d36e81b28f59efeb31e3fcf.json",
+      "sha256": "sha256:4106516aaf17f4b9884482a195ebf3ddcb32ce5c1d36e81b28f59efeb31e3fcf",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609081134-SRM6JM/verification/20260908135737862-8e81902afe3e091d.json",
+      "sha256": "sha256:1fba71d547ea949834e1296cfcf6568e3fd060a287cacb5b6b88dbe6451dce06",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac8ee9e94898dc99774784bae63bbc0da680c8062f6d60d488514d81a250c824.json",
+      "sha256": "sha256:ac8ee9e94898dc99774784bae63bbc0da680c8062f6d60d488514d81a250c824",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}
