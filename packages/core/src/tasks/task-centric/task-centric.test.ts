@@ -1,3 +1,4 @@
+import { normalizeCompactTaskPlanProposal } from "./schema.js";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -628,6 +629,94 @@ describe("task-centric domain", () => {
     const parsed = parseTaskPlanProposal(proposal([item({ id: "a" })]));
     expect(parsed.task_id).toBe("task-1");
     expect(() => parseTaskPlanProposal({ ...parsed, task_id: "" })).toThrow();
+  });
+
+  it("expands one compact WorkItem without changing its scope or validation contract", () => {
+    const original = item({ id: "a" });
+    const baseline = snapshot();
+    const { acceptance_criteria, validation: plan, ...definition } = original;
+    const input = {
+      schema_version: 2,
+      criteria: acceptance_criteria,
+      checks: plan.checks,
+      work_items: [definition],
+    };
+    const normalize = (value: unknown) =>
+      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
+    const expanded = normalize(input);
+    const expectedValidation = { ...plan, evidence_fingerprint: baseline.digest };
+    expect(expanded).toEqual({
+      ...proposal([{ ...original, validation: expectedValidation }], baseline),
+      top_level_validation: expectedValidation,
+    });
+    expect(parseTaskPlanProposal(expanded)).toEqual(expanded);
+    for (const invalid of [
+      { ...input, criteria: [...input.criteria, ...input.criteria] },
+      { ...input, checks: [...input.checks, ...input.checks] },
+      { ...input, criteria: [{ ...acceptance_criteria[0], check_ids: ["missing"] }] },
+      { ...input, work_items: [{ ...definition, criterion_ids: ["missing"] }] },
+      { ...input, work_items: [{ ...definition, check_ids: ["missing"] }] },
+      {
+        ...input,
+        work_items: [{ ...definition, check_ids: [plan.checks[0]!.id, plan.checks[0]!.id] }],
+      },
+      { ...input, work_items: [{ ...definition, scope_roots: undefined }] },
+      { ...input, planning_baseline: snapshot("b".repeat(40)) },
+      { ...input, task_id: "foreign" },
+    ])
+      expect(() => normalize(invalid)).toThrow();
+  });
+
+  it("requires explicit multi-WorkItem coverage and preserves unresolved questions", () => {
+    const items = [
+      item({ id: "a" }),
+      item({ id: "b", depends_on: ["a"], required_inputs: ["out-a"] }),
+    ];
+    const input = {
+      schema_version: 2,
+      criteria: items.flatMap((item) => item.acceptance_criteria),
+      checks: items.flatMap((item) => item.validation.checks),
+      work_items: items.map(({ acceptance_criteria, validation, ...definition }) => ({
+        ...definition,
+        criterion_ids: acceptance_criteria.map((criterion) => criterion.id),
+        check_ids: validation.checks.map((check) => check.id),
+      })),
+      top_level_validation: { criterion_ids: ["criterion-b"], check_ids: ["check-b"] },
+      unresolved_questions: ["Material scope choice"],
+    };
+    const baseline = snapshot();
+    const normalize = (value: unknown) =>
+      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
+    const normalized = normalize(input);
+    expect(normalized.work_items.work_items[1]!.depends_on).toEqual(["a"]);
+    expect(normalized.top_level_validation.criteria).toEqual(items[1]!.acceptance_criteria);
+    expect(
+      validateTaskPlanProposal({
+        proposal: normalized,
+        expected_task_id: "task-1",
+        current_repository_digest: baseline.digest,
+      }).map((issue) => issue.code),
+    ).toContain("material_question");
+    for (const invalid of [
+      { ...input, top_level_validation: undefined },
+      {
+        ...input,
+        work_items: input.work_items.map((item) => ({ ...item, criterion_ids: undefined })),
+      },
+      {
+        ...input,
+        top_level_validation: { criterion_ids: ["criterion-b"], check_ids: ["check-a"] },
+      },
+      { ...input, criteria: [...input.criteria, { ...input.criteria[0], id: "unused" }] },
+      {
+        ...input,
+        work_items: input.work_items.map((item) => ({
+          ...item,
+          depends_on: [item.id === "a" ? "b" : "a"],
+        })),
+      },
+    ])
+      expect(() => normalize(invalid)).toThrow();
   });
 
   it("computes readiness and deterministic resource-aware scheduling", () => {

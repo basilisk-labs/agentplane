@@ -157,6 +157,16 @@ it("measures a one-condition protocol round trip without claiming model telemetr
       delete payload.schema_version;
       delete payload.kind;
       delete payload.canonical_binding;
+      if (payload.task_plan_proposal) {
+        const proposal = payload.task_plan_proposal;
+        const { acceptance_criteria, validation, ...item } = proposal.work_items.work_items[0];
+        payload.task_plan_proposal = {
+          schema_version: 2,
+          criteria: acceptance_criteria,
+          checks: validation.checks,
+          work_items: [item],
+        };
+      }
       await writeFile(resultPath, `${JSON.stringify(payload, null, 2)}\n`);
     }
     exchanges.push({

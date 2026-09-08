@@ -1,3 +1,4 @@
+import { normalizeCompactTaskPlanProposal } from "../tasks/task-centric/schema.js";
 import { z } from "zod";
 import { kernelEpisodeBindingSchema } from "../tasks/kernel-semantic.js";
 
@@ -503,6 +504,20 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
           phase: workOrder.canonical_binding?.phase,
         }).parse(opts.semantic_result)
       : null;
+  const proposal = payload?.task_plan_proposal;
+  if (
+    proposal &&
+    typeof proposal === "object" &&
+    "schema_version" in proposal &&
+    proposal.schema_version === 2
+  ) {
+    if (!workOrder.planning_context)
+      throw new Error("Compact planning requires an issued repository baseline");
+    payload.task_plan_proposal = normalizeCompactTaskPlanProposal(proposal, {
+      task_id: workOrder.task.id,
+      planning_baseline: workOrder.planning_context.repository_snapshot,
+    });
+  }
   const semanticResult = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
     payload
       ? {
