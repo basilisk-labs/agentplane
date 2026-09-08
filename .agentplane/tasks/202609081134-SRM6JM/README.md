@@ -2,10 +2,10 @@
 id: "202609081134-SRM6JM"
 title: "Reduce agent protocol overhead for small code changes"
 result_summary: "pre-merge closure"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -435,6 +435,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The hosted Knip defect is fixed. Reverification is blocked by disk exhaustion while a test creates a temporary checkout. Recommended action: Authorize inspection of AgentPlane temporary test directories outside the repository and removal only of positively identified disposable artifacts from these runs. Then rerun failed verification and continue the already-authorized merge. Agentplane receipt: external-agent-blocker/tr_7bb2d8b2806c8c5966e22630e101ccfa/sha256:cf7b7d9125a1f047d338d19d9eea446f0a3201736fd770ed870543b993c599dc."
+  -
+    author: "CODER"
+    body: "Resumed: USER authorized temporary test-cache cleanup. Removed only disposable Bun caches from isolated AgentPlane critical-test HOME directories. Available disk space increased from about 0.5 GiB to 1.3 GiB. Repeat the failed checkout test and verification before the authorized merge."
 events:
   -
     type: "status"
@@ -538,9 +541,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The hosted Knip defect is fixed. Reverification is blocked by disk exhaustion while a test creates a temporary checkout. Recommended action: Authorize inspection of AgentPlane temporary test directories outside the repository and removal only of positively identified disposable artifacts from these runs. Then rerun failed verification and continue the already-authorized merge. Agentplane receipt: external-agent-blocker/tr_7bb2d8b2806c8c5966e22630e101ccfa/sha256:cf7b7d9125a1f047d338d19d9eea446f0a3201736fd770ed870543b993c599dc."
+  -
+    type: "status"
+    at: "2026-09-08T17:29:24.278Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resumed: USER authorized temporary test-cache cleanup. Removed only disposable Bun caches from isolated AgentPlane critical-test HOME directories. Available disk space increased from about 0.5 GiB to 1.3 GiB. Repeat the failed checkout test and verification before the authorized merge."
 doc_version: 3
-doc_updated_at: "2026-09-08T14:28:19.224Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-08T17:29:24.304Z"
+doc_updated_by: "CODER"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
   Summary: |-
@@ -1256,7 +1266,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 26
+    event_cursor: 27
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1268,7 +1278,7 @@ extensions:
 
         Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings.
       task_id: "202609081134-SRM6JM"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -1806,9 +1816,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 33
+    revision: 34
     schema_version: 1
-    updated_at: "2026-09-08T14:28:19.208Z"
+    updated_at: "2026-09-08T17:29:24.278Z"
     work_items:
       baseline:
         attempt: 1
@@ -2277,6 +2287,30 @@ extensions:
         mutation_id: "compatibility:sha256:31370970bbbc7a49cb6c39b1b6b21e5fa99e489a3c7a844cdd8839e16c56380c"
         next_revision: 33
         previous_revision: 32
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:5d43b90347c0a9148d8caa1aac87717ddb66078e8c2a1ef89c75a2542fd7b8af:
+        aggregate_digest: "sha256:f59d2a45c2ed87d1a9bdffcbcd35e84a06f65c8101537355d579c916a3354bcf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T17:29:24.278Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_53d42966f0bc3cd34b3a27d3"
+          mutation_id: "compatibility:sha256:5d43b90347c0a9148d8caa1aac87717ddb66078e8c2a1ef89c75a2542fd7b8af"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 33
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5d43b90347c0a9148d8caa1aac87717ddb66078e8c2a1ef89c75a2542fd7b8af"
+        next_revision: 34
+        previous_revision: 33
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:6d186f31489b5e7f15187fdc37c419740365a825da9e5089cf935fcd69fbc946:
