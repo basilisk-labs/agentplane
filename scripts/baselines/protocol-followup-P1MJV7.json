@@ -16,7 +16,7 @@
     "src/commands/task/branch-task-supervisor.test.ts": "2fefdb85e622f4b22be178d77318e1dfb319c9b8688d5a2a029289bf0e45d278",
     "src/commands/task/direct-task-verification-record.ts": "00bb6c270649d9286c1fb5f2806fa06dab2158a763e05f41c85508eb5c159dcb",
     "src/commands/task/branch-task-verification.test.ts": "5aa23521012589646f58fc127381d4292e4db5da1045dc6a825577474ee409c8",
-    "src/cli/run-cli.core.task-advance.clean-verification.test.ts": "a6a8b48071b76c4681226c2ff4cd29fcdf3ddc44e7894e6078a9b10cc32d097b",
+    "src/cli/run-cli.core.task-advance.clean-verification.test.ts": "edec098ae08ce06c84beeb4b378bdbb4e02d795a98dda695bc8bd47f72b2e733",
     "src/runner/usecases/task-run-bootstrap.ts": "9b48633fef2309858fe7ebae9a747960b2b09be2d9c1f0a7f5d1518a7e71ed01",
     "src/runner/adapters/prepared-input.ts": "28d4d1aec017936aaba6ed2efbdaaf304cf25c581a328e4d0699e1a065c77fff"
   },

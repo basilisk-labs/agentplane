@@ -1,4 +1,3 @@
-export { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { runProcess } from "@agentplaneorg/core/process";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";

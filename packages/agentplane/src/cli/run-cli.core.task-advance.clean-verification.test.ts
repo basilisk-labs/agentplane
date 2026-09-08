@@ -16,7 +16,7 @@ import {
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
-import * as verification from "../commands/task/direct-task-verification.js";
+import * as verification from "../commands/task/direct-task-verification-record.js";
 
 installRunCliIntegrationHarness();
 const exec = promisify(execFile);

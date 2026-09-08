@@ -21,7 +21,7 @@ import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
 import * as refinement from "../commands/task/external-agent-plan-refinement.js";
-import * as verification from "../commands/task/direct-task-verification.js";
+import * as verification from "../commands/task/direct-task-verification-record.js";
 import * as fingerprints from "../commands/shared/workflow-step-fingerprint.js";
 import * as exchanges from "../commands/task/external-agent-exchange.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";

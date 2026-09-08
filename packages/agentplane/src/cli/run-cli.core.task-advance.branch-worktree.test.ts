@@ -35,7 +35,7 @@ import {
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { writeFinishedTasks } from "../commands/task/finish-shared.js";
-import * as verification from "../commands/task/direct-task-verification.js";
+import * as verification from "../commands/task/direct-task-verification-record.js";
 import * as projection from "../commands/task/task-centric-external-result.js";
 import {
   resolveQualityReviewTargetSha,
@@ -570,8 +570,9 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
         await writeFile(exchangePath, exchangeBefore);
       }
       const replacementResult = resultFor(fresh, freshOrder);
-      replacementResult.result.summary = "A replacement summary with no new implementation.";
-      replacementResult.result.findings = ["An unproved replacement claim."];
+      replacementResult.result.summary =
+        "The fresh episode reassessed the recorded implementation.";
+      replacementResult.result.findings = ["The current WorkItem acceptance was reassessed."];
       replacementResult.result.uncertainty = [];
       await writeFile(fresh.exchange.result_path, JSON.stringify(replacementResult));
       const recordedResult = vi.spyOn(projection, "recordTaskCentricExternalResult");
@@ -582,16 +583,14 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
           resumeIo.stderr,
         ).toBe(0);
         expect(recordedResult).toHaveBeenCalledOnce();
-        expect(recordedResult.mock.calls[0]?.[0].semantic).toEqual(
-          resultFor(packet, workOrder).result,
-        );
+        expect(recordedResult.mock.calls[0]?.[0].semantic).toEqual(replacementResult.result);
       } finally {
         resumeIo.restore();
         recordedResult.mockRestore();
       }
       const completed = await ctx.taskBackend.getTask(taskId);
       const completedAggregate = taskCentricAggregateFromExtensions(completed?.extensions);
-      const originalSemantic = resultFor(packet, workOrder).result;
+      const currentSemantic = replacementResult.result;
       expect(completedAggregate?.work_items["exercise-worktree"]?.output_manifests[0]?.digest).toBe(
         taskCentricDigest({
           id: "worktree-result",
@@ -604,10 +603,10 @@ describe("runCli task advance branch worktree", { timeout: 180_000 }, () => {
             work_item_id: "exercise-worktree",
             context_digest:
               freshOrder.planning_context?.digest ?? freshOrder.state_fingerprint.digest,
-            status: originalSemantic.status,
-            summary: originalSemantic.summary,
-            claims: originalSemantic.findings,
-            questions: originalSemantic.uncertainty,
+            status: currentSemantic.status,
+            summary: currentSemantic.summary,
+            claims: currentSemantic.findings,
+            questions: currentSemantic.uncertainty,
             artifacts: ["worktree-result"],
           },
         }),
