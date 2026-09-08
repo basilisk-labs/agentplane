@@ -1,10 +1,10 @@
 ---
 id: "202609082225-ZYASFT"
 title: "Measure provider token usage and align Bun runtime qualification"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: "USER approved the proposed token-measurement implementation and Bun runtime qualification, and explicitly requested updating the system Bun to the current stable release."
 verification:
   state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  updated_at: "2026-09-08T23:26:00.194Z"
+  updated_by: "USER"
+  note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
 execution_route:
   frozen: true
@@ -64,6 +64,7 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
       - "packages/agentplane/src/harness"
@@ -88,6 +89,7 @@ execution_contract:
     rationale:
       - "Provider experiments use the existing authenticated Codex transport on isolated fixtures. They must not publish code or perform unrelated external actions."
       - "USER approved the measurement implementation, runtime qualification and system Bun upgrade."
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; repository_effects=tests"
     repository_effects:
       - "ci"
       - "documentation"
@@ -101,6 +103,7 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
       - "packages/agentplane/src/commands/shared"
       - "packages/agentplane/src/commands/task"
       - "packages/agentplane/src/harness"
@@ -145,6 +148,7 @@ execution_contract:
       declared:
         components:
           - "packages/agentplane/src/cli"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
           - "packages/agentplane/src/commands/shared"
           - "packages/agentplane/src/commands/task"
           - "packages/agentplane/src/harness"
@@ -187,7 +191,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:cbca555f2accab8cdf5589d611d74181714d380d4f3168caa40681a4b547a79d"
+      digest: "sha256:06fe4efaca48accffa9f806d0c21e66bdafeab2bde1664e6ba4225f38e12bdfd"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/runner"
@@ -254,6 +258,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Provider accounting, the measured context comparison and Bun qualification are implemented. One evaluator test fixture requires an additional writable path before full CI can pass. Recommended action: Obtain authorization for the exact additional test path and native local commits. Submit this scope-extension result, follow the emitted scope recovery route, apply /tmp/agentplane-ZYASFT-evaluator-usage.patch, rerun full local CI, and return the completed result. Do not push, publish or merge. Requested scope: roots=packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; repository effects=tests; request digest=sha256:5e5faf5d8d856ffeeda01c52d0f8403a024349ed08fa17f966c708425887fbe4. Agentplane receipt: external-agent-blocker/tr_fdc8378a09bf2b39dcb2ed05bba07869/sha256:87660a4f42de9abcddbf93297598e02444be23981781bbb2b6072e1fd06e2b77/sha256:5e5faf5d8d856ffeeda01c52d0f8403a024349ed08fa17f966c708425887fbe4."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; repository effects: tests."
 events:
   -
     type: "status"
@@ -315,6 +322,8 @@ extensions:
     status: "active"
     task_id: "202609082225-ZYASFT"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-08T23:26:00.194Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:87660a4f42de9abcddbf93297598e02444be23981781bbb2b6072e1fd06e2b77"
     kind: "task_scope_extension_request"
     request:
@@ -326,19 +335,19 @@ extensions:
         - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
     request_digest: "sha256:5e5faf5d8d856ffeeda01c52d0f8403a024349ed08fa17f966c708425887fbe4"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_fdc8378a09bf2b39dcb2ed05bba07869"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-08T22:28:56.527Z"
+        approved_at: "2026-09-08T23:26:00.194Z"
         approved_by: "USER"
-        approved_digest: "sha256:db279ee229d3cb7ecf2e20215ef8e968f8ee9111da73c134a25f53a341f2bc90"
+        approved_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
         policy_facts:
-          - "manual_operator"
+          - "state_bound_scope_extension:sha256:5e5faf5d8d856ffeeda01c52d0f8403a024349ed08fa17f966c708425887fbe4"
         state: "approved"
-      created_at: "2026-09-08T22:28:18.009Z"
-      digest: "sha256:db279ee229d3cb7ecf2e20215ef8e968f8ee9111da73c134a25f53a341f2bc90"
+      created_at: "2026-09-08T23:26:00.194Z"
+      digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
       proposal:
         assumptions:
           - "The current system stable Bun is 1.4.2 and matches the project pin."
@@ -460,24 +469,29 @@ extensions:
                   kind: "workspace"
                   mode: "exclusive"
                   resource: "task-worktree"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/runner"
+                - "packages/agentplane/src/cli"
+                - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
                 - "packages/agentplane/src/commands/shared"
                 - "packages/agentplane/src/commands/task"
-                - "packages/agentplane/src/cli"
                 - "packages/agentplane/src/harness"
+                - "packages/agentplane/src/runner"
                 - "packages/agentplane/tsup.config.ts"
+                - "packages/core/schemas"
                 - "packages/core/src/runner"
                 - "packages/core/src/tasks"
-                - "packages/core/schemas"
                 - "packages/spec/schemas"
                 - "schemas"
-                - "scripts/checks"
-                - "scripts/workflow"
-                - "scripts/lib"
-                - "scripts/bench"
                 - "scripts/baselines"
+                - "scripts/bench"
+                - "scripts/checks"
+                - "scripts/lib"
+                - "scripts/workflow"
               validation:
                 checks:
                   -
@@ -513,10 +527,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:1f85d1d059f041614d48bb4d870e4f71131db44b28bbfbc1693e97f443986e77"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609082225-ZYASFT"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609082225-ZYASFT"
     intent:
@@ -533,10 +547,197 @@ extensions:
 
         USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval.
       task_id: "202609082225-ZYASFT"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 7
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-08T22:28:56.527Z"
+          approved_by: "USER"
+          approved_digest: "sha256:db279ee229d3cb7ecf2e20215ef8e968f8ee9111da73c134a25f53a341f2bc90"
+          policy_facts:
+            - "manual_operator"
+          state: "approved"
+        created_at: "2026-09-08T22:28:18.009Z"
+        digest: "sha256:db279ee229d3cb7ecf2e20215ef8e968f8ee9111da73c134a25f53a341f2bc90"
+        proposal:
+          assumptions:
+            - "The current system stable Bun is 1.4.2 and matches the project pin."
+            - "Provider calls use the existing Codex login. No API keys are created or changed."
+            - "No token savings are claimed for current-agent sessions without accessible provider telemetry."
+            - "No publish, push or merge is authorized by this implementation approval."
+          planning_baseline:
+            captured_at: "2026-09-08T22:25:32.217Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:1f85d1d059f041614d48bb4d870e4f71131db44b28bbfbc1693e97f443986e77"
+            dirty_paths:
+              - ".agentplane/tasks/202609072121-9VEHKH/README.md"
+              - ".agentplane/tasks/202609080727-BAWTEE/README.md"
+              - ".agentplane/tasks/202609082225-ZYASFT/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "edbb9f694c30db1fd678e5f642ffdaa14df6dc3b"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-ci"
+                kind: "deterministic"
+                required: true
+            criteria:
+              -
+                check_ids:
+                  - "full-ci"
+                description: "Provider-observed token totals include cache, visible output, reasoning, failed attempts and role identity. Persisted episode and provider identities prevent replay double counting. Missing coverage remains explicit."
+                id: "usage"
+                required: true
+              -
+                check_ids:
+                  - "full-ci"
+                description: "A reproducible before/after comparison uses identical fixtures, explicit model and reasoning settings, raw provider usage, all attempts, task success and timing. Fresh and retained context are reported separately. Historical artifacts remain unchanged."
+                id: "measurement"
+                required: true
+              -
+                check_ids:
+                  - "full-ci"
+                description: "Local CI rejects a Bun version that differs from packageManager before running checks. The Bun minification workaround is retained or removed based on pinned-runtime build and compiled smoke evidence."
+                id: "bun"
+                required: true
+              -
+                check_ids:
+                  - "full-ci"
+                description: "Focused positive, negative and replay tests, typecheck, affected lint and format, compiled smoke and full local CI pass. Unrelated work is preserved."
+                id: "verification"
+                required: true
+            evidence_fingerprint: "sha256:1f85d1d059f041614d48bb4d870e4f71131db44b28bbfbc1693e97f443986e77"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "full-ci"
+                    description: "Provider-observed token totals include cache, visible output, reasoning, failed attempts and role identity. Persisted episode and provider identities prevent replay double counting. Missing coverage remains explicit."
+                    id: "usage"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-ci"
+                    description: "A reproducible before/after comparison uses identical fixtures, explicit model and reasoning settings, raw provider usage, all attempts, task success and timing. Fresh and retained context are reported separately. Historical artifacts remain unchanged."
+                    id: "measurement"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-ci"
+                    description: "Local CI rejects a Bun version that differs from packageManager before running checks. The Bun minification workaround is retained or removed based on pinned-runtime build and compiled smoke evidence."
+                    id: "bun"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-ci"
+                    description: "Focused positive, negative and replay tests, typecheck, affected lint and format, compiled smoke and full local CI pass. Unrelated work is preserved."
+                    id: "verification"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 80000
+                  optional_sources: []
+                  required_sources:
+                    - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+                    - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+                    - "packages/core/src/runner/supervisor-execution-episode.ts"
+                    - "scripts/bench/internal/agent-efficiency-codex-runtime.mjs"
+                    - "scripts/checks/run-local-ci.mjs"
+                    - "packages/agentplane/tsup.config.ts"
+                  symbol_hints:
+                    - "observedRunnerUsage"
+                    - "completeSupervisorExecutionEpisode"
+                    - "createCodexResultEventCollector"
+                depends_on: []
+                expected_outputs:
+                  - "verified source changes"
+                  - "focused regression tests"
+                  - "reproducible provider measurement evidence with coverage and quality limits"
+                  - "Bun build qualification evidence"
+                id: "measured-runtime"
+                objective: "Complete provider token accounting and its reproducible before/after measurement with a pinned Bun preflight and evidence-based minification qualification. Reuse existing journal, adapters and benchmark primitives."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "exclusive"
+                    resource: "task-worktree"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/runner"
+                  - "packages/agentplane/src/commands/shared"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/harness"
+                  - "packages/agentplane/tsup.config.ts"
+                  - "packages/core/src/runner"
+                  - "packages/core/src/tasks"
+                  - "packages/core/schemas"
+                  - "packages/spec/schemas"
+                  - "schemas"
+                  - "scripts/checks"
+                  - "scripts/workflow"
+                  - "scripts/lib"
+                  - "scripts/bench"
+                  - "scripts/baselines"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-ci"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "full-ci"
+                      description: "Provider-observed token totals include cache, visible output, reasoning, failed attempts and role identity. Persisted episode and provider identities prevent replay double counting. Missing coverage remains explicit."
+                      id: "usage"
+                      required: true
+                    -
+                      check_ids:
+                        - "full-ci"
+                      description: "A reproducible before/after comparison uses identical fixtures, explicit model and reasoning settings, raw provider usage, all attempts, task success and timing. Fresh and retained context are reported separately. Historical artifacts remain unchanged."
+                      id: "measurement"
+                      required: true
+                    -
+                      check_ids:
+                        - "full-ci"
+                      description: "Local CI rejects a Bun version that differs from packageManager before running checks. The Bun minification workaround is retained or removed based on pinned-runtime build and compiled smoke evidence."
+                      id: "bun"
+                      required: true
+                    -
+                      check_ids:
+                        - "full-ci"
+                      description: "Focused positive, negative and replay tests, typecheck, affected lint and format, compiled smoke and full local CI pass. Unrelated work is preserved."
+                      id: "verification"
+                      required: true
+                  evidence_fingerprint: "sha256:1f85d1d059f041614d48bb4d870e4f71131db44b28bbfbc1693e97f443986e77"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
+    revision: 8
     schema_version: 1
     updated_at: "2026-09-08T23:24:41.956Z"
     work_items:
@@ -600,6 +801,30 @@ extensions:
         mutation_id: "compatibility:sha256:1830b17f6c1bb843bd9c10e573b5bcd83e104bf222bde23ca8aa18bcf135d2cb"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
+      compatibility:sha256:237ebcee744941df85eaefcc230971d918086ca12902f08a10d305cfd3858721:
+        aggregate_digest: "sha256:4a8260384fe5b548d0ae59ed40d085bc9459d86919f3fe5c8fdc3d89a12e3a82"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T23:24:41.956Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_bb806dca9a43e389e37cbfd4"
+          mutation_id: "compatibility:sha256:237ebcee744941df85eaefcc230971d918086ca12902f08a10d305cfd3858721"
+          plan_digest: "sha256:db279ee229d3cb7ecf2e20215ef8e968f8ee9111da73c134a25f53a341f2bc90"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 7
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:237ebcee744941df85eaefcc230971d918086ca12902f08a10d305cfd3858721"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609082225-ZYASFT"
       compatibility:sha256:2a8032de10e76defa04b66569aa61f31320edcdce0a7730d02cf03b322b2034f:
