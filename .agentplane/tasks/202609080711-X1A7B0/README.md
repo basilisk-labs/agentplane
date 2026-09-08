@@ -279,25 +279,24 @@ events:
 doc_version: 3
 doc_updated_at: "2026-09-08T07:49:10.609Z"
 doc_updated_by: "SUPERVISOR"
-description: "On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes."
+description: "On the v0.6.27 maintenance base, preserve task next-action as the v0.6 route oracle and remove only recommendations that direct the current coding agent to ap task run. Keep ap task run available for explicit managed-runner or compatibility use. Prepare AgentPlane v0.6.28 and open a PR against codex/release-v0.6.27-reclaim-fix."
 sections:
   Summary: |-
-    Remove ap task run from standard route recommendations and release AgentPlane v0.6.28
+    Remove `ap task run` from standard route recommendations and release AgentPlane v0.6.28.
 
-    On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes.
+    On the v0.6.27 maintenance base, preserve `ap task next-action <task-id> --explain` as the route oracle and remove only recommendations that direct the current coding agent to `ap task run`. The agent performs the task itself. Keep `ap task run` available for explicit managed-runner or compatibility use. Open the PR against `codex/release-v0.6.27-reclaim-fix`.
   Scope: |-
-    - In scope: On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes.
-    - Out of scope: unrelated refactors not required for "Remove ap task run from standard route recommendations and release AgentPlane v0.6.28".
+    - In scope: remove `ap task run` from normal route recommendations while preserving `ap task next-action <task-id> --explain`; keep the command implementation available for explicit managed-runner or compatibility use; update focused tests and release surfaces for v0.6.28; open the PR against `codex/release-v0.6.27-reclaim-fix`.
+    - Out of scope: removing the `task run` command, replacing `task next-action`, backporting the 0.7 `task advance` protocol, unrelated refactors, merge, tag creation, npm publication.
   Plan: "Refined the maintenance plan to preserve task next-action as the v0.6.x route oracle, remove only task run from normal execution recommendations, and keep task execution with the current agent before verification."
   Verify Steps: |-
-    1. Inspect standard route output and canonical policy projections. Expected: normal agent guidance uses `ap task active`, `ap task advance <task-id> --agent-json`, the typed result path, and exact resume argv; it does not recommend `ap task run`.
-    2. Run focused route-decision, external-agent packet, prompt/policy projection, and help snapshot tests selected from changed files. Expected: all pass and preserve `task run` only as a compatibility/operator command.
+    1. Inspect standard route output and canonical policy projections. Expected: the v0.6 route oracle remains `ap task next-action <task-id> --explain`, and normal agent guidance does not recommend `ap task run`.
+    2. Run the focused route-decision, task-guided, route-guidance, and command-catalog tests selected from changed files. Expected: all pass and preserve `task run` only as an explicit compatibility/operator command.
     3. Run `node .agentplane/policy/check-routing.mjs`. Expected: routing graph and policy size budgets pass.
     4. Run `git diff --check` and review `v0.6.27..HEAD`. Expected: only the approved routing fix, tests, task evidence, and 0.6.28 release surfaces changed; historical task/release artifacts remain untouched.
     5. Run `bun run release:parity`. Expected: all version surfaces and exact internal dependency pins resolve to 0.6.28.
-    6. Run `bun run release:prepublish`. Expected: the complete local release gate passes.
-    7. Verify the hosted PR targets `0.6.x` and required checks pass for its exact head SHA.
-    8. After explicit publish approval, verify GitHub tag/release `v0.6.28` and npm versions for `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` all resolve to 0.6.28 from the exact integrated SHA.
+    6. Run `bun run release:prepublish`. Expected: checks available without the optional recipes submodule pass; the submodule-dependent recipe documentation check is explicitly waived by the user for this narrow patch.
+    7. Verify the hosted PR targets `codex/release-v0.6.27-reclaim-fix` at the exact candidate head SHA.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->

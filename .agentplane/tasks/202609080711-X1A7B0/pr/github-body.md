@@ -4,14 +4,14 @@ Canonical task record: `.agentplane/tasks/202609080711-X1A7B0/README.md`
 
 ## Summary
 
-Remove ap task run from standard route recommendations and release AgentPlane v0.6.28
+Remove `ap task run` from standard route recommendations and release AgentPlane v0.6.28.
 
-On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes.
+On the v0.6.27 maintenance base, preserve `ap task next-action <task-id> --explain` as the route oracle and remove only recommendations that direct the current coding agent to `ap task run`. The agent performs the task itself. Keep `ap task run` available for explicit managed-runner or compatibility use. Open the PR against `codex/release-v0.6.27-reclaim-fix`.
 
 ## Scope
 
-- In scope: On the 0.6 maintenance line based on v0.6.27, remove recommendations that direct agents to ap task run. The standard agent route must require the external-agent task advance exchange so the agent performs bounded semantic episodes itself. Update canonical policy, generated projections, implementation and regression tests as required; prepare and publish v0.6.28 through a PR targeting 0.6.x without unrelated 0.7.x changes.
-- Out of scope: unrelated refactors not required for "Remove ap task run from standard route recommendations and release AgentPlane v0.6.28".
+- In scope: remove `ap task run` from normal route recommendations while preserving `ap task next-action <task-id> --explain`; keep the command implementation available for explicit managed-runner or compatibility use; update focused tests and release surfaces for v0.6.28; open the PR against `codex/release-v0.6.27-reclaim-fix`.
+- Out of scope: removing the `task run` command, replacing `task next-action`, backporting the 0.7 `task advance` protocol, unrelated refactors, merge, tag creation, npm publication.
 
 ## Verification
 
