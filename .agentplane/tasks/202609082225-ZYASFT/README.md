@@ -4,7 +4,7 @@ title: "Measure provider token usage and align Bun runtime qualification"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: "USER approved the proposed token-measurement implementation and Bun runtime qualification, and explicitly requested updating the system Bun to the current stable release."
 verification:
   state: "ok"
-  updated_at: "2026-09-08T23:45:07.361Z"
+  updated_at: "2026-09-08T23:56:02.054Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -403,8 +403,14 @@ events:
     to: "DOING"
     note: "Implementation committed: b026d6113ea9. CLI accepted one state-bound external-agent semantic result."
     commit: "b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+  -
+    type: "verify"
+    at: "2026-09-08T23:56:02.054Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-08T23:47:44.346Z"
+doc_updated_at: "2026-09-08T23:56:03.844Z"
 doc_updated_by: "SUPERVISOR"
 description: "USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval."
 sections:
@@ -427,6 +433,72 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e447b87044e6b291c66cae58fd84bef447cb441c103a2e8f3cbc77e7b261ba8b, input_digest=sha256:92a026a838b17815a2ecc096c048560cf256aef92f863a32479e3c7c3917b26a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609082225-ZYASFT Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609082225-ZYASFT Verification Contract check critical_paths
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609082225-ZYASFT Verification Contract check docs_contract
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609082225-ZYASFT Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609082225-ZYASFT Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609082225-ZYASFT Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609082225-ZYASFT-measure-provider-token-usage-and-align-bun-runti/.agentplane/tasks/202609082225-ZYASFT/blueprint/resolved-snapshot.json
+    - old_digest: 912163f09da761cc1febac2e92d0eae427f1f1d8393d116299bdf4252a9f7939
+    - current_digest: 912163f09da761cc1febac2e92d0eae427f1f1d8393d116299bdf4252a9f7939
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609082225-ZYASFT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609082225-ZYASFT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-08T23:56:02.054Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e447b87044e6b291c66cae58fd84bef447cb441c103a2e8f3cbc77e7b261ba8b, input_digest=sha256:192fb45f3f4bbd189cf25f02f0c5220076cc345c69a542aebd830e4aa843fa9b
 
     Details:
 
@@ -723,7 +795,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609082225-ZYASFT"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609082225-ZYASFT"
     intent:
@@ -930,9 +1002,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609082225-ZYASFT"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-08T23:47:44.346Z"
+    updated_at: "2026-09-08T23:56:03.842Z"
     work_items:
       measured-runtime:
         attempt: 1
@@ -1184,6 +1256,30 @@ extensions:
         previous_revision: 11
         schema_version: 1
         task_id: "202609082225-ZYASFT"
+      compatibility:sha256:5bc0475b10a4bb7998c66ec502dacf7110286f7ebaacf7cf3e2b0f3335033dfd:
+        aggregate_digest: "sha256:0c94c2e9a6f40708d706e79c66407782b2391016d1a5da809b8ea95022fdba89"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T23:56:03.842Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a9c6a6032164d6475c5fce70"
+          mutation_id: "compatibility:sha256:5bc0475b10a4bb7998c66ec502dacf7110286f7ebaacf7cf3e2b0f3335033dfd"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5bc0475b10a4bb7998c66ec502dacf7110286f7ebaacf7cf3e2b0f3335033dfd"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
       compatibility:sha256:8e783dfd42708c0c1e152f6eccb278bb298fae8ed365e58af34c7d977a96bcf8:
         aggregate_digest: "sha256:38f867c62cab540a34236aed9eb98c3ae499c463ce0eb5551dc6d83b16e46baf"
         event:
@@ -1398,6 +1494,72 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e447b87044e6b291c66cae58fd84bef447cb441c103a2e8f3cbc77e7b261ba8b, input_digest=sha256:92a026a838b17815a2ecc096c048560cf256aef92f863a32479e3c7c3917b26a
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609082225-ZYASFT Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609082225-ZYASFT Verification Contract check critical_paths
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609082225-ZYASFT Verification Contract check docs_contract
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609082225-ZYASFT Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609082225-ZYASFT Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609082225-ZYASFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609082225-ZYASFT Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609082225-ZYASFT-measure-provider-token-usage-and-align-bun-runti/.agentplane/tasks/202609082225-ZYASFT/blueprint/resolved-snapshot.json
+- old_digest: 912163f09da761cc1febac2e92d0eae427f1f1d8393d116299bdf4252a9f7939
+- current_digest: 912163f09da761cc1febac2e92d0eae427f1f1d8393d116299bdf4252a9f7939
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609082225-ZYASFT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609082225-ZYASFT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-08T23:56:02.054Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:e447b87044e6b291c66cae58fd84bef447cb441c103a2e8f3cbc77e7b261ba8b, input_digest=sha256:192fb45f3f4bbd189cf25f02f0c5220076cc345c69a542aebd830e4aa843fa9b
 
 Details:
 
