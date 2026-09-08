@@ -6,14 +6,14 @@ Created: 2026-09-08T11:38:53.832Z
 
 - Task: `202609081134-SRM6JM`
 - Title: Reduce agent protocol overhead for small code changes
-- Status: DONE
+- Status: DOING
 - Branch: `task/202609081134-SRM6JM/reduce-agent-protocol-overhead-for-small-code-ch`
 - Canonical task record: `.agentplane/tasks/202609081134-SRM6JM/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
