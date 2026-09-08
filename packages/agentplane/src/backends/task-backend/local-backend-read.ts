@@ -200,7 +200,8 @@ async function isIgnorableMissingReadmeTaskDir(root: string, dirName: string): P
       const schema: unknown = JSON.parse(contents);
       if (
         !isRecord(schema) ||
-        schema.$id !== "https://agentplane.org/schemas/agent-semantic-result.schema.json" ||
+        (schema.$id !== "https://agentplane.org/schemas/agent-semantic-result.schema.json" &&
+          schema.$id !== "https://agentplane.org/schemas/agent-semantic-payload.schema.json") ||
         typeof schema.$schema !== "string"
       )
         return false;

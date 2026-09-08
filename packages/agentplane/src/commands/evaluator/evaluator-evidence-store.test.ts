@@ -462,7 +462,12 @@ it("shares canonical result schemas across new exchanges and preserves historica
   const firstPath = path.resolve(first.exchange.directory, first.exchange.result_schema_ref);
   const secondPath = path.resolve(second.exchange.directory, second.exchange.result_schema_ref);
   expect(firstPath).toBe(secondPath);
-  expect(await readFile(firstPath, "utf8")).toBe(renderAgentSemanticResultSchemaJson());
+  expect(await readFile(firstPath, "utf8")).toBe(
+    renderAgentSemanticResultSchemaJson({
+      role: order.role,
+      phase: order.canonical_binding?.phase,
+    }),
+  );
   expect(await readdir(path.dirname(firstPath))).toHaveLength(1);
   expect(await readdir(first.exchange.directory)).not.toContain("result-schema.json");
   const contents = await readFile(firstPath);
