@@ -1,10 +1,11 @@
 ---
 id: "202609081927-P1MJV7"
 title: "Reduce redundant recovery episodes and exchange data"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -52,6 +53,22 @@ quality_review:
     - "Residual risk: Managed adapters start fresh processes. Context delta measurements require explicit acknowledgement within the same live session. Provider token usage and latency were not measured."
     - "Residual risk: Hosted CI and integration remain outside this local review and require separate publication authority."
     - "Residual risk: Merged-worktree cleanup runs on the next lifecycle invocation. No background watcher was added."
+token_usage:
+  agent_runs: 9
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:8c035d05c686a94e0a040910e119fdf4893611a22d84cf273d49c0497014b3b9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-08T21:11:56.030Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -445,8 +462,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "666124058321eeb280100a3dfc6222c1388e3d84"
-  message: "🚧 P1MJV7 task: apply external agent result"
+  hash: "f53b4d70c38d9909b64ec72269e3cf270d167e3b"
+  message: "🚧 P1MJV7 task: record external evaluator result"
 comments:
   -
     author: "PLANNER"
@@ -472,6 +489,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 666124058321. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "comment"
@@ -534,9 +554,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-08T21:11:56.030Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "f53b4d70c38d9909b64ec72269e3cf270d167e3b"
 doc_version: 3
-doc_updated_at: "2026-09-08T21:07:14.252Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-08T21:11:56.030Z"
+doc_updated_by: "CODER"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
   Summary: |-
@@ -932,7 +960,23 @@ extensions:
       schema_version: 1
       task_id: "202609081927-P1MJV7"
     event_cursor: 18
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609081927-P1MJV7"
+            - "git:666124058321eeb280100a3dfc6222c1388e3d84"
+          check_id: "task-check"
+          command_identity: "task.verify"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-08T21:07:12.984Z"
+          repository_snapshot_digest: "sha256:1ddb27e269aff9afa7b9fd2ea1a09f568b177066eeae8586216e95375b23c575"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609081927-P1MJV7"
     intent:
       acceptance_criteria: []
@@ -943,7 +987,7 @@ extensions:
 
         Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval.
       task_id: "202609081927-P1MJV7"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1140,9 +1184,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-08T21:07:14.252Z"
+    updated_at: "2026-09-08T21:11:56.030Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 1
@@ -1691,11 +1735,37 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609081927-P1MJV7"
+      legacy-finish:202609081927-P1MJV7:2026-09-08T21:07:12.984Z:666124058321eeb280100a3dfc6222c1388e3d84:
+        aggregate_digest: "sha256:ae724549ed9562ef284f674e1ea7770556b2618c8b83585d0e4753bccd9167c7"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-08T21:11:56.030Z"
+          cause_refs:
+            - "task-verification:202609081927-P1MJV7"
+            - "git:666124058321eeb280100a3dfc6222c1388e3d84"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bcd125a6c8dbe4a3f70621e2"
+          mutation_id: "legacy-finish:202609081927-P1MJV7:2026-09-08T21:07:12.984Z:666124058321eeb280100a3dfc6222c1388e3d84"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: "sha256:1ddb27e269aff9afa7b9fd2ea1a09f568b177066eeae8586216e95375b23c575"
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609081927-P1MJV7:2026-09-08T21:07:12.984Z:666124058321eeb280100a3dfc6222c1388e3d84"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "666124058321eeb280100a3dfc6222c1388e3d84"
+    message: "🚧 P1MJV7 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "33e106d611fe92603cb836bdcd500a1c624d206b"
@@ -1873,3 +1943,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/9` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8c035d05c686a94e0a040910e119fdf4893611a22d84cf273d49c0497014b3b9`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-08T21:11:56.030Z`
