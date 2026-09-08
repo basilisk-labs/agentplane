@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -20,11 +20,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-08T14:24:27.945Z"
+  state: "ok"
+  updated_at: "2026-09-08T17:40:50.240Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -158,9 +158,7 @@ execution_contract:
       - "scripts/checks"
       - "scripts/lib"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
       - "packages/core"
@@ -210,10 +208,22 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -392,8 +402,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit:
   hash: "f33d994a331fa73f30292b8735c44b0c9fb2730f"
   message: "🚧 SRM6JM task: apply external agent result"
@@ -561,8 +569,14 @@ events:
     to: "DOING"
     note: "Implementation committed: f33d994a331f. CLI accepted one state-bound external-agent semantic result."
     commit: "f33d994a331fa73f30292b8735c44b0c9fb2730f"
+  -
+    type: "verify"
+    at: "2026-09-08T17:40:50.240Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-08T17:32:40.450Z"
+doc_updated_at: "2026-09-08T17:40:51.274Z"
 doc_updated_by: "SUPERVISOR"
 description: "Implement the user-approved optimization plan in dependency order: establish a reproducible one-condition-change benchmark; issue compact role- and episode-specific result schemas; assemble CLI-owned result identity from the immutable issued episode; remove duplicated planning criteria and summaries; optimize measured repeated CLI preparation work; rerun performance and authority, stale-result, scope, recovery, and historical-exchange compatibility checks. Target at least 70 percent less required schema bytes and 50 percent less generated protocol payload on the small fixture. Report measured wall time separately from provider and user waiting. Preserve existing verification and authority guarantees. Reuse existing benchmark infrastructure. Do not publish, push, merge, change dependencies, or rewrite historical artifacts. Coordinate with active reliability task 202609080727-BAWTEE and avoid duplicating its changes. Paid provider comparison requires available explicitly authorized runtime; never represent fixture or byte measurements as observed provider-token savings."
 sections:
@@ -691,6 +705,66 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202609081134-SRM6JM declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081134-SRM6JM-reduce-agent-protocol-overhead-for-small-code-ch/.agentplane/tasks/202609081134-SRM6JM/blueprint/resolved-snapshot.json
+    - old_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+    - current_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609081134-SRM6JM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609081134-SRM6JM
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-08T17:40:50.240Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4f28e9196c2f5767b07db719c78c79f6620a97c2b5700990c2fa7bb4458806e4, input_digest=sha256:f8b016f9e333c540b75055534c4fcebdde6722ab59dcde5ee307c22845e5a6f9
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081134-SRM6JM Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081134-SRM6JM Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081134-SRM6JM Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081134-SRM6JM Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609081134-SRM6JM Verification Contract check task_outcome
 
     BlueprintSnapshotRef:
     - state: current
@@ -1279,7 +1353,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081134-SRM6JM"
-    event_cursor: 29
+    event_cursor: 30
     final_validation: null
     id: "202609081134-SRM6JM"
     intent:
@@ -1829,9 +1903,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 36
+    revision: 37
     schema_version: 1
-    updated_at: "2026-09-08T17:32:40.379Z"
+    updated_at: "2026-09-08T17:40:51.271Z"
     work_items:
       baseline:
         attempt: 1
@@ -2084,6 +2158,30 @@ extensions:
         mutation_id: "compatibility:sha256:01f48e0a6e316194a1313e5f0e92de2331d2bb5353c84d3775371cf2a62463d3"
         next_revision: 22
         previous_revision: 21
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      compatibility:sha256:09005912b8c2dacda190d86124f1e97267215f6c7c439ddbd733801da7275e38:
+        aggregate_digest: "sha256:bf022554b0336869895e21122e78440b3805a0942a25760eab775e845da8bbff"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T17:40:51.271Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7a56d8cac6fa9e6744d3d694"
+          mutation_id: "compatibility:sha256:09005912b8c2dacda190d86124f1e97267215f6c7c439ddbd733801da7275e38"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 36
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:09005912b8c2dacda190d86124f1e97267215f6c7c439ddbd733801da7275e38"
+        next_revision: 37
+        previous_revision: 36
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       compatibility:sha256:0bbaf829ec0396f3c910327ed4d2193f72d2a0f1f1c9e17015b841d896a050e1:
@@ -3030,6 +3128,66 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202609081134-SRM6JM declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609081134-SRM6JM-reduce-agent-protocol-overhead-for-small-code-ch/.agentplane/tasks/202609081134-SRM6JM/blueprint/resolved-snapshot.json
+- old_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+- current_digest: baeb764d839d9f9be5bf8dc633fde5f0a4ad6384b136b8112cefb96b2c250cf5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609081134-SRM6JM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609081134-SRM6JM
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-08T17:40:50.240Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:4f28e9196c2f5767b07db719c78c79f6620a97c2b5700990c2fa7bb4458806e4, input_digest=sha256:f8b016f9e333c540b75055534c4fcebdde6722ab59dcde5ee307c22845e5a6f9
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081134-SRM6JM Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081134-SRM6JM Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081134-SRM6JM Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081134-SRM6JM Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609081134-SRM6JM Verification Contract check task_outcome
 
 BlueprintSnapshotRef:
 - state: current
