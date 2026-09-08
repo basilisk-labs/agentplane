@@ -1,10 +1,10 @@
 ---
 id: "202609081927-P1MJV7"
 title: "Reduce redundant recovery episodes and exchange data"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -238,6 +238,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The added USER request requires the branch cleanup implementation and its tests. Requested scope: roots=packages/agentplane/src/commands/branch; repository effects=source_code,tests; request digest=sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65. Agentplane receipt: external-agent-blocker/tr_9f3424827f0fced23b814230b3bda09e/sha256:16eb6e765612cbebd6df63f7dad3f3ea3a503dab88c8b4cc3d7edba568966e35/sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65."
+  -
+    author: "CODER"
+    body: "Resumed: USER-approved branch cleanup scope is already present in the execution contract. The task checkout is synchronized with merged prerequisite 7563d84a4 and disk space is restored. Continue all approved optimizations."
 events:
   -
     type: "comment"
@@ -265,9 +268,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The added USER request requires the branch cleanup implementation and its tests. Requested scope: roots=packages/agentplane/src/commands/branch; repository effects=source_code,tests; request digest=sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65. Agentplane receipt: external-agent-blocker/tr_9f3424827f0fced23b814230b3bda09e/sha256:16eb6e765612cbebd6df63f7dad3f3ea3a503dab88c8b4cc3d7edba568966e35/sha256:22cd81fba8f20aa547a0f67e270689aec4382b1b37dc03c6fbf7ca013ab16c65."
+  -
+    type: "status"
+    at: "2026-09-08T19:45:24.055Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Resumed: USER-approved branch cleanup scope is already present in the execution contract. The task checkout is synchronized with merged prerequisite 7563d84a4 and disk space is restored. Continue all approved optimizations."
 doc_version: 3
-doc_updated_at: "2026-09-08T19:43:46.844Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-08T19:45:24.055Z"
+doc_updated_by: "CODER"
 description: "Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval."
 sections:
   Summary: |-
@@ -530,7 +540,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609081927-P1MJV7"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609081927-P1MJV7"
     intent:
@@ -542,7 +552,7 @@ extensions:
 
         Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval.
       task_id: "202609081927-P1MJV7"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -739,9 +749,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081927-P1MJV7"
-    revision: 12
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-08T19:43:46.844Z"
+    updated_at: "2026-09-08T19:45:24.055Z"
     work_items:
       reduce-redundant-protocol-work:
         attempt: 0
@@ -757,6 +767,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:208c1e784545b5c70fd5d361ca37e2545c55d148762f07c82c724351a158dbba:
+        aggregate_digest: "sha256:d2ba15c20ef10c7e2bb38db9a7fbd176d75f4e719a9184c54454a5ddd517fb0a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T19:45:24.055Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_4d39c197bc42309bab7743cc"
+          mutation_id: "compatibility:sha256:208c1e784545b5c70fd5d361ca37e2545c55d148762f07c82c724351a158dbba"
+          plan_digest: "sha256:c2b04c05fadf49d11863665c2d8774e984a7199d4a901ce3a9f5b074a6356e08"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081927-P1MJV7"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:208c1e784545b5c70fd5d361ca37e2545c55d148762f07c82c724351a158dbba"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609081927-P1MJV7"
       compatibility:sha256:36a2682b4ab0e2b8ee75a9c765219190c416e90f9b243ad48d690c8ce022ecd5:
         aggregate_digest: "sha256:76b38e548023fb385f0db91cda15bea7a38d8729f2468d86a8db649bfe50a9e2"
         event:

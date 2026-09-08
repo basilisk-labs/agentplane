@@ -1,3 +1,4 @@
+import path from "node:path";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { advanceCanonicalTask } from "./kernel-advance.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
@@ -397,7 +398,10 @@ export function makeRunTaskAdvanceHandler(deps: {
                 : {}),
               directory: exchange.paths.directory,
               work_order_ref: "work-order.json",
-              result_schema_ref: "result-schema.json",
+              result_schema_ref: path.relative(
+                exchange.paths.directory,
+                exchange.exchange.result_schema_ref,
+              ),
               result_ref: "result.json",
               return_invocation:
                 `agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json` +

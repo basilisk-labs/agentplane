@@ -220,7 +220,7 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     readDirectRepositoryStatus(checkout),
   ]);
   const at = new Date().toISOString();
-  const preparedExchange: ExternalAgentExchange = {
+  let preparedExchange: ExternalAgentExchange = {
     schema_version: 1,
     kind: "external_agent_exchange",
     issue_digest_version: 2,
@@ -250,7 +250,7 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     created_at: at,
     updated_at: at,
   };
-  await persistExternalAgentExchangeArtifacts({
+  preparedExchange = await persistExternalAgentExchangeArtifacts({
     paths,
     work_order: workOrder,
     exchange: preparedExchange,

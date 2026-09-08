@@ -1,6 +1,5 @@
+export { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { runProcess } from "@agentplaneorg/core/process";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -10,18 +9,14 @@ import {
   parseDeclaredTaskCheck,
   parseDeclaredTaskCheckSequence,
 } from "../shared/declared-check.js";
-import {
-  localRuntimeEvidence,
-  isRuntimeInfrastructureError,
-  type LocalRuntimeEvidence,
-} from "../../shared/runtime-env.js";
+import { localRuntimeEvidence, type LocalRuntimeEvidence } from "../../shared/runtime-env.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
-import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
-import { CliError } from "../../shared/errors.js";
-import { cmdVerifyParsed } from "./verify-record.js";
-import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
-import type { PreparedTaskMutationObserver } from "../shared/task-mutation.js";
+import {
+  isInfrastructureVerification,
+  isVerificationInfrastructureError,
+} from "./verification-infrastructure.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
@@ -103,85 +98,6 @@ export function isTaskLevelVerificationReworkState(opts: {
     opts.has_current_plan &&
     opts.all_required_work_items_completed
   );
-}
-
-export async function recordDirectTaskVerification(opts: {
-  command: CommandContext;
-  checkout: string;
-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
-  work_order: AgentWorkOrderV2;
-  workflow: "direct" | "branch_pr";
-  beforePersist?: (
-    mutation: Parameters<PreparedTaskMutationObserver>[0],
-    verification: DirectTaskVerificationResult,
-  ) => Promise<void>;
-  afterPersist?: () => Promise<void>;
-}): Promise<DirectTaskVerificationResult> {
-  const verification = await resolveImplementationVerificationTask(opts);
-  const verificationTask = verification.task;
-  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
-  const selectedWorkItem = aggregate?.current_plan?.proposal.work_items.work_items.find(
-    (item) => item.id === opts.work_order.task.work_item_id,
-  );
-  const taskCentricValidation = opts.work_order.task.work_item_id
-    ? selectedWorkItem?.validation
-    : aggregate?.current_plan?.proposal.top_level_validation;
-  const additionalCommands = taskCentricValidation
-    ? blockingWorkItemCommands(taskCentricValidation)
-    : [];
-  const usesTaskLevelPlanCommands =
-    !opts.work_order.task.work_item_id && additionalCommands.length > 0;
-  const usesTaskCentricCommands = selectedWorkItem !== undefined || usesTaskLevelPlanCommands;
-  const checks = await runDirectTaskVerification({
-    command: opts.command,
-    task: verificationTask,
-    task_id: opts.task.id,
-    cwd: opts.checkout,
-    additional_commands: usesTaskCentricCommands ? additionalCommands : [],
-    additional_only: usesTaskCentricCommands,
-    allow_empty: selectedWorkItem !== undefined,
-    map_selected_checks: usesTaskLevelPlanCommands,
-  });
-  if (selectedWorkItem) {
-    // WorkItem validation is projected by recordTaskCentricExternalResult.
-    // Task-level verification remains pending until every required WorkItem is complete.
-    return checks;
-  }
-  const exitCode = await cmdVerifyParsed({
-    ctx: opts.command,
-    cwd: opts.checkout,
-    rootOverride: undefined,
-    taskId: opts.task.id,
-    state: checks.status === "passed" ? "ok" : "needs_rework",
-    by: "SUPERVISOR",
-    note:
-      checks.status === "passed"
-        ? "Verified: CLI-owned checks passed before independent EVALUATOR review."
-        : `Rework: ${checks.reason ?? "Declared implementation verification did not pass."}`,
-    details: renderDirectTaskVerificationDetails({
-      task: verificationTask,
-      taskId: opts.task.id,
-      workflow: opts.workflow,
-      result: checks,
-    }),
-    localOnly: false,
-    repoFixable: checks.status !== "passed",
-    incidentTags: [],
-    incidentMatch: [],
-    quiet: true,
-    verificationSnapshot: verification.snapshot,
-    beforePersist: opts.beforePersist
-      ? (mutation) => opts.beforePersist!(mutation, checks)
-      : undefined,
-  });
-  if (exitCode !== 0) {
-    throw new CliError({
-      code: "E_RUNTIME",
-      message: `External-agent implementation verification exited with ${exitCode}.`,
-    });
-  }
-  await opts.afterPersist?.();
-  return checks;
 }
 
 export function renderDirectTaskVerificationDetails(opts: {
@@ -380,7 +296,12 @@ async function writeCheckArtifact(opts: {
   command: CommandContext;
   task_id: string;
   result: Omit<DirectTaskVerificationResult, "artifact_path">;
+  retain_infrastructure_failure?: (
+    result: Omit<DirectTaskVerificationResult, "artifact_path">,
+  ) => Promise<string>;
 }): Promise<string> {
+  if (opts.retain_infrastructure_failure && isInfrastructureVerification(opts.result))
+    return opts.retain_infrastructure_failure(opts.result);
   const relative = path.join(
     opts.command.config.paths.workflow_dir,
     opts.task_id,
@@ -420,6 +341,9 @@ export async function runDirectTaskVerification(opts: {
   additional_only?: boolean;
   allow_empty?: boolean;
   map_selected_checks?: boolean;
+  retain_infrastructure_failure?: (
+    result: Omit<DirectTaskVerificationResult, "artifact_path">,
+  ) => Promise<string>;
   run_process?: typeof runProcess;
   now?: () => number;
 }): Promise<DirectTaskVerificationResult> {
@@ -498,7 +422,7 @@ export async function runDirectTaskVerification(opts: {
     let infrastructureFailure = false;
     const completedCheck = (error?: unknown): DirectTaskCheck => ({
       runtime,
-      ...(infrastructureFailure || (error && isRuntimeInfrastructureError(error))
+      ...(infrastructureFailure || (error && isVerificationInfrastructureError(error))
         ? { failure_kind: "infrastructure" as const }
         : {}),
       command,
@@ -545,7 +469,7 @@ export async function runDirectTaskVerification(opts: {
           stderr: executed.stderr,
         });
         infrastructureFailure =
-          segmentRuntime.status === "unavailable" || isRuntimeInfrastructureError(executed);
+          segmentRuntime.status === "unavailable" || isVerificationInfrastructureError(executed);
         if (infrastructureFailure || exitCode !== 0 || zeroTests) {
           runtime = segmentRuntime;
           break;
@@ -565,7 +489,7 @@ export async function runDirectTaskVerification(opts: {
     } catch (error) {
       checks.push(completedCheck(error));
       const result = {
-        status: isRuntimeInfrastructureError(error)
+        status: isVerificationInfrastructureError(error)
           ? ("unsupported" as const)
           : ("failed" as const),
         checks,

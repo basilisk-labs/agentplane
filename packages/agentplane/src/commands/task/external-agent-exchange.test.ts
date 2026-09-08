@@ -1,5 +1,14 @@
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, rename, rm, symlink, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -13,6 +22,8 @@ import {
 import { externalAgentResultIdentity } from "./external-agent-result-routing.js";
 import {
   resolveExternalAgentExchangePaths,
+  persistExternalAgentExchangeArtifacts,
+  readExternalAgentExchange,
   validateExternalAgentResultEnvelope,
   externalAgentIssueDigest,
   type ExternalAgentExchange,
@@ -169,4 +180,85 @@ describe("compact external result admission", () => {
       );
     }
   });
+});
+
+describe("external schema objects", () => {
+  it.each(["missing", "tampered", "symlink"])(
+    "deduplicates schemas and rejects %s objects",
+    async (failure) => {
+      const root = await mkdtemp(path.join(os.tmpdir(), "ap-external-schema-"));
+      try {
+        const order = AGENT_WORK_ORDER_V2_VALID_FIXTURE;
+        const issue = async (fingerprint: string, historical = false) => {
+          const paths = await resolveExternalAgentExchangePaths({
+            git_root: root,
+            common_git_dir: root,
+            task_id: order.task.id,
+            transition_id: `tr_${"b".repeat(32)}`,
+            state_fingerprint: `sha256:${fingerprint.repeat(64)}`,
+          });
+          if (historical) {
+            await mkdir(paths.directory, { recursive: true });
+            await writeFile(paths.result_schema, "historic bytes");
+          }
+          const exchange: ExternalAgentExchange = {
+            schema_version: 1,
+            kind: "external_agent_exchange",
+            status: "prepared",
+            issue_digest_version: 2,
+            result_format: "semantic_payload_v1",
+            task_id: order.task.id,
+            transition_id: `tr_${"b".repeat(32)}`,
+            state_fingerprint: `sha256:${fingerprint.repeat(64)}`,
+            role: order.role,
+            purpose: "implementation",
+            checkout: root,
+            work_order_id: order.work_order_id,
+            work_order_ref: paths.work_order,
+            result_schema_ref: paths.result_schema,
+            result_ref: paths.result,
+            evaluator_work_order_ref: null,
+            baseline: { head: null, changed_paths: [] },
+            result_digest: null,
+            result: null,
+            postcondition_fingerprint: null,
+            created_at: "2026-09-08T00:00:00Z",
+            updated_at: "2026-09-08T00:00:00Z",
+          };
+          const result = await persistExternalAgentExchangeArtifacts({
+            paths,
+            exchange,
+            work_order: order,
+          });
+          return { paths, exchange: result };
+        };
+        const first = await issue("a");
+        const bytes = await readFile(first.exchange.result_schema_ref);
+        const second = await issue("c");
+        expect(second.exchange.result_schema_ref).toBe(first.exchange.result_schema_ref);
+        expect(await readdir(path.dirname(first.exchange.result_schema_ref))).toHaveLength(1);
+        await expect(readFile(first.paths.result_schema)).rejects.toMatchObject({ code: "ENOENT" });
+        // An interrupted exchange publication leaves an object reusable by the next issue.
+        await rm(second.paths.exchange);
+        const resumed = await issue("c");
+        expect(resumed.exchange.result_schema_ref).toBe(first.exchange.result_schema_ref);
+        const historical = await issue("d", true);
+        expect(historical.exchange.result_schema_object).toBeUndefined();
+        expect(await readFile(historical.paths.result_schema, "utf8")).toBe("historic bytes");
+        expect(await readExternalAgentExchange(first.paths.exchange)).toEqual(first.exchange);
+        if (failure === "tampered") await writeFile(first.exchange.result_schema_ref, "changed");
+        else {
+          await rm(first.exchange.result_schema_ref);
+          if (failure === "symlink") {
+            const other = path.join(root, "other.json");
+            await writeFile(other, bytes);
+            await symlink(other, first.exchange.result_schema_ref);
+          }
+        }
+        await expect(readExternalAgentExchange(first.paths.exchange)).rejects.toThrow();
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
 });

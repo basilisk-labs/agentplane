@@ -1,4 +1,4 @@
-import { resolveWorkOrderContextBlocks } from "../context/work-order-context.js";
+import { assertWorkOrderContextManifest } from "../context/work-order-context.js";
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 import { createHash } from "node:crypto";
 
@@ -92,10 +92,7 @@ export async function readValidatedPreparedRunnerStdin(opts: {
   if (parsedBundle.work_order) {
     if (!parsedBundle.semantic_context)
       throw preparedInputError("required context manifest is missing");
-    resolveWorkOrderContextBlocks({
-      order: parsedBundle.work_order,
-      manifest: parsedBundle.semantic_context,
-    });
+    assertWorkOrderContextManifest(parsedBundle.work_order, parsedBundle.semantic_context);
   }
 
   if (!opts.invocation.bootstrap_path && opts.require_bootstrap) {
