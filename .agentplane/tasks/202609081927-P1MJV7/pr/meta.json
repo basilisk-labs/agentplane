@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:205f81876d1831b14852685e331980d3453fbcef8bda8adebe3baf2c7fb815fb",
   "pr_number": 5924,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5924",
+  "pre_merge_closure": {
+    "basis_commit": "fe1cd0f438b23b1981c8f9b127928b4669d47049",
+    "branch": "task/202609081927-P1MJV7/reduce-redundant-recovery-episodes-and-exchange",
+    "pr_number": 5924,
+    "recorded_at": "2026-09-08T22:04:41.540Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
