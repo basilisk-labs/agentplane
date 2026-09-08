@@ -4,7 +4,7 @@ title: "Reduce agent protocol overhead for small code changes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -1563,9 +1563,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609081134-SRM6JM"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-08T13:25:50.160Z"
+    updated_at: "2026-09-08T13:25:53.212Z"
     work_items:
       baseline:
         attempt: 1
@@ -1685,14 +1685,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       profile-and-qualify:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "profile-and-qualify"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:142ca1af9447c7a6c853dba4c8f35577a457aca4782db9803d5c43b2406c716e"
+            id: "profile-and-qualify-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609081134-SRM6JM"
+              work_item_id: "profile-and-qualify"
+            provenance:
+              - "sha256:410dd32b3728e9a7eb6b1b11e1e1ee3e804c205dd6bcae1900d974fd0f7d96ed"
+              - ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:a4152f0aedb04684027056c398aa9dac9df24a3664055e14e6638e515cc8ef06"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609081134-SRM6JM/supervision/declared-checks.json"
+              check_id: "task-check"
+              command_identity: "task.verify"
+              detail: "Observed by task.verify."
+              exit_code: 0
+              observed_at: "2026-09-08T13:25:53.200Z"
+              repository_snapshot_digest: "sha256:a4152f0aedb04684027056c398aa9dac9df24a3664055e14e6638e515cc8ef06"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1747,6 +1777,23 @@ extensions:
         task_id: "202609081134-SRM6JM"
         task_revision: 15
         work_item_id: "compact-plan"
+      -
+        at: "2026-09-08T13:25:53.212Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:28cc0920df3220939fc8ab7a470b525a147904146880f6dfaf2f8c2494535f26"
+        entity: "work_item"
+        id: "event_1304bd2561e8f0b007267365"
+        mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-14caf65756414a2b9fc427aa"
+        plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+        task_revision: 18
+        work_item_id: "profile-and-qualify"
     leases: []
     mutation_receipts:
       compatibility:sha256:0bbaf829ec0396f3c910327ed4d2193f72d2a0f1f1c9e17015b841d896a050e1:
@@ -2083,6 +2130,30 @@ extensions:
         mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-0c479114a89e4d5d1e1056b2"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609081134-SRM6JM"
+      external-result:work-order-202609081134-SRM6JM-executor-14caf65756414a2b9fc427aa:
+        aggregate_digest: "sha256:6465a1a7b7c75c0161242746ba2dc331acffe0bf81bca55289f5742b8192a935"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-08T13:25:53.212Z"
+          cause_refs:
+            - "semantic-result:sha256:28cc0920df3220939fc8ab7a470b525a147904146880f6dfaf2f8c2494535f26"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_1304bd2561e8f0b007267365"
+          mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-14caf65756414a2b9fc427aa"
+          plan_digest: "sha256:0d5bd41f20ecec14538c4c600a72dc82832ee6d6887f7651977b1f5ccbfd3f97"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609081134-SRM6JM"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: "profile-and-qualify"
+        mutation_id: "external-result:work-order-202609081134-SRM6JM-executor-14caf65756414a2b9fc427aa"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609081134-SRM6JM"
       external-result:work-order-202609081134-SRM6JM-executor-1afefedd6a2c53fa94dc2065:
