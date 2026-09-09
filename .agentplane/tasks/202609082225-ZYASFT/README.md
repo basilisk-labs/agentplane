@@ -2,10 +2,10 @@
 id: "202609082225-ZYASFT"
 title: "Measure provider token usage and align Bun runtime qualification"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -55,9 +55,11 @@ quality_review:
     - "The original provider accounting and Bun qualification review remains applicable; this rework does not change those source files."
     - "Residual risk: Hosted CI must pass on the newly published head before merge."
 token_usage:
-  agent_runs: 6
+  agent_runs: 8
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:335bb9a788e6b2e40102c02a7567b32218af4312f79a2615efd1995c497ebeff"
+  journal_digest: "sha256:1a054f54d5886a181875046d8088c67d016efab6f5007f9eed6db0d4f9885e4c"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -67,7 +69,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-08T23:59:02.919Z"
+  updated_at: "2026-09-09T05:54:25.794Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -367,8 +369,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "7a8af485e9e028cf78c6952c82b295e5be27d22e"
-  message: "🚧 ZYASFT task: apply external agent result"
+  hash: "2402e69c0b3f48c6796001de8d82c4ca17fc727f"
+  message: "🚧 ZYASFT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -391,6 +393,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 7a8af485e9e0. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -456,9 +461,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-09T05:54:25.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "2402e69c0b3f48c6796001de8d82c4ca17fc727f"
 doc_version: 3
-doc_updated_at: "2026-09-09T05:54:06.655Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-09T05:54:25.801Z"
+doc_updated_by: "CODER"
 description: "USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval."
 sections:
   Summary: |-
@@ -909,7 +922,23 @@ extensions:
       schema_version: 1
       task_id: "202609082225-ZYASFT"
     event_cursor: 18
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609082225-ZYASFT"
+            - "git:7a8af485e9e028cf78c6952c82b295e5be27d22e"
+          check_id: "full-ci"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-09T05:52:40.659Z"
+          repository_snapshot_digest: "sha256:81aa4d80b1809a78779ac32e2790d5c4c979cf810d95dfe1c2e2766f19596d6e"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609082225-ZYASFT"
     intent:
       acceptance_criteria:
@@ -925,7 +954,7 @@ extensions:
 
         USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval.
       task_id: "202609082225-ZYASFT"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1115,9 +1144,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609082225-ZYASFT"
-    revision: 22
+    revision: 23
     schema_version: 1
-    updated_at: "2026-09-09T05:52:41.977Z"
+    updated_at: "2026-09-09T05:54:25.794Z"
     work_items:
       measured-runtime:
         attempt: 1
@@ -1706,11 +1735,37 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609082225-ZYASFT"
+      legacy-finish:202609082225-ZYASFT:2026-09-09T05:52:40.659Z:7a8af485e9e028cf78c6952c82b295e5be27d22e:
+        aggregate_digest: "sha256:b1b977a2fe3621758d9d1e7c2a4d6009e61a1f3ad5859a2a42af6507c0d28278"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-09T05:54:25.794Z"
+          cause_refs:
+            - "task-verification:202609082225-ZYASFT"
+            - "git:7a8af485e9e028cf78c6952c82b295e5be27d22e"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d8818c47f7ade6df24791bf2"
+          mutation_id: "legacy-finish:202609082225-ZYASFT:2026-09-09T05:52:40.659Z:7a8af485e9e028cf78c6952c82b295e5be27d22e"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: "sha256:81aa4d80b1809a78779ac32e2790d5c4c979cf810d95dfe1c2e2766f19596d6e"
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 22
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609082225-ZYASFT:2026-09-09T05:52:40.659Z:7a8af485e9e028cf78c6952c82b295e5be27d22e"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
     hash: "7a8af485e9e028cf78c6952c82b295e5be27d22e"
+    message: "🚧 ZYASFT task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "edbb9f694c30db1fd678e5f642ffdaa14df6dc3b"
@@ -1954,12 +2009,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/6` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:335bb9a788e6b2e40102c02a7567b32218af4312f79a2615efd1995c497ebeff`
+- Journal digest: `sha256:1a054f54d5886a181875046d8088c67d016efab6f5007f9eed6db0d4f9885e4c`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-08T23:59:02.919Z`
+- Updated at: `2026-09-09T05:54:25.794Z`
