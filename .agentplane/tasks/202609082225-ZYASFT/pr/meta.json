@@ -3,8 +3,8 @@
   "branch": "task/202609082225-ZYASFT/measure-provider-token-usage-and-align-bun-runti",
   "created_at": "2026-09-08T22:29:07.319Z",
   "diffstat_sha256": "sha256:44ddf6c0d099337cb9c9dd183357765dce12b444894b25cb905a9ef1d2eb88da",
-  "last_verified_at": "2026-09-08T23:56:02.054Z",
-  "last_verified_diffstat_sha256": "sha256:a746aa46c6a293a4b6580389cfcffae94ba835dd8937ef38bf1c22e86b38259e",
+  "last_verified_at": "2026-09-09T05:52:40.659Z",
+  "last_verified_diffstat_sha256": "sha256:44ddf6c0d099337cb9c9dd183357765dce12b444894b25cb905a9ef1d2eb88da",
   "pr_number": 5925,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5925",
   "pre_merge_closure": {
