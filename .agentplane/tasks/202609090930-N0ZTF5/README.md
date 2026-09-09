@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -109,6 +109,7 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
     external_effects: []
@@ -162,7 +163,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ef6c3f09dcb97f4755dff6b2058f28eb7a90eb38544a2eb227ed42d5054d72dc"
+      digest: "sha256:ed461384643e228740ae15b982587d30b214f1bfac0f316bfd5db265c2644b1f"
       escalation_reasons: []
       execution_groups:
         - "core"
@@ -171,6 +172,7 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
         external_effects: []
@@ -209,7 +211,7 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
+  hash: "189383949cab0efb5bd5951b11df3506c6b26c20"
   message: "🚧 N0ZTF5 task: apply external agent result"
 comments:
   -
@@ -218,6 +220,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 12014e6d6ba4. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 189383949cab. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -240,8 +245,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-09T14:19:48.747Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 189383949cab. CLI accepted one state-bound external-agent semantic result."
+    commit: "189383949cab0efb5bd5951b11df3506c6b26c20"
 doc_version: 3
-doc_updated_at: "2026-09-09T13:33:38.623Z"
+doc_updated_at: "2026-09-09T14:19:48.747Z"
 doc_updated_by: "SUPERVISOR"
 description: "Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task."
 sections:
@@ -459,7 +472,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609090930-N0ZTF5"
     intent:
@@ -598,9 +611,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
-    revision: 12
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-09T13:33:38.623Z"
+    updated_at: "2026-09-09T14:19:48.747Z"
     work_items:
       refinement-recovery:
         attempt: 0
@@ -655,6 +668,30 @@ extensions:
         mutation_id: "compatibility:sha256:3d8a9a27ffed23aaa835111449f24419dbc3c75fc696de9a64440230c0a16d4b"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
+      compatibility:sha256:3dda4170d6a5014fd5a9301e832168e908ffcfc72e00f481c45e4c0d8d61240d:
+        aggregate_digest: "sha256:22881e89bfaf09c65d8f51ba51ccb83945dfc51112ab9d75e501cfc0dc40e5b2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T14:19:48.747Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_985e909eb4eced8c4cc33c4f"
+          mutation_id: "compatibility:sha256:3dda4170d6a5014fd5a9301e832168e908ffcfc72e00f481c45e4c0d8d61240d"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3dda4170d6a5014fd5a9301e832168e908ffcfc72e00f481c45e4c0d8d61240d"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
       compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda:
@@ -801,6 +838,30 @@ extensions:
         previous_revision: 10
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
+      compatibility:sha256:f3859cf3a56b83988003dbf16c1fcc0aaa0477705b3f6c2718915c8e16601f35:
+        aggregate_digest: "sha256:9699510e2b9a8202e4f85a0aaf659e63e0783cb36d25272ff26d3569bf371012"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T14:19:48.747Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_982b708361297e0876e1d5f8"
+          mutation_id: "compatibility:sha256:f3859cf3a56b83988003dbf16c1fcc0aaa0477705b3f6c2718915c8e16601f35"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f3859cf3a56b83988003dbf16c1fcc0aaa0477705b3f6c2718915c8e16601f35"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
       compatibility:sha256:ff9749e3a0af1c57f0c8300b5a358b6d7125674b9e7ea33b5e0e8a4ad1100676:
         aggregate_digest: "sha256:c1602a1dde746cf46d9e4d89866155b133b55bd07d40159844a14ec20a24ae51"
         event:
@@ -853,7 +914,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
+    hash: "189383949cab0efb5bd5951b11df3506c6b26c20"
   task_execution_context:
     base_ref: "main"
     base_sha: "3b3ddab7b2e642329356e873a44d245796f23a67"
