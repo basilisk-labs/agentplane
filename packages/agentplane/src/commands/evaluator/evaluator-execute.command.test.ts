@@ -124,7 +124,7 @@ async function installFakeCodex(root: string): Promise<string> {
     "  const complete = () => {",
     "    process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
     "    process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
-    "    process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 30, reasoning_output_tokens: 20 } }) + '\\n');",
+    "    process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 50, reasoning_output_tokens: 20 } }) + '\\n');",
     "  };",
     "  const delayMs = Number(process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS ?? '0');",
     "  if (Number.isFinite(delayMs) && delayMs > 0) setTimeout(complete, delayMs);",

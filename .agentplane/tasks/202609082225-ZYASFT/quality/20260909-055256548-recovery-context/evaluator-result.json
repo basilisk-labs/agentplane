@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The delta from the published implementation is one Verify Steps string in scripts/lib/installed-migration-matrix.mjs. It preserves migration invariants and removes supervisor-owned command choreography from semantic input. No enforcement or test scenario was removed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/100b47cc96195231f7624d446a33b9e24ecad9d31dd04b8e807f90b330676942.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The installed-tarball smoke executes all eight migration scenarios and passes. The frozen verification record .agentplane/tasks/202609082225-ZYASFT/verification/20260909055240659-c1939d8574b9e4a5.json records successful full local CI for implementation 7a8af485e9e028cf78c6952c82b295e5be27d22e.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/100b47cc96195231f7624d446a33b9e24ecad9d31dd04b8e807f90b330676942.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The original provider accounting and Bun qualification review remains applicable; this rework does not change those source files.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/100b47cc96195231f7624d446a33b9e24ecad9d31dd04b8e807f90b330676942.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI must pass on the newly published head before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/100b47cc96195231f7624d446a33b9e24ecad9d31dd04b8e807f90b330676942.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -180,6 +180,16 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
     recovery: SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA.optional(),
     replacement_of_operation_key: SHA256_DIGEST_SCHEMA.nullable().optional(),
     status: z.enum(SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES),
+    provider_usage: z
+      .object({
+        provider: NON_EMPTY_STRING,
+        run_id: NON_EMPTY_STRING,
+        work_order_id: NON_EMPTY_STRING,
+        thread_id: NON_EMPTY_STRING.nullable(),
+        turn_id: NON_EMPTY_STRING.nullable(),
+      })
+      .strict()
+      .optional(),
     usage: z
       .object({
         input_tokens: NON_NEGATIVE_INTEGER.optional(),
@@ -754,6 +764,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   operation_key: string;
   result: unknown;
   usage?: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
+  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
   progress?: unknown;
   bounded_feedback?: unknown;
   failed?: boolean;
@@ -772,6 +783,23 @@ export function completeSupervisorExecutionEpisode(opts: {
     throw new Error("Supervisor episode completion requires the latest operation intent.");
   }
   const usageInput = opts.usage ?? {};
+  const providerUsage = opts.provider_usage;
+  if (
+    providerUsage &&
+    journal.operations.some((operation) => {
+      const previous = operation.provider_usage;
+      return (
+        previous?.provider === providerUsage.provider &&
+        (previous.run_id === providerUsage.run_id ||
+          (providerUsage.thread_id !== null &&
+            providerUsage.turn_id !== null &&
+            previous.thread_id === providerUsage.thread_id &&
+            previous.turn_id === providerUsage.turn_id))
+      );
+    })
+  ) {
+    throw new Error("Provider usage is already bound to a completed supervisor operation.");
+  }
   const tokenUsageObserved =
     isAgentOperation(last.kind) &&
     Number.isSafeInteger(usageInput.input_tokens) &&
@@ -833,6 +861,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   };
   const operation = {
     ...last,
+    ...(providerUsage ? { provider_usage: providerUsage } : {}),
     usage: Object.fromEntries(
       [
         "input_tokens",

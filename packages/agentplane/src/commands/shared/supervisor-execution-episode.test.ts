@@ -97,7 +97,7 @@ function executedLifecycle(opts: {
   metrics?: {
     duration_ms?: number;
   };
-  provider_usage?: { input_tokens: number; output_tokens: number; total_tokens: number };
+  provider_usage?: Parameters<typeof recordCodexProviderUsageForResult>[1];
   files_changed_count?: number;
 }): TaskRunnerLifecycleResult {
   const lifecycle: TaskRunnerLifecycleResult = {
@@ -628,54 +628,80 @@ describe("persisted supervisor execution episodes", () => {
     });
   });
 
-  it("projects supervisor-observed provider and execution usage into the journal", async () => {
-    const root = await mkGitRepoRoot();
-    const decision = fixtureDecision(root, 1);
-    const outcome = await supervisePersistedWorkflowEpisode({
-      decision,
-      git_root: root,
-      task_revision: 1,
-      execute: () =>
-        Promise.resolve({
-          status: "succeeded" as const,
-          observed_postconditions: ["runner_state_observed"],
-          detail: "fixture runner completed",
-          exit_code: 0,
-          operation_result: {
-            kind: "runner_lifecycle" as const,
-            value: executedLifecycle({
-              decision,
-              metrics: { duration_ms: 17 },
-              provider_usage: { input_tokens: 3, output_tokens: 5, total_tokens: 8 },
-              files_changed_count: 2,
-            }),
-          },
-        }),
-      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
-      budget: {
-        max_episodes: 2,
-        max_agent_runs: 2,
-        max_input_tokens: 10,
-        max_output_tokens: 10,
-        max_total_tokens: 20,
-        max_wall_time_ms: 1000,
-        max_changed_files: 10,
-        max_diff_lines: null,
-        max_no_progress_episodes: 2,
-      },
-    });
+  it.each(["succeeded", "failed"] as const)(
+    "projects provider usage for a %s attempt into the journal",
+    async (status) => {
+      const root = await mkGitRepoRoot();
+      const decision = fixtureDecision(root, 1);
+      const outcome = await supervisePersistedWorkflowEpisode({
+        decision,
+        git_root: root,
+        task_revision: 1,
+        execute: () =>
+          Promise.resolve({
+            status,
+            observed_postconditions: ["runner_state_observed"],
+            detail: "fixture runner completed",
+            exit_code: 0,
+            operation_result: {
+              kind: "runner_lifecycle" as const,
+              value: executedLifecycle({
+                decision,
+                metrics: { duration_ms: 17 },
+                provider_usage: {
+                  input_tokens: 3,
+                  output_tokens: 5,
+                  total_tokens: 8,
+                  visible_output_tokens: 2,
+                  reasoning_tokens: 3,
+                  cached_input_tokens: 0,
+                  prepared_context_bytes: 42,
+                  thread_id: "thread-1",
+                  turn_id: "turn-1",
+                },
+                files_changed_count: 2,
+              }),
+            },
+          }),
+        refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+        budget: {
+          max_episodes: 2,
+          max_agent_runs: 2,
+          max_input_tokens: 10,
+          max_output_tokens: 10,
+          max_total_tokens: 20,
+          max_wall_time_ms: 1000,
+          max_changed_files: 10,
+          max_diff_lines: null,
+          max_no_progress_episodes: 2,
+        },
+      });
 
-    expect(outcome.journal.usage).toMatchObject({
-      episodes: 1,
-      agent_runs: 1,
-      input_tokens: 3,
-      output_tokens: 5,
-      total_tokens: 8,
-      wall_time_ms: 17,
-      changed_files: 2,
-    });
-    expect(outcome.journal.status).toBe("running");
-  });
+      expect(outcome.journal.usage).toMatchObject({
+        episodes: 1,
+        agent_runs: 1,
+        input_tokens: 3,
+        output_tokens: 5,
+        total_tokens: 8,
+        cached_input_tokens: 0,
+        cached_input_observed_agent_runs: 1,
+        prepared_context_bytes: 42,
+        prepared_context_observed_agent_runs: 1,
+        wall_time_ms: 17,
+        changed_files: 2,
+      });
+      expect(outcome.journal.operations.at(-1)).toMatchObject({
+        status: status === "succeeded" ? "completed" : "failed",
+        provider_usage: {
+          provider: "codex",
+          run_id: "run-supervisor-episode",
+          work_order_id: "work-order-supervisor-episode",
+          thread_id: "thread-1",
+          turn_id: "turn-1",
+        },
+      });
+    },
+  );
 
   it("charges observed wall time when a runner executor throws", async () => {
     const root = await mkGitRepoRoot();
