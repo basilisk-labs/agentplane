@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -611,19 +611,79 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-09T14:19:48.747Z"
+    updated_at: "2026-09-09T14:19:56.320Z"
     work_items:
       refinement-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "refinement-recovery"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:b01a31c3ddbce11ce23e19285502602f41ec4633bae3c4fda0c476c803ea0ae3"
+            id: "recovery-regression"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609090930-N0ZTF5"
+              work_item_id: "refinement-recovery"
+            provenance:
+              - "sha256:dc3481000d306d2821fb028dc2e4489d4fc0f4976506d7e2d0aa496f66d04e53"
+              - ".agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:23e05c3a50c6b44499208ffaf05924cb3ecc3b5ad029ade2ba77ccfc73ff2fb4"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:550b4d96e0fdab9a6ea9c8332629934b4138e4cbba8b8b6da583d7a23fa80502"
+            id: "bounded-recovery-fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609090930-N0ZTF5"
+              work_item_id: "refinement-recovery"
+            provenance:
+              - "sha256:dc3481000d306d2821fb028dc2e4489d4fc0f4976506d7e2d0aa496f66d04e53"
+              - ".agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:23e05c3a50c6b44499208ffaf05924cb3ecc3b5ad029ade2ba77ccfc73ff2fb4"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:c2d9a4ad247b6ed285e797c196c76fbf2ed03ce20e5f1a5e896935ea6860ab88"
+            id: "check-evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609090930-N0ZTF5"
+              work_item_id: "refinement-recovery"
+            provenance:
+              - "sha256:dc3481000d306d2821fb028dc2e4489d4fc0f4976506d7e2d0aa496f66d04e53"
+              - ".agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:23e05c3a50c6b44499208ffaf05924cb3ecc3b5ad029ade2ba77ccfc73ff2fb4"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json"
+              check_id: "recovery-regressions"
+              command_identity: "bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+              detail: "Observed by bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-09T14:19:56.310Z"
+              repository_snapshot_digest: "sha256:23e05c3a50c6b44499208ffaf05924cb3ecc3b5ad029ade2ba77ccfc73ff2fb4"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -644,6 +704,22 @@ extensions:
         task_id: "202609090930-N0ZTF5"
         task_revision: 7
         work_item_id: null
+      -
+        at: "2026-09-09T14:19:56.320Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs: []
+        entity: "work_item"
+        id: "event_f4df554cf5f8a2bbdb6452ac"
+        mutation_id: "external-result:work-order-202609090930-N0ZTF5-executor-c43c2a4c6da96b97eb2a4cc1"
+        plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
+        task_revision: 14
+        work_item_id: "refinement-recovery"
     leases: []
     mutation_receipts:
       compatibility:sha256:3d8a9a27ffed23aaa835111449f24419dbc3c75fc696de9a64440230c0a16d4b:
@@ -884,6 +960,29 @@ extensions:
         mutation_id: "compatibility:sha256:ff9749e3a0af1c57f0c8300b5a358b6d7125674b9e7ea33b5e0e8a4ad1100676"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
+      external-result:work-order-202609090930-N0ZTF5-executor-c43c2a4c6da96b97eb2a4cc1:
+        aggregate_digest: "sha256:2868d465f4e8d03af4788192f4aa87d4444e654b6b164549bc4272d14eedeb5e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T14:19:56.320Z"
+          cause_refs: []
+          entity: "work_item"
+          from: "READY"
+          id: "event_f4df554cf5f8a2bbdb6452ac"
+          mutation_id: "external-result:work-order-202609090930-N0ZTF5-executor-c43c2a4c6da96b97eb2a4cc1"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: "refinement-recovery"
+        mutation_id: "external-result:work-order-202609090930-N0ZTF5-executor-c43c2a4c6da96b97eb2a4cc1"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
       plan-refinement:work-order-202609090930-N0ZTF5-executor-6410c621c1b60cbb286ee54e:
