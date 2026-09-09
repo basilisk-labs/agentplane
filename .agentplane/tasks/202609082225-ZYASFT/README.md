@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -30,33 +30,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-08T23:58:51.703Z"
+  updated_at: "2026-09-09T05:54:06.646Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 7 typed finding(s)."
-  evaluated_sha: "b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "7a8af485e9e028cf78c6952c82b295e5be27d22e"
   blueprint_digest: "912163f09da761cc1febac2e92d0eae427f1f1d8393d116299bdf4252a9f7939"
   evidence_refs:
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260908-235612601-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260908-235612601-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/0bb3740c9d6d5f847f0141cdeeef9c684542c6d0367ae77481928b29240d4b9d.md"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260908-235612601-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260908-235612601-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260908-235612601-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260909-055256548-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260909-055256548-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/258414eeac6ea5bedfdefffba21bf3ee3a14d35bd4b07ffe5e030a5dd6853402.md"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260909-055256548-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260909-055256548-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/20260909-055256548-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609082225-ZYASFT/README.md"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
-    - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/da7005574d5ae0d72c4770931d2f46fa9bf465f2b24bf529457aa4d52714a839.json"
-    - ".agentplane/tasks/202609082225-ZYASFT/verification/20260908235602054-cbd79f041fdf2e4b.json"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/100b47cc96195231f7624d446a33b9e24ecad9d31dd04b8e807f90b330676942.patch"
+    - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/b7ff123dd16d23dd8c321eacab5f852fb33c7e4538cdaef47de97ad05d54a6d8.json"
+    - ".agentplane/tasks/202609082225-ZYASFT/verification/20260909055240659-c1939d8574b9e4a5.json"
     - ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/fc4a7d3ddf1f4ebc3fb6ada3cd080c0e56abb0319f90cafa938ecc07b295a711.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The evaluated implementation b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f contains the 15 intended source, test, benchmark and baseline files. All 14 restored files match their reviewed SHA-256 manifest; the additional evaluator fixture has the approved one-line usage correction."
-    - "Provider output includes reasoning exactly once. Transport tests cover valid usage after semantic failure, duplicate and conflicting completion events, cache subsets and identity. Persisted journal tests cover failed attempts, role projection and replay deduplication. Missing external-agent usage remains explicit."
-    - "Bun and bunx resolve to 1.4.2. Runtime preflight tests cover mismatch rejection before CI. Compiled macOS ARM64 smoke supports removal of the identifier-minification workaround."
-    - "The 54-turn provider artifact reports raw usage and paired comparisons without claiming end-to-end engineering savings. Retained-turn reduction is 1.6737 percent; the measured two-turn sequence increases 0.7397 percent."
-    - "The frozen verification record .agentplane/tasks/202609082225-ZYASFT/verification/20260908235602054-cbd79f041fdf2e4b.json binds successful bun run ci:local:full to the actual implementation SHA. This supersedes recovery-baseline evidence for this review."
-    - "Residual risk: Do not generalize the contract microbenchmark to full engineering tasks."
-    - "Residual risk: Hosted CI, publication and integration have not been performed or authorized."
+    - "The delta from the published implementation is one Verify Steps string in scripts/lib/installed-migration-matrix.mjs. It preserves migration invariants and removes supervisor-owned command choreography from semantic input. No enforcement or test scenario was removed."
+    - "The installed-tarball smoke executes all eight migration scenarios and passes. The frozen verification record .agentplane/tasks/202609082225-ZYASFT/verification/20260909055240659-c1939d8574b9e4a5.json records successful full local CI for implementation 7a8af485e9e028cf78c6952c82b295e5be27d22e."
+    - "The original provider accounting and Bun qualification review remains applicable; this rework does not change those source files."
+    - "Residual risk: Hosted CI must pass on the newly published head before merge."
 token_usage:
   agent_runs: 6
   input_tokens: null
@@ -460,7 +457,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-09T05:52:41.977Z"
+doc_updated_at: "2026-09-09T05:54:06.655Z"
 doc_updated_by: "SUPERVISOR"
 description: "USER approved implementation of factual provider-token accounting and a reproducible before/after experiment. Reuse the supervisor journal and task usage projection. Persist cached input usage, bind telemetry to task, episode, attempt and provider session/turn identity, deduplicate replay, include failed attempts and all roles, and expose incomplete coverage without inventing values. Provide comparable fixed-model and reasoning runs from identical repository states, report task totals, time, rework and quality with separate fresh-session and acknowledged-retention scenarios. USER also approved upgrading the system Bun installation to the latest stable version. Align local qualification with the pinned Bun version, add a narrow runtime version preflight using the existing packageManager pin, and reassess the Bun identifier-minification workaround on the current pinned runtime before retaining or removing it. Preserve historical measurements, existing Node runtime boundaries, unrelated tasks and dirty work. Run focused tests, type checks, affected lint/format, compiled CLI smoke and full local CI. Do not publish, push or merge without separate approval."
 sections:
@@ -911,7 +908,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609082225-ZYASFT"
-    event_cursor: 17
+    event_cursor: 18
     final_validation: null
     id: "202609082225-ZYASFT"
     intent:
@@ -1118,9 +1115,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609082225-ZYASFT"
-    revision: 21
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-09T05:52:41.975Z"
+    updated_at: "2026-09-09T05:52:41.977Z"
     work_items:
       measured-runtime:
         attempt: 1
@@ -1394,6 +1391,30 @@ extensions:
         mutation_id: "compatibility:sha256:2b01d7ae66dff2d5414a0f053bd4a4f519b4efcb968a57af0ad5ca35b7b85a88"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609082225-ZYASFT"
+      compatibility:sha256:34709efe95f6a085d871b9310013007e030105cfa4c0868d5e29620cca3c02b7:
+        aggregate_digest: "sha256:dd0ae12270e470e7d515eabd0518509e95d039390e97bf9cfe8302cdbcfe4cf3"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T05:52:41.977Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b2d2e3efcc078551706ae7b9"
+          mutation_id: "compatibility:sha256:34709efe95f6a085d871b9310013007e030105cfa4c0868d5e29620cca3c02b7"
+          plan_digest: "sha256:f96f27b3c5b8d845b7501c44850485eaf96103cf1133b3d2fca0915ddff859c7"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609082225-ZYASFT"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:34709efe95f6a085d871b9310013007e030105cfa4c0868d5e29620cca3c02b7"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609082225-ZYASFT"
       compatibility:sha256:4c93f170260a6c878be8e787679bd374fbeb60bc05742f7daa72fca1d513d768:
