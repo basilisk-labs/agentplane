@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 7605aed51f6653edd55e43dc91cf948f8910c055..b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f",
+      "command": "git diff --check 872829ae95597c5e4e31c507c4db84c410f99bc7..7a8af485e9e028cf78c6952c82b295e5be27d22e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 7605aed51f6653edd55e43dc91cf948f8910c055..b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 872829ae95597c5e4e31c507c4db84c410f99bc7..7a8af485e9e028cf78c6952c82b295e5be27d22e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,21 +21,7 @@
         "M\t.agentplane/tasks/202609082225-ZYASFT/pr/github-body.md",
         "M\t.agentplane/tasks/202609082225-ZYASFT/pr/meta.json",
         "M\t.agentplane/tasks/202609082225-ZYASFT/pr/review.md",
-        "M\tpackages/agentplane/src/cli/local-ci-selection.test.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-        "M\tpackages/agentplane/src/commands/task/task-token-usage.test.ts",
-        "M\tpackages/agentplane/src/runner/adapters/codex-result-transport.test.ts",
-        "M\tpackages/agentplane/src/runner/adapters/codex-result-transport.ts",
-        "M\tpackages/agentplane/src/runner/adapters/codex.test.ts",
-        "M\tpackages/agentplane/tsup.config.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.ts",
-        "A\tscripts/baselines/bun-runtime-ZYASFT.json",
-        "A\tscripts/baselines/context-provider-usage-ZYASFT.json",
-        "A\tscripts/bench/measure-context-provider-usage.mjs",
-        "M\tscripts/checks/run-local-ci.mjs",
-        "A\tscripts/lib/bun-runtime.mjs"
+        "M\tscripts/lib/installed-migration-matrix.mjs"
       ]
     },
     {
@@ -45,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "7605aed51f6653edd55e43dc91cf948f8910c055",
-  "implementation_commit": "b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f",
+  "execution_base_commit": "872829ae95597c5e4e31c507c4db84c410f99bc7",
+  "implementation_commit": "7a8af485e9e028cf78c6952c82b295e5be27d22e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
