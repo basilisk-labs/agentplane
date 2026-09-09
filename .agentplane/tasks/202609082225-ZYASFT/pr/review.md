@@ -6,7 +6,7 @@ Created: 2026-09-08T22:29:07.319Z
 
 - Task: `202609082225-ZYASFT`
 - Title: Measure provider token usage and align Bun runtime qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609082225-ZYASFT/measure-provider-token-usage-and-align-bun-runti`
 - Canonical task record: `.agentplane/tasks/202609082225-ZYASFT/README.md`
 
