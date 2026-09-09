@@ -4,7 +4,7 @@ title: "Publish direct ops quality review fix from upstream main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -841,19 +841,119 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609091457-5N53HA"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-09T15:23:30.821Z"
+    updated_at: "2026-09-09T15:24:48.751Z"
     work_items:
       work-prepare-publishable-fix:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "work-prepare-publishable-fix"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:3cc7a7488820fc979d3d2cc9e9b4a9b6d382f27a300a3f3dfa793e1527715644"
+            id: "Equivalent source, schema, test, and documentation changes"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609091457-5N53HA"
+              work_item_id: "work-prepare-publishable-fix"
+            provenance:
+              - "sha256:78fce5799198244f79b441fa7984e2c330ee6a2c0ea74605f13e4c79ac0e36ce"
+              - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:75de73dbe1c3ff6f763014561a0258ccce2c8fc00c2b46484931ebbbe26dda0d"
+            id: "Passing local verification evidence"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609091457-5N53HA"
+              work_item_id: "work-prepare-publishable-fix"
+            provenance:
+              - "sha256:78fce5799198244f79b441fa7984e2c330ee6a2c0ea74605f13e4c79ac0e36ce"
+              - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:994764c7c4bf9800a95426165bd2c4a59714aa35d370022cd01659c23e71ecb0"
+            id: "Committed branch ready for supervisor publication"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609091457-5N53HA"
+              work_item_id: "work-prepare-publishable-fix"
+            provenance:
+              - "sha256:78fce5799198244f79b441fa7984e2c330ee6a2c0ea74605f13e4c79ac0e36ce"
+              - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "check-focused"
+              command_identity: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-09T15:24:48.727Z"
+              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "check-lifecycle"
+              command_identity: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-09T15:24:48.727Z"
+              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "check-typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-09T15:24:48.727Z"
+              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "check-build"
+              command_identity: "bun run build"
+              detail: "Observed by bun run build."
+              exit_code: 0
+              observed_at: "2026-09-09T15:24:48.727Z"
+              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "check-tarball"
+              command_identity: "bun run package:tarball:check"
+              detail: "Observed by bun run package:tarball:check."
+              exit_code: 0
+              observed_at: "2026-09-09T15:24:48.727Z"
+              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -907,6 +1007,23 @@ extensions:
         task_id: "202609091457-5N53HA"
         task_revision: 13
         work_item_id: null
+      -
+        at: "2026-09-09T15:24:48.751Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:407f6a4fe030140ffade9df7758585d36ce343a6fa3944b8ee38aa5cd759efdf"
+        entity: "work_item"
+        id: "event_12574ee085d942019b72cf9d"
+        mutation_id: "external-result:work-order-202609091457-5N53HA-executor-f26a8fdd9baa4ed9327e8034"
+        plan_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+        task_revision: 19
+        work_item_id: "work-prepare-publishable-fix"
     leases: []
     mutation_receipts:
       compatibility:sha256:1c42116d04b08fe34330cca1bca3dcb92148013594bae6b2683add506cac93d0:
@@ -1123,6 +1240,30 @@ extensions:
         mutation_id: "external-result:work-order-202609091457-5N53HA-executor-a7981bb82d6b985675fb76a6"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+      external-result:work-order-202609091457-5N53HA-executor-f26a8fdd9baa4ed9327e8034:
+        aggregate_digest: "sha256:ae1826beae9dbcbb5f9b77f9a8b559179db74aab3a8038df30586ed29c352597"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T15:24:48.751Z"
+          cause_refs:
+            - "semantic-result:sha256:407f6a4fe030140ffade9df7758585d36ce343a6fa3944b8ee38aa5cd759efdf"
+          entity: "work_item"
+          from: "READY"
+          id: "event_12574ee085d942019b72cf9d"
+          mutation_id: "external-result:work-order-202609091457-5N53HA-executor-f26a8fdd9baa4ed9327e8034"
+          plan_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 19
+          to: "COMPLETED"
+          work_item_id: "work-prepare-publishable-fix"
+        mutation_id: "external-result:work-order-202609091457-5N53HA-executor-f26a8fdd9baa4ed9327e8034"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609091457-5N53HA"
       plan-refinement:work-order-202609091457-5N53HA-executor-b342d44daebc7845170f43bd:
