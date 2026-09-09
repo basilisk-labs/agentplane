@@ -1,0 +1,493 @@
+diff --git a/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts b/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts
+index 481bd8dcd3..bec02fbdbe 100644
+--- a/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts
++++ b/packages/agentplane/src/commands/task/evidence-only-rework-commit.ts
+@@ -1,3 +1,16 @@
++import {
++  parseTaskReadme,
++  renderTaskReadme,
++  setMarkdownSection,
++  taskCentricAggregateFromExtensions,
++  taskCentricDigest,
++  createTaskPlanRevision,
++  parseExecutionGrant,
++  computePlanDigest,
++  type TaskPlanRevision,
++} from "@agentplaneorg/core/tasks";
++import { isRecord } from "../../shared/guards.js";
++
+ export function resolveEvidenceOnlyReworkCommit(opts: {
+   purpose: string;
+   changed_paths: readonly string[];
+@@ -40,3 +53,137 @@ export function selectRecordedImplementationRecoveryCommit(opts: {
+     ? opts.evidence_commit
+     : (opts.recorded_commit ?? opts.evidence_commit);
+ }
++
++function approvedRecoveryPlan(plan: TaskPlanRevision): boolean {
++  return (
++    plan.approval.state === "approved" &&
++    plan.approval.approved_digest === plan.digest &&
++    createTaskPlanRevision({
++      proposal: plan.proposal,
++      revision: plan.revision,
++      created_at: plan.created_at,
++    }).digest === plan.digest
++  );
++}
++
++function implementationPlanDigest(plan: TaskPlanRevision): string {
++  return taskCentricDigest(
++    plan.proposal.work_items.work_items.map(
++      ({ validation, acceptance_criteria, objective, ...item }) => {
++        void validation;
++        void acceptance_criteria;
++        void objective;
++        return item;
++      },
++    ),
++  );
++}
++
++export function approvedValidationRefinementReadmes(
++  before: string,
++  after: string,
++): readonly [string, string] | null {
++  const original = parseTaskReadme(before);
++  const next = parseTaskReadme(after);
++  const oldExtensions = original.frontmatter.extensions;
++  const newExtensions = next.frontmatter.extensions;
++  if (!isRecord(oldExtensions) || !isRecord(newExtensions)) return null;
++  const oldTask = taskCentricAggregateFromExtensions(oldExtensions);
++  const newTask = taskCentricAggregateFromExtensions(newExtensions);
++  const previous = oldTask?.current_plan;
++  const current = newTask?.current_plan;
++  if (
++    !oldTask ||
++    !newTask ||
++    !previous ||
++    !current ||
++    current.revision <= previous.revision ||
++    !approvedRecoveryPlan(previous) ||
++    !approvedRecoveryPlan(current) ||
++    !isRecord(next.frontmatter.plan_approval) ||
++    next.frontmatter.plan_approval.state !== "approved" ||
++    taskCentricDigest(oldTask.intent) !== taskCentricDigest(newTask.intent) ||
++    !newTask.plan_history?.some((entry) => taskCentricDigest(entry) === taskCentricDigest(previous))
++  )
++    return null;
++  if (implementationPlanDigest(previous) !== implementationPlanDigest(current)) return null;
++
++  const grantKey = "agentplane.execution_grant";
++  if (Object.hasOwn(oldExtensions, grantKey) || Object.hasOwn(newExtensions, grantKey)) {
++    const oldGrant = parseExecutionGrant(oldExtensions[grantKey]);
++    const newGrant = parseExecutionGrant(newExtensions[grantKey]);
++    if (
++      !oldGrant ||
++      !newGrant ||
++      oldGrant.task_id !== oldTask.id ||
++      newGrant.task_id !== oldTask.id ||
++      !isRecord(original.frontmatter.sections) ||
++      !isRecord(next.frontmatter.sections) ||
++      typeof original.frontmatter.sections.Plan !== "string" ||
++      typeof next.frontmatter.sections.Plan !== "string" ||
++      oldGrant.plan_digest !== computePlanDigest(original.frontmatter.sections.Plan) ||
++      newGrant.plan_digest !== computePlanDigest(next.frontmatter.sections.Plan) ||
++      newGrant.plan_revision <= oldGrant.plan_revision ||
++      oldGrant.scope_digest !== newGrant.scope_digest ||
++      oldGrant.repository_identity !== newGrant.repository_identity ||
++      oldGrant.completion_contract_digest !== newGrant.completion_contract_digest ||
++      taskCentricDigest(oldGrant.capabilities) !== taskCentricDigest(newGrant.capabilities)
++    )
++      return null;
++    newExtensions[grantKey] = oldExtensions[grantKey];
++  }
++  const runtimeKey = "agentplane.task_centric_runtime";
++  if (Object.hasOwn(oldExtensions, runtimeKey) || Object.hasOwn(newExtensions, runtimeKey)) {
++    const oldRuntime = oldExtensions[runtimeKey];
++    const newRuntime = newExtensions[runtimeKey];
++    if (!isRecord(oldRuntime) || !isRecord(newRuntime)) return null;
++    const { mutation_receipts: oldReceipts, events: oldEvents, ...oldState } = oldRuntime;
++    const { mutation_receipts: newReceipts, events: newEvents, ...newState } = newRuntime;
++    if (
++      !isRecord(oldReceipts) ||
++      !isRecord(newReceipts) ||
++      !Array.isArray(oldEvents) ||
++      !Array.isArray(newEvents) ||
++      taskCentricDigest(oldState) !== taskCentricDigest(newState) ||
++      taskCentricDigest(oldEvents) !== taskCentricDigest(newEvents.slice(0, oldEvents.length)) ||
++      Object.entries(oldReceipts).some(
++        ([key, receipt]) =>
++          taskCentricDigest(receipt) !== taskCentricDigest(newReceipts[key] ?? null),
++      )
++    )
++      return null;
++    const latest = Object.values(newReceipts).find(
++      (receipt) => isRecord(receipt) && receipt.next_revision === newTask.revision,
++    );
++    if (
++      !isRecord(latest) ||
++      latest.task_id !== newTask.id ||
++      latest.aggregate_digest !== taskCentricDigest(newTask)
++    )
++      return null;
++  }
++
++  // Only the current, approved validation is used. Historical claims and checks are not reused.
++  // Keep the rest of the task contract exact, including execution scope, effects and base.
++  for (const key of ["agentplane.task_centric", "agentplane.task_centric_runtime"]) {
++    if (Object.hasOwn(oldExtensions, key)) newExtensions[key] = oldExtensions[key];
++    else Reflect.deleteProperty(newExtensions, key);
++  }
++  for (const key of ["verify", "plan_approval"]) {
++    if (Object.hasOwn(original.frontmatter, key)) next.frontmatter[key] = original.frontmatter[key];
++    else Reflect.deleteProperty(next.frontmatter, key);
++  }
++  let oldBody = original.body;
++  let newBody = next.body;
++  for (const section of ["Plan", "Verify Steps"]) {
++    oldBody = setMarkdownSection(oldBody, section, "");
++    newBody = setMarkdownSection(newBody, section, "");
++    for (const fields of [original.frontmatter, next.frontmatter]) {
++      if (isRecord(fields.sections)) fields.sections[section] = "";
++    }
++  }
++  return [
++    renderTaskReadme(original.frontmatter, oldBody),
++    renderTaskReadme(next.frontmatter, newBody),
++  ];
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+index 641b0874aa..a218cac4a6 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -1,7 +1,14 @@
+ import { describe, expect, it } from "vitest";
+ import {
++  approveTaskPlan,
+   createLegacyTaskAggregate,
++  createRepositorySnapshot,
++  createTaskPlanRevision,
++  createExecutionGrant,
++  createPlanProposal,
++  executionGrantDigest,
+   renderTaskReadme,
++  type TaskPlanProposal,
+   withTaskCentricAggregate,
+ } from "@agentplaneorg/core/tasks";
+ import type { TaskData } from "../../backends/task-backend.js";
+@@ -21,6 +28,197 @@ const BASE_CONTEXT = {
+   repository_identity: "sha256:" + "c".repeat(64),
+ };
+ 
++function refinedReadmes(change = "validation") {
++  const original = task();
++  const now = "2026-09-09T00:00:00.000Z";
++  const aggregate = createLegacyTaskAggregate({
++    id: original.id,
++    revision: 1,
++    title: "Recovery",
++    description: "Recovery",
++    status: "DOING",
++    acceptance_criteria: [],
++    captured_at: now,
++    updated_at: now,
++  });
++  const validation = { schema_version: 1 as const, criteria: [], checks: [] };
++  const proposal: TaskPlanProposal = {
++    schema_version: 1,
++    task_id: original.id,
++    planning_baseline: createRepositorySnapshot({
++      git: { kind: "commit", sha: COMMIT, ref: null },
++      dirty_paths: [],
++      policy_digest: null,
++      config_digest: null,
++      context_digest: null,
++      task_history_cursor: "task-revision:1",
++      captured_at: now,
++    }),
++    work_items: {
++      schema_version: 1,
++      work_items: [
++        {
++          id: "implementation",
++          objective: "Implement the same behavior",
++          depends_on: [],
++          required_inputs: [],
++          expected_outputs: ["implementation"],
++          scope_roots: ["src"],
++          acceptance_criteria: [],
++          validation,
++          context: {
++            required_sources: ["src"],
++            optional_sources: [],
++            symbol_hints: [],
++            max_bytes: 8192,
++          },
++          risk: "medium",
++          capabilities: ["task.verify"],
++          resource_claims: [{ kind: "path", resource: "src", mode: "write" }],
++          optional: false,
++          priority: 0,
++        },
++      ],
++    },
++    assumptions: [],
++    unresolved_questions: [],
++    top_level_validation: validation,
++  };
++  const approve = (value: TaskPlanProposal, revision: number) => {
++    const plan = createTaskPlanRevision({ proposal: value, revision, created_at: now });
++    return approveTaskPlan({ plan, expected_digest: plan.digest, actor: "USER", approved_at: now });
++  };
++  const previous = approve(proposal, 1);
++  const nextProposal = structuredClone(proposal);
++  const changedItem = {
++    ...nextProposal.work_items.work_items[0]!,
++    ...(change === "scope" ? { scope_roots: ["other"] } : {}),
++    ...(change === "wording" ? { objective: "Revalidate the same behavior" } : {}),
++    ...(change === "output" ? { expected_outputs: ["other"] } : {}),
++  };
++  const current = approve(
++    {
++      ...nextProposal,
++      work_items: { schema_version: 1, work_items: [changedItem] },
++      top_level_validation: {
++        ...validation,
++        checks: [
++          {
++            id: "fresh",
++            kind: "deterministic",
++            required: true,
++            capability: "task.verify",
++            command: "bun run test:recovery",
++          },
++        ],
++      },
++    },
++    2,
++  );
++  const before = {
++    ...original,
++    sections: { Plan: "Implement behavior" },
++    plan_approval: { state: "approved" },
++    extensions: withTaskCentricAggregate(
++      { task_execution_context: BASE_CONTEXT },
++      {
++        ...aggregate,
++        current_plan: previous,
++      },
++    ),
++  };
++  const after = {
++    ...before,
++    sections: { Plan: "Run current verification" },
++    plan_approval: { state: change === "approval" ? "pending" : "approved" },
++    execution_contract:
++      change === "authority"
++        ? { ...original.execution_contract, authority: { writable_roots: ["other"] } }
++        : original.execution_contract,
++    extensions: withTaskCentricAggregate(
++      { task_execution_context: BASE_CONTEXT },
++      {
++        ...aggregate,
++        current_plan: current,
++        plan_history: change === "history" ? [] : [previous],
++      },
++    ),
++  };
++  if (change.startsWith("grant")) {
++    const grant = (plan: string, revision: number) =>
++      createExecutionGrant({
++        proposal: createPlanProposal({
++          task_id: original.id,
++          task_revision: revision,
++          plan,
++          repository_identity: "sha256:" + "c".repeat(64),
++        }),
++        actor: "USER",
++        approval_kind: "manual_operator",
++        issued_at: now,
++      });
++    before.extensions = {
++      ...before.extensions,
++      "agentplane.execution_grant": grant(before.sections.Plan, 1),
++    };
++    const currentGrant = grant(after.sections.Plan, 2);
++    const { digest, ...unsigned } = {
++      ...currentGrant,
++      ...(change === "grant-scope" ? { scope_digest: "sha256:" + "d".repeat(64) } : {}),
++      ...(change === "grant-task" ? { task_id: "other" } : {}),
++      ...(change === "grant-plan" ? { plan_digest: "sha256:" + "e".repeat(64) } : {}),
++      ...(change === "grant-capabilities" ? { capabilities: ["deploy"] } : {}),
++      ...(change === "grant-repository" ? { repository_identity: "sha256:" + "f".repeat(64) } : {}),
++      ...(change === "grant-completion"
++        ? { completion_contract_digest: "sha256:" + "f".repeat(64) }
++        : {}),
++    };
++    after.extensions = {
++      ...after.extensions,
++      "agentplane.execution_grant": {
++        ...unsigned,
++        digest:
++          change === "grant-digest"
++            ? digest.replace("sha256:", "invalid:")
++            : executionGrantDigest(unsigned),
++      },
++    };
++    if (change === "grant-missing")
++      Reflect.deleteProperty(after.extensions, "agentplane.execution_grant");
++  }
++  if (change === "commit")
++    after.extensions = { ...after.extensions, implementation_commit: { hash: "b".repeat(40) } };
++  if (change === "base")
++    after.extensions = {
++      ...after.extensions,
++      task_execution_context: { ...BASE_CONTEXT, base_sha: "b".repeat(40) },
++    };
++  if (change === "unknown") after.extensions = { ...after.extensions, unknown_authority: true };
++  if (change === "intent")
++    after.extensions = withTaskCentricAggregate(after.extensions, {
++      ...aggregate,
++      intent: { ...aggregate.intent, request: "Implement different behavior" },
++      current_plan: current,
++      plan_history: [previous],
++    });
++  if (change === "digest")
++    after.extensions = withTaskCentricAggregate(after.extensions, {
++      ...aggregate,
++      current_plan: { ...current, digest: ("sha256:" + "0".repeat(64)) as typeof current.digest },
++      plan_history: [previous],
++    });
++  if (change === "plan-approval")
++    after.extensions = withTaskCentricAggregate(after.extensions, {
++      ...aggregate,
++      current_plan: { ...current, approval: { ...current.approval, state: "pending" } },
++      plan_history: [previous],
++    });
++  return [
++    renderTaskReadme(before, "## Summary\nApproved behavior.\n"),
++    renderTaskReadme(after, "## Summary\nApproved behavior.\n"),
++  ] as const;
++}
++
+ function contextReadme(context: Record<string, unknown>) {
+   const original = task();
+   return renderTaskReadme(
+@@ -51,6 +249,36 @@ function task() {
+ }
+ 
+ describe("recorded implementation recovery contract", () => {
++  it.each([
++    "validation",
++    "scope",
++    "wording",
++    "intent",
++    "output",
++    "approval",
++    "history",
++    "authority",
++    "commit",
++    "base",
++    "unknown",
++    "digest",
++    "plan-approval",
++    "grant",
++    "grant-digest",
++    "grant-scope",
++    "grant-task",
++    "grant-plan",
++    "grant-capabilities",
++    "grant-repository",
++    "grant-completion",
++    "grant-missing",
++  ])("allows only approved validation refinement (%s)", (change) => {
++    const [before, after] = refinedReadmes(change);
++    expect(taskReadmesPreserveRecoveryContract(before, after, COMMIT, true)).toBe(
++      change === "validation" || change === "wording" || change === "grant",
++    );
++    expect(taskReadmesPreserveRecoveryContract(before, after, COMMIT)).toBe(false);
++  });
+   it.each(["valid", "missing", "changed", "prior", "gap", "task", "output", "runtime"])(
+     "replays only an intact metadata receipt chain (%s)",
+     (change) => {
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+index 4c2ab9a97c..be5222b0cb 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+@@ -41,6 +41,7 @@ import {
+   type ExternalAgentExchange,
+ } from "./external-agent-exchange.js";
+ import {
++  approvedValidationRefinementReadmes,
+   resolveEvidenceOnlyReworkCommit,
+   selectRecordedImplementationRecoveryCommit,
+ } from "./evidence-only-rework-commit.js";
+@@ -199,7 +200,10 @@ export function taskReadmesPreserveRecoveryContract(
+   before: string,
+   after: string,
+   commit: string,
++  allowApprovedValidationRefinement = false,
+ ): boolean {
++  if (allowApprovedValidationRefinement && approvedValidationRefinement(before, after, commit))
++    return true;
+   const original = parseTaskReadme(before);
+   const next = parseTaskReadme(after);
+   const previousExtensions = original.frontmatter.extensions;
+@@ -267,6 +271,11 @@ export function taskReadmesPreserveRecoveryContract(
+   );
+ }
+ 
++function approvedValidationRefinement(before: string, after: string, commit: string): boolean {
++  const readmes = approvedValidationRefinementReadmes(before, after);
++  return readmes !== null && taskReadmesPreserveRecoveryContract(...readmes, commit);
++}
++
+ async function exactChangedPaths(
+   root: string,
+   base: string,
+@@ -489,12 +498,16 @@ export async function resolveRecordedImplementationRecovery(opts: {
+     return null;
+   const committedReadme = await gitShowFile(root, commit, `${taskPrefix}README.md`);
+   if (!committedReadme) return null;
+-  const currentReadmes = await Promise.all([
++  const [headReadme, workingReadme] = await Promise.all([
+     gitShowFile(root, opts.head, `${taskPrefix}README.md`),
+     readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
+   ]);
++  const validationRefined =
++    approvedValidationRefinement(committedReadme, workingReadme, commit) &&
++    taskReadmesPreserveRecoveryContract(headReadme, workingReadme, commit, true);
+   if (
+-    currentReadmes.some(
++    !validationRefined &&
++    [headReadme, workingReadme].some(
+       (readme) =>
+         !taskReadmesPreserveRecoveryContract(
+           taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+@@ -508,7 +521,11 @@ export async function resolveRecordedImplementationRecovery(opts: {
+   const recordedPlan = taskCentricAggregateFromExtensions(
+     isRecord(frontmatter.extensions) ? frontmatter.extensions : undefined,
+   )?.current_plan;
+-  if (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision) return null;
++  if (
++    !validationRefined &&
++    (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision)
++  )
++    return null;
+ 
+   const base = evidence.execution_base_commit;
+   if (!(await gitIsAncestor(root, base, commit)) || base === commit) return null;
+@@ -567,7 +584,11 @@ export async function resolveRecordedImplementationRecovery(opts: {
+       )
+         continue;
+       // Task-level rework reports current claims. Interrupted WorkItems retain original claims.
+-      return { commit, execution_base: base, semantic: taskLevelRework ? null : original.result };
++      return {
++        commit,
++        execution_base: base,
++        semantic: taskLevelRework || validationRefined ? null : original.result,
++      };
+     }
+   }
+   return null;

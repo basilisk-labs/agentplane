@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -25,33 +25,36 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-09T13:38:29.280Z"
+  updated_at: "2026-09-09T14:22:19.753Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "189383949cab0efb5bd5951b11df3506c6b26c20"
   blueprint_digest: "3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d"
   evidence_refs:
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/dc9386e4a8142f18663ae95a85a07323f345dc25a94fc48054c3241e19d0cb86.md"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-142031273-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-142031273-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/d70d3b40b33a200289fbbeb45921716b4ca21d28352bf4edf098ec99001213f4.md"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-142031273-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-142031273-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-142031273-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609090930-N0ZTF5/README.md"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/e35f461db092ed47a54e5b3d30eb3949214f4d5a1e12a2f25780ffaddf612b88.patch"
-    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/65f31675cab6546fedc6c5c6a766f4e2895c8f8b3e9c5e5060d24ab561944591.json"
-    - ".agentplane/tasks/202609090930-N0ZTF5/verification/20260909133335796-c1f0e970fd29b183.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/41b3f7f1cdf93341e452bb366b80436335b4efbab4200db1ccf43865119ce7b3.patch"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/5e42d015bc74b56b79c8ed7d17d8c3cd3e7c844854dbdcd970765426b0583826.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/verification/20260909142018487-8116f9a8423fe062.json"
     - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/981e81e3f33478c391d5670d9964afbdbc22c4817eefc654cd1da4142c8a3d8f.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen actual diff still adds approvedRecoveryPlan, implementationPlanDigest and approvedValidationRefinement to external-agent-implementation-recovery.ts; evidence-only-rework-commit.ts is unchanged. This does not implement the current approved Plan requiring extraction into the existing helper module while retaining all gates."
-    - "The frozen verification record only runs the two focused regression files. It does not establish the mandatory bun run typecheck and bun run ci:local:full acceptance criteria. A narrow regression pass cannot establish task_outcome for the unfinished extraction."
+    - "The frozen diff 41b3f7f1... contains exactly the three approved implementation/test paths. The existing helper now owns approved-refinement normalization and does not import the recovery adapter; the adapter applies the original contract comparator to the normalized pair. No new module, behavior expansion or circular dependency was introduced."
+    - "The recovery branch preserves the original task intent, plan approval/history digests, unchanged implementation WorkItem fields, execution grant task/plan/scope/repository/capability/completion bindings, receipt history and current aggregate consistency. The final comparator retains unknown extensions and execution-boundary checks. Git ancestry, exact source scope and authenticated original exchange checks still apply after normalization; semantic=null forces current claims and validation rather than reusing prior success."
+    - "Positive and negative regressions cover validation-only refinement and changed intent, source scope, outputs, approval, grant bindings, execution base, receipt and unknown extension boundaries. The source tree checked by typecheck, scoped lint, 66 focused regressions and the full local CI is byte-identical to evaluated SHA 189383949cab0efb5bd5951b11df3506c6b26c20 (git diff --exit-code for all three paths passed). Supervisor additionally recorded the focused checks for this SHA."
+    - "Full local CI was observed to exit 0 with the documented whole-group budget of 1800000ms after an earlier 900000ms core timeout. Test selection and individual 60000ms limits were unchanged. Runtime 17, core 5464 passed/1 skipped, all 14 CLI groups, docs/schema/hotspot, docs site, workflows, platform-critical 98 and coverage 101 passed; significant coverage contract passed. The full regression requirement is not inferred from the narrower supervisor check record."
+    - "No source or concurrent-writer drift is present. Remaining untracked files are exactly the current supervisor-created evaluator packet. No installed CLI replacement or Arkady runtime mutation occurred in this implementation episode."
+    - "Residual risk: This is local patch acceptance only. Hosted integration is still required before merge; publication, installation and live Arkady continuation require their own authorized route. The frozen source base is 3b3ddab7b2 and has not been silently rebased."
 execution_route:
   frozen: true
   reason_codes:
@@ -526,7 +529,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609090930-N0ZTF5"
     intent:
@@ -665,9 +668,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-09T14:20:21.531Z"
+    updated_at: "2026-09-09T14:20:21.534Z"
     work_items:
       refinement-recovery:
         attempt: 1
@@ -776,6 +779,30 @@ extensions:
         work_item_id: "refinement-recovery"
     leases: []
     mutation_receipts:
+      compatibility:sha256:028c896f2736228fd6c492bcf954fdcb57653a96d86248de11db15dc21c949f0:
+        aggregate_digest: "sha256:3eba75b1402696a32b438826ef2e42796d9570836d1d1f2454bcdfb468342c5f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T14:20:21.534Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_acce6a186d5473c6652755a0"
+          mutation_id: "compatibility:sha256:028c896f2736228fd6c492bcf954fdcb57653a96d86248de11db15dc21c949f0"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:028c896f2736228fd6c492bcf954fdcb57653a96d86248de11db15dc21c949f0"
+        next_revision: 17
+        previous_revision: 16
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
       compatibility:sha256:3d8a9a27ffed23aaa835111449f24419dbc3c75fc696de9a64440230c0a16d4b:
         aggregate_digest: "sha256:d3e3ec224939f70eed727fda04a277b12add1d4e419e08ca5d67138206fbb977"
         event:

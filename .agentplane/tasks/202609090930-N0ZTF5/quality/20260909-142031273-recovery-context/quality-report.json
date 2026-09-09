@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202609090930-N0ZTF5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-09T14:22:19.753Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "189383949cab0efb5bd5951b11df3506c6b26c20",
+  "blueprint_digest": "3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d",
+  "findings": [
+    "The frozen diff 41b3f7f1... contains exactly the three approved implementation/test paths. The existing helper now owns approved-refinement normalization and does not import the recovery adapter; the adapter applies the original contract comparator to the normalized pair. No new module, behavior expansion or circular dependency was introduced.",
+    "The recovery branch preserves the original task intent, plan approval/history digests, unchanged implementation WorkItem fields, execution grant task/plan/scope/repository/capability/completion bindings, receipt history and current aggregate consistency. The final comparator retains unknown extensions and execution-boundary checks. Git ancestry, exact source scope and authenticated original exchange checks still apply after normalization; semantic=null forces current claims and validation rather than reusing prior success.",
+    "Positive and negative regressions cover validation-only refinement and changed intent, source scope, outputs, approval, grant bindings, execution base, receipt and unknown extension boundaries. The source tree checked by typecheck, scoped lint, 66 focused regressions and the full local CI is byte-identical to evaluated SHA 189383949cab0efb5bd5951b11df3506c6b26c20 (git diff --exit-code for all three paths passed). Supervisor additionally recorded the focused checks for this SHA.",
+    "Full local CI was observed to exit 0 with the documented whole-group budget of 1800000ms after an earlier 900000ms core timeout. Test selection and individual 60000ms limits were unchanged. Runtime 17, core 5464 passed/1 skipped, all 14 CLI groups, docs/schema/hotspot, docs site, workflows, platform-critical 98 and coverage 101 passed; significant coverage contract passed. The full regression requirement is not inferred from the narrower supervisor check record.",
+    "No source or concurrent-writer drift is present. Remaining untracked files are exactly the current supervisor-created evaluator packet. No installed CLI replacement or Arkady runtime mutation occurred in this implementation episode.",
+    "Residual risk: This is local patch acceptance only. Hosted integration is still required before merge; publication, installation and live Arkady continuation require their own authorized route. The frozen source base is 3b3ddab7b2 and has not been silently rebased."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/41b3f7f1cdf93341e452bb366b80436335b4efbab4200db1ccf43865119ce7b3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
