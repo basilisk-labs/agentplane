@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,6 +24,34 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-09T13:38:29.280Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
+  blueprint_digest: "3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d"
+  evidence_refs:
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/dc9386e4a8142f18663ae95a85a07323f345dc25a94fc48054c3241e19d0cb86.md"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/README.md"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/e35f461db092ed47a54e5b3d30eb3949214f4d5a1e12a2f25780ffaddf612b88.patch"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/65f31675cab6546fedc6c5c6a766f4e2895c8f8b3e9c5e5060d24ab561944591.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/verification/20260909133335796-c1f0e970fd29b183.json"
+    - ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/981e81e3f33478c391d5670d9964afbdbc22c4817eefc654cd1da4142c8a3d8f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The frozen actual diff still adds approvedRecoveryPlan, implementationPlanDigest and approvedValidationRefinement to external-agent-implementation-recovery.ts; evidence-only-rework-commit.ts is unchanged. This does not implement the current approved Plan requiring extraction into the existing helper module while retaining all gates."
+    - "The frozen verification record only runs the two focused regression files. It does not establish the mandatory bun run typecheck and bun run ci:local:full acceptance criteria. A narrow regression pass cannot establish task_outcome for the unfinished extraction."
 execution_route:
   frozen: true
   reason_codes:
@@ -431,7 +459,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
-    event_cursor: 7
+    event_cursor: 8
     final_validation: null
     id: "202609090930-N0ZTF5"
     intent:
@@ -570,9 +598,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
-    revision: 11
+    revision: 12
     schema_version: 1
-    updated_at: "2026-09-09T13:33:38.620Z"
+    updated_at: "2026-09-09T13:33:38.623Z"
     work_items:
       refinement-recovery:
         attempt: 0
@@ -605,6 +633,30 @@ extensions:
         work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:3d8a9a27ffed23aaa835111449f24419dbc3c75fc696de9a64440230c0a16d4b:
+        aggregate_digest: "sha256:d3e3ec224939f70eed727fda04a277b12add1d4e419e08ca5d67138206fbb977"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T13:33:38.623Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dc4192678d859b27b1cf97a3"
+          mutation_id: "compatibility:sha256:3d8a9a27ffed23aaa835111449f24419dbc3c75fc696de9a64440230c0a16d4b"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3d8a9a27ffed23aaa835111449f24419dbc3c75fc696de9a64440230c0a16d4b"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
       compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda:
         aggregate_digest: "sha256:338f6281d5e5031e8b9f3d491378fa2af948f85dd1847b1146ed6257e562635d"
         event:

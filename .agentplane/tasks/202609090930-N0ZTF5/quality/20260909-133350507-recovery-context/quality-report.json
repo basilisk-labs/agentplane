@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202609090930-N0ZTF5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-09T13:38:29.280Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "12014e6d6ba4bcaf0986467b4e95867f63c97bdf",
+  "blueprint_digest": "3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d",
+  "findings": [
+    "The frozen actual diff still adds approvedRecoveryPlan, implementationPlanDigest and approvedValidationRefinement to external-agent-implementation-recovery.ts; evidence-only-rework-commit.ts is unchanged. This does not implement the current approved Plan requiring extraction into the existing helper module while retaining all gates.",
+    "The frozen verification record only runs the two focused regression files. It does not establish the mandatory bun run typecheck and bun run ci:local:full acceptance criteria. A narrow regression pass cannot establish task_outcome for the unfinished extraction."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/e35f461db092ed47a54e5b3d30eb3949214f4d5a1e12a2f25780ffaddf612b88.patch"
+  ],
+  "missing_tests": [
+    "Run typecheck and full local CI on the completed three-file extraction and retain the focused positive/negative recovery regressions."
+  ],
+  "hidden_assumptions": [
+    "The automatically recorded task_outcome assumes the focused regression command proves the newly approved extraction and full CI requirements; the frozen diff and check record do not support that assumption."
+  ],
+  "residual_risks": [
+    "Preserve the existing draft and the approved plan. Complete only the approved helper extraction within recovery.ts, recovery.test.ts and evidence-only-rework-commit.ts, with no circular dependency. Run focused regressions, typecheck and full local CI; do not waive the size limit or change the execution base. No installed CLI, publication, Arkady Factory or live runtime mutation is authorized by this task."
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609090930-N0ZTF5-aa1b0f40803a94d5fce52dd5",
+  "prepared_at": "2026-09-09T13:33:50.507Z",
+  "task": {
+    "id": "202609090930-N0ZTF5",
+    "revision": 11,
+    "objective": "Recover committed implementation after an approved verification-only plan refinement without fabricated source changes\n\nArkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task.",
+    "acceptance_criteria": [
+      "- In scope: Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task.\n- Out of scope: unrelated refactors not required for \"Recover committed implementation after an approved verification-only plan refinement without fabricated source changes\".",
+      "Finish the existing recovery draft by extracting only its approved-refinement comparison into the existing evidence-only-rework-commit.ts helper module. Replace the unused authority.ts scope path; keep three total existing files, the same behavior and all verification gates.",
+      "1. Reproduce approved verification-only refinement recovery using an existing recorded implementation fixture. Reject source drift, scope expansion, absent approval and invalid implementation receipts.\n2. Run bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts. Expected: positive and negative recovery regressions pass.\n3. Run bun run typecheck and bun run ci:local:full before declaring the patch verified. Expected: both pass. Hosted integration remains required before merge.\n4. Audit the final diff against the three approved source/test paths. No installed CLI, Arkady Factory, runtime, credentials or unrelated task artifacts may change."
+    ]
+  },
+  "evaluated_sha": "12014e6d6ba4bcaf0986467b4e95867f63c97bdf",
+  "diff_base_sha": "3b3ddab7b2e642329356e873a44d245796f23a67",
+  "blueprint_digest": "3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609090930-N0ZTF5/quality/20260909-133350507-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:6db60402685f3567d2fb62153f33c4df3fef872ed65bd67eada53041760da2a2",
+    "prompt_path": ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/dc9386e4a8142f18663ae95a85a07323f345dc25a94fc48054c3241e19d0cb86.md",
+    "result_schema_path": ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609090930-N0ZTF5/README.md",
+      "sha256": "sha256:bc08ab19c82070199712ae8c156a0f8a807420d6302fb036b00df44dbe809fa5",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/e35f461db092ed47a54e5b3d30eb3949214f4d5a1e12a2f25780ffaddf612b88.patch",
+      "sha256": "sha256:e35f461db092ed47a54e5b3d30eb3949214f4d5a1e12a2f25780ffaddf612b88",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/65f31675cab6546fedc6c5c6a766f4e2895c8f8b3e9c5e5060d24ab561944591.json",
+      "sha256": "sha256:65f31675cab6546fedc6c5c6a766f4e2895c8f8b3e9c5e5060d24ab561944591",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609090930-N0ZTF5/verification/20260909133335796-c1f0e970fd29b183.json",
+      "sha256": "sha256:a95dd00707d2cabce861e3494063bf7c5eb94aa4feb6216369ac1cbf061a6cda",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609090930-N0ZTF5/quality/objects/sha256/981e81e3f33478c391d5670d9964afbdbc22c4817eefc654cd1da4142c8a3d8f.json",
+      "sha256": "sha256:981e81e3f33478c391d5670d9964afbdbc22c4817eefc654cd1da4142c8a3d8f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
