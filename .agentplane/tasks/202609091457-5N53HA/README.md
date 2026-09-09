@@ -4,7 +4,7 @@ title: "Publish direct ops quality review fix from upstream main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:0c80f60a5461629e6462cc0b2c58353a4e73e1363e49d089ba8dfc59a1ae85c2"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-09T15:42:41.598Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -117,16 +117,80 @@ execution_contract:
       - "schemas"
       - "scripts/release"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-6:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/spec"
+      - "schemas"
+      - "scripts"
     changed_paths:
+      - "docs/developer/blueprints.mdx"
+      - "docs/user/cli-reference.generated.mdx"
       - "docs/user/commands.mdx"
+      - "packages/agentplane/src/backends/task-backend.test.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/normalize.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/types.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-artifact-port.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator.spec.ts"
+      - "packages/agentplane/src/commands/evidence/ops-evidence-subject.ts"
+      - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/quality-review-gate.ts"
+      - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+      - "packages/core/schemas/task-readme-frontmatter.schema.json"
+      - "packages/core/schemas/tasks-export.schema.json"
+      - "packages/core/src/index.ts"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-artifact-schema.test.ts"
+      - "packages/core/src/tasks/task-artifact-schema.verification.ts"
+      - "packages/core/src/tasks/task-readme.ts"
+      - "packages/core/src/tasks/task-store.ts"
+      - "packages/spec/schemas/task-readme-frontmatter.schema.json"
+      - "packages/spec/schemas/tasks-export.schema.json"
+      - "schemas/task-readme-frontmatter.schema.json"
+      - "schemas/tasks-export.schema.json"
+      - "scripts/release/check-local-tarball-install-smoke.mjs"
     external_effects: []
     repository_effects:
       - "documentation"
+      - "public_api"
       - "repository_write"
-    verification_results: []
+      - "schema"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_public_api"
@@ -184,11 +248,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c318e4a2eb47794ffdf48127f3201647fb893a05a8d456144a66d6510f3ad661"
+      digest: "sha256:4f1da5d0066713d3c4ddd72aa48b6269c1ccf13e3cb12356ea90369f17beb252"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/index.ts"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+        - "central_path:packages/core/schemas/task-readme-frontmatter.schema.json"
+        - "central_path:packages/core/schemas/tasks-export.schema.json"
+        - "central_path:packages/core/src/index.ts"
+        - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.test.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.verification.ts"
+        - "central_path:packages/core/src/tasks/task-readme.ts"
+        - "central_path:packages/core/src/tasks/task-store.ts"
+        - "central_path:schemas/task-readme-frontmatter.schema.json"
+        - "central_path:schemas/tasks-export.schema.json"
+        - "central_path:scripts/release/check-local-tarball-install-smoke.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "external_effect_requires_real_e2e"
@@ -200,12 +276,53 @@ execution_contract:
       observed:
         changed_components:
           - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/spec"
+          - "schemas"
+          - "scripts"
         changed_files:
+          - "docs/developer/blueprints.mdx"
+          - "docs/user/cli-reference.generated.mdx"
           - "docs/user/commands.mdx"
+          - "packages/agentplane/src/backends/task-backend.test.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/normalize.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/types.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-artifact-port.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator.spec.ts"
+          - "packages/agentplane/src/commands/evidence/ops-evidence-subject.ts"
+          - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/quality-review-gate.ts"
+          - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+          - "packages/core/schemas/task-readme-frontmatter.schema.json"
+          - "packages/core/schemas/tasks-export.schema.json"
+          - "packages/core/src/index.ts"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/task-artifact-schema.test.ts"
+          - "packages/core/src/tasks/task-artifact-schema.verification.ts"
+          - "packages/core/src/tasks/task-readme.ts"
+          - "packages/core/src/tasks/task-store.ts"
+          - "packages/spec/schemas/task-readme-frontmatter.schema.json"
+          - "packages/spec/schemas/tasks-export.schema.json"
+          - "schemas/task-readme-frontmatter.schema.json"
+          - "schemas/tasks-export.schema.json"
+          - "scripts/release/check-local-tarball-install-smoke.mjs"
         external_effects: []
         repository_effects:
           - "documentation"
+          - "public_api"
           - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -244,9 +361,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "1ef8e1811069e2d51ae7f13b15e2fbabe2756935"
-  message: "🚧 5N53HA task: apply external agent result"
+      - "verification_recovery:recorded-check-6"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -292,8 +409,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 1ef8e1811069. CLI accepted one state-bound external-agent semantic result."
     commit: "1ef8e1811069e2d51ae7f13b15e2fbabe2756935"
+  -
+    type: "verify"
+    at: "2026-09-09T15:42:41.598Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-09T15:23:30.821Z"
+doc_updated_at: "2026-09-09T15:42:42.681Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recreate the already verified direct ops quality-review patch from commit 75a1b9743288ca2a60ccafd82287df37eb8922bd on a task branch based on upstream main, preserve its tests and documentation, and publish a fork-based PR to basilisk-labs/agentplane. Do not install or deploy the CLI."
 sections:
@@ -314,6 +437,66 @@ sections:
     6. Open the fork-based GitHub PR against `basilisk-labs/agentplane:main`. Expected: the hosted PR head equals the verified local task branch head.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-09T15:42:41.598Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:33a296b0de2cb60ab262cbb6eff99f60358fb63791d8e3cd48301c85fb2dfdd5, input_digest=sha256:ab4e70352e2ba246d1d32a792525191b9b0121ce626872647a4120019561d060
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run package:tarball:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /srv/projects/agentplane/.agentplane/worktrees/202609091457-5N53HA-publish-direct-ops-review-fix/.agentplane/tasks/202609091457-5N53HA/blueprint/resolved-snapshot.json
+    - old_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+    - current_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609091457-5N53HA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609091457-5N53HA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -554,7 +737,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609091457-5N53HA"
-    event_cursor: 9
+    event_cursor: 10
     final_validation: null
     id: "202609091457-5N53HA"
     intent:
@@ -841,9 +1024,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609091457-5N53HA"
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-09T15:24:48.751Z"
+    updated_at: "2026-09-09T15:42:42.676Z"
     work_items:
       work-prepare-publishable-fix:
         attempt: 1
@@ -1146,6 +1329,30 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609091457-5N53HA"
+      compatibility:sha256:6b4a2828232e07d4bae19d6572cbdf9099a277335205457eb619b36608d28e12:
+        aggregate_digest: "sha256:4a3ae88b2a0675e763e07ce94c5cf08346f7ce17dc844e6dedd19beac1bc4ced"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T15:42:42.676Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_28be61be257d23b0499753d2"
+          mutation_id: "compatibility:sha256:6b4a2828232e07d4bae19d6572cbdf9099a277335205457eb619b36608d28e12"
+          plan_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 20
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6b4a2828232e07d4bae19d6572cbdf9099a277335205457eb619b36608d28e12"
+        next_revision: 21
+        previous_revision: 20
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
       compatibility:sha256:7ac1296f27a32702de15cb37610da03e50b250f761bf53e03cd5cd14638684b0:
         aggregate_digest: "sha256:91627b4c349a30a1dbc7e9588c493b46a9658884bda9d0a2c813adb7b8c35c00"
         event:
@@ -1316,8 +1523,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "1ef8e1811069e2d51ae7f13b15e2fbabe2756935"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
@@ -1356,6 +1561,66 @@ Separated local implementation acceptance from supervisor-owned pull request pub
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-09T15:42:41.598Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:33a296b0de2cb60ab262cbb6eff99f60358fb63791d8e3cd48301c85fb2dfdd5, input_digest=sha256:ab4e70352e2ba246d1d32a792525191b9b0121ce626872647a4120019561d060
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run package:tarball:check
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /srv/projects/agentplane/.agentplane/worktrees/202609091457-5N53HA-publish-direct-ops-review-fix/.agentplane/tasks/202609091457-5N53HA/blueprint/resolved-snapshot.json
+- old_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+- current_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609091457-5N53HA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609091457-5N53HA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

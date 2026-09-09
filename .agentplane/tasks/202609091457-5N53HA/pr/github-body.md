@@ -15,14 +15,14 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-09T15:05:46.161Z
+- Updated: 2026-09-09T15:24:58.152Z
 - Branch: task/202609091457-5N53HA/publish-direct-ops-review-fix
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
