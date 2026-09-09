@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:203589408e7ee69295c36b94b34748e6ed25bcbb1cb20385727c5594d7b3de3e",
   "pr_number": 5926,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5926",
+  "pre_merge_closure": {
+    "basis_commit": "0f61937d0f80c54eee6b1b29b2e0d939dfbc1347",
+    "branch": "task/202609090930-N0ZTF5/recover-committed-implementation-after-an-approv",
+    "pr_number": 5926,
+    "recorded_at": "2026-09-09T14:22:48.721Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

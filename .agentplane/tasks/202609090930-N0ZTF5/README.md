@@ -1,10 +1,11 @@
 ---
 id: "202609090930-N0ZTF5"
 title: "Recover committed implementation after an approved verification-only plan refinement without fabricated source changes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,20 @@ quality_review:
     - "Full local CI was observed to exit 0 with the documented whole-group budget of 1800000ms after an earlier 900000ms core timeout. Test selection and individual 60000ms limits were unchanged. Runtime 17, core 5464 passed/1 skipped, all 14 CLI groups, docs/schema/hotspot, docs site, workflows, platform-critical 98 and coverage 101 passed; significant coverage contract passed. The full regression requirement is not inferred from the narrower supervisor check record."
     - "No source or concurrent-writer drift is present. Remaining untracked files are exactly the current supervisor-created evaluator packet. No installed CLI replacement or Arkady runtime mutation occurred in this implementation episode."
     - "Residual risk: This is local patch acceptance only. Hosted integration is still required before merge; publication, installation and live Arkady continuation require their own authorized route. The frozen source base is 3b3ddab7b2 and has not been silently rebased."
+token_usage:
+  agent_runs: 6
+  input_tokens: null
+  journal_digest: "sha256:76fe762499553a34bda564c60c5565f07537798c880e59db356fe73f62b692d5"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-09T14:22:48.565Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -214,8 +229,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "189383949cab0efb5bd5951b11df3506c6b26c20"
-  message: "🚧 N0ZTF5 task: apply external agent result"
+  hash: "0f61937d0f80c54eee6b1b29b2e0d939dfbc1347"
+  message: "🚧 N0ZTF5 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -226,6 +241,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 189383949cab. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -262,9 +280,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-09T14:22:48.565Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "0f61937d0f80c54eee6b1b29b2e0d939dfbc1347"
 doc_version: 3
-doc_updated_at: "2026-09-09T14:20:21.534Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-09T14:22:48.565Z"
+doc_updated_by: "CODER"
 description: "Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task."
 sections:
   Summary: |-
@@ -530,7 +556,23 @@ extensions:
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
     event_cursor: 12
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609090930-N0ZTF5"
+            - "git:189383949cab0efb5bd5951b11df3506c6b26c20"
+          check_id: "recovery-regressions"
+          command_identity: "bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-09T14:20:18.487Z"
+          repository_snapshot_digest: "sha256:caa48bcfbb2eee5a7450c9f9221c06c00717b790bd0a4c8dc05ee0de1b258d33"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609090930-N0ZTF5"
     intent:
       acceptance_criteria: []
@@ -541,7 +583,7 @@ extensions:
 
         Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task.
       task_id: "202609090930-N0ZTF5"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -668,9 +710,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-09T14:20:21.534Z"
+    updated_at: "2026-09-09T14:22:48.565Z"
     work_items:
       refinement-recovery:
         attempt: 1
@@ -1090,6 +1132,31 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
+      legacy-finish:202609090930-N0ZTF5:2026-09-09T14:20:18.487Z:189383949cab0efb5bd5951b11df3506c6b26c20:
+        aggregate_digest: "sha256:575d9ada2f3ef54e994f1f359520cc8abd3c9c6a8158a0b0fff4233104d72993"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-09T14:22:48.565Z"
+          cause_refs:
+            - "task-verification:202609090930-N0ZTF5"
+            - "git:189383949cab0efb5bd5951b11df3506c6b26c20"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3c8a4ecb7d6e0afe96d63ffb"
+          mutation_id: "legacy-finish:202609090930-N0ZTF5:2026-09-09T14:20:18.487Z:189383949cab0efb5bd5951b11df3506c6b26c20"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: "sha256:caa48bcfbb2eee5a7450c9f9221c06c00717b790bd0a4c8dc05ee0de1b258d33"
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 17
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609090930-N0ZTF5:2026-09-09T14:20:18.487Z:189383949cab0efb5bd5951b11df3506c6b26c20"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
       plan-refinement:work-order-202609090930-N0ZTF5-executor-6410c621c1b60cbb286ee54e:
         aggregate_digest: "sha256:37b6b45c199c67f6cc070fe135aaaec64739189bbe40d32a5144d94a0361f14f"
         event:
@@ -1119,6 +1186,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "189383949cab0efb5bd5951b11df3506c6b26c20"
+    message: "🚧 N0ZTF5 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3b3ddab7b2e642329356e873a44d245796f23a67"
@@ -1259,3 +1327,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:76fe762499553a34bda564c60c5565f07537798c880e59db356fe73f62b692d5`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-09T14:22:48.565Z`
