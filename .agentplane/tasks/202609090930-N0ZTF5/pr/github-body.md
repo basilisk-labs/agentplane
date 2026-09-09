@@ -27,9 +27,10 @@ Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implemen
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../commands/task/evidence-only-rework-commit.ts   | 147 +++++++++++++
  .../external-agent-implementation-recovery.test.ts | 228 +++++++++++++++++++++
- .../task/external-agent-implementation-recovery.ts | 160 ++++++++++++++-
- 2 files changed, 384 insertions(+), 4 deletions(-)
+ .../task/external-agent-implementation-recovery.ts |  29 ++-
+ 3 files changed, 400 insertions(+), 4 deletions(-)
 ```
 
 </details>
