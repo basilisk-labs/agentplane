@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -15,9 +15,9 @@ mutation_scope: "code"
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-09T11:37:17.293Z"
+  updated_at: "2026-09-09T13:32:48.872Z"
   updated_by: "HOST:local:USER"
-  note: "host_user_decision=sha256:6a810486bc85907d27c168df48eec7a5be0d06a40c6665d246233a65103758fd"
+  note: "host_user_decision=sha256:088a64d9032d7fdb2a327504750018cff8c0ab5f4c6bfbbfb99db059fa660259"
 verification:
   state: "pending"
   updated_at: null
@@ -56,7 +56,7 @@ execution_contract:
       - "release_metadata"
       - "security_boundary"
     writable_roots:
-      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
   declaration:
@@ -64,7 +64,7 @@ execution_contract:
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "A bounded local recovery regression and implementation correction; no global installation, release or runtime writes."
+      - "Only local extraction into the existing canonical recovery helper and associated regression validation; no new module, behavior or external effect."
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -73,21 +73,15 @@ execution_contract:
     reversibility: "reversible"
     schema_version: 2
     scope_roots:
-      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+      - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
-      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "source_code"
-      - "tests"
+    repository_effects: []
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -104,7 +98,7 @@ execution_contract:
     contract:
       declared:
         components:
-          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+          - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
         evidence_requirements:
@@ -122,22 +116,16 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:3737009c71db6f2c61462feda834f776ef3198c4d21b82378f46b112ded19376"
+      digest: "sha256:83e3abc34a117eecb52b94365c70f68dc5181ea64b7d9aa30e1df83ec6df82b9"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
-          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "source_code"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -195,7 +183,7 @@ events:
     note: "Implementation committed: 12014e6d6ba4. CLI accepted one state-bound external-agent semantic result."
     commit: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
 doc_version: 3
-doc_updated_at: "2026-09-09T12:00:59.198Z"
+doc_updated_at: "2026-09-09T12:03:16.416Z"
 doc_updated_by: "SUPERVISOR"
 description: "Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task."
 sections:
@@ -206,7 +194,7 @@ sections:
   Scope: |-
     - In scope: Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task.
     - Out of scope: unrelated refactors not required for "Recover committed implementation after an approved verification-only plan refinement without fabricated source changes".
-  Plan: "Reproduce and narrowly repair recovery of a previously committed implementation after an approved verification-only plan refinement. Keep source-scope and evidence checks fail-closed; rerun validation under the current approved plan."
+  Plan: "Finish the existing recovery draft by extracting only its approved-refinement comparison into the existing evidence-only-rework-commit.ts helper module. Replace the unused authority.ts scope path; keep three total existing files, the same behavior and all verification gates."
   Verify Steps: |-
     1. Reproduce approved verification-only refinement recovery using an existing recorded implementation fixture. Reject source drift, scope expansion, absent approval and invalid implementation receipts.
     2. Run bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts. Expected: positive and negative recovery regressions pass.
@@ -222,7 +210,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:local:USER"
-    approval_evidence_digest: "sha256:6a810486bc85907d27c168df48eec7a5be0d06a40c6665d246233a65103758fd"
+    approval_evidence_digest: "sha256:088a64d9032d7fdb2a327504750018cff8c0ab5f4c6bfbbfb99db059fa660259"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -232,12 +220,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:f9aa1555d06a80c5272dac7994b35a5e6a6760ba34e1a6e3c1e51b5f21e05a1d"
-    grant_id: "0e18c167-9f0a-44a7-bc75-5301b704fa7e"
-    issued_at: "2026-09-09T11:37:17.293Z"
+    digest: "sha256:d0b9c337f117526d869e2e7295fb419860ef92f1a83cbaf6f2bdb46137543e8f"
+    grant_id: "24a789b8-2f48-4501-9e40-3786d143537a"
+    issued_at: "2026-09-09T13:32:48.872Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:3e5b58ccd8d0ee5c7e02303a284c4cb594622ad9fd16de30242003aebaaa2455"
-    plan_revision: 3
+    plan_digest: "sha256:ef55171a4a280c0ec33bd0099a5afc16f5d767e9386eb1c92cb68ce3f1681537"
+    plan_revision: 9
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
@@ -246,35 +234,33 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-09T11:37:17.293Z"
+        approved_at: "2026-09-09T13:32:48.872Z"
         approved_by: "HOST:local:USER"
-        approved_digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+        approved_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-09T09:31:16.592Z"
-      digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+      created_at: "2026-09-09T12:03:16.389Z"
+      digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
       proposal:
         assumptions:
-          - "User approved diagnosing and fixing the AgentPlane blocker. This proposal does not authorize installation or publication."
-          - "Run focused regression tests, typecheck and full local CI before declaring the patch verified; retain hosted integration gate before merge. No checks are waived."
-          - "First reproduce with existing fixtures; do not weaken plan/evidence validation generally or fabricate changes in Arkady Factory."
+          - "Only the unused authority.ts writable path is replaced with evidence-only-rework-commit.ts; total three existing files. Existing draft and unrelated task data are preserved."
+          - "Extract only the new comparison/projection helpers. Recovery uses the exact prior implementation receipt and current approved validation; do not reuse prior semantic success or weaken source, approval or grant checks."
+          - "Run the same focused regression suite, typecheck and full local CI to completion on the final code. The full CI module-size limit remains mandatory. Hosted integration is still required before merge."
+          - "No global CLI installation, publication or Arkady runtime mutation. The task remains based on the recorded execution base; do not silently change its base."
         planning_baseline:
-          captured_at: "2026-09-09T09:30:06.554Z"
+          captured_at: "2026-09-09T12:01:10.415Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:6d8f9c29658f975dba696ebc6111df7b46d2e87ec1b33c970d34608f21fe96c1"
-          dirty_paths:
-            - ".agentplane/tasks/202609062320-7VFWQS/README.md"
-            - ".agentplane/tasks/202609062324-6K4B1S/README.md"
-            - ".agentplane/tasks/202609090930-N0ZTF5/README.md"
+          digest: "sha256:2ba7e7f899726c625e08b484de937b1a806a1e602f01698b0cf0e3df82ba7387"
+          dirty_paths: []
           git:
             kind: "commit"
             ref: null
-            sha: "3b3ddab7b2e642329356e873a44d245796f23a67"
+            sha: "f89350f850b92060d39cfc4eeef73eb0a94b0373"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:8"
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
         top_level_validation:
@@ -293,7 +279,7 @@ extensions:
               description: "Reproduce approved validation-only refinement recovery on a recorded implementation. Accept only unchanged implementation scope and authenticated prior implementation evidence with fresh current-plan validation. Reject source drift, expanded implementation intent, absent approval and invalid receipts. No installed CLI changes or live deployment."
               id: "safe-recovery"
               required: true
-          evidence_fingerprint: "sha256:6d8f9c29658f975dba696ebc6111df7b46d2e87ec1b33c970d34608f21fe96c1"
+          evidence_fingerprint: "sha256:2ba7e7f899726c625e08b484de937b1a806a1e602f01698b0cf0e3df82ba7387"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -311,12 +297,11 @@ extensions:
                 - "task.verify"
               context:
                 max_bytes: 160000
-                optional_sources:
-                  - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
+                optional_sources: []
                 required_sources:
                   - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
                   - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
-                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
                 symbol_hints:
                   - "resolveRecordedImplementationRecovery"
               depends_on: []
@@ -325,7 +310,7 @@ extensions:
                 - "bounded-recovery-fix"
                 - "check-evidence"
               id: "refinement-recovery"
-              objective: "Reproduce and narrowly repair recovery of a previously committed implementation after an approved verification-only plan refinement. Keep source-scope and evidence checks fail-closed; rerun validation under the current approved plan."
+              objective: "Finish the existing recovery draft by extracting only its approved-refinement comparison into the existing evidence-only-rework-commit.ts helper module. Replace the unused authority.ts scope path; keep three total existing files, the same behavior and all verification gates."
               optional: false
               priority: 0
               required_inputs: []
@@ -341,12 +326,12 @@ extensions:
                 -
                   kind: "path"
                   mode: "write"
-                  resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  resource: "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
               risk: "high"
               scope_roots:
                 - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
                 - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
-                - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
               validation:
                 checks:
                   -
@@ -363,12 +348,12 @@ extensions:
                     description: "Reproduce approved validation-only refinement recovery on a recorded implementation. Accept only unchanged implementation scope and authenticated prior implementation evidence with fresh current-plan validation. Reject source drift, expanded implementation intent, absent approval and invalid receipts. No installed CLI changes or live deployment."
                     id: "safe-recovery"
                     required: true
-                evidence_fingerprint: "sha256:6d8f9c29658f975dba696ebc6111df7b46d2e87ec1b33c970d34608f21fe96c1"
+                evidence_fingerprint: "sha256:2ba7e7f899726c625e08b484de937b1a806a1e602f01698b0cf0e3df82ba7387"
                 schema_version: 1
-      revision: 1
+      revision: 2
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609090930-N0ZTF5"
     intent:
@@ -382,10 +367,134 @@ extensions:
       task_id: "202609090930-N0ZTF5"
     lifecycle: "ACTIVE"
     plan_amendments: []
-    plan_history: []
-    revision: 7
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-09T11:37:17.293Z"
+          approved_by: "HOST:local:USER"
+          approved_digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-09T09:31:16.592Z"
+        digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+        proposal:
+          assumptions:
+            - "User approved diagnosing and fixing the AgentPlane blocker. This proposal does not authorize installation or publication."
+            - "Run focused regression tests, typecheck and full local CI before declaring the patch verified; retain hosted integration gate before merge. No checks are waived."
+            - "First reproduce with existing fixtures; do not weaken plan/evidence validation generally or fabricate changes in Arkady Factory."
+          planning_baseline:
+            captured_at: "2026-09-09T09:30:06.554Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:6d8f9c29658f975dba696ebc6111df7b46d2e87ec1b33c970d34608f21fe96c1"
+            dirty_paths:
+              - ".agentplane/tasks/202609062320-7VFWQS/README.md"
+              - ".agentplane/tasks/202609062324-6K4B1S/README.md"
+              - ".agentplane/tasks/202609090930-N0ZTF5/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "3b3ddab7b2e642329356e873a44d245796f23a67"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+                id: "recovery-regressions"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "recovery-regressions"
+                description: "Reproduce approved validation-only refinement recovery on a recorded implementation. Accept only unchanged implementation scope and authenticated prior implementation evidence with fresh current-plan validation. Reject source drift, expanded implementation intent, absent approval and invalid receipts. No installed CLI changes or live deployment."
+                id: "safe-recovery"
+                required: true
+            evidence_fingerprint: "sha256:6d8f9c29658f975dba696ebc6111df7b46d2e87ec1b33c970d34608f21fe96c1"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "recovery-regressions"
+                    description: "Reproduce approved validation-only refinement recovery on a recorded implementation. Accept only unchanged implementation scope and authenticated prior implementation evidence with fresh current-plan validation. Reject source drift, expanded implementation intent, absent approval and invalid receipts. No installed CLI changes or live deployment."
+                    id: "safe-recovery"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 160000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+                    - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                  symbol_hints:
+                    - "resolveRecordedImplementationRecovery"
+                depends_on: []
+                expected_outputs:
+                  - "recovery-regression"
+                  - "bounded-recovery-fix"
+                  - "check-evidence"
+                id: "refinement-recovery"
+                objective: "Reproduce and narrowly repair recovery of a previously committed implementation after an approved verification-only plan refinement. Keep source-scope and evidence checks fail-closed; rerun validation under the current approved plan."
+                optional: false
+                priority: 0
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                risk: "high"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts"
+                      id: "recovery-regressions"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "recovery-regressions"
+                      description: "Reproduce approved validation-only refinement recovery on a recorded implementation. Accept only unchanged implementation scope and authenticated prior implementation evidence with fresh current-plan validation. Reject source drift, expanded implementation intent, absent approval and invalid receipts. No installed CLI changes or live deployment."
+                      id: "safe-recovery"
+                      required: true
+                  evidence_fingerprint: "sha256:6d8f9c29658f975dba696ebc6111df7b46d2e87ec1b33c970d34608f21fe96c1"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
+    revision: 10
     schema_version: 1
-    updated_at: "2026-09-09T12:00:59.198Z"
+    updated_at: "2026-09-09T12:03:16.416Z"
     work_items:
       refinement-recovery:
         attempt: 0
@@ -398,7 +507,24 @@ extensions:
         validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-09T12:01:05.653Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+        entity: "task"
+        id: "event_9b8a2108e35bd2d482e999ed"
+        mutation_id: "plan-refinement:work-order-202609090930-N0ZTF5-executor-6410c621c1b60cbb286ee54e"
+        plan_digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
+        task_revision: 7
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda:
@@ -473,6 +599,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
+      compatibility:sha256:9a4113d5b648db11ae5f59d5aef60c0429a9c9bf74a13f8f2b481e703601ba09:
+        aggregate_digest: "sha256:7a7ba399dcf4ede921a791435ad3cf5c45088fad2615e78bdd257f25ab5842f2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T12:03:16.416Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_8804fc5207945da74b6b8223"
+          mutation_id: "compatibility:sha256:9a4113d5b648db11ae5f59d5aef60c0429a9c9bf74a13f8f2b481e703601ba09"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9a4113d5b648db11ae5f59d5aef60c0429a9c9bf74a13f8f2b481e703601ba09"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
       compatibility:sha256:b4b74d8c4c05c08bd7b12431f5adf459b0c6d8eaa38d71e8e66e871070243fba:
         aggregate_digest: "sha256:d3d619de0b7cd2eb2cdcb5faa5b9cf87424d2b9ce7a81974e1b5eb308c5de72b"
         event:
@@ -521,6 +671,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
+      plan-refinement:work-order-202609090930-N0ZTF5-executor-6410c621c1b60cbb286ee54e:
+        aggregate_digest: "sha256:37b6b45c199c67f6cc070fe135aaaec64739189bbe40d32a5144d94a0361f14f"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-09T12:01:05.653Z"
+          cause_refs:
+            - "scope_expanded"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9b8a2108e35bd2d482e999ed"
+          mutation_id: "plan-refinement:work-order-202609090930-N0ZTF5-executor-6410c621c1b60cbb286ee54e"
+          plan_digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 7
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609090930-N0ZTF5-executor-6410c621c1b60cbb286ee54e"
+        next_revision: 8
+        previous_revision: 7
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -550,7 +724,7 @@ Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implemen
 
 ## Plan
 
-Reproduce and narrowly repair recovery of a previously committed implementation after an approved verification-only plan refinement. Keep source-scope and evidence checks fail-closed; rerun validation under the current approved plan.
+Finish the existing recovery draft by extracting only its approved-refinement comparison into the existing evidence-only-rework-commit.ts helper module. Replace the unused authority.ts scope path; keep three total existing files, the same behavior and all verification gates.
 
 ## Verify Steps
 
