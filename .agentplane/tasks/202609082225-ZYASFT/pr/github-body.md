@@ -42,7 +42,8 @@ USER approved implementation of factual provider-token accounting and a reproduc
  scripts/bench/measure-context-provider-usage.mjs   |  421 ++
  scripts/checks/run-local-ci.mjs                    |    3 +
  scripts/lib/bun-runtime.mjs                        |   22 +
- 15 files changed, 5168 insertions(+), 103 deletions(-)
+ scripts/lib/installed-migration-matrix.mjs         |    2 +-
+ 16 files changed, 5169 insertions(+), 104 deletions(-)
 ```
 
 </details>

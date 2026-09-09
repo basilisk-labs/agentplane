@@ -283,7 +283,7 @@ function createApprovedTask(agentplane, root, workflowMode) {
       "--section",
       "Verify Steps",
       "--text",
-      "1. Run `agentplane task lint`. Expected: migrated task records retain valid lifecycle fields.\n2. Run `agentplane doctor`. Expected: the installed migration fixture reports no errors.",
+      "1. Check that migrated task records retain valid identity, owner, status, plan approval, and verification fields.\n2. Check that the installed migration fixture reports no diagnostic errors.",
       "--updated-by",
       "ORCHESTRATOR",
     ],
