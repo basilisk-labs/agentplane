@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -78,10 +78,16 @@ execution_contract:
       - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -116,16 +122,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:6cc96e462c29c7869597cbdd15b65753bc1980287ca4039414b93db3a9b402b9"
+      digest: "sha256:3737009c71db6f2c61462feda834f776ef3198c4d21b82378f46b112ded19376"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -156,11 +168,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
+  message: "🚧 N0ZTF5 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 12014e6d6ba4. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -169,9 +186,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-09T12:00:59.198Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 12014e6d6ba4. CLI accepted one state-bound external-agent semantic result."
+    commit: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
 doc_version: 3
-doc_updated_at: "2026-09-09T11:39:32.775Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-09T12:00:59.198Z"
+doc_updated_by: "SUPERVISOR"
 description: "Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task."
 sections:
   Summary: |-
@@ -343,7 +368,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609090930-N0ZTF5"
     intent:
@@ -358,9 +383,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-09T11:39:32.775Z"
+    updated_at: "2026-09-09T12:00:59.198Z"
     work_items:
       refinement-recovery:
         attempt: 0
@@ -376,6 +401,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda:
+        aggregate_digest: "sha256:338f6281d5e5031e8b9f3d491378fa2af948f85dd1847b1146ed6257e562635d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T12:00:59.198Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_cda6516143ce245bd76d10fe"
+          mutation_id: "compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda"
+          plan_digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
       compatibility:sha256:7e2c7738b7139cbc48850fc02897bf5b3a5b7b0a5584f5f4bb320250a20b1aef:
         aggregate_digest: "sha256:0fb784cf6e11bece0112d3dfe2f4cb53052c491a2e631ea3b168f72dc1e4bbe5"
         event:
@@ -448,9 +497,35 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
+      compatibility:sha256:ff9749e3a0af1c57f0c8300b5a358b6d7125674b9e7ea33b5e0e8a4ad1100676:
+        aggregate_digest: "sha256:c1602a1dde746cf46d9e4d89866155b133b55bd07d40159844a14ec20a24ae51"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T12:00:59.198Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ad18069a919e6528575572e4"
+          mutation_id: "compatibility:sha256:ff9749e3a0af1c57f0c8300b5a358b6d7125674b9e7ea33b5e0e8a4ad1100676"
+          plan_digest: "sha256:538c060a34e7156ab51d95c1e8e33747c6e3e1308c939dedce768c3d0e7b42c2"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ff9749e3a0af1c57f0c8300b5a358b6d7125674b9e7ea33b5e0e8a4ad1100676"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
   task_execution_context:
     base_ref: "main"
     base_sha: "3b3ddab7b2e642329356e873a44d245796f23a67"
