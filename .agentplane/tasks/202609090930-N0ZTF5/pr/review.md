@@ -6,7 +6,7 @@ Created: 2026-09-09T11:39:33.192Z
 
 - Task: `202609090930-N0ZTF5`
 - Title: Recover committed implementation after an approved verification-only plan refinement without fabricated source changes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609090930-N0ZTF5/recover-committed-implementation-after-an-approv`
 - Canonical task record: `.agentplane/tasks/202609090930-N0ZTF5/README.md`
 
