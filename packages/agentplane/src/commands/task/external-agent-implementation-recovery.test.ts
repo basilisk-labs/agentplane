@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  approveTaskPlan,
   createLegacyTaskAggregate,
+  createRepositorySnapshot,
+  createTaskPlanRevision,
+  createExecutionGrant,
+  createPlanProposal,
+  executionGrantDigest,
   renderTaskReadme,
+  type TaskPlanProposal,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
@@ -20,6 +27,197 @@ const BASE_CONTEXT = {
   base_sha: COMMIT,
   repository_identity: "sha256:" + "c".repeat(64),
 };
+
+function refinedReadmes(change = "validation") {
+  const original = task();
+  const now = "2026-09-09T00:00:00.000Z";
+  const aggregate = createLegacyTaskAggregate({
+    id: original.id,
+    revision: 1,
+    title: "Recovery",
+    description: "Recovery",
+    status: "DOING",
+    acceptance_criteria: [],
+    captured_at: now,
+    updated_at: now,
+  });
+  const validation = { schema_version: 1 as const, criteria: [], checks: [] };
+  const proposal: TaskPlanProposal = {
+    schema_version: 1,
+    task_id: original.id,
+    planning_baseline: createRepositorySnapshot({
+      git: { kind: "commit", sha: COMMIT, ref: null },
+      dirty_paths: [],
+      policy_digest: null,
+      config_digest: null,
+      context_digest: null,
+      task_history_cursor: "task-revision:1",
+      captured_at: now,
+    }),
+    work_items: {
+      schema_version: 1,
+      work_items: [
+        {
+          id: "implementation",
+          objective: "Implement the same behavior",
+          depends_on: [],
+          required_inputs: [],
+          expected_outputs: ["implementation"],
+          scope_roots: ["src"],
+          acceptance_criteria: [],
+          validation,
+          context: {
+            required_sources: ["src"],
+            optional_sources: [],
+            symbol_hints: [],
+            max_bytes: 8192,
+          },
+          risk: "medium",
+          capabilities: ["task.verify"],
+          resource_claims: [{ kind: "path", resource: "src", mode: "write" }],
+          optional: false,
+          priority: 0,
+        },
+      ],
+    },
+    assumptions: [],
+    unresolved_questions: [],
+    top_level_validation: validation,
+  };
+  const approve = (value: TaskPlanProposal, revision: number) => {
+    const plan = createTaskPlanRevision({ proposal: value, revision, created_at: now });
+    return approveTaskPlan({ plan, expected_digest: plan.digest, actor: "USER", approved_at: now });
+  };
+  const previous = approve(proposal, 1);
+  const nextProposal = structuredClone(proposal);
+  const changedItem = {
+    ...nextProposal.work_items.work_items[0]!,
+    ...(change === "scope" ? { scope_roots: ["other"] } : {}),
+    ...(change === "wording" ? { objective: "Revalidate the same behavior" } : {}),
+    ...(change === "output" ? { expected_outputs: ["other"] } : {}),
+  };
+  const current = approve(
+    {
+      ...nextProposal,
+      work_items: { schema_version: 1, work_items: [changedItem] },
+      top_level_validation: {
+        ...validation,
+        checks: [
+          {
+            id: "fresh",
+            kind: "deterministic",
+            required: true,
+            capability: "task.verify",
+            command: "bun run test:recovery",
+          },
+        ],
+      },
+    },
+    2,
+  );
+  const before = {
+    ...original,
+    sections: { Plan: "Implement behavior" },
+    plan_approval: { state: "approved" },
+    extensions: withTaskCentricAggregate(
+      { task_execution_context: BASE_CONTEXT },
+      {
+        ...aggregate,
+        current_plan: previous,
+      },
+    ),
+  };
+  const after = {
+    ...before,
+    sections: { Plan: "Run current verification" },
+    plan_approval: { state: change === "approval" ? "pending" : "approved" },
+    execution_contract:
+      change === "authority"
+        ? { ...original.execution_contract, authority: { writable_roots: ["other"] } }
+        : original.execution_contract,
+    extensions: withTaskCentricAggregate(
+      { task_execution_context: BASE_CONTEXT },
+      {
+        ...aggregate,
+        current_plan: current,
+        plan_history: change === "history" ? [] : [previous],
+      },
+    ),
+  };
+  if (change.startsWith("grant")) {
+    const grant = (plan: string, revision: number) =>
+      createExecutionGrant({
+        proposal: createPlanProposal({
+          task_id: original.id,
+          task_revision: revision,
+          plan,
+          repository_identity: "sha256:" + "c".repeat(64),
+        }),
+        actor: "USER",
+        approval_kind: "manual_operator",
+        issued_at: now,
+      });
+    before.extensions = {
+      ...before.extensions,
+      "agentplane.execution_grant": grant(before.sections.Plan, 1),
+    };
+    const currentGrant = grant(after.sections.Plan, 2);
+    const { digest, ...unsigned } = {
+      ...currentGrant,
+      ...(change === "grant-scope" ? { scope_digest: "sha256:" + "d".repeat(64) } : {}),
+      ...(change === "grant-task" ? { task_id: "other" } : {}),
+      ...(change === "grant-plan" ? { plan_digest: "sha256:" + "e".repeat(64) } : {}),
+      ...(change === "grant-capabilities" ? { capabilities: ["deploy"] } : {}),
+      ...(change === "grant-repository" ? { repository_identity: "sha256:" + "f".repeat(64) } : {}),
+      ...(change === "grant-completion"
+        ? { completion_contract_digest: "sha256:" + "f".repeat(64) }
+        : {}),
+    };
+    after.extensions = {
+      ...after.extensions,
+      "agentplane.execution_grant": {
+        ...unsigned,
+        digest:
+          change === "grant-digest"
+            ? digest.replace("sha256:", "invalid:")
+            : executionGrantDigest(unsigned),
+      },
+    };
+    if (change === "grant-missing")
+      Reflect.deleteProperty(after.extensions, "agentplane.execution_grant");
+  }
+  if (change === "commit")
+    after.extensions = { ...after.extensions, implementation_commit: { hash: "b".repeat(40) } };
+  if (change === "base")
+    after.extensions = {
+      ...after.extensions,
+      task_execution_context: { ...BASE_CONTEXT, base_sha: "b".repeat(40) },
+    };
+  if (change === "unknown") after.extensions = { ...after.extensions, unknown_authority: true };
+  if (change === "intent")
+    after.extensions = withTaskCentricAggregate(after.extensions, {
+      ...aggregate,
+      intent: { ...aggregate.intent, request: "Implement different behavior" },
+      current_plan: current,
+      plan_history: [previous],
+    });
+  if (change === "digest")
+    after.extensions = withTaskCentricAggregate(after.extensions, {
+      ...aggregate,
+      current_plan: { ...current, digest: ("sha256:" + "0".repeat(64)) as typeof current.digest },
+      plan_history: [previous],
+    });
+  if (change === "plan-approval")
+    after.extensions = withTaskCentricAggregate(after.extensions, {
+      ...aggregate,
+      current_plan: { ...current, approval: { ...current.approval, state: "pending" } },
+      plan_history: [previous],
+    });
+  return [
+    renderTaskReadme(before, "## Summary\nApproved behavior.\n"),
+    renderTaskReadme(after, "## Summary\nApproved behavior.\n"),
+  ] as const;
+}
 
 function contextReadme(context: Record<string, unknown>) {
   const original = task();
@@ -51,6 +249,36 @@ function task() {
 }
 
 describe("recorded implementation recovery contract", () => {
+  it.each([
+    "validation",
+    "scope",
+    "wording",
+    "intent",
+    "output",
+    "approval",
+    "history",
+    "authority",
+    "commit",
+    "base",
+    "unknown",
+    "digest",
+    "plan-approval",
+    "grant",
+    "grant-digest",
+    "grant-scope",
+    "grant-task",
+    "grant-plan",
+    "grant-capabilities",
+    "grant-repository",
+    "grant-completion",
+    "grant-missing",
+  ])("allows only approved validation refinement (%s)", (change) => {
+    const [before, after] = refinedReadmes(change);
+    expect(taskReadmesPreserveRecoveryContract(before, after, COMMIT, true)).toBe(
+      change === "validation" || change === "wording" || change === "grant",
+    );
+    expect(taskReadmesPreserveRecoveryContract(before, after, COMMIT)).toBe(false);
+  });
   it.each(["valid", "missing", "changed", "prior", "gap", "task", "output", "runtime"])(
     "replays only an intact metadata receipt chain (%s)",
     (change) => {

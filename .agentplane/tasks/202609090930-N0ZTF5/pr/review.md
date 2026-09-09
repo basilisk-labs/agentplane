@@ -1,0 +1,38 @@
+# PR Review
+
+Created: 2026-09-09T11:39:33.192Z
+
+## Task
+
+- Task: `202609090930-N0ZTF5`
+- Title: Recover committed implementation after an approved verification-only plan refinement without fabricated source changes
+- Status: DOING
+- Branch: `task/202609090930-N0ZTF5/recover-committed-implementation-after-an-approv`
+- Canonical task record: `.agentplane/tasks/202609090930-N0ZTF5/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-09T11:39:33.192Z
+- Branch: task/202609090930-N0ZTF5/recover-committed-implementation-after-an-approv
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../external-agent-implementation-recovery.test.ts | 228 +++++++++++++++++++++
+ .../task/external-agent-implementation-recovery.ts | 160 ++++++++++++++-
+ 2 files changed, 384 insertions(+), 4 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

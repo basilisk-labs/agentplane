@@ -7,6 +7,11 @@ import {
   renderTaskReadme,
   setMarkdownSection,
   taskCentricAggregateFromExtensions,
+  taskCentricDigest,
+  createTaskPlanRevision,
+  parseExecutionGrant,
+  computePlanDigest,
+  type TaskPlanRevision,
   isGitObjectId,
 } from "@agentplaneorg/core/tasks";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
@@ -199,7 +204,10 @@ export function taskReadmesPreserveRecoveryContract(
   before: string,
   after: string,
   commit: string,
+  allowApprovedValidationRefinement = false,
 ): boolean {
+  if (allowApprovedValidationRefinement && approvedValidationRefinement(before, after, commit))
+    return true;
   const original = parseTaskReadme(before);
   const next = parseTaskReadme(after);
   const previousExtensions = original.frontmatter.extensions;
@@ -264,6 +272,138 @@ export function taskReadmesPreserveRecoveryContract(
   const current = recoveryComparableReadme(after, commit, true);
   return (
     previous !== null && current !== null && taskReadmesHaveOnlyLifecycleDrift(previous, current)
+  );
+}
+
+function approvedRecoveryPlan(plan: TaskPlanRevision): boolean {
+  return (
+    plan.approval.state === "approved" &&
+    plan.approval.approved_digest === plan.digest &&
+    createTaskPlanRevision({
+      proposal: plan.proposal,
+      revision: plan.revision,
+      created_at: plan.created_at,
+    }).digest === plan.digest
+  );
+}
+
+function implementationPlanDigest(plan: TaskPlanRevision): string {
+  return taskCentricDigest(
+    plan.proposal.work_items.work_items.map(
+      ({ validation, acceptance_criteria, objective, ...item }) => {
+        void validation;
+        void acceptance_criteria;
+        void objective;
+        return item;
+      },
+    ),
+  );
+}
+
+function approvedValidationRefinement(before: string, after: string, commit: string): boolean {
+  const original = parseTaskReadme(before);
+  const next = parseTaskReadme(after);
+  const oldExtensions = original.frontmatter.extensions;
+  const newExtensions = next.frontmatter.extensions;
+  if (!isRecord(oldExtensions) || !isRecord(newExtensions)) return false;
+  const oldTask = taskCentricAggregateFromExtensions(oldExtensions);
+  const newTask = taskCentricAggregateFromExtensions(newExtensions);
+  const previous = oldTask?.current_plan;
+  const current = newTask?.current_plan;
+  if (
+    !oldTask ||
+    !newTask ||
+    !previous ||
+    !current ||
+    current.revision <= previous.revision ||
+    !approvedRecoveryPlan(previous) ||
+    !approvedRecoveryPlan(current) ||
+    !isRecord(next.frontmatter.plan_approval) ||
+    next.frontmatter.plan_approval.state !== "approved" ||
+    taskCentricDigest(oldTask.intent) !== taskCentricDigest(newTask.intent) ||
+    !newTask.plan_history?.some((entry) => taskCentricDigest(entry) === taskCentricDigest(previous))
+  )
+    return false;
+  if (implementationPlanDigest(previous) !== implementationPlanDigest(current)) return false;
+
+  const grantKey = "agentplane.execution_grant";
+  if (Object.hasOwn(oldExtensions, grantKey) || Object.hasOwn(newExtensions, grantKey)) {
+    const oldGrant = parseExecutionGrant(oldExtensions[grantKey]);
+    const newGrant = parseExecutionGrant(newExtensions[grantKey]);
+    if (
+      !oldGrant ||
+      !newGrant ||
+      oldGrant.task_id !== oldTask.id ||
+      newGrant.task_id !== oldTask.id ||
+      !isRecord(original.frontmatter.sections) ||
+      !isRecord(next.frontmatter.sections) ||
+      typeof original.frontmatter.sections.Plan !== "string" ||
+      typeof next.frontmatter.sections.Plan !== "string" ||
+      oldGrant.plan_digest !== computePlanDigest(original.frontmatter.sections.Plan) ||
+      newGrant.plan_digest !== computePlanDigest(next.frontmatter.sections.Plan) ||
+      newGrant.plan_revision <= oldGrant.plan_revision ||
+      oldGrant.scope_digest !== newGrant.scope_digest ||
+      oldGrant.repository_identity !== newGrant.repository_identity ||
+      oldGrant.completion_contract_digest !== newGrant.completion_contract_digest ||
+      taskCentricDigest(oldGrant.capabilities) !== taskCentricDigest(newGrant.capabilities)
+    )
+      return false;
+    newExtensions[grantKey] = oldExtensions[grantKey];
+  }
+  const runtimeKey = "agentplane.task_centric_runtime";
+  if (Object.hasOwn(oldExtensions, runtimeKey) || Object.hasOwn(newExtensions, runtimeKey)) {
+    const oldRuntime = oldExtensions[runtimeKey];
+    const newRuntime = newExtensions[runtimeKey];
+    if (!isRecord(oldRuntime) || !isRecord(newRuntime)) return false;
+    const { mutation_receipts: oldReceipts, events: oldEvents, ...oldState } = oldRuntime;
+    const { mutation_receipts: newReceipts, events: newEvents, ...newState } = newRuntime;
+    if (
+      !isRecord(oldReceipts) ||
+      !isRecord(newReceipts) ||
+      !Array.isArray(oldEvents) ||
+      !Array.isArray(newEvents) ||
+      taskCentricDigest(oldState) !== taskCentricDigest(newState) ||
+      taskCentricDigest(oldEvents) !== taskCentricDigest(newEvents.slice(0, oldEvents.length)) ||
+      Object.entries(oldReceipts).some(
+        ([key, receipt]) =>
+          taskCentricDigest(receipt) !== taskCentricDigest(newReceipts[key] ?? null),
+      )
+    )
+      return false;
+    const latest = Object.values(newReceipts).find(
+      (receipt) => isRecord(receipt) && receipt.next_revision === newTask.revision,
+    );
+    if (
+      !isRecord(latest) ||
+      latest.task_id !== newTask.id ||
+      latest.aggregate_digest !== taskCentricDigest(newTask)
+    )
+      return false;
+  }
+
+  // Only the current, approved validation is used. Historical claims and checks are not reused.
+  // Keep the rest of the task contract exact, including execution scope, effects and base.
+  for (const key of ["agentplane.task_centric", "agentplane.task_centric_runtime"]) {
+    if (Object.hasOwn(oldExtensions, key)) newExtensions[key] = oldExtensions[key];
+    else Reflect.deleteProperty(newExtensions, key);
+  }
+  for (const key of ["verify", "plan_approval"]) {
+    if (Object.hasOwn(original.frontmatter, key)) next.frontmatter[key] = original.frontmatter[key];
+    else Reflect.deleteProperty(next.frontmatter, key);
+  }
+  let oldBody = original.body;
+  let newBody = next.body;
+  for (const section of ["Plan", "Verify Steps"]) {
+    oldBody = setMarkdownSection(oldBody, section, "");
+    newBody = setMarkdownSection(newBody, section, "");
+    for (const fields of [original.frontmatter, next.frontmatter]) {
+      if (isRecord(fields.sections)) fields.sections[section] = "";
+    }
+  }
+  return taskReadmesPreserveRecoveryContract(
+    renderTaskReadme(original.frontmatter, oldBody),
+    renderTaskReadme(next.frontmatter, newBody),
+    commit,
   );
 }
 
@@ -489,12 +629,16 @@ export async function resolveRecordedImplementationRecovery(opts: {
     return null;
   const committedReadme = await gitShowFile(root, commit, `${taskPrefix}README.md`);
   if (!committedReadme) return null;
-  const currentReadmes = await Promise.all([
+  const [headReadme, workingReadme] = await Promise.all([
     gitShowFile(root, opts.head, `${taskPrefix}README.md`),
     readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
   ]);
+  const validationRefined =
+    approvedValidationRefinement(committedReadme, workingReadme, commit) &&
+    taskReadmesPreserveRecoveryContract(headReadme, workingReadme, commit, true);
   if (
-    currentReadmes.some(
+    !validationRefined &&
+    [headReadme, workingReadme].some(
       (readme) =>
         !taskReadmesPreserveRecoveryContract(
           taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
@@ -508,7 +652,11 @@ export async function resolveRecordedImplementationRecovery(opts: {
   const recordedPlan = taskCentricAggregateFromExtensions(
     isRecord(frontmatter.extensions) ? frontmatter.extensions : undefined,
   )?.current_plan;
-  if (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision) return null;
+  if (
+    !validationRefined &&
+    (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision)
+  )
+    return null;
 
   const base = evidence.execution_base_commit;
   if (!(await gitIsAncestor(root, base, commit)) || base === commit) return null;
@@ -567,7 +715,11 @@ export async function resolveRecordedImplementationRecovery(opts: {
       )
         continue;
       // Task-level rework reports current claims. Interrupted WorkItems retain original claims.
-      return { commit, execution_base: base, semantic: taskLevelRework ? null : original.result };
+      return {
+        commit,
+        execution_base: base,
+        semantic: taskLevelRework || validationRefined ? null : original.result,
+      };
     }
   }
   return null;
