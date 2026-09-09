@@ -3,8 +3,9 @@ import path from "node:path";
 import { CliError } from "../../shared/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { gitIsAncestor } from "@agentplaneorg/core/git";
-import type { TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
+import type { QualityReviewSubject, TaskExecutionRouteMode } from "@agentplaneorg/core/tasks";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+import { buildOpsEvidenceBundle } from "../evidence/ops-evidence-subject.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   isTaskLocalOnlyAdvance,
@@ -88,18 +89,33 @@ export async function assertQualityReviewBeforeFinish(opts: {
       ctx: opts.ctx,
       task: loaded.task,
     });
-    const expectedSha = await resolveExpectedQualitySha({
-      ctx: opts.ctx,
-      loaded,
-      taskIds,
-      baselineSha:
-        opts.implementationCommitInfo?.hash ??
-        opts.taskCommitInfo?.hash ??
-        loaded.task.commit?.hash ??
-        null,
-    });
+    const opsReview = snapshot.current.blueprintId === "ops.approval";
+    const reviewedSubject = reviewSubject(loaded.task.quality_review);
+    const expectedSubject = opsReview
+      ? await resolveOpsFinishSubject({
+          ctx: opts.ctx,
+          loaded,
+          reviewedSubject,
+          blueprintDigest: snapshot.current.digest,
+          taskCommitInfo: opts.taskCommitInfo,
+        })
+      : null;
+    const expectedSha = opsReview
+      ? expectedSubject?.kind === "git_commit"
+        ? expectedSubject.value
+        : null
+      : await resolveExpectedQualitySha({
+          ctx: opts.ctx,
+          loaded,
+          taskIds,
+          baselineSha:
+            opts.implementationCommitInfo?.hash ??
+            opts.taskCommitInfo?.hash ??
+            loaded.task.commit?.hash ??
+            null,
+        });
     const selectedChecks = requiredVerificationContractChecks(loaded.task);
-    if (selectedChecks.length > 0) {
+    if (selectedChecks.length > 0 && expectedSubject?.kind !== "evidence_bundle") {
       const accepted = await hasAcceptedVerificationRecord({
         taskRoot: path.join(
           opts.ctx.resolvedProject.gitRoot,
@@ -132,11 +148,39 @@ export async function assertQualityReviewBeforeFinish(opts: {
     }
     assertEvaluatorQualityReviewPassed({
       task: loaded.task,
-      expectedSha,
+      ...(opsReview ? { expectedSubject } : { expectedSha }),
       expectedBlueprintDigest: snapshot.previous.digest ? snapshot.current.digest : null,
       command: "finish",
     });
   }
+}
+
+function reviewSubject(
+  review: LoadedFinishTask["task"]["quality_review"],
+): QualityReviewSubject | null {
+  return (
+    review?.evaluated_subject ??
+    (review?.evaluated_sha ? { kind: "git_commit", value: review.evaluated_sha } : null)
+  );
+}
+
+async function resolveOpsFinishSubject(opts: {
+  ctx: CommandContext;
+  loaded: LoadedFinishTask;
+  reviewedSubject: QualityReviewSubject | null;
+  blueprintDigest: string;
+  taskCommitInfo: ResolvedCommitInfo | null;
+}): Promise<QualityReviewSubject | null> {
+  if (opts.reviewedSubject?.kind === "evidence_bundle") {
+    const evidence = await buildOpsEvidenceBundle({
+      ctx: opts.ctx,
+      task: opts.loaded.task,
+      blueprintDigest: opts.blueprintDigest,
+    });
+    return evidence.subject;
+  }
+  const evidenceCommit = opts.taskCommitInfo?.hash ?? opts.loaded.task.commit?.hash?.trim() ?? null;
+  return evidenceCommit ? { kind: "git_commit", value: evidenceCommit } : null;
 }
 
 async function resolveExpectedQualitySha(opts: {

@@ -196,6 +196,7 @@ describe("task-backend helpers", () => {
           updated_by: "HUMAN",
           note: "Supplied decision",
           evaluated_sha: "abcdef1",
+          evaluated_subject: { kind: "git_commit", value: "abcdef1" },
           blueprint_digest: null,
           evidence_refs: ["quality-report.json"],
           findings: ["Supplied finding"],
@@ -209,7 +210,44 @@ describe("task-backend helpers", () => {
       provenance: "human_supplied",
       updated_by: "HUMAN",
       note: "Supplied decision",
+      evaluated_subject: { kind: "git_commit", value: "abcdef1" },
       findings: ["Supplied finding"],
+    });
+  });
+
+  it("taskRecordToData preserves an evidence-bundle quality-review subject", () => {
+    const digest = `sha256:${"a".repeat(64)}`;
+    const record = {
+      id: "202601300000-OPS1",
+      frontmatter: {
+        id: "202601300000-OPS1",
+        title: "Ops task",
+        description: "Operational evidence review",
+        status: "DOING",
+        priority: "high",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["ops"],
+        verify: [],
+        quality_review: {
+          state: "pass",
+          provenance: "evaluator_supplied",
+          updated_at: "2026-01-30T00:00:00.000Z",
+          updated_by: "EVALUATOR",
+          note: "Evidence bundle review passed",
+          evaluated_sha: null,
+          evaluated_subject: { kind: "evidence_bundle", value: digest },
+          blueprint_digest: null,
+          evidence_refs: ["action-receipt.txt"],
+          findings: ["Operational evidence is complete"],
+        },
+      },
+      body: "## Summary\n\nDoc text\n",
+    } as unknown as TaskRecord;
+
+    expect(taskRecordToData(record).quality_review).toMatchObject({
+      evaluated_sha: null,
+      evaluated_subject: { kind: "evidence_bundle", value: digest },
     });
   });
 

@@ -456,8 +456,9 @@ the repository.
 ```bash
 agentplane evaluator list
 agentplane evaluator show recovery-context
-agentplane evaluator execute <task-id> --evaluator recovery-context
-agentplane evaluator run <task-id> --provenance human_supplied --verdict human_review --summary "A human decision is required." --finding "Acceptance remains ambiguous." --evidence .agentplane/tasks/<task-id>/README.md
+agentplane evaluator prepare <task-id> --evaluator recovery-context [--commit <git-rev>]
+agentplane evaluator execute <task-id> --evaluator recovery-context [--commit <git-rev>]
+agentplane evaluator run <task-id> [--commit <git-rev>] --provenance human_supplied --verdict human_review --summary "A human decision is required." --finding "Acceptance remains ambiguous." --evidence .agentplane/tasks/<task-id>/README.md
 ```
 
 Evaluators are repository-local prompt modules under `.agentplane/evaluators`. The current public
@@ -482,6 +483,22 @@ current task artifact subtree so the recorded `evaluated_sha` matches committed 
 use `--no-record` only for artifact-generation smoke checks. Pass reviews must include concrete
 findings and evidence, so `finish` and `integrate` no longer accept a bare
 `ap verify --by EVALUATOR` pass-note as sufficient quality evidence.
+
+`evaluator prepare`, `evaluator execute`, and `evaluator run` accept `--commit <git-rev>`. The
+revision must resolve to an existing commit and is normalized to its full SHA before the review is
+frozen. Code, docs, data, and release tasks still require this subject to match the current
+implementation commit.
+
+For `ops.approval`, review binding uses the first available subject in this order: an explicit
+evaluator `--commit`, a commit already registered in task metadata, or a stable SHA-256 digest of
+the frozen operational evidence bundle. That bundle contains the action receipt, rollback plan,
+passing operational checks, verification records, and verification artifacts. It deliberately
+excludes quality-review output, ACR and lifecycle status files, its own manifest, and later close
+artifacts so recording the review cannot make itself stale. In evidence-bundle mode,
+`finish --commit <git-rev>` records the evidence or closure commit; it does not invent an
+implementation commit. Changing bundled evidence after review is always rejected, including with
+`--force --yes`. Freshness errors print both subjects and the exact evaluator command needed to
+freeze the intended subject again.
 
 ## Blueprint catalogs
 

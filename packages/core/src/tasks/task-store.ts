@@ -47,12 +47,16 @@ export type VerificationResult = {
 export type QualityReviewState = "pending" | "pass" | "rework" | "blocked" | "human_review";
 export type QualityReviewProvenance = "human_supplied" | "evaluator_supplied";
 export type QualityReviewRecoveryReason = "deterministic_evidence_gap";
+export type QualityReviewSubject =
+  | { kind: "git_commit"; value: string }
+  | { kind: "evidence_bundle"; value: `sha256:${string}` };
 export type QualityReviewResult = {
   state: QualityReviewState;
   provenance?: QualityReviewProvenance;
   updated_at: string | null;
   updated_by: string | null;
   note: string | null;
+  evaluated_subject?: QualityReviewSubject;
   evaluated_sha: string | null;
   blueprint_digest: string | null;
   evidence_refs: string[];

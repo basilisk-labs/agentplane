@@ -17,6 +17,12 @@ const QUALITY_REVIEW_STATE_VALUES = [
   "human_review",
 ] as const;
 const QUALITY_REVIEW_PROVENANCE_VALUES = ["human_supplied", "evaluator_supplied"] as const;
+const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/u;
+
+const QUALITY_REVIEW_SUBJECT_SCHEMA = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("git_commit"), value: z.string().trim().min(1) }).strict(),
+  z.object({ kind: z.literal("evidence_bundle"), value: z.string().regex(SHA256_DIGEST) }).strict(),
+]);
 
 export const TASK_PLAN_APPROVAL_SCHEMA = z
   .object({
@@ -45,12 +51,24 @@ export const TASK_QUALITY_REVIEW_SCHEMA = z
     updated_at: NULLABLE_ISO_UTC_TIMESTAMP,
     updated_by: z.string().nullable(),
     note: z.string().nullable(),
+    evaluated_subject: QUALITY_REVIEW_SUBJECT_SCHEMA.optional(),
     evaluated_sha: z.string().nullable(),
     blueprint_digest: z.string().nullable(),
     evidence_refs: z.array(z.string()).default([]),
     findings: z.array(z.string()).default([]),
   })
-  .passthrough();
+  .passthrough()
+  .transform((value) => ({
+    ...value,
+    ...(value.evaluated_subject || !value.evaluated_sha
+      ? {}
+      : {
+          evaluated_subject: {
+            kind: "git_commit" as const,
+            value: value.evaluated_sha,
+          },
+        }),
+  }));
 
 export function normalizeApprovalRecord(
   value: unknown,

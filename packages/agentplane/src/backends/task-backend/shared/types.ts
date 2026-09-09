@@ -26,6 +26,7 @@ export {
   TaskRunnerTarget,
   TaskTokenUsage,
   QualityReviewResult,
+  QualityReviewSubject,
   VerificationResult,
 } from "@agentplaneorg/core/tasks";
 

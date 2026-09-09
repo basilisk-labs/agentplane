@@ -3969,6 +3969,7 @@ agentplane evaluator execute <task-id> [options]
 Options:
 
 - `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--commit <rev>`: Git commit to freeze as the reviewed subject.
 - `--replacement`: Explicitly start a new bounded evaluator operation after terminal operation_failed; never reopens the failed operation or effect_in_doubt. (default=false)
 - `--json`: Emit machine-readable episode and recorded artifact paths. (default=false)
 
@@ -4020,6 +4021,7 @@ agentplane evaluator prepare <task-id> [options]
 Options:
 
 - `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--commit <rev>`: Git commit to freeze as the reviewed subject.
 - `--json`: Emit machine-readable work-order paths. (default=false)
 
 ### evaluator run
@@ -4035,6 +4037,7 @@ agentplane evaluator run <task-id> [options]
 Options:
 
 - `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--commit <rev>`: Git commit to freeze as the reviewed subject.
 - `--verdict <pass|rework|blocked|human_review>`: Quality verdict to record. (choices=pass|rework|blocked|human_review)
 - `--provenance <human_supplied|evaluator_supplied>`: Origin of the supplied review values. This command records a result; it does not execute an evaluator. (choices=human_supplied|evaluator_supplied)
 - `--summary <text>`: Concise evaluator judgement summary.

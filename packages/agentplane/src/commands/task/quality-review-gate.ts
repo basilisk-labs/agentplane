@@ -1,4 +1,5 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
+import type { QualityReviewSubject } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -12,10 +13,18 @@ export function hasAcceptedQualityReviewProvenance(review: TaskData["quality_rev
 export function assertEvaluatorQualityReviewPassed(opts: {
   task: TaskData;
   expectedSha?: string | null;
+  expectedSubject?: QualityReviewSubject | null;
   expectedBlueprintDigest?: string | null;
   command: "finish" | "integrate";
 }): void {
   const review = opts.task.quality_review;
+  const requestedSubject =
+    opts.expectedSubject ??
+    (opts.expectedSha ? { kind: "git_commit" as const, value: opts.expectedSha } : null);
+  const reviewAgain =
+    requestedSubject?.kind === "git_commit"
+      ? `agentplane evaluator prepare ${opts.task.id} --commit ${requestedSubject.value}`
+      : `agentplane evaluator prepare ${opts.task.id}`;
   const fix =
     `agentplane evaluator run ${opts.task.id} --provenance <human_supplied|evaluator_supplied> ` +
     `--verdict <pass|rework|blocked|human_review> --summary "<supplied-summary>" ` +
@@ -50,15 +59,24 @@ export function assertEvaluatorQualityReviewPassed(opts: {
     });
   }
 
-  if (opts.expectedSha && review.evaluated_sha !== opts.expectedSha) {
+  const expectedSubject = requestedSubject;
+  const evaluatedSubject =
+    review.evaluated_subject ??
+    (review.evaluated_sha ? { kind: "git_commit" as const, value: review.evaluated_sha } : null);
+  if (
+    expectedSubject &&
+    (evaluatedSubject?.kind !== expectedSubject.kind ||
+      evaluatedSubject?.value !== expectedSubject.value)
+  ) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires a fresh EVALUATOR quality review for the current commit.`,
+        `${opts.command} requires a fresh EVALUATOR quality review for the current review subject.`,
         `task=${opts.task.id}`,
-        `quality_review.evaluated_sha=${review.evaluated_sha ?? "missing"}`,
-        `expected_sha=${opts.expectedSha}`,
+        `quality_review.evaluated_subject=${formatReviewSubject(evaluatedSubject)}`,
+        `expected_subject=${formatReviewSubject(expectedSubject)}`,
+        `Review again: ${reviewAgain}`,
         `Human record: ${fix}`,
       ].join("\n"),
     });
@@ -103,4 +121,8 @@ export function assertEvaluatorQualityReviewPassed(opts: {
       ].join("\n"),
     });
   }
+}
+
+function formatReviewSubject(subject: QualityReviewSubject | null): string {
+  return subject ? `${subject.kind}:${subject.value}` : "missing";
 }

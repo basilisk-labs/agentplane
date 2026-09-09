@@ -169,6 +169,7 @@ type EvaluatorPrepareResult = {
   work_order: string;
   prompt: string;
   evaluated_sha: string | null;
+  evaluated_subject: PreparedEvaluatorReview["work_order"]["evaluated_subject"];
   sandbox: string;
 };
 
@@ -183,6 +184,7 @@ async function prepareEvaluatorCommand(
     taskId: parsed.taskId,
     evaluatorId: parsed.evaluator,
     provenance: "evaluator_supplied",
+    commit: parsed.commit,
   });
   const { prepared } = packet;
   return {
@@ -190,6 +192,7 @@ async function prepareEvaluatorCommand(
     work_order: relativeToProject(packet.git_root, prepared.work_order_path),
     prompt: relativeToProject(packet.git_root, prepared.prompt_path),
     evaluated_sha: prepared.work_order.evaluated_sha,
+    evaluated_subject: prepared.work_order.evaluated_subject,
     sandbox: prepared.work_order.authority.sandbox,
   };
 }
@@ -308,6 +311,7 @@ export async function executeEvaluatorCommand(
     evaluator,
     task_id: parsed.taskId,
     replacement: parsed.replacement,
+    commit: parsed.commit,
     artifacts: await deps.getEvaluatorArtifactPort(ctx, "evaluator execute"),
   });
 
@@ -436,6 +440,7 @@ async function prepareEvaluatorRunArtifacts(
     taskId: parsed.taskId,
     evaluatorId: parsed.evaluator,
     provenance: parsed.provenance,
+    commit: parsed.commit,
   });
 }
 

@@ -635,10 +635,32 @@ describe("task-artifact-schema", () => {
       id_source: "generated",
     } satisfies Record<string, unknown>;
 
-    expect(() => validateTaskReadmeFrontmatter(frontmatter)).not.toThrow();
+    const validated = validateTaskReadmeFrontmatter(frontmatter);
+    expect(validated.quality_review?.evaluated_subject).toEqual({
+      kind: "git_commit",
+      value: "abcdef1",
+    });
     const legacy = structuredClone(frontmatter);
     delete (legacy.quality_review as Record<string, unknown>).provenance;
     expect(() => validateTaskReadmeFrontmatter(legacy)).not.toThrow();
+    const evidenceBound = structuredClone(frontmatter);
+    (evidenceBound.quality_review as Record<string, unknown>).evaluated_sha = null;
+    (evidenceBound.quality_review as Record<string, unknown>).evaluated_subject = {
+      kind: "evidence_bundle",
+      value: `sha256:${"a".repeat(64)}`,
+    };
+    expect(validateTaskReadmeFrontmatter(evidenceBound).quality_review?.evaluated_subject).toEqual({
+      kind: "evidence_bundle",
+      value: `sha256:${"a".repeat(64)}`,
+    });
+    const invalidEvidence = structuredClone(evidenceBound);
+    (invalidEvidence.quality_review as Record<string, unknown>).evaluated_subject = {
+      kind: "evidence_bundle",
+      value: "sha256:not-a-digest",
+    };
+    expect(() => validateTaskReadmeFrontmatter(invalidEvidence)).toThrow(
+      /quality_review\.evaluated_subject/,
+    );
     const invalid = structuredClone(frontmatter);
     (invalid.quality_review as Record<string, unknown>).provenance = "router_inferred";
     expect(() => validateTaskReadmeFrontmatter(invalid)).toThrow(/quality_review\.provenance/);
