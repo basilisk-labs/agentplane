@@ -29,7 +29,7 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
 ```text
  docs/developer/blueprints.mdx                      |   7 +
  docs/user/cli-reference.generated.mdx              |   3 +
- docs/user/commands.mdx                             |  21 +-
+ docs/user/commands.mdx                             |  24 +-
  .../agentplane/src/backends/task-backend.test.ts   |  38 +++
  .../src/backends/task-backend/shared/normalize.ts  |  15 +
  .../src/backends/task-backend/shared/types.ts      |   1 +
@@ -60,7 +60,7 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
  schemas/task-readme-frontmatter.schema.json        |  34 ++
  schemas/tasks-export.schema.json                   |  34 ++
  .../release/check-local-tarball-install-smoke.mjs  | 380 +++++++++++++++++++++
- 33 files changed, 1773 insertions(+), 40 deletions(-)
+ 33 files changed, 1776 insertions(+), 40 deletions(-)
 ```
 
 </details>

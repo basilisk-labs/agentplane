@@ -500,6 +500,9 @@ implementation commit. Changing bundled evidence after review is always rejected
 `--force --yes`. Freshness errors print both subjects and the exact evaluator command needed to
 freeze the intended subject again.
 
+To use evidence-bundle binding, omit `--commit` from the evaluator command and pass the closure
+commit only to `finish`; passing `--commit` to the evaluator intentionally selects commit binding.
+
 ## Blueprint catalogs
 
 ```bash
