@@ -3,7 +3,10 @@
   "branch": "task/202609090930-N0ZTF5/recover-committed-implementation-after-an-approv",
   "created_at": "2026-09-09T11:39:33.192Z",
   "diffstat_sha256": "sha256:ceef6f8f3913be4cea3642f045b19784847a610f921206d24aa57d4731e524ee",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-09T13:33:35.796Z",
+  "last_verified_diffstat_sha256": "sha256:ceef6f8f3913be4cea3642f045b19784847a610f921206d24aa57d4731e524ee",
+  "pr_number": 5926,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5926",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202609090930-N0ZTF5",
-  "updated_at": "2026-09-09T11:39:33.192Z",
+  "updated_at": "2026-09-09T13:33:11.401Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -12,8 +12,8 @@ Created: 2026-09-09T11:39:33.192Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-09T11:39:33.192Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-09T11:39:33.192Z
+- Updated: 2026-09-09T13:33:11.401Z
 - Branch: task/202609090930-N0ZTF5/recover-committed-implementation-after-an-approv
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

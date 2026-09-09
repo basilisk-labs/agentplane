@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609090930-N0ZTF5 Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609090930-N0ZTF5 Verification Contract check critical_paths\n\nCheck: task_outcome\nCommand: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609090930-N0ZTF5 Verification Contract check task_outcome",
+  "digest": "sha256:c1f0e970fd29b1832e1563f4433d582f0e76dbafdec0a5ac4995acb00cde3bc7",
+  "implementation_sha": "12014e6d6ba4bcaf0986467b4e95867f63c97bdf",
+  "input": {
+    "context": {
+      "digest": "sha256:6c5bf404e043b64f06d6fe8c0958e121fb33e8b689c974ad526d95c82071b672",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:c37c45c95398542785d1aac79c9eae74abe4c42049cbc6cb358a46f1ec0c2475",
+    "environment": {
+      "digest": "sha256:bd3e1dd33c56a55ada826e76effcfd88c4413ce5d9d5c11c442cb2a94959023c",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": "1",
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:a8e7d6aefa88f2950ecf81e4fa8a3400c6df6d30692c24649953b9867cf81dc6",
+      "digest": "sha256:4188ede419589768a2520b63ca2def0da0bd67bb2f8454338a75c1a702c04b02",
+      "references": [
+        {
+          "digest": "sha256:a9100af6b43027c76b3179a452605635d8dd743cf6721b582288b1ace9649ac5",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "3b3ddab7b2e642329356e873a44d245796f23a67",
+      "digest": "sha256:b391fda569297b55bcbb47148d81c7512c50ebe3a63e4d2b20c0543c7eb5b592",
+      "primary_task_id": "202609090930-N0ZTF5",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609090930-N0ZTF5"
+      ]
+    },
+    "implementation": {
+      "base_sha": "3b3ddab7b2e642329356e873a44d245796f23a67",
+      "digest": "sha256:225071259f5e55b9d2e9ba249a5337bde477f8396c741b0a33616e9cba7d8f30",
+      "strategy": "branch_diff",
+      "target_sha": "12014e6d6ba4bcaf0986467b4e95867f63c97bdf"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:ef6c3f09dcb97f4755dff6b2058f28eb7a90eb38544a2eb227ed42d5054d72dc",
+    "verify_steps_digest": "sha256:39fcd18f211a6c367e2bf885475606fb53516fe2ad84783f33a097d6e444102f"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-09-09T13:33:35.796Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Reproduce approved verification-only refinement recovery using an existing recorded implementation fixture. Reject source drift, scope expansion, absent approval and invalid implementation receipts.\n2. Run bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts. Expected: positive and negative recovery regressions pass.\n3. Run bun run typecheck and bun run ci:local:full before declaring the patch verified. Expected: both pass. Hosted integration remains required before merge.\n4. Audit the final diff against the three approved source/test paths. No installed CLI, Arkady Factory, runtime, credentials or unrelated task artifacts may change.",
+  "scope_digest": "sha256:39fcd18f211a6c367e2bf885475606fb53516fe2ad84783f33a097d6e444102f",
+  "task_id": "202609090930-N0ZTF5",
+  "verification_command": "agentplane verify 202609090930-N0ZTF5 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
