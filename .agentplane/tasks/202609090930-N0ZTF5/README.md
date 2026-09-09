@@ -4,7 +4,7 @@ title: "Recover committed implementation after an approved verification-only pla
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -20,7 +20,7 @@ plan_approval:
   note: "host_user_decision=sha256:088a64d9032d7fdb2a327504750018cff8c0ab5f4c6bfbbfb99db059fa660259"
 verification:
   state: "ok"
-  updated_at: "2026-09-09T13:33:35.796Z"
+  updated_at: "2026-09-09T14:20:18.487Z"
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
@@ -253,8 +253,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 189383949cab. CLI accepted one state-bound external-agent semantic result."
     commit: "189383949cab0efb5bd5951b11df3506c6b26c20"
+  -
+    type: "verify"
+    at: "2026-09-09T14:20:18.487Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-09T14:19:48.747Z"
+doc_updated_at: "2026-09-09T14:20:21.534Z"
 doc_updated_by: "SUPERVISOR"
 description: "Arkady Factory task 202609090806-AWQTDT on AgentPlane 0.7.8 is blocked: implementation already committed, declared validation failed on task metadata cleanliness, user approved rescheduling the same contracts after a clean checkpoint, refined plan approved, completed no-change executor result rejected with E_VALIDATION and persisted. Diagnose and narrowly fix recovery with exact implementation evidence, unchanged approved source scope, fresh checks under current approved validation plan, and negative tests for source drift and scope expansion. Do not bypass approval, weaken checks, mutate the installed CLI, publish or deploy in this task."
 sections:
@@ -281,6 +287,54 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:39fcd18f211a6c367e2bf885475606fb53516fe2ad84783f33a097d6e444102f, input_digest=sha256:c37c45c95398542785d1aac79c9eae74abe4c42049cbc6cb358a46f1ec0c2475
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609090930-N0ZTF5 Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609090930-N0ZTF5 Verification Contract check critical_paths
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609090930-N0ZTF5 Verification Contract check task_outcome
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane-cli-main/.agentplane/worktrees/202609090930-N0ZTF5-recover-committed-implementation-after-an-approv/.agentplane/tasks/202609090930-N0ZTF5/blueprint/resolved-snapshot.json
+    - old_digest: 3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d
+    - current_digest: 3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609090930-N0ZTF5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609090930-N0ZTF5
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-09T14:20:18.487Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:39fcd18f211a6c367e2bf885475606fb53516fe2ad84783f33a097d6e444102f, input_digest=sha256:71a8f97efa5e3bb2f5d3b8f8e0128a5c6b7d05a68284f836dab46cd119ddf53c
 
     Details:
 
@@ -472,7 +526,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609090930-N0ZTF5"
-    event_cursor: 10
+    event_cursor: 11
     final_validation: null
     id: "202609090930-N0ZTF5"
     intent:
@@ -611,9 +665,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-09T14:19:56.320Z"
+    updated_at: "2026-09-09T14:20:21.531Z"
     work_items:
       refinement-recovery:
         attempt: 1
@@ -768,6 +822,30 @@ extensions:
         mutation_id: "compatibility:sha256:3dda4170d6a5014fd5a9301e832168e908ffcfc72e00f481c45e4c0d8d61240d"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609090930-N0ZTF5"
+      compatibility:sha256:4659d1badb7104f664fd117da85486cc79f8e6d2fecbe3261f61aa66996ab6bc:
+        aggregate_digest: "sha256:c8155c3e6805ec64537346fde5cb4283a1712c145cf107a6f3d5f6826ec77e65"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T14:20:21.531Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9d32f625930cd6d2808911e6"
+          mutation_id: "compatibility:sha256:4659d1badb7104f664fd117da85486cc79f8e6d2fecbe3261f61aa66996ab6bc"
+          plan_digest: "sha256:bab169b5c5a41f611e0ed7d0412606ef9901408fd06f45c82f97f6cbd66b5249"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609090930-N0ZTF5"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4659d1badb7104f664fd117da85486cc79f8e6d2fecbe3261f61aa66996ab6bc"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609090930-N0ZTF5"
       compatibility:sha256:7cb71b363872947364dfa23dc794caef57a727c1cd862cfe292672533395ffda:
@@ -1058,6 +1136,54 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:39fcd18f211a6c367e2bf885475606fb53516fe2ad84783f33a097d6e444102f, input_digest=sha256:c37c45c95398542785d1aac79c9eae74abe4c42049cbc6cb358a46f1ec0c2475
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609090930-N0ZTF5 Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609090930-N0ZTF5 Verification Contract check critical_paths
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609090930-N0ZTF5/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609090930-N0ZTF5 Verification Contract check task_outcome
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane-cli-main/.agentplane/worktrees/202609090930-N0ZTF5-recover-committed-implementation-after-an-approv/.agentplane/tasks/202609090930-N0ZTF5/blueprint/resolved-snapshot.json
+- old_digest: 3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d
+- current_digest: 3d10862ad8ccb9c0ac1033f5e6524898d97ba26c45242bfc534f3e56b152945d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609090930-N0ZTF5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609090930-N0ZTF5
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-09T14:20:18.487Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:39fcd18f211a6c367e2bf885475606fb53516fe2ad84783f33a097d6e444102f, input_digest=sha256:71a8f97efa5e3bb2f5d3b8f8e0128a5c6b7d05a68284f836dab46cd119ddf53c
 
 Details:
 
