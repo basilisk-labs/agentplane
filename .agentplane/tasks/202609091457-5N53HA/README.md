@@ -4,7 +4,7 @@ title: "Publish direct ops quality review fix from upstream main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -118,10 +118,55 @@ execution_contract:
       - "scripts/release"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/spec"
+      - "schemas"
+      - "scripts"
+    changed_paths:
+      - "docs/developer/blueprints.mdx"
+      - "docs/user/cli-reference.generated.mdx"
+      - "docs/user/commands.mdx"
+      - "packages/agentplane/src/backends/task-backend.test.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/normalize.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/types.ts"
+      - "packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-artifact-port.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator.spec.ts"
+      - "packages/agentplane/src/commands/evidence/ops-evidence-subject.ts"
+      - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+      - "packages/agentplane/src/commands/task/quality-review-gate.ts"
+      - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+      - "packages/core/schemas/task-readme-frontmatter.schema.json"
+      - "packages/core/schemas/tasks-export.schema.json"
+      - "packages/core/src/index.ts"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/task-artifact-schema.test.ts"
+      - "packages/core/src/tasks/task-artifact-schema.verification.ts"
+      - "packages/core/src/tasks/task-readme.ts"
+      - "packages/core/src/tasks/task-store.ts"
+      - "packages/spec/schemas/task-readme-frontmatter.schema.json"
+      - "packages/spec/schemas/tasks-export.schema.json"
+      - "schemas/task-readme-frontmatter.schema.json"
+      - "schemas/tasks-export.schema.json"
+      - "scripts/release/check-local-tarball-install-smoke.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "documentation"
+      - "public_api"
+      - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -180,11 +225,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:6cb40ae1da254c7370f2a518323dc65f04cbe8bcafbb4a516bdd8482f1ae2e72"
+      digest: "sha256:4f1da5d0066713d3c4ddd72aa48b6269c1ccf13e3cb12356ea90369f17beb252"
       escalation_reasons:
         - "central_component:packages/core/schemas"
         - "central_component:packages/core/src/index.ts"
         - "central_component:packages/core/src/tasks"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+        - "central_path:packages/core/schemas/task-readme-frontmatter.schema.json"
+        - "central_path:packages/core/schemas/tasks-export.schema.json"
+        - "central_path:packages/core/src/index.ts"
+        - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.test.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.verification.ts"
+        - "central_path:packages/core/src/tasks/task-readme.ts"
+        - "central_path:packages/core/src/tasks/task-store.ts"
+        - "central_path:schemas/task-readme-frontmatter.schema.json"
+        - "central_path:schemas/tasks-export.schema.json"
+        - "central_path:scripts/release/check-local-tarball-install-smoke.mjs"
         - "effect_public_api"
         - "effect_schema"
         - "external_effect_requires_real_e2e"
@@ -194,10 +251,55 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/spec"
+          - "schemas"
+          - "scripts"
+        changed_files:
+          - "docs/developer/blueprints.mdx"
+          - "docs/user/cli-reference.generated.mdx"
+          - "docs/user/commands.mdx"
+          - "packages/agentplane/src/backends/task-backend.test.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/normalize.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/types.ts"
+          - "packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-artifact-port.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-work-order.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator.spec.ts"
+          - "packages/agentplane/src/commands/evidence/ops-evidence-subject.ts"
+          - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+          - "packages/agentplane/src/commands/task/quality-review-gate.ts"
+          - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
+          - "packages/core/schemas/task-readme-frontmatter.schema.json"
+          - "packages/core/schemas/tasks-export.schema.json"
+          - "packages/core/src/index.ts"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/task-artifact-schema.test.ts"
+          - "packages/core/src/tasks/task-artifact-schema.verification.ts"
+          - "packages/core/src/tasks/task-readme.ts"
+          - "packages/core/src/tasks/task-store.ts"
+          - "packages/spec/schemas/task-readme-frontmatter.schema.json"
+          - "packages/spec/schemas/tasks-export.schema.json"
+          - "schemas/task-readme-frontmatter.schema.json"
+          - "schemas/tasks-export.schema.json"
+          - "scripts/release/check-local-tarball-install-smoke.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "public_api"
+          - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -236,11 +338,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "be02f2a45a75a7778f45efb610e7f3caf41f9bcf"
+  message: "🚧 5N53HA task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: be02f2a45a75. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -249,9 +356,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-09T15:11:30.253Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: be02f2a45a75. CLI accepted one state-bound external-agent semantic result."
+    commit: "be02f2a45a75a7778f45efb610e7f3caf41f9bcf"
 doc_version: 3
-doc_updated_at: "2026-09-09T15:05:46.009Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-09T15:11:30.253Z"
+doc_updated_by: "SUPERVISOR"
 description: "Recreate the already verified direct ops quality-review patch from commit 75a1b9743288ca2a60ccafd82287df37eb8922bd on a task branch based on upstream main, preserve its tests and documentation, and publish a fork-based PR to basilisk-labs/agentplane. Do not install or deploy the CLI."
 sections:
   Summary: |-
@@ -549,7 +664,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609091457-5N53HA"
-    event_cursor: 2
+    event_cursor: 4
     final_validation: null
     id: "202609091457-5N53HA"
     intent:
@@ -589,9 +704,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-09T15:05:46.009Z"
+    updated_at: "2026-09-09T15:11:30.253Z"
     work_items:
       work-publish-fix:
         attempt: 0
@@ -631,6 +746,54 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609091457-5N53HA"
+      compatibility:sha256:275152d048fe0681086f3c02db48dd87502102d5b48fee85248b6aa1c1d0c4d1:
+        aggregate_digest: "sha256:066ca09d2830e205ff6c8cdd55a565b6bd4b1781e01d93aeecb33b773f2f0a69"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T15:11:30.253Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_bc3d51bb04fddb7750bf561a"
+          mutation_id: "compatibility:sha256:275152d048fe0681086f3c02db48dd87502102d5b48fee85248b6aa1c1d0c4d1"
+          plan_digest: "sha256:dc323e5acaad56c752e75d0bbe4e738f8ee172bbc5f1e069aba3d34ca2f3244f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:275152d048fe0681086f3c02db48dd87502102d5b48fee85248b6aa1c1d0c4d1"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+      compatibility:sha256:287e435193352f71c4bad12fd65ad1eb9764fb49ef43264c6acaf684d40d7b01:
+        aggregate_digest: "sha256:11d0f5659507a3e040c3e443db656c880440fe3add4c5fe487575f6ce4a60cc5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-09T15:11:30.253Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4dbda6973c822cd069fe4f7a"
+          mutation_id: "compatibility:sha256:287e435193352f71c4bad12fd65ad1eb9764fb49ef43264c6acaf684d40d7b01"
+          plan_digest: "sha256:dc323e5acaad56c752e75d0bbe4e738f8ee172bbc5f1e069aba3d34ca2f3244f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:287e435193352f71c4bad12fd65ad1eb9764fb49ef43264c6acaf684d40d7b01"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
       compatibility:sha256:4652298b9dd076b2c6c84f0798f02dd39739152dbdb171b3f013b6ee19a537a0:
         aggregate_digest: "sha256:3ca9271a32dd0b764581d1d15dab20b52bc012d4ef0cf31200b0e9b1cb91612c"
         event:
@@ -658,6 +821,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "be02f2a45a75a7778f45efb610e7f3caf41f9bcf"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
