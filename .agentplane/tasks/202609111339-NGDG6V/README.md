@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:f1720d797d2c03f2b29a4ffd1ed1f8dfc321006744f813868c0dd2bc131b7d26"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-11T15:36:23.030Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -185,9 +185,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "0bafc17cba6d0e84c0d3507d078ee74ad8bc7652"
-  message: "🚧 NGDG6V task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -660,19 +658,83 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-11T16:14:29.716Z"
+    updated_at: "2026-09-11T16:29:12.582Z"
     work_items:
       pinned-runtime-verification-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "pinned-runtime-verification-recovery"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "direct-rework-route"
+            - "pinned-runtime"
+          code: "validation_failed"
+          kind: "validation"
+          message: "The direct rework route and its fresh TESTER transition regression pass under the task-local Bun 1.4.2 runtime."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:e6a04caeb2e13c5e2df4922ee513147a99e7dad1b0f40cbc5a2facc4ce198474"
+            id: "Verified direct rework routing at the committed implementation SHA."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609111339-NGDG6V"
+              work_item_id: "pinned-runtime-verification-recovery"
+            provenance:
+              - "sha256:b8e10c866d5eaf9950525d976a27db68f51be5f6c02bffef1e10d68c4f469fda"
+              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:ba072495f6444247c908230a5937501001093d01a15f868d4791c24bc945a8bd"
+            id: "Full local CI evidence produced by Bun 1.4.2."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609111339-NGDG6V"
+              work_item_id: "pinned-runtime-verification-recovery"
+            provenance:
+              - "sha256:b8e10c866d5eaf9950525d976a27db68f51be5f6c02bffef1e10d68c4f469fda"
+              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+              check_id: "focused-regression"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-11T16:29:12.563Z"
+              repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-11T16:29:12.563Z"
+              repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "direct-rework-route"
+            - "pinned-runtime"
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -713,6 +775,23 @@ extensions:
         task_id: "202609111339-NGDG6V"
         task_revision: 9
         work_item_id: null
+      -
+        at: "2026-09-11T16:29:12.582Z"
+        from: "READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:b2c882d94bcf85d8be062ecc32cf32e96f8f96b283c043fd609df3a86eda091d"
+        entity: "work_item"
+        id: "event_fffe8eb78f38212f0fbbf7f9"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-e8284937d9be495ebbedd5d7"
+        plan_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+        task_revision: 15
+        work_item_id: "pinned-runtime-verification-recovery"
     leases: []
     mutation_receipts:
       compatibility:sha256:172c8d39d5a895818ca3aef9de0f2ea9323a30dc65b76d63b63f8dc1cc2ae50f:
@@ -977,6 +1056,30 @@ extensions:
         mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-1cb49946b99364814f64d390"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      external-result:work-order-202609111339-NGDG6V-executor-e8284937d9be495ebbedd5d7:
+        aggregate_digest: "sha256:e2e93d6dc9701fcec1e4664cc6b45c8746ba480cce257b332c73f9255cd1bd10"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T16:29:12.582Z"
+          cause_refs:
+            - "semantic-result:sha256:b2c882d94bcf85d8be062ecc32cf32e96f8f96b283c043fd609df3a86eda091d"
+          entity: "work_item"
+          from: "READY"
+          id: "event_fffe8eb78f38212f0fbbf7f9"
+          mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-e8284937d9be495ebbedd5d7"
+          plan_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 15
+          to: "REWORK_READY"
+          work_item_id: "pinned-runtime-verification-recovery"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-e8284937d9be495ebbedd5d7"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       plan-refinement:work-order-202609111339-NGDG6V-executor-348812f9062f49530d4549ec:
