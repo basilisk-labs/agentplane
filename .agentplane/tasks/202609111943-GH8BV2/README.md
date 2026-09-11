@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -449,22 +449,79 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-11T19:58:52.599Z"
+    updated_at: "2026-09-11T19:59:29.617Z"
     work_items:
       preserve-legacy-effect-only-scope:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "preserve-legacy-effect-only-scope"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:7eb22b3d9aabdb01451b4b1542ea50ae9831845df42dce0c48a153cf9cfbb0bb"
+            id: "verified-legacy-effect-only-scope-extension"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609111943-GH8BV2"
+              work_item_id: "preserve-legacy-effect-only-scope"
+            provenance:
+              - "sha256:e4fbb75b53d0f83923ed448075b32078d1d0364dbc416fc39136f286441c92b6"
+              - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:d836f3188ac54d5888b7f2be01494a6f3225de682121857ada4ecc48cdbfc7e4"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+              check_id: "scope-extension-regressions"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-11T19:59:29.596Z"
+              repository_snapshot_digest: "sha256:d836f3188ac54d5888b7f2be01494a6f3225de682121857ada4ecc48cdbfc7e4"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-11T19:59:29.596Z"
+              repository_snapshot_digest: "sha256:d836f3188ac54d5888b7f2be01494a6f3225de682121857ada4ecc48cdbfc7e4"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-11T19:59:29.617Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:558d7431c618b4fdb2009e918f5a2a28755aaf8e31369f54849aca6639b9b008"
+        entity: "work_item"
+        id: "event_895b3bc884d0c8f2021a51ea"
+        mutation_id: "external-result:work-order-202609111943-GH8BV2-executor-fd145775f5351c558673b0eb"
+        plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+        task_revision: 7
+        work_item_id: "preserve-legacy-effect-only-scope"
     leases: []
     mutation_receipts:
       compatibility:sha256:259eed4137df73f019c169dba7f6d108c2e44f42404ef5bbc10dd35af5f8aa13:
@@ -585,6 +642,30 @@ extensions:
         mutation_id: "compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7"
         next_revision: 5
         previous_revision: 4
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      external-result:work-order-202609111943-GH8BV2-executor-fd145775f5351c558673b0eb:
+        aggregate_digest: "sha256:5f2c4260c7319af41f4a6cdbe16346d94688df52310c2c3a2a571b13494ce977"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T19:59:29.617Z"
+          cause_refs:
+            - "semantic-result:sha256:558d7431c618b4fdb2009e918f5a2a28755aaf8e31369f54849aca6639b9b008"
+          entity: "work_item"
+          from: "READY"
+          id: "event_895b3bc884d0c8f2021a51ea"
+          mutation_id: "external-result:work-order-202609111943-GH8BV2-executor-fd145775f5351c558673b0eb"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "preserve-legacy-effect-only-scope"
+        mutation_id: "external-result:work-order-202609111943-GH8BV2-executor-fd145775f5351c558673b0eb"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609111943-GH8BV2"
     pending_effects: []
