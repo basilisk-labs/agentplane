@@ -424,6 +424,41 @@ describe("quality evidence refresh route", () => {
     });
   });
 
+  it("returns direct verification rework to TESTER after a newer implementation event", () => {
+    const step = reduceRouteState(
+      routeState({
+        workflowMode: "direct",
+        task: {
+          ...task,
+          commit: { hash: resume.head_sha, message: "fix: record newer direct verification repair" },
+          verification: {
+            state: "needs_rework",
+            updated_at: "2026-07-29T14:40:00.000Z",
+          },
+          events: [
+            {
+              type: "status",
+              at: "2026-07-29T14:41:00.000Z",
+              author: "CODER",
+              from: "DOING",
+              to: "DOING",
+              note: "Record the repaired direct implementation.",
+              commit: resume.head_sha,
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "direct_verification_required",
+      authoritativeCheckout: "current_checkout",
+      execution: { semanticMutationAllowed: false, needsVerificationRecord: true },
+      episode: { purpose: "verification", role: "TESTER" },
+    });
+  });
+
   it("returns a deterministic evidence block to EVALUATOR after TESTER refreshes verification", () => {
     const step = reduceRouteState(
       routeState({
