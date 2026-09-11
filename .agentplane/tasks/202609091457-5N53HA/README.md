@@ -4,7 +4,7 @@ title: "Publish direct ops quality review fix from upstream main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -365,7 +365,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-6"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "63c8816c088e3b61865397e23453c708903632a4"
+  message: "🚧 5N53HA task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -382,6 +384,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: ddd46df7028e. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 63c8816c088e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -434,8 +439,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-11T15:31:56.262Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 63c8816c088e. CLI accepted one state-bound external-agent semantic result."
+    commit: "63c8816c088e3b61865397e23453c708903632a4"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:33:42.803Z"
+doc_updated_at: "2026-09-11T15:31:56.262Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recreate the already verified direct ops quality-review patch from commit 75a1b9743288ca2a60ccafd82287df37eb8922bd on a task branch based on upstream main, preserve its tests and documentation, and publish a fork-based PR to basilisk-labs/agentplane. Do not install or deploy the CLI."
 sections:
@@ -989,7 +1002,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609091457-5N53HA"
-    event_cursor: 14
+    event_cursor: 16
     final_validation: null
     id: "202609091457-5N53HA"
     intent:
@@ -1485,9 +1498,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609091457-5N53HA"
-    revision: 27
+    revision: 29
     schema_version: 1
-    updated_at: "2026-09-11T14:33:42.803Z"
+    updated_at: "2026-09-11T15:31:56.262Z"
     work_items:
       preserve-ops-quality-review-fix:
         attempt: 0
@@ -1599,6 +1612,30 @@ extensions:
         work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:10ccc88a92b55de83060ba1e37dcfe02aec8eed556e19ba105d33b6640e7d997:
+        aggregate_digest: "sha256:dd9a11095c50ef3c031104c7f2179a470d9bb2ac5c12883a4dfcbf04403cf5d6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T15:31:56.262Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_28048fa0b548521df44565cb"
+          mutation_id: "compatibility:sha256:10ccc88a92b55de83060ba1e37dcfe02aec8eed556e19ba105d33b6640e7d997"
+          plan_digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 27
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:10ccc88a92b55de83060ba1e37dcfe02aec8eed556e19ba105d33b6640e7d997"
+        next_revision: 28
+        previous_revision: 27
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
       compatibility:sha256:1c42116d04b08fe34330cca1bca3dcb92148013594bae6b2683add506cac93d0:
         aggregate_digest: "sha256:ffa0a526ee77e50bac835c0c3fced2c5f81bb70a97aea592254c1a6079050a3a"
         event:
@@ -1887,6 +1924,30 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202609091457-5N53HA"
+      compatibility:sha256:e1c612c07bc4853b6915a43bfcddc895bacdece18bde278c6476e4e3f6a7fb1b:
+        aggregate_digest: "sha256:9717e0428c04b7ab5d84a9287a2a8c2368c9382bb2112e686e4ec61c35129b6a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T15:31:56.262Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1e029dc84c5c76485db25905"
+          mutation_id: "compatibility:sha256:e1c612c07bc4853b6915a43bfcddc895bacdece18bde278c6476e4e3f6a7fb1b"
+          plan_digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 28
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e1c612c07bc4853b6915a43bfcddc895bacdece18bde278c6476e4e3f6a7fb1b"
+        next_revision: 29
+        previous_revision: 28
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
       compatibility:sha256:f6a3cdd27b314de42f6eb4760b381d44281563226fc62d32b0be8b87b486da95:
         aggregate_digest: "sha256:e3cea7da7a62014ae45edac175a8f3a69f9018e070580bd7a651d8dc8fdb15f0"
         event:
@@ -2036,6 +2097,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "63c8816c088e3b61865397e23453c708903632a4"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
