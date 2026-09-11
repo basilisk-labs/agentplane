@@ -1,3 +1,4 @@
+import { normalizeCompactTaskPlanProposal, parseTaskPlanProposal } from "./schema.js";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -312,5 +313,43 @@ describe("replacement-plan WorkItem recovery", () => {
       }).a,
     ).toMatchObject({ state: "PLANNED", revision: 1, attempt: 0 });
     expect(taskCentricDigest(reset)).toBe(before);
+  });
+});
+
+describe("compact plan persistence compatibility", () => {
+  it("expands one compact WorkItem without changing its scope or validation contract", () => {
+    const original = item();
+    const baseline = snapshot();
+    const { acceptance_criteria, validation: plan, ...definition } = original;
+    const input = {
+      schema_version: 2,
+      criteria: acceptance_criteria,
+      checks: plan.checks,
+      work_items: [definition],
+    };
+    const normalize = (value: unknown) =>
+      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
+    const expanded = normalize(input);
+    const expectedValidation = { ...plan, evidence_fingerprint: baseline.digest };
+    expect(expanded).toEqual({
+      ...proposal({ ...original, validation: expectedValidation }),
+      top_level_validation: expectedValidation,
+    });
+    expect(parseTaskPlanProposal(expanded)).toEqual(expanded);
+    for (const invalid of [
+      { ...input, criteria: [...input.criteria, ...input.criteria] },
+      { ...input, checks: [...input.checks, ...input.checks] },
+      { ...input, criteria: [{ ...acceptance_criteria[0], check_ids: ["missing"] }] },
+      { ...input, work_items: [{ ...definition, criterion_ids: ["missing"] }] },
+      { ...input, work_items: [{ ...definition, check_ids: ["missing"] }] },
+      {
+        ...input,
+        work_items: [{ ...definition, check_ids: [plan.checks[0]!.id, plan.checks[0]!.id] }],
+      },
+      { ...input, work_items: [{ ...definition, scope_roots: undefined }] },
+      { ...input, planning_baseline: snapshot() },
+      { ...input, task_id: "foreign" },
+    ])
+      expect(() => normalize(invalid)).toThrow();
   });
 });

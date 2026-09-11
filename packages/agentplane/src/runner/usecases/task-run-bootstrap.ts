@@ -1,5 +1,6 @@
 import {
   buildWorkOrderContextManifest,
+  resolveWorkOrderContextBlocks,
   workOrderContextManifestDigest,
 } from "../context/work-order-context.js";
 import {
@@ -157,8 +158,28 @@ function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): strin
 }
 
 function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
-  const workOrder = bundle.work_order;
-  if (!workOrder) return null;
+  const sourceOrder = bundle.work_order;
+  if (!sourceOrder) return null;
+  const manifest =
+    bundle.semantic_context ??
+    buildWorkOrderContextManifest(
+      sourceOrder,
+      `${bundle.execution.artifact_paths.bundle_path}#/work_order`,
+    );
+  const blocks = resolveWorkOrderContextBlocks({ order: sourceOrder, manifest });
+  const selected = new Set(blocks.map((block) => block.pointer));
+  const workOrder = {
+    ...sourceOrder,
+    required_inputs: sourceOrder.required_inputs.filter((_, index) =>
+      selected.has(`/required_inputs/${index}`),
+    ),
+    knowledge_refs: sourceOrder.knowledge_refs.filter((_, index) =>
+      selected.has(`/knowledge_refs/${index}`),
+    ),
+    prepared_evidence: sourceOrder.prepared_evidence.filter((_, index) =>
+      selected.has(`/prepared_evidence/${index}`),
+    ),
+  };
   const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
     (criterion) => !semanticTextHasProcessChoreography(criterion.description),
   );
@@ -188,18 +209,14 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
   return {
     context_discovery: {
       manifest_ref: `${bundle.execution.artifact_paths.bundle_path}#/semantic_context`,
-      manifest_digest: workOrderContextManifestDigest(
-        buildWorkOrderContextManifest(
-          workOrder,
-          `${bundle.execution.artifact_paths.bundle_path}#/work_order`,
-        ),
-      ),
+      manifest_digest: workOrderContextManifestDigest(manifest),
       required_loading:
-        "Read every required block before semantic work. Validate its digest. Reload after restart or context loss. Read optional blocks only on demand.",
+        "Required semantic context is included in this input. Consult the manifest for complete source blocks. Read optional blocks from the complete manifest only on demand. Reload after restart or context loss.",
     },
     work_order_id: workOrder.work_order_id,
     ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
     role: workOrder.role,
+    ...(workOrder.planning_context ? { planning_context: workOrder.planning_context } : {}),
     task: {
       ...workOrder.task,
       acceptance_criteria: semanticAcceptanceCriteria,

@@ -1,3 +1,4 @@
+import path from "node:path";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { advanceCanonicalTask } from "./kernel-advance.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
@@ -120,15 +121,21 @@ export function makeRunTaskAdvanceHandler(deps: {
         result_path: parsed.result,
         include_remote: parsed.remote,
       });
-      const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
-      const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
-      current = await buildTaskRouteDecision({
-        ctx: refreshedCommand,
-        cwd: checkout,
-        rootOverride: null,
-        includeRemote: parsed.remote,
-        taskId: parsed.taskId,
-      });
+      if (accepted.workflowMode === "direct") {
+        // Admission observed the route after semantic mutation. Its subsequent journal
+        // bookkeeping does not change direct route inputs; native transitions refresh below.
+        current = accepted;
+      } else {
+        const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
+        const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+        current = await buildTaskRouteDecision({
+          ctx: refreshedCommand,
+          cwd: checkout,
+          rootOverride: null,
+          includeRemote: parsed.remote,
+          taskId: parsed.taskId,
+        });
+      }
     } else {
       const routed = await decide();
       current =
@@ -386,9 +393,15 @@ export function makeRunTaskAdvanceHandler(deps: {
       ...(exchange
         ? {
             exchange: {
+              ...(exchange.exchange.result_format
+                ? { result_format: exchange.exchange.result_format }
+                : {}),
               directory: exchange.paths.directory,
               work_order_ref: "work-order.json",
-              result_schema_ref: "result-schema.json",
+              result_schema_ref: path.relative(
+                exchange.paths.directory,
+                exchange.exchange.result_schema_ref,
+              ),
               result_ref: "result.json",
               return_invocation:
                 `agentplane task advance <task_id> --result <exchange_directory>/<result_ref> --agent-json` +

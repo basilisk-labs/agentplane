@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609081134-SRM6JM/reduce-agent-protocol-overhead-for-small-code-ch",
+  "created_at": "2026-09-08T11:38:53.832Z",
+  "diffstat_sha256": "sha256:5beb0d75590ccade30535b131d1b87d908cd6f92180a2ce6c83a35186dd199e1",
+  "last_verified_at": "2026-09-08T17:40:50.240Z",
+  "last_verified_diffstat_sha256": "sha256:5beb0d75590ccade30535b131d1b87d908cd6f92180a2ce6c83a35186dd199e1",
+  "pr_number": 5923,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5923",
+  "pre_merge_closure": {
+    "basis_commit": "4d5b0a4ce3e4fa2c9d1a9dd137b6863d0bab7e62",
+    "branch": "task/202609081134-SRM6JM/reduce-agent-protocol-overhead-for-small-code-ch",
+    "pr_number": 5923,
+    "recorded_at": "2026-09-08T17:42:20.327Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609081134-SRM6JM",
+  "updated_at": "2026-09-08T13:26:03.396Z",
+  "verify": {
+    "status": "pass"
+  }
+}

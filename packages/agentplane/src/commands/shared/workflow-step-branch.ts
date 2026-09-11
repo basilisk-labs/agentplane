@@ -283,6 +283,28 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.cleanupProbe.state === "blocked") {
+    const merge = state.prFlow?.pr.state === "MERGED" ? state.prFlow.pr.mergeCommit : null;
+    const base = state.resume.base_branch ?? "main";
+    const onlyMissingBase =
+      merge &&
+      /^[a-f0-9]{40}(?:[a-f0-9]{24})?$/u.test(merge) &&
+      state.cleanupProbe.reasons.length > 0 &&
+      state.cleanupProbe.reasons.every(
+        (reason) =>
+          reason.endsWith(`provider merge commit object is unavailable locally: ${merge}`) ||
+          reason.endsWith(`provider merge commit is not on ${base}: ${merge}`),
+      );
+    if (onlyMissingBase) {
+      // Finalization fast-forwards base and repeats the complete deletion proof.
+      return cliOperationStep({
+        state,
+        operationId: "task.worktree.cleanup",
+        params: { taskId: id, base },
+        code: "cleanup",
+        summary: "synchronize base, revalidate cleanup proof, and remove the task worktree",
+        selectedBlocker: null,
+      });
+    }
     return terminalStep({
       state,
       id: "terminal.cleanup_blocked",

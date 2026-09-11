@@ -348,6 +348,7 @@ function observedRunnerUsage(opts: {
   budget: SupervisorExecutionBudget;
 }): {
   usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
+  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
   progress: unknown;
   missing_dimensions: string[];
 } {
@@ -369,6 +370,8 @@ function observedRunnerUsage(opts: {
     "total_tokens",
     "visible_output_tokens",
     "reasoning_tokens",
+    "cached_input_tokens",
+    "prepared_context_bytes",
   ] as const) {
     if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
   }
@@ -386,6 +389,17 @@ function observedRunnerUsage(opts: {
   if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
   return {
     usage,
+    ...(providerUsage && lifecycle.invocation
+      ? {
+          provider_usage: {
+            provider: "codex",
+            run_id: lifecycle.invocation.run_id,
+            work_order_id: lifecycle.invocation.work_order_id,
+            thread_id: providerUsage.thread_id ?? null,
+            turn_id: providerUsage.turn_id ?? null,
+          },
+        }
+      : {}),
     progress: lifecycle.lifecycle.state_fingerprint,
     missing_dimensions: missing.toSorted(),
   };
@@ -537,6 +551,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
             exit_code: result.exit_code,
           },
           usage: observed.usage,
+          provider_usage: observed.provider_usage,
           ...(observed.progress === undefined ? {} : { progress: observed.progress }),
           failed: result.status !== "succeeded",
         });

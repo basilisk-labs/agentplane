@@ -1,3 +1,4 @@
+import * as processRuntime from "@agentplaneorg/core/process";
 import { execFile } from "node:child_process";
 import { cp, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -15,7 +16,7 @@ import {
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
-import * as verification from "../commands/task/direct-task-verification.js";
+import * as verification from "../commands/task/direct-task-verification-record.js";
 
 installRunCliIntegrationHarness();
 const exec = promisify(execFile);
@@ -80,7 +81,7 @@ async function returnResult(
 }
 
 describe("branch implementation clean verification", { timeout: 180_000 }, () => {
-  it.each(["clean", "foreign", "implementation_replay", "rework", "rework_foreign"])(
+  it.each(["clean", "foreign", "implementation_replay", "infra", "rework", "rework_foreign"])(
     "preserves the implementation and rejects unrelated dirt: %s",
     async (scenario) => {
       const foreign = scenario === "foreign";
@@ -229,14 +230,37 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
       };
       await writeFile(path.join(checkout, "feature.ts"), "export const feature = true;\n");
       if (foreign) await writeFile(path.join(checkout, "unrelated.txt"), "must survive\n");
-      if (scenario === "implementation_replay") {
-        const interruption = vi
-          .spyOn(verification, "recordDirectTaskVerification")
-          .mockRejectedValueOnce(new Error("interrupted initial verification"));
+      if (scenario === "implementation_replay" || scenario === "infra") {
+        const originalProcess = processRuntime.runProcess;
+        let failed = false;
+        const interruption =
+          scenario === "infra"
+            ? vi.spyOn(processRuntime, "runProcess").mockImplementation((options) => {
+                if (!failed && options.args?.includes("test:critical")) {
+                  failed = true;
+                  return Promise.reject(
+                    Object.assign(new Error("injected native disk failure"), { code: "ENOSPC" }),
+                  );
+                }
+                return originalProcess(options);
+              })
+            : vi
+                .spyOn(verification, "recordDirectTaskVerification")
+                .mockRejectedValueOnce(new Error("interrupted initial verification"));
+        let failedArtifact: { path: string; bytes: string } | undefined;
         try {
           const interrupted = await returnResult(root, taskId, implementation);
           expect(interrupted.code).not.toBe(0);
-          expect(interrupted.stderr).toContain("interrupted initial verification");
+          expect(interrupted.stderr).toContain(
+            scenario === "infra"
+              ? "Verification infrastructure failed"
+              : "interrupted initial verification",
+          );
+          if (scenario === "infra") {
+            const retainedPath = /Retained: (.+?\.json)/u.exec(interrupted.stderr)?.[1];
+            expect(retainedPath).toContain("verification-retries");
+            failedArtifact = { path: retainedPath!, bytes: await readFile(retainedPath!, "utf8") };
+          }
         } finally {
           interruption.mockRestore();
         }
@@ -269,11 +293,28 @@ describe("branch implementation clean verification", { timeout: 180_000 }, () =>
             implementation.packet.exchange.resume_argv.slice(1),
           );
           expect(resumed.code, resumed.stderr).toBe(0);
+          if (scenario === "infra") {
+            const returned = JSON.parse(resumed.stdout) as {
+              action: { kind: string };
+              authority?: { role?: string };
+            };
+            expect(
+              returned.action.kind === "agent_episode" && returned.authority?.role === "EXECUTOR",
+              resumed.stdout,
+            ).toBe(false);
+          }
           const resumedTask = await ctx.taskBackend.getTask(taskId);
           expect(resumedTask?.commit?.hash).toBe(implementationSha);
+          if (scenario === "infra")
+            expect(
+              taskCentricAggregateFromExtensions(resumedTask?.extensions)?.work_items.feature
+                ?.state,
+            ).toBe("COMPLETED");
           expect(await readFile(evidencePath, "utf8")).toBe(evidenceBefore);
           expect(await checkoutGit("log", "--format=%H", "--", "feature.ts")).toBe(featureHistory);
         }
+        if (failedArtifact)
+          expect(await readFile(failedArtifact.path, "utf8")).toBe(failedArtifact.bytes);
         return;
       }
       const result = await returnResult(root, taskId, implementation);

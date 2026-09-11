@@ -10,12 +10,12 @@ export const ISO_UTC_TIMESTAMP = z.string().datetime({ offset: true });
 export const NULLABLE_NON_EMPTY_STRING = NON_EMPTY_STRING.nullable();
 export const NULLABLE_ISO_UTC_TIMESTAMP = ISO_UTC_TIMESTAMP.nullable();
 
-function zodToDraft7JsonSchema(schema: z.ZodTypeAny): JsonSchemaDocument {
+function zodToDraft7JsonSchema(schema: z.ZodTypeAny, reused: "inline" | "ref"): JsonSchemaDocument {
   return z.toJSONSchema(schema, {
     target: "draft-07",
     unrepresentable: "any",
     io: "input",
-    reused: "inline",
+    reused,
     cycles: "throw",
   }) as JsonSchemaDocument;
 }
@@ -27,14 +27,16 @@ export function buildJsonSchemaDocument(
     title: string;
     description?: string;
   },
+  options: { reused?: "inline" | "ref" } = {},
 ): JsonSchemaDocument {
-  const generated = zodToDraft7JsonSchema(schema);
+  const generated = zodToDraft7JsonSchema(schema, options.reused ?? "inline");
   const { $schema: _schema, definitions: _definitions, ...rest } = generated;
   return {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: meta.$id,
     title: meta.title,
     ...(meta.description ? { description: meta.description } : {}),
+    ...(options.reused === "ref" && _definitions ? { definitions: _definitions } : {}),
     ...rest,
   };
 }

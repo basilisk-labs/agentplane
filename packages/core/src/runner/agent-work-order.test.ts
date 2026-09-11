@@ -83,6 +83,26 @@ describe("AgentWorkOrder v2 contract", () => {
         },
       }),
     ).toThrow("canonical_binding");
+    const {
+      schema_version: _version,
+      kind: _kind,
+      canonical_binding: _binding,
+      ...payload
+    } = result;
+    expect(
+      validateAgentSemanticResultForWorkOrder({
+        work_order: order,
+        semantic_result: payload,
+        format: "semantic_payload_v1",
+      }),
+    ).toEqual(result);
+    expect(() =>
+      validateAgentSemanticResultForWorkOrder({
+        work_order: order,
+        semantic_result: { ...payload, canonical_outputs: undefined },
+        format: "semantic_payload_v1",
+      }),
+    ).toThrow();
     expect(
       listAgentWorkOrderV2SchemaErrors({
         ...order,
@@ -95,6 +115,38 @@ describe("AgentWorkOrder v2 contract", () => {
         canonical_binding: { ...order.canonical_binding, task_id: "foreign" },
       }),
     ).not.toEqual([]);
+  });
+
+  it("normalizes only opted-in compact payloads and rejects service or foreign role fields", () => {
+    const order = AGENT_WORK_ORDER_V2_VALID_FIXTURE;
+    const full = buildAgentSemanticResultV2ValidFixtures(order.work_order_id).completed;
+    const { schema_version: _version, kind: _kind, ...payload } = full;
+    const validate = (value: unknown) =>
+      validateAgentSemanticResultForWorkOrder({
+        work_order: order,
+        semantic_result: value,
+        format: "semantic_payload_v1",
+      });
+    expect(validate(payload)).toEqual(full);
+    expect(() =>
+      validateAgentSemanticResultForWorkOrder({
+        work_order: order,
+        semantic_result: payload,
+      }),
+    ).toThrow();
+    for (const invalid of [
+      { ...payload, work_order_id: "foreign-episode" },
+      { ...payload, task_id: "foreign-task" },
+      { ...payload, schema_version: 2 },
+      { ...payload, canonical_binding: {} },
+      {
+        ...payload,
+        review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
+      },
+      { ...payload, status: "blocked" },
+      { ...payload, status: "needs_context" },
+    ])
+      expect(() => validate(invalid)).toThrow();
   });
 
   it("accepts the generated public fixture", async () => {

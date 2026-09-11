@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "baseline_revision": "33e106d611fe92603cb836bdcd500a1c624d206b",
+  "test": "runCli task advance branch worktree > recovers an implementation interrupted before verification through a fresh episode",
+  "baseline_result": "failed",
+  "current_result": "failed",
+  "assertion_line": 585,
+  "observed_difference": {
+    "expected": "Original implementation claims, uncertainty and WorkOrder identity.",
+    "actual": "Replacement claims and fresh WorkOrder identity."
+  },
+  "baseline_method": "Isolated git-archive source tree with source aliases; installed dependencies and CLI hook bundles shared with the current checkout.",
+  "command": "node_modules/.bin/vitest run --config vitest.workspace.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t \"recovers an implementation interrupted before verification\" --maxWorkers=1",
+  "unchanged_source_files": [
+    {
+      "path": "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+      "sha256": "cca7361d879b6362c3e3fba47049091f2bc59f405cb32549a6bea3054ee58dc8"
+    },
+    {
+      "path": "packages/agentplane/src/commands/task/task-centric-external-result.ts",
+      "sha256": "a294ab5e5f51c0eef60c828b569535f0665479d4886357087ee947758c40c811"
+    },
+    {
+      "path": "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
+      "sha256": "f86efde7a8786e998fc34a989173d7bc4716235568be0a0f5fd4a2f146a7ce0d"
+    }
+  ],
+  "assessment": "The original-claim recovery test conflicts with the existing current-WorkOrder binding requirement. This predates the compact exchange and needs a separate recovery-semantics decision; neither the binding guard nor test expectation was weakened."
+}

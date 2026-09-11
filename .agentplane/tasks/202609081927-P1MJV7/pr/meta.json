@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609081927-P1MJV7/reduce-redundant-recovery-episodes-and-exchange",
+  "created_at": "2026-09-08T19:31:00.077Z",
+  "diffstat_sha256": "sha256:205f81876d1831b14852685e331980d3453fbcef8bda8adebe3baf2c7fb815fb",
+  "last_verified_at": "2026-09-08T22:01:43.703Z",
+  "last_verified_diffstat_sha256": "sha256:205f81876d1831b14852685e331980d3453fbcef8bda8adebe3baf2c7fb815fb",
+  "pr_number": 5924,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5924",
+  "pre_merge_closure": {
+    "basis_commit": "fe1cd0f438b23b1981c8f9b127928b4669d47049",
+    "branch": "task/202609081927-P1MJV7/reduce-redundant-recovery-episodes-and-exchange",
+    "pr_number": 5924,
+    "recorded_at": "2026-09-08T22:04:41.540Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609081927-P1MJV7",
+  "updated_at": "2026-09-08T21:13:55.165Z",
+  "verify": {
+    "status": "pass"
+  }
+}

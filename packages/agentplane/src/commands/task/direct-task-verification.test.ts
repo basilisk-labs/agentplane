@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+import * as infrastructureVerification from "./verification-infrastructure.js";
 import * as runtimeEnv from "../../shared/runtime-env.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import * as executionContext from "../../runtime/task-execution-context/index.js";
@@ -23,9 +24,9 @@ import {
   isTaskLevelVerificationReworkState,
   parseDirectTaskCheck,
   renderDirectTaskVerificationDetails,
-  recordDirectTaskVerification,
   runDirectTaskVerification,
 } from "./direct-task-verification.js";
+import { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { resolveEvidenceOnlyReworkCommit } from "./evidence-only-rework-commit.js";
 import "./direct-task-verification.sequence.cases.js";
 
@@ -107,32 +108,37 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
-  it("records missing executable as infrastructure evidence rather than a failing implementation", async () => {
-    const cwd = await root();
-    mocks.runProcess.mockRejectedValueOnce(
-      Object.assign(new Error("spawn bun ENOENT"), { code: "ENOENT" }),
-    );
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { id: TASK_ID, verify: ["bun test"] } as TaskData,
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
-    });
-    expect(result.status).toBe("unsupported");
-    expect(result.checks[0]).toMatchObject({
-      exit_code: null,
-      failure_kind: "infrastructure",
-      runtime: {
-        kind: "local_runtime_resolution",
-        environment_digest: expect.stringMatching(/^sha256:/) as unknown,
-      },
-    });
-    const persisted = JSON.parse(await readFile(path.join(cwd, result.artifact_path), "utf8")) as {
-      checks: { failure_kind: string }[];
-    };
-    expect(persisted.checks[0]!.failure_kind).toBe("infrastructure");
-  });
+  it.each(["ENOENT", "ENOSPC", "EDQUOT"])(
+    "records native %s as infrastructure evidence rather than a failing implementation",
+    async (code) => {
+      const cwd = await root();
+      mocks.runProcess.mockRejectedValueOnce(
+        Object.assign(new Error(`spawn bun ${code}`), { code }),
+      );
+      const result = await runDirectTaskVerification({
+        command: command(cwd),
+        task: { id: TASK_ID, verify: ["bun test"] } as TaskData,
+        task_id: TASK_ID,
+        cwd,
+        run_process: mocks.runProcess,
+      });
+      expect(result.status).toBe("unsupported");
+      expect(result.checks[0]).toMatchObject({
+        exit_code: null,
+        failure_kind: "infrastructure",
+        runtime: {
+          kind: "local_runtime_resolution",
+          environment_digest: expect.stringMatching(/^sha256:/) as unknown,
+        },
+      });
+      const persisted = JSON.parse(
+        await readFile(path.join(cwd, result.artifact_path), "utf8"),
+      ) as {
+        checks: { failure_kind: string }[];
+      };
+      expect(persisted.checks[0]!.failure_kind).toBe("infrastructure");
+    },
+  );
 
   it("maps checks from the frozen verification diff before persisting their evidence", async () => {
     const repo = await root();
@@ -163,6 +169,9 @@ describe("direct task verification", () => {
     const observed = vi
       .spyOn(observedChanges, "resolveObservedVerificationChangedPaths")
       .mockResolvedValue(["docs/contract.md"]);
+    const retain = vi
+      .spyOn(infrastructureVerification, "prepareInfrastructureVerificationForCheckout")
+      .mockResolvedValue(() => Promise.resolve("infra.json"));
     const persist = vi.spyOn(verifyRecord, "cmdVerifyParsed").mockResolvedValue(0);
     const process = vi
       .spyOn(processRunner, "runProcess")
@@ -193,11 +202,7 @@ describe("direct task verification", () => {
         "docs_contract",
       );
     } finally {
-      context.mockRestore();
-      target.mockRestore();
-      observed.mockRestore();
-      persist.mockRestore();
-      process.mockRestore();
+      for (const spy of [context, target, observed, persist, retain, process]) spy.mockRestore();
     }
   });
   it("reuses only the exact unchanged implementation identity at a rework boundary", () => {

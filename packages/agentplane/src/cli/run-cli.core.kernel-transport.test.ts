@@ -1,3 +1,4 @@
+import { readKernelOrderResult } from "../commands/task/kernel-exchange.js";
 import { KernelTaskLifecycle } from "../runner/usecases/kernel-task-lifecycle.js";
 import { execFileSync } from "node:child_process";
 import * as finalChecks from "../commands/task/direct-task-verification.js";
@@ -129,7 +130,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     await writeFile(path.join(linked, "local-change.txt"), "local change");
     expect(await runtime.observe()).not.toMatchObject({ fingerprint: before.fingerprint });
   });
-  it.each(["local", "cloud"] as const)(
+  it.each(["local", "cloud", "compact"] as const)(
     "canonical first-write and host lifecycle on %s storage",
     async (backendKind) => {
       const root = await mkGitRepoRootWithCommit();
@@ -202,7 +203,17 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           scope_roots: ["more"],
         },
       });
-      await writeFile(planningExchange.result_path, JSON.stringify(semantic));
+      const wireResult = (value: Record<string, unknown>) => {
+        if (backendKind !== "compact") return JSON.stringify(value);
+        const {
+          schema_version: _version,
+          kind: _kind,
+          canonical_binding: _binding,
+          ...payload
+        } = value;
+        return JSON.stringify(payload);
+      };
+      await writeFile(planningExchange.result_path, wireResult(semantic));
       const approval = await runJson(root, [
         "task",
         "advance",
@@ -279,7 +290,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
       }
       await writeFile(path.join(root, "outside.txt"), "not authorized");
-      await writeFile(implementationExchange.result_path, JSON.stringify(result));
+      await writeFile(implementationExchange.result_path, wireResult(result));
       await refused(
         root,
         ["task", "advance", taskId, "--result", implementationExchange.result_path, "--agent-json"],
@@ -293,7 +304,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         "legacy mutation is refused",
       );
       expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
-      await writeFile(implementationExchange.result_path, JSON.stringify(result));
+      await writeFile(implementationExchange.result_path, wireResult(result));
       const accepted = await runJson(root, [
         "task",
         "advance",
@@ -369,7 +380,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         canonical_binding: inspection.canonical_binding,
         status: "completed" as const,
         summary: "Independent inspection passed",
-        findings: [],
+        findings: ["Implementation satisfies the declared contract."],
         uncertainty: [],
         review: {
           verdict: "pass" as const,
@@ -378,6 +389,33 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           residual_risks: [],
         },
       };
+      if (backendKind === "compact") {
+        await writeFile(inspectionExchange.result_path, wireResult(review));
+        const compactReview = await readKernelOrderResult(
+          command,
+          taskId,
+          inspectionExchange.result_path,
+        );
+        expect(compactReview.semantic).toEqual(review);
+        const ownerPath = path.join(inspectionExchange.directory, "transport-owner.json");
+        const ownerText = await readFile(ownerPath, "utf8");
+        const { result_format: _format, ...historicalOwner } = JSON.parse(ownerText) as Record<
+          string,
+          unknown
+        >;
+        await writeFile(ownerPath, JSON.stringify(historicalOwner));
+        await expect(
+          readKernelOrderResult(command, taskId, inspectionExchange.result_path),
+        ).rejects.toThrow("does not accept compact");
+        await writeFile(inspectionExchange.result_path, JSON.stringify(review));
+        const historicalReview = await readKernelOrderResult(
+          command,
+          taskId,
+          inspectionExchange.result_path,
+        );
+        expect(historicalReview.semantic).toEqual(review);
+        await writeFile(ownerPath, ownerText);
+      }
       await writeFile(path.join(root, "result.txt"), "changed after inspection");
       await expect(
         acceptKernelInspection(command, runtime, inspectionExchange.directory, review),

@@ -2,6 +2,7 @@ import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
 import {
   buildWorkOrderContextManifest,
   resolveWorkOrderContextBlocks,
+  workOrderContextBoundaryDigest,
 } from "./work-order-context.js";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -463,10 +464,13 @@ describe("lossless WorkOrder context selection", () => {
     const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
     const initial = resolveWorkOrderContextBlocks({ order, manifest });
     const retained = {
-      source_digest: manifest.source_digest,
+      session_id: "live-1",
+      boundary_digest: workOrderContextBoundaryDigest(order),
       blocks: new Map(initial.map((block) => [block.id, block.digest])),
     };
-    expect(resolveWorkOrderContextBlocks({ order, manifest, retained })).toEqual([]);
+    expect(
+      resolveWorkOrderContextBlocks({ order, manifest, session_id: "live-1", retained }),
+    ).toEqual([]);
     expect(resolveWorkOrderContextBlocks({ order, manifest })).toEqual(initial);
     const evaluator = {
       ...order,
@@ -479,8 +483,55 @@ describe("lossless WorkOrder context selection", () => {
     const evaluationManifest = buildWorkOrderContextManifest(evaluator, "/run/work-order.json");
     expect(evaluationManifest.source_digest).not.toBe(manifest.source_digest);
     expect(
-      resolveWorkOrderContextBlocks({ order: evaluator, manifest: evaluationManifest, retained })
-        .length,
+      resolveWorkOrderContextBlocks({
+        order: evaluator,
+        manifest: evaluationManifest,
+        session_id: "live-1",
+        retained,
+      }).length,
     ).toBeGreaterThan(0);
   });
+});
+
+it("delivers only changed acknowledged blocks in the same session and reloads at boundaries", () => {
+  const order = buildAgentWorkOrderV2ValidFixture("context-delta");
+  const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
+  const blocks = resolveWorkOrderContextBlocks({ order, manifest });
+  const retained = {
+    session_id: "live-1",
+    boundary_digest: workOrderContextBoundaryDigest(order),
+    blocks: new Map(blocks.map((block) => [block.id, block.digest])),
+  };
+  const changed = { ...order, task: { ...order.task, objective: "Changed objective" } };
+  const next = buildWorkOrderContextManifest(changed, "/run/next.json");
+  const delta = resolveWorkOrderContextBlocks({
+    order: changed,
+    manifest: next,
+    session_id: "live-1",
+    retained,
+  });
+  expect(delta.map((block) => block.id)).toEqual(["objective"]);
+  expect(Buffer.byteLength(JSON.stringify(delta))).toBeLessThan(
+    Buffer.byteLength(JSON.stringify(blocks)),
+  );
+  expect(
+    resolveWorkOrderContextBlocks({
+      order: changed,
+      manifest: next,
+      session_id: "live-2",
+      retained,
+    }).length,
+  ).toBe(blocks.length);
+  const altered = {
+    ...changed,
+    authority: { ...changed.authority, writable_roots: ["different"] },
+  };
+  expect(
+    resolveWorkOrderContextBlocks({
+      order: altered,
+      manifest: buildWorkOrderContextManifest(altered, "/run/next.json"),
+      session_id: "live-1",
+      retained,
+    }).length,
+  ).toBe(blocks.length);
 });

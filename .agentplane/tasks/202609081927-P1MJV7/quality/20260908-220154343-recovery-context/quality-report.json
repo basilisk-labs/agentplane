@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202609081927-P1MJV7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-08T22:03:32.238Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "438ef52d9e8f9cd8e0c3d1c757a81ebcbffba376",
+  "blueprint_digest": "2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc",
+  "findings": [
+    "Compared the current source with the previously reviewed implementation. Direct verification imports remove the cycle without changing verification behavior. The recovery test now checks current reassessment claims while retaining stale-plan, altered-evidence, and receipt-digest rejection. The Bun entry preserves identifiers during rebundling. Other build entries retain their existing options. All frozen evidence digests match. No source changed after the evaluated commit.",
+    "Residual risk: Provider token usage and latency were not measured. Context deltas require explicit retention acknowledgement in the same live session.",
+    "Residual risk: Hosted CI and integration remain pending outside this read-only review.",
+    "Residual risk: The measured compiled Bun binary is approximately 1.9 percent larger."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/1cb20fe7cc77fc52abad63bdb6adc6fa4e5ee96efbc8c3006a2d6967606c7408.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

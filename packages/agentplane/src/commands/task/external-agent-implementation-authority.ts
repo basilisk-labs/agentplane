@@ -29,7 +29,7 @@ import {
 } from "./external-agent-blocked-result.js";
 import { recoversRecordedImplementationCommit } from "./external-agent-purpose.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
-import { recordDirectTaskVerification } from "./direct-task-verification.js";
+import { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskComment } from "./comment.js";
 import { cmdTaskSetStatus } from "./set-status.js";

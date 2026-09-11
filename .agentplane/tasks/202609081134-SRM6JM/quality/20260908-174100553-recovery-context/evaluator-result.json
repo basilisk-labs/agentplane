@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All frozen evidence digests match. The only additional production change removes five unused internal exports; function bodies and callers remain unchanged. Knip passes with unchanged budgets.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The required full local CI passed for f33d994a331fa73f30292b8735c44b0c9fb2730f. The previously failing staging suite separately passed all 13 tests after authorized cleanup of disposable test caches.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The existing summary now records the environmental failure and recovery. Raw measurements remain unchanged: schema bytes reduced by 90.1 percent and result bytes by 56.0 percent. Existing compact transport, plan, identity, stale, role, scope and historical compatibility coverage remains valid.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The previously documented original-claims recovery inconsistency predates this change and remains explicitly recorded. No identity checks or CI budgets were relaxed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Pre-existing original-claims recovery inconsistency remains documented.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: No provider-level latency or token measurement was performed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/ac225c862d4947bd43e479b7e258297cafd9d489d5d5112417fafda76ded3daa.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

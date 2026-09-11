@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The frozen diff and all seven frozen evidence digests match the evaluated implementation. Changes remain inside the approved source roots and task-owned artifacts. No dependency changes or historical exchange rewrites were introduced.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Three matched scripted cycles reduce required schema bytes from 452556 to 44683 (90.1 percent) and agent result bytes from 6244 to 2746 (56.0 percent). Both acceptance thresholds pass. Median measured CLI protocol time changes from 3738.2 to 3485.0 ms. No model-token or provider-latency claim is made.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Compact payloads require the issued WorkOrder id and an exchange that explicitly enables the new format. The CLI supplies service identity only after validation. Existing stale, role, scope, lease, canonical-binding and historical-envelope checks remain enforced. Compact plans normalize to the existing full persisted contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Focused positive and negative transport, plan, authority and recovery tests cover the changed paths. The schema-store correction retains historical-copy, object integrity and interrupted-publication assertions. Both known schema identifiers retain the same backend hash and no-symlink checks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The latest verification record for implementation 4005ad7a1c494e516248e8b3e975340de70a034e records bun run ci:local:full as passed. Typecheck, targeted lint, formatting and 27 focused correction tests also pass.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "The additional original-claims recovery assertion previously failed on both the original source and current implementation. Its three relevant source identities are unchanged. This is a documented pre-existing limitation in the separate reliability work, not a waived identity check or a claim that all recovery behavior is proven.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The pre-existing interrupted-implementation original-claims recovery inconsistency remains documented in protocol-cost-SRM6JM-recovery-baseline.json.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: No paid provider comparison or hosted integration validation was performed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081134-SRM6JM/quality/objects/sha256/c6f34f50c6cb3107e28bad8ad887ab3e3e5ff1425574f361b5734f4d34e46f80.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

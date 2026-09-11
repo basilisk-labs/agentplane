@@ -292,9 +292,9 @@ describe("CodexRunnerAdapter", () => {
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
     expect(readCodexProviderUsageForResult(result)).toMatchObject({
       input_tokens: 100,
-      output_tokens: 50,
-      total_tokens: 150,
-      visible_output_tokens: 30,
+      output_tokens: 30,
+      total_tokens: 130,
+      visible_output_tokens: 10,
       reasoning_tokens: 20,
     });
     expect(readCodexProviderUsageForResult(result)?.prepared_context_bytes).toBeGreaterThan(0);
@@ -418,7 +418,7 @@ describe("CodexRunnerAdapter", () => {
         "cat >/dev/null",
         String.raw`printf '{"type":"session.started"}\n'`,
         String.raw`printf '%s\n' '${codexAgentMessageEvent("missing manifest path exercised")}'`,
-        String.raw`printf '%s\n' '{"type":"turn.completed"}'`,
+        String.raw`printf '%s\n' '{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":7,"output_tokens":5,"reasoning_output_tokens":3}}'`,
         "exit 0",
       ].join("\n"),
     ]);
@@ -434,6 +434,11 @@ describe("CodexRunnerAdapter", () => {
     const result = await adapter.execute(invocation);
 
     expect(result.status).toBe("failed");
+    expect(readCodexProviderUsageForResult(result)).toMatchObject({
+      input_tokens: 10,
+      cached_input_tokens: 7,
+      total_tokens: 15,
+    });
     expect(result.exit_code).toBe(1);
     expect(result.summary).toBe(
       "Codex execution failed before producing a valid supervised semantic result.",

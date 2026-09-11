@@ -94,16 +94,28 @@ export function workOrderContextManifestDigest(manifest: WorkOrderContextManifes
   return digest(manifest);
 }
 
+export function assertWorkOrderContextManifest(
+  order: AgentWorkOrderV2,
+  manifest: WorkOrderContextManifest,
+): void {
+  if (digest(buildWorkOrderContextManifest(order, manifest.source_ref)) !== digest(manifest))
+    throw new Error("WorkOrder context manifest is incomplete or stale");
+}
+
 /** Retention is explicit process-local knowledge. A fresh process supplies no retained block set. */
 export function resolveWorkOrderContextBlocks(opts: {
   order: AgentWorkOrderV2;
   manifest: WorkOrderContextManifest;
   optional_ids?: readonly string[];
-  retained?: { source_digest: string; blocks: ReadonlyMap<string, string> };
+  session_id?: string;
+  retained?: {
+    blocks: ReadonlyMap<string, string>;
+    session_id: string;
+    boundary_digest: string;
+  };
 }) {
-  const expected = buildWorkOrderContextManifest(opts.order, opts.manifest.source_ref);
-  if (digest(expected) !== digest(opts.manifest))
-    throw new Error("WorkOrder context manifest is incomplete or stale");
+  assertWorkOrderContextManifest(opts.order, opts.manifest);
+  const expected = opts.manifest;
   const requested = new Set(opts.optional_ids);
   if ([...requested].some((id) => !expected.blocks.some((block) => block.id === id)))
     throw new Error("Requested context block is not in the complete manifest");
@@ -119,10 +131,23 @@ export function resolveWorkOrderContextBlocks(opts: {
       if (digest(content) !== block.digest)
         throw new Error(`Required context block changed: ${block.id}`);
       if (
-        opts.retained?.source_digest === expected.source_digest &&
+        opts.session_id &&
+        opts.retained?.session_id === opts.session_id &&
+        opts.retained.boundary_digest === workOrderContextBoundaryDigest(opts.order) &&
         opts.retained.blocks.get(block.id) === block.digest
       )
         return [];
       return [{ ...block, content }];
     });
+}
+
+/** A live transport must acknowledge delivery before retaining blocks across work orders. */
+export function workOrderContextBoundaryDigest(order: AgentWorkOrderV2): string {
+  return digest({
+    task_id: order.task.id,
+    work_item_id: order.task.work_item_id ?? null,
+    role: order.role,
+    authority: order.authority,
+    canonical_binding: order.canonical_binding ?? null,
+  });
 }

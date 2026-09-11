@@ -4,6 +4,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  validateSupervisorExecutionEpisodeJournal,
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 
@@ -34,7 +35,9 @@ function journal(): SupervisorExecutionEpisodeJournal {
 
 function completeAgent(opts: {
   journal: SupervisorExecutionEpisodeJournal;
-  role: "EXECUTOR" | "EVALUATOR";
+  role: "PLANNER" | "EXECUTOR" | "EVALUATOR";
+  failed?: boolean;
+  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
   fingerprint: string;
   usage?: {
     input_tokens: number;
@@ -59,6 +62,8 @@ function completeAgent(opts: {
     operation_key: started.operation_key,
     result: { status: "completed" },
     usage: opts.usage,
+    failed: opts.failed,
+    provider_usage: opts.provider_usage,
     now: "2026-08-03T00:00:02.000Z",
   });
 }
@@ -79,6 +84,90 @@ const create = (cached?: number) =>
   });
 
 describe("completed task token usage projection", () => {
+  it("persists provider identity and rejects usage replay across roles", () => {
+    const provider = {
+      provider: "codex",
+      run_id: "run-1",
+      work_order_id: "work-1",
+      thread_id: "thread-1",
+      turn_id: "turn-1",
+    };
+    const usage = {
+      input_tokens: 10,
+      output_tokens: 5,
+      total_tokens: 15,
+      visible_output_tokens: 2,
+      reasoning_tokens: 3,
+      cached_input_tokens: 7,
+    };
+    const completed = completeAgent({
+      journal: journal(),
+      role: "EXECUTOR",
+      fingerprint: fingerprintA,
+      usage,
+      provider_usage: provider,
+    });
+    const persisted = JSON.stringify(completed);
+    const reloaded = validateSupervisorExecutionEpisodeJournal(JSON.parse(persisted));
+    expect(reloaded.operations[0]?.provider_usage).toEqual(provider);
+    const advanced = advanceSupervisorExecutionEpisodeState({
+      journal: reloaded,
+      state_fingerprint_digest: fingerprintB,
+      route_observation: {},
+    });
+    const finish = (binding: typeof provider) =>
+      completeAgent({
+        journal: advanced,
+        role: "EVALUATOR",
+        fingerprint: fingerprintB,
+        usage,
+        provider_usage: binding,
+      });
+    expect(() => finish(provider)).toThrow(/already bound/u);
+    expect(() => finish({ ...provider, run_id: "run-2" })).toThrow(/already bound/u);
+    const final = finish({ ...provider, run_id: "run-2", turn_id: "turn-2" });
+    expect(final.operations.map(({ role }) => role)).toEqual(["EXECUTOR", "EVALUATOR"]);
+    expect(projectTaskTokenUsage({ journal: final })).toMatchObject({
+      state: "observed",
+      total_tokens: 30,
+      cached_input_tokens: 14,
+      agent_runs: 2,
+      observed_agent_runs: 2,
+    });
+  });
+
+  it.each(["PLANNER", "EXECUTOR", "EVALUATOR"] as const)(
+    "includes a failed %s attempt in task totals and observed coverage",
+    (role) => {
+      const completed = completeAgent({
+        journal: journal(),
+        role,
+        fingerprint: fingerprintA,
+        failed: true,
+        usage: {
+          input_tokens: 10,
+          cached_input_tokens: 7,
+          output_tokens: 5,
+          visible_output_tokens: 2,
+          reasoning_tokens: 3,
+          total_tokens: 15,
+        },
+      });
+      expect(completed.operations[0]).toMatchObject({ role, status: "failed" });
+      expect(projectTaskTokenUsage({ journal: completed })).toMatchObject({
+        state: "observed",
+        input_tokens: 10,
+        cached_input_tokens: 7,
+        output_tokens: 2,
+        reasoning_tokens: 3,
+        total_tokens: 15,
+        agent_runs: 1,
+        observed_agent_runs: 1,
+        cached_input_observed_agent_runs: 1,
+      });
+    },
+  );
+
   it("distinguishes observed zero cached input from missing cache telemetry", () => {
     expect(create()).toMatchObject({
       cached_input_tokens: null,
