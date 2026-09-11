@@ -1,10 +1,10 @@
 ---
 id: "202609111943-GH8BV2"
 title: "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   note: "host_user_decision=sha256:3930e46c72abef10d21cfda7f2921700141030e4cc5c157cb76bdcaff9aa22c1"
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-11T20:33:13.654Z"
+  updated_at: "2026-09-11T22:09:49.744Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -202,9 +202,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-3"
       - "verification_recovery:verification-record"
-commit:
-  hash: "d4e7acc4ec708b1319041730c4ac5a0cd1ba0567"
-  message: "🚧 GH8BV2 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -215,6 +213,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: d4e7acc4ec70. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is verified, but the mandatory full local CI check cannot complete within its current core-group timeout. Recommended action: Extend the CI scope, raise the operator-tunable default group timeout with a contract regression, and rerun the mandatory full CI check. Requested scope: roots=packages/agentplane/src/commands/release/release-ci-contract.test.ts,scripts/checks/run-local-ci.mjs; repository effects=ci; request digest=sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779. Agentplane receipt: external-agent-blocker/tr_def2c6037a23c6b43c73d2534644cd14/sha256:4208e53ef8579adaeaaa7cd4a3551c4dc16d9cf9462654d85ccc847ff5a1f17d/sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779."
 events:
   -
     type: "status"
@@ -245,8 +246,21 @@ events:
     to: "DOING"
     note: "Implementation committed: d4e7acc4ec70. CLI accepted one state-bound external-agent semantic result."
     commit: "d4e7acc4ec708b1319041730c4ac5a0cd1ba0567"
+  -
+    type: "verify"
+    at: "2026-09-11T22:09:49.744Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-11T22:12:04.322Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is verified, but the mandatory full local CI check cannot complete within its current core-group timeout. Recommended action: Extend the CI scope, raise the operator-tunable default group timeout with a contract regression, and rerun the mandatory full CI check. Requested scope: roots=packages/agentplane/src/commands/release/release-ci-contract.test.ts,scripts/checks/run-local-ci.mjs; repository effects=ci; request digest=sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779. Agentplane receipt: external-agent-blocker/tr_def2c6037a23c6b43c73d2534644cd14/sha256:4208e53ef8579adaeaaa7cd4a3551c4dc16d9cf9462654d85ccc847ff5a1f17d/sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779."
 doc_version: 3
-doc_updated_at: "2026-09-11T21:46:08.752Z"
+doc_updated_at: "2026-09-11T22:12:04.322Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -272,6 +286,51 @@ sections:
     Attempts: 1
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:ecb28dd9c0589d52f6e6889678ff368711edad3272d6be70a58163d57c76bf7f
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+    - old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-11T22:09:49.744Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:3009e183de917e652c4ec72cb61d7a27fd49f6900d2e54d1fe99507b2d64ca01
 
     Details:
 
@@ -338,6 +397,21 @@ extensions:
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
     status: "active"
     task_id: "202609111943-GH8BV2"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:4208e53ef8579adaeaaa7cd4a3551c4dc16d9cf9462654d85ccc847ff5a1f17d"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The required full CI check reproducibly times out before the passing core suite completes. The narrow recovery changes only the default timeout and its existing contract assertion."
+      repository_effects:
+        - "ci"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+        - "scripts/checks/run-local-ci.mjs"
+    request_digest: "sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_def2c6037a23c6b43c73d2534644cd14"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -502,7 +576,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 8
+    event_cursor: 11
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -524,12 +598,12 @@ extensions:
 
         Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
       task_id: "202609111943-GH8BV2"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 11
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-11T21:46:08.752Z"
+    updated_at: "2026-09-11T22:12:04.322Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -624,6 +698,30 @@ extensions:
         mutation_id: "compatibility:sha256:0a91f3ccba5dd35bef5852bcdba2342a817c951411ce0ad1274f0a445503ce4b"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:252aa0b5858301231a2ef0dee15bb605a2de098ffd6b5c8a64de1aa82340bdc2:
+        aggregate_digest: "sha256:db68d273e142ad8a46f1f7cf76c6d318cc4d54baf89aea20c258c7d03e14528a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T22:12:04.322Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_05774769785cfc8807188580"
+          mutation_id: "compatibility:sha256:252aa0b5858301231a2ef0dee15bb605a2de098ffd6b5c8a64de1aa82340bdc2"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 12
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:252aa0b5858301231a2ef0dee15bb605a2de098ffd6b5c8a64de1aa82340bdc2"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:259eed4137df73f019c169dba7f6d108c2e44f42404ef5bbc10dd35af5f8aa13:
@@ -770,6 +868,54 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609111943-GH8BV2"
+      compatibility:sha256:ace41ca515b7d6cb4e1428530de8b5ebbfa279f90dcab8c4c7d5bb9f40c8eea9:
+        aggregate_digest: "sha256:e898816870aea7be41261c1783b7c2a4d1f3e864ca141dc316d5de2ca72d165c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T22:12:04.322Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_fa1e3b55de6166118ad90e8a"
+          mutation_id: "compatibility:sha256:ace41ca515b7d6cb4e1428530de8b5ebbfa279f90dcab8c4c7d5bb9f40c8eea9"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 13
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ace41ca515b7d6cb4e1428530de8b5ebbfa279f90dcab8c4c7d5bb9f40c8eea9"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:b2f026350d6983a56a4b4767119d34f95d9b221787eb2f2198d2c523156efef5:
+        aggregate_digest: "sha256:6654cc699de9dd730fbd05ebb4cb795d1e3f947020dd80aa4e31029a96fbbbea"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T22:09:52.683Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_280b2e5431c9774b0e74958d"
+          mutation_id: "compatibility:sha256:b2f026350d6983a56a4b4767119d34f95d9b221787eb2f2198d2c523156efef5"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 11
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:b2f026350d6983a56a4b4767119d34f95d9b221787eb2f2198d2c523156efef5"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
       compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7:
         aggregate_digest: "sha256:ca804db2f2d764d6b60e9211048c632aa2d85e4c992a47084037862759226d8f"
         event:
@@ -821,8 +967,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "d4e7acc4ec708b1319041730c4ac5a0cd1ba0567"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -866,6 +1010,51 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:ecb28dd9c0589d52f6e6889678ff368711edad3272d6be70a58163d57c76bf7f
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+- old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-11T22:09:49.744Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:3009e183de917e652c4ec72cb61d7a27fd49f6900d2e54d1fe99507b2d64ca01
 
 Details:
 
