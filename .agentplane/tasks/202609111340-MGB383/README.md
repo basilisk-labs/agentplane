@@ -4,7 +4,7 @@ title: "Harden the post-release evidence close-tail under branch protection for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -107,7 +107,9 @@ execution_contract:
       - "packages/agentplane"
       - "scripts"
     changed_paths:
+      - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
       - "packages/agentplane/src/commands/release/verify-release-evidence-pr-script.test.ts"
+      - "scripts/lib/next-development-version.mjs"
       - "scripts/workflow/verify-release-evidence-pr.mjs"
     external_effects: []
     repository_effects:
@@ -164,12 +166,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:0647a1831b3858bc8e3ee50c75796d33ba932b0aee02b1200a4b3ccc3773a96e"
+      digest: "sha256:bda7ce45d3e95a62a0d511d902535e5279c23272e1c58fdaa29fe2ebdc9c4276"
       escalation_reasons:
         - "central_component:.github/workflows/publish.yml"
         - "central_component:scripts/lib/next-development-version.mjs"
         - "central_component:scripts/release/open-next-development-version.mjs"
         - "central_component:scripts/workflow/verify-release-evidence-pr.mjs"
+        - "central_path:scripts/lib/next-development-version.mjs"
         - "central_path:scripts/workflow/verify-release-evidence-pr.mjs"
         - "effect_ci"
         - "effect_release_metadata"
@@ -185,7 +188,9 @@ execution_contract:
           - "packages/agentplane"
           - "scripts"
         changed_files:
+          - "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts"
           - "packages/agentplane/src/commands/release/verify-release-evidence-pr-script.test.ts"
+          - "scripts/lib/next-development-version.mjs"
           - "scripts/workflow/verify-release-evidence-pr.mjs"
         external_effects: []
         repository_effects:
@@ -227,11 +232,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "2ce9ad411025921a1b82b7f8b383501fd655d342"
+  message: "🚧 MGB383 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 2ce9ad411025. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -254,9 +264,17 @@ events:
     from: "DOING"
     to: "DOING"
     commit: "6f127b5ad60646d6233d08ec333b16035bc40279"
+  -
+    type: "status"
+    at: "2026-09-11T18:53:27.398Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 2ce9ad411025. CLI accepted one state-bound external-agent semantic result."
+    commit: "2ce9ad411025921a1b82b7f8b383501fd655d342"
 doc_version: 3
-doc_updated_at: "2026-09-11T18:51:27.640Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-11T18:53:27.398Z"
+doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #4848 is still relevant on current main. The release follow-up stages version surfaces but does not refresh or stage scripts/baselines/v0.7-compatibility-candidate.json, and verify-release-evidence-pr still publishes a synthetic PR verification check after workflow_dispatch instead of obtaining a native pull_request status accepted by branch protection. Make the generated next-development diff Prettier-clean, refresh and stage the compatibility candidate whenever the version surface advances, add a pre-push/pre-PR contract gate, and drive the close-tail through a native pull_request verification with regression coverage for action_required or empty native rollup. Do not weaken branch protection or use admin bypass. Issue: https://github.com/basilisk-labs/agentplane/issues/4848"
 sections:
   Summary: |-
@@ -614,7 +632,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111340-MGB383"
-    event_cursor: 6
+    event_cursor: 8
     final_validation: null
     id: "202609111340-MGB383"
     intent:
@@ -634,9 +652,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 9
+    revision: 11
     schema_version: 1
-    updated_at: "2026-09-11T18:51:38.731Z"
+    updated_at: "2026-09-11T18:53:27.398Z"
     work_items:
       work-native-pr-verification:
         attempt: 1
@@ -789,6 +807,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609111340-MGB383"
+      compatibility:sha256:44e73b17559a911182830f469995e7c2b4f7ddfa14a274ec0bddbeda00b4bba6:
+        aggregate_digest: "sha256:e31ebe03695eb0b6d40a94cbdf7acd2574eaea9197b7dc2846dd7af737bbe0b7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T18:53:27.398Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_0790bf8c2406c825b082efc3"
+          mutation_id: "compatibility:sha256:44e73b17559a911182830f469995e7c2b4f7ddfa14a274ec0bddbeda00b4bba6"
+          plan_digest: "sha256:561ecf6a31e5da0501ae93d26c9f884af477f46a4b17250d7c9b5d40ae1f24fa"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111340-MGB383"
+          task_revision: 10
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:44e73b17559a911182830f469995e7c2b4f7ddfa14a274ec0bddbeda00b4bba6"
+        next_revision: 11
+        previous_revision: 10
+        schema_version: 1
+        task_id: "202609111340-MGB383"
       compatibility:sha256:aa8960213bb9882caf65594e4072847419b2b1afdb3e9e1a37122e775b307af0:
         aggregate_digest: "sha256:91d2efe8c5305283b14ee4b32d22802ae9727e5f953e8a12b10b54752abafd51"
         event:
@@ -861,6 +903,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609111340-MGB383"
+      compatibility:sha256:f99fa24a918250c2b18f1b78c15bc156205db81c62c3d943da47ace4b0b45559:
+        aggregate_digest: "sha256:245f4b0e3498a8e207e753962386896bdd2d3be0d53a257e81d3ec6f33b78a48"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T18:53:27.398Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_6b7231298fd505a6dc694255"
+          mutation_id: "compatibility:sha256:f99fa24a918250c2b18f1b78c15bc156205db81c62c3d943da47ace4b0b45559"
+          plan_digest: "sha256:561ecf6a31e5da0501ae93d26c9f884af477f46a4b17250d7c9b5d40ae1f24fa"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111340-MGB383"
+          task_revision: 9
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f99fa24a918250c2b18f1b78c15bc156205db81c62c3d943da47ace4b0b45559"
+        next_revision: 10
+        previous_revision: 9
+        schema_version: 1
+        task_id: "202609111340-MGB383"
       external-result:work-order-202609111340-MGB383-executor-45a8e43f6c5503dd1507e90d:
         aggregate_digest: "sha256:1dcf022444eaee223e044cbceb43c79a414774d089c945b22b7a8426e8ce41c6"
         event:
@@ -889,7 +955,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "6f127b5ad60646d6233d08ec333b16035bc40279"
+    hash: "2ce9ad411025921a1b82b7f8b383501fd655d342"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
