@@ -9,6 +9,7 @@ import type { RouteBlocker } from "./route-oracle.js";
 import {
   qualityReviewRequiresImplementationRework,
   qualityReworkHasNewVerification,
+  verificationReworkHasNewImplementation,
 } from "./route-decision-verification.js";
 import { cliOperationStep } from "./workflow-step-authority.js";
 import {
@@ -170,8 +171,9 @@ export function approvalStep(opts: {
 
 export function directStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
+  const taskIsDoing = String(state.task.status).toUpperCase() === "DOING";
   if (
-    String(state.task.status).toUpperCase() === "DOING" &&
+    taskIsDoing &&
     state.task.verification?.state === "ok" &&
     !hasUninitializedTaskBaseline(state.task) &&
     incompleteRequiredWorkItems(taskCentricAggregateFromExtensions(state.task.extensions)).length >
@@ -193,38 +195,39 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: null,
     });
   }
-  if (
+  const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
+  const verificationRequiresRework =
+    state.task.verification?.state === "needs_rework" &&
+    !verificationReworkHasNewImplementation(state.task);
+  const qualityReviewRequiresRework =
     state.task.verification?.state === "ok" &&
-    String(state.task.status).toUpperCase() === "DOING"
-  ) {
-    const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
-    if (
-      !reviewIsStale &&
-      qualityReviewRequiresImplementationRework(state.task) &&
-      !qualityReworkHasNewVerification(state.task)
-    ) {
-      return agentEpisodeStep({
-        state,
-        id: "agent.direct_implementation_rework",
-        code: "implementation_rework_required",
-        phase: "implementation_rework_required",
-        checkout: "current_checkout",
-        role: "CODER",
-        purpose: "implementation_rework",
-        summary: "apply the repository-fixable EVALUATOR findings before reverification",
-        objective:
-          "Implement the bounded evaluator recovery context, then return control for fresh deterministic verification.",
-        semanticMutationAllowed: true,
-        mustNot: [
-          "do not rerun the unchanged quality-review episode before implementation changes",
-          "do not preserve stale verification as evidence for the revised implementation",
-        ],
-        returnControlWhen:
-          "after CODER records the revised implementation; then recompute the route for TESTER verification",
-        evidenceMissing: ["verified_implementation_rework"],
-        selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
-      });
-    }
+    !reviewIsStale &&
+    qualityReviewRequiresImplementationRework(state.task) &&
+    !qualityReworkHasNewVerification(state.task);
+  if (taskIsDoing && (verificationRequiresRework || qualityReviewRequiresRework)) {
+    return agentEpisodeStep({
+      state,
+      id: "agent.direct_implementation_rework",
+      code: "implementation_rework_required",
+      phase: "implementation_rework_required",
+      checkout: "current_checkout",
+      role: "CODER",
+      purpose: "implementation_rework",
+      summary: "apply the repository-fixable findings before reverification",
+      objective:
+        "Implement the bounded recovery context or return a plan refinement for an approved task-contract correction, then return control for fresh deterministic verification.",
+      semanticMutationAllowed: true,
+      mustNot: [
+        "do not rerun unchanged verification or quality-review work before implementation or approved task-contract changes",
+        "do not preserve stale verification as evidence for the revised implementation or task contract",
+      ],
+      returnControlWhen:
+        "after CODER records the revised implementation or approved task-contract correction; then recompute the route for TESTER verification",
+      evidenceMissing: ["verified_implementation_rework"],
+      selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
+    });
+  }
+  if (state.task.verification?.state === "ok" && taskIsDoing) {
     if (reviewIsStale || state.task.quality_review?.state !== "pass") {
       return agentEpisodeStep({
         state,
