@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -83,10 +83,17 @@ execution_contract:
       - "packages/agentplane/src/runner"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/run-render.test.ts"
+      - "packages/agentplane/src/commands/task/run-render.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -121,16 +128,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:fb2175d34571d609a7f429de2c09adf4e43f35a74127b81f0c1bdc8a0dbf78aa"
+      digest: "sha256:c726e8f34304ace275c9139c07dfb400fb5add5070a9f9168a270c6f4f7a9920"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/run-render.test.ts"
+          - "packages/agentplane/src/commands/task/run-render.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -161,11 +175,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "4f367ae362e1b415069e95b5edbfee4eb18d6ad5"
+  message: "🚧 ZJ6AFT task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 4f367ae362e1. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -174,9 +193,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-11T14:40:45.882Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 4f367ae362e1. CLI accepted one state-bound external-agent semantic result."
+    commit: "4f367ae362e1b415069e95b5edbfee4eb18d6ad5"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:09:51.181Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-11T14:40:45.882Z"
+doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887"
 sections:
   Summary: |-
@@ -406,7 +433,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111337-ZJ6AFT"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609111337-ZJ6AFT"
     intent:
@@ -426,9 +453,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-11T14:09:51.181Z"
+    updated_at: "2026-09-11T14:40:45.882Z"
     work_items:
       runner-activity-status-and-safety:
         attempt: 0
@@ -492,6 +519,54 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:89b21d3efff39b99a02446c3f80b4b3e5cb3b05b9c5d9b574b7279640fc34da5:
+        aggregate_digest: "sha256:a227902057cce05baa8e19efb657b01f6f48acccc9529373787413a2c1d0b506"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:40:45.882Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b9d845b16f2c9ac9317fef66"
+          mutation_id: "compatibility:sha256:89b21d3efff39b99a02446c3f80b4b3e5cb3b05b9c5d9b574b7279640fc34da5"
+          plan_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:89b21d3efff39b99a02446c3f80b4b3e5cb3b05b9c5d9b574b7279640fc34da5"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:91a49517da51ee69729eb1edf8b892e2916d5c307f68f72dc9cb61e3aa36b3c1:
+        aggregate_digest: "sha256:a96992522ce4d6c910c79dbecbac904433b11c69be409952c61579d5a9ebf8a2"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:40:45.882Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_11d6e972a0c0ff6a2eabd2c0"
+          mutation_id: "compatibility:sha256:91a49517da51ee69729eb1edf8b892e2916d5c307f68f72dc9cb61e3aa36b3c1"
+          plan_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:91a49517da51ee69729eb1edf8b892e2916d5c307f68f72dc9cb61e3aa36b3c1"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
       compatibility:sha256:b16b3dfe0e34f8dd8e2cf8637e7ce63044a6fcc44ac8dc404450b640898b5390:
         aggregate_digest: "sha256:a71d85f7d82ff5a8b4acae280e985f1f5ad15aaa9eb0ed2234ae271f9c9452d1"
         event:
@@ -519,6 +594,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "4f367ae362e1b415069e95b5edbfee4eb18d6ad5"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
