@@ -15,8 +15,8 @@ GitHub issue #4893 remains relevant on current main. After agentplane verify <ta
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>

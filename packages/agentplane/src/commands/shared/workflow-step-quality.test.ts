@@ -424,7 +424,7 @@ describe("quality evidence refresh route", () => {
     });
   });
 
-  it("returns direct verification rework to TESTER after a newer implementation event", () => {
+  it("returns direct verification rework to fresh TESTER verification after a newer implementation event", () => {
     const step = reduceRouteState(
       routeState({
         workflowMode: "direct",
