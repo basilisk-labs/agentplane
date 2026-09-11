@@ -50,6 +50,7 @@ const testEnv = {
   GIT_COMMITTER_EMAIL: "agentplane-ci@example.com",
 };
 const VITEST_TIMEOUT_MS = "60000";
+// Include bounded headroom for core-suite setup and lint around the Vitest run.
 const DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS = 20 * 60 * 1000;
 const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS,

@@ -15,8 +15,8 @@ Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emi
 
 ## Verification
 
-- State: pending
-- Note: Invalidated by USER-approved execution scope extension.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,8 +31,8 @@ Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emi
  .../agentplane/src/commands/task/scope-extend.ts   |  1 +
  .../src/runtime/task-routing/resolve.test.ts       | 35 ++++++++++++++++++++++
  .../agentplane/src/runtime/task-routing/resolve.ts | 11 +++++--
- scripts/checks/run-local-ci.mjs                    |  2 +-
- 5 files changed, 47 insertions(+), 4 deletions(-)
+ scripts/checks/run-local-ci.mjs                    |  3 +-
+ 5 files changed, 48 insertions(+), 4 deletions(-)
 ```
 
 </details>
