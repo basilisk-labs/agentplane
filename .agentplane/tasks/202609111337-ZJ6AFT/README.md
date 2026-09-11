@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -688,19 +688,59 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
-    revision: 15
+    revision: 16
     schema_version: 1
-    updated_at: "2026-09-11T14:55:19.875Z"
+    updated_at: "2026-09-11T14:55:32.182Z"
     work_items:
       runner-activity-status-and-safety:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "runner-activity-status-and-safety"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:7aa5db9c949804392552b0f2d0cfd62545adb16562b76a3d1501a5fb675d5238"
+            id: "verified-runner-activity-status-and-safety"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609111337-ZJ6AFT"
+              work_item_id: "runner-activity-status-and-safety"
+            provenance:
+              - "sha256:03f98144ae18188602e45bac4aa6ea41c27fb357f743e4d5a4e5fd34b9956fb9"
+              - ".agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:1b797f2f9fd928a0c5dc3e89daeb22d8b76e98e52ba983bc2365d54cb9b97e66"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json"
+              check_id: "runner-activity-regressions"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-11T14:55:32.166Z"
+              repository_snapshot_digest: "sha256:1b797f2f9fd928a0c5dc3e89daeb22d8b76e98e52ba983bc2365d54cb9b97e66"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-11T14:55:32.166Z"
+              repository_snapshot_digest: "sha256:1b797f2f9fd928a0c5dc3e89daeb22d8b76e98e52ba983bc2365d54cb9b97e66"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -738,6 +778,23 @@ extensions:
         task_id: "202609111337-ZJ6AFT"
         task_revision: 9
         work_item_id: null
+      -
+        at: "2026-09-11T14:55:32.182Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:3c52adb23619fbc834f8bc7fe56da6a7d55ff9caaf08325c734d579f0dfa3788"
+        entity: "work_item"
+        id: "event_e00216d2e1933b7f36d5d89a"
+        mutation_id: "external-result:work-order-202609111337-ZJ6AFT-executor-e125499169ad5ed904bb70ce"
+        plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+        task_revision: 15
+        work_item_id: "runner-activity-status-and-safety"
     leases: []
     mutation_receipts:
       compatibility:sha256:06b73ca9addcdc5da6b917838f36c0fe7c122d58b9e083373da7679f33d9207d:
@@ -1002,6 +1059,30 @@ extensions:
         mutation_id: "external-result:work-order-202609111337-ZJ6AFT-executor-9ca2945c8c2b10e903b0886d"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+      external-result:work-order-202609111337-ZJ6AFT-executor-e125499169ad5ed904bb70ce:
+        aggregate_digest: "sha256:bb5fc9d0c6af0f0cb23b5d7509d74f84b9a0cb02af13531d75705bd3545b5d4d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:55:32.182Z"
+          cause_refs:
+            - "semantic-result:sha256:3c52adb23619fbc834f8bc7fe56da6a7d55ff9caaf08325c734d579f0dfa3788"
+          entity: "work_item"
+          from: "READY"
+          id: "event_e00216d2e1933b7f36d5d89a"
+          mutation_id: "external-result:work-order-202609111337-ZJ6AFT-executor-e125499169ad5ed904bb70ce"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 15
+          to: "COMPLETED"
+          work_item_id: "runner-activity-status-and-safety"
+        mutation_id: "external-result:work-order-202609111337-ZJ6AFT-executor-e125499169ad5ed904bb70ce"
+        next_revision: 16
+        previous_revision: 15
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
       plan-refinement:work-order-202609111337-ZJ6AFT-executor-8aa5bf0278c8f57c3049bca5:
