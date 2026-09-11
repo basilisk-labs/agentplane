@@ -1,0 +1,556 @@
+---
+id: "202609111943-GH8BV2"
+title: "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 5
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "intake"
+task_kind: "code"
+mutation_scope: "code"
+blueprint_request: "code.branch_pr"
+verify:
+  - "bun run typecheck"
+  - "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts --maxWorkers=1"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-09-11T19:49:26.964Z"
+  updated_by: "HOST:codex:USER"
+  note: "host_user_decision=sha256:3930e46c72abef10d21cfda7f2921700141030e4cc5c157cb76bdcaff9aa22c1"
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "release_metadata"
+      - "security_boundary"
+    writable_roots:
+      - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "Hosted integration is required because task scope extension is a protected lifecycle path."
+      - "The change is local to execution-contract resolution and scope-extension regression coverage."
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    requirements_uncertainty: "bounded"
+    reversibility: "reversible"
+    schema_version: 2
+    scope_roots:
+      - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+  observed:
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
+    external_effects: []
+    repository_effects: []
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "repository_branch_pr_floor"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
+          - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+          - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:repository_write"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "reversible"
+      digest: "sha256:3960bca190dfa5e1fcc28100a7fea67eace108480a63a2dc8d0e1cab2cd6f8d0"
+      escalation_reasons:
+        - "central_component:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+        - "central_component:packages/agentplane/src/runtime/task-routing/resolve.ts"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components: []
+        changed_files: []
+        external_effects: []
+        repository_effects: []
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: false
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "full_regression"
+        - "hosted_integration"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:repository_write"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-09-11T19:51:47.487Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+doc_version: 3
+doc_updated_at: "2026-09-11T19:51:47.487Z"
+doc_updated_by: "CODER"
+description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
+sections:
+  Summary: |-
+    Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths
+
+    Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
+  Scope: |-
+    - In scope: Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
+    - Out of scope: unrelated refactors not required for "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths".
+  Plan: "Plan one narrow legacy-compatible path for exact effect-only scope extensions."
+  Verify Steps: |-
+    1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1`. Expected: all focused legacy scope-extension and explicit-declaration regressions pass.
+    2. Run `bun run typecheck`. Expected: TypeScript build check passes.
+    3. Run `git diff --check`. Expected: no whitespace errors.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  agentplane.execution_grant:
+    actor: "HOST:codex:USER"
+    approval_evidence_digest: "sha256:3930e46c72abef10d21cfda7f2921700141030e4cc5c157cb76bdcaff9aa22c1"
+    approval_kind: "host_user_decision"
+    capabilities:
+      - "provider.merge"
+      - "provider.pr"
+      - "repository.integrate"
+      - "repository.write"
+      - "task.lifecycle"
+      - "task.scope.extend"
+    completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
+    digest: "sha256:9984f474dc1eb74c62d87e4c23f1c049d0959d5715580f22b13c79300ef60a5e"
+    grant_id: "23ef151e-7dec-4cf7-9826-3cf52c3cc6cb"
+    issued_at: "2026-09-11T19:49:26.964Z"
+    kind: "agentplane.execution_grant"
+    plan_digest: "sha256:48ea490a49d6d85d8b6275e5fdad8aae2c11fddc776bcb3828a8e7dc597b7dca"
+    plan_revision: 3
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
+    status: "active"
+    task_id: "202609111943-GH8BV2"
+  agentplane.task_centric:
+    current_plan:
+      approval:
+        approved_at: "2026-09-11T19:49:26.964Z"
+        approved_by: "HOST:codex:USER"
+        approved_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+        policy_facts:
+          - "host_user_decision"
+        state: "approved"
+      created_at: "2026-09-11T19:45:13.822Z"
+      digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+      proposal:
+        assumptions:
+          - "Preserving a legacy contract's already-empty path scope is not a repository-path expansion."
+        planning_baseline:
+          captured_at: "2026-09-11T19:43:34.734Z"
+          config_digest: null
+          context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+          digest: "sha256:94e1caf85416c365f0b5469938954cd607d92e5831cac3055910fdf3bcad710b"
+          dirty_paths:
+            - ".agentplane/tasks/202609111341-FK9C2T/README.md"
+            - ".agentplane/tasks/202609111341-SED9K5/README.md"
+            - ".agentplane/tasks/202609111502-4XSWZQ/README.md"
+            - ".agentplane/tasks/202609111943-GH8BV2/README.md"
+          git:
+            kind: "commit"
+            ref: null
+            sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
+          policy_digest: null
+          schema_version: 1
+          task_history_cursor: "task-revision:1"
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+        top_level_validation:
+          checks:
+            -
+              capability: "task.verify"
+              command: "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1"
+              id: "scope-extension-regressions"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 600000
+            -
+              capability: "task.verify"
+              command: "bun run typecheck"
+              id: "typecheck"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 300000
+          criteria:
+            -
+              check_ids:
+                - "scope-extension-regressions"
+              description: "An exact USER-approved repository-effect-only request applies to a legacy execution contract with empty scope roots, retains the existing empty path scope, and adds only the requested effect."
+              id: "legacy-effect-only-extension"
+              required: true
+            -
+              check_ids:
+                - "scope-extension-regressions"
+                - "typecheck"
+              description: "An explicit agent-declared execution contract with repository effects and empty scope roots remains rejected, and exact request matching and USER authority checks remain unchanged."
+              id: "explicit-contract-fail-closed"
+              required: true
+          evidence_fingerprint: "sha256:94e1caf85416c365f0b5469938954cd607d92e5831cac3055910fdf3bcad710b"
+          schema_version: 1
+        unresolved_questions: []
+        work_items:
+          schema_version: 1
+          work_items:
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "scope-extension-regressions"
+                  description: "An exact USER-approved repository-effect-only request applies to a legacy execution contract with empty scope roots, retains the existing empty path scope, and adds only the requested effect."
+                  id: "legacy-effect-only-extension"
+                  required: true
+                -
+                  check_ids:
+                    - "scope-extension-regressions"
+                    - "typecheck"
+                  description: "An explicit agent-declared execution contract with repository effects and empty scope roots remains rejected, and exact request matching and USER authority checks remain unchanged."
+                  id: "explicit-contract-fail-closed"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 140000
+                optional_sources:
+                  - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+                required_sources:
+                  - "packages/agentplane/src/commands/task/scope-extend.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                  - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+                  - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+                symbol_hints:
+                  - "extendBlockedTaskExecutionContract"
+                  - "resolveTaskExecutionContract"
+              depends_on: []
+              expected_outputs:
+                - "verified-legacy-effect-only-scope-extension"
+              id: "preserve-legacy-effect-only-scope"
+              objective: "Preserve legacy empty path scope when task scope extension re-resolves an existing legacy contract, while keeping the non-empty scope invariant for explicit agent declarations. Add focused positive and negative regressions."
+              optional: false
+              priority: 1
+              required_inputs: []
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/scope-extend.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/runtime/task-routing/resolve.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+              risk: "high"
+              scope_roots:
+                - "packages/agentplane/src/commands/task/scope-extend.ts"
+                - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+                - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+                - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1"
+                    id: "scope-extension-regressions"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bun run typecheck"
+                    id: "typecheck"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 300000
+                criteria:
+                  -
+                    check_ids:
+                      - "scope-extension-regressions"
+                    description: "An exact USER-approved repository-effect-only request applies to a legacy execution contract with empty scope roots, retains the existing empty path scope, and adds only the requested effect."
+                    id: "legacy-effect-only-extension"
+                    required: true
+                  -
+                    check_ids:
+                      - "scope-extension-regressions"
+                      - "typecheck"
+                    description: "An explicit agent-declared execution contract with repository effects and empty scope roots remains rejected, and exact request matching and USER authority checks remain unchanged."
+                    id: "explicit-contract-fail-closed"
+                    required: true
+                evidence_fingerprint: "sha256:94e1caf85416c365f0b5469938954cd607d92e5831cac3055910fdf3bcad710b"
+                schema_version: 1
+      revision: 1
+      schema_version: 1
+      task_id: "202609111943-GH8BV2"
+    event_cursor: 3
+    final_validation: null
+    id: "202609111943-GH8BV2"
+    intent:
+      acceptance_criteria:
+        -
+          check_ids: []
+          description: "bun run typecheck"
+          id: "legacy-1"
+          required: true
+        -
+          check_ids: []
+          description: "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts --maxWorkers=1"
+          id: "legacy-2"
+          required: true
+      captured_at: "2026-09-11T19:43:18.644Z"
+      constraints: []
+      request: |-
+        Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths
+
+        Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
+      task_id: "202609111943-GH8BV2"
+    lifecycle: "ACTIVE"
+    plan_amendments: []
+    plan_history: []
+    revision: 5
+    schema_version: 1
+    updated_at: "2026-09-11T19:51:47.487Z"
+    work_items:
+      preserve-legacy-effect-only-scope:
+        attempt: 0
+        claim_id: null
+        id: "preserve-legacy-effect-only-scope"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
+  agentplane.task_centric_runtime:
+    checkpoints: []
+    events: []
+    leases: []
+    mutation_receipts:
+      compatibility:sha256:3ac1cba4edfb9cf776ceed2dbc47df6cafc5ab173013820c7f4d1eb75a4cfc5c:
+        aggregate_digest: "sha256:d6642c89e5ba5e35dedcd67107160aaafa028ff40ff66e96270ff519d8e2d2c4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T19:48:22.160Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_99c24a5c124fee01214ea7b3"
+          mutation_id: "compatibility:sha256:3ac1cba4edfb9cf776ceed2dbc47df6cafc5ab173013820c7f4d1eb75a4cfc5c"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 2
+          to: "AWAITING_PLAN_APPROVAL"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:3ac1cba4edfb9cf776ceed2dbc47df6cafc5ab173013820c7f4d1eb75a4cfc5c"
+        next_revision: 3
+        previous_revision: 2
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:46ec0c6112128ff73c2753601e54acd1fc06636954c9f809523be007c2f3a03e:
+        aggregate_digest: "sha256:1bae771e639f7a0a2b6b9613c6182eaefc68835936313c02d32915948ab6d2ed"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T19:48:22.168Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_ffbc12bfb7ec8c1e34e04b98"
+          mutation_id: "compatibility:sha256:46ec0c6112128ff73c2753601e54acd1fc06636954c9f809523be007c2f3a03e"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 3
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:46ec0c6112128ff73c2753601e54acd1fc06636954c9f809523be007c2f3a03e"
+        next_revision: 4
+        previous_revision: 3
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7:
+        aggregate_digest: "sha256:ca804db2f2d764d6b60e9211048c632aa2d85e4c992a47084037862759226d8f"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T19:51:47.487Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_312a8ce68ab201426a25732d"
+          mutation_id: "compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 4
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:eecd0dbcf34eaba02c9a0d38e753a7569e53afd5d40363eef22a78313c470ae7"
+        next_revision: 5
+        previous_revision: 4
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+    pending_effects: []
+    retry_budgets: []
+    schema_version: 1
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    source: "creation_checkout"
+  workflow_route_baseline:
+    start_head_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
+    version: 1
+id_source: "generated"
+---
+## Summary
+
+Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths
+
+Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
+
+## Scope
+
+- In scope: Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
+- Out of scope: unrelated refactors not required for "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths".
+
+## Plan
+
+Plan one narrow legacy-compatible path for exact effect-only scope extensions.
+
+## Verify Steps
+
+1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1`. Expected: all focused legacy scope-extension and explicit-declaration regressions pass.
+2. Run `bun run typecheck`. Expected: TypeScript build check passes.
+3. Run `git diff --check`. Expected: no whitespace errors.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

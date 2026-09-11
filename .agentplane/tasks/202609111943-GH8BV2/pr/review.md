@@ -1,0 +1,40 @@
+# PR Review
+
+Created: 2026-09-11T19:51:57.383Z
+
+## Task
+
+- Task: `202609111943-GH8BV2`
+- Title: Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope root...
+- Status: DOING
+- Branch: `task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e`
+- Canonical task record: `.agentplane/tasks/202609111943-GH8BV2/README.md`
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-11T19:51:57.383Z
+- Branch: task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../src/commands/task/scope-extend.test.ts         | 33 ++++++++++++++++++++
+ .../agentplane/src/commands/task/scope-extend.ts   |  1 +
+ .../src/runtime/task-routing/resolve.test.ts       | 35 ++++++++++++++++++++++
+ .../agentplane/src/runtime/task-routing/resolve.ts | 11 +++++--
+ 4 files changed, 78 insertions(+), 2 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
