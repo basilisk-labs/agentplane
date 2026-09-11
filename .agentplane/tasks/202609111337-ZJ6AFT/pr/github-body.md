@@ -33,10 +33,10 @@ packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxW
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/run-render.test.ts           | 157 +++++++++++++++++++++
- .../agentplane/src/commands/task/run-render.ts     |  45 ++++--
- .../src/runner/usecases/task-run-inspect.ts        | 145 +++++++++++++++++++
- 3 files changed, 339 insertions(+), 8 deletions(-)
+ .../src/commands/task/run-render.test.ts           | 167 +++++++++++++++++++++
+ .../agentplane/src/commands/task/run-render.ts     |  45 +++++-
+ .../src/runner/usecases/task-run-inspect.ts        | 145 ++++++++++++++++++
+ 3 files changed, 349 insertions(+), 8 deletions(-)
 ```
 
 </details>

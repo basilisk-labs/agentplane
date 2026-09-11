@@ -419,6 +419,16 @@ describe("task run rendering", () => {
       health: "active",
       next_safe_action: "wait_for_active_run",
     });
+    const io = captureStdIO();
+    try {
+      reportRunnerStatus(active, inspection.task_id);
+      expect(io.stdout).toMatch(/last_trace_at:\s+2026-07-24T08:09:30.000Z/u);
+      expect(io.stdout).toMatch(/last_trace_seq:\s+42/u);
+      expect(io.stdout).toMatch(/seconds_since_activity:\s+30/u);
+      expect(io.stdout).toMatch(/health:\s+active/u);
+    } finally {
+      io.restore();
+    }
 
     inspection.state.supervision!.pid = undefined;
     inspection.state.created_at = "2026-07-24T08:00:00.000Z";
