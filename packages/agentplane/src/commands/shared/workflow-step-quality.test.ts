@@ -430,7 +430,6 @@ describe("quality evidence refresh route", () => {
         workflowMode: "direct",
         task: {
           ...task,
-          commit: { hash: resume.head_sha, message: "fix: record newer direct verification repair" },
           verification: {
             state: "needs_rework",
             updated_at: "2026-07-29T14:40:00.000Z",
