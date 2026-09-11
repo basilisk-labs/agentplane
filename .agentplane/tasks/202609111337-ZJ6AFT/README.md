@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -185,7 +185,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-1"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+  message: "🚧 ZJ6AFT task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -193,6 +195,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 4f367ae362e1. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 0f58c0913c09. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -215,8 +220,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+  -
+    type: "status"
+    at: "2026-09-11T14:55:19.875Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 0f58c0913c09. CLI accepted one state-bound external-agent semantic result."
+    commit: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:53:30.120Z"
+doc_updated_at: "2026-09-11T14:55:19.875Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887"
 sections:
@@ -472,7 +485,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609111337-ZJ6AFT"
-    event_cursor: 8
+    event_cursor: 10
     final_validation: null
     id: "202609111337-ZJ6AFT"
     intent:
@@ -675,9 +688,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
-    revision: 13
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-11T14:53:30.120Z"
+    updated_at: "2026-09-11T14:55:19.875Z"
     work_items:
       runner-activity-status-and-safety:
         attempt: 0
@@ -727,6 +740,30 @@ extensions:
         work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:06b73ca9addcdc5da6b917838f36c0fe7c122d58b9e083373da7679f33d9207d:
+        aggregate_digest: "sha256:da31361d8667750cd99ad44858b5d50aa88122419c5ac3270bca6a1975df3a6d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:55:19.875Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_be4510b1e0c1c53871d58953"
+          mutation_id: "compatibility:sha256:06b73ca9addcdc5da6b917838f36c0fe7c122d58b9e083373da7679f33d9207d"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:06b73ca9addcdc5da6b917838f36c0fe7c122d58b9e083373da7679f33d9207d"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
       compatibility:sha256:1110095af15c27b2d8ad09e27b8d4205fbedb812adfd19e58f7548ea057f6d4e:
         aggregate_digest: "sha256:fe16caa5f4e9e8b822aaa51b71e88e7cdbe083b75902f4b84cd4ab6052fc64f0"
         event:
@@ -749,6 +786,30 @@ extensions:
         mutation_id: "compatibility:sha256:1110095af15c27b2d8ad09e27b8d4205fbedb812adfd19e58f7548ea057f6d4e"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:1e7c5ca311e1733edcad1b91bea2a6a89d141acc05707906883fa06ee33133fd:
+        aggregate_digest: "sha256:3c4d804d0b494dd6cfd1920e4157a0000ae78d2ba2d25a9de56e569aa2174955"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:55:19.875Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_80652e21355a031f366cf05b"
+          mutation_id: "compatibility:sha256:1e7c5ca311e1733edcad1b91bea2a6a89d141acc05707906883fa06ee33133fd"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1e7c5ca311e1733edcad1b91bea2a6a89d141acc05707906883fa06ee33133fd"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
       compatibility:sha256:3057f60e39f0dc6e5dd3e7059c577de28caca50dc82d98ec3974117f71c55103:
@@ -970,6 +1031,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
