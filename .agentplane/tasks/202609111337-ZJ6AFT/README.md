@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:9fb9ebe2a4da24b0e1ed513520103d73ab8c876cd16bc2109e5635fbcd2d8406"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-11T14:48:16.515Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -82,7 +82,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/run-render.ts"
       - "packages/agentplane/src/runner"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -94,7 +96,13 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -175,9 +183,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "4f367ae362e1b415069e95b5edbfee4eb18d6ad5"
-  message: "🚧 ZJ6AFT task: apply external agent result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -201,8 +209,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 4f367ae362e1. CLI accepted one state-bound external-agent semantic result."
     commit: "4f367ae362e1b415069e95b5edbfee4eb18d6ad5"
+  -
+    type: "verify"
+    at: "2026-09-11T14:48:16.515Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:40:45.882Z"
+doc_updated_at: "2026-09-11T14:48:43.510Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887"
 sections:
@@ -220,6 +234,41 @@ sections:
     3. Review the final diff against GitHub issue #5887. Expected: status exposes last_trace_at, last_trace_seq, seconds_since_activity, and typed health, and reclaim guidance uses the same activity evidence.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-11T14:48:16.515Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d9de6147a41da3cf89602eba88b164eef726b1d34a4464403aebf03be335f210, input_digest=sha256:2f3fa69f67a86a7db93ad3d3ee450755b80dc6f352ab55eece275d4e6134f54a
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1
+    Result: fail
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111337-ZJ6AFT declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111337-ZJ6AFT-report-trace-backed-runner-activity-and-safe-liv/.agentplane/tasks/202609111337-ZJ6AFT/blueprint/resolved-snapshot.json
+    - old_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+    - current_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111337-ZJ6AFT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111337-ZJ6AFT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -433,7 +482,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111337-ZJ6AFT"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609111337-ZJ6AFT"
     intent:
@@ -453,9 +502,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-11T14:42:20.767Z"
+    updated_at: "2026-09-11T14:48:43.501Z"
     work_items:
       runner-activity-status-and-safety:
         attempt: 1
@@ -624,6 +673,30 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:93ad5d91b8222a37a4fd4a3ee71410c20f7dd9867e77fd45b1c75d817920eac3:
+        aggregate_digest: "sha256:ec9ba3ee69423d4cec7c8c3697c65369c9625f7f88b2009144ab52704b19253d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:48:43.501Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4593fb26daf3b049bdffd75e"
+          mutation_id: "compatibility:sha256:93ad5d91b8222a37a4fd4a3ee71410c20f7dd9867e77fd45b1c75d817920eac3"
+          plan_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:93ad5d91b8222a37a4fd4a3ee71410c20f7dd9867e77fd45b1c75d817920eac3"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
       compatibility:sha256:b16b3dfe0e34f8dd8e2cf8637e7ce63044a6fcc44ac8dc404450b640898b5390:
         aggregate_digest: "sha256:a71d85f7d82ff5a8b4acae280e985f1f5ad15aaa9eb0ed2234ae271f9c9452d1"
         event:
@@ -675,8 +748,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "4f367ae362e1b415069e95b5edbfee4eb18d6ad5"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
@@ -712,6 +783,41 @@ Plan one bounded runner-activity status and reclaim-safety change with focused r
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-11T14:48:16.515Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:d9de6147a41da3cf89602eba88b164eef726b1d34a4464403aebf03be335f210, input_digest=sha256:2f3fa69f67a86a7db93ad3d3ee450755b80dc6f352ab55eece275d4e6134f54a
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1
+Result: fail
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111337-ZJ6AFT declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111337-ZJ6AFT-report-trace-backed-runner-activity-and-safe-liv/.agentplane/tasks/202609111337-ZJ6AFT/blueprint/resolved-snapshot.json
+- old_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+- current_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111337-ZJ6AFT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111337-ZJ6AFT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

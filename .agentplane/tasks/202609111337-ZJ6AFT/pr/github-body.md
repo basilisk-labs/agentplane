@@ -15,14 +15,20 @@ GitHub issue #5887 remains present on current main: task run status exposes hear
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: Declared check failed: bunx --no-install vitest run
+packages/agentplane/src/commands/task/run-render.test.ts
+packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-11T14:09:55.511Z
+- Updated: 2026-09-11T14:42:47.871Z
 - Branch: task/202609111337-ZJ6AFT/report-trace-backed-runner-activity-and-safe-liv
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
