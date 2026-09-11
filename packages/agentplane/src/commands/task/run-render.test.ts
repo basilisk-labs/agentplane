@@ -1,3 +1,7 @@
+import { mkdtemp, rm, utimes, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { captureStdIO } from "@agentplane/testkit";
@@ -354,5 +358,168 @@ describe("task run rendering", () => {
     await expect(renderRunnerStatusPayload(base)).resolves.toMatchObject({
       pid_alive: "mismatch",
     });
+  });
+
+  it("reports trace-backed health and suppresses unsafe reclaim guidance", async () => {
+    const now = Date.parse("2026-07-24T08:10:00.000Z");
+    const traceAt = "2026-07-24T08:09:30.000Z";
+    const inspection = {
+      task_id: "TASK-ACTIVITY",
+      run_id: "run-activity",
+      selection: "latest",
+      storage: "supervisor",
+      paths: {
+        run_dir: "/repo/runs/run-activity",
+        state_path: "/repo/runs/run-activity/state.json",
+        events_path: "/repo/runs/run-activity/events.jsonl",
+        trace_path: "/repo/runs/run-activity/trace.jsonl",
+        stderr_path: "/repo/runs/run-activity/stderr.log",
+        result_path: "/repo/runs/run-activity/result.json",
+        receipt_path: "/repo/runs/run-activity/execution-receipt.json",
+        bundle_path: "/repo/runs/run-activity/bundle.json",
+        bootstrap_path: "/repo/runs/run-activity/bootstrap.md",
+      },
+      repository: {
+        readTraceTextRequired: () =>
+          Promise.resolve(
+            `${JSON.stringify({ ts: traceAt, seq: 41 })}\n${JSON.stringify({ ts: traceAt, seq: 42 })}\n`,
+          ),
+        readStderrTextRequired: () => Promise.resolve(""),
+      },
+      state: {
+        status: "running",
+        mode: "execute",
+        adapter_id: "codex",
+        target: { kind: "task", task_id: "TASK-ACTIVITY" },
+        created_at: "2026-07-24T08:00:00.000Z",
+        updated_at: "2026-07-24T08:00:00.000Z",
+        timeout_policy: { wall_clock_ms: 0, idle_ms: 180_000, terminate_grace_ms: 30_000 },
+        supervision: {
+          pid: 999_997,
+          heartbeat_at: "2026-07-24T08:00:00.000Z",
+        },
+      },
+      active_claim: {
+        run_id: "run-activity",
+        operation: "execute",
+        generation: "activity-generation",
+        claimed_at: "2026-07-24T08:00:00.000Z",
+      },
+      active_claim_owner_status: "stale",
+      claimed_run_authority: "running_child_unverified",
+      recovery_lease: null,
+      task_runner_outcome: null,
+    } as unknown as LoadedTaskRunnerInspection;
+
+    const active = await renderRunnerStatusPayload(inspection, now);
+    expect(active).toMatchObject({
+      last_trace_at: traceAt,
+      last_trace_seq: 42,
+      seconds_since_activity: 30,
+      health: "active",
+      next_safe_action: "wait_for_active_run",
+    });
+    const io = captureStdIO();
+    try {
+      reportRunnerStatus(active, inspection.task_id);
+      expect(io.stdout).toMatch(/last_trace_at:\s+2026-07-24T08:09:30.000Z/u);
+      expect(io.stdout).toMatch(/last_trace_seq:\s+42/u);
+      expect(io.stdout).toMatch(/seconds_since_activity:\s+30/u);
+      expect(io.stdout).toMatch(/health:\s+active/u);
+    } finally {
+      io.restore();
+    }
+
+    inspection.state.supervision!.pid = undefined;
+    inspection.state.created_at = "2026-07-24T08:00:00.000Z";
+    inspection.state.updated_at = "2026-07-24T08:00:00.000Z";
+    inspection.state.supervision!.heartbeat_at = "2026-07-24T08:00:00.000Z";
+    inspection.repository.readTraceTextRequired = () =>
+      Promise.resolve(`${JSON.stringify({ ts: "2026-07-24T08:05:00.000Z", seq: 40 })}\n`);
+    await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
+      seconds_since_activity: 300,
+      health: "idle",
+      next_safe_action: "inspect_run_state",
+    });
+
+    inspection.state.status = "success";
+    await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
+      health: "exited",
+    });
+
+    inspection.state.status = "running";
+    inspection.state.timeout_policy.idle_ms = 0;
+    inspection.state.created_at = "unavailable";
+    inspection.state.updated_at = "unavailable";
+    inspection.state.supervision!.heartbeat_at = undefined;
+    inspection.repository.readTraceTextRequired = () => Promise.resolve("");
+    await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
+      last_trace_at: null,
+      last_trace_seq: null,
+      seconds_since_activity: null,
+      health: "unknown",
+    });
+  });
+
+  it("keeps reclaim guidance safe while stderr is recent", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-run-activity-"));
+    const stderrPath = path.join(root, "stderr.log");
+    const tracePath = path.join(root, "trace.jsonl");
+    const now = Date.parse("2026-07-24T08:10:00.000Z");
+    try {
+      await writeFile(stderrPath, "runner is still progressing\n", "utf8");
+      await utimes(stderrPath, new Date(now - 30_000), new Date(now - 30_000));
+      const inspection = {
+        task_id: "TASK-STDERR-ACTIVITY",
+        run_id: "run-stderr-activity",
+        selection: "latest",
+        storage: "supervisor",
+        paths: {
+          run_dir: root,
+          state_path: path.join(root, "state.json"),
+          events_path: path.join(root, "events.jsonl"),
+          trace_path: tracePath,
+          stderr_path: stderrPath,
+          result_path: path.join(root, "result.json"),
+          receipt_path: path.join(root, "execution-receipt.json"),
+          bundle_path: path.join(root, "bundle.json"),
+          bootstrap_path: path.join(root, "bootstrap.md"),
+        },
+        repository: {
+          readTraceTextRequired: () => Promise.resolve(""),
+          readStderrTextRequired: () => Promise.resolve("runner is still progressing\n"),
+        },
+        state: {
+          status: "running",
+          mode: "execute",
+          adapter_id: "codex",
+          target: { kind: "task", task_id: "TASK-STDERR-ACTIVITY" },
+          created_at: "2026-07-24T08:00:00.000Z",
+          updated_at: "2026-07-24T08:00:00.000Z",
+          timeout_policy: { wall_clock_ms: 0, idle_ms: 180_000, terminate_grace_ms: 30_000 },
+          supervision: { heartbeat_at: "2026-07-24T08:00:00.000Z" },
+        },
+        active_claim: {
+          run_id: "run-stderr-activity",
+          operation: "execute",
+          generation: "stderr-generation",
+          claimed_at: "2026-07-24T08:00:00.000Z",
+        },
+        active_claim_owner_status: "stale",
+        claimed_run_authority: "running_child_unverified",
+        recovery_lease: null,
+        task_runner_outcome: null,
+      } as unknown as LoadedTaskRunnerInspection;
+
+      await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
+        last_trace_at: null,
+        last_trace_seq: null,
+        seconds_since_activity: 30,
+        health: "active",
+        next_safe_action: "wait_for_active_run",
+      });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });
