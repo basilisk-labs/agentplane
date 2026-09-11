@@ -29,11 +29,13 @@ Created: 2026-09-11T18:45:55.843Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .github/workflows/publish.yml                      |  15 ++-
  .../open-next-development-version-script.test.ts   |  22 +++-
+ .../release/publish-workflow-contract.test.ts      |  17 +++-
  .../verify-release-evidence-pr-script.test.ts      |  68 +++++++------
  scripts/lib/next-development-version.mjs           |  31 +++++-
  scripts/workflow/verify-release-evidence-pr.mjs    | 111 +++++++++++----------
- 4 files changed, 150 insertions(+), 82 deletions(-)
+ 6 files changed, 180 insertions(+), 84 deletions(-)
 ```
 
 </details>

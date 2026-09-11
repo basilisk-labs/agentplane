@@ -910,6 +910,7 @@ jobs:
           git add \
             "${{ steps.release_evidence.outputs.readme_path }}" \
             .agentplane/WORKFLOW.md \
+            .agentplane/config.json \
             bun.lock \
             docs/reference/generated-reference.mdx \
             packages/agentplane/package.json \
@@ -917,7 +918,8 @@ jobs:
             packages/recipes/package.json \
             packages/recipes/src/index.ts \
             packages/spec/examples/acr.json \
-            packages/testkit/package.json
+            packages/testkit/package.json \
+            scripts/baselines/v0.7-compatibility-candidate.json
           unstaged="$(git diff --name-only)"
           if [ -n "${unstaged}" ]; then
             echo "next development version mutation left unstaged tracked files" >&2
@@ -932,6 +934,17 @@ jobs:
           git commit --no-verify -m "${commit_subject}"
           echo "created_commit=true" >> "$GITHUB_OUTPUT"
           echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Validate release evidence branch contract
+        if: steps.apply_release_evidence.outputs.created_commit == 'true'
+        run: |
+          set -euo pipefail
+          bun run format:check
+          bun run bench:compatibility:candidate:check
+          if [ -n "$(git status --short --untracked-files=no)" ]; then
+            echo "release evidence branch contract checks mutated tracked files" >&2
+            git status --short --untracked-files=no >&2
+            exit 1
+          fi
       - name: Push release evidence branch
         if: steps.apply_release_evidence.outputs.created_commit == 'true'
         run: |
