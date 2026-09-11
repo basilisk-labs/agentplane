@@ -6,7 +6,7 @@ Created: 2026-09-11T14:09:55.511Z
 
 - Task: `202609111337-ZJ6AFT`
 - Title: Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609111337-ZJ6AFT/report-trace-backed-runner-activity-and-safe-liv`
 - Canonical task record: `.agentplane/tasks/202609111337-ZJ6AFT/README.md`
 
