@@ -438,7 +438,7 @@ describe("quality evidence refresh route", () => {
             {
               type: "status",
               at: "2026-07-29T14:41:00.000Z",
-              author: "CODER",
+              author: "SUPERVISOR",
               from: "DOING",
               to: "DOING",
               note: "Record the repaired direct implementation.",

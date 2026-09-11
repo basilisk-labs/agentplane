@@ -92,6 +92,7 @@ export function verificationReworkHasNewImplementation(task: TaskData): boolean 
       event.type !== "status" ||
       event.to !== "DOING" ||
       !eventCommit ||
+      (!currentCommit && event.author !== "SUPERVISOR") ||
       (currentCommit && eventCommit !== currentCommit)
     ) {
       return false;
