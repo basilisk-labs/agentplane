@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "When task.commit is absent, verificationReworkHasNewImplementation currently accepts a committed DOING event from any author. The approved refinement and live evidence identify the supervisor implementation receipt as the valid fallback, so the event-only branch should require author SUPERVISOR.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/4618e515a90acc2cb6c970fb5b59a6b953c88a4de76e982917c327bc5f57316d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The verification_required assertion was accidentally moved from the existing newer-implementation test into the preceding quality-rework test. Restore it to the original test and keep the event-only test focused on removing implementation_rework_required.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/4618e515a90acc2cb6c970fb5b59a6b953c88a4de76e982917c327bc5f57316d.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: Without the author constraint, an unrelated committed status event could bypass required implementation rework for task metadata without task.commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/4618e515a90acc2cb6c970fb5b59a6b953c88a4de76e982917c327bc5f57316d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add or adjust regression coverage so an event-only fallback is supervisor-authored and a non-supervisor event cannot prove fresh implementation when task.commit is absent."
+  ],
+  "hidden_assumptions": [],
+  "recovery_context": "Require SUPERVISOR only for the event-only fallback, preserve the existing commit-match behavior when task.commit is populated, and correct the misplaced assertion without widening scope."
+}
