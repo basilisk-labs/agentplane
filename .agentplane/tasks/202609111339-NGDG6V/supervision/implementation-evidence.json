@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d..c14b1c85cb35f0ee51131670fa16bb50a191284b",
+      "command": "git diff --check 54347966d2848af7bb9c5644d01936f091a3d75a..0bafc17cba6d0e84c0d3507d078ee74ad8bc7652",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,19 +13,16 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d..c14b1c85cb35f0ee51131670fa16bb50a191284b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 54347966d2848af7bb9c5644d01936f091a3d75a..0bafc17cba6d0e84c0d3507d078ee74ad8bc7652",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202609111339-NGDG6V/README.md",
-        "A\t.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json",
-        "A\t.agentplane/tasks/202609111339-NGDG6V/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202609111339-NGDG6V/pr/github-body.md",
-        "A\t.agentplane/tasks/202609111339-NGDG6V/pr/github-title.txt",
-        "A\t.agentplane/tasks/202609111339-NGDG6V/pr/meta.json",
-        "A\t.agentplane/tasks/202609111339-NGDG6V/pr/review.md",
-        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        "M\t.agentplane/tasks/202609111339-NGDG6V/README.md",
+        "M\t.agentplane/tasks/202609111339-NGDG6V/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609111339-NGDG6V/pr/github-body.md",
+        "M\t.agentplane/tasks/202609111339-NGDG6V/pr/meta.json",
+        "M\t.agentplane/tasks/202609111339-NGDG6V/pr/review.md",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       ]
     },
     {
@@ -35,59 +32,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
-  "implementation_commit": "c14b1c85cb35f0ee51131670fa16bb50a191284b",
+  "execution_base_commit": "54347966d2848af7bb9c5644d01936f091a3d75a",
+  "implementation_commit": "0bafc17cba6d0e84c0d3507d078ee74ad8bc7652",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "?? .agentplane/tasks/202609111339-NGDG6V/README.md",
-      "?? .agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/diffstat.txt",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/github-body.md",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/github-title.txt",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/meta.json",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/review.md"
+      " M .agentplane/tasks/202609111339-NGDG6V/README.md",
+      " M packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/README.md"
+        "line": " M .agentplane/tasks/202609111339-NGDG6V/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/pr/github-title.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202609111339-NGDG6V/pr/review.md"
+        "line": " M packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202609111339-NGDG6V/README.md",
-      "?? .agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/diffstat.txt",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/github-body.md",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/github-title.txt",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/meta.json",
-      "?? .agentplane/tasks/202609111339-NGDG6V/pr/review.md"
+      " M .agentplane/tasks/202609111339-NGDG6V/README.md",
+      " M packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
     ],
     "unchanged_from_execution_baseline": []
   },
