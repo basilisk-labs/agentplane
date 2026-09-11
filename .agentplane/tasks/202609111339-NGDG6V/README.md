@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,35 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-11T17:36:00.359Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "11319e1aa570abf361648bc1c25ca0393818cee3"
+  blueprint_digest: "e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181"
+  evidence_refs:
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/133a16ec03939963768e16e15c99904bdf4e77baabfb0da0f78f8444274ffb65.md"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/README.md"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/4618e515a90acc2cb6c970fb5b59a6b953c88a4de76e982917c327bc5f57316d.patch"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/2463927d892b07cb7a28fc9092ed23bec47a886031a6953f20bff49765984d56.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/verification/20260911173454989-336ac954a2848665.json"
+    - ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/c54d46060b266cef66c635886e79cff83492db35de8c3efb33dc3ba6083a6945.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "When task.commit is absent, verificationReworkHasNewImplementation currently accepts a committed DOING event from any author. The approved refinement and live evidence identify the supervisor implementation receipt as the valid fallback, so the event-only branch should require author SUPERVISOR."
+    - "The verification_required assertion was accidentally moved from the existing newer-implementation test into the preceding quality-rework test. Restore it to the original test and keep the event-only test focused on removing implementation_rework_required."
+    - "Residual risk: Without the author constraint, an unrelated committed status event could bypass required implementation rework for task metadata without task.commit."
 execution_route:
   frozen: true
   reason_codes:
@@ -679,7 +708,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609111339-NGDG6V"
-    event_cursor: 16
+    event_cursor: 17
     final_validation: null
     id: "202609111339-NGDG6V"
     intent:
@@ -1021,9 +1050,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-11T17:34:56.534Z"
+    updated_at: "2026-09-11T17:34:56.537Z"
     work_items:
       branch-event-verification-recovery:
         attempt: 1
@@ -1581,6 +1610,30 @@ extensions:
         mutation_id: "compatibility:sha256:e4cb1ed19a3cb4d3fc47c2cfe1e2132f8098c9b9214d8bca8a7032337c95001e"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      compatibility:sha256:f3c7b48bf8cbc0447ebfb8b3613640fcba67c138fddb54d3a4a9eef73b90f6e1:
+        aggregate_digest: "sha256:ec1509f6c109457a1e5a7675f8ff4bfcd801be9d83866fe92fdc1eda07fc87ac"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T17:34:56.537Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_28e2049d7bae1a8383448246"
+          mutation_id: "compatibility:sha256:f3c7b48bf8cbc0447ebfb8b3613640fcba67c138fddb54d3a4a9eef73b90f6e1"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:f3c7b48bf8cbc0447ebfb8b3613640fcba67c138fddb54d3a4a9eef73b90f6e1"
+        next_revision: 27
+        previous_revision: 26
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       external-result:work-order-202609111339-NGDG6V-executor-1cb49946b99364814f64d390:
