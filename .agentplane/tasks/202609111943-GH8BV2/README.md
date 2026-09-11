@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -224,7 +224,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-3"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "3e9fde47b020cbe33a5e292390745b3e7f837bf7"
+  message: "🚧 GH8BV2 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -244,6 +246,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 1f87fb547597. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 3e9fde47b020. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -301,8 +306,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-11T23:10:33.303Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 3e9fde47b020. CLI accepted one state-bound external-agent semantic result."
+    commit: "3e9fde47b020cbe33a5e292390745b3e7f837bf7"
 doc_version: 3
-doc_updated_at: "2026-09-11T23:01:39.466Z"
+doc_updated_at: "2026-09-11T23:10:33.303Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -642,7 +655,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 15
+    event_cursor: 17
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -667,9 +680,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 18
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-11T23:01:39.464Z"
+    updated_at: "2026-09-11T23:10:33.303Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -788,6 +801,30 @@ extensions:
         mutation_id: "compatibility:sha256:1b7f83d0c12a0ac483cd7c87bf3ddc59389c15b7a1b56b14f9959b775e50c2fb"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:1e6b772252bc5f1da0fe0dca1786f015b312a9a872bf83f7d9ff88a2b858e543:
+        aggregate_digest: "sha256:12452caeb7aa62c3eee16c16bcf5cd83f5a69f6b247860241b7bfd8fdea75428"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T23:10:33.303Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e9243b2d24f561d03054e140"
+          mutation_id: "compatibility:sha256:1e6b772252bc5f1da0fe0dca1786f015b312a9a872bf83f7d9ff88a2b858e543"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1e6b772252bc5f1da0fe0dca1786f015b312a9a872bf83f7d9ff88a2b858e543"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:252aa0b5858301231a2ef0dee15bb605a2de098ffd6b5c8a64de1aa82340bdc2:
@@ -982,6 +1019,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609111943-GH8BV2"
+      compatibility:sha256:772564c1836d45f084a31eb6ec199b75bc9807ae5e180c5f8ec7fabfbecb9d53:
+        aggregate_digest: "sha256:b758daed0d06706d7dc38ef6b3dac62b50999f3c6cdb911b33f6c2a464899603"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T23:10:33.303Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ceaf8327e8390188242412d5"
+          mutation_id: "compatibility:sha256:772564c1836d45f084a31eb6ec199b75bc9807ae5e180c5f8ec7fabfbecb9d53"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:772564c1836d45f084a31eb6ec199b75bc9807ae5e180c5f8ec7fabfbecb9d53"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
       compatibility:sha256:9dc2ca32420cf8b5a430a3b243eacf8ab9e18d1e9306d6dd7ff47680c02a1fb7:
         aggregate_digest: "sha256:39b8ba3bda40aecec4ece734695561773b622ac1a0700d6aa0aa0d339336f89e"
         event:
@@ -1129,6 +1190,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "3e9fde47b020cbe33a5e292390745b3e7f837bf7"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
