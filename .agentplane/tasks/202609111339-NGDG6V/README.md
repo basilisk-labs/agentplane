@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,10 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:62488dddd7fe21e7065c2b1febf544ee2d681ec51fde398c6b94b54dd505e2df"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-11T17:34:54.989Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -94,6 +94,7 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
       - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
       - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
@@ -103,7 +104,37 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -142,13 +173,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:124883c2192a3f30628da10c1e75794d46195517a30b7cb01efa188bf49714b4"
+      digest: "sha256:01cded343d9f8656d4e5975288320421872c1213a701827fe379a691f57a2495"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-verification.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/route-decision-verification.ts"
         - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
@@ -162,6 +194,7 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
           - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
           - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
@@ -269,8 +302,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 11319e1aa570. CLI accepted one state-bound external-agent semantic result."
     commit: "11319e1aa570abf361648bc1c25ca0393818cee3"
+  -
+    type: "verify"
+    at: "2026-09-11T17:34:54.989Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-11T17:05:39.627Z"
+doc_updated_at: "2026-09-11T17:34:56.537Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893"
 sections:
@@ -315,6 +354,90 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
     - old_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
     - current_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111339-NGDG6V
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-11T17:34:54.989Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fa82ae4a3ef90db87015c6e695b5546fd83a8f3f9d523c277d8b2ccc6ee303d, input_digest=sha256:1e5dad0691f5f94f79a812549c12d3d6d274c69083a76adec0c20475eb9a544f
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check critical_paths (2/2)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check real_e2e (1/2)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check real_e2e (2/2)
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111339-NGDG6V Verification Contract check task_outcome (2/2)
+
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
+    - old_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+    - current_digest: e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
 
@@ -556,7 +679,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609111339-NGDG6V"
-    event_cursor: 15
+    event_cursor: 16
     final_validation: null
     id: "202609111339-NGDG6V"
     intent:
@@ -898,9 +1021,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 25
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-11T17:19:58.916Z"
+    updated_at: "2026-09-11T17:34:56.534Z"
     work_items:
       branch-event-verification-recovery:
         attempt: 1
@@ -1146,6 +1269,30 @@ extensions:
         mutation_id: "compatibility:sha256:214ce2eaad1eacf9bc356c9215572dec1a929f80c2509f87a1a624139b3a2c31"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      compatibility:sha256:216e3075554935a64cb38ee9fa2ba16ad72330df633fd19592fb27bc9dee00f0:
+        aggregate_digest: "sha256:72154dcbcd005e7b1a4d7228983a40587cd5460fb16ad9880cc27cda5d452df6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T17:34:56.534Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_3b1e79ab30344a16509dc88d"
+          mutation_id: "compatibility:sha256:216e3075554935a64cb38ee9fa2ba16ad72330df633fd19592fb27bc9dee00f0"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 25
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:216e3075554935a64cb38ee9fa2ba16ad72330df633fd19592fb27bc9dee00f0"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       compatibility:sha256:3f058c0e6a4e001f55d7159a72890203c9eea5abf9c02d16b51ff4599823ae2f:
@@ -1650,6 +1797,90 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
 - old_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
 - current_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111339-NGDG6V
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-11T17:34:54.989Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fa82ae4a3ef90db87015c6e695b5546fd83a8f3f9d523c277d8b2ccc6ee303d, input_digest=sha256:1e5dad0691f5f94f79a812549c12d3d6d274c69083a76adec0c20475eb9a544f
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check critical_paths (2/2)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check full_regression
+
+Check: real_e2e
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check real_e2e (1/2)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check real_e2e (2/2)
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111339-NGDG6V Verification Contract check task_outcome (2/2)
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
+- old_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+- current_digest: e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
 
