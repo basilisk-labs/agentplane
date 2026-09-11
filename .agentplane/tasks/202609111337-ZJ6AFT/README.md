@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -28,6 +28,36 @@ verification:
   updated_by: "SUPERVISOR"
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-09-11T14:57:28.750Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+  blueprint_digest: "22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e"
+  evidence_refs:
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/20260911-145606921-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/20260911-145606921-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/d25d41e9011f18aac64fb0081bd916b59f6966a4fd6c59030ae1c747e7b03751.md"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/20260911-145606921-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/20260911-145606921-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/20260911-145606921-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/README.md"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/b32c3eed719757fd04e00f9629d1621bd27d8e12945a46275007ea3eba0d8b8f.json"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/verification/20260911145556971-340ee853386ceffd.json"
+    - ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/4ce22a38a6b84782774730adff16ae3b520ef24932e63436cfaa336ef687da4a.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation derives one health model from process liveness, trace timestamp and sequence, trace or stderr modification time, heartbeat, state timestamps, and the persisted idle_ms policy."
+    - "JSON and human status outputs expose last_trace_at, last_trace_seq, seconds_since_activity, and health."
+    - "Recent trace or stderr activity produces wait_for_active_run for an unverified child, while confirmed dead or mismatched children retain task_reclaim guidance."
+    - "Supervisor-owned verification records 7 focused tests and typecheck as passing for commit 41245a6a7d7a8b4c6a3d9c03431dd6ac105734fc."
+    - "Residual risk: Status reads retained trace and stderr content through the bounded repository artifact reader, so very large retained artifacts can add status latency."
 execution_route:
   frozen: true
   reason_codes:
@@ -568,7 +598,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609111337-ZJ6AFT"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609111337-ZJ6AFT"
     intent:
@@ -771,9 +801,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
-    revision: 17
+    revision: 18
     schema_version: 1
-    updated_at: "2026-09-11T14:55:58.304Z"
+    updated_at: "2026-09-11T14:55:58.306Z"
     work_items:
       runner-activity-status-and-safety:
         attempt: 1
@@ -1142,6 +1172,30 @@ extensions:
         mutation_id: "compatibility:sha256:e64bee2f6f0cb0b8e70f68e37096193260d73a60049259e0f44d9acd1c680353"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:ed8facd63b5e9683b4ddc043651f5e3ce77bef11fbd592c9202fbfb6388bccf1:
+        aggregate_digest: "sha256:03582d87d94e5029a87f8b63bed33be20b162cfacfc876adb5c811fdca913eba"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:55:58.306Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a1aaaaa219bf4a0f409d9348"
+          mutation_id: "compatibility:sha256:ed8facd63b5e9683b4ddc043651f5e3ce77bef11fbd592c9202fbfb6388bccf1"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ed8facd63b5e9683b4ddc043651f5e3ce77bef11fbd592c9202fbfb6388bccf1"
+        next_revision: 18
+        previous_revision: 17
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
       external-result:work-order-202609111337-ZJ6AFT-executor-9ca2945c8c2b10e903b0886d:

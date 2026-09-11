@@ -1,0 +1,475 @@
+diff --git a/packages/agentplane/src/commands/task/run-render.test.ts b/packages/agentplane/src/commands/task/run-render.test.ts
+index f63ca29ff..8fab39631 100644
+--- a/packages/agentplane/src/commands/task/run-render.test.ts
++++ b/packages/agentplane/src/commands/task/run-render.test.ts
+@@ -1,3 +1,7 @@
++import { mkdtemp, rm, utimes, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++
+ import { describe, expect, it } from "vitest";
+ 
+ import { captureStdIO } from "@agentplane/testkit";
+@@ -355,4 +359,167 @@ describe("task run rendering", () => {
+       pid_alive: "mismatch",
+     });
+   });
++
++  it("reports trace-backed health and suppresses unsafe reclaim guidance", async () => {
++    const now = Date.parse("2026-07-24T08:10:00.000Z");
++    const traceAt = "2026-07-24T08:09:30.000Z";
++    const inspection = {
++      task_id: "TASK-ACTIVITY",
++      run_id: "run-activity",
++      selection: "latest",
++      storage: "supervisor",
++      paths: {
++        run_dir: "/repo/runs/run-activity",
++        state_path: "/repo/runs/run-activity/state.json",
++        events_path: "/repo/runs/run-activity/events.jsonl",
++        trace_path: "/repo/runs/run-activity/trace.jsonl",
++        stderr_path: "/repo/runs/run-activity/stderr.log",
++        result_path: "/repo/runs/run-activity/result.json",
++        receipt_path: "/repo/runs/run-activity/execution-receipt.json",
++        bundle_path: "/repo/runs/run-activity/bundle.json",
++        bootstrap_path: "/repo/runs/run-activity/bootstrap.md",
++      },
++      repository: {
++        readTraceTextRequired: () =>
++          Promise.resolve(
++            `${JSON.stringify({ ts: traceAt, seq: 41 })}\n${JSON.stringify({ ts: traceAt, seq: 42 })}\n`,
++          ),
++        readStderrTextRequired: () => Promise.resolve(""),
++      },
++      state: {
++        status: "running",
++        mode: "execute",
++        adapter_id: "codex",
++        target: { kind: "task", task_id: "TASK-ACTIVITY" },
++        created_at: "2026-07-24T08:00:00.000Z",
++        updated_at: "2026-07-24T08:00:00.000Z",
++        timeout_policy: { wall_clock_ms: 0, idle_ms: 180_000, terminate_grace_ms: 30_000 },
++        supervision: {
++          pid: 999_997,
++          heartbeat_at: "2026-07-24T08:00:00.000Z",
++        },
++      },
++      active_claim: {
++        run_id: "run-activity",
++        operation: "execute",
++        generation: "activity-generation",
++        claimed_at: "2026-07-24T08:00:00.000Z",
++      },
++      active_claim_owner_status: "stale",
++      claimed_run_authority: "running_child_unverified",
++      recovery_lease: null,
++      task_runner_outcome: null,
++    } as unknown as LoadedTaskRunnerInspection;
++
++    const active = await renderRunnerStatusPayload(inspection, now);
++    expect(active).toMatchObject({
++      last_trace_at: traceAt,
++      last_trace_seq: 42,
++      seconds_since_activity: 30,
++      health: "active",
++      next_safe_action: "wait_for_active_run",
++    });
++    const io = captureStdIO();
++    try {
++      reportRunnerStatus(active, inspection.task_id);
++      expect(io.stdout).toMatch(/last_trace_at:\s+2026-07-24T08:09:30.000Z/u);
++      expect(io.stdout).toMatch(/last_trace_seq:\s+42/u);
++      expect(io.stdout).toMatch(/seconds_since_activity:\s+30/u);
++      expect(io.stdout).toMatch(/health:\s+active/u);
++    } finally {
++      io.restore();
++    }
++
++    inspection.state.supervision!.pid = undefined;
++    inspection.state.created_at = "2026-07-24T08:00:00.000Z";
++    inspection.state.updated_at = "2026-07-24T08:00:00.000Z";
++    inspection.state.supervision!.heartbeat_at = "2026-07-24T08:00:00.000Z";
++    inspection.repository.readTraceTextRequired = () =>
++      Promise.resolve(`${JSON.stringify({ ts: "2026-07-24T08:05:00.000Z", seq: 40 })}\n`);
++    await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
++      seconds_since_activity: 300,
++      health: "idle",
++      next_safe_action: "inspect_run_state",
++    });
++
++    inspection.state.status = "success";
++    await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
++      health: "exited",
++    });
++
++    inspection.state.status = "running";
++    inspection.state.timeout_policy.idle_ms = 0;
++    inspection.state.created_at = "unavailable";
++    inspection.state.updated_at = "unavailable";
++    inspection.state.supervision!.heartbeat_at = undefined;
++    inspection.repository.readTraceTextRequired = () => Promise.resolve("");
++    await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
++      last_trace_at: null,
++      last_trace_seq: null,
++      seconds_since_activity: null,
++      health: "unknown",
++    });
++  });
++
++  it("keeps reclaim guidance safe while stderr is recent", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-run-activity-"));
++    const stderrPath = path.join(root, "stderr.log");
++    const tracePath = path.join(root, "trace.jsonl");
++    const now = Date.parse("2026-07-24T08:10:00.000Z");
++    try {
++      await writeFile(stderrPath, "runner is still progressing\n", "utf8");
++      await utimes(stderrPath, new Date(now - 30_000), new Date(now - 30_000));
++      const inspection = {
++        task_id: "TASK-STDERR-ACTIVITY",
++        run_id: "run-stderr-activity",
++        selection: "latest",
++        storage: "supervisor",
++        paths: {
++          run_dir: root,
++          state_path: path.join(root, "state.json"),
++          events_path: path.join(root, "events.jsonl"),
++          trace_path: tracePath,
++          stderr_path: stderrPath,
++          result_path: path.join(root, "result.json"),
++          receipt_path: path.join(root, "execution-receipt.json"),
++          bundle_path: path.join(root, "bundle.json"),
++          bootstrap_path: path.join(root, "bootstrap.md"),
++        },
++        repository: {
++          readTraceTextRequired: () => Promise.resolve(""),
++          readStderrTextRequired: () => Promise.resolve("runner is still progressing\n"),
++        },
++        state: {
++          status: "running",
++          mode: "execute",
++          adapter_id: "codex",
++          target: { kind: "task", task_id: "TASK-STDERR-ACTIVITY" },
++          created_at: "2026-07-24T08:00:00.000Z",
++          updated_at: "2026-07-24T08:00:00.000Z",
++          timeout_policy: { wall_clock_ms: 0, idle_ms: 180_000, terminate_grace_ms: 30_000 },
++          supervision: { heartbeat_at: "2026-07-24T08:00:00.000Z" },
++        },
++        active_claim: {
++          run_id: "run-stderr-activity",
++          operation: "execute",
++          generation: "stderr-generation",
++          claimed_at: "2026-07-24T08:00:00.000Z",
++        },
++        active_claim_owner_status: "stale",
++        claimed_run_authority: "running_child_unverified",
++        recovery_lease: null,
++        task_runner_outcome: null,
++      } as unknown as LoadedTaskRunnerInspection;
++
++      await expect(renderRunnerStatusPayload(inspection, now)).resolves.toMatchObject({
++        last_trace_at: null,
++        last_trace_seq: null,
++        seconds_since_activity: 30,
++        health: "active",
++        next_safe_action: "wait_for_active_run",
++      });
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
+ });
+diff --git a/packages/agentplane/src/commands/task/run-render.ts b/packages/agentplane/src/commands/task/run-render.ts
+index 0c24a27fb..3bae75b17 100644
+--- a/packages/agentplane/src/commands/task/run-render.ts
++++ b/packages/agentplane/src/commands/task/run-render.ts
+@@ -1,9 +1,12 @@
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type {
+   LoadedTaskRunnerInspection,
++  TaskRunnerActivityHealth,
+   TaskRunnerControlInspection,
+   TaskRunnerDiagnosticInspection,
++  TaskRunnerProcessLiveness,
+ } from "../../runner/usecases/task-run-inspect.js";
++import { inspectTaskRunnerActivity } from "../../runner/usecases/task-run-inspect.js";
+ import type { TaskRunnerActiveClaimCleanupDiagnostic } from "../../runner/usecases/task-run-active-claim-runtime.js";
+ import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+ import type { RunnerLifecycleStatus } from "../../runner/types.js";
+@@ -103,11 +106,9 @@ export function tailText(text: string, lineCount: number): string {
+   return trailingEmpty.slice(-lineCount).join("\n");
+ }
+ 
+-export type RunnerProcessLiveness = boolean | "unverified" | "mismatch" | null;
+-
+ async function runnerProcessAlive(
+   inspection: LoadedTaskRunnerInspection,
+-): Promise<RunnerProcessLiveness> {
++): Promise<TaskRunnerProcessLiveness> {
+   const pid = inspection.state.supervision?.pid;
+   if (typeof pid !== "number") return null;
+   const expected = inspection.state.supervision?.process_identity;
+@@ -158,6 +159,7 @@ type TaskRunnerNextSafeAction =
+ 
+ function taskRunnerNextSafeAction(
+   inspection: TaskRunnerControlInspection,
++  activityHealth?: TaskRunnerActivityHealth,
+ ): TaskRunnerNextSafeAction {
+   if (!inspection.active_claim) return "none";
+   const recoveryLease = inspection.recovery_lease;
+@@ -183,6 +185,12 @@ function taskRunnerNextSafeAction(
+   if (inspection.claimed_run_authority === "terminal_cleanup_unverified") {
+     return "inspect_process_cleanup";
+   }
++  if (
++    inspection.claimed_run_authority === "running_child_unverified" &&
++    activityHealth === "active"
++  ) {
++    return "wait_for_active_run";
++  }
+   if (
+     inspection.claimed_run_authority === "running_child_dead" ||
+     inspection.claimed_run_authority === "running_child_mismatch"
+@@ -201,7 +209,10 @@ function taskRunnerNextSafeAction(
+   return "inspect_run_state";
+ }
+ 
+-function renderTaskRunnerControlPayload(inspection: TaskRunnerControlInspection) {
++function renderTaskRunnerControlPayload(
++  inspection: TaskRunnerControlInspection,
++  activityHealth?: TaskRunnerActivityHealth,
++) {
+   const activeClaim = inspection.active_claim ?? null;
+   return {
+     active_claim_present: activeClaim !== null,
+@@ -217,18 +228,27 @@ function renderTaskRunnerControlPayload(inspection: TaskRunnerControlInspection)
+     claimed_run_authority: inspection.claimed_run_authority,
+     recovery_lease: inspection.recovery_lease,
+     execution_blocked: activeClaim !== null,
+-    next_safe_action: taskRunnerNextSafeAction(inspection),
++    next_safe_action: taskRunnerNextSafeAction(inspection, activityHealth),
+   };
+ }
+ 
+-export async function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection) {
++export async function renderRunnerStatusPayload(
++  inspection: LoadedTaskRunnerInspection,
++  nowMs?: number,
++) {
+   const state = inspection.state;
+   const supervision = state.supervision ?? null;
+   const executionReceipt = state.result?.execution_receipt ?? null;
+   const activeClaim = inspection.active_claim ?? null;
+   const selectedRunOwnsActiveClaim = activeClaim?.run_id === inspection.run_id;
+   const reconcileRequired = selectedRunOwnsActiveClaim && isTerminalRunnerStatus(state.status);
+-  const control = renderTaskRunnerControlPayload(inspection);
++  const pidAlive = await runnerProcessAlive(inspection);
++  const activity = await inspectTaskRunnerActivity({
++    inspection,
++    process_liveness: pidAlive,
++    ...(nowMs === undefined ? {} : { now_ms: nowMs }),
++  });
++  const control = renderTaskRunnerControlPayload(inspection, activity.health);
+   return {
+     task_id: inspection.task_id,
+     run_id: inspection.run_id,
+@@ -242,9 +262,10 @@ export async function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInsp
+     updated_at: state.updated_at,
+     started_at: supervision?.started_at ?? null,
+     heartbeat_at: supervision?.heartbeat_at ?? null,
++    ...activity,
+     ended_at: state.result?.ended_at ?? null,
+     pid: supervision?.pid ?? null,
+-    pid_alive: await runnerProcessAlive(inspection),
++    pid_alive: pidAlive,
+     ...control,
+     active_claim_retained: reconcileRequired,
+     active_claim_selected_run: selectedRunOwnsActiveClaim,
+@@ -289,6 +310,10 @@ export async function renderRunnerDiagnosticStatusPayload(
+     updated_at: null,
+     started_at: null,
+     heartbeat_at: null,
++    last_trace_at: null,
++    last_trace_seq: null,
++    seconds_since_activity: null,
++    health: "unknown" as const,
+     ended_at: null,
+     pid: null,
+     pid_alive: null,
+@@ -318,6 +343,10 @@ function renderRunnerStatusReportEntries(
+     { label: "adapter", value: payload.adapter_id },
+     { label: "updated_at", value: payload.updated_at },
+     { label: "heartbeat_at", value: payload.heartbeat_at },
++    { label: "last_trace_at", value: payload.last_trace_at },
++    { label: "last_trace_seq", value: payload.last_trace_seq },
++    { label: "seconds_since_activity", value: payload.seconds_since_activity },
++    { label: "health", value: payload.health },
+     { label: "pid", value: payload.pid },
+     { label: "pid_alive", value: payload.pid_alive },
+     { label: "active_claim_present", value: payload.active_claim_present },
+diff --git a/packages/agentplane/src/runner/usecases/task-run-inspect.ts b/packages/agentplane/src/runner/usecases/task-run-inspect.ts
+index 1effd9c17..ca1816232 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-inspect.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-inspect.ts
+@@ -1,3 +1,5 @@
++import { lstat } from "node:fs/promises";
++
+ import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+@@ -9,6 +11,7 @@ import type { RunnerRunRepository } from "../run-repository.js";
+ import type { TaskRunnerPaths } from "../task-run-paths.js";
+ import type { RunnerContextBundle, RunnerEvent, RunnerRunState } from "../types.js";
+ import type { TaskRunnerOutcome } from "../../backends/task-backend.js";
++import { compressedTraceArtifactPath } from "../trace-artifacts.js";
+ 
+ import {
+   inspectTaskRunnerActiveClaimOwner,
+@@ -49,6 +52,148 @@ export type TaskRunnerDiagnosticInspection = {
+   run: LoadedTaskRunnerInspection | null;
+ };
+ 
++export type TaskRunnerActivityHealth = "active" | "idle" | "exited" | "unknown";
++
++export type TaskRunnerActivityInspection = {
++  last_trace_at: string | null;
++  last_trace_seq: number | null;
++  seconds_since_activity: number | null;
++  health: TaskRunnerActivityHealth;
++};
++
++export type TaskRunnerProcessLiveness = boolean | "unverified" | "mismatch" | null;
++
++function parsedTimestamp(value: string | null | undefined): number | null {
++  if (typeof value !== "string") return null;
++  const parsed = Date.parse(value);
++  return Number.isFinite(parsed) ? parsed : null;
++}
++
++function latestTimestamp(values: readonly (string | null | undefined)[]): string | null {
++  let latest: { value: string; parsed: number } | null = null;
++  for (const value of values) {
++    const parsed = parsedTimestamp(value);
++    if (typeof value === "string" && parsed !== null && (!latest || parsed > latest.parsed)) {
++      latest = { value, parsed };
++    }
++  }
++  return latest?.value ?? null;
++}
++
++async function artifactModifiedAt(filePath: string, hasContent: boolean): Promise<string | null> {
++  if (!hasContent) return null;
++  for (const candidate of [filePath, compressedTraceArtifactPath(filePath)]) {
++    try {
++      const stats = await lstat(candidate);
++      if (stats.isFile() && !stats.isSymbolicLink() && stats.size > 0) {
++        return stats.mtime.toISOString();
++      }
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
++    }
++  }
++  return null;
++}
++
++function latestTraceRecord(traceText: string): { at: string | null; seq: number | null } {
++  let latestAt: string | null = null;
++  let latestSeq: number | null = null;
++  for (const line of traceText.split("\n")) {
++    if (!line.trim()) continue;
++    try {
++      const record = JSON.parse(line) as { ts?: unknown; seq?: unknown };
++      if (typeof record.ts === "string" && parsedTimestamp(record.ts) !== null) {
++        latestAt = latestTimestamp([latestAt, record.ts]);
++      }
++      if (typeof record.seq === "number" && Number.isSafeInteger(record.seq)) {
++        latestSeq = latestSeq === null ? record.seq : Math.max(latestSeq, record.seq);
++      }
++    } catch {
++      // A partial final JSONL record must not hide earlier durable activity.
++    }
++  }
++  return { at: latestAt, seq: latestSeq };
++}
++
++async function readActivityText(
++  inspection: LoadedTaskRunnerInspection,
++  stream: "trace" | "stderr",
++): Promise<string> {
++  const repository = inspection.repository as RunnerRunRepository | undefined;
++  if (!repository) return "";
++  try {
++    return stream === "trace"
++      ? await repository.readTraceTextRequired({
++          task_id: inspection.task_id,
++          run_id: inspection.run_id,
++        })
++      : await repository.readStderrTextRequired({
++          task_id: inspection.task_id,
++          run_id: inspection.run_id,
++        });
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return "";
++    if (
++      error instanceof CliError &&
++      error.code === "E_IO" &&
++      error.message.startsWith("Runner artifact not found")
++    ) {
++      return "";
++    }
++    throw error;
++  }
++}
++
++export async function inspectTaskRunnerActivity(opts: {
++  inspection: LoadedTaskRunnerInspection;
++  process_liveness: TaskRunnerProcessLiveness;
++  now_ms?: number;
++}): Promise<TaskRunnerActivityInspection> {
++  const { inspection } = opts;
++  const [traceText, stderrText] = await Promise.all([
++    readActivityText(inspection, "trace"),
++    readActivityText(inspection, "stderr"),
++  ]);
++  const traceRecord = latestTraceRecord(traceText);
++  const [traceModifiedAt, stderrModifiedAt] = await Promise.all([
++    artifactModifiedAt(inspection.paths.trace_path, traceText.length > 0),
++    artifactModifiedAt(inspection.paths.stderr_path, stderrText.length > 0),
++  ]);
++  const lastTraceAt = latestTimestamp([traceRecord.at, traceModifiedAt]);
++  const lastActivityAt = latestTimestamp([
++    lastTraceAt,
++    stderrModifiedAt,
++    inspection.state.supervision?.heartbeat_at,
++    inspection.state.updated_at,
++    inspection.state.created_at,
++  ]);
++  const lastActivityMs = parsedTimestamp(lastActivityAt);
++  const nowMs = opts.now_ms ?? Date.now();
++  const secondsSinceActivity =
++    lastActivityMs === null ? null : Math.max(0, Math.floor((nowMs - lastActivityMs) / 1000));
++  const idleMs = inspection.state.timeout_policy?.idle_ms;
++  const recentActivity =
++    lastActivityMs !== null &&
++    typeof idleMs === "number" &&
++    idleMs > 0 &&
++    nowMs - lastActivityMs <= idleMs;
++  const terminal = ["success", "failed", "blocked", "cancelled"].includes(inspection.state.status);
++  let health: TaskRunnerActivityHealth;
++  if (terminal) health = "exited";
++  else if (recentActivity || opts.process_liveness === true) health = "active";
++  else if (opts.process_liveness === false || opts.process_liveness === "mismatch")
++    health = "exited";
++  else if (lastActivityMs !== null && typeof idleMs === "number" && idleMs > 0) health = "idle";
++  else health = "unknown";
++
++  return {
++    last_trace_at: lastTraceAt,
++    last_trace_seq: traceRecord.seq,
++    seconds_since_activity: secondsSinceActivity,
++    health,
++  };
++}
++
+ type TaskRunnerInspectionOptions = {
+   ctx?: CommandContext;
+   cwd: string;
