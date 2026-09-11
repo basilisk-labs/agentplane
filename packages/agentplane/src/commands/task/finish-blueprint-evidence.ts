@@ -90,12 +90,10 @@ export async function assertQualityReviewBeforeFinish(opts: {
       task: loaded.task,
     });
     const opsReview = snapshot.current.blueprintId === "ops.approval";
-    const reviewedSubject = reviewSubject(loaded.task.quality_review);
     const expectedSubject = opsReview
       ? await resolveOpsFinishSubject({
           ctx: opts.ctx,
           loaded,
-          reviewedSubject,
           blueprintDigest: snapshot.current.digest,
           taskCommitInfo: opts.taskCommitInfo,
         })
@@ -155,32 +153,25 @@ export async function assertQualityReviewBeforeFinish(opts: {
   }
 }
 
-function reviewSubject(
-  review: LoadedFinishTask["task"]["quality_review"],
-): QualityReviewSubject | null {
-  return (
-    review?.evaluated_subject ??
-    (review?.evaluated_sha ? { kind: "git_commit", value: review.evaluated_sha } : null)
-  );
-}
-
 async function resolveOpsFinishSubject(opts: {
   ctx: CommandContext;
   loaded: LoadedFinishTask;
-  reviewedSubject: QualityReviewSubject | null;
   blueprintDigest: string;
   taskCommitInfo: ResolvedCommitInfo | null;
 }): Promise<QualityReviewSubject | null> {
-  if (opts.reviewedSubject?.kind === "evidence_bundle") {
-    const evidence = await buildOpsEvidenceBundle({
-      ctx: opts.ctx,
-      task: opts.loaded.task,
-      blueprintDigest: opts.blueprintDigest,
-    });
-    return evidence.subject;
-  }
-  const evidenceCommit = opts.taskCommitInfo?.hash ?? opts.loaded.task.commit?.hash?.trim() ?? null;
-  return evidenceCommit ? { kind: "git_commit", value: evidenceCommit } : null;
+  const evidenceCommit =
+    opts.loaded.task.commit?.hash?.trim() ??
+    (opts.loaded.task.quality_review?.evaluated_sha
+      ? (opts.taskCommitInfo?.hash ?? opts.loaded.task.quality_review.evaluated_sha.trim())
+      : null);
+  if (evidenceCommit) return { kind: "git_commit", value: evidenceCommit };
+
+  const evidence = await buildOpsEvidenceBundle({
+    ctx: opts.ctx,
+    task: opts.loaded.task,
+    blueprintDigest: opts.blueprintDigest,
+  });
+  return evidence.subject;
 }
 
 async function resolveExpectedQualitySha(opts: {

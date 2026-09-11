@@ -44,7 +44,8 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
  .../src/commands/evaluator/evaluator.command.ts    |   5 +
  .../src/commands/evaluator/evaluator.spec.ts       |  24 ++
  .../src/commands/evidence/ops-evidence-subject.ts  | 238 +++++++++++++
- .../src/commands/task/finish-blueprint-evidence.ts |  70 +++-
+ .../src/commands/task/finish-blueprint-evidence.ts |  61 +++-
+ .../task/finish.quality-review-target.unit.test.ts |  42 +++
  .../src/commands/task/quality-review-gate.ts       |  30 +-
  .../commands/task/quality-review-gate.unit.test.ts | 121 +++++++
  .../schemas/task-readme-frontmatter.schema.json    |  34 ++
@@ -60,7 +61,7 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
  schemas/task-readme-frontmatter.schema.json        |  34 ++
  schemas/tasks-export.schema.json                   |  34 ++
  .../release/check-local-tarball-install-smoke.mjs  | 380 +++++++++++++++++++++
- 33 files changed, 1776 insertions(+), 40 deletions(-)
+ 34 files changed, 1809 insertions(+), 40 deletions(-)
 ```
 
 </details>

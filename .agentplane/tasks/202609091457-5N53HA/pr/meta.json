@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609091457-5N53HA/publish-direct-ops-review-fix",
   "created_at": "2026-09-09T15:05:46.161Z",
-  "diffstat_sha256": "sha256:286d106dfa3a4ac1611842da3cb5954f1f4536094123f834e0f246265f927587",
+  "diffstat_sha256": "sha256:25bb10cea657ee72d89117b8c69bf9f15c285e60117c2715a65722249fb8596a",
   "last_verified_at": "2026-09-09T15:42:41.598Z",
   "last_verified_diffstat_sha256": "sha256:286d106dfa3a4ac1611842da3cb5954f1f4536094123f834e0f246265f927587",
   "pr_number": 5927,
