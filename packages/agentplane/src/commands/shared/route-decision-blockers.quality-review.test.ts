@@ -316,9 +316,6 @@ describe("DOING route quality rework", () => {
     expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
-    expect(blockers).toEqual(
-      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
-    );
   });
 });
 
@@ -368,6 +365,9 @@ describe("DOING route verification rework", () => {
     expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
+    );
   });
 
   it("accepts a newer supervisor implementation event when branch task commit is unset", async () => {
@@ -377,6 +377,18 @@ describe("DOING route verification rework", () => {
     const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
 
     expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("rejects a newer non-supervisor event when branch task commit is unset", async () => {
+    const task = verificationReworkTask(true);
+    task.commit = undefined;
+    task.events![0]!.author = "CODER";
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
+
+    expect(blockers).toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
   });
