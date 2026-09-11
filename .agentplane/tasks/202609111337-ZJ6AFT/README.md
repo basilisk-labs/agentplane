@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ verify:
   - "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-11T14:08:43.560Z"
+  updated_at: "2026-09-11T14:54:03.213Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:9fb9ebe2a4da24b0e1ed513520103d73ab8c876cd16bc2109e5635fbcd2d8406"
+  note: "host_user_decision=sha256:de99c299d9d681843e9917b76bc8e76244fab2c9ef028d21875754e94f6ce176"
 verification:
   state: "needs_rework"
   updated_at: "2026-09-11T14:48:16.515Z"
@@ -216,7 +216,7 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:48:43.510Z"
+doc_updated_at: "2026-09-11T14:53:30.120Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887"
 sections:
@@ -227,11 +227,11 @@ sections:
   Scope: |-
     - In scope: GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887.
     - Out of scope: unrelated refactors not required for "Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887".
-  Plan: "Plan one bounded runner-activity status and reclaim-safety change with focused regressions."
+  Plan: "Keep the runner activity implementation and bind verification to its changed status surface."
   Verify Steps: |-
-    1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1`. Expected: active, idle, exited, unavailable, and recent trace or stderr safety regressions pass.
+    1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1`. Expected: active, idle, exited, unknown, recent trace, recent stderr, JSON status, and human status output regressions pass.
     2. Run `bun run typecheck`. Expected: the runner activity model and status output type-check.
-    3. Review the final diff against GitHub issue #5887. Expected: status exposes last_trace_at, last_trace_seq, seconds_since_activity, and typed health, and reclaim guidance uses the same activity evidence.
+    3. Review the final diff against GitHub issue #5887. Expected: status exposes last_trace_at, last_trace_seq, seconds_since_activity, and typed health, and recent activity prevents reclaim guidance for an unverified child.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-09-11T14:48:16.515Z — VERIFY — needs_rework
@@ -277,7 +277,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:9fb9ebe2a4da24b0e1ed513520103d73ab8c876cd16bc2109e5635fbcd2d8406"
+    approval_evidence_digest: "sha256:de99c299d9d681843e9917b76bc8e76244fab2c9ef028d21875754e94f6ce176"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -286,13 +286,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
-    digest: "sha256:2ac48bda442961e13344c2fea5eb68890198bd31ef8700d4df9b1e4c35e98255"
-    grant_id: "6ee9470a-527c-4a03-9b04-3e9aa1d51fcc"
-    issued_at: "2026-09-11T14:08:43.560Z"
+    completion_contract_digest: "sha256:5e92819bd74eddaea1263831a1e1730c6e414d44222c2f1b8ff0ca4e42bf7cef"
+    digest: "sha256:f904697322073b29825f5b5e476dd02936966b4d7b18e984ff79b5b551613d76"
+    grant_id: "d2f1573c-df71-4736-9168-f13246d9ce46"
+    issued_at: "2026-09-11T14:54:03.213Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:be6753f4e2165eb16da9ae1e6fad568e8a77066917c3efc526d08e5129c7078b"
-    plan_revision: 3
+    plan_digest: "sha256:0088b8a75234e07d95e051ef911b82087c9ad66d0066343ad96d47f496fa8db8"
+    plan_revision: 12
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:65f818387fe18e2395974d2c9ba0010295d3db8f70b3a9a513cccae132b1d575"
@@ -301,42 +301,38 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-11T14:08:43.560Z"
+        approved_at: "2026-09-11T14:54:03.213Z"
         approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+        approved_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-11T14:05:26.410Z"
-      digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+      created_at: "2026-09-11T14:53:12.457Z"
+      digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
       proposal:
         assumptions:
-          - "The existing persisted runner artifacts contain enough timestamps and trace sequence information to derive activity without a schema migration."
+          - "The committed implementation remains the source baseline for this replacement plan."
         planning_baseline:
-          captured_at: "2026-09-11T14:04:31.892Z"
+          captured_at: "2026-09-11T14:51:57.324Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:78112f1f4600b6fc400fe7b119acf6eb13ef163f330119346fa0301ccc4ae592"
+          digest: "sha256:49d42d8f1ebc2224d58f9833f58571e37a6a0e067ef5db0d5188a8061ee8a67c"
           dirty_paths:
             - ".agentplane/tasks/202609111337-ZJ6AFT/README.md"
-            - ".agentplane/tasks/202609111339-NGDG6V/README.md"
-            - ".agentplane/tasks/202609111340-MGB383/README.md"
-            - ".agentplane/tasks/202609111341-FK9C2T/README.md"
-            - ".agentplane/tasks/202609111341-SED9K5/README.md"
           git:
             kind: "commit"
             ref: null
-            sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
+            sha: "384ac7659f34815ab51745eb9f2b9435ff3ae9ac"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:1"
+          task_history_cursor: "task-revision:10"
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
         top_level_validation:
           checks:
             -
               capability: "task.verify"
-              command: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+              command: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1"
               id: "runner-activity-regressions"
               kind: "deterministic"
               required: true
@@ -352,23 +348,23 @@ extensions:
             -
               check_ids:
                 - "runner-activity-regressions"
-              description: "Task run status reports last_trace_at, last_trace_seq, seconds_since_activity, and typed health using the newest runner-owned trace, stderr, heartbeat, and process-exit evidence."
+                - "typecheck"
+              description: "JSON and human task run status report last_trace_at, last_trace_seq, seconds_since_activity, and typed health using runner-owned signals and configured idle_ms."
               id: "trace-backed-status"
               required: true
             -
               check_ids:
                 - "runner-activity-regressions"
-              description: "Focused status regressions cover active, idle, exited, and unavailable activity signals."
+              description: "Focused regressions cover active, idle, exited, unknown, recent trace, and recent stderr signals."
               id: "health-cases"
               required: true
             -
               check_ids:
                 - "runner-activity-regressions"
-                - "typecheck"
-              description: "Reclaim or cancel guidance does not classify a run as inactive while recent trace or stderr evidence is advancing even when the process heartbeat is stale."
-              id: "safe-reclaim-guidance"
+              description: "Recent trace or stderr activity prevents reclaim guidance for an unverified child, while confirmed process exit remains reclaimable."
+              id: "safe-guidance"
               required: true
-          evidence_fingerprint: "sha256:78112f1f4600b6fc400fe7b119acf6eb13ef163f330119346fa0301ccc4ae592"
+          evidence_fingerprint: "sha256:49d42d8f1ebc2224d58f9833f58571e37a6a0e067ef5db0d5188a8061ee8a67c"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -379,44 +375,41 @@ extensions:
                 -
                   check_ids:
                     - "runner-activity-regressions"
-                  description: "Task run status reports last_trace_at, last_trace_seq, seconds_since_activity, and typed health using the newest runner-owned trace, stderr, heartbeat, and process-exit evidence."
+                    - "typecheck"
+                  description: "JSON and human task run status report last_trace_at, last_trace_seq, seconds_since_activity, and typed health using runner-owned signals and configured idle_ms."
                   id: "trace-backed-status"
                   required: true
                 -
                   check_ids:
                     - "runner-activity-regressions"
-                  description: "Focused status regressions cover active, idle, exited, and unavailable activity signals."
+                  description: "Focused regressions cover active, idle, exited, unknown, recent trace, and recent stderr signals."
                   id: "health-cases"
                   required: true
                 -
                   check_ids:
                     - "runner-activity-regressions"
-                    - "typecheck"
-                  description: "Reclaim or cancel guidance does not classify a run as inactive while recent trace or stderr evidence is advancing even when the process heartbeat is stale."
-                  id: "safe-reclaim-guidance"
+                  description: "Recent trace or stderr activity prevents reclaim guidance for an unverified child, while confirmed process exit remains reclaimable."
+                  id: "safe-guidance"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 180000
+                max_bytes: 160000
                 optional_sources:
-                  - "packages/agentplane/src/runner/run-state.ts"
+                  - "packages/agentplane/src/runner/trace-artifacts.ts"
                 required_sources:
                   - "packages/agentplane/src/commands/task/run-render.ts"
                   - "packages/agentplane/src/commands/task/run-render.test.ts"
                   - "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
-                  - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts"
-                  - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
-                  - "packages/agentplane/src/runner/trace-artifacts.ts"
                 symbol_hints:
-                  - "renderTaskRunInspectHuman"
-                  - "inspectTaskRun"
-                  - "cancelTaskRun"
+                  - "inspectTaskRunnerActivity"
+                  - "renderRunnerStatusPayload"
+                  - "reportRunnerStatus"
               depends_on: []
               expected_outputs:
                 - "verified-runner-activity-status-and-safety"
               id: "runner-activity-status-and-safety"
-              objective: "Implement one runner-owned activity model. Derive activity from trace, stderr, heartbeat, and process exit evidence. Expose the required status fields and typed health. Reuse the model for stale-run reclaim or cancel guidance. Add focused regressions. Run the declared checks."
+              objective: "Preserve the committed runner-owned activity model and safe guidance behavior. Add human status-output coverage for the new fields. Run the declared checks."
               optional: false
               priority: 1
               required_inputs: []
@@ -432,20 +425,17 @@ extensions:
                 -
                   kind: "path"
                   mode: "write"
-                  resource: "packages/agentplane/src/runner"
+                  resource: "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
               risk: "medium"
               scope_roots:
                 - "packages/agentplane/src/commands/task/run-render.ts"
                 - "packages/agentplane/src/commands/task/run-render.test.ts"
                 - "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
-                - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts"
-                - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
-                - "packages/agentplane/src/runner/trace-artifacts.ts"
               validation:
                 checks:
                   -
                     capability: "task.verify"
-                    command: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+                    command: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1"
                     id: "runner-activity-regressions"
                     kind: "deterministic"
                     required: true
@@ -458,6 +448,127 @@ extensions:
                     required: true
                     timeout_ms: 300000
                 criteria:
+                  -
+                    check_ids:
+                      - "runner-activity-regressions"
+                      - "typecheck"
+                    description: "JSON and human task run status report last_trace_at, last_trace_seq, seconds_since_activity, and typed health using runner-owned signals and configured idle_ms."
+                    id: "trace-backed-status"
+                    required: true
+                  -
+                    check_ids:
+                      - "runner-activity-regressions"
+                    description: "Focused regressions cover active, idle, exited, unknown, recent trace, and recent stderr signals."
+                    id: "health-cases"
+                    required: true
+                  -
+                    check_ids:
+                      - "runner-activity-regressions"
+                    description: "Recent trace or stderr activity prevents reclaim guidance for an unverified child, while confirmed process exit remains reclaimable."
+                    id: "safe-guidance"
+                    required: true
+                evidence_fingerprint: "sha256:49d42d8f1ebc2224d58f9833f58571e37a6a0e067ef5db0d5188a8061ee8a67c"
+                schema_version: 1
+      revision: 2
+      schema_version: 1
+      task_id: "202609111337-ZJ6AFT"
+    event_cursor: 8
+    final_validation: null
+    id: "202609111337-ZJ6AFT"
+    intent:
+      acceptance_criteria:
+        -
+          check_ids: []
+          description: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+          id: "legacy-1"
+          required: true
+      captured_at: "2026-09-11T13:37:59.893Z"
+      constraints: []
+      request: |-
+        Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887
+
+        GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887
+      task_id: "202609111337-ZJ6AFT"
+    lifecycle: "ACTIVE"
+    plan_amendments: []
+    plan_history:
+      -
+        approval:
+          approved_at: "2026-09-11T14:08:43.560Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-11T14:05:26.410Z"
+        digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+        proposal:
+          assumptions:
+            - "The existing persisted runner artifacts contain enough timestamps and trace sequence information to derive activity without a schema migration."
+          planning_baseline:
+            captured_at: "2026-09-11T14:04:31.892Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:78112f1f4600b6fc400fe7b119acf6eb13ef163f330119346fa0301ccc4ae592"
+            dirty_paths:
+              - ".agentplane/tasks/202609111337-ZJ6AFT/README.md"
+              - ".agentplane/tasks/202609111339-NGDG6V/README.md"
+              - ".agentplane/tasks/202609111340-MGB383/README.md"
+              - ".agentplane/tasks/202609111341-FK9C2T/README.md"
+              - ".agentplane/tasks/202609111341-SED9K5/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:1"
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+                id: "runner-activity-regressions"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "typecheck"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "runner-activity-regressions"
+                description: "Task run status reports last_trace_at, last_trace_seq, seconds_since_activity, and typed health using the newest runner-owned trace, stderr, heartbeat, and process-exit evidence."
+                id: "trace-backed-status"
+                required: true
+              -
+                check_ids:
+                  - "runner-activity-regressions"
+                description: "Focused status regressions cover active, idle, exited, and unavailable activity signals."
+                id: "health-cases"
+                required: true
+              -
+                check_ids:
+                  - "runner-activity-regressions"
+                  - "typecheck"
+                description: "Reclaim or cancel guidance does not classify a run as inactive while recent trace or stderr evidence is advancing even when the process heartbeat is stale."
+                id: "safe-reclaim-guidance"
+                required: true
+            evidence_fingerprint: "sha256:78112f1f4600b6fc400fe7b119acf6eb13ef163f330119346fa0301ccc4ae592"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
                   -
                     check_ids:
                       - "runner-activity-regressions"
@@ -477,84 +588,106 @@ extensions:
                     description: "Reclaim or cancel guidance does not classify a run as inactive while recent trace or stderr evidence is advancing even when the process heartbeat is stale."
                     id: "safe-reclaim-guidance"
                     required: true
-                evidence_fingerprint: "sha256:78112f1f4600b6fc400fe7b119acf6eb13ef163f330119346fa0301ccc4ae592"
-                schema_version: 1
-      revision: 1
-      schema_version: 1
-      task_id: "202609111337-ZJ6AFT"
-    event_cursor: 6
-    final_validation: null
-    id: "202609111337-ZJ6AFT"
-    intent:
-      acceptance_criteria:
-        -
-          check_ids: []
-          description: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
-          id: "legacy-1"
-          required: true
-      captured_at: "2026-09-11T13:37:59.893Z"
-      constraints: []
-      request: |-
-        Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887
-
-        GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887
-      task_id: "202609111337-ZJ6AFT"
-    lifecycle: "ACTIVE"
-    plan_amendments: []
-    plan_history: []
-    revision: 9
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 180000
+                  optional_sources:
+                    - "packages/agentplane/src/runner/run-state.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/run-render.ts"
+                    - "packages/agentplane/src/commands/task/run-render.test.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts"
+                    - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+                    - "packages/agentplane/src/runner/trace-artifacts.ts"
+                  symbol_hints:
+                    - "renderTaskRunInspectHuman"
+                    - "inspectTaskRun"
+                    - "cancelTaskRun"
+                depends_on: []
+                expected_outputs:
+                  - "verified-runner-activity-status-and-safety"
+                id: "runner-activity-status-and-safety"
+                objective: "Implement one runner-owned activity model. Derive activity from trace, stderr, heartbeat, and process exit evidence. Expose the required status fields and typed health. Reuse the model for stale-run reclaim or cancel guidance. Add focused regressions. Run the declared checks."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/run-render.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/task/run-render.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/runner"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/run-render.ts"
+                  - "packages/agentplane/src/commands/task/run-render.test.ts"
+                  - "packages/agentplane/src/runner/usecases/task-run-inspect.ts"
+                  - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts"
+                  - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+                  - "packages/agentplane/src/runner/trace-artifacts.ts"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
+                      id: "runner-activity-regressions"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "runner-activity-regressions"
+                      description: "Task run status reports last_trace_at, last_trace_seq, seconds_since_activity, and typed health using the newest runner-owned trace, stderr, heartbeat, and process-exit evidence."
+                      id: "trace-backed-status"
+                      required: true
+                    -
+                      check_ids:
+                        - "runner-activity-regressions"
+                      description: "Focused status regressions cover active, idle, exited, and unavailable activity signals."
+                      id: "health-cases"
+                      required: true
+                    -
+                      check_ids:
+                        - "runner-activity-regressions"
+                        - "typecheck"
+                      description: "Reclaim or cancel guidance does not classify a run as inactive while recent trace or stderr evidence is advancing even when the process heartbeat is stale."
+                      id: "safe-reclaim-guidance"
+                      required: true
+                  evidence_fingerprint: "sha256:78112f1f4600b6fc400fe7b119acf6eb13ef163f330119346fa0301ccc4ae592"
+                  schema_version: 1
+        revision: 1
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+    revision: 13
     schema_version: 1
-    updated_at: "2026-09-11T14:48:43.501Z"
+    updated_at: "2026-09-11T14:53:30.120Z"
     work_items:
       runner-activity-status-and-safety:
-        attempt: 1
+        attempt: 0
         claim_id: null
         id: "runner-activity-status-and-safety"
         last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:675d3b2ea635e92921f84c0f55129e6e3cd424c90d9da1b8b4b6dc4528d8f870"
-            id: "verified-runner-activity-status-and-safety"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 1
-              task_id: "202609111337-ZJ6AFT"
-              work_item_id: "runner-activity-status-and-safety"
-            provenance:
-              - "sha256:62ab1352f7dd6ae02b318c545ca79c2dc5b123e07c202fff5a18835f1c7f466d"
-              - ".agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:4c5ce682ca97256f4ebc7a9afae34f98064d5d84b66d669024fe391bcd360146"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json"
-              check_id: "runner-activity-regressions"
-              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
-              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1."
-              exit_code: 0
-              observed_at: "2026-09-11T14:42:20.754Z"
-              repository_snapshot_digest: "sha256:4c5ce682ca97256f4ebc7a9afae34f98064d5d84b66d669024fe391bcd360146"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json"
-              check_id: "typecheck"
-              command_identity: "bun run typecheck"
-              detail: "Observed by bun run typecheck."
-              exit_code: 0
-              observed_at: "2026-09-11T14:42:20.755Z"
-              repository_snapshot_digest: "sha256:4c5ce682ca97256f4ebc7a9afae34f98064d5d84b66d669024fe391bcd360146"
-              status: "passed"
-          schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -575,8 +708,49 @@ extensions:
         task_id: "202609111337-ZJ6AFT"
         task_revision: 7
         work_item_id: "runner-activity-status-and-safety"
+      -
+        at: "2026-09-11T14:51:33.656Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "acceptance_changed"
+        entity: "task"
+        id: "event_1d7ebdaf6b36db108a26a40c"
+        mutation_id: "plan-refinement:work-order-202609111337-ZJ6AFT-executor-8aa5bf0278c8f57c3049bca5"
+        plan_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+        task_revision: 9
+        work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:1110095af15c27b2d8ad09e27b8d4205fbedb812adfd19e58f7548ea057f6d4e:
+        aggregate_digest: "sha256:fe16caa5f4e9e8b822aaa51b71e88e7cdbe083b75902f4b84cd4ab6052fc64f0"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:53:30.120Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_5f42fa4c31cc4e4b1698ca13"
+          mutation_id: "compatibility:sha256:1110095af15c27b2d8ad09e27b8d4205fbedb812adfd19e58f7548ea057f6d4e"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1110095af15c27b2d8ad09e27b8d4205fbedb812adfd19e58f7548ea057f6d4e"
+        next_revision: 13
+        previous_revision: 12
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
       compatibility:sha256:3057f60e39f0dc6e5dd3e7059c577de28caca50dc82d98ec3974117f71c55103:
         aggregate_digest: "sha256:257f63e67bae438b6560973f7b076193418977a4e06f0acb99ac4b0b0fd6335f"
         event:
@@ -721,6 +895,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:e64bee2f6f0cb0b8e70f68e37096193260d73a60049259e0f44d9acd1c680353:
+        aggregate_digest: "sha256:b0527df3726eb37285cbf142e00e97686a4c07908fea07d76a38a15ecf900767"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:53:30.114Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_70589d032aff7e70cf184077"
+          mutation_id: "compatibility:sha256:e64bee2f6f0cb0b8e70f68e37096193260d73a60049259e0f44d9acd1c680353"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 11
+          to: "AWAITING_PLAN_APPROVAL"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e64bee2f6f0cb0b8e70f68e37096193260d73a60049259e0f44d9acd1c680353"
+        next_revision: 12
+        previous_revision: 11
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
       external-result:work-order-202609111337-ZJ6AFT-executor-9ca2945c8c2b10e903b0886d:
         aggregate_digest: "sha256:d4a4d94bc0913bac2f26a8662650ff1c46de9ea33db97a42b9223f04b9bfbb5d"
         event:
@@ -743,6 +941,30 @@ extensions:
         mutation_id: "external-result:work-order-202609111337-ZJ6AFT-executor-9ca2945c8c2b10e903b0886d"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+      plan-refinement:work-order-202609111337-ZJ6AFT-executor-8aa5bf0278c8f57c3049bca5:
+        aggregate_digest: "sha256:93fb112e1c678f665e36c59144ef7f4de2c25cef5478dc7912365c2d1cd66bc2"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-11T14:51:33.656Z"
+          cause_refs:
+            - "acceptance_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_1d7ebdaf6b36db108a26a40c"
+          mutation_id: "plan-refinement:work-order-202609111337-ZJ6AFT-executor-8aa5bf0278c8f57c3049bca5"
+          plan_digest: "sha256:255b12d6150265950b5284fa6d4a361a617664b2a9b4418c4c4d03cdafbbce19"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 9
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609111337-ZJ6AFT-executor-8aa5bf0278c8f57c3049bca5"
+        next_revision: 10
+        previous_revision: 9
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
     pending_effects: []
@@ -772,13 +994,13 @@ GitHub issue #5887 remains present on current main: task run status exposes hear
 
 ## Plan
 
-Plan one bounded runner-activity status and reclaim-safety change with focused regressions.
+Keep the runner activity implementation and bind verification to its changed status surface.
 
 ## Verify Steps
 
-1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1`. Expected: active, idle, exited, unavailable, and recent trace or stderr safety regressions pass.
+1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1`. Expected: active, idle, exited, unknown, recent trace, recent stderr, JSON status, and human status output regressions pass.
 2. Run `bun run typecheck`. Expected: the runner activity model and status output type-check.
-3. Review the final diff against GitHub issue #5887. Expected: status exposes last_trace_at, last_trace_seq, seconds_since_activity, and typed health, and reclaim guidance uses the same activity evidence.
+3. Review the final diff against GitHub issue #5887. Expected: status exposes last_trace_at, last_trace_seq, seconds_since_activity, and typed health, and recent activity prevents reclaim guidance for an unverified child.
 
 ## Verification
 
