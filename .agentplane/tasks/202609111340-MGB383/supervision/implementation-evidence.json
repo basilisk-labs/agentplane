@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 521cdc0310be7401234907b0b64e718973474dde..2ce9ad411025921a1b82b7f8b383501fd655d342",
+      "command": "git diff --check 2fa4c538aa40fcdf2b5b467ae07126a19cb13562..ab800d228f1a8ad14f0fe44654dbcddcf1266cfa",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 521cdc0310be7401234907b0b64e718973474dde..2ce9ad411025921a1b82b7f8b383501fd655d342",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2fa4c538aa40fcdf2b5b467ae07126a19cb13562..ab800d228f1a8ad14f0fe44654dbcddcf1266cfa",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,8 @@
         "M\t.agentplane/tasks/202609111340-MGB383/pr/github-body.md",
         "M\t.agentplane/tasks/202609111340-MGB383/pr/meta.json",
         "M\t.agentplane/tasks/202609111340-MGB383/pr/review.md",
-        "M\tpackages/agentplane/src/commands/release/open-next-development-version-script.test.ts",
-        "M\tscripts/lib/next-development-version.mjs"
+        "M\t.github/workflows/publish.yml",
+        "M\tpackages/agentplane/src/commands/release/publish-workflow-contract.test.ts"
       ]
     },
     {
@@ -32,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "521cdc0310be7401234907b0b64e718973474dde",
-  "implementation_commit": "2ce9ad411025921a1b82b7f8b383501fd655d342",
+  "execution_base_commit": "2fa4c538aa40fcdf2b5b467ae07126a19cb13562",
+  "implementation_commit": "ab800d228f1a8ad14f0fe44654dbcddcf1266cfa",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
