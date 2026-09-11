@@ -31,7 +31,8 @@ Created: 2026-09-11T15:28:14.044Z
 ```text
  ...cli.core.route-decision.direct-closeout.test.ts | 213 ++++++++++++++++-----
  .../src/commands/shared/workflow-step-factory.ts   |  67 +++----
- 2 files changed, 198 insertions(+), 82 deletions(-)
+ .../commands/shared/workflow-step-quality.test.ts  |  35 ++++
+ 3 files changed, 233 insertions(+), 82 deletions(-)
 ```
 
 </details>
