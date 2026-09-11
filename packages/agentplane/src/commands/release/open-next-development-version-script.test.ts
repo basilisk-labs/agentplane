@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, rm } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -42,6 +42,19 @@ afterEach(async () => {
 describe("open next development version", () => {
   it("atomically opens the next patch beta and is idempotent", async () => {
     const root = await workspace("0.2.6");
+    const capturePath = path.join(root, "scripts", "bench", "capture-compatibility-candidate.mjs");
+    await mkdir(path.dirname(capturePath), { recursive: true });
+    await mkdir(path.join(root, "scripts", "baselines"), { recursive: true });
+    await writeFile(
+      capturePath,
+      "import { writeFileSync } from 'node:fs'; writeFileSync('scripts/baselines/v0.7-compatibility-candidate.json', JSON.stringify({ version: '0.2.7-beta.1' }));\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "scripts", "baselines", "v0.7-compatibility-candidate.json"),
+      '{"version":"0.2.6"}\n',
+      "utf8",
+    );
 
     const first = await execFileAsync(
       "node",
@@ -62,6 +75,7 @@ describe("open next development version", () => {
         "packages/core/package.json",
         "packages/recipes/package.json",
         "packages/recipes/src/index.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
       ]),
     );
     const agentplaneManifest = await readJson(root, "packages/agentplane/package.json");
@@ -73,6 +87,12 @@ describe("open next development version", () => {
     await expect(
       readFile(path.join(root, "packages", "recipes", "src", "index.ts"), "utf8"),
     ).resolves.toContain('RECIPES_VERSION = "0.2.7-beta.1"');
+    await expect(
+      readFile(
+        path.join(root, "scripts", "baselines", "v0.7-compatibility-candidate.json"),
+        "utf8",
+      ),
+    ).resolves.toBe('{ "version": "0.2.7-beta.1" }\n');
 
     const repeated = await execFileAsync(
       "node",

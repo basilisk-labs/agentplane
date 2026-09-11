@@ -27,9 +27,11 @@ GitHub issue #4848 is still relevant on current main. The release follow-up stag
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../open-next-development-version-script.test.ts   |  22 +++-
  .../verify-release-evidence-pr-script.test.ts      |  68 +++++++------
+ scripts/lib/next-development-version.mjs           |  31 +++++-
  scripts/workflow/verify-release-evidence-pr.mjs    | 111 +++++++++++----------
- 2 files changed, 99 insertions(+), 80 deletions(-)
+ 4 files changed, 150 insertions(+), 82 deletions(-)
 ```
 
 </details>

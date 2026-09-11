@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609111340-MGB383/harden-the-post-release-evidence-close-tail-unde",
   "created_at": "2026-09-11T18:45:55.843Z",
-  "diffstat_sha256": "sha256:678b1bac3e312a57e71de7f43d0ffa313e0a487d3a5c3a1329a2b18fc929a85e",
+  "diffstat_sha256": "sha256:abca54a6a2ab14e2a6c7ed6337ced9c84c8b07301d5fcda1ab12185692938907",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
