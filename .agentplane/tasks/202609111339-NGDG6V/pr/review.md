@@ -12,8 +12,8 @@ Created: 2026-09-11T15:28:14.044Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-11T15:28:14.044Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-11T15:28:14.044Z
+- Updated: 2026-09-11T15:35:52.577Z
 - Branch: task/202609111339-NGDG6V/route-direct-verification-rework-to-bounded-repa
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

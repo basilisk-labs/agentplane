@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:3ec41610f8b8089a8f633cd7d2bfb0816ab470a6a7c95c0d9f132342e07fbaf9"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-11T15:36:23.030Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -82,7 +82,9 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-2:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -93,7 +95,16 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -181,9 +192,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "c14b1c85cb35f0ee51131670fa16bb50a191284b"
-  message: "🚧 NGDG6V task: apply external agent result"
+      - "verification_recovery:recorded-check-2"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -207,8 +218,14 @@ events:
     to: "DOING"
     note: "Implementation committed: c14b1c85cb35. CLI accepted one state-bound external-agent semantic result."
     commit: "c14b1c85cb35f0ee51131670fa16bb50a191284b"
+  -
+    type: "verify"
+    at: "2026-09-11T15:36:23.030Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-11T15:35:16.981Z"
+doc_updated_at: "2026-09-11T15:36:24.683Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893"
 sections:
@@ -226,6 +243,46 @@ sections:
     3. Confirm the regression records newer repair evidence before TESTER is selected again. Expected: unchanged implementation or unapproved task-contract drift remains on the repair path.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-11T15:36:23.030Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b434ac5d180a14ad7cb650945d4df1b94248c088dc1a0b0826e42f5675c67a03, input_digest=sha256:4c16ece2228341cf4a376c4427243a034ef3e8d81e414cc7209098068c6a88fb
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111339-NGDG6V declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111339-NGDG6V declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
+    - old_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+    - current_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111339-NGDG6V
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -418,7 +475,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111339-NGDG6V"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609111339-NGDG6V"
     intent:
@@ -438,9 +495,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-11T15:35:40.189Z"
+    updated_at: "2026-09-11T15:36:24.681Z"
     work_items:
       direct-rework-routing-and-regression:
         attempt: 1
@@ -614,6 +671,30 @@ extensions:
         previous_revision: 2
         schema_version: 1
         task_id: "202609111339-NGDG6V"
+      compatibility:sha256:d52ac5aaff9d43ed603efbff53595c943b055baf8595232bb202c47c7634492d:
+        aggregate_digest: "sha256:bd04242556c5b6df74d71f68eac36bfe0d65586e5d4d5e45c9dbe9166937259d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T15:36:24.681Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_5f7d42bf2e940fe934832888"
+          mutation_id: "compatibility:sha256:d52ac5aaff9d43ed603efbff53595c943b055baf8595232bb202c47c7634492d"
+          plan_digest: "sha256:0a76fdd4105767bb073ae02940e73a715d3fd550ae0b792ed800c9c63f433b7f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:d52ac5aaff9d43ed603efbff53595c943b055baf8595232bb202c47c7634492d"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
       compatibility:sha256:e4cb1ed19a3cb4d3fc47c2cfe1e2132f8098c9b9214d8bca8a7032337c95001e:
         aggregate_digest: "sha256:cea3000b70c51419d8d777b22944ef6ec78e847a99d9c7ff6bcd063288210e37"
         event:
@@ -665,8 +746,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "c14b1c85cb35f0ee51131670fa16bb50a191284b"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
@@ -702,6 +781,46 @@ Plan direct verification rework as one bounded routing change with focused regre
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-11T15:36:23.030Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b434ac5d180a14ad7cb650945d4df1b94248c088dc1a0b0826e42f5675c67a03, input_digest=sha256:4c16ece2228341cf4a376c4427243a034ef3e8d81e414cc7209098068c6a88fb
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111339-NGDG6V declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111339-NGDG6V declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
+- old_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+- current_digest: 823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111339-NGDG6V
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
