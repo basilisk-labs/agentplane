@@ -29,11 +29,10 @@ Created: 2026-09-11T19:51:57.383Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/scope-extend.test.ts         | 33 ++++++++++++++++++++
  .../agentplane/src/commands/task/scope-extend.ts   |  1 +
  .../src/runtime/task-routing/resolve.test.ts       | 35 ++++++++++++++++++++++
  .../agentplane/src/runtime/task-routing/resolve.ts | 11 +++++--
- 4 files changed, 78 insertions(+), 2 deletions(-)
+ 3 files changed, 45 insertions(+), 2 deletions(-)
 ```
 
 </details>

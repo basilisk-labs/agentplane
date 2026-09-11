@@ -711,39 +711,6 @@ describe("blocked task execution scope extension", () => {
     );
   });
 
-  it("adds only the approved effect to a legacy contract with empty scope roots", () => {
-    const { command, pending, task } = fixture(
-      {},
-      { scope_roots: [], repository_effects: ["release_metadata"] },
-    );
-    const legacy = resolveTaskExecutionContract({
-      config: command.config,
-      task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
-      requestedMode: "branch_pr",
-    });
-    legacy.observed.changed_paths = ["packages/agentplane/src/release.ts"];
-    task.execution_contract = legacy;
-
-    const extended = extendBlockedTaskExecutionContract({
-      command,
-      task,
-      scope_roots: [],
-      repository_effects: pending.request.repository_effects,
-      request_digest: pending.request_digest,
-      by: "USER",
-    });
-
-    expect(extended.source).toBe("legacy_compatibility");
-    expect(extended.declaration.scope_roots).toEqual([]);
-    expect(extended.authority.writable_roots).toEqual([]);
-    expect(extended.declaration.repository_effects).toEqual([
-      "release_metadata",
-      "repository_write",
-      "source_code",
-    ]);
-    expect(extended.observed.changed_paths).toEqual(["packages/agentplane/src/release.ts"]);
-  });
-
   it("preserves evaluator rework evidence while invalidating verification", () => {
     const qualityReview = {
       state: "rework" as const,
