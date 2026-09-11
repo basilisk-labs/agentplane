@@ -4,7 +4,7 @@ title: "Publish direct ops quality review fix from upstream main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "USER"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-11T14:21:19.861Z"
-  updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 2
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -365,9 +365,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-6"
       - "verification_recovery:verification-record"
-commit:
-  hash: "63c8816c088e3b61865397e23453c708903632a4"
-  message: "🚧 5N53HA task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1498,19 +1496,89 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609091457-5N53HA"
-    revision: 29
+    revision: 30
     schema_version: 1
-    updated_at: "2026-09-11T15:31:56.262Z"
+    updated_at: "2026-09-11T15:33:17.156Z"
     work_items:
       preserve-ops-quality-review-fix:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "preserve-ops-quality-review-fix"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:0a0ad766c92da98fb98eef0d840189240a1936099360a73bc244fd010c2bcb78"
+            id: "ops-quality-review-subject-fix"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609091457-5N53HA"
+              work_item_id: "preserve-ops-quality-review-fix"
+            provenance:
+              - "sha256:e6b48faccab529456b07870ec33b33da3707e35dc7616ab5f6193548ad9ccca1"
+              - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:7735d9a91aaeb06ee94b946c37cf9965e37c02064561fa0d99aaec47d24f64cd"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "ops-quality-target-tests"
+              command_identity: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-11T15:33:17.124Z"
+              repository_snapshot_digest: "sha256:7735d9a91aaeb06ee94b946c37cf9965e37c02064561fa0d99aaec47d24f64cd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "direct-ops-lifecycle-tests"
+              command_identity: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-11T15:33:17.124Z"
+              repository_snapshot_digest: "sha256:7735d9a91aaeb06ee94b946c37cf9965e37c02064561fa0d99aaec47d24f64cd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "build"
+              command_identity: "bun run build"
+              detail: "Observed by bun run build."
+              exit_code: 0
+              observed_at: "2026-09-11T15:33:17.124Z"
+              repository_snapshot_digest: "sha256:7735d9a91aaeb06ee94b946c37cf9965e37c02064561fa0d99aaec47d24f64cd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-11T15:33:17.124Z"
+              repository_snapshot_digest: "sha256:7735d9a91aaeb06ee94b946c37cf9965e37c02064561fa0d99aaec47d24f64cd"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+              check_id: "tarball-check"
+              command_identity: "bun run package:tarball:check"
+              detail: "Observed by bun run package:tarball:check."
+              exit_code: 0
+              observed_at: "2026-09-11T15:33:17.124Z"
+              repository_snapshot_digest: "sha256:7735d9a91aaeb06ee94b946c37cf9965e37c02064561fa0d99aaec47d24f64cd"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       refresh-v07-compatibility-candidate:
         attempt: 0
         claim_id: null
@@ -1610,6 +1678,23 @@ extensions:
         task_id: "202609091457-5N53HA"
         task_revision: 24
         work_item_id: null
+      -
+        at: "2026-09-11T15:33:17.156Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:1b04bf24e1fbfac44a4bb5ce752dc87999347d750ad6f936ef069615c2825171"
+        entity: "work_item"
+        id: "event_e8dd8c55047a813192b8e366"
+        mutation_id: "external-result:work-order-202609091457-5N53HA-executor-e2e740d11780026de5a58516"
+        plan_digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+        task_revision: 29
+        work_item_id: "preserve-ops-quality-review-fix"
     leases: []
     mutation_receipts:
       compatibility:sha256:10ccc88a92b55de83060ba1e37dcfe02aec8eed556e19ba105d33b6640e7d997:
@@ -1994,6 +2079,30 @@ extensions:
         mutation_id: "external-result:work-order-202609091457-5N53HA-executor-a7981bb82d6b985675fb76a6"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+      external-result:work-order-202609091457-5N53HA-executor-e2e740d11780026de5a58516:
+        aggregate_digest: "sha256:4e776477106a5ac816ddf5f6276c4dd921161ae3adf16aea37ec988a0a0eb55c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T15:33:17.156Z"
+          cause_refs:
+            - "semantic-result:sha256:1b04bf24e1fbfac44a4bb5ce752dc87999347d750ad6f936ef069615c2825171"
+          entity: "work_item"
+          from: "READY"
+          id: "event_e8dd8c55047a813192b8e366"
+          mutation_id: "external-result:work-order-202609091457-5N53HA-executor-e2e740d11780026de5a58516"
+          plan_digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 29
+          to: "COMPLETED"
+          work_item_id: "preserve-ops-quality-review-fix"
+        mutation_id: "external-result:work-order-202609091457-5N53HA-executor-e2e740d11780026de5a58516"
+        next_revision: 30
+        previous_revision: 29
         schema_version: 1
         task_id: "202609091457-5N53HA"
       external-result:work-order-202609091457-5N53HA-executor-f26a8fdd9baa4ed9327e8034:
