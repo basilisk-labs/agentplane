@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609111339-NGDG6V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-11T18:10:16.145Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "769499c4b85a218bf58d06f4829a86fbbed4961a",
+  "blueprint_digest": "e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181",
+  "findings": [
+    "The final predicate accepts only supervisor-authored event-only implementation receipts, preserves exact commit matching when task.commit exists, and the live NGDG6V lifecycle advanced from implementation through TESTER to EVALUATOR without returning to CODER."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/f817d2e83cca9119981f002084c2936d56dde922932328a97f47a42493b52896.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
