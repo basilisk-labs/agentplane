@@ -16,7 +16,7 @@ GitHub issue #4893 remains relevant on current main. After agentplane verify <ta
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: final scoped routing change passes focused and full regression under Bun 1.4.2.
 - Canonical workflow state lives in the task README.
 
 <details>

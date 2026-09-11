@@ -1,10 +1,11 @@
 ---
 id: "202609111339-NGDG6V"
 title: "Route direct verification rework to bounded repair instead of repeated verification for GitHub issue #4893"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +25,9 @@ plan_approval:
   note: "host_user_decision=sha256:62488dddd7fe21e7065c2b1febf544ee2d681ec51fde398c6b94b54dd505e2df"
 verification:
   state: "ok"
-  updated_at: "2026-09-11T18:09:16.552Z"
-  updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  updated_at: "2026-09-11T18:12:02.945Z"
+  updated_by: "TESTER"
+  note: "Verified: final scoped routing change passes focused and full regression under Bun 1.4.2."
   attempts: 0
 quality_review:
   state: "pass"
@@ -54,6 +55,22 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The final predicate accepts only supervisor-authored event-only implementation receipts, preserves exact commit matching when task.commit exists, and the live NGDG6V lifecycle advanced from implementation through TESTER to EVALUATOR without returning to CODER."
+token_usage:
+  agent_runs: 13
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:372a8d3fb61824c456743b7200313ddcce5816d57e4c6afa3a479ec8921d73a9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-11T18:12:22.566Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -145,18 +162,6 @@ execution_contract:
         result: "pass"
       -
         id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
         result: "pass"
       -
         id: "verification-record"
@@ -264,8 +269,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "769499c4b85a218bf58d06f4829a86fbbed4961a"
-  message: "🚧 NGDG6V task: apply external agent result"
+  hash: "08c437b3d19e21c6e85de277fc47ef9e269651ec"
+  message: "🚧 NGDG6V task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -285,6 +290,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 769499c4b85a. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -351,9 +359,23 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "verify"
+    at: "2026-09-11T18:12:02.945Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: final scoped routing change passes focused and full regression under Bun 1.4.2."
+  -
+    type: "status"
+    at: "2026-09-11T18:12:22.566Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "08c437b3d19e21c6e85de277fc47ef9e269651ec"
 doc_version: 3
-doc_updated_at: "2026-09-11T18:09:19.044Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-11T18:12:22.566Z"
+doc_updated_by: "CODER"
 description: "GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893"
 sections:
   Summary: |-
@@ -573,6 +595,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202609111339-NGDG6V
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-11T18:12:02.945Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: final scoped routing change passes focused and full regression under Bun 1.4.2.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fa82ae4a3ef90db87015c6e695b5546fd83a8f3f9d523c277d8b2ccc6ee303d, input_digest=sha256:cac19a0b9a01b05639318bf53d426249d02ca65c73e88684dbc6ed1f6c8323c1
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: 3 test files passed; 47 tests passed under task-local Bun 1.4.2.
+    Scope: affected direct verification rework routing and freshness units.
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: runtime, core, and critical CLI groups passed under task-local Bun 1.4.2.
+    Scope: critical routing and lifecycle paths.
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: the full repository CI completed with exit code 0.
+    Scope: full repository regression matrix.
+
+    Check: real_e2e
+    Command: agentplane task advance 202609111339-NGDG6V --result <state-bound-result> --agent-json
+    Result: pass
+    Evidence: the live branch task advanced from the accepted implementation through TESTER to EVALUATOR instead of returning to CODER.
+    Scope: real task lifecycle route for event-only implementation evidence.
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: direct needs_rework selects mutable CODER repair, then supervisor implementation evidence returns the route to fresh TESTER verification.
+    Scope: requested GitHub issue #4893 task outcome.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
+    - old_digest: e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181
+    - current_digest: e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -806,8 +888,35 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609111339-NGDG6V"
-    event_cursor: 21
-    final_validation: null
+    event_cursor: 22
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609111339-NGDG6V"
+            - "git:769499c4b85a218bf58d06f4829a86fbbed4961a"
+          check_id: "focused-regression"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+          detail: "Verified: final scoped routing change passes focused and full regression under Bun 1.4.2."
+          exit_code: 0
+          observed_at: "2026-09-11T18:12:02.945Z"
+          repository_snapshot_digest: "sha256:1e0277cb65c9b42ae78367ae3a0f677f8aa83b183851c320a0c9aa469b958530"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609111339-NGDG6V"
+            - "git:769499c4b85a218bf58d06f4829a86fbbed4961a"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: final scoped routing change passes focused and full regression under Bun 1.4.2."
+          exit_code: 0
+          observed_at: "2026-09-11T18:12:02.945Z"
+          repository_snapshot_digest: "sha256:1e0277cb65c9b42ae78367ae3a0f677f8aa83b183851c320a0c9aa469b958530"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609111339-NGDG6V"
     intent:
       acceptance_criteria:
@@ -823,7 +932,7 @@ extensions:
 
         GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893
       task_id: "202609111339-NGDG6V"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1148,9 +1257,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 31
+    revision: 33
     schema_version: 1
-    updated_at: "2026-09-11T18:09:19.044Z"
+    updated_at: "2026-09-11T18:12:22.566Z"
     work_items:
       branch-event-verification-recovery:
         attempt: 1
@@ -1468,6 +1577,30 @@ extensions:
         mutation_id: "compatibility:sha256:216e3075554935a64cb38ee9fa2ba16ad72330df633fd19592fb27bc9dee00f0"
         next_revision: 26
         previous_revision: 25
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      compatibility:sha256:2e8b575702f2c56e0f9f385c9442989ac7fd55ce446d5272f9f875278c4cbbbf:
+        aggregate_digest: "sha256:7986350260fc7435614d08d2262584b64e3f7465cb57eadb3eeed02338ed9901"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T18:12:06.424Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9f12018bcb52120cca0b9cfa"
+          mutation_id: "compatibility:sha256:2e8b575702f2c56e0f9f385c9442989ac7fd55ce446d5272f9f875278c4cbbbf"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 31
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2e8b575702f2c56e0f9f385c9442989ac7fd55ce446d5272f9f875278c4cbbbf"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       compatibility:sha256:3f058c0e6a4e001f55d7159a72890203c9eea5abf9c02d16b51ff4599823ae2f:
@@ -1926,6 +2059,31 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609111339-NGDG6V"
+      legacy-finish:202609111339-NGDG6V:2026-09-11T18:12:02.945Z:769499c4b85a218bf58d06f4829a86fbbed4961a:
+        aggregate_digest: "sha256:ec6591b74f0d14847d513afb8e85598cd716b46802d15ad51c97fafb4be1b64f"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-11T18:12:22.566Z"
+          cause_refs:
+            - "task-verification:202609111339-NGDG6V"
+            - "git:769499c4b85a218bf58d06f4829a86fbbed4961a"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b602fad643e7c6a7ac940863"
+          mutation_id: "legacy-finish:202609111339-NGDG6V:2026-09-11T18:12:02.945Z:769499c4b85a218bf58d06f4829a86fbbed4961a"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: "sha256:1e0277cb65c9b42ae78367ae3a0f677f8aa83b183851c320a0c9aa469b958530"
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 32
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609111339-NGDG6V:2026-09-11T18:12:02.945Z:769499c4b85a218bf58d06f4829a86fbbed4961a"
+        next_revision: 33
+        previous_revision: 32
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
       plan-refinement:work-order-202609111339-NGDG6V-executor-348812f9062f49530d4549ec:
         aggregate_digest: "sha256:e283ee574ad9addedd0a02d2daf0748ef82495e946f7f0993cd4805b41fa178f"
         event:
@@ -1982,6 +2140,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "769499c4b85a218bf58d06f4829a86fbbed4961a"
+    message: "🚧 NGDG6V task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
@@ -2226,6 +2385,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-09-11T18:12:02.945Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: final scoped routing change passes focused and full regression under Bun 1.4.2.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:7fa82ae4a3ef90db87015c6e695b5546fd83a8f3f9d523c277d8b2ccc6ee303d, input_digest=sha256:cac19a0b9a01b05639318bf53d426249d02ca65c73e88684dbc6ed1f6c8323c1
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: 3 test files passed; 47 tests passed under task-local Bun 1.4.2.
+Scope: affected direct verification rework routing and freshness units.
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: runtime, core, and critical CLI groups passed under task-local Bun 1.4.2.
+Scope: critical routing and lifecycle paths.
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: the full repository CI completed with exit code 0.
+Scope: full repository regression matrix.
+
+Check: real_e2e
+Command: agentplane task advance 202609111339-NGDG6V --result <state-bound-result> --agent-json
+Result: pass
+Evidence: the live branch task advanced from the accepted implementation through TESTER to EVALUATOR instead of returning to CODER.
+Scope: real task lifecycle route for event-only implementation evidence.
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1
+Result: pass
+Evidence: direct needs_rework selects mutable CODER repair, then supervisor implementation evidence returns the route to fresh TESTER verification.
+Scope: requested GitHub issue #4893 task outcome.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111339-NGDG6V-route-direct-verification-rework-to-bounded-repa/.agentplane/tasks/202609111339-NGDG6V/blueprint/resolved-snapshot.json
+- old_digest: e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181
+- current_digest: e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111339-NGDG6V
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -2234,3 +2453,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/13` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:372a8d3fb61824c456743b7200313ddcce5816d57e4c6afa3a479ec8921d73a9`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-11T18:12:22.566Z`

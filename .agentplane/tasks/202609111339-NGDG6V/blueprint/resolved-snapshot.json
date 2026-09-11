@@ -25,7 +25,9 @@
     "mutationScope": "code",
     "touchedPaths": [],
     "recipeHints": [],
-    "riskFlags": [],
+    "riskFlags": [
+      "network"
+    ],
     "blueprintRequest": "quality.regression"
   },
   "selectedBlueprint": {
@@ -57,6 +59,9 @@
     "taskIntent": {
       "taskKind": "code",
       "mutationScope": "code",
+      "riskFlags": [
+        "network"
+      ],
       "blueprintRequest": "quality.regression"
     },
     "whySelected": [
@@ -327,7 +332,13 @@
     "contextManifest": [],
     "acceptedRecipeExtensions": [],
     "rejectedRecipeExtensions": [],
-    "stopReasons": []
+    "stopReasons": [
+      {
+        "id": "network_risk",
+        "severity": "warn",
+        "reason": "Task declares network risk; preserve explicit evidence for that step."
+      }
+    ]
   },
   "nodes": [
     {
@@ -591,7 +602,13 @@
   "contextManifest": [],
   "acceptedRecipeExtensions": [],
   "rejectedRecipeExtensions": [],
-  "stopReasons": [],
+  "stopReasons": [
+    {
+      "id": "network_risk",
+      "severity": "warn",
+      "reason": "Task declares network risk; preserve explicit evidence for that step."
+    }
+  ],
   "selectionReasons": [
     "explicit blueprint requested: quality.regression",
     "task intent kind: code",
@@ -600,6 +617,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "823764a6196d2004c1109797c319a2c7f17a056e1fb1518d528da77053f5df60"
+    "value": "e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181"
   }
 }
