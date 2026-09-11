@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -91,10 +91,18 @@ execution_contract:
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -134,23 +142,35 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:2d742fd2b93b96d1429fcaa95062d4d0020da7a5194799832b0c63c48facbf67"
+      digest: "sha256:124883c2192a3f30628da10c1e75794d46195517a30b7cb01efa188bf49714b4"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/route-decision-verification.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/route-decision-verification.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -184,7 +204,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "11319e1aa570abf361648bc1c25ca0393818cee3"
+  message: "🚧 NGDG6V task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -198,6 +220,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a515733b1ca8. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 11319e1aa570. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -236,8 +261,16 @@ events:
     to: "DOING"
     note: "Implementation committed: a515733b1ca8. CLI accepted one state-bound external-agent semantic result."
     commit: "a515733b1ca8aa2b220bdda3f91e94023cb10aaf"
+  -
+    type: "status"
+    at: "2026-09-11T17:05:39.627Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 11319e1aa570. CLI accepted one state-bound external-agent semantic result."
+    commit: "11319e1aa570abf361648bc1c25ca0393818cee3"
 doc_version: 3
-doc_updated_at: "2026-09-11T16:49:03.952Z"
+doc_updated_at: "2026-09-11T17:05:39.627Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893"
 sections:
@@ -523,7 +556,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609111339-NGDG6V"
-    event_cursor: 13
+    event_cursor: 15
     final_validation: null
     id: "202609111339-NGDG6V"
     intent:
@@ -865,9 +898,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 22
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-11T16:49:03.952Z"
+    updated_at: "2026-09-11T17:05:39.627Z"
     work_items:
       branch-event-verification-recovery:
         attempt: 0
@@ -1067,6 +1100,30 @@ extensions:
         previous_revision: 13
         schema_version: 1
         task_id: "202609111339-NGDG6V"
+      compatibility:sha256:4f3e8b101e21b3c0d801bb31c5f78d6508722edda3b3081437db513be2364f14:
+        aggregate_digest: "sha256:018a5e0cb7fb22a3d7b4e71a07d1b311530ab4c3b3497447811c0b27f8d47370"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T17:05:39.627Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_710dfc2c4b5eeafbab05fc34"
+          mutation_id: "compatibility:sha256:4f3e8b101e21b3c0d801bb31c5f78d6508722edda3b3081437db513be2364f14"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 22
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4f3e8b101e21b3c0d801bb31c5f78d6508722edda3b3081437db513be2364f14"
+        next_revision: 23
+        previous_revision: 22
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
       compatibility:sha256:66a7f23ed93db09286a86ca49c22fcb50f7a489f5727ee157c0c12c635f32cdc:
         aggregate_digest: "sha256:6c3c736c202cc569d14253b5a55c54813a6d33a9bcac416c4855607a67c0791d"
         event:
@@ -1161,6 +1218,30 @@ extensions:
         mutation_id: "compatibility:sha256:753def621d3a654129d71cb16ced3f42f0c7b864ae74f3096b46d9d73e48d100"
         next_revision: 18
         previous_revision: 17
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      compatibility:sha256:7bbec617b4b1eebb1241a31aedbd3301164034d79fb7267827c41409bca2c99b:
+        aggregate_digest: "sha256:6d27c85c8511f2f2018fe5fe933dc7198eb932f88f0c5de672fd15e4003bfec5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T17:05:39.627Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c7f0b704313974150a8f358b"
+          mutation_id: "compatibility:sha256:7bbec617b4b1eebb1241a31aedbd3301164034d79fb7267827c41409bca2c99b"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:7bbec617b4b1eebb1241a31aedbd3301164034d79fb7267827c41409bca2c99b"
+        next_revision: 24
+        previous_revision: 23
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       compatibility:sha256:8243be5900f7c78b33c3493a78da66590ac705e7640edb4bccd1e6d11cc9c2fa:
@@ -1410,7 +1491,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "a515733b1ca8aa2b220bdda3f91e94023cb10aaf"
+    hash: "11319e1aa570abf361648bc1c25ca0393818cee3"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
