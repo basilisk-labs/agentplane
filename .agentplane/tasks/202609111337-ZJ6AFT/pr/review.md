@@ -12,8 +12,8 @@ Created: 2026-09-11T14:09:55.511Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
