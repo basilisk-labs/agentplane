@@ -6,14 +6,14 @@ Created: 2026-09-11T15:28:14.044Z
 
 - Task: `202609111339-NGDG6V`
 - Title: Route direct verification rework to bounded repair instead of repeated verification for GitHub issue #4893
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609111339-NGDG6V/route-direct-verification-rework-to-bounded-repa`
 - Canonical task record: `.agentplane/tasks/202609111339-NGDG6V/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+- Note: Verified: final scoped routing change passes focused and full regression under Bun 1.4.2.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
