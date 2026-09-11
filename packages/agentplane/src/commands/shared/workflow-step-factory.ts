@@ -295,7 +295,8 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
       });
     }
   }
-  const externalImplementationRecorded = Boolean(state.task.commit?.hash);
+  const externalImplementationRecorded =
+    Boolean(state.task.commit?.hash) || verificationReworkHasNewImplementation(state.task);
   if (externalImplementationRecorded || state.resume.runner.run_id || state.resume.runner.status) {
     if (externalImplementationRecorded || state.resume.runner.next_action === "none") {
       return agentEpisodeStep({

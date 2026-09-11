@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609111339-NGDG6V/route-direct-verification-rework-to-bounded-repa",
   "created_at": "2026-09-11T15:28:14.044Z",
-  "diffstat_sha256": "sha256:cab3d146e1c44cdab28d98c870148e631c7d205e716af65a44b42c022c4ba79d",
+  "diffstat_sha256": "sha256:b6294b239627a665bef9fc88f172d54bb21c1f18e03d4b10727372308c54d5b3",
   "last_verified_at": "2026-09-11T15:36:23.030Z",
   "last_verified_diffstat_sha256": "sha256:09b13903ed14dfc60984e3961d8458786ef919d934ec130350b585dc092c757c",
   "pr_number": 5929,

@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ verify:
   - "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-11T15:41:18.400Z"
+  updated_at: "2026-09-11T16:49:30.740Z"
   updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:f1720d797d2c03f2b29a4ffd1ed1f8dfc321006744f813868c0dd2bc131b7d26"
+  note: "host_user_decision=sha256:62488dddd7fe21e7065c2b1febf544ee2d681ec51fde398c6b94b54dd505e2df"
 verification:
   state: "pending"
   updated_at: null
@@ -62,6 +62,8 @@ execution_contract:
     writable_roots:
       - "node_modules/.cache/agentplane-mise"
       - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
   declaration:
@@ -70,9 +72,9 @@ execution_contract:
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
-      - "A task-local ignored tool cache avoids changing the user global Bun installation."
-      - "The committed implementation is already focused and passed its regression suite."
-      - "The repository requires Bun 1.4.2 for the unchanged full local CI gate."
+      - "The live task proved that branch workflow implementation evidence is event-backed while task.commit can remain null."
+      - "The shared freshness helper is the canonical owner used by direct routing and blocker derivation."
+      - "The task-local Bun 1.4.2 cache preserves the pinned verification environment without changing the global installation."
     repository_effects:
       - "repository_write"
       - "source_code"
@@ -83,18 +85,16 @@ execution_contract:
     scope_roots:
       - "node_modules/.cache/agentplane-mise"
       - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+      - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
       - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
   observed:
     authority_violations: []
-    changed_components:
-      - "packages/agentplane"
-    changed_paths:
-      - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+    changed_components: []
+    changed_paths: []
     external_effects: []
-    repository_effects:
-      - "repository_write"
-      - "tests"
+    repository_effects: []
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -113,6 +113,8 @@ execution_contract:
         components:
           - "node_modules/.cache/agentplane-mise"
           - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+          - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
           - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
         evidence_requirements:
@@ -132,26 +134,23 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:21d4b39ab94e7fe65e4eb306181b3e9340dd88ef7183a316d63125286f81169a"
+      digest: "sha256:2d742fd2b93b96d1429fcaa95062d4d0020da7a5194799832b0c63c48facbf67"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+        - "central_component:packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
+        - "central_component:packages/agentplane/src/commands/shared/route-decision-verification.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-factory.ts"
         - "central_component:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
-        - "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components:
-          - "packages/agentplane"
-        changed_files:
-          - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+        changed_components: []
+        changed_files: []
         external_effects: []
-        repository_effects:
-          - "repository_write"
-          - "tests"
+        repository_effects: []
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -185,9 +184,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "a515733b1ca8aa2b220bdda3f91e94023cb10aaf"
-  message: "🚧 NGDG6V task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -240,7 +237,7 @@ events:
     note: "Implementation committed: a515733b1ca8. CLI accepted one state-bound external-agent semantic result."
     commit: "a515733b1ca8aa2b220bdda3f91e94023cb10aaf"
 doc_version: 3
-doc_updated_at: "2026-09-11T16:30:39.480Z"
+doc_updated_at: "2026-09-11T16:49:03.952Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893"
 sections:
@@ -251,7 +248,7 @@ sections:
   Scope: |-
     - In scope: GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893.
     - Out of scope: unrelated refactors not required for "Route direct verification rework to bounded repair instead of repeated verification for GitHub issue #4893".
-  Plan: "Preserve the committed repair and rerun all gates with task-local Bun 1.4.2."
+  Plan: "Refine the route fix for branch tasks whose implementation SHA exists only in the supervisor event."
   Verify Steps: |-
     1. With approved network access, run `MISE_DATA_DIR="$PWD/node_modules/.cache/agentplane-mise/data" MISE_CACHE_DIR="$PWD/node_modules/.cache/agentplane-mise/cache" mise install bun@1.4.2`. Expected: Bun 1.4.2 is available only in the ignored task-local cache.
     2. With the task-local Bun directory prepended to `PATH`, run `bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1`. Expected: all focused direct rework and workflow-step routing regressions pass.
@@ -307,7 +304,7 @@ sections:
 extensions:
   agentplane.execution_grant:
     actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:f1720d797d2c03f2b29a4ffd1ed1f8dfc321006744f813868c0dd2bc131b7d26"
+    approval_evidence_digest: "sha256:62488dddd7fe21e7065c2b1febf544ee2d681ec51fde398c6b94b54dd505e2df"
     approval_kind: "host_user_decision"
     capabilities:
       - "provider.merge"
@@ -317,12 +314,12 @@ extensions:
       - "task.lifecycle"
       - "task.scope.extend"
     completion_contract_digest: "sha256:59e45a5765142a99068af6bb7d14d571e116bddf1edf2e8f3ef7194d769a20f3"
-    digest: "sha256:60f83d2b9b693444fbe01d77f45bfa777abd27e40e8b7b1ced27b335034ee71e"
-    grant_id: "18f1f564-2ded-4fc6-9d3f-57d04954a481"
-    issued_at: "2026-09-11T15:41:18.400Z"
+    digest: "sha256:93633ae903c2510245e8e99883a1445b551586b0a4e4354a2361673c34c4d473"
+    grant_id: "2655759d-c89e-41cf-92cd-0a25cd8cd081"
+    issued_at: "2026-09-11T16:49:30.740Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:92193134a89dd349bc5ad28830f0a263fa679bcd5ff3f0cb1f5b928f4c864879"
-    plan_revision: 12
+    plan_digest: "sha256:d8e6ab487470df2758e644a22baabdaa833397ba56d88ae7e013a031fc38c51f"
+    plan_revision: 21
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
     scope_digest: "sha256:32d5a87e989310f1f4381d95c2dfca88f89cd22cdde7a996701a9121f3d43093"
@@ -331,38 +328,39 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-11T15:41:18.400Z"
+        approved_at: "2026-09-11T16:49:30.740Z"
         approved_by: "HOST:codex-desktop:USER"
-        approved_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+        approved_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
         policy_facts:
           - "host_user_decision"
         state: "approved"
-      created_at: "2026-09-11T15:40:29.237Z"
-      digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+      created_at: "2026-09-11T16:49:03.942Z"
+      digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
       proposal:
         assumptions:
-          - "mise can install Bun 1.4.2 into task-local data and cache directories when network_read is approved."
+          - "Supervisor-authored post-verification DOING events with non-empty commit fields remain the canonical branch implementation receipt."
         planning_baseline:
-          captured_at: "2026-09-11T15:39:13.014Z"
+          captured_at: "2026-09-11T16:47:40.624Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:24dcd360bd9840f95f671039da788f8653ad6e9e4a56e3cc160293cd55d8a90b"
+          digest: "sha256:5b271c6ab8beb89f5a9047666f0b097c8ebdbd4c20ad147ea8bf2ec35751f441"
           dirty_paths:
             - ".agentplane/tasks/202609111339-NGDG6V/README.md"
+            - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
           git:
             kind: "commit"
             ref: null
-            sha: "54347966d2848af7bb9c5644d01936f091a3d75a"
+            sha: "3c7fa007a1f5ea426e21513459ce64be97e58787"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:10"
+          task_history_cursor: "task-revision:20"
         schema_version: 1
         task_id: "202609111339-NGDG6V"
         top_level_validation:
           checks:
             -
               capability: "task.verify"
-              command: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+              command: "bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
               id: "focused-regression"
               kind: "deterministic"
               required: true
@@ -379,16 +377,24 @@ extensions:
               check_ids:
                 - "focused-regression"
                 - "full-regression"
-              description: "The committed direct route sends unresolved verification rework to a mutable CODER episode and preserves the transition to fresh TESTER verification."
-              id: "direct-rework-route"
+              description: "A post-verification DOING status event with a non-empty implementation commit proves fresh implementation when task.commit is absent."
+              id: "branch-event-freshness"
               required: true
             -
               check_ids:
+                - "focused-regression"
                 - "full-regression"
-              description: "All local CI checks execute with the repository-pinned Bun 1.4.2 runtime without changing the global Bun installation."
-              id: "pinned-runtime"
+              description: "When task.commit is present, only a matching post-verification event proves fresh implementation."
+              id: "commit-consistency"
               required: true
-          evidence_fingerprint: "sha256:24dcd360bd9840f95f671039da788f8653ad6e9e4a56e3cc160293cd55d8a90b"
+            -
+              check_ids:
+                - "focused-regression"
+                - "full-regression"
+              description: "After accepted branch implementation evidence, the task leaves CODER rework and returns to fresh TESTER verification."
+              id: "fresh-tester-route"
+              required: true
+          evidence_fingerprint: "sha256:5b271c6ab8beb89f5a9047666f0b097c8ebdbd4c20ad147ea8bf2ec35751f441"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -400,38 +406,56 @@ extensions:
                   check_ids:
                     - "focused-regression"
                     - "full-regression"
-                  description: "The committed direct route sends unresolved verification rework to a mutable CODER episode and preserves the transition to fresh TESTER verification."
-                  id: "direct-rework-route"
+                  description: "A post-verification DOING status event with a non-empty implementation commit proves fresh implementation when task.commit is absent."
+                  id: "branch-event-freshness"
                   required: true
                 -
                   check_ids:
+                    - "focused-regression"
                     - "full-regression"
-                  description: "All local CI checks execute with the repository-pinned Bun 1.4.2 runtime without changing the global Bun installation."
-                  id: "pinned-runtime"
+                  description: "When task.commit is present, only a matching post-verification event proves fresh implementation."
+                  id: "commit-consistency"
+                  required: true
+                -
+                  check_ids:
+                    - "focused-regression"
+                    - "full-regression"
+                  description: "After accepted branch implementation evidence, the task leaves CODER rework and returns to fresh TESTER verification."
+                  id: "fresh-tester-route"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 180000
+                max_bytes: 120000
                 optional_sources:
-                  - "scripts/lib/bun-runtime.mjs"
+                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
                 required_sources:
+                  - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+                  - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+                  - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
                   - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
-                  - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
-                  - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
                 symbol_hints:
+                  - "verificationReworkHasNewImplementation"
                   - "directStep"
-                  - "assertPinnedBunRuntime"
+                  - "deriveBlockers"
               depends_on: []
               expected_outputs:
-                - "Verified direct rework routing at the committed implementation SHA."
-                - "Full local CI evidence produced by Bun 1.4.2."
-              id: "pinned-runtime-verification-recovery"
-              objective: "Preserve the committed direct rework routing, obtain Bun 1.4.2 into node_modules/.cache/agentplane-mise, prepend that task-local runtime to PATH, and run the focused and full regression checks."
+                - "A minimal shared freshness predicate for both event-only and task.commit-backed branch metadata."
+                - "Regression coverage for event-only branch implementation evidence and mismatched or missing evidence."
+              id: "branch-event-verification-recovery"
+              objective: "Update the shared verification-rework freshness predicate to accept a post-verification implementation event when task.commit is absent, preserve commit equality when task.commit is present, and cover the real branch-task shape."
               optional: false
               priority: 1
               required_inputs: []
               resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
                 -
                   kind: "path"
                   mode: "write"
@@ -450,6 +474,8 @@ extensions:
                   resource: "node_modules/.cache/agentplane-mise"
               risk: "medium"
               scope_roots:
+                - "packages/agentplane/src/commands/shared/route-decision-verification.ts"
+                - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
                 - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
                 - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
                 - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
@@ -458,7 +484,7 @@ extensions:
                 checks:
                   -
                     capability: "task.verify"
-                    command: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+                    command: "bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
                     id: "focused-regression"
                     kind: "deterministic"
                     required: true
@@ -475,21 +501,29 @@ extensions:
                     check_ids:
                       - "focused-regression"
                       - "full-regression"
-                    description: "The committed direct route sends unresolved verification rework to a mutable CODER episode and preserves the transition to fresh TESTER verification."
-                    id: "direct-rework-route"
+                    description: "A post-verification DOING status event with a non-empty implementation commit proves fresh implementation when task.commit is absent."
+                    id: "branch-event-freshness"
                     required: true
                   -
                     check_ids:
+                      - "focused-regression"
                       - "full-regression"
-                    description: "All local CI checks execute with the repository-pinned Bun 1.4.2 runtime without changing the global Bun installation."
-                    id: "pinned-runtime"
+                    description: "When task.commit is present, only a matching post-verification event proves fresh implementation."
+                    id: "commit-consistency"
                     required: true
-                evidence_fingerprint: "sha256:24dcd360bd9840f95f671039da788f8653ad6e9e4a56e3cc160293cd55d8a90b"
+                  -
+                    check_ids:
+                      - "focused-regression"
+                      - "full-regression"
+                    description: "After accepted branch implementation evidence, the task leaves CODER rework and returns to fresh TESTER verification."
+                    id: "fresh-tester-route"
+                    required: true
+                evidence_fingerprint: "sha256:5b271c6ab8beb89f5a9047666f0b097c8ebdbd4c20ad147ea8bf2ec35751f441"
                 schema_version: 1
-      revision: 2
+      revision: 3
       schema_version: 1
       task_id: "202609111339-NGDG6V"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609111339-NGDG6V"
     intent:
@@ -671,83 +705,179 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 18
-    schema_version: 1
-    updated_at: "2026-09-11T16:30:39.480Z"
-    work_items:
-      pinned-runtime-verification-recovery:
-        attempt: 1
-        claim_id: null
-        id: "pinned-runtime-verification-recovery"
-        last_failure:
-          cause_refs:
-            - "direct-rework-route"
-            - "pinned-runtime"
-          code: "validation_failed"
-          kind: "validation"
-          message: "The direct rework route and its fresh TESTER transition regression pass under the task-local Bun 1.4.2 runtime."
-          retryable: true
-        output_manifests:
-          -
-            digest: "sha256:e6a04caeb2e13c5e2df4922ee513147a99e7dad1b0f40cbc5a2facc4ce198474"
-            id: "Verified direct rework routing at the committed implementation SHA."
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609111339-NGDG6V"
-              work_item_id: "pinned-runtime-verification-recovery"
-            provenance:
-              - "sha256:b8e10c866d5eaf9950525d976a27db68f51be5f6c02bffef1e10d68c4f469fda"
-              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
-            schema: "agentplane.semantic-output.v1"
+      -
+        approval:
+          approved_at: "2026-09-11T15:41:18.400Z"
+          approved_by: "HOST:codex-desktop:USER"
+          approved_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-11T15:40:29.237Z"
+        digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+        proposal:
+          assumptions:
+            - "mise can install Bun 1.4.2 into task-local data and cache directories when network_read is approved."
+          planning_baseline:
+            captured_at: "2026-09-11T15:39:13.014Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:24dcd360bd9840f95f671039da788f8653ad6e9e4a56e3cc160293cd55d8a90b"
+            dirty_paths:
+              - ".agentplane/tasks/202609111339-NGDG6V/README.md"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "54347966d2848af7bb9c5644d01936f091a3d75a"
+            policy_digest: null
             schema_version: 1
-          -
-            digest: "sha256:ba072495f6444247c908230a5937501001093d01a15f868d4791c24bc945a8bd"
-            id: "Full local CI evidence produced by Bun 1.4.2."
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609111339-NGDG6V"
-              work_item_id: "pinned-runtime-verification-recovery"
-            provenance:
-              - "sha256:b8e10c866d5eaf9950525d976a27db68f51be5f6c02bffef1e10d68c4f469fda"
-              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
-              check_id: "focused-regression"
-              command_identity: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 0
-              observed_at: "2026-09-11T16:29:12.563Z"
-              repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
-              check_id: "full-regression"
-              command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-09-11T16:29:12.563Z"
-              repository_snapshot_digest: "sha256:bf99939e3f82ae01f3b49585a2f2ab10979940b0e3ac13d90699cf968fa6c75e"
-              status: "failed"
+            task_history_cursor: "task-revision:10"
           schema_version: 1
-          stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "direct-rework-route"
-            - "pinned-runtime"
+          task_id: "202609111339-NGDG6V"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+                id: "focused-regression"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run ci:local:full"
+                id: "full-regression"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 1800000
+            criteria:
+              -
+                check_ids:
+                  - "focused-regression"
+                  - "full-regression"
+                description: "The committed direct route sends unresolved verification rework to a mutable CODER episode and preserves the transition to fresh TESTER verification."
+                id: "direct-rework-route"
+                required: true
+              -
+                check_ids:
+                  - "full-regression"
+                description: "All local CI checks execute with the repository-pinned Bun 1.4.2 runtime without changing the global Bun installation."
+                id: "pinned-runtime"
+                required: true
+            evidence_fingerprint: "sha256:24dcd360bd9840f95f671039da788f8653ad6e9e4a56e3cc160293cd55d8a90b"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "focused-regression"
+                      - "full-regression"
+                    description: "The committed direct route sends unresolved verification rework to a mutable CODER episode and preserves the transition to fresh TESTER verification."
+                    id: "direct-rework-route"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-regression"
+                    description: "All local CI checks execute with the repository-pinned Bun 1.4.2 runtime without changing the global Bun installation."
+                    id: "pinned-runtime"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 180000
+                  optional_sources:
+                    - "scripts/lib/bun-runtime.mjs"
+                  required_sources:
+                    - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+                    - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                    - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+                  symbol_hints:
+                    - "directStep"
+                    - "assertPinnedBunRuntime"
+                depends_on: []
+                expected_outputs:
+                  - "Verified direct rework routing at the committed implementation SHA."
+                  - "Full local CI evidence produced by Bun 1.4.2."
+                id: "pinned-runtime-verification-recovery"
+                objective: "Preserve the committed direct rework routing, obtain Bun 1.4.2 into node_modules/.cache/agentplane-mise, prepend that task-local runtime to PATH, and run the focused and full regression checks."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "node_modules/.cache/agentplane-mise"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+                  - "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts"
+                  - "node_modules/.cache/agentplane-mise"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+                      id: "focused-regression"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run ci:local:full"
+                      id: "full-regression"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 1800000
+                  criteria:
+                    -
+                      check_ids:
+                        - "focused-regression"
+                        - "full-regression"
+                      description: "The committed direct route sends unresolved verification rework to a mutable CODER episode and preserves the transition to fresh TESTER verification."
+                      id: "direct-rework-route"
+                      required: true
+                    -
+                      check_ids:
+                        - "full-regression"
+                      description: "All local CI checks execute with the repository-pinned Bun 1.4.2 runtime without changing the global Bun installation."
+                      id: "pinned-runtime"
+                      required: true
+                  evidence_fingerprint: "sha256:24dcd360bd9840f95f671039da788f8653ad6e9e4a56e3cc160293cd55d8a90b"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+    revision: 22
+    schema_version: 1
+    updated_at: "2026-09-11T16:49:03.952Z"
+    work_items:
+      branch-event-verification-recovery:
+        attempt: 0
+        claim_id: null
+        id: "branch-event-verification-recovery"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -805,6 +935,40 @@ extensions:
         task_id: "202609111339-NGDG6V"
         task_revision: 15
         work_item_id: "pinned-runtime-verification-recovery"
+      -
+        at: "2026-09-11T16:46:13.312Z"
+        from: "REWORK_READY"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:0ad4b02ab71f7dcd8586e39a94b86971b03a00706b4c076429c1bc4f6d6cb47f"
+        entity: "work_item"
+        id: "event_3af0ff9f25d6d34832813201"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-629b84de05a3998515748a44"
+        plan_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+        task_revision: 18
+        work_item_id: "pinned-runtime-verification-recovery"
+      -
+        at: "2026-09-11T16:47:38.736Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+        entity: "task"
+        id: "event_c4908929a1b140ab9254c28d"
+        mutation_id: "plan-refinement:work-order-202609111339-NGDG6V-executor-867b540619ec4006bc53bd4f"
+        plan_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+        task_revision: 19
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:172c8d39d5a895818ca3aef9de0f2ea9323a30dc65b76d63b63f8dc1cc2ae50f:
@@ -829,6 +993,30 @@ extensions:
         mutation_id: "compatibility:sha256:172c8d39d5a895818ca3aef9de0f2ea9323a30dc65b76d63b63f8dc1cc2ae50f"
         next_revision: 15
         previous_revision: 14
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      compatibility:sha256:1c9cd8f34154e092002df9ed9ca266587d5e455c9c7b26b9f6fb1b964700035a:
+        aggregate_digest: "sha256:ce0070a4fadf6dcfa3890e959d1c2a44fcbf04784d6b78fad648c8541408f544"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T16:49:03.952Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_e77bb29392903940231cd2ce"
+          mutation_id: "compatibility:sha256:1c9cd8f34154e092002df9ed9ca266587d5e455c9c7b26b9f6fb1b964700035a"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 21
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1c9cd8f34154e092002df9ed9ca266587d5e455c9c7b26b9f6fb1b964700035a"
+        next_revision: 22
+        previous_revision: 21
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       compatibility:sha256:214ce2eaad1eacf9bc356c9215572dec1a929f80c2509f87a1a624139b3a2c31:
@@ -1119,6 +1307,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609111339-NGDG6V"
+      external-result:work-order-202609111339-NGDG6V-executor-629b84de05a3998515748a44:
+        aggregate_digest: "sha256:063f5abbac48ce0a440eb11bb19da9a21ce207a14ef18084f7a8532637d91839"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T16:46:13.312Z"
+          cause_refs:
+            - "semantic-result:sha256:0ad4b02ab71f7dcd8586e39a94b86971b03a00706b4c076429c1bc4f6d6cb47f"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_3af0ff9f25d6d34832813201"
+          mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-629b84de05a3998515748a44"
+          plan_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 18
+          to: "REWORK_READY"
+          work_item_id: "pinned-runtime-verification-recovery"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-629b84de05a3998515748a44"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
       external-result:work-order-202609111339-NGDG6V-executor-e8284937d9be495ebbedd5d7:
         aggregate_digest: "sha256:e2e93d6dc9701fcec1e4664cc6b45c8746ba480cce257b332c73f9255cd1bd10"
         event:
@@ -1170,6 +1382,30 @@ extensions:
         previous_revision: 9
         schema_version: 1
         task_id: "202609111339-NGDG6V"
+      plan-refinement:work-order-202609111339-NGDG6V-executor-867b540619ec4006bc53bd4f:
+        aggregate_digest: "sha256:73a7ad1784c1d81d1b11f4dbbc5497d014e20942ee88115f46fecf4e06aa7d52"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-11T16:47:38.736Z"
+          cause_refs:
+            - "scope_expanded"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_c4908929a1b140ab9254c28d"
+          mutation_id: "plan-refinement:work-order-202609111339-NGDG6V-executor-867b540619ec4006bc53bd4f"
+          plan_digest: "sha256:8625b1e9554592c0078f99851e375813d0f709b93d928a0612c5c6bc2c06fae1"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 19
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609111339-NGDG6V-executor-867b540619ec4006bc53bd4f"
+        next_revision: 20
+        previous_revision: 19
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
@@ -1199,7 +1435,7 @@ GitHub issue #4893 remains relevant on current main. After agentplane verify <ta
 
 ## Plan
 
-Preserve the committed repair and rerun all gates with task-local Bun 1.4.2.
+Refine the route fix for branch tasks whose implementation SHA exists only in the supervisor event.
 
 ## Verify Steps
 

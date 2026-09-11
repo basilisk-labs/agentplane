@@ -30,9 +30,11 @@ Created: 2026-09-11T15:28:14.044Z
 
 ```text
  ...cli.core.route-decision.direct-closeout.test.ts | 213 ++++++++++++++++-----
- .../src/commands/shared/workflow-step-factory.ts   |  67 +++----
- .../commands/shared/workflow-step-quality.test.ts  |  35 ++++
- 3 files changed, 233 insertions(+), 82 deletions(-)
+ .../route-decision-blockers.quality-review.test.ts |  24 ++-
+ .../commands/shared/route-decision-verification.ts |  10 +-
+ .../src/commands/shared/workflow-step-factory.ts   |  70 +++----
+ .../commands/shared/workflow-step-quality.test.ts  |  34 ++++
+ 5 files changed, 265 insertions(+), 86 deletions(-)
 ```
 
 </details>
