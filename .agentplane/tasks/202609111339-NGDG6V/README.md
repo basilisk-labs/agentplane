@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -898,19 +898,74 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609111339-NGDG6V"
-    revision: 24
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-11T17:05:39.627Z"
+    updated_at: "2026-09-11T17:19:58.916Z"
     work_items:
       branch-event-verification-recovery:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "branch-event-verification-recovery"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:dd49d6b44559229f6bc210442ba78ce8ede0f7a572c3718301da0a8dff384837"
+            id: "A minimal shared freshness predicate for both event-only and task.commit-backed branch metadata."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609111339-NGDG6V"
+              work_item_id: "branch-event-verification-recovery"
+            provenance:
+              - "sha256:97556c4920839fd4bd3555727795a1dcf8bb64fd617113123bc97cd979078ca6"
+              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:796bc5d4501b82b9ecd67a5dd62a018d1004489840e679a81c2c6bf9aee34a38"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:0e4501a095022b3a04605bed6f6e66b36fd1756e592a656d9e6e195af5da5aa9"
+            id: "Regression coverage for event-only branch implementation evidence and mismatched or missing evidence."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 3
+              task_id: "202609111339-NGDG6V"
+              work_item_id: "branch-event-verification-recovery"
+            provenance:
+              - "sha256:97556c4920839fd4bd3555727795a1dcf8bb64fd617113123bc97cd979078ca6"
+              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:796bc5d4501b82b9ecd67a5dd62a018d1004489840e679a81c2c6bf9aee34a38"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+              check_id: "focused-regression"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-11T17:19:58.897Z"
+              repository_snapshot_digest: "sha256:796bc5d4501b82b9ecd67a5dd62a018d1004489840e679a81c2c6bf9aee34a38"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+              check_id: "full-regression"
+              command_identity: "bun run ci:local:full"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-11T17:19:58.897Z"
+              repository_snapshot_digest: "sha256:796bc5d4501b82b9ecd67a5dd62a018d1004489840e679a81c2c6bf9aee34a38"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1002,6 +1057,23 @@ extensions:
         task_id: "202609111339-NGDG6V"
         task_revision: 19
         work_item_id: null
+      -
+        at: "2026-09-11T17:19:58.916Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:b0cd4a1586da436f6a64ffa6afd6daf04d44095d909ef0525a831a5bb5a90036"
+        entity: "work_item"
+        id: "event_ae7fafafb866fce1f2848c86"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-e1fd6674914f0c13aad2cbc8"
+        plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+        task_revision: 24
+        work_item_id: "branch-event-verification-recovery"
     leases: []
     mutation_receipts:
       compatibility:sha256:172c8d39d5a895818ca3aef9de0f2ea9323a30dc65b76d63b63f8dc1cc2ae50f:
@@ -1410,6 +1482,30 @@ extensions:
         mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-629b84de05a3998515748a44"
         next_revision: 19
         previous_revision: 18
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      external-result:work-order-202609111339-NGDG6V-executor-e1fd6674914f0c13aad2cbc8:
+        aggregate_digest: "sha256:249e718bdb034ad2712fd18f07f08302265f8c548e5eb2e577bab73590b62299"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T17:19:58.916Z"
+          cause_refs:
+            - "semantic-result:sha256:b0cd4a1586da436f6a64ffa6afd6daf04d44095d909ef0525a831a5bb5a90036"
+          entity: "work_item"
+          from: "READY"
+          id: "event_ae7fafafb866fce1f2848c86"
+          mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-e1fd6674914f0c13aad2cbc8"
+          plan_digest: "sha256:28030fe42d9c8d5c76471d46e2220b1d1db9d02d87ef2100c49aa2cddf41970f"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 24
+          to: "COMPLETED"
+          work_item_id: "branch-event-verification-recovery"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-e1fd6674914f0c13aad2cbc8"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609111339-NGDG6V"
       external-result:work-order-202609111339-NGDG6V-executor-e8284937d9be495ebbedd5d7:
