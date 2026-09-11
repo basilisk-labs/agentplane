@@ -4,7 +4,7 @@ title: "Report trace-backed runner activity and safe liveness in task run status
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,11 @@ plan_approval:
   updated_by: "HOST:codex-desktop:USER"
   note: "host_user_decision=sha256:de99c299d9d681843e9917b76bc8e76244fab2c9ef028d21875754e94f6ce176"
 verification:
-  state: "needs_rework"
-  updated_at: "2026-09-11T14:48:16.515Z"
+  state: "ok"
+  updated_at: "2026-09-11T14:55:56.971Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1"
-  attempts: 1
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  attempts: 0
 execution_route:
   frozen: true
   reason_codes:
@@ -82,9 +82,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/run-render.ts"
       - "packages/agentplane/src/runner"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -99,10 +97,25 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -183,8 +196,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit:
   hash: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
   message: "🚧 ZJ6AFT task: apply external agent result"
@@ -228,8 +239,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 0f58c0913c09. CLI accepted one state-bound external-agent semantic result."
     commit: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+  -
+    type: "verify"
+    at: "2026-09-11T14:55:56.971Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-11T14:55:19.875Z"
+doc_updated_at: "2026-09-11T14:55:58.306Z"
 doc_updated_by: "SUPERVISOR"
 description: "GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887"
 sections:
@@ -262,6 +279,72 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202609111337-ZJ6AFT declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111337-ZJ6AFT-report-trace-backed-runner-activity-and-safe-liv/.agentplane/tasks/202609111337-ZJ6AFT/blueprint/resolved-snapshot.json
+    - old_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+    - current_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111337-ZJ6AFT
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111337-ZJ6AFT
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-11T14:55:56.971Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ef696e979ca668745620612280b6dba91b0b22551aa1949502be73394f4bf983, input_digest=sha256:79dea8a685d19f395fa8c70fb333388389d7b32a7bdf794b1c96ba6ec656dd03
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check critical_paths (2/2)
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check task_outcome (2/2)
 
     BlueprintSnapshotRef:
     - state: current
@@ -485,7 +568,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609111337-ZJ6AFT"
-    event_cursor: 10
+    event_cursor: 11
     final_validation: null
     id: "202609111337-ZJ6AFT"
     intent:
@@ -688,9 +771,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
-    revision: 16
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-11T14:55:32.182Z"
+    updated_at: "2026-09-11T14:55:58.304Z"
     work_items:
       runner-activity-status-and-safety:
         attempt: 1
@@ -891,6 +974,30 @@ extensions:
         mutation_id: "compatibility:sha256:3057f60e39f0dc6e5dd3e7059c577de28caca50dc82d98ec3974117f71c55103"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
+      compatibility:sha256:316d60465a8e5db2d4f481b6c1e50680745cb7d14a06e2d72a03edba906e46f0:
+        aggregate_digest: "sha256:6d65ddb337c2d1f84fa7dce07d20c0cb46ff1fbff54a4aed2c2e7626c26cacc6"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:55:58.304Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f9f112bcbd6eac4f7a3fe5c4"
+          mutation_id: "compatibility:sha256:316d60465a8e5db2d4f481b6c1e50680745cb7d14a06e2d72a03edba906e46f0"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:316d60465a8e5db2d4f481b6c1e50680745cb7d14a06e2d72a03edba906e46f0"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
       compatibility:sha256:3b990909f45b492fe79dde66af5f2509b6b39b2f2d43dce8b3578ceac0eda648:
@@ -1164,6 +1271,72 @@ Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-
 Result: fail
 Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202609111337-ZJ6AFT declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111337-ZJ6AFT-report-trace-backed-runner-activity-and-safe-liv/.agentplane/tasks/202609111337-ZJ6AFT/blueprint/resolved-snapshot.json
+- old_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+- current_digest: 22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111337-ZJ6AFT
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111337-ZJ6AFT
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-11T14:55:56.971Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:ef696e979ca668745620612280b6dba91b0b22551aa1949502be73394f4bf983, input_digest=sha256:79dea8a685d19f395fa8c70fb333388389d7b32a7bdf794b1c96ba6ec656dd03
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check critical_paths (2/2)
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111337-ZJ6AFT/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111337-ZJ6AFT Verification Contract check task_outcome (2/2)
 
 BlueprintSnapshotRef:
 - state: current
