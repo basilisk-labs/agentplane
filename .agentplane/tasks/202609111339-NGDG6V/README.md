@@ -4,7 +4,7 @@ title: "Route direct verification rework to bounded repair instead of repeated v
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -438,22 +438,84 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-11T15:35:16.981Z"
+    updated_at: "2026-09-11T15:35:40.189Z"
     work_items:
       direct-rework-routing-and-regression:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "direct-rework-routing-and-regression"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:150bf0389a92c193cbd46de8c949ee1f44e03847f02cdfc9e71a34beeee62504"
+            id: "A minimal direct route predicate and step selection for unresolved verification rework."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609111339-NGDG6V"
+              work_item_id: "direct-rework-routing-and-regression"
+            provenance:
+              - "sha256:e434fef343e96160377872d8dc0ef74ef2476bd2d0fa5767d8199ebb1286bcf4"
+              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:48aa446a959afcf8acc8fe6afb83506acbd703f0b8be32fd84fcb1520e4e1f8b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:bb60d78cd6788934414396d11e6f73385bc518addd6d08c00ccb17295eaba6fd"
+            id: "Regression coverage that fails on repeated verification and passes on bounded CODER repair routing."
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609111339-NGDG6V"
+              work_item_id: "direct-rework-routing-and-regression"
+            provenance:
+              - "sha256:e434fef343e96160377872d8dc0ef74ef2476bd2d0fa5767d8199ebb1286bcf4"
+              - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:48aa446a959afcf8acc8fe6afb83506acbd703f0b8be32fd84fcb1520e4e1f8b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111339-NGDG6V/supervision/declared-checks.json"
+              check_id: "focused-regression"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-11T15:35:40.184Z"
+              repository_snapshot_digest: "sha256:48aa446a959afcf8acc8fe6afb83506acbd703f0b8be32fd84fcb1520e4e1f8b"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-11T15:35:40.189Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:ceacecab76b0382ba2b456d2e2b8ac1c4da4a883d40b3cccc710c662b52605b3"
+        entity: "work_item"
+        id: "event_776c4edec846488cd03f1d6f"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-1cb49946b99364814f64d390"
+        plan_digest: "sha256:0a76fdd4105767bb073ae02940e73a715d3fd550ae0b792ed800c9c63f433b7f"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+        task_revision: 7
+        work_item_id: "direct-rework-routing-and-regression"
     leases: []
     mutation_receipts:
       compatibility:sha256:214ce2eaad1eacf9bc356c9215572dec1a929f80c2509f87a1a624139b3a2c31:
@@ -574,6 +636,30 @@ extensions:
         mutation_id: "compatibility:sha256:e4cb1ed19a3cb4d3fc47c2cfe1e2132f8098c9b9214d8bca8a7032337c95001e"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609111339-NGDG6V"
+      external-result:work-order-202609111339-NGDG6V-executor-1cb49946b99364814f64d390:
+        aggregate_digest: "sha256:c05e7593b34e1f061f536ffc961e087c157ae5bea0fa87950fc5b4df5a2b922c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T15:35:40.189Z"
+          cause_refs:
+            - "semantic-result:sha256:ceacecab76b0382ba2b456d2e2b8ac1c4da4a883d40b3cccc710c662b52605b3"
+          entity: "work_item"
+          from: "READY"
+          id: "event_776c4edec846488cd03f1d6f"
+          mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-1cb49946b99364814f64d390"
+          plan_digest: "sha256:0a76fdd4105767bb073ae02940e73a715d3fd550ae0b792ed800c9c63f433b7f"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111339-NGDG6V"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "direct-rework-routing-and-regression"
+        mutation_id: "external-result:work-order-202609111339-NGDG6V-executor-1cb49946b99364814f64d390"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609111339-NGDG6V"
     pending_effects: []
