@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check b278fdc430f9f3a761f00026ff550687ebca3f80..d4e7acc4ec708b1319041730c4ac5a0cd1ba0567",
+      "command": "git diff --check eed5e1492e40a306a001df78fd02aca325dc7e0c..1f87fb547597abe3e338134424487e8c82f523d3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB b278fdc430f9f3a761f00026ff550687ebca3f80..d4e7acc4ec708b1319041730c4ac5a0cd1ba0567",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB eed5e1492e40a306a001df78fd02aca325dc7e0c..1f87fb547597abe3e338134424487e8c82f523d3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202609111943-GH8BV2/pr/github-body.md",
         "M\t.agentplane/tasks/202609111943-GH8BV2/pr/meta.json",
         "M\t.agentplane/tasks/202609111943-GH8BV2/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts"
+        "M\tpackages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "M\tscripts/checks/run-local-ci.mjs"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "b278fdc430f9f3a761f00026ff550687ebca3f80",
-  "implementation_commit": "d4e7acc4ec708b1319041730c4ac5a0cd1ba0567",
+  "execution_base_commit": "eed5e1492e40a306a001df78fd02aca325dc7e0c",
+  "implementation_commit": "1f87fb547597abe3e338134424487e8c82f523d3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],

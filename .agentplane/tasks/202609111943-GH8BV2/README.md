@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -93,11 +93,14 @@ execution_contract:
     authority_violations: []
     changed_components:
       - "packages/agentplane"
+      - "scripts"
     changed_paths:
+      - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.ts"
       - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
       - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+      - "scripts/checks/run-local-ci.mjs"
     external_effects: []
     repository_effects:
       - "repository_write"
@@ -143,13 +146,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:4f48c90a7572bcafe615262288a7cb249c90ade096d6aad983cecf191b12d232"
+      digest: "sha256:915a1e5445c79e98676ebc78140ea8e61c1d11d2c6762c20f076f73120df6b55"
       escalation_reasons:
         - "central_component:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
         - "central_component:packages/agentplane/src/runtime/task-routing/resolve.ts"
         - "central_component:scripts/checks/run-local-ci.mjs"
         - "central_path:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
         - "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts"
+        - "central_path:scripts/checks/run-local-ci.mjs"
         - "effect_ci"
       execution_groups:
         - "docs-schema"
@@ -159,11 +163,14 @@ execution_contract:
       observed:
         changed_components:
           - "packages/agentplane"
+          - "scripts"
         changed_files:
+          - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.ts"
           - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
           - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+          - "scripts/checks/run-local-ci.mjs"
         external_effects: []
         repository_effects:
           - "repository_write"
@@ -201,7 +208,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "1f87fb547597abe3e338134424487e8c82f523d3"
+  message: "🚧 GH8BV2 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -218,6 +227,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/release/release-ci-contract.test.ts, scripts/checks/run-local-ci.mjs; repository effects: ci."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1f87fb547597. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -261,8 +273,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The implementation is verified, but the mandatory full local CI check cannot complete within its current core-group timeout. Recommended action: Extend the CI scope, raise the operator-tunable default group timeout with a contract regression, and rerun the mandatory full CI check. Requested scope: roots=packages/agentplane/src/commands/release/release-ci-contract.test.ts,scripts/checks/run-local-ci.mjs; repository effects=ci; request digest=sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779. Agentplane receipt: external-agent-blocker/tr_def2c6037a23c6b43c73d2534644cd14/sha256:4208e53ef8579adaeaaa7cd4a3551c4dc16d9cf9462654d85ccc847ff5a1f17d/sha256:882d1077b12dfab4f5fb4d589224df33d8e463d0ea3a60a6e463085f5bc05779."
+  -
+    type: "status"
+    at: "2026-09-11T22:32:39.366Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1f87fb547597. CLI accepted one state-bound external-agent semantic result."
+    commit: "1f87fb547597abe3e338134424487e8c82f523d3"
 doc_version: 3
-doc_updated_at: "2026-09-11T22:12:04.322Z"
+doc_updated_at: "2026-09-11T22:32:39.366Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -557,7 +577,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 12
+    event_cursor: 14
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -582,9 +602,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 15
+    revision: 17
     schema_version: 1
-    updated_at: "2026-09-11T22:12:04.322Z"
+    updated_at: "2026-09-11T22:32:39.366Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -679,6 +699,30 @@ extensions:
         mutation_id: "compatibility:sha256:0a91f3ccba5dd35bef5852bcdba2342a817c951411ce0ad1274f0a445503ce4b"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:1b7f83d0c12a0ac483cd7c87bf3ddc59389c15b7a1b56b14f9959b775e50c2fb:
+        aggregate_digest: "sha256:89f030fa5067d7dfd23a2ccfc64e077889ba1612106d8115639695ebec63385d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T22:32:39.366Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_a48bec5254ef882846bc5ea8"
+          mutation_id: "compatibility:sha256:1b7f83d0c12a0ac483cd7c87bf3ddc59389c15b7a1b56b14f9959b775e50c2fb"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 16
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1b7f83d0c12a0ac483cd7c87bf3ddc59389c15b7a1b56b14f9959b775e50c2fb"
+        next_revision: 17
+        previous_revision: 16
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:252aa0b5858301231a2ef0dee15bb605a2de098ffd6b5c8a64de1aa82340bdc2:
@@ -873,6 +917,30 @@ extensions:
         previous_revision: 5
         schema_version: 1
         task_id: "202609111943-GH8BV2"
+      compatibility:sha256:9dc2ca32420cf8b5a430a3b243eacf8ab9e18d1e9306d6dd7ff47680c02a1fb7:
+        aggregate_digest: "sha256:39b8ba3bda40aecec4ece734695561773b622ac1a0700d6aa0aa0d339336f89e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T22:32:39.366Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9f32c11589b935cf37405110"
+          mutation_id: "compatibility:sha256:9dc2ca32420cf8b5a430a3b243eacf8ab9e18d1e9306d6dd7ff47680c02a1fb7"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 15
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:9dc2ca32420cf8b5a430a3b243eacf8ab9e18d1e9306d6dd7ff47680c02a1fb7"
+        next_revision: 16
+        previous_revision: 15
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
       compatibility:sha256:ace41ca515b7d6cb4e1428530de8b5ebbfa279f90dcab8c4c7d5bb9f40c8eea9:
         aggregate_digest: "sha256:e898816870aea7be41261c1783b7c2a4d1f3e864ca141dc316d5de2ca72d165c"
         event:
@@ -972,6 +1040,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "1f87fb547597abe3e338134424487e8c82f523d3"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
