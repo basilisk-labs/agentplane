@@ -4,7 +4,7 @@ title: "Harden the post-release evidence close-tail under branch protection for 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -672,9 +672,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-11T18:54:58.671Z"
+    updated_at: "2026-09-11T18:55:04.446Z"
     work_items:
       work-native-pr-verification:
         attempt: 1
@@ -716,14 +716,44 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       work-publish-contract:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "work-publish-contract"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:a90f021a389e4024216e23263fe2e30f407d870e9144910c3e64bbc2190143df"
+            id: "publish-contract-output"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609111340-MGB383"
+              work_item_id: "work-publish-contract"
+            provenance:
+              - "sha256:ee74b738cc1121205598dbd5d90749598f4c8cc9e3f7cb4ff63846a4d00be064"
+              - ".agentplane/tasks/202609111340-MGB383/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:852bfa000dc552f63672c984f8f572697df4ce8fe3641a572f30231a13a12dfe"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609111340-MGB383/supervision/declared-checks.json"
+              check_id: "check-focused-release"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/release/open-next-development-version-script.test.ts packages/agentplane/src/commands/release/verify-release-evidence-pr-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/release/open-next-development-version-script.test.ts packages/agentplane/src/commands/release/verify-release-evidence-pr-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-11T18:55:04.439Z"
+              repository_snapshot_digest: "sha256:852bfa000dc552f63672c984f8f572697df4ce8fe3641a572f30231a13a12dfe"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       work-version-surfaces:
         attempt: 1
         claim_id: null
@@ -800,6 +830,23 @@ extensions:
         task_id: "202609111340-MGB383"
         task_revision: 11
         work_item_id: "work-version-surfaces"
+      -
+        at: "2026-09-11T18:55:04.446Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:5d85e04cce331d01fbf99fb0a7442ce777a4d883418fae5da461d9bbd4499757"
+        entity: "work_item"
+        id: "event_3cfedcf4d967e0f1648e3e36"
+        mutation_id: "external-result:work-order-202609111340-MGB383-executor-13b33b57c185d8ff07a3ebe9"
+        plan_digest: "sha256:561ecf6a31e5da0501ae93d26c9f884af477f46a4b17250d7c9b5d40ae1f24fa"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609111340-MGB383"
+        task_revision: 14
+        work_item_id: "work-publish-contract"
     leases: []
     mutation_receipts:
       compatibility:sha256:0d9670b99051a55edbb7ac41ecacbe142f74f39da97aca1c64b1642e23bfd5b9:
@@ -1040,6 +1087,30 @@ extensions:
         mutation_id: "compatibility:sha256:f99fa24a918250c2b18f1b78c15bc156205db81c62c3d943da47ace4b0b45559"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609111340-MGB383"
+      external-result:work-order-202609111340-MGB383-executor-13b33b57c185d8ff07a3ebe9:
+        aggregate_digest: "sha256:0a9482877b26c7863aac9407878ef86967995486b7a0d4ed3e13d71a5ffd6610"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T18:55:04.446Z"
+          cause_refs:
+            - "semantic-result:sha256:5d85e04cce331d01fbf99fb0a7442ce777a4d883418fae5da461d9bbd4499757"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_3cfedcf4d967e0f1648e3e36"
+          mutation_id: "external-result:work-order-202609111340-MGB383-executor-13b33b57c185d8ff07a3ebe9"
+          plan_digest: "sha256:561ecf6a31e5da0501ae93d26c9f884af477f46a4b17250d7c9b5d40ae1f24fa"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111340-MGB383"
+          task_revision: 14
+          to: "COMPLETED"
+          work_item_id: "work-publish-contract"
+        mutation_id: "external-result:work-order-202609111340-MGB383-executor-13b33b57c185d8ff07a3ebe9"
+        next_revision: 15
+        previous_revision: 14
         schema_version: 1
         task_id: "202609111340-MGB383"
       external-result:work-order-202609111340-MGB383-executor-45a8e43f6c5503dd1507e90d:
