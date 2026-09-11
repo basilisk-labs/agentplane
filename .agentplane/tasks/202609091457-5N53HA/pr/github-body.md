@@ -15,8 +15,8 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run ci:local:full
+- State: pending
+- Note: Not recorded yet.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -60,8 +60,9 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
  packages/spec/schemas/tasks-export.schema.json     |  34 ++
  schemas/task-readme-frontmatter.schema.json        |  34 ++
  schemas/tasks-export.schema.json                   |  34 ++
+ .../baselines/v0.7-compatibility-candidate.json    |  25 +-
  .../release/check-local-tarball-install-smoke.mjs  | 380 +++++++++++++++++++++
- 34 files changed, 1810 insertions(+), 40 deletions(-)
+ 35 files changed, 1830 insertions(+), 45 deletions(-)
 ```
 
 </details>
