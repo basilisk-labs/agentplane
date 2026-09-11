@@ -1,0 +1,98 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 50b1810dda648be0c0762b47e885c6ad0b2d42af..edc86419666b36abeb3169dfa607dfb6e244ac13",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 50b1810dda648be0c0762b47e885c6ad0b2d42af..edc86419666b36abeb3169dfa607dfb6e244ac13",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609111943-GH8BV2/README.md",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/pr/github-body.md",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/pr/meta.json",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
+        "M\tpackages/agentplane/src/runtime/task-routing/resolve.test.ts",
+        "M\tpackages/agentplane/src/runtime/task-routing/resolve.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+  "implementation_commit": "edc86419666b36abeb3169dfa607dfb6e244ac13",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609111943-GH8BV2/README.md",
+      "?? .agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/github-body.md",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/github-title.txt",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/meta.json",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609111943-GH8BV2/README.md",
+      "?? .agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/github-body.md",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/github-title.txt",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/meta.json",
+      "?? .agentplane/tasks/202609111943-GH8BV2/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609111943-GH8BV2"
+}
