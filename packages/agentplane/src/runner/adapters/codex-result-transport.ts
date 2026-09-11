@@ -243,8 +243,12 @@ export type CodexProviderUsage = {
   /** Budget-charged output, including reasoning tokens. */
   output_tokens: number;
   total_tokens: number;
+  cached_input_tokens?: number;
+  prepared_context_bytes?: number;
   visible_output_tokens?: number;
   reasoning_tokens?: number;
+  thread_id?: string;
+  turn_id?: string;
 };
 
 // Provider usage is process-local supervisor evidence. It deliberately stays
@@ -264,23 +268,27 @@ function nonNegativeInteger(value: unknown): number | null {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
 
-/**
- * Codex reports visible and reasoning output separately.  The supervisor
- * charges both to output and total so a reasoning-only turn cannot evade a
- * run budget. `total_tokens`, when the provider includes it, may be larger
- * (for example when it includes a cached component), but never smaller.
- */
+/** Codex output_tokens includes reasoning_output_tokens. Cache is also a subset of input. */
 function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexProviderUsage | null {
   if (providerEvent.type !== "turn.completed") return null;
   if (!isRecord(providerEvent.usage)) return null;
   const input = nonNegativeInteger(providerEvent.usage.input_tokens);
   const output = nonNegativeInteger(providerEvent.usage.output_tokens);
   const reasoning = nonNegativeInteger(providerEvent.usage.reasoning_output_tokens);
-  if (input === null || output === null || reasoning === null) {
+  if (input === null || output === null || reasoning === null || reasoning > output) {
     throw new Error("Codex turn completion contains malformed provider usage.");
   }
-  const chargedOutput = output + reasoning;
-  const minimumTotal = input + chargedOutput;
+  const cached =
+    providerEvent.usage.cached_input_tokens === undefined
+      ? undefined
+      : nonNegativeInteger(providerEvent.usage.cached_input_tokens);
+  if (cached === null || (cached !== undefined && cached > input)) {
+    throw new Error("Codex turn completion contains malformed cached input usage.");
+  }
+  const minimumTotal = input + output;
+  if (!Number.isSafeInteger(minimumTotal)) {
+    throw new Error("Codex turn completion contains unsafe total token usage.");
+  }
   const reportedTotal =
     providerEvent.usage.total_tokens === undefined
       ? null
@@ -292,10 +300,11 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
     throw new Error("Codex turn completion total token usage is lower than its components.");
   }
   return {
+    ...(cached === undefined ? {} : { cached_input_tokens: cached }),
     input_tokens: input,
-    output_tokens: chargedOutput,
+    output_tokens: output,
     total_tokens: reportedTotal ?? minimumTotal,
-    visible_output_tokens: output,
+    visible_output_tokens: output - reasoning,
     reasoning_tokens: reasoning,
   };
 }
@@ -310,10 +319,13 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
   let usage: CodexProviderUsage | null = null;
   let turnCompleted = false;
   let protocolError: Error | null = null;
+  let usageError: Error | null = null;
+  let threadId: string | undefined;
+  let turnId: string | undefined;
   return {
     observeStdoutLine(rawLine) {
       const trimmed = rawLine.trim();
-      if (!trimmed || protocolError) return;
+      if (!trimmed) return;
       let parsed: unknown;
       try {
         parsed = JSON.parse(trimmed) as unknown;
@@ -321,19 +333,52 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
         return;
       }
       if (!isRecord(parsed)) return;
+      if (parsed.type === "thread.started" && typeof parsed.thread_id === "string") {
+        if (threadId && threadId !== parsed.thread_id) {
+          usageError = new Error("Codex JSONL stream changed provider thread identity.");
+        } else if (parsed.thread_id.trim()) threadId = parsed.thread_id;
+        return;
+      }
+      if (parsed.type === "turn.started" && typeof parsed.turn_id === "string") {
+        if (turnId && turnId !== parsed.turn_id) {
+          usageError = new Error("Codex JSONL stream changed provider turn identity.");
+        } else if (parsed.turn_id.trim()) turnId = parsed.turn_id;
+        return;
+      }
       if (parsed.type === "turn.completed") {
-        if (turnCompleted) {
-          protocolError = new Error("Codex JSONL stream contained duplicate turn completion.");
-          return;
-        }
         try {
-          usage = readCodexProviderUsage(parsed);
+          const observed = readCodexProviderUsage(parsed);
+          const completedTurn =
+            typeof parsed.turn_id === "string" && parsed.turn_id.trim() ? parsed.turn_id : turnId;
+          if (turnId && completedTurn !== turnId) {
+            throw new Error("Codex turn completion changed provider turn identity.");
+          }
+          const next =
+            observed === null
+              ? null
+              : {
+                  ...observed,
+                  ...(threadId ? { thread_id: threadId } : {}),
+                  ...(completedTurn ? { turn_id: completedTurn } : {}),
+                };
+          if (turnCompleted) {
+            protocolError = new Error("Codex JSONL stream contained duplicate turn completion.");
+            if (JSON.stringify(next) !== JSON.stringify(usage)) {
+              usageError = new Error(
+                "Codex duplicate completion contains conflicting provider usage.",
+              );
+            }
+            return;
+          }
+          usage = next;
           turnCompleted = true;
         } catch (error) {
-          protocolError = error instanceof Error ? error : new Error(String(error));
+          usageError = error instanceof Error ? error : new Error(String(error));
+          protocolError = usageError;
         }
         return;
       }
+      if (protocolError) return;
       const message = readCodexAgentMessage(parsed);
       if (message === null) return;
       if (turnCompleted) {
@@ -356,7 +401,8 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
       return lastMessage;
     },
     readUsage() {
-      if (protocolError) throw protocolError;
+      // A malformed semantic result does not erase a completed provider charge.
+      if (usageError) throw usageError;
       if (!turnCompleted) {
         throw new Error("Codex JSONL stream ended before turn completion.");
       }

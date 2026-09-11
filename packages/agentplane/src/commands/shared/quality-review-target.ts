@@ -39,7 +39,7 @@ function normalizeWorkflowDir(value: string): string {
   return value.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
 }
 
-function isManagedTaskArtifact(relativePath: string): boolean {
+export function isManagedTaskArtifact(relativePath: string): boolean {
   return (
     relativePath === "README.md" ||
     MANAGED_TASK_ARTIFACT_DIRECTORIES.some((directory) => relativePath.startsWith(directory))

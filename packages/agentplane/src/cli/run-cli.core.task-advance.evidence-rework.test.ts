@@ -21,7 +21,7 @@ import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { recordedTaskImplementationCommitSha } from "../commands/shared/quality-review-target.js";
 import * as refinement from "../commands/task/external-agent-plan-refinement.js";
-import * as verification from "../commands/task/direct-task-verification.js";
+import * as verification from "../commands/task/direct-task-verification-record.js";
 import * as fingerprints from "../commands/shared/workflow-step-fingerprint.js";
 import * as exchanges from "../commands/task/external-agent-exchange.js";
 import { resolveRecordedImplementationRecovery } from "../commands/task/external-agent-implementation-recovery.js";
@@ -187,6 +187,10 @@ async function completedFixture(initialized = true) {
   if (initialized) {
     expect(completed.extensions?.task_execution_context).toEqual(creationBase);
   }
+  const beforeReviewCommit = await git("git", ["log", "-1", "--format=%s"], { cwd: checkout });
+  expect(beforeReviewCommit.stdout).not.toContain("record external implementation evidence");
+  const pendingEvidence = await git("git", ["status", "--porcelain"], { cwd: checkout });
+  expect(pendingEvidence.stdout).toContain(`.agentplane/tasks/${taskId}/`);
   const reviewOrder = await order(review);
   expect(reviewOrder.role).toBe("EVALUATOR");
   expect(
@@ -203,6 +207,15 @@ async function completedFixture(initialized = true) {
     },
   });
   await resume(checkout, review);
+  const committedChecks = await git(
+    "git",
+    ["show", `HEAD:.agentplane/tasks/${taskId}/supervision/declared-checks.json`],
+    { cwd: checkout },
+  );
+  expect(JSON.parse(committedChecks.stdout)).toMatchObject({ status: "passed" });
+  const combinedCommit = await git("git", ["log", "-1", "--format=%s"], { cwd: checkout });
+  expect(combinedCommit.stdout).toContain("record external evaluator result");
+
   // The operator supplies task documentation before a fresh semantic episode.
   expect(
     await runCliSilent([
@@ -741,7 +754,9 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
   );
   it("retains ordinary completed-no-diff rejection", async () => {
     const f = await implementationFixture();
-    await report(f.implementation, "No implementation and no refinement.");
+    await report(f.implementation, "No implementation and no refinement.", {
+      findings: ["A report does not satisfy the approved source implementation."],
+    });
     const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
     expect(result.code).not.toBe(0);
     expect(result.stderr).toContain("no supervisor-observed workspace change");

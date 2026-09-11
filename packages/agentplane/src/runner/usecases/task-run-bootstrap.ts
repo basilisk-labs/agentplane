@@ -1,4 +1,9 @@
 import {
+  buildWorkOrderContextManifest,
+  resolveWorkOrderContextBlocks,
+  workOrderContextManifestDigest,
+} from "../context/work-order-context.js";
+import {
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
   type AgentSemanticResult,
 } from "@agentplaneorg/core/schemas";
@@ -153,8 +158,28 @@ function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): strin
 }
 
 function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
-  const workOrder = bundle.work_order;
-  if (!workOrder) return null;
+  const sourceOrder = bundle.work_order;
+  if (!sourceOrder) return null;
+  const manifest =
+    bundle.semantic_context ??
+    buildWorkOrderContextManifest(
+      sourceOrder,
+      `${bundle.execution.artifact_paths.bundle_path}#/work_order`,
+    );
+  const blocks = resolveWorkOrderContextBlocks({ order: sourceOrder, manifest });
+  const selected = new Set(blocks.map((block) => block.pointer));
+  const workOrder = {
+    ...sourceOrder,
+    required_inputs: sourceOrder.required_inputs.filter((_, index) =>
+      selected.has(`/required_inputs/${index}`),
+    ),
+    knowledge_refs: sourceOrder.knowledge_refs.filter((_, index) =>
+      selected.has(`/knowledge_refs/${index}`),
+    ),
+    prepared_evidence: sourceOrder.prepared_evidence.filter((_, index) =>
+      selected.has(`/prepared_evidence/${index}`),
+    ),
+  };
   const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
     (criterion) => !semanticTextHasProcessChoreography(criterion.description),
   );
@@ -162,6 +187,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     (requirement) => !semanticTextHasProcessChoreography(requirement.description),
   );
   const requiredInputs = workOrder.required_inputs.filter((input) => {
+    if (!input.required) return false;
     if (input.kind === "task_document" || input.kind === "policy_module") return false;
     if (input.kind !== "source_artifact") return true;
     const source = input.path ?? "";
@@ -181,9 +207,16 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     (toolClass) => toolClass !== "workspace_write" || effectiveWritableRoots.length > 0,
   );
   return {
+    context_discovery: {
+      manifest_ref: `${bundle.execution.artifact_paths.bundle_path}#/semantic_context`,
+      manifest_digest: workOrderContextManifestDigest(manifest),
+      required_loading:
+        "Required semantic context is included in this input. Consult the manifest for complete source blocks. Read optional blocks from the complete manifest only on demand. Reload after restart or context loss.",
+    },
     work_order_id: workOrder.work_order_id,
     ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
     role: workOrder.role,
+    ...(workOrder.planning_context ? { planning_context: workOrder.planning_context } : {}),
     task: {
       ...workOrder.task,
       acceptance_criteria: semanticAcceptanceCriteria,
@@ -199,8 +232,12 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
       required_knowledge_ref_digests: workOrder.context_intent.required_knowledge_ref_digests,
       require_prepared_evidence: workOrder.context_intent.require_prepared_evidence,
     },
-    knowledge_refs: workOrder.knowledge_refs,
-    prepared_evidence: workOrder.prepared_evidence,
+    knowledge_refs: workOrder.knowledge_refs.filter((ref) =>
+      workOrder.context_intent.required_knowledge_ref_digests.includes(ref.digest),
+    ),
+    prepared_evidence: workOrder.prepared_evidence.filter(
+      (evidence) => evidence.role === workOrder.role,
+    ),
     required_inputs: requiredInputs,
     required_outputs: workOrder.required_outputs,
     semantic_checks: semanticVerificationRequirements.map((requirement) => ({
@@ -248,7 +285,7 @@ export function renderTaskRunnerBootstrap(
     "# agentplane runner bootstrap",
     "",
     "- Use only the supplied context, writable roots, and declared tools.",
-    "- Do not inspect internal orchestration artifacts or invoke undeclared interfaces.",
+    "- Read only declared context references and source artifacts. Do not invoke undeclared interfaces.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
     "",
     `- target: ${targetLabel}`,
@@ -257,7 +294,7 @@ export function renderTaskRunnerBootstrap(
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     "",
-    "The content below is the complete provider-facing projection for this episode.",
+    "The projection below starts this episode. The complete context manifest preserves all required constraints and input references. References do not grant authority.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
     "Treat protected_paths as forbidden even when the native sandbox permits them.",
     "",

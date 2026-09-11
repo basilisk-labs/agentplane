@@ -377,6 +377,8 @@ const TASK_TOKEN_USAGE_SCHEMA = z
   .object({
     schema_version: z.literal(1),
     state: z.enum(["observed", "partial", "unavailable"]),
+    cached_input_tokens: z.number().int().min(0).nullable().optional(),
+    cached_input_observed_agent_runs: z.number().int().min(0).optional(),
     input_tokens: z.number().int().min(0).nullable(),
     output_tokens: z.number().int().min(0).nullable(),
     reasoning_tokens: z.number().int().min(0).nullable(),
@@ -394,6 +396,18 @@ const TASK_TOKEN_USAGE_SCHEMA = z
   })
   .strict()
   .superRefine((usage, ctx) => {
+    if (
+      (usage.cached_input_observed_agent_runs ?? 0) > usage.observed_agent_runs ||
+      ((usage.cached_input_observed_agent_runs ?? 0) > 0 && usage.cached_input_tokens == null) ||
+      (usage.cached_input_tokens != null && (usage.cached_input_observed_agent_runs ?? 0) === 0) ||
+      (usage.cached_input_tokens != null &&
+        (usage.input_tokens == null || usage.cached_input_tokens > usage.input_tokens))
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Cached input requires consistent supervisor-observed coverage and input totals.",
+      });
+    }
     if (usage.observed_agent_runs > usage.agent_runs) {
       ctx.addIssue({
         code: "custom",

@@ -144,7 +144,7 @@ async function executeKernelPacket(
       record: current.record,
       context: await runtime.native.readContext(taskId),
       authority_digest:
-        workOrder.canonical_binding?.phase === "implementation"
+        workOrder.canonical_binding && workOrder.canonical_binding.phase !== "planning"
           ? workOrder.canonical_binding.authority_digest
           : null,
     });

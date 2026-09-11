@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All frozen evidence object digests match their content. The source diff updates the package manager and workflow Bun pins without changing Node engines, default Node Vitest, tsup, dependency resolutions, or distribution behavior.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The CI commit permission is derived from the approved ci repository effect and observed paths after semantic authority validation. Other protected-path permissions remain false. Three focused integration cases exercise the real commit and reject missing CI effect or an unauthorized workflow path before committing.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Five SQLite contract tests cover persistence and bindings, transaction arguments and commit, rollback and connection reuse, readonly write rejection, and missing readonly databases. The qualification evidence records all five passing under Node and Bun 1.4.2.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The supervisor recorded the full CI pass for the current implementation. I additionally ran the full existing CI contract with the task-local Bun 1.4.2 first on PATH on the unchanged source. It exited 0. Runtime, docs-schema, core, all 14 critical CLI chunks, site pipeline, workflow lint, 98 platform-critical tests, 101 guard tests, and the 17-target coverage contract passed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The qualification report uses repeated startup measurements with output parity and explicitly limits the performance inference. Its earlier blocker-status sections are historical and superseded by the current verification; they are not evidence of present integration.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Broader Bun-hosted Vitest import failures remain documented, so Node remains the test default.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: The standalone website lockfile mismatch reproduces with both Bun versions; normal workspace frozen installation and site checks pass without dependency-resolution changes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: Cross-platform execution remains a separate qualification boundary.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

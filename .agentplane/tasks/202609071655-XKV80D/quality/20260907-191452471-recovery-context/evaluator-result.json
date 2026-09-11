@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "All seven frozen evidence files match the evaluator work-order SHA-256 values.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/85c2a60d12c0b3d6821f27e877a175bccc031da4fb03f76cf4bb88a305503a64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Report materialization remains restricted to completed report WorkItems, the exact accepted result digest, and the task-owned artifact root.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/85c2a60d12c0b3d6821f27e877a175bccc031da4fb03f76cf4bb88a305503a64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The compatibility rework preserves fail-closed CI path rejection and keeps the combined runtime module below the enforced limit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/85c2a60d12c0b3d6821f27e877a175bccc031da4fb03f76cf4bb88a305503a64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The exact 33-test suite and mandatory full CI passed on implementation commit 36bfc3ba23e0c65466a5b6c172ef58dfd63883c1.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/85c2a60d12c0b3d6821f27e877a175bccc031da4fb03f76cf4bb88a305503a64.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted checks for the refreshed PR head remain a separate integration gate.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/85c2a60d12c0b3d6821f27e877a175bccc031da4fb03f76cf4bb88a305503a64.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

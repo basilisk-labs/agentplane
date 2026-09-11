@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "source": {
+    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
+    "tracked_patch_digest": "sha256:5541895756d65d2164382f939715b05bf094efa7754cbb4a25ddad936163707f",
+    "probe_digest": "sha256:c3fe1e9baebc50929017744b9234d54d62a5f6f3098f89ac19a5d85fb3932e55"
+  },
+  "runtime": {
+    "node": "v24.18.0",
+    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "harness": "Vitest in-process runCli; no provider",
+    "profiling": false
+  },
+  "fixture": {
+    "before": "module.exports = (value) => value > 10;\n",
+    "after": "module.exports = (value) => value >= 10;\n",
+    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
+    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
+  },
+  "exchanges": [
+    {
+      "role": "PLANNER",
+      "schema": {
+        "files": 1,
+        "bytes": 28528
+      },
+      "work_order_bytes": 12953,
+      "manifest_bytes": 9570,
+      "result_bytes": 2121
+    },
+    {
+      "role": "EXECUTOR",
+      "schema": {
+        "files": 1,
+        "bytes": 7860
+      },
+      "work_order_bytes": 12244,
+      "manifest_bytes": 12828,
+      "result_bytes": 223
+    },
+    {
+      "role": "EVALUATOR",
+      "schema": {
+        "files": 1,
+        "bytes": 8295
+      },
+      "work_order_bytes": 13686,
+      "manifest_bytes": 13438,
+      "result_bytes": 402
+    }
+  ],
+  "calls": [
+    {
+      "stage": "setup",
+      "duration_ms": 813.344791,
+      "exit_code": 0
+    },
+    {
+      "stage": "prepare:PLANNER",
+      "duration_ms": 740.3660830000003,
+      "exit_code": 0
+    },
+    {
+      "stage": "admit:PLANNER",
+      "duration_ms": 233.74108400000023,
+      "exit_code": 0
+    },
+    {
+      "stage": "fixture_approval",
+      "duration_ms": 44.905125000000226,
+      "exit_code": 0
+    },
+    {
+      "stage": "prepare:EXECUTOR",
+      "duration_ms": 354.02008300000034,
+      "exit_code": 0
+    },
+    {
+      "stage": "admit:EXECUTOR",
+      "duration_ms": 1376.2823340000004,
+      "exit_code": 0
+    },
+    {
+      "stage": "admit:EVALUATOR",
+      "duration_ms": 780.6192500000006,
+      "exit_code": 0
+    }
+  ],
+  "totals": {
+    "semantic_exchanges": 3,
+    "result_retries": 0,
+    "required_schema_bytes": 44683,
+    "agent_result_bytes": 2746,
+    "cli_protocol_ms": 3485.028834000002
+  },
+  "model": {
+    "elapsed_ms": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_tokens": null
+  },
+  "user_wait_ms": null,
+  "limitations": [
+    "Scripted semantic results, not a model run.",
+    "CLI admission includes native transitions and checks, and can prepare the next episode.",
+    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
+    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
+  ]
+}

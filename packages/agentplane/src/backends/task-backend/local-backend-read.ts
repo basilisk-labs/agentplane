@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
@@ -171,9 +172,41 @@ async function isIgnorableMissingReadmeTaskDir(root: string, dirName: string): P
   try {
     const entries = await readdir(path.join(root, dirName), { withFileTypes: true });
     if (entries.length === 0) return true;
-    return (
-      entries.length === 1 && entries[0]?.isDirectory() === true && entries[0].name === "handoff"
-    );
+    if (entries.length !== 1 || !entries[0]?.isDirectory()) return false;
+    if (entries[0].name === "handoff") return true;
+    if (entries[0].name !== "quality") return false;
+
+    // Shared result schemas can survive their task document in a checkout. Only recognize
+    // this exact object-store shape; a damaged task or other quality evidence still warns.
+    let directory = path.join(root, dirName, "quality");
+    for (const component of ["objects", "sha256"]) {
+      const children = await readdir(directory, { withFileTypes: true });
+      if (children.length !== 1 || !children[0]?.isDirectory() || children[0].name !== component)
+        return false;
+      directory = path.join(directory, component);
+    }
+    const objects = await readdir(directory, { withFileTypes: true });
+    if (objects.length === 0) return false;
+    for (const object of objects) {
+      if (!object.isFile() || !/^[a-f0-9]{64}\.json$/u.test(object.name)) return false;
+      const contents = await readContainedStableTextNoFollow({
+        repository_root: root,
+        file_path: path.join(directory, object.name),
+        label: "orphan result schema object",
+        max_bytes: 1024 * 1024,
+      });
+      if (createHash("sha256").update(contents).digest("hex") !== object.name.slice(0, -5))
+        return false;
+      const schema: unknown = JSON.parse(contents);
+      if (
+        !isRecord(schema) ||
+        (schema.$id !== "https://agentplane.org/schemas/agent-semantic-result.schema.json" &&
+          schema.$id !== "https://agentplane.org/schemas/agent-semantic-payload.schema.json") ||
+        typeof schema.$schema !== "string"
+      )
+        return false;
+    }
+    return true;
   } catch {
     return false;
   }

@@ -1,0 +1,192 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:local:full"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "documentation",
+        "public_api",
+        "repository_write",
+        "schema",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "external_write",
+        "network_read"
+      ],
+      "components": [
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task",
+        "packages/agentplane/src/harness",
+        "packages/agentplane/src/runner",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/schemas",
+        "packages/core/src/runner",
+        "packages/core/src/tasks",
+        "packages/spec/schemas",
+        "schemas",
+        "scripts/baselines",
+        "scripts/bench",
+        "scripts/checks",
+        "scripts/lib",
+        "scripts/workflow"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:documentation",
+        "repository_effect:public_api",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [],
+      "external_effects": [],
+      "changed_components": [],
+      "changed_files": []
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/schemas",
+      "central_component:packages/core/src/runner",
+      "central_component:packages/core/src/tasks",
+      "effect_ci",
+      "effect_public_api",
+      "effect_schema",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:06fe4efaca48accffa9f806d0c21e66bdafeab2bde1664e6ba4225f38e12bdfd"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-08T23:45:07.361Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609082225-ZYASFT/verification/20260908234507361-a185092049e3ef88.json",
+      "sha256": "sha256:ce2914c9c955ed993d575344021259ef3eddad955e7809ce4e903af1feee31df"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 1d204f5dfd2955c1695ced5098cd753703e71f17..0533fbca8d7b7cc50c569f991c539d1ee6be0aa6",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 1d204f5dfd2955c1695ced5098cd753703e71f17..0533fbca8d7b7cc50c569f991c539d1ee6be0aa6",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609082225-ZYASFT/README.md"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "1d204f5dfd2955c1695ced5098cd753703e71f17",
+    "implementation_commit": "0533fbca8d7b7cc50c569f991c539d1ee6be0aa6",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "M  .agentplane/tasks/202609082225-ZYASFT/README.md",
+        " M bun.lock"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "M  .agentplane/tasks/202609082225-ZYASFT/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M bun.lock"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "M  .agentplane/tasks/202609082225-ZYASFT/README.md",
+        " M bun.lock"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609082225-ZYASFT",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609082225-ZYASFT/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

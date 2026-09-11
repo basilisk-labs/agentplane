@@ -1,3 +1,4 @@
+import { buildWorkOrderContextManifest } from "./context/work-order-context.js";
 import { localRuntimeEvidence, withPreferredRuntimePath } from "../shared/runtime-env.js";
 import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
@@ -154,6 +155,11 @@ export async function writePreparedRunnerArtifacts(opts: {
 }): Promise<RunnerRunState> {
   const paths = opts.bundle.execution.artifact_paths;
   await mkdir(paths.run_dir, { recursive: true });
+  if (opts.bundle.work_order)
+    opts.bundle.semantic_context = buildWorkOrderContextManifest(
+      opts.bundle.work_order,
+      `${paths.bundle_path}#/work_order`,
+    );
   const bundleText = `${JSON.stringify(opts.bundle, null, 2)}\n`;
   const bootstrapText = opts.bootstrap_markdown
     ? ensureTrailingNewline(opts.bootstrap_markdown)

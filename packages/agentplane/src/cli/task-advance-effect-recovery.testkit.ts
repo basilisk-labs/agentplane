@@ -12,7 +12,7 @@ import { loadCommandContext } from "../commands/shared/task-backend.js";
 
 import * as conflictApplication from "../commands/pr/conflict-rework-merge.js";
 
-import * as taskVerification from "../commands/task/direct-task-verification.js";
+import * as taskVerification from "../commands/task/direct-task-verification-record.js";
 import * as prSync from "../commands/pr/internal/sync.js";
 import type {
   ExternalAgentExchange,

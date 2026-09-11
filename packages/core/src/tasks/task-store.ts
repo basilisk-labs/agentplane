@@ -155,6 +155,8 @@ export type TaskTokenUsageState = "observed" | "partial" | "unavailable";
 export type TaskTokenUsage = {
   schema_version: 1;
   state: TaskTokenUsageState;
+  cached_input_tokens?: number | null;
+  cached_input_observed_agent_runs?: number;
   input_tokens: number | null;
   output_tokens: number | null;
   reasoning_tokens: number | null;

@@ -43,7 +43,8 @@ export function assertExternalAgentExchangeIdentity(opts: {
     opts.exchange.purpose !== opts.purpose ||
     !samePath(opts.exchange.checkout, opts.checkout) ||
     !samePath(opts.exchange.work_order_ref, opts.paths.work_order) ||
-    !samePath(opts.exchange.result_schema_ref, opts.paths.result_schema) ||
+    (!opts.exchange.result_schema_object &&
+      !samePath(opts.exchange.result_schema_ref, opts.paths.result_schema)) ||
     !samePath(opts.exchange.result_ref, opts.paths.result)
   ) {
     throw new CliError({

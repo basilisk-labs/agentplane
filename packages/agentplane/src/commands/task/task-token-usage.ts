@@ -17,6 +17,8 @@ function unavailableTaskTokenUsage(opts: {
   return {
     schema_version: 1,
     state: "unavailable",
+    cached_input_tokens: null,
+    cached_input_observed_agent_runs: 0,
     input_tokens: null,
     output_tokens: null,
     reasoning_tokens: null,
@@ -66,6 +68,11 @@ export function projectTaskTokenUsage(opts: {
   return {
     schema_version: 1,
     state: fullyObserved ? "observed" : "partial",
+    cached_input_tokens:
+      (usage.cached_input_observed_agent_runs ?? 0) > 0
+        ? (usage.cached_input_tokens ?? null)
+        : null,
+    cached_input_observed_agent_runs: usage.cached_input_observed_agent_runs ?? 0,
     input_tokens: usage.input_tokens,
     output_tokens: hasCompleteBreakdown ? (usage.visible_output_tokens ?? null) : null,
     reasoning_tokens: hasCompleteBreakdown ? (usage.reasoning_tokens ?? null) : null,

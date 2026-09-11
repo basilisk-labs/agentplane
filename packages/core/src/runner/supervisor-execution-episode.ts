@@ -71,6 +71,10 @@ export const SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA = z
     input_tokens: NON_NEGATIVE_INTEGER,
     output_tokens: NON_NEGATIVE_INTEGER,
     total_tokens: NON_NEGATIVE_INTEGER,
+    cached_input_tokens: NON_NEGATIVE_INTEGER.optional(),
+    cached_input_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
+    prepared_context_bytes: NON_NEGATIVE_INTEGER.optional(),
+    prepared_context_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
     visible_output_tokens: NON_NEGATIVE_INTEGER.optional(),
     reasoning_tokens: NON_NEGATIVE_INTEGER.optional(),
     token_observed_agent_runs: NON_NEGATIVE_INTEGER.optional(),
@@ -82,6 +86,20 @@ export const SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA = z
   })
   .strict()
   .superRefine((usage, ctx) => {
+    for (const [count, total] of [
+      [usage.cached_input_observed_agent_runs, usage.cached_input_tokens],
+      [usage.prepared_context_observed_agent_runs, usage.prepared_context_bytes],
+    ]) {
+      if (count !== undefined && (count > usage.agent_runs || (count > 0 && total === undefined))) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Observed measurement runs require totals and cannot exceed agent runs.",
+        });
+      }
+    }
+    if ((usage.cached_input_tokens ?? 0) > usage.input_tokens) {
+      ctx.addIssue({ code: "custom", message: "Cached input cannot exceed input tokens." });
+    }
     if (
       usage.token_observed_agent_runs !== undefined &&
       usage.token_observed_agent_runs > usage.agent_runs
@@ -162,6 +180,28 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
     recovery: SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA.optional(),
     replacement_of_operation_key: SHA256_DIGEST_SCHEMA.nullable().optional(),
     status: z.enum(SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES),
+    provider_usage: z
+      .object({
+        provider: NON_EMPTY_STRING,
+        run_id: NON_EMPTY_STRING,
+        work_order_id: NON_EMPTY_STRING,
+        thread_id: NON_EMPTY_STRING.nullable(),
+        turn_id: NON_EMPTY_STRING.nullable(),
+      })
+      .strict()
+      .optional(),
+    usage: z
+      .object({
+        input_tokens: NON_NEGATIVE_INTEGER.optional(),
+        output_tokens: NON_NEGATIVE_INTEGER.optional(),
+        total_tokens: NON_NEGATIVE_INTEGER.optional(),
+        visible_output_tokens: NON_NEGATIVE_INTEGER.optional(),
+        reasoning_tokens: NON_NEGATIVE_INTEGER.optional(),
+        cached_input_tokens: NON_NEGATIVE_INTEGER.optional(),
+        prepared_context_bytes: NON_NEGATIVE_INTEGER.optional(),
+      })
+      .strict()
+      .optional(),
     result_digest: SHA256_DIGEST_SCHEMA.nullable(),
     postcondition_fingerprint_digest: SHA256_DIGEST_SCHEMA.nullable(),
     feedback_digest: SHA256_DIGEST_SCHEMA.nullable(),
@@ -724,6 +764,7 @@ export function completeSupervisorExecutionEpisode(opts: {
   operation_key: string;
   result: unknown;
   usage?: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
+  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
   progress?: unknown;
   bounded_feedback?: unknown;
   failed?: boolean;
@@ -742,6 +783,23 @@ export function completeSupervisorExecutionEpisode(opts: {
     throw new Error("Supervisor episode completion requires the latest operation intent.");
   }
   const usageInput = opts.usage ?? {};
+  const providerUsage = opts.provider_usage;
+  if (
+    providerUsage &&
+    journal.operations.some((operation) => {
+      const previous = operation.provider_usage;
+      return (
+        previous?.provider === providerUsage.provider &&
+        (previous.run_id === providerUsage.run_id ||
+          (providerUsage.thread_id !== null &&
+            providerUsage.turn_id !== null &&
+            previous.thread_id === providerUsage.thread_id &&
+            previous.turn_id === providerUsage.turn_id))
+      );
+    })
+  ) {
+    throw new Error("Provider usage is already bound to a completed supervisor operation.");
+  }
   const tokenUsageObserved =
     isAgentOperation(last.kind) &&
     Number.isSafeInteger(usageInput.input_tokens) &&
@@ -773,6 +831,17 @@ export function completeSupervisorExecutionEpisode(opts: {
     input_tokens: journal.usage.input_tokens + Math.max(0, usageInput.input_tokens ?? 0),
     output_tokens: journal.usage.output_tokens + Math.max(0, usageInput.output_tokens ?? 0),
     total_tokens: journal.usage.total_tokens + Math.max(0, usageInput.total_tokens ?? 0),
+    cached_input_tokens:
+      (journal.usage.cached_input_tokens ?? 0) + Math.max(0, usageInput.cached_input_tokens ?? 0),
+    cached_input_observed_agent_runs:
+      (journal.usage.cached_input_observed_agent_runs ?? 0) +
+      (tokenUsageObserved && usageInput.cached_input_tokens !== undefined ? 1 : 0),
+    prepared_context_bytes:
+      (journal.usage.prepared_context_bytes ?? 0) +
+      Math.max(0, usageInput.prepared_context_bytes ?? 0),
+    prepared_context_observed_agent_runs:
+      (journal.usage.prepared_context_observed_agent_runs ?? 0) +
+      (isAgentOperation(last.kind) && usageInput.prepared_context_bytes !== undefined ? 1 : 0),
     visible_output_tokens:
       (journal.usage.visible_output_tokens ?? 0) +
       Math.max(0, usageInput.visible_output_tokens ?? 0),
@@ -792,6 +861,20 @@ export function completeSupervisorExecutionEpisode(opts: {
   };
   const operation = {
     ...last,
+    ...(providerUsage ? { provider_usage: providerUsage } : {}),
+    usage: Object.fromEntries(
+      [
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "visible_output_tokens",
+        "reasoning_tokens",
+        "cached_input_tokens",
+        "prepared_context_bytes",
+      ]
+        .filter((key) => usageInput[key as keyof typeof usageInput] !== undefined)
+        .map((key) => [key, usageInput[key as keyof typeof usageInput]]),
+    ),
     status: opts.failed ? ("failed" as const) : ("completed" as const),
     result_digest: digestSupervisorEpisodeValue(opts.result),
     feedback_digest:

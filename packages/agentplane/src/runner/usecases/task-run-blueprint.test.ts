@@ -110,7 +110,9 @@ describe("runner blueprint guards", () => {
     expect(bootstrap).not.toContain("- route_exact_argv:");
     expect(bootstrap).not.toContain("- route_stale_state_check:");
     expect(bootstrap).not.toContain("- route_requires_provider_action:");
-    expect(bootstrap).toContain("complete provider-facing projection");
+    expect(bootstrap).toContain(
+      "complete context manifest preserves all required constraints and input references",
+    );
   });
 
   it("renders configured evaluator skepticism into the runner bootstrap", () => {

@@ -13,6 +13,16 @@ import {
 } from "./evidence-only-rework-commit.js";
 import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
 
+import {
+  assertExternalImplementationReturnState,
+  implementationCommitAllowsCi,
+} from "./external-agent-implementation-authority.js";
+
+const contract = (effects: string[]) =>
+  ({ authority: { allowed_repository_effects: effects } }) as NonNullable<
+    TaskData["execution_contract"]
+  >;
+
 const COMMIT = "a".repeat(40);
 const BASE_CONTEXT = {
   schema_version: 1,
@@ -387,4 +397,78 @@ describe("recorded implementation recovery contract", () => {
       ).toBe(false);
     },
   );
+});
+
+describe("external implementation CI commit authority", () => {
+  const workflow = ".github/workflows/ci.yml";
+
+  it("passes approved CI changes to the commit guard", () => {
+    expect(implementationCommitAllowsCi(contract(["ci"]), [workflow], [workflow])).toBe(true);
+    expect(
+      implementationCommitAllowsCi(
+        contract(["ci"]),
+        [".github/actions/check/action.yml"],
+        [".github/actions/check/action.yml"],
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps missing CI permission and unrelated protected paths denied", () => {
+    expect(implementationCommitAllowsCi(undefined, [workflow], [workflow])).toBe(false);
+    expect(implementationCommitAllowsCi(contract(["source_code"]), [workflow], [workflow])).toBe(
+      false,
+    );
+    for (const file of [
+      "AGENTS.md",
+      ".agentplane/config.json",
+      "lefthook.yml",
+      ".github/workflows-other/ci.yml",
+    ])
+      expect(implementationCommitAllowsCi(contract(["ci"]), [file], [file])).toBe(false);
+  });
+
+  it("does not admit preexisting CI changes through the family-wide guard flag", () => {
+    expect(
+      implementationCommitAllowsCi(
+        contract(["ci"]),
+        [workflow],
+        [workflow, ".github/workflows/preexisting.yml"],
+      ),
+    ).toBe(false);
+  });
+
+  it("rejects unapproved CI paths before deriving commit permission", () => {
+    const fingerprint = {
+      task_id: "T-1",
+      task_revision: 1,
+      worktree: "/repo",
+      components: {
+        task: { digest: "task" },
+        backend_projection: { digest: "backend" },
+        provider: { digest: "provider" },
+      },
+    };
+    const input = {
+      exchange: {
+        checkout: "/repo",
+        task_id: "T-1",
+        purpose: "implementation",
+        baseline: { head: COMMIT, changed_paths: [] },
+      },
+      work_order: {
+        state_fingerprint: fingerprint,
+        authority: { writable_roots: ["/repo/.github/workflows/ci.yml"] },
+      },
+      current: { workflowStep: { preconditionFingerprint: fingerprint } },
+      current_head: COMMIT,
+      current_status_lines: [" M .github/workflows/unapproved.yml"],
+      require_changes: true,
+    } as unknown as Parameters<typeof assertExternalImplementationReturnState>[0];
+    expect(() => assertExternalImplementationReturnState(input)).toThrow(
+      "escaped semantic authority",
+    );
+    input.current_status_lines = [" M .github/workflows/ci.yml"];
+    const validated = assertExternalImplementationReturnState(input);
+    expect(implementationCommitAllowsCi(contract(["ci"]), validated, validated)).toBe(true);
+  });
 });

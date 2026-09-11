@@ -157,7 +157,7 @@ describe("Codex supervisor semantic result transport", () => {
     });
   });
 
-  it("charges visible and reasoning output from the completed-turn usage", () => {
+  it("counts reasoning within provider output instead of charging it twice", () => {
     const collector = createCodexResultEventCollector();
 
     collector.observeStdoutLine(
@@ -173,11 +173,128 @@ describe("Codex supervisor semantic result transport", () => {
 
     expect(collector.readUsage()).toEqual({
       input_tokens: 100,
-      output_tokens: 50,
-      total_tokens: 150,
-      visible_output_tokens: 30,
+      output_tokens: 30,
+      total_tokens: 130,
+      visible_output_tokens: 10,
       reasoning_tokens: 20,
     });
+  });
+
+  it("retains optional cache telemetry without charging cached input twice", () => {
+    const collector = createCodexResultEventCollector();
+    const event = {
+      type: "turn.completed",
+      usage: {
+        input_tokens: 100,
+        cached_input_tokens: 70,
+        output_tokens: 20,
+        reasoning_output_tokens: 0,
+      },
+    };
+    collector.observeStdoutLine(JSON.stringify(event));
+    expect(collector.readUsage()).toMatchObject({ cached_input_tokens: 70, total_tokens: 120 });
+  });
+
+  it("rejects cache counts exceeding observed input", () => {
+    const collector = createCodexResultEventCollector();
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "turn.completed",
+        usage: {
+          input_tokens: 10,
+          cached_input_tokens: 11,
+          output_tokens: 0,
+          reasoning_output_tokens: 0,
+        },
+      }),
+    );
+    expect(() => collector.readUsage()).toThrow(/malformed cached input/u);
+  });
+
+  it("retains one provider charge when duplicate completion makes the semantic result invalid", () => {
+    const collector = createCodexResultEventCollector();
+    collector.observeStdoutLine(JSON.stringify({ type: "thread.started", thread_id: "thread-1" }));
+    collector.observeStdoutLine(JSON.stringify({ type: "turn.started", turn_id: "turn-1" }));
+    const event = JSON.stringify({
+      type: "turn.completed",
+      turn_id: "turn-1",
+      usage: {
+        input_tokens: 100,
+        cached_input_tokens: 70,
+        output_tokens: 20,
+        reasoning_output_tokens: 5,
+      },
+    });
+    collector.observeStdoutLine(event);
+    collector.observeStdoutLine(event);
+    expect(() => collector.readLastAgentMessage()).toThrow(/duplicate turn completion/u);
+    expect(collector.readUsage()).toMatchObject({
+      thread_id: "thread-1",
+      turn_id: "turn-1",
+      total_tokens: 120,
+      cached_input_tokens: 70,
+    });
+  });
+
+  it("does not erase provider usage after an invalid trailing semantic message", () => {
+    const collector = createCodexResultEventCollector();
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "turn.completed",
+        usage: { input_tokens: 10, output_tokens: 5, reasoning_output_tokens: 3 },
+      }),
+    );
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "item.completed",
+        item: { type: "agent_message", text: "late" },
+      }),
+    );
+    expect(() => collector.readLastAgentMessage()).toThrow(/after turn completion/u);
+    expect(collector.readUsage()).toMatchObject({ total_tokens: 15 });
+  });
+
+  it("rejects conflicting usage or provider identity in the same invocation", () => {
+    for (const conflict of ["usage", "identity"]) {
+      const collector = createCodexResultEventCollector();
+      collector.observeStdoutLine(
+        JSON.stringify({ type: "thread.started", thread_id: "thread-1" }),
+      );
+      collector.observeStdoutLine(
+        JSON.stringify({
+          type: "turn.completed",
+          usage: { input_tokens: 10, output_tokens: 5, reasoning_output_tokens: 3 },
+        }),
+      );
+      collector.observeStdoutLine(
+        JSON.stringify(
+          conflict === "identity"
+            ? { type: "thread.started", thread_id: "thread-2" }
+            : {
+                type: "turn.completed",
+                usage: { input_tokens: 20, output_tokens: 5, reasoning_output_tokens: 3 },
+              },
+        ),
+      );
+      expect(() => collector.readUsage()).toThrow(
+        /conflicting provider usage|changed provider thread/u,
+      );
+    }
+  });
+
+  it("rejects reasoning counts exceeding total output", () => {
+    const collector = createCodexResultEventCollector();
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "turn.completed",
+        usage: {
+          input_tokens: 10,
+          output_tokens: 2,
+          reasoning_output_tokens: 3,
+        },
+      }),
+    );
+    expect(() => collector.readUsage()).toThrow(/malformed provider usage/u);
   });
 
   it("rejects malformed completed-turn usage instead of recording zero", () => {

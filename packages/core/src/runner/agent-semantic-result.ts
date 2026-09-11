@@ -11,7 +11,10 @@ import {
   buildJsonSchemaDocument,
   schemaErrors,
 } from "../tasks/task-artifact-schema.shared.js";
-import { TASK_PLAN_PROPOSAL_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
+import {
+  COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+  TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
+} from "../tasks/task-centric/schema.js";
 
 export const AGENT_SEMANTIC_RESULT_SCHEMA_VERSION = 2 as const;
 export const AGENT_SEMANTIC_RESULT_KIND = "agent_semantic_result" as const;
@@ -260,11 +263,15 @@ export const AGENT_SEMANTIC_RESULT_ZOD_SCHEMA = z
     if (
       (!binding && (value.canonical_plan || value.canonical_outputs)) ||
       (binding && (value.task_intent || value.task_plan_proposal || value.plan_refinement)) ||
-      (binding?.phase === "planning" && value.canonical_outputs) ||
-      (binding?.phase === "implementation" && value.canonical_plan) ||
+      (binding?.phase !== "implementation" && value.canonical_outputs) ||
+      (binding?.phase !== "planning" && value.canonical_plan) ||
       (binding &&
         value.status === "completed" &&
-        !(binding.phase === "planning" ? value.canonical_plan : value.canonical_outputs))
+        !(binding.phase === "planning"
+          ? value.canonical_plan
+          : binding.phase === "inspection"
+            ? value.review
+            : value.canonical_outputs))
     )
       ctx.addIssue({
         code: "custom",
@@ -437,8 +444,109 @@ export function validateAgentSemanticResult(value: unknown): AgentSemanticResult
   return assertValid("agent semantic result", AGENT_SEMANTIC_RESULT_ZOD_SCHEMA, value);
 }
 
-export function renderAgentSemanticResultSchemaJson(): string {
-  return `${JSON.stringify(AGENT_SEMANTIC_RESULT_SCHEMA, null, 2)}\n`;
+type SemanticPayloadContext = {
+  role: "PLANNER" | "CURATOR" | "EXECUTOR" | "EVALUATOR";
+  phase?: "planning" | "implementation" | "inspection";
+};
+
+export function buildAgentSemanticPayloadSchema(context: SemanticPayloadContext) {
+  const fields: Record<string, z.ZodType> = {
+    work_order_id: NON_EMPTY_STRING,
+    status: z.enum(AGENT_SEMANTIC_RESULT_STATUS_VALUES),
+    summary: NON_EMPTY_STRING,
+    findings: z.array(z.string()),
+    uncertainty: z.array(z.string()),
+    claimed_checks: AGENT_SEMANTIC_RESULT_BASE_SHAPE.claimed_checks,
+    blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
+    knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
+  };
+  if (context.phase === "planning") fields.canonical_plan = kernelPlanProposalSchema.optional();
+  else if (context.phase === "implementation")
+    fields.canonical_outputs = kernelOutputClaimsSchema.optional();
+  else if (!context.phase && context.role === "PLANNER") {
+    fields.task_intent = AGENT_SEMANTIC_RESULT_BASE_SHAPE.task_intent;
+    fields.task_plan_proposal = z
+      .union([COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA, TASK_PLAN_PROPOSAL_ZOD_SCHEMA])
+      .describe(
+        "Prefer compact schema_version 2. Version 1 remains accepted for previously issued results.",
+      )
+      .optional();
+  } else if (!context.phase && context.role === "EXECUTOR")
+    fields.plan_refinement = AGENT_SEMANTIC_RESULT_BASE_SHAPE.plan_refinement;
+  if (context.role === "EVALUATOR") fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA;
+  return z.strictObject(fields);
+}
+
+export function renderAgentSemanticResultSchemaJson(context?: SemanticPayloadContext): string {
+  if (!context) return `${JSON.stringify(AGENT_SEMANTIC_RESULT_SCHEMA, null, 2)}\n`;
+  const schema = buildJsonSchemaDocument(
+    buildAgentSemanticPayloadSchema(context),
+    {
+      $id: "https://agentplane.org/schemas/agent-semantic-payload.schema.json",
+      title: `Agent semantic payload (${context.role}, ${context.phase ?? "legacy"})`,
+      description:
+        "Copy work_order_id from the issued WorkOrder. Return only this payload. The CLI binds it to that immutable episode and supplies its service fields. Keep summary short and report each finding once.",
+    },
+    { reused: "ref" },
+  );
+  const completedField =
+    context.phase === "planning"
+      ? "canonical_plan"
+      : context.phase === "implementation"
+        ? "canonical_outputs"
+        : null;
+  /* eslint-disable unicorn/no-thenable -- JSON Schema conditionals require the then keyword. */
+  schema.allOf = [
+    { if: { properties: { status: { const: "blocked" } } }, then: { required: ["blocker"] } },
+    {
+      if: { properties: { status: { const: "needs_context" } } },
+      then: { required: ["knowledge_request"] },
+    },
+    ...(context.role === "EVALUATOR"
+      ? [
+          {
+            if: {
+              properties: { review: { properties: { verdict: { enum: ["pass", "rework"] } } } },
+            },
+            then: { properties: { findings: { minItems: 1 } } },
+          },
+          {
+            if: { properties: { review: { properties: { verdict: { const: "human_review" } } } } },
+            then: { properties: { review: { required: ["recovery_context"] } } },
+          },
+        ]
+      : []),
+    ...(completedField
+      ? [
+          {
+            if: { properties: { status: { const: "completed" } } },
+            then: { required: [completedField] },
+          },
+        ]
+      : []),
+  ];
+  /* eslint-enable unicorn/no-thenable */
+  schema.examples = [
+    {
+      work_order_id: "copy-the-issued-work-order-id",
+      status: "blocked",
+      summary: "The required input is unavailable.",
+      findings: [],
+      uncertainty: [],
+      blocker: { summary: "Describe the concrete missing input." },
+      ...(context.role === "EVALUATOR"
+        ? {
+            review: {
+              verdict: "blocked",
+              missing_tests: [],
+              hidden_assumptions: [],
+              residual_risks: [],
+            },
+          }
+        : {}),
+    },
+  ];
+  return `${JSON.stringify(schema, null, 2)}\n`;
 }
 
 export function renderAgentSemanticResultV2ValidFixtureJson(

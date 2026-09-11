@@ -1,3 +1,8 @@
+import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+import {
+  isInfrastructureVerification,
+  prepareInfrastructureVerificationForCheckout,
+} from "./verification-infrastructure.js";
 import {
   stoppedEpisode,
   applyBranchImplementationResult,
@@ -29,7 +34,6 @@ import type {
   BranchEpisodeOutcome,
   BranchTaskSupervisorOptions,
 } from "./branch-task-supervisor.js";
-import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { runAndApplyDirectTaskEvaluator } from "./direct-task-supervisor-evaluator.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
 
@@ -43,6 +47,7 @@ import {
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import {
+  canCoalesceVerificationArtifacts,
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
@@ -338,8 +343,21 @@ async function executeBranchVerificationEpisode(opts: {
         const validation = taskCentricAggregateFromExtensions(task.extensions)?.current_plan
           ?.proposal.top_level_validation;
         const additionalCommands = validation ? blockingWorkItemCommands(validation) : [];
+        const retainInfrastructureFailure = await prepareInfrastructureVerificationForCheckout({
+          command,
+          checkout,
+          task_id: opts.input.task_id,
+          implementation_commit: verification.snapshot.evaluated_sha ?? "",
+          identity: {
+            snapshot: verification.snapshot,
+            commands: verification.task.verify ?? [],
+            validation: validation ?? null,
+            policy: command.config,
+          },
+        });
         const checks = await runDirectTaskVerification({
           command,
+          retain_infrastructure_failure: retainInfrastructureFailure,
           task: verification.task,
           task_id: opts.input.task_id,
           cwd: checkout,
@@ -351,6 +369,12 @@ async function executeBranchVerificationEpisode(opts: {
               }
             : {}),
         });
+        if (isInfrastructureVerification(checks)) {
+          throw new Error(
+            `Verification infrastructure failed; evidence: ${checks.artifact_path}. ` +
+              `Repair the environment, then run agentplane task advance ${opts.input.task_id} --replacement --agent-json.`,
+          );
+        }
         passed = checks.status === "passed";
         failureReason = checks.reason ?? failureReason;
         const exitCode = await cmdVerifyParsed({
@@ -376,15 +400,24 @@ async function executeBranchVerificationEpisode(opts: {
           quiet: true,
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
-        await commitBranchSupervisorTaskArtifacts({
-          command,
-          cwd: checkout,
-          task_id: opts.input.task_id,
-          message: branchSupervisorArtifactCommitMessage(
-            opts.input.task_id,
-            passed ? "verification_pass" : "verification_rework",
-          ),
-        });
+        const coalesce =
+          passed &&
+          (await canCoalesceVerificationArtifacts({
+            command,
+            cwd: checkout,
+            task_id: opts.input.task_id,
+            next: await opts.decide(),
+          }));
+        if (!coalesce)
+          await commitBranchSupervisorTaskArtifacts({
+            command,
+            cwd: checkout,
+            task_id: opts.input.task_id,
+            message: branchSupervisorArtifactCommitMessage(
+              opts.input.task_id,
+              passed ? "verification_pass" : "verification_rework",
+            ),
+          });
         return {
           verification: passed ? "ok" : "needs_rework",
           declared_checks: checks.artifact_path,

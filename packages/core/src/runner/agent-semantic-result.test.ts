@@ -47,6 +47,35 @@ describe("agent semantic result contract", () => {
       expect(listAgentSemanticResultSchemaErrors(invalid)).not.toEqual([]);
   });
 
+  it("keeps inspection review separate from implementation outputs and native validation", () => {
+    const digest = `sha256:${"a".repeat(64)}`;
+    const value = {
+      ...AGENT_SEMANTIC_RESULT_V2_VALID_FIXTURE,
+      canonical_binding: {
+        phase: "inspection",
+        task_id: "T-inspection",
+        repository_identity: digest,
+        repository_fingerprint: digest,
+        plan_revision: 1,
+        plan_digest: digest,
+        work_item_id: "build",
+        attempt: 1,
+        claim_id: "claim",
+        contract_digest: digest,
+        authority_digest: digest,
+        result_digest: digest,
+      },
+      review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
+    };
+    expect(listAgentSemanticResultSchemaErrors(value)).toEqual([]);
+    for (const changed of [
+      { ...value, review: undefined },
+      { ...value, canonical_outputs: [{ id: "source", kind: "source", digest }] },
+      { ...value, canonical_binding: { ...value.canonical_binding, result_digest: "invalid" } },
+    ])
+      expect(listAgentSemanticResultSchemaErrors(changed)).not.toEqual([]);
+  });
+
   it("accepts the generated v2 fixture", async () => {
     const fixturePath = path.join(
       process.cwd(),
@@ -215,6 +244,36 @@ describe("agent semantic result contract", () => {
         [field]: value,
       }),
     ).not.toEqual([]);
+  });
+
+  it.each([
+    { role: "PLANNER" },
+    { role: "EXECUTOR" },
+    { role: "EVALUATOR" },
+    { role: "PLANNER", phase: "planning" },
+    { role: "EXECUTOR", phase: "implementation" },
+    { role: "EVALUATOR", phase: "inspection" },
+  ] as const)("renders a closed role schema with resolvable shared definitions: %j", (context) => {
+    const text = renderAgentSemanticResultSchemaJson(context);
+    const schema = JSON.parse(text) as Record<string, unknown>;
+    expect(schema.additionalProperties).toBe(false);
+    expect(text.length).toBeLessThan(renderAgentSemanticResultSchemaJson().length * 0.3);
+    function visit(value: unknown) {
+      if (!value || typeof value !== "object") return;
+      const ref = (value as { $ref?: string }).$ref;
+      if (ref) {
+        expect(ref.startsWith("#/"), ref).toBe(true);
+        let resolved: unknown = schema;
+        for (const segment of ref.slice(2).split("/")) {
+          resolved = (resolved as Record<string, unknown>)[
+            segment.replaceAll("~1", "/").replaceAll("~0", "~")
+          ];
+        }
+        expect(resolved, ref).toBeDefined();
+      }
+      for (const child of Object.values(value)) visit(child);
+    }
+    visit(schema);
   });
 
   it("renders a strict public schema with the status requirements", () => {

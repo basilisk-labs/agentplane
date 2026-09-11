@@ -44,7 +44,7 @@ import {
   assertExternalAgentSupervisorIntent,
   finalizeCompletedExternalAgentExchange,
 } from "./external-agent-exchange-authority.js";
-import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+import { semanticPurpose, usesExternalImplementationAuthority } from "./external-agent-purpose.js";
 import {
   bindPreparedEvaluatorState,
   evaluatorReturnFingerprint,
@@ -69,19 +69,6 @@ export type IssuedExternalAgentExchange = {
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
-
-function semanticPurpose(decision: TaskRouteDecision): ExternalAgentExchange["purpose"] | null {
-  const step = decision.workflowStep;
-  if (step.kind === "agent_episode") return step.episode.purpose;
-  if (
-    step.kind === "cli_operation" &&
-    step.operation.id === "runner.follow" &&
-    step.operation.params.mode === "run"
-  ) {
-    return "implementation";
-  }
-  return null;
-}
 
 function digestText(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
@@ -233,10 +220,11 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     readDirectRepositoryStatus(checkout),
   ]);
   const at = new Date().toISOString();
-  const preparedExchange: ExternalAgentExchange = {
+  let preparedExchange: ExternalAgentExchange = {
     schema_version: 1,
     kind: "external_agent_exchange",
     issue_digest_version: 2,
+    result_format: "semantic_payload_v1",
     status: "prepared",
     task_id: opts.decision.task.id,
     transition_id: transitionId,
@@ -262,7 +250,7 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     created_at: at,
     updated_at: at,
   };
-  await persistExternalAgentExchangeArtifacts({
+  preparedExchange = await persistExternalAgentExchangeArtifacts({
     paths,
     work_order: workOrder,
     exchange: preparedExchange,
@@ -347,15 +335,20 @@ export async function acceptExternalAgentResult(opts: {
   result_path: string;
   include_remote: boolean;
 }): Promise<TaskRouteDecision> {
-  const raw = await readExternalAgentResult(path.resolve(opts.ctx.cwd, opts.result_path));
-  const identity = externalAgentResultIdentity(raw);
+  const resultPath = path.resolve(opts.ctx.cwd, opts.result_path);
+  const raw = await readExternalAgentResult(resultPath);
+  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+  const identity = externalAgentResultIdentity(raw, {
+    task_id: opts.task_id,
+    exchange_root: path.join(commonGitDir, "agentplane", "external-agent"),
+    result_path: resultPath,
+  });
   if (identity.task_id !== opts.task_id) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Result task_id does not match command task id.",
     });
   }
-  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const paths = await resolveExternalAgentExchangePaths({
     git_root: opts.command.resolvedProject.gitRoot,
     common_git_dir: commonGitDir,

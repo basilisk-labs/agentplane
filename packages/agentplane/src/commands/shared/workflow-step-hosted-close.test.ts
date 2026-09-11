@@ -118,3 +118,26 @@ describe("hosted-close route convergence", () => {
     });
   });
 });
+
+it.each([
+  `provider merge commit object is unavailable locally: ${prFlow.pr.mergeCommit}`,
+  `provider merge commit is not on main: ${prFlow.pr.mergeCommit}`,
+])("synchronizes main before proving cleanup when %s", (reason) => {
+  expect(route({ state: "blocked", reasons: [`branch=${branch}: ${reason}`] })).toMatchObject({
+    kind: "cli_operation",
+    operation: { id: "task.worktree.cleanup", params: { taskId, base: "main" } },
+  });
+});
+
+it.each(
+  [
+    ["exact pre-merge closure marker is unavailable"],
+    [`provider merge commit is not on main: ${"f".repeat(40)}`],
+    [`provider merge commit is not on main: ${prFlow.pr.mergeCommit}`, "dirty worktree"],
+  ].map((reasons) => ({ reasons })),
+)("retains unsafe cleanup blockers %j", ({ reasons }) => {
+  expect(route({ state: "blocked", reasons })).toMatchObject({
+    kind: "terminal",
+    id: "terminal.cleanup_blocked",
+  });
+});
