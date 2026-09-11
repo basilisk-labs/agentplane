@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "HOST:codex:USER"
   note: "host_user_decision=sha256:3930e46c72abef10d21cfda7f2921700141030e4cc5c157cb76bdcaff9aa22c1"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-09-11T20:33:13.654Z"
+  updated_by: "SUPERVISOR"
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 execution_route:
   frozen: true
   reason_codes:
@@ -83,7 +83,9 @@ execution_contract:
       - "packages/agentplane/src/runtime/task-routing/resolve.test.ts"
       - "packages/agentplane/src/runtime/task-routing/resolve.ts"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-3:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -96,7 +98,19 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "fail"
+      -
+        id: "verification-record"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -186,9 +200,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "edc86419666b36abeb3169dfa607dfb6e244ac13"
-  message: "🚧 GH8BV2 task: apply external agent result"
+      - "verification_recovery:recorded-check-3"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -212,8 +226,14 @@ events:
     to: "DOING"
     note: "Implementation committed: edc86419666b. CLI accepted one state-bound external-agent semantic result."
     commit: "edc86419666b36abeb3169dfa607dfb6e244ac13"
+  -
+    type: "verify"
+    at: "2026-09-11T20:33:13.654Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-11T19:58:52.599Z"
+doc_updated_at: "2026-09-11T20:33:50.135Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -231,6 +251,51 @@ sections:
     3. Run `git diff --check`. Expected: no whitespace errors.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-11T20:33:13.654Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:ecb28dd9c0589d52f6e6889678ff368711edad3272d6be70a58163d57c76bf7f
+
+    Details:
+
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+    - old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -424,7 +489,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 5
+    event_cursor: 6
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -449,9 +514,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 8
+    revision: 9
     schema_version: 1
-    updated_at: "2026-09-11T19:59:29.617Z"
+    updated_at: "2026-09-11T20:33:50.133Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -596,6 +661,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609111943-GH8BV2"
+      compatibility:sha256:5dc0011a36a7f0c4f8333f98208282cd5cb8534b610b77e191f697b7148e7b8a:
+        aggregate_digest: "sha256:43162774d4614c459891fc442e132e4f17177ba751fff5f9e6ee92765a26ac8b"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T20:33:50.133Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_8b7bc9532979642e81d71373"
+          mutation_id: "compatibility:sha256:5dc0011a36a7f0c4f8333f98208282cd5cb8534b610b77e191f697b7148e7b8a"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 8
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:5dc0011a36a7f0c4f8333f98208282cd5cb8534b610b77e191f697b7148e7b8a"
+        next_revision: 9
+        previous_revision: 8
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
       compatibility:sha256:645ecda69ad09c16d006eec4e0c78ad6f06aede99f1854df0075b9a3e1be79e9:
         aggregate_digest: "sha256:ea2f796e66ebb2ffc28bc8408e45b28d65b665abc42f912dd7e50432e18b4b0b"
         event:
@@ -671,8 +760,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "edc86419666b36abeb3169dfa607dfb6e244ac13"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -708,6 +795,51 @@ Plan one narrow legacy-compatible path for exact effect-only scope extensions.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-11T20:33:13.654Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:ecb28dd9c0589d52f6e6889678ff368711edad3272d6be70a58163d57c76bf7f
+
+Details:
+
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+- old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

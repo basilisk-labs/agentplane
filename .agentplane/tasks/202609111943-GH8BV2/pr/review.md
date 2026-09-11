@@ -12,8 +12,8 @@ Created: 2026-09-11T19:51:57.383Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-09-11T19:51:57.383Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-11T19:51:57.383Z
+- Updated: 2026-09-11T20:01:18.988Z
 - Branch: task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
