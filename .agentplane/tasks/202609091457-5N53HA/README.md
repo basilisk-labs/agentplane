@@ -4,7 +4,7 @@ title: "Publish direct ops quality review fix from upstream main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -25,15 +25,15 @@ verify:
   - "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-09T15:19:36.854Z"
-  updated_by: "HOST:codex:USER"
-  note: "host_user_decision=sha256:0c80f60a5461629e6462cc0b2c58353a4e73e1363e49d089ba8dfc59a1ae85c2"
+  updated_at: "2026-09-11T15:13:07.781Z"
+  updated_by: "USER"
+  note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-09-09T15:42:41.598Z"
+  updated_at: "2026-09-11T14:21:19.861Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 execution_route:
   frozen: true
   reason_codes:
@@ -365,9 +365,7 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-6"
       - "verification_recovery:verification-record"
-commit:
-  hash: "ddd46df7028e4160b8e1a140fe96315607214bc7"
-  message: "🚧 5N53HA task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -430,8 +428,14 @@ events:
     to: "DOING"
     note: "Implementation committed: ddd46df7028e. CLI accepted one state-bound external-agent semantic result."
     commit: "ddd46df7028e4160b8e1a140fe96315607214bc7"
+  -
+    type: "verify"
+    at: "2026-09-11T14:21:19.861Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:12:53.761Z"
+doc_updated_at: "2026-09-11T14:33:42.803Z"
 doc_updated_by: "SUPERVISOR"
 description: "Recreate the already verified direct ops quality-review patch from commit 75a1b9743288ca2a60ccafd82287df37eb8922bd on a task branch based on upstream main, preserve its tests and documentation, and publish a fork-based PR to basilisk-labs/agentplane. Do not install or deploy the CLI."
 sections:
@@ -442,7 +446,7 @@ sections:
   Scope: |-
     - In scope: Recreate the already verified direct ops quality-review patch from commit 75a1b9743288ca2a60ccafd82287df37eb8922bd on a task branch based on upstream main, preserve its tests and documentation, and publish a fork-based PR to basilisk-labs/agentplane. Do not install or deploy the CLI.
     - Out of scope: unrelated refactors not required for "Publish direct ops quality review fix from upstream main".
-  Plan: "Separated local implementation acceptance from supervisor-owned pull request publication."
+  Plan: "Task-specific plan preserves the reviewer fix and adds only the current compatibility candidate ledger refresh."
   Verify Steps: |-
     1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts`. Expected: explicit commit, evidence subject, legacy compatibility, and force-bypass cases pass.
     2. Run `bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts`. Expected: the complete direct ops lifecycle reaches DONE and rejects stale evidence.
@@ -512,6 +516,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-09-11T14:21:19.861Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:33a296b0de2cb60ab262cbb6eff99f60358fb63791d8e3cd48301c85fb2dfdd5, input_digest=sha256:ed43f6c21c786404fcd842461802fbe3c8df2d01e92116bbcd1899db1887d06a
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run package:tarball:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609091457-5N53HA declared verification
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /srv/projects/agentplane/.agentplane/worktrees/202609091457-5N53HA-publish-direct-ops-review-fix/.agentplane/tasks/202609091457-5N53HA/blueprint/resolved-snapshot.json
+    - old_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+    - current_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609091457-5N53HA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609091457-5N53HA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -519,9 +583,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "HOST:codex:USER"
-    approval_evidence_digest: "sha256:0c80f60a5461629e6462cc0b2c58353a4e73e1363e49d089ba8dfc59a1ae85c2"
-    approval_kind: "host_user_decision"
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -530,13 +594,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:78839e46b5e70193f9d3f3a9ed18e57be8f6231e5bde4d08b99573774b5f6817"
-    digest: "sha256:0ea492497c06f2a75ea5952630fca852fc582db8c4f483a0a549e06fa1fe69e7"
-    grant_id: "653cc7a7-0f85-4f48-90c6-02a24a5cc3ed"
-    issued_at: "2026-09-09T15:19:36.854Z"
+    completion_contract_digest: "sha256:6e9584f424f1649fc6978f85d3765a8a9b9ccf0270cb7abfeaa872c2cbfbd984"
+    digest: "sha256:1e605ec7f9b746781a665d835666a8d6ccc4eb38904e0427640da10bbc344ec4"
+    grant_id: "9cf1baf1-ccd3-444c-a7a3-bdc707b62733"
+    issued_at: "2026-09-11T15:13:07.781Z"
     kind: "agentplane.execution_grant"
-    plan_digest: "sha256:eda5381cc41b61b4efbb4174ea983fc51258aed628e5396fbb4018d61be3cf09"
-    plan_revision: 15
+    plan_digest: "sha256:e20d1392d2084170b2a064421222f9cf33c254c411a238671c5d91c95dea7d09"
+    plan_revision: 26
     repository_identity: "sha256:4d4f122365e3b382519a58a42f4021d908a09e93d8b2a5709639f1843429d339"
     schema_version: 1
     scope_digest: "sha256:bd456e03d944818b09c90ec7263f76d648296797bc05d5900a933b1b812a5528"
@@ -545,88 +609,152 @@ extensions:
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-09T15:19:36.854Z"
-        approved_by: "HOST:codex:USER"
-        approved_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+        approved_at: "2026-09-11T15:13:07.781Z"
+        approved_by: "USER"
+        approved_digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
         policy_facts:
-          - "host_user_decision"
+          - "manual_operator"
         state: "approved"
-      created_at: "2026-09-09T15:18:44.012Z"
-      digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+      created_at: "2026-09-11T14:33:42.763Z"
+      digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
       proposal:
         assumptions:
-          - "The branch_pr supervisor will publish the fork-based PR after local verification is recorded."
+          - "The existing hosted PR publication effect remains user-approved and is not a new publication action in this plan."
+          - "The canonical capture command derives the candidate ledger from the current worktree; no manual ledger editing is needed."
+          - "The frozen scripts/baselines/v0.6.24-compatibility-contract.json baseline remains immutable."
         planning_baseline:
-          captured_at: "2026-09-09T15:17:09.177Z"
+          captured_at: "2026-09-11T14:27:24.809Z"
           config_digest: null
           context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
-          digest: "sha256:1f8ca096753bf05f10b33bf193d06c3aa1a0934d076dab5c6cc5834b58386cb9"
+          digest: "sha256:adb6a1bd5df57938e8ae7772e897c12bcd436434f7c8850acf9b63bf0cf3ab2f"
           dirty_paths:
             - ".agentplane/tasks/202609091457-5N53HA/README.md"
+            - ".agentplane/tasks/202609091457-5N53HA/pr/meta.json"
             - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
+            - ".agentplane/tasks/202609091457-5N53HA/verification/20260911142119861-b094b9c8bde1ecdc.json"
           git:
             kind: "commit"
             ref: null
-            sha: "81da4bf5aff1e0e9b09a82668f84881bfa78b800"
+            sha: "d4ae942061a00d74758bee40b4d12da52ee13de2"
           policy_digest: null
           schema_version: 1
-          task_history_cursor: "task-revision:14"
+          task_history_cursor: "task-revision:25"
         schema_version: 1
         task_id: "202609091457-5N53HA"
         top_level_validation:
           checks:
             -
               capability: "task.verify"
-              command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
-              id: "check-focused"
+              command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+              id: "ops-quality-target-tests"
               kind: "deterministic"
               required: true
-              timeout_ms: 180000
+              timeout_ms: 120000
             -
               capability: "task.verify"
               command: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
-              id: "check-lifecycle"
+              id: "direct-ops-lifecycle-tests"
               kind: "deterministic"
               required: true
-              timeout_ms: 240000
-            -
-              capability: "task.verify"
-              command: "bun run typecheck"
-              id: "check-typecheck"
-              kind: "structural"
-              required: true
-              timeout_ms: 300000
+              timeout_ms: 120000
             -
               capability: "task.verify"
               command: "bun run build"
-              id: "check-build"
-              kind: "structural"
+              id: "build"
+              kind: "deterministic"
               required: true
-              timeout_ms: 300000
+              timeout_ms: 600000
+            -
+              capability: "task.verify"
+              command: "bun run typecheck"
+              id: "typecheck"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 600000
             -
               capability: "task.verify"
               command: "bun run package:tarball:check"
-              id: "check-tarball"
+              id: "tarball-check"
               kind: "deterministic"
               required: true
-              timeout_ms: 300000
+              timeout_ms: 600000
+            -
+              capability: "task.verify"
+              command: "bun run bench:compatibility:candidate:capture"
+              id: "candidate-capture"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 120000
+            -
+              capability: "task.verify"
+              command: "git diff --exit-code -- scripts/baselines/v0.6.24-compatibility-contract.json"
+              id: "frozen-baseline-unchanged"
+              kind: "structural"
+              required: true
+              timeout_ms: 30000
+            -
+              capability: "task.verify"
+              command: "bun run bench:compatibility:candidate:check"
+              id: "candidate-check"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 120000
+            -
+              capability: "task.verify"
+              command: "bun run ci:local:full"
+              id: "full-local-ci"
+              kind: "deterministic"
+              required: true
+              timeout_ms: 900000
+            -
+              capability: "task.verify"
+              command: "Verify the existing hosted PR head equals the verified local task branch head."
+              id: "hosted-pr-alignment"
+              kind: "provider"
+              required: true
+              timeout_ms: 120000
           criteria:
             -
               check_ids:
-                - "check-focused"
-                - "check-lifecycle"
-              description: "The implementation paths match the verified direct ops quality-review patch without ParfScanner or runtime changes."
-              id: "criterion-equivalence"
+                - "ops-quality-target-tests"
+                - "direct-ops-lifecycle-tests"
+              description: "The direct ops finish gate derives its expected subject from current task and evidence state, and the missing legacy subject cannot fail open."
+              id: "ops-finish-subject-regression"
               required: true
             -
               check_ids:
-                - "check-typecheck"
-                - "check-build"
-                - "check-tarball"
-              description: "The source typechecks, builds, and produces valid package tarballs."
-              id: "criterion-package"
+                - "build"
+                - "typecheck"
+                - "tarball-check"
+              description: "The scoped reviewer fix builds, typechecks, and produces valid package tarballs."
+              id: "publishable-reviewer-fix"
               required: true
-          evidence_fingerprint: "sha256:1f8ca096753bf05f10b33bf193d06c3aa1a0934d076dab5c6cc5834b58386cb9"
+            -
+              check_ids:
+                - "candidate-capture"
+                - "frozen-baseline-unchanged"
+              description: "The v0.7 compatibility candidate ledger is regenerated only through the canonical capture command while the frozen v0.6.24 baseline remains unchanged."
+              id: "candidate-ledger-generated"
+              required: true
+            -
+              check_ids:
+                - "candidate-check"
+              description: "The regenerated compatibility candidate passes its currentness check."
+              id: "candidate-ledger-current"
+              required: true
+            -
+              check_ids:
+                - "full-local-ci"
+              description: "The complete local CI suite passes with the refreshed candidate ledger."
+              id: "full-local-ci"
+              required: true
+            -
+              check_ids:
+                - "hosted-pr-alignment"
+              description: "The existing user-approved hosted PR remains aligned to the verified task branch head."
+              id: "existing-hosted-pr-effect"
+              required: true
+          evidence_fingerprint: "sha256:adb6a1bd5df57938e8ae7772e897c12bcd436434f7c8850acf9b63bf0cf3ab2f"
           schema_version: 1
         unresolved_questions: []
         work_items:
@@ -636,123 +764,232 @@ extensions:
               acceptance_criteria:
                 -
                   check_ids:
-                    - "check-focused"
-                    - "check-lifecycle"
-                  description: "The implementation paths match the verified direct ops quality-review patch without ParfScanner or runtime changes."
-                  id: "criterion-equivalence"
+                    - "ops-quality-target-tests"
+                    - "direct-ops-lifecycle-tests"
+                  description: "The direct ops finish gate derives its expected subject from current task and evidence state, and the missing legacy subject cannot fail open."
+                  id: "ops-finish-subject-regression"
                   required: true
                 -
                   check_ids:
-                    - "check-typecheck"
-                    - "check-build"
-                    - "check-tarball"
-                  description: "The source typechecks, builds, and produces valid package tarballs."
-                  id: "criterion-package"
+                    - "build"
+                    - "typecheck"
+                    - "tarball-check"
+                  description: "The scoped reviewer fix builds, typechecks, and produces valid package tarballs."
+                  id: "publishable-reviewer-fix"
                   required: true
               capabilities:
                 - "task.verify"
               context:
-                max_bytes: 300000
+                max_bytes: 196608
                 optional_sources:
+                  - "packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts"
                   - "packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
-                  - "scripts/release/check-local-tarball-install-smoke.mjs"
                 required_sources:
-                  - "packages/core/src/tasks/task-store.ts"
-                  - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
                   - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+                  - "packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
                 symbol_hints:
-                  - "QualityReviewSubject"
-                  - "resolveEvaluatorBinding"
                   - "resolveOpsFinishSubject"
+                  - "assertQualityReviewBeforeFinish"
+                  - "buildOpsEvidenceBundle"
               depends_on: []
               expected_outputs:
-                - "Equivalent source, schema, test, and documentation changes"
-                - "Passing local verification evidence"
-                - "Committed branch ready for supervisor publication"
-              id: "work-prepare-publishable-fix"
-              objective: "Prepare and validate the verified direct ops quality-review implementation on an upstream-main task branch."
+                - "ops-quality-review-subject-fix"
+              id: "preserve-ops-quality-review-fix"
+              objective: "Preserve the scoped direct ops quality-review subject fix and its regression coverage without widening the public module surface."
               optional: false
-              priority: 1
+              priority: 20
               required_inputs: []
               resource_claims:
                 -
-                  kind: "workspace"
+                  kind: "path"
                   mode: "write"
-                  resource: "task/202609091457-5N53HA/publish-direct-ops-review-fix"
+                  resource: "packages/agentplane/src/commands/task"
               risk: "medium"
               scope_roots:
-                - "packages/agentplane/src/backends"
-                - "packages/agentplane/src/cli"
-                - "packages/agentplane/src/commands/evaluator"
-                - "packages/agentplane/src/commands/evidence"
                 - "packages/agentplane/src/commands/task"
-                - "packages/core/schemas"
-                - "packages/core/src/index.ts"
-                - "packages/core/src/tasks"
-                - "packages/spec/schemas"
-                - "schemas"
-                - "docs/developer"
-                - "docs/user"
-                - "scripts/release"
               validation:
                 checks:
                   -
                     capability: "task.verify"
-                    command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
-                    id: "check-focused"
+                    command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+                    id: "ops-quality-target-tests"
                     kind: "deterministic"
                     required: true
-                    timeout_ms: 180000
+                    timeout_ms: 120000
                   -
                     capability: "task.verify"
                     command: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
-                    id: "check-lifecycle"
+                    id: "direct-ops-lifecycle-tests"
                     kind: "deterministic"
                     required: true
-                    timeout_ms: 240000
-                  -
-                    capability: "task.verify"
-                    command: "bun run typecheck"
-                    id: "check-typecheck"
-                    kind: "structural"
-                    required: true
-                    timeout_ms: 300000
+                    timeout_ms: 120000
                   -
                     capability: "task.verify"
                     command: "bun run build"
-                    id: "check-build"
-                    kind: "structural"
+                    id: "build"
+                    kind: "deterministic"
                     required: true
-                    timeout_ms: 300000
+                    timeout_ms: 600000
+                  -
+                    capability: "task.verify"
+                    command: "bun run typecheck"
+                    id: "typecheck"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 600000
                   -
                     capability: "task.verify"
                     command: "bun run package:tarball:check"
-                    id: "check-tarball"
+                    id: "tarball-check"
                     kind: "deterministic"
                     required: true
-                    timeout_ms: 300000
+                    timeout_ms: 600000
                 criteria:
                   -
                     check_ids:
-                      - "check-focused"
-                      - "check-lifecycle"
-                    description: "The implementation paths match the verified direct ops quality-review patch without ParfScanner or runtime changes."
-                    id: "criterion-equivalence"
+                      - "ops-quality-target-tests"
+                      - "direct-ops-lifecycle-tests"
+                    description: "The direct ops finish gate derives its expected subject from current task and evidence state, and the missing legacy subject cannot fail open."
+                    id: "ops-finish-subject-regression"
                     required: true
                   -
                     check_ids:
-                      - "check-typecheck"
-                      - "check-build"
-                      - "check-tarball"
-                    description: "The source typechecks, builds, and produces valid package tarballs."
-                    id: "criterion-package"
+                      - "build"
+                      - "typecheck"
+                      - "tarball-check"
+                    description: "The scoped reviewer fix builds, typechecks, and produces valid package tarballs."
+                    id: "publishable-reviewer-fix"
                     required: true
-                evidence_fingerprint: "sha256:1f8ca096753bf05f10b33bf193d06c3aa1a0934d076dab5c6cc5834b58386cb9"
+                evidence_fingerprint: "sha256:adb6a1bd5df57938e8ae7772e897c12bcd436434f7c8850acf9b63bf0cf3ab2f"
                 schema_version: 1
-      revision: 2
+            -
+              acceptance_criteria:
+                -
+                  check_ids:
+                    - "candidate-capture"
+                    - "frozen-baseline-unchanged"
+                  description: "The v0.7 compatibility candidate ledger is regenerated only through the canonical capture command while the frozen v0.6.24 baseline remains unchanged."
+                  id: "candidate-ledger-generated"
+                  required: true
+                -
+                  check_ids:
+                    - "candidate-check"
+                  description: "The regenerated compatibility candidate passes its currentness check."
+                  id: "candidate-ledger-current"
+                  required: true
+                -
+                  check_ids:
+                    - "full-local-ci"
+                  description: "The complete local CI suite passes with the refreshed candidate ledger."
+                  id: "full-local-ci"
+                  required: true
+                -
+                  check_ids:
+                    - "hosted-pr-alignment"
+                  description: "The existing user-approved hosted PR remains aligned to the verified task branch head."
+                  id: "existing-hosted-pr-effect"
+                  required: true
+              capabilities:
+                - "task.verify"
+              context:
+                max_bytes: 262144
+                optional_sources:
+                  - "scripts/checks/check-compatibility-contract-baseline.mjs"
+                required_sources:
+                  - "scripts/bench/capture-compatibility-candidate.mjs"
+                  - "scripts/baselines/v0.6.24-compatibility-contract.json"
+                  - "scripts/baselines/v0.7-compatibility-candidate.json"
+                symbol_hints:
+                  - "buildCandidate"
+                  - "release_version_delta"
+                  - "compatibility candidate"
+              depends_on:
+                - "preserve-ops-quality-review-fix"
+              expected_outputs:
+                - "scripts/baselines/v0.7-compatibility-candidate.json"
+              id: "refresh-v07-compatibility-candidate"
+              objective: "Regenerate the current v0.7 compatibility candidate ledger through its canonical capture command, without changing release versions or the immutable v0.6.24 compatibility baseline."
+              optional: false
+              priority: 10
+              required_inputs:
+                - "ops-quality-review-subject-fix"
+              resource_claims:
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "scripts/baselines/v0.7-compatibility-candidate.json"
+              risk: "medium"
+              scope_roots:
+                - "scripts/baselines"
+              validation:
+                checks:
+                  -
+                    capability: "task.verify"
+                    command: "bun run bench:compatibility:candidate:capture"
+                    id: "candidate-capture"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "git diff --exit-code -- scripts/baselines/v0.6.24-compatibility-contract.json"
+                    id: "frozen-baseline-unchanged"
+                    kind: "structural"
+                    required: true
+                    timeout_ms: 30000
+                  -
+                    capability: "task.verify"
+                    command: "bun run bench:compatibility:candidate:check"
+                    id: "candidate-check"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 120000
+                  -
+                    capability: "task.verify"
+                    command: "bun run ci:local:full"
+                    id: "full-local-ci"
+                    kind: "deterministic"
+                    required: true
+                    timeout_ms: 900000
+                  -
+                    capability: "task.verify"
+                    command: "Verify the existing hosted PR head equals the verified local task branch head."
+                    id: "hosted-pr-alignment"
+                    kind: "provider"
+                    required: true
+                    timeout_ms: 120000
+                criteria:
+                  -
+                    check_ids:
+                      - "candidate-capture"
+                      - "frozen-baseline-unchanged"
+                    description: "The v0.7 compatibility candidate ledger is regenerated only through the canonical capture command while the frozen v0.6.24 baseline remains unchanged."
+                    id: "candidate-ledger-generated"
+                    required: true
+                  -
+                    check_ids:
+                      - "candidate-check"
+                    description: "The regenerated compatibility candidate passes its currentness check."
+                    id: "candidate-ledger-current"
+                    required: true
+                  -
+                    check_ids:
+                      - "full-local-ci"
+                    description: "The complete local CI suite passes with the refreshed candidate ledger."
+                    id: "full-local-ci"
+                    required: true
+                  -
+                    check_ids:
+                      - "hosted-pr-alignment"
+                    description: "The existing user-approved hosted PR remains aligned to the verified task branch head."
+                    id: "existing-hosted-pr-effect"
+                    required: true
+                evidence_fingerprint: "sha256:adb6a1bd5df57938e8ae7772e897c12bcd436434f7c8850acf9b63bf0cf3ab2f"
+                schema_version: 1
+      revision: 3
       schema_version: 1
       task_id: "202609091457-5N53HA"
-    event_cursor: 12
+    event_cursor: 14
     final_validation: null
     id: "202609091457-5N53HA"
     intent:
@@ -1039,119 +1276,237 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609091457-5N53HA"
-    revision: 23
-    schema_version: 1
-    updated_at: "2026-09-11T14:12:53.761Z"
-    work_items:
-      work-prepare-publishable-fix:
-        attempt: 1
-        claim_id: null
-        id: "work-prepare-publishable-fix"
-        last_failure: null
-        output_manifests:
-          -
-            digest: "sha256:3cc7a7488820fc979d3d2cc9e9b4a9b6d382f27a300a3f3dfa793e1527715644"
-            id: "Equivalent source, schema, test, and documentation changes"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609091457-5N53HA"
-              work_item_id: "work-prepare-publishable-fix"
-            provenance:
-              - "sha256:78fce5799198244f79b441fa7984e2c330ee6a2c0ea74605f13e4c79ac0e36ce"
+      -
+        approval:
+          approved_at: "2026-09-09T15:19:36.854Z"
+          approved_by: "HOST:codex:USER"
+          approved_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+          policy_facts:
+            - "host_user_decision"
+          state: "approved"
+        created_at: "2026-09-09T15:18:44.012Z"
+        digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+        proposal:
+          assumptions:
+            - "The branch_pr supervisor will publish the fork-based PR after local verification is recorded."
+          planning_baseline:
+            captured_at: "2026-09-09T15:17:09.177Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:1f8ca096753bf05f10b33bf193d06c3aa1a0934d076dab5c6cc5834b58386cb9"
+            dirty_paths:
+              - ".agentplane/tasks/202609091457-5N53HA/README.md"
               - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-            schema: "agentplane.semantic-output.v1"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "81da4bf5aff1e0e9b09a82668f84881bfa78b800"
+            policy_digest: null
             schema_version: 1
-          -
-            digest: "sha256:75de73dbe1c3ff6f763014561a0258ccce2c8fc00c2b46484931ebbbe26dda0d"
-            id: "Passing local verification evidence"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609091457-5N53HA"
-              work_item_id: "work-prepare-publishable-fix"
-            provenance:
-              - "sha256:78fce5799198244f79b441fa7984e2c330ee6a2c0ea74605f13e4c79ac0e36ce"
-              - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-          -
-            digest: "sha256:994764c7c4bf9800a95426165bd2c4a59714aa35d370022cd01659c23e71ecb0"
-            id: "Committed branch ready for supervisor publication"
-            kind: "semantic_output"
-            producer:
-              attempt: 1
-              plan_revision: 2
-              task_id: "202609091457-5N53HA"
-              work_item_id: "work-prepare-publishable-fix"
-            provenance:
-              - "sha256:78fce5799198244f79b441fa7984e2c330ee6a2c0ea74605f13e4c79ac0e36ce"
-              - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-            schema: "agentplane.semantic-output.v1"
-            schema_version: 1
-        revision: 2
-        state: "COMPLETED"
-        validation_result:
-          evidence:
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-              check_id: "check-focused"
-              command_identity: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
-              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-09T15:24:48.727Z"
-              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-              check_id: "check-lifecycle"
-              command_identity: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
-              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts."
-              exit_code: 0
-              observed_at: "2026-09-09T15:24:48.727Z"
-              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-              check_id: "check-typecheck"
-              command_identity: "bun run typecheck"
-              detail: "Observed by bun run typecheck."
-              exit_code: 0
-              observed_at: "2026-09-09T15:24:48.727Z"
-              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-              check_id: "check-build"
-              command_identity: "bun run build"
-              detail: "Observed by bun run build."
-              exit_code: 0
-              observed_at: "2026-09-09T15:24:48.727Z"
-              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-              status: "passed"
-            -
-              artifact_refs:
-                - ".agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json"
-              check_id: "check-tarball"
-              command_identity: "bun run package:tarball:check"
-              detail: "Observed by bun run package:tarball:check."
-              exit_code: 0
-              observed_at: "2026-09-09T15:24:48.727Z"
-              repository_snapshot_digest: "sha256:d5fcb7801bdaf308b13b263c6a14bad2cb4b7a0ea0e62765c195ad3b5d5e1d64"
-              status: "passed"
+            task_history_cursor: "task-revision:14"
           schema_version: 1
-          stale_evidence: []
-          status: "passed"
-          unsatisfied_criteria: []
+          task_id: "202609091457-5N53HA"
+          top_level_validation:
+            checks:
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+                id: "check-focused"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 180000
+              -
+                capability: "task.verify"
+                command: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+                id: "check-lifecycle"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 240000
+              -
+                capability: "task.verify"
+                command: "bun run typecheck"
+                id: "check-typecheck"
+                kind: "structural"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run build"
+                id: "check-build"
+                kind: "structural"
+                required: true
+                timeout_ms: 300000
+              -
+                capability: "task.verify"
+                command: "bun run package:tarball:check"
+                id: "check-tarball"
+                kind: "deterministic"
+                required: true
+                timeout_ms: 300000
+            criteria:
+              -
+                check_ids:
+                  - "check-focused"
+                  - "check-lifecycle"
+                description: "The implementation paths match the verified direct ops quality-review patch without ParfScanner or runtime changes."
+                id: "criterion-equivalence"
+                required: true
+              -
+                check_ids:
+                  - "check-typecheck"
+                  - "check-build"
+                  - "check-tarball"
+                description: "The source typechecks, builds, and produces valid package tarballs."
+                id: "criterion-package"
+                required: true
+            evidence_fingerprint: "sha256:1f8ca096753bf05f10b33bf193d06c3aa1a0934d076dab5c6cc5834b58386cb9"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "check-focused"
+                      - "check-lifecycle"
+                    description: "The implementation paths match the verified direct ops quality-review patch without ParfScanner or runtime changes."
+                    id: "criterion-equivalence"
+                    required: true
+                  -
+                    check_ids:
+                      - "check-typecheck"
+                      - "check-build"
+                      - "check-tarball"
+                    description: "The source typechecks, builds, and produces valid package tarballs."
+                    id: "criterion-package"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 300000
+                  optional_sources:
+                    - "packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+                    - "scripts/release/check-local-tarball-install-smoke.mjs"
+                  required_sources:
+                    - "packages/core/src/tasks/task-store.ts"
+                    - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+                    - "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts"
+                  symbol_hints:
+                    - "QualityReviewSubject"
+                    - "resolveEvaluatorBinding"
+                    - "resolveOpsFinishSubject"
+                depends_on: []
+                expected_outputs:
+                  - "Equivalent source, schema, test, and documentation changes"
+                  - "Passing local verification evidence"
+                  - "Committed branch ready for supervisor publication"
+                id: "work-prepare-publishable-fix"
+                objective: "Prepare and validate the verified direct ops quality-review implementation on an upstream-main task branch."
+                optional: false
+                priority: 1
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "workspace"
+                    mode: "write"
+                    resource: "task/202609091457-5N53HA/publish-direct-ops-review-fix"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src/backends"
+                  - "packages/agentplane/src/cli"
+                  - "packages/agentplane/src/commands/evaluator"
+                  - "packages/agentplane/src/commands/evidence"
+                  - "packages/agentplane/src/commands/task"
+                  - "packages/core/schemas"
+                  - "packages/core/src/index.ts"
+                  - "packages/core/src/tasks"
+                  - "packages/spec/schemas"
+                  - "schemas"
+                  - "docs/developer"
+                  - "docs/user"
+                  - "scripts/release"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
+                      id: "check-focused"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 180000
+                    -
+                      capability: "task.verify"
+                      command: "bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts"
+                      id: "check-lifecycle"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 240000
+                    -
+                      capability: "task.verify"
+                      command: "bun run typecheck"
+                      id: "check-typecheck"
+                      kind: "structural"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run build"
+                      id: "check-build"
+                      kind: "structural"
+                      required: true
+                      timeout_ms: 300000
+                    -
+                      capability: "task.verify"
+                      command: "bun run package:tarball:check"
+                      id: "check-tarball"
+                      kind: "deterministic"
+                      required: true
+                      timeout_ms: 300000
+                  criteria:
+                    -
+                      check_ids:
+                        - "check-focused"
+                        - "check-lifecycle"
+                      description: "The implementation paths match the verified direct ops quality-review patch without ParfScanner or runtime changes."
+                      id: "criterion-equivalence"
+                      required: true
+                    -
+                      check_ids:
+                        - "check-typecheck"
+                        - "check-build"
+                        - "check-tarball"
+                      description: "The source typechecks, builds, and produces valid package tarballs."
+                      id: "criterion-package"
+                      required: true
+                  evidence_fingerprint: "sha256:1f8ca096753bf05f10b33bf193d06c3aa1a0934d076dab5c6cc5834b58386cb9"
+                  schema_version: 1
+        revision: 2
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+    revision: 27
+    schema_version: 1
+    updated_at: "2026-09-11T14:33:42.803Z"
+    work_items:
+      preserve-ops-quality-review-fix:
+        attempt: 0
+        claim_id: null
+        id: "preserve-ops-quality-review-fix"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "READY"
+        validation_result: null
+      refresh-v07-compatibility-candidate:
+        attempt: 0
+        claim_id: null
+        id: "refresh-v07-compatibility-candidate"
+        last_failure: null
+        output_manifests: []
+        revision: 1
+        state: "PLANNED"
+        validation_result: null
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1222,6 +1577,26 @@ extensions:
         task_id: "202609091457-5N53HA"
         task_revision: 19
         work_item_id: "work-prepare-publishable-fix"
+      -
+        at: "2026-09-11T14:27:23.002Z"
+        from: "ACTIVE"
+        to: "PLANNING"
+        actor_id: "external:EXECUTOR"
+        cause_refs:
+          - "scope_expanded"
+          - "outputs_changed"
+          - "acceptance_changed"
+          - "risk_changed"
+        entity: "task"
+        id: "event_08a698215bc57f240c228d2d"
+        mutation_id: "plan-refinement:work-order-202609091457-5N53HA-executor-c3499fa026197850bf6f94e7"
+        plan_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+        task_revision: 24
+        work_item_id: null
     leases: []
     mutation_receipts:
       compatibility:sha256:1c42116d04b08fe34330cca1bca3dcb92148013594bae6b2683add506cac93d0:
@@ -1318,6 +1693,30 @@ extensions:
         mutation_id: "compatibility:sha256:287e435193352f71c4bad12fd65ad1eb9764fb49ef43264c6acaf684d40d7b01"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
+      compatibility:sha256:2a8801c3cc7d5dc420994262730e07f883ea40ddc9207bd1f7021d9069c3a733:
+        aggregate_digest: "sha256:00a0c5d3ab72d87ca4c25d2f401af188faaaf522ec80c3334170b99b19c8da6c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:21:21.310Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_fa9447a2fab3cfaaafefb31a"
+          mutation_id: "compatibility:sha256:2a8801c3cc7d5dc420994262730e07f883ea40ddc9207bd1f7021d9069c3a733"
+          plan_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 23
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2a8801c3cc7d5dc420994262730e07f883ea40ddc9207bd1f7021d9069c3a733"
+        next_revision: 24
+        previous_revision: 23
         schema_version: 1
         task_id: "202609091457-5N53HA"
       compatibility:sha256:4652298b9dd076b2c6c84f0798f02dd39739152dbdb171b3f013b6ee19a537a0:
@@ -1464,6 +1863,30 @@ extensions:
         previous_revision: 17
         schema_version: 1
         task_id: "202609091457-5N53HA"
+      compatibility:sha256:dade05dabf2675bd363f33a5637cab70885b7e69266c901491f458321ddd298b:
+        aggregate_digest: "sha256:ceae9b3fb22324efad018873a44d6d5bf9fdf3084b66254234b5d9bde64d2fa4"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-11T14:33:42.803Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "AWAITING_PLAN_APPROVAL"
+          id: "event_497aa31f21b840de7d3cd3a0"
+          mutation_id: "compatibility:sha256:dade05dabf2675bd363f33a5637cab70885b7e69266c901491f458321ddd298b"
+          plan_digest: "sha256:59fcac48a8769577efe21a01fd58b2e592b893b2b1e4be28b6fce44e90e93457"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 26
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:dade05dabf2675bd363f33a5637cab70885b7e69266c901491f458321ddd298b"
+        next_revision: 27
+        previous_revision: 26
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
       compatibility:sha256:f6a3cdd27b314de42f6eb4760b381d44281563226fc62d32b0be8b87b486da95:
         aggregate_digest: "sha256:e3cea7da7a62014ae45edac175a8f3a69f9018e070580bd7a651d8dc8fdb15f0"
         event:
@@ -1559,6 +1982,33 @@ extensions:
         previous_revision: 12
         schema_version: 1
         task_id: "202609091457-5N53HA"
+      plan-refinement:work-order-202609091457-5N53HA-executor-c3499fa026197850bf6f94e7:
+        aggregate_digest: "sha256:db8f6ffbe383f82e1610c33858699eaa68c93457c1bf30fa5474119828507fdd"
+        event:
+          actor_id: "external:EXECUTOR"
+          at: "2026-09-11T14:27:23.002Z"
+          cause_refs:
+            - "scope_expanded"
+            - "outputs_changed"
+            - "acceptance_changed"
+            - "risk_changed"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_08a698215bc57f240c228d2d"
+          mutation_id: "plan-refinement:work-order-202609091457-5N53HA-executor-c3499fa026197850bf6f94e7"
+          plan_digest: "sha256:9b449919c247a83c4b47ef1bbd8d539d0e97ba73a66a5ee528f6dbd58b89dd12"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609091457-5N53HA"
+          task_revision: 24
+          to: "PLANNING"
+          work_item_id: null
+        mutation_id: "plan-refinement:work-order-202609091457-5N53HA-executor-c3499fa026197850bf6f94e7"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609091457-5N53HA"
       plan-refinement:work-order-202609091457-5N53HA-executor-c514a525c67e04de667006fb:
         aggregate_digest: "sha256:9c3c7b65b3c2ab2335df99dd606336cb9188cb8054c4f350ad1c43221b1b944a"
         event:
@@ -1586,8 +2036,6 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
-  implementation_commit:
-    hash: "ddd46df7028e4160b8e1a140fe96315607214bc7"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
@@ -1612,7 +2060,7 @@ Recreate the already verified direct ops quality-review patch from commit 75a1b9
 
 ## Plan
 
-Separated local implementation acceptance from supervisor-owned pull request publication.
+Task-specific plan preserves the reviewer fix and adds only the current compatibility candidate ledger refresh.
 
 ## Verify Steps
 
@@ -1634,6 +2082,66 @@ Note: Rework: Declared check failed: bun run ci:local:full
 Attempts: 1
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:33a296b0de2cb60ab262cbb6eff99f60358fb63791d8e3cd48301c85fb2dfdd5, input_digest=sha256:ab4e70352e2ba246d1d32a792525191b9b0121ce626872647a4120019561d060
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.lifecycle.direct-ops-quality.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run package:tarball:check
+Result: pass
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202609091457-5N53HA/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609091457-5N53HA declared verification
+
+BlueprintSnapshotRef:
+- state: current
+- path: /srv/projects/agentplane/.agentplane/worktrees/202609091457-5N53HA-publish-direct-ops-review-fix/.agentplane/tasks/202609091457-5N53HA/blueprint/resolved-snapshot.json
+- old_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+- current_digest: c2fd0e7f6154f438ad6d3ecf6969ec3e46fb82b4b3c49c356b35fb820d5dc0c6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609091457-5N53HA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609091457-5N53HA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-11T14:21:19.861Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:33a296b0de2cb60ab262cbb6eff99f60358fb63791d8e3cd48301c85fb2dfdd5, input_digest=sha256:ed43f6c21c786404fcd842461802fbe3c8df2d01e92116bbcd1899db1887d06a
 
 Details:
 

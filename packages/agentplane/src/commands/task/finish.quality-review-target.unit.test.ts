@@ -130,10 +130,11 @@ describe("finish quality review target selection", () => {
       current: { blueprintId: "ops.approval", digest: "d1" },
     });
     const { assertQualityReviewBeforeFinish } = await import("./finish-blueprint-evidence.js");
+    const ctx = mkCtx();
 
     await expect(
       assertQualityReviewBeforeFinish({
-        ctx: mkCtx(),
+        ctx,
         loadedTasks: [loaded],
         taskCommitInfo: null,
         implementationCommitInfo: null,
@@ -143,7 +144,7 @@ describe("finish quality review target selection", () => {
       /quality_review\.evaluated_subject=missing.*expected_subject=evidence_bundle:/s,
     );
     expect(mocks.buildOpsEvidenceBundle).toHaveBeenCalledWith({
-      ctx: expect.anything(),
+      ctx,
       task: loaded.task,
       blueprintDigest: "d1",
     });

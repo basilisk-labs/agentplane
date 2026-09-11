@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202609091457-5N53HA/publish-direct-ops-review-fix",
   "created_at": "2026-09-09T15:05:46.161Z",
-  "diffstat_sha256": "sha256:25bb10cea657ee72d89117b8c69bf9f15c285e60117c2715a65722249fb8596a",
-  "last_verified_at": "2026-09-09T15:42:41.598Z",
-  "last_verified_diffstat_sha256": "sha256:286d106dfa3a4ac1611842da3cb5954f1f4536094123f834e0f246265f927587",
+  "diffstat_sha256": "sha256:f522f808b7f0891557bf426f50797aa7aa398e84ece3c59d5dc1c081eabd14e4",
+  "last_verified_at": "2026-09-11T14:21:19.861Z",
+  "last_verified_diffstat_sha256": "sha256:25bb10cea657ee72d89117b8c69bf9f15c285e60117c2715a65722249fb8596a",
   "pr_number": 5927,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5927",
   "provider": {
