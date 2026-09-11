@@ -1,10 +1,11 @@
 ---
 id: "202609111337-ZJ6AFT"
 title: "Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,22 @@ quality_review:
     - "Recent trace or stderr activity produces wait_for_active_run for an unverified child, while confirmed dead or mismatched children retain task_reclaim guidance."
     - "Supervisor-owned verification records 7 focused tests and typecheck as passing for commit 41245a6a7d7a8b4c6a3d9c03431dd6ac105734fc."
     - "Residual risk: Status reads retained trace and stderr content through the bounded repository artifact reader, so very large retained artifacts can add status latency."
+token_usage:
+  agent_runs: 7
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:51928fa30f0e240a7ea99846fbfb025829a20a959f13c099f0fc625b6a23811c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-11T14:58:24.852Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -227,8 +244,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
-  message: "🚧 ZJ6AFT task: apply external agent result"
+  hash: "91111c8674b2f56c54efb06dd56dd4c675821539"
+  message: "🚧 ZJ6AFT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -239,6 +256,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 0f58c0913c09. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -275,9 +295,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-11T14:58:24.852Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "91111c8674b2f56c54efb06dd56dd4c675821539"
 doc_version: 3
-doc_updated_at: "2026-09-11T14:55:58.306Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-11T14:58:24.852Z"
+doc_updated_by: "CODER"
 description: "GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887"
 sections:
   Summary: |-
@@ -599,7 +627,34 @@ extensions:
       schema_version: 1
       task_id: "202609111337-ZJ6AFT"
     event_cursor: 12
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609111337-ZJ6AFT"
+            - "git:0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+          check_id: "runner-activity-regressions"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-11T14:55:56.971Z"
+          repository_snapshot_digest: "sha256:7b68e90ea056df4c41a994a9be261475d433edf5eb59f51daed1f63d764b662c"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609111337-ZJ6AFT"
+            - "git:0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-11T14:55:56.971Z"
+          repository_snapshot_digest: "sha256:7b68e90ea056df4c41a994a9be261475d433edf5eb59f51daed1f63d764b662c"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609111337-ZJ6AFT"
     intent:
       acceptance_criteria:
@@ -615,7 +670,7 @@ extensions:
 
         GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887
       task_id: "202609111337-ZJ6AFT"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -801,9 +856,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-11T14:55:58.306Z"
+    updated_at: "2026-09-11T14:58:24.852Z"
     work_items:
       runner-activity-status-and-safety:
         attempt: 1
@@ -1246,6 +1301,31 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609111337-ZJ6AFT"
+      legacy-finish:202609111337-ZJ6AFT:2026-09-11T14:55:56.971Z:0f58c0913c0991f6a4a23d0bcd8b791d285efa27:
+        aggregate_digest: "sha256:ed3bf98d62c79e19f4b2debea5358777b8d35900a17e20024d36f1cfbbbab043"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-11T14:58:24.852Z"
+          cause_refs:
+            - "task-verification:202609111337-ZJ6AFT"
+            - "git:0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_253338c242ee47a4fb279746"
+          mutation_id: "legacy-finish:202609111337-ZJ6AFT:2026-09-11T14:55:56.971Z:0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+          plan_digest: "sha256:a7bee6ff5f4c3b9d72867ddace9c8af899e18aa879ee24589ab05a5c08636bee"
+          plan_revision: 2
+          repository_fingerprint: "sha256:7b68e90ea056df4c41a994a9be261475d433edf5eb59f51daed1f63d764b662c"
+          schema_version: 1
+          task_id: "202609111337-ZJ6AFT"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609111337-ZJ6AFT:2026-09-11T14:55:56.971Z:0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+        next_revision: 19
+        previous_revision: 18
+        schema_version: 1
+        task_id: "202609111337-ZJ6AFT"
       plan-refinement:work-order-202609111337-ZJ6AFT-executor-8aa5bf0278c8f57c3049bca5:
         aggregate_digest: "sha256:93fb112e1c678f665e36c59144ef7f4de2c25cef5478dc7912365c2d1cd66bc2"
         event:
@@ -1275,6 +1355,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "0f58c0913c0991f6a4a23d0bcd8b791d285efa27"
+    message: "🚧 ZJ6AFT task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d"
@@ -1419,3 +1500,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/7` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:51928fa30f0e240a7ea99846fbfb025829a20a959f13c099f0fc625b6a23811c`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-11T14:58:24.852Z`
