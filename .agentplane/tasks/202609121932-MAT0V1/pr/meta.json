@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609121932-MAT0V1/fix-branch-pr-dependency-readiness-after-a-depen",
+  "created_at": "2026-09-12T19:35:46.087Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609121932-MAT0V1",
+  "updated_at": "2026-09-12T19:35:46.087Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
