@@ -2,10 +2,10 @@
 id: "202609111943-GH8BV2"
 title: "Allow an approved repository-effect-only scope extension to recover a legacy execution contract with empty scope roots without widening repository paths"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -56,9 +56,11 @@ quality_review:
     - "The resolver permits effect-bearing empty roots only for legacy_compatibility contracts and keeps explicit agent declarations fail-closed. The scope-extension path preserves the stored contract source. Local core Vitest uses a 30-minute default, direct task verification gives only ci:local:full a 60-minute outer window, and the table-driven regression preserves the 150-minute provider gate while existing tests retain the ordinary 30-minute default."
     - "Residual risk: Hosted integration remains required for the exact published PR head."
 token_usage:
-  agent_runs: 9
+  agent_runs: 17
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:472f0dd4aff3a153ed18ad86f1f3e724ce364a704cf7b0bf3b87794085752ecf"
+  journal_digest: "sha256:d07c5136941984320612716ac3a7e6beafbbf83f8cf368713f8be7f6ee0f3819"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -68,7 +70,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-12T16:07:32.154Z"
+  updated_at: "2026-09-12T19:28:01.089Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -410,8 +412,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "cce97011265fd02d5fb0c33f380cda909029dfaa"
-  message: "🚧 GH8BV2 task: apply external agent result"
+  hash: "e46ee4206dd0df169b893eee15b3ade9ec623ce4"
+  message: "🚧 GH8BV2 task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -455,6 +457,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: cce97011265f. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -617,9 +622,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-09-12T19:28:01.089Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "e46ee4206dd0df169b893eee15b3ade9ec623ce4"
 doc_version: 3
-doc_updated_at: "2026-09-12T19:27:24.043Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T19:28:01.104Z"
+doc_updated_by: "CODER"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
   Summary: |-
@@ -1478,7 +1491,34 @@ extensions:
       schema_version: 1
       task_id: "202609111943-GH8BV2"
     event_cursor: 39
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609111943-GH8BV2"
+            - "git:cce97011265fd02d5fb0c33f380cda909029dfaa"
+          check_id: "focused-regressions"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T19:25:46.180Z"
+          repository_snapshot_digest: "sha256:dfb1fe2a802bfdd6e2ec0e5fb19c2a58dc5fcbc86108697c134a619dae6a5134"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609111943-GH8BV2"
+            - "git:cce97011265fd02d5fb0c33f380cda909029dfaa"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+          exit_code: 0
+          observed_at: "2026-09-12T19:25:46.180Z"
+          repository_snapshot_digest: "sha256:dfb1fe2a802bfdd6e2ec0e5fb19c2a58dc5fcbc86108697c134a619dae6a5134"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609111943-GH8BV2"
     intent:
       acceptance_criteria:
@@ -1499,7 +1539,7 @@ extensions:
 
         Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task.
       task_id: "202609111943-GH8BV2"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1665,9 +1705,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111943-GH8BV2"
-    revision: 46
+    revision: 47
     schema_version: 1
-    updated_at: "2026-09-12T19:25:47.660Z"
+    updated_at: "2026-09-12T19:28:01.089Z"
     work_items:
       complete-legacy-recovery-and-ci-timeout-bounds:
         attempt: 1
@@ -2799,6 +2839,31 @@ extensions:
         previous_revision: 26
         schema_version: 1
         task_id: "202609111943-GH8BV2"
+      legacy-finish:202609111943-GH8BV2:2026-09-12T19:25:46.180Z:cce97011265fd02d5fb0c33f380cda909029dfaa:
+        aggregate_digest: "sha256:e6e686043de9fd90817edda2c6179bf70b08c839c8a6a2d86742d9ce9f1eefc7"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T19:28:01.089Z"
+          cause_refs:
+            - "task-verification:202609111943-GH8BV2"
+            - "git:cce97011265fd02d5fb0c33f380cda909029dfaa"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_33e8bd97fac6141dc2a51fec"
+          mutation_id: "legacy-finish:202609111943-GH8BV2:2026-09-12T19:25:46.180Z:cce97011265fd02d5fb0c33f380cda909029dfaa"
+          plan_digest: "sha256:5a8e97acd643b241f5ac20aba535e41603437672c223ae623173eeb558f20537"
+          plan_revision: 2
+          repository_fingerprint: "sha256:dfb1fe2a802bfdd6e2ec0e5fb19c2a58dc5fcbc86108697c134a619dae6a5134"
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 46
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609111943-GH8BV2:2026-09-12T19:25:46.180Z:cce97011265fd02d5fb0c33f380cda909029dfaa"
+        next_revision: 47
+        previous_revision: 46
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
       plan-refinement:work-order-202609111943-GH8BV2-executor-adfdf4d421598422fd7edfc5:
         aggregate_digest: "sha256:122cbab0dd64eaa1e76bfc52e96a7177279f13f5a6da0fd5ce7431d482916ca5"
         event:
@@ -2829,6 +2894,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "cce97011265fd02d5fb0c33f380cda909029dfaa"
+    message: "🚧 GH8BV2 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -3479,12 +3545,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/9` agent runs
+- Completeness: `0/17` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:472f0dd4aff3a153ed18ad86f1f3e724ce364a704cf7b0bf3b87794085752ecf`
+- Journal digest: `sha256:d07c5136941984320612716ac3a7e6beafbbf83f8cf368713f8be7f6ee0f3819`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-12T16:07:32.154Z`
+- Updated at: `2026-09-12T19:28:01.089Z`
