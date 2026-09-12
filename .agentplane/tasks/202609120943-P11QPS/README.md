@@ -4,7 +4,7 @@ title: "Create the AgentPlane 0.7.9 and 0.7.10 architecture improvement roadmap"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -443,22 +443,79 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 7
+    revision: 8
     schema_version: 1
-    updated_at: "2026-09-12T10:10:12.453Z"
+    updated_at: "2026-09-12T10:10:19.338Z"
     work_items:
       write-versioned-architecture-roadmap:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "write-versioned-architecture-roadmap"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:f7994cb23832889c50a3837d079318b2680eb2390e9de0844f105e1bea8e08fd"
+            id: "verified-versioned-architecture-roadmap"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609120943-P11QPS"
+              work_item_id: "write-versioned-architecture-roadmap"
+            provenance:
+              - "sha256:ed843c203deef55fd42d2e15d1c3ae4ab5adfa0ec1ce191667a078f9c98f4cc7"
+              - ".agentplane/tasks/202609120943-P11QPS/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:a731c705a93f375315726f1411fe34d4dc67b78bac2f34d34df74f3639971db7"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609120943-P11QPS/supervision/declared-checks.json"
+              check_id: "format-check"
+              command_identity: "bunx prettier --check docs/internal/v0.7.9-v0.7.10-architecture-roadmap.md"
+              detail: "Observed by bunx prettier --check docs/internal/v0.7.9-v0.7.10-architecture-roadmap.md."
+              exit_code: 0
+              observed_at: "2026-09-12T10:10:19.325Z"
+              repository_snapshot_digest: "sha256:a731c705a93f375315726f1411fe34d4dc67b78bac2f34d34df74f3639971db7"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609120943-P11QPS/supervision/declared-checks.json"
+              check_id: "routing-check"
+              command_identity: "node .agentplane/policy/check-routing.mjs"
+              detail: "Observed by node .agentplane/policy/check-routing.mjs."
+              exit_code: 0
+              observed_at: "2026-09-12T10:10:19.325Z"
+              repository_snapshot_digest: "sha256:a731c705a93f375315726f1411fe34d4dc67b78bac2f34d34df74f3639971db7"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-12T10:10:19.338Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:c5da128dfdcdf9f5b5234bde9683de1b50b8e696327f9c9a3da566a16a03a5e1"
+        entity: "work_item"
+        id: "event_07bbdedfc64a5634d233e54f"
+        mutation_id: "external-result:work-order-202609120943-P11QPS-executor-8dbf0de450659d239436ecb2"
+        plan_digest: "sha256:c04a3fd013c722ee840ae8588d230787fb244c40e180a5c82dd9b01c6f699ed5"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609120943-P11QPS"
+        task_revision: 7
+        work_item_id: "write-versioned-architecture-roadmap"
     leases: []
     mutation_receipts:
       compatibility:sha256:4d26893f3cb2c6f90090af471ef0b9072bbd79a354bcf6a8141d109b5994ec60:
@@ -579,6 +636,30 @@ extensions:
         mutation_id: "compatibility:sha256:e7a2d51c6ba106f8c23479d4dae67f3fdb541a1e6f67a85f7f3546ecf03a4a67"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609120943-P11QPS"
+      external-result:work-order-202609120943-P11QPS-executor-8dbf0de450659d239436ecb2:
+        aggregate_digest: "sha256:92a3bb2c6cba2cab5dcd854e20a533c34b516700cd46bd6b48b3d755f5834e24"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T10:10:19.338Z"
+          cause_refs:
+            - "semantic-result:sha256:c5da128dfdcdf9f5b5234bde9683de1b50b8e696327f9c9a3da566a16a03a5e1"
+          entity: "work_item"
+          from: "READY"
+          id: "event_07bbdedfc64a5634d233e54f"
+          mutation_id: "external-result:work-order-202609120943-P11QPS-executor-8dbf0de450659d239436ecb2"
+          plan_digest: "sha256:c04a3fd013c722ee840ae8588d230787fb244c40e180a5c82dd9b01c6f699ed5"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120943-P11QPS"
+          task_revision: 7
+          to: "COMPLETED"
+          work_item_id: "write-versioned-architecture-roadmap"
+        mutation_id: "external-result:work-order-202609120943-P11QPS-executor-8dbf0de450659d239436ecb2"
+        next_revision: 8
+        previous_revision: 7
         schema_version: 1
         task_id: "202609120943-P11QPS"
     pending_effects: []

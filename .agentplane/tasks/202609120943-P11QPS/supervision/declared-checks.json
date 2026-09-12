@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "format-check"
+      ],
+      "command": "bunx prettier --check docs/internal/v0.7.9-v0.7.10-architecture-roadmap.md",
+      "duration_ms": 494,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3308005fac9d32f69b94b3df9ca32d660556868e17bec2215bbf27726c7cc603",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:b0442f22f0f60a5f05239995b3921d93a899858aa8529e64800e17f73da7fd8a"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [
+        "routing-check"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 253,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3308005fac9d32f69b94b3df9ca32d660556868e17bec2215bbf27726c7cc603",
+        "executable_digest": "sha256:902b6a6984d5d825829ea9064ab73b734548df37bc0683990dca31c8dc2a9253",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:b0442f22f0f60a5f05239995b3921d93a899858aa8529e64800e17f73da7fd8a"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609120943-P11QPS"
+}
