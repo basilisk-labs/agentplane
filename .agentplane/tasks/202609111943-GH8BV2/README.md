@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -28,33 +28,31 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-12T14:38:47.235Z"
+  updated_at: "2026-09-12T14:50:16.047Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "3e9fde47b020cbe33a5e292390745b3e7f837bf7"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "e000d63deb14c4403120357b9c4030178e7d4adb"
   blueprint_digest: "700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e"
   evidence_refs:
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/bfc5b4151764f2021bae82c198bbfd23e5cb927fe1763e9d7c5ab9e91d86c71c.md"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-143628992-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-144936643-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-144936643-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/852f211581aeaf6a8f1cbd47e7dbb9522a40822761d54fe170763ba8782ba517.md"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-144936643-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-144936643-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/20260912-144936643-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202609111943-GH8BV2/README.md"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/fa42e1242ae71bd1531ce67842d626e6e9f6e69b2749568631ec008d3237dbb8.patch"
-    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/dfec286ed2a4ab23693d5f652059a81081b0babd0ddf58b52c999e3ef8f5d717.json"
-    - ".agentplane/tasks/202609111943-GH8BV2/verification/20260912143620257-e5aba31d725cf653.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/eaa47eaafe2c741c78e8a1d50a660ebe3c7eb5ee17cc772eef870ecd2ec1bbc2.patch"
+    - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/e64f5fa104d029304646f70eb6d71fb4716f0d8e3d81e06c1dc64502c81b2d70.json"
+    - ".agentplane/tasks/202609111943-GH8BV2/verification/20260912144927288-15a40996212f50bf.json"
     - ".agentplane/tasks/202609111943-GH8BV2/quality/objects/sha256/d61ca3983bc04d1f9320b5d8b330a545095cdb526f3ed99b5962d55e514122fd.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated diff still sets DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS to 20 * 60 * 1000 and asserts 20 minutes in release-ci-contract.test.ts. The current user-approved rework requires 30 minutes after repeated clean core-suite terminations at the exact 20-minute boundary. Update only those two values to 30 minutes and rerun the scoped verification."
-    - "Residual risk: A single clean run under the 20-minute default does not remove the previously reproduced boundary timeout variability."
+    - "The resolver preserves empty scope roots only for a contract explicitly marked legacy_compatibility, while an ordinary explicit declaration with repository effects and empty roots remains fail-closed. The scope-extension path reuses the stored contract source, and the CI default plus its contract assertion are consistently set to 30 minutes."
 execution_route:
   frozen: true
   reason_codes:
@@ -903,7 +901,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 22
+    event_cursor: 23
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -928,9 +926,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 25
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-12T14:49:28.736Z"
+    updated_at: "2026-09-12T14:49:28.738Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -1241,6 +1239,30 @@ extensions:
         mutation_id: "compatibility:sha256:46ec0c6112128ff73c2753601e54acd1fc06636954c9f809523be007c2f3a03e"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:4920403c4fd896d48e7bf9c85a8c4feca08013e8870e2164976fb62f45c445be:
+        aggregate_digest: "sha256:e2e83200ea037fa792cad811aba393fcff6582426f5fde70b45a4a324273166a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:49:28.738Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_dd0aeafc80ec38e5ffa4ce48"
+          mutation_id: "compatibility:sha256:4920403c4fd896d48e7bf9c85a8c4feca08013e8870e2164976fb62f45c445be"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 25
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4920403c4fd896d48e7bf9c85a8c4feca08013e8870e2164976fb62f45c445be"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:505e965ae21ea39ba02602dc9f5d0da22afbf83dd8eaf0e40ff8af9a55603208:

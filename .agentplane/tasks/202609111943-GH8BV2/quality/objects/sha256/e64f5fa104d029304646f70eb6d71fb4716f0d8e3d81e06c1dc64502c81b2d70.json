@@ -1,0 +1,168 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run typecheck",
+    "bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts --maxWorkers=1"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.ts",
+        "packages/agentplane/src/runtime/task-routing/resolve.test.ts",
+        "packages/agentplane/src/runtime/task-routing/resolve.ts",
+        "scripts/checks/run-local-ci.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.ts",
+        "packages/agentplane/src/runtime/task-routing/resolve.test.ts",
+        "packages/agentplane/src/runtime/task-routing/resolve.ts",
+        "scripts/checks/run-local-ci.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/runtime/task-routing/resolve.test.ts",
+      "central_component:packages/agentplane/src/runtime/task-routing/resolve.ts",
+      "central_component:scripts/checks/run-local-ci.mjs",
+      "central_path:packages/agentplane/src/runtime/task-routing/resolve.test.ts",
+      "central_path:packages/agentplane/src/runtime/task-routing/resolve.ts",
+      "central_path:scripts/checks/run-local-ci.mjs",
+      "effect_ci"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:915a1e5445c79e98676ebc78140ea8e61c1d11d2c6762c20f076f73120df6b55"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-12T14:49:27.288Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609111943-GH8BV2/verification/20260912144927288-15a40996212f50bf.json",
+      "sha256": "sha256:70ccff078ae1c8ce430a4124c498b8ba7f59cd861e6951a553a2076206b5148d"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 3706d4ddb28aa84637fe83c5a128cb7b7055531d..e000d63deb14c4403120357b9c4030178e7d4adb",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 3706d4ddb28aa84637fe83c5a128cb7b7055531d..e000d63deb14c4403120357b9c4030178e7d4adb",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\tpackages/agentplane/src/commands/release/release-ci-contract.test.ts",
+          "M\tscripts/checks/run-local-ci.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "3706d4ddb28aa84637fe83c5a128cb7b7055531d",
+    "implementation_commit": "e000d63deb14c4403120357b9c4030178e7d4adb",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609111943-GH8BV2",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609111943-GH8BV2/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
