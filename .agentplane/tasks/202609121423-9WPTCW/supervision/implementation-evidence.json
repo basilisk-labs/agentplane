@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 01b1234e93b3574a036eafb2b0b4a0e6c0b08279..ac856fe3cc89dea00266576286e9733694802e58",
+      "command": "git diff --check 55e6528c768dd0251a5e9f62c14a595add2c7df4..9a641de885013773df0a570a5fd9285f5b6373e6",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 01b1234e93b3574a036eafb2b0b4a0e6c0b08279..ac856fe3cc89dea00266576286e9733694802e58",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 55e6528c768dd0251a5e9f62c14a595add2c7df4..9a641de885013773df0a570a5fd9285f5b6373e6",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,10 +21,11 @@
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/github-body.md",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/meta.json",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
         "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts",
-        "M\tscripts/baselines/architecture-inventory.json",
-        "M\tscripts/checks/architecture-inventory.mjs"
+        "M\tpackages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
       ]
     },
     {
@@ -34,8 +35,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "01b1234e93b3574a036eafb2b0b4a0e6c0b08279",
-  "implementation_commit": "ac856fe3cc89dea00266576286e9733694802e58",
+  "execution_base_commit": "55e6528c768dd0251a5e9f62c14a595add2c7df4",
+  "implementation_commit": "9a641de885013773df0a570a5fd9285f5b6373e6",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
