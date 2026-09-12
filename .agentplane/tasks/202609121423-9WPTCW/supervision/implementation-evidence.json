@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 90d62de24ffd9871614d6cf74390cbb9e1bc9208..d8327ee45875d7c0f5b62bbfcf102d890c8745b7",
+      "command": "git diff --check 4caa9d0d6c87939516a17387c582a68331edef64..63bf9e1749847cbf8f74b85812124d2216c3fc64",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 90d62de24ffd9871614d6cf74390cbb9e1bc9208..d8327ee45875d7c0f5b62bbfcf102d890c8745b7",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4caa9d0d6c87939516a17387c582a68331edef64..63bf9e1749847cbf8f74b85812124d2216c3fc64",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,7 @@
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/github-body.md",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/meta.json",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/review.md",
-        "A\tpackages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts"
+        "A\tpackages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
       ]
     },
     {
@@ -31,8 +31,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "90d62de24ffd9871614d6cf74390cbb9e1bc9208",
-  "implementation_commit": "d8327ee45875d7c0f5b62bbfcf102d890c8745b7",
+  "execution_base_commit": "4caa9d0d6c87939516a17387c582a68331edef64",
+  "implementation_commit": "63bf9e1749847cbf8f74b85812124d2216c3fc64",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
