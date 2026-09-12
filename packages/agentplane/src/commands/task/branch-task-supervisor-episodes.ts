@@ -51,7 +51,7 @@ import {
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
-import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usage.js";
+import { branchSupervisorAccountingFromLifecycle } from "./branch-task-supervisor-usage.js";
 
 import path from "node:path";
 import { readFile } from "node:fs/promises";
@@ -260,6 +260,7 @@ async function executeBranchImplementationEpisode(opts: {
         }
       }
     }
+    const accounting = branchSupervisorAccountingFromLifecycle(lifecycle);
     journal = completeSupervisorExecutionEpisode({
       journal,
       operation_key: started.operation_key,
@@ -269,7 +270,8 @@ async function executeBranchImplementationEpisode(opts: {
         receipt: lifecycle.result?.execution_receipt ?? null,
         semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
       },
-      usage: branchSupervisorUsageFromLifecycle(lifecycle),
+      usage: accounting.usage,
+      provider_usage: accounting.provider_usage,
       progress: acceptedRoute
         ? {
             authority: conflictApplicationAuthority(acceptedRoute),

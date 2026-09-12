@@ -404,14 +404,14 @@ function observedRunnerUsage(opts: {
   if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
   return {
     usage,
-    ...(providerUsage && lifecycle.invocation
+    ...(lifecycle.invocation
       ? {
           provider_usage: {
-            provider: "codex",
+            provider: lifecycle.invocation.adapter_id,
             run_id: lifecycle.invocation.run_id,
             work_order_id: lifecycle.invocation.work_order_id,
-            thread_id: providerUsage.thread_id ?? null,
-            turn_id: providerUsage.turn_id ?? null,
+            thread_id: providerUsage?.thread_id ?? null,
+            turn_id: providerUsage?.turn_id ?? null,
           },
         }
       : {}),
