@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8ef4f2be18951b748992b64e83b290f9a8d8c55e..0a6612ae197108023d7d4927b0e0042167bc2a56",
+      "command": "git diff --check d37d8eff15ff1794d8fc3128fdad4da5bd971926..a3ee9fe467038a030796157c5047394db064386e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8ef4f2be18951b748992b64e83b290f9a8d8c55e..0a6612ae197108023d7d4927b0e0042167bc2a56",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d37d8eff15ff1794d8fc3128fdad4da5bd971926..a3ee9fe467038a030796157c5047394db064386e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,14 +21,10 @@
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/review.md",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-episode.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-        "A\tpackages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts",
-        "A\tpackages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts",
         "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.test.ts",
-        "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
+        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts"
       ]
     },
     {
@@ -38,15 +34,54 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8ef4f2be18951b748992b64e83b290f9a8d8c55e",
-  "implementation_commit": "0a6612ae197108023d7d4927b0e0042167bc2a56",
+  "execution_base_commit": "d37d8eff15ff1794d8fc3128fdad4da5bd971926",
+  "implementation_commit": "a3ee9fe467038a030796157c5047394db064386e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.ts",
+      " M packages/core/src/schemas/index.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/supervisor-execution-episode.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/schemas/index.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
+      " M packages/core/src/runner/supervisor-execution-episode.ts",
+      " M packages/core/src/schemas/index.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
