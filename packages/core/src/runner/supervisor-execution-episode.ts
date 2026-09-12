@@ -325,6 +325,9 @@ function exhaustedDimensions(opts: {
 }): string[] {
   const { budget, usage } = opts;
   const dimensions: string[] = [];
+  const nextIsPaidAgent = isAgentOperation(opts.next_kind ?? "cli_operation");
+  const tokenCoverageUnknown =
+    nextIsPaidAgent && (usage.token_observed_agent_runs ?? 0) < usage.agent_runs;
   if (usage.episodes >= budget.max_episodes) dimensions.push("episodes");
   if (
     isAgentOperation(opts.next_kind ?? "cli_operation") &&
@@ -341,6 +344,11 @@ function exhaustedDimensions(opts: {
   }
   if (budget.max_total_tokens !== null && usage.total_tokens >= budget.max_total_tokens) {
     dimensions.push("total_tokens");
+  }
+  if (tokenCoverageUnknown) {
+    if (budget.max_input_tokens !== null) dimensions.push("input_tokens_telemetry");
+    if (budget.max_output_tokens !== null) dimensions.push("output_tokens_telemetry");
+    if (budget.max_total_tokens !== null) dimensions.push("total_tokens_telemetry");
   }
   if (budget.max_wall_time_ms !== null && usage.wall_time_ms >= budget.max_wall_time_ms) {
     dimensions.push("wall_time_ms");
@@ -947,7 +955,7 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
     budget: journal.budget,
     usage: journal.usage,
     next_kind: opts.next_kind,
-  });
+  }).filter((dimension) => !dimension.endsWith("_telemetry"));
   if (exhausted.length > 0) {
     return stoppedJournal({
       journal,
@@ -983,12 +991,12 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
   const last = journal.operations.at(-1);
   const completedRunningOperation =
     journal.status === "running" && journal.cursor.phase === "completed";
-  const completedBudgetStoppedOperation =
+  const completedStoppedOperation =
     journal.status === "stopped" &&
-    journal.stop?.reason === "budget_exhausted" &&
+    (journal.stop?.reason === "budget_exhausted" || journal.stop?.reason === "human_review") &&
     journal.cursor.phase === "stopped" &&
     journal.stop.operation_key === last?.operation_key;
-  if (!completedRunningOperation && !completedBudgetStoppedOperation) {
+  if (!completedRunningOperation && !completedStoppedOperation) {
     throw new Error(
       "Supervisor episode state advance requires a completed running operation or budget-stopped completed operation.",
     );
@@ -1006,12 +1014,12 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
     ...journal,
     state_fingerprint_digest: opts.state_fingerprint_digest,
-    cursor: completedBudgetStoppedOperation
+    cursor: completedStoppedOperation
       ? journal.cursor
       : { episode: journal.cursor.episode, phase: "ready", operation_key: null },
     operations: [...journal.operations.slice(0, -1), operation],
-    status: completedBudgetStoppedOperation ? "stopped" : "running",
-    stop: completedBudgetStoppedOperation ? journal.stop : null,
+    status: completedStoppedOperation ? "stopped" : "running",
+    stop: completedStoppedOperation ? journal.stop : null,
     updated_at: now,
     previous_digest: journal.digest,
   };
@@ -1121,7 +1129,7 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
     budget: journal.budget,
     usage: journal.usage,
     next_kind: last.kind,
-  });
+  }).filter((dimension) => !dimension.endsWith("_telemetry"));
   if (exhausted.length > 0) {
     throw new Error(
       `Supervisor episode replacement requires remaining budget; exhausted: ${exhausted.join(", ")}.`,

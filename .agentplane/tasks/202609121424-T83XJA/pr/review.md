@@ -29,11 +29,19 @@ Created: 2026-09-12T20:52:29.086Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/runner/adapters/codex-result-transport.ts  |  42 +++++-
- packages/agentplane/src/runner/adapters/codex.ts   |  81 +++++++++--
- .../adapters/roadmap-usage-durability.test.ts      | 159 +++++++++++++++++++++
- packages/agentplane/src/runner/artifacts.ts        |  29 ++++
- 4 files changed, 297 insertions(+), 14 deletions(-)
+ .../src/commands/evaluator/evaluator-episode.ts    | 236 ++++++++++++++++++---
+ .../evaluator/evaluator-execute-supervisor.ts      |  66 ++++--
+ .../evaluator/evaluator-execute.command.test.ts    |  70 +++++-
+ .../evaluator/roadmap-failed-usage.test.ts         | 175 +++++++++++++++
+ .../roadmap-telemetry-disposition.test.ts          |  72 +++++++
+ .../shared/supervisor-execution-episode.test.ts    |  13 ++
+ .../src/runner/adapters/codex-result-transport.ts  |  42 +++-
+ packages/agentplane/src/runner/adapters/codex.ts   |  81 ++++++-
+ .../adapters/roadmap-usage-durability.test.ts      | 159 ++++++++++++++
+ packages/agentplane/src/runner/artifacts.ts        |  29 +++
+ .../runner/supervisor-execution-episode.test.ts    |   6 +-
+ .../src/runner/supervisor-execution-episode.ts     |  24 ++-
+ 12 files changed, 898 insertions(+), 75 deletions(-)
 ```
 
 </details>
