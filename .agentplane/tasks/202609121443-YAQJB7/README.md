@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,11 @@ quality_review:
     - "Pass: the regression exercises one REWORK_READY WorkItem alongside another independently schedulable WorkItem and verifies that only the rework target receives the scope extension."
     - "Pass: CLI-owned verification recorded the focused command, typecheck, and full local CI at implementation SHA 162211482e028760b82733d2dc62bbfd502ec06c."
 token_usage:
-  agent_runs: 8
+  agent_runs: 9
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:3779858e7558d095a7f66d354b00a6d65322623b79c1c62eb2388f0d9c2cc77d"
+  journal_digest: "sha256:1087b17802bb47cdcb53205f7f31343e5ce02f838aab53c84029cda0208ee9f4"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-09-12T16:00:06.065Z"
+  updated_at: "2026-09-12T16:07:26.731Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -265,8 +267,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d49a811d9eb4b4a2f3b1ff7b7304fdd568b9751f"
-  message: "🚧 YAQJB7 task: record external evaluator result"
+  hash: "2e599f76b67c9a62dcc2674d46d2d4e339941f34"
+  message: "🚧 YAQJB7 task: record worktree observation"
 comments:
   -
     author: "CODER"
@@ -298,6 +300,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree is not clean after PR recovery."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -390,9 +395,17 @@ events:
     at: "2026-09-12T16:07:05.381Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree is not clean after PR recovery."
+  -
+    type: "status"
+    at: "2026-09-12T16:07:26.731Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "2e599f76b67c9a62dcc2674d46d2d4e339941f34"
 doc_version: 3
-doc_updated_at: "2026-09-12T16:07:05.401Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T16:07:26.739Z"
+doc_updated_by: "CODER"
 description: "When a blocked external semantic result requests a repository scope extension, persist and use the blocked WorkItem identity so the exact USER-approved extension updates that WorkItem even when other independent WorkItems are schedulable. Preserve fail-closed state binding and add regression coverage. This is required to unblock task 202609121423-9WPTCW."
 sections:
   Summary: |-
@@ -1027,7 +1040,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121443-YAQJB7"
-    event_cursor: 21
+    event_cursor: 22
     final_validation:
       evidence:
         -
@@ -1377,9 +1390,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121443-YAQJB7"
-    revision: 26
+    revision: 27
     schema_version: 1
-    updated_at: "2026-09-12T16:07:05.381Z"
+    updated_at: "2026-09-12T16:07:26.731Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1908,6 +1921,30 @@ extensions:
         previous_revision: 20
         schema_version: 1
         task_id: "202609121443-YAQJB7"
+      compatibility:sha256:e434fe13a618c5924f693a925d39bb5e2eadc178429d5691c300cba017c32d25:
+        aggregate_digest: "sha256:cc9a888a5c73ce3bc7fd7ea42eea101637440e1474cba7ff7f9effeee20f1997"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:07:26.731Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_603fc84c47b49ad4dc51de5f"
+          mutation_id: "compatibility:sha256:e434fe13a618c5924f693a925d39bb5e2eadc178429d5691c300cba017c32d25"
+          plan_digest: "sha256:8c2291aaa937649da54608045290d479e5db886c8169d8d4ba533a72ec6c40ef"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121443-YAQJB7"
+          task_revision: 26
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e434fe13a618c5924f693a925d39bb5e2eadc178429d5691c300cba017c32d25"
+        next_revision: 27
+        previous_revision: 26
+        schema_version: 1
+        task_id: "202609121443-YAQJB7"
       compatibility:sha256:eeab062caceba2d25cd5d30816e73f3fb37b3dcbdcc953ba6053a96742783a5b:
         aggregate_digest: "sha256:804240f4a491e5c7868fac857f0d31ce318a55d6978552f4675b057f54619670"
         event:
@@ -2353,12 +2390,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/8` agent runs
+- Completeness: `0/9` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:3779858e7558d095a7f66d354b00a6d65322623b79c1c62eb2388f0d9c2cc77d`
+- Journal digest: `sha256:1087b17802bb47cdcb53205f7f31343e5ce02f838aab53c84029cda0208ee9f4`
 - Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-09-12T16:00:06.065Z`
+- Updated at: `2026-09-12T16:07:26.731Z`
