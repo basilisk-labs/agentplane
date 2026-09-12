@@ -4,7 +4,7 @@ title: "Make verification rework exhaustion atomically project BLOCKED into the 
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -877,19 +877,84 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121019-8K70MT"
-    revision: 20
+    revision: 21
     schema_version: 1
-    updated_at: "2026-09-12T12:35:16.776Z"
+    updated_at: "2026-09-12T12:36:24.341Z"
     work_items:
       project-terminal-verification-block:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "project-terminal-verification-block"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:9c7711d031ceffff0fbf0d5d3f8b89e2435beb19956b6f0e97f60e97d07af4f1"
+            id: "atomic terminal rework BLOCKED projection"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121019-8K70MT"
+              work_item_id: "project-terminal-verification-block"
+            provenance:
+              - "sha256:89a430be2547a86d4d1dcea81dd9f861bffec90e0f43363ee2682e7a817754c5"
+              - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b7484ba8a66fd5efe68e50c58cf052cb8c7d900dad0014fea27f150568848394"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:51e216ba1898ac957c30794f8a206f28a62a4fd949ea7f0524d0d7c0fda852f9"
+            id: "focused regression coverage"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121019-8K70MT"
+              work_item_id: "project-terminal-verification-block"
+            provenance:
+              - "sha256:89a430be2547a86d4d1dcea81dd9f861bffec90e0f43363ee2682e7a817754c5"
+              - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:b7484ba8a66fd5efe68e50c58cf052cb8c7d900dad0014fea27f150568848394"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+              check_id: "projection-regressions"
+              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1"
+              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1."
+              exit_code: 0
+              observed_at: "2026-09-12T12:36:23.528Z"
+              repository_snapshot_digest: "sha256:b7484ba8a66fd5efe68e50c58cf052cb8c7d900dad0014fea27f150568848394"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-12T12:36:23.528Z"
+              repository_snapshot_digest: "sha256:b7484ba8a66fd5efe68e50c58cf052cb8c7d900dad0014fea27f150568848394"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121019-8K70MT/supervision/declared-checks.json"
+              check_id: "diff-check"
+              command_identity: "git diff --check"
+              detail: "Observed by git diff --check."
+              exit_code: 0
+              observed_at: "2026-09-12T12:36:23.528Z"
+              repository_snapshot_digest: "sha256:b7484ba8a66fd5efe68e50c58cf052cb8c7d900dad0014fea27f150568848394"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -927,6 +992,23 @@ extensions:
         task_id: "202609121019-8K70MT"
         task_revision: 15
         work_item_id: null
+      -
+        at: "2026-09-12T12:36:24.341Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:ffd6c798e59f21dda48fd5478a8f38582c91a35bb1fef925247e0196aea18ee6"
+        entity: "work_item"
+        id: "event_306601432a8b6b83f3ca1fe7"
+        mutation_id: "external-result:work-order-202609121019-8K70MT-executor-3b02b627a8d4910115a60452"
+        plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+        task_revision: 20
+        work_item_id: "project-terminal-verification-block"
     leases: []
     mutation_receipts:
       compatibility:sha256:15a2ce2dfca794811fcdaf14a65dca8abf08b2f102f0a26140fbb68645f0a5bf:
@@ -1287,6 +1369,30 @@ extensions:
         mutation_id: "compatibility:sha256:f5933e2445a96a41529c878c3220ba13d09d6ae34e366ecfdceab92f4b18750e"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
+      external-result:work-order-202609121019-8K70MT-executor-3b02b627a8d4910115a60452:
+        aggregate_digest: "sha256:743e7bb42710bbebafd4a1a9660dcda5bfb27cdccc2ee3e636eb42bed9e222ef"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T12:36:24.341Z"
+          cause_refs:
+            - "semantic-result:sha256:ffd6c798e59f21dda48fd5478a8f38582c91a35bb1fef925247e0196aea18ee6"
+          entity: "work_item"
+          from: "READY"
+          id: "event_306601432a8b6b83f3ca1fe7"
+          mutation_id: "external-result:work-order-202609121019-8K70MT-executor-3b02b627a8d4910115a60452"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 20
+          to: "COMPLETED"
+          work_item_id: "project-terminal-verification-block"
+        mutation_id: "external-result:work-order-202609121019-8K70MT-executor-3b02b627a8d4910115a60452"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609121019-8K70MT"
       external-result:work-order-202609121019-8K70MT-executor-b7eab56d1e2e4e1820a72101:
