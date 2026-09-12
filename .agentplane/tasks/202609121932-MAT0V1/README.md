@@ -4,7 +4,7 @@ title: "Fix branch_pr dependency readiness after a dependency merges into the ca
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:26c3472e4a606d3e754bb87e6b6e5873420bcec416f94433d92f86082c3df152"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-12T20:31:20.576Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -92,7 +92,49 @@ execution_contract:
       - "repository_write"
       - "source_code"
       - "tests"
-    verification_results: []
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -229,8 +271,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 858f3fc349da. CLI accepted one state-bound external-agent semantic result."
     commit: "858f3fc349daab7c990e7fd4fe66b1f02ab19bab"
+  -
+    type: "verify"
+    at: "2026-09-12T20:31:20.576Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-12T20:11:05.123Z"
+doc_updated_at: "2026-09-12T20:31:21.590Z"
 doc_updated_by: "SUPERVISOR"
 description: "Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked."
 sections:
@@ -251,6 +299,114 @@ sections:
     6. Review `git diff` and `git status --short --untracked-files=all`; require only the narrow planning-base recovery implementation, its test, and CLI-owned task artifacts.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-12T20:31:20.576Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3ecaf5ae3cd6e1f6c4a7a658241bb33346d06331712c7514fa732854365a08cc, input_digest=sha256:221189a618a9d78da0415dd41e0e6677a04344708ba64b207cfc1272a2194065
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (4/4)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121932-MAT0V1-fix-branch-pr-dependency-readiness-after-a-depen/.agentplane/tasks/202609121932-MAT0V1/blueprint/resolved-snapshot.json
+    - old_digest: 75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a
+    - current_digest: 75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609121932-MAT0V1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609121932-MAT0V1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -471,7 +627,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121932-MAT0V1"
-    event_cursor: 11
+    event_cursor: 12
     final_validation: null
     id: "202609121932-MAT0V1"
     intent:
@@ -998,9 +1154,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 19
+    revision: 20
     schema_version: 1
-    updated_at: "2026-09-12T20:21:02.785Z"
+    updated_at: "2026-09-12T20:31:21.589Z"
     work_items:
       WI-01:
         attempt: 2
@@ -1255,6 +1411,30 @@ extensions:
         mutation_id: "compatibility:sha256:532d878c498dbafd19957d8798f56d76650b8c4f3ae81ead84cd5c0c47d565f4"
         next_revision: 14
         previous_revision: 13
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      compatibility:sha256:6649c879bc61f38b9c2c85f837d7929cc955daa087abe02f299d00d18f90f5e7:
+        aggregate_digest: "sha256:2ec34eb773146b769a10fff7d82e1c69ec56bf2fde449372f8df72e3daa59919"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T20:31:21.589Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_17a510d23f9bb93904a305e5"
+          mutation_id: "compatibility:sha256:6649c879bc61f38b9c2c85f837d7929cc955daa087abe02f299d00d18f90f5e7"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 19
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:6649c879bc61f38b9c2c85f837d7929cc955daa087abe02f299d00d18f90f5e7"
+        next_revision: 20
+        previous_revision: 19
         schema_version: 1
         task_id: "202609121932-MAT0V1"
       compatibility:sha256:66ac2f6dfe0699edb29af17057a29bf4f6f7e7ea005554522753f9caafe7ad8c:
@@ -1566,6 +1746,114 @@ Prepared the executable recovery-revision repair plan with a nonzero-discovery f
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-12T20:31:20.576Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:3ecaf5ae3cd6e1f6c4a7a658241bb33346d06331712c7514fa732854365a08cc, input_digest=sha256:221189a618a9d78da0415dd41e0e6677a04344708ba64b207cfc1272a2194065
+
+Details:
+
+Check: affected_unit_integration
+Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check full_regression
+
+Check: task_outcome
+Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609121932-MAT0V1 Verification Contract check task_outcome (4/4)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121932-MAT0V1-fix-branch-pr-dependency-readiness-after-a-depen/.agentplane/tasks/202609121932-MAT0V1/blueprint/resolved-snapshot.json
+- old_digest: 75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a
+- current_digest: 75affa1a467c1e6344a2ac0ec8f371c0d40d99007d85697566bf5c44d48a134a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609121932-MAT0V1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609121932-MAT0V1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

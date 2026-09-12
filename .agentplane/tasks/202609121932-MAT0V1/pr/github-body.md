@@ -15,14 +15,14 @@ Fix branch_pr dependency readiness after a dependency merges into the canonical 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T19:35:46.087Z
+- Updated: 2026-09-12T20:21:12.655Z
 - Branch: task/202609121932-MAT0V1/fix-branch-pr-dependency-readiness-after-a-depen
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
