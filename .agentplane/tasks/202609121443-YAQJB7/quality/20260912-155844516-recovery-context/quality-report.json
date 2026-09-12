@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121443-YAQJB7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T15:59:46.487Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "162211482e028760b82733d2dc62bbfd502ec06c",
+  "blueprint_digest": "9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454",
+  "findings": [
+    "Pass: new requests use the persisted issued WorkItem identity, while legacy requests may select only a single REWORK_READY WorkItem and otherwise retain the existing fail-closed scheduler validation.",
+    "Pass: the regression exercises one REWORK_READY WorkItem alongside another independently schedulable WorkItem and verifies that only the rework target receives the scope extension.",
+    "Pass: CLI-owned verification recorded the focused command, typecheck, and full local CI at implementation SHA 162211482e028760b82733d2dc62bbfd502ec06c."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/2b8007144a78a8e253c587d0acee638badd0cff246abb3d432cb9f9e4e6d3dde.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
