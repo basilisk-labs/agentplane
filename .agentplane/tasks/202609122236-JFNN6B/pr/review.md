@@ -13,7 +13,7 @@ Created: 2026-09-12T22:42:33.380Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -38,9 +38,10 @@ Created: 2026-09-12T22:42:33.380Z
  .../src/runtime/prompt-modules/gpt56-contract.ts   |  78 ----------
  .../agentplane/src/runtime/prompt-modules/index.ts |   2 -
  scripts/README.md                                  |  64 ++++----
+ scripts/check-coverage-thresholds.mjs              |   1 -
  scripts/checks/check-coverage-thresholds.mjs       |  48 ------
  scripts/lib/test-route-registry.mjs                |  27 +++-
- 11 files changed, 76 insertions(+), 594 deletions(-)
+ 12 files changed, 76 insertions(+), 595 deletions(-)
 ```
 
 </details>
