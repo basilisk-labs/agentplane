@@ -1,0 +1,106 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 1f8b58d52ade59dd6185af72b00f70bb6194bdb0..fdb54b250502ad6f31f44376504f88c6b4896967",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1f8b58d52ade59dd6185af72b00f70bb6194bdb0..fdb54b250502ad6f31f44376504f88c6b4896967",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609121932-MAT0V1/README.md",
+        "A\t.agentplane/tasks/202609121932-MAT0V1/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609121932-MAT0V1/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609121932-MAT0V1/pr/github-body.md",
+        "A\t.agentplane/tasks/202609121932-MAT0V1/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609121932-MAT0V1/pr/meta.json",
+        "A\t.agentplane/tasks/202609121932-MAT0V1/pr/review.md",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-resume-planning-base.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": [
+        " M .agentplane/tasks/202609121932-MAT0V1/README.md"
+      ]
+    }
+  ],
+  "execution_base_commit": "1f8b58d52ade59dd6185af72b00f70bb6194bdb0",
+  "implementation_commit": "fdb54b250502ad6f31f44376504f88c6b4896967",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609121932-MAT0V1/README.md",
+      "?? .agentplane/tasks/202609121932-MAT0V1/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/github-body.md",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/github-title.txt",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/meta.json",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "introduced_during_execution",
+        "line": " M .agentplane/tasks/202609121932-MAT0V1/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609121932-MAT0V1/pr/review.md"
+      }
+    ],
+    "final": [
+      " M .agentplane/tasks/202609121932-MAT0V1/README.md"
+    ],
+    "introduced_after_execution_baseline": [
+      " M .agentplane/tasks/202609121932-MAT0V1/README.md"
+    ],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609121932-MAT0V1/README.md",
+      "?? .agentplane/tasks/202609121932-MAT0V1/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/github-body.md",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/github-title.txt",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/meta.json",
+      "?? .agentplane/tasks/202609121932-MAT0V1/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609121932-MAT0V1"
+}

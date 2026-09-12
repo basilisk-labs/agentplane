@@ -4,7 +4,7 @@ title: "Fix branch_pr dependency readiness after a dependency merges into the ca
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -82,10 +82,16 @@ execution_contract:
       - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -122,9 +128,10 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:699f88eeeba4d9638e0ea0f579588da0a70d4a99f3f576f9ca7f237329fcd379"
+      digest: "sha256:8dfaf839c0fedde70a1764df79fa792c0b029e90da5a8d8fb4b9de0470908bd7"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
         - "effect_ci"
       execution_groups:
         - "docs-schema"
@@ -132,10 +139,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/commands/branch/work-resume-planning-base.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -168,11 +181,19 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "fdb54b250502ad6f31f44376504f88c6b4896967"
+  message: "🚧 MAT0V1 task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: preserve TaskData and TaskAggregate revision alignment during planning-base recovery and reconcile legacy applied drift; focused regression and typecheck passed."
+  -
+    author: "CODER"
+    body: "Implementation commit identity updated to the exact external-result recovery subject."
 events:
   -
     type: "status"
@@ -181,8 +202,24 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-12T19:49:42.488Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: preserve TaskData and TaskAggregate revision alignment during planning-base recovery and reconcile legacy applied drift; focused regression and typecheck passed."
+    commit: "de969a22ce00f0b8a823f1f2be31f1ec913e2069"
+  -
+    type: "status"
+    at: "2026-09-12T19:51:03.148Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation commit identity updated to the exact external-result recovery subject."
+    commit: "fdb54b250502ad6f31f44376504f88c6b4896967"
 doc_version: 3
-doc_updated_at: "2026-09-12T19:45:15.966Z"
+doc_updated_at: "2026-09-12T19:51:03.148Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr dependency readiness after a dependency merges into the canonical base checkout. When an existing task worktree predates the dependency task artifact, resolve declared dependencies from the authoritative base backend without weakening incomplete or missing dependency checks. Add focused regression coverage proving a DONE dependency on current main unblocks the stale task worktree while incomplete and truly missing dependencies remain blocked."
 sections:
@@ -423,7 +460,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121932-MAT0V1"
-    event_cursor: 6
+    event_cursor: 9
     final_validation: null
     id: "202609121932-MAT0V1"
     intent:
@@ -950,9 +987,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 12
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-12T19:45:15.966Z"
+    updated_at: "2026-09-12T19:51:03.148Z"
     work_items:
       WI-01:
         attempt: 0
@@ -1050,6 +1087,78 @@ extensions:
         mutation_id: "compatibility:sha256:2c6097e1b5afc1656c1848136e07ce91d6edd6e81f4719e793e864249932cb3e"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      compatibility:sha256:4a6d92d02d6ee0e6d9d1d0d134d7bf3eb0efee6a6ee30b85d919214d93a1454b:
+        aggregate_digest: "sha256:24c322096aee786298a074d894678d2d2f38aa8f9ae792e5fb73e01fdc9769d7"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T19:51:03.148Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7131f68954cde53fc1d81787"
+          mutation_id: "compatibility:sha256:4a6d92d02d6ee0e6d9d1d0d134d7bf3eb0efee6a6ee30b85d919214d93a1454b"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:4a6d92d02d6ee0e6d9d1d0d134d7bf3eb0efee6a6ee30b85d919214d93a1454b"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      compatibility:sha256:532d878c498dbafd19957d8798f56d76650b8c4f3ae81ead84cd5c0c47d565f4:
+        aggregate_digest: "sha256:7cd1a74c348d211a54158996be41404d9f2fc3e9ff4833c26b50058914a1a83a"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T19:51:03.148Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e121657f9ba5229c1fbd64ae"
+          mutation_id: "compatibility:sha256:532d878c498dbafd19957d8798f56d76650b8c4f3ae81ead84cd5c0c47d565f4"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:532d878c498dbafd19957d8798f56d76650b8c4f3ae81ead84cd5c0c47d565f4"
+        next_revision: 14
+        previous_revision: 13
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      compatibility:sha256:66ac2f6dfe0699edb29af17057a29bf4f6f7e7ea005554522753f9caafe7ad8c:
+        aggregate_digest: "sha256:8420d0ad6236737b134e5a4a45f64d5f77daf295ad37c88f7b208459f10cbb78"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T19:49:42.488Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_21628ccb2f36d4b211002216"
+          mutation_id: "compatibility:sha256:66ac2f6dfe0699edb29af17057a29bf4f6f7e7ea005554522753f9caafe7ad8c"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 12
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:66ac2f6dfe0699edb29af17057a29bf4f6f7e7ea005554522753f9caafe7ad8c"
+        next_revision: 13
+        previous_revision: 12
         schema_version: 1
         task_id: "202609121932-MAT0V1"
       compatibility:sha256:78dc0345e3530a4b57b41ea080867c769e73c8bb06afa229e9a8dc00240658ad:
@@ -1201,6 +1310,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "fdb54b250502ad6f31f44376504f88c6b4896967"
   task_execution_context:
     base_ref: "main"
     base_sha: "1f8b58d52ade59dd6185af72b00f70bb6194bdb0"
