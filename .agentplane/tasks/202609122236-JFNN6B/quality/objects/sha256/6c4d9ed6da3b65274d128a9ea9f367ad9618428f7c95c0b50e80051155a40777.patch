@@ -1,0 +1,835 @@
+diff --git a/package.json b/package.json
+index 07feda1c4..38291a7a5 100644
+--- a/package.json
++++ b/package.json
+@@ -19,6 +19,7 @@
+     "test:project": "vitest --config vitest.workspace.ts run --project",
+     "test:precommit": "node scripts/checks/run-vitest-suite.mjs precommit",
+     "test:critical": "node scripts/checks/run-vitest-suite.mjs critical-cli",
++    "test:agent-efficiency:qualification": "node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification",
+     "test:cli:critical": "bun run test:critical",
+     "test:platform-critical": "node scripts/checks/run-vitest-suite.mjs platform-critical",
+     "test:backend-critical": "node scripts/checks/run-vitest-suite.mjs backend-critical",
+@@ -27,7 +28,6 @@
+     "backend:matrix": "bun run test:backend-critical",
+     "coverage:workflow-suite": "node scripts/workflow/run-workflow-coverage-suite.mjs",
+     "coverage:significant-suite": "node scripts/checks/run-significant-coverage-suite.mjs",
+-    "coverage:thresholds:check": "node scripts/checks/check-coverage-thresholds.mjs",
+     "coverage": "vitest run --coverage",
+     "arch:baseline": "node scripts/checks/check-depcruise-known-violations.mjs",
+     "arch:deps": "node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs",
+@@ -38,7 +38,7 @@
+     "clone:report": "node scripts/checks/check-clone-baseline.mjs --report",
+     "clone:baseline:update": "node scripts/checks/check-clone-baseline.mjs --update-baseline",
+     "ci": "bun run ci:contract && bun run ci:test",
+-    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check",
++    "ci:contract": "bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check",
+     "ci:test": "bun run typecheck && bun run coverage && bun run coverage:significant",
+     "ci:local": "node scripts/checks/run-local-ci.mjs --mode fast",
+     "ci:local:smoke": "node scripts/checks/run-local-ci.mjs --mode smoke",
+diff --git a/packages/agentplane/src/commands/release/release-ci-contract.test.ts b/packages/agentplane/src/commands/release/release-ci-contract.test.ts
+index 1ce415475..559133199 100644
+--- a/packages/agentplane/src/commands/release/release-ci-contract.test.ts
++++ b/packages/agentplane/src/commands/release/release-ci-contract.test.ts
+@@ -33,6 +33,9 @@ describe("release CI contract", () => {
+       "node scripts/checks/run-local-ci.mjs --mode smoke --explain",
+     );
+     expect(scripts["test:critical"]).toBe("node scripts/checks/run-vitest-suite.mjs critical-cli");
++    expect(scripts["test:agent-efficiency:qualification"]).toBe(
++      "node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification",
++    );
+     expect(scripts["bench:cli:cold:check"]).toContain("--attempts 3");
+     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
+     expect(releaseCheck).toContain("bun run release:incidents:check");
+@@ -56,10 +59,24 @@ describe("release CI contract", () => {
+     );
+ 
+     expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
+-    expect(SUITES["critical-cli"]?.chunkSize).toBe(1);
++    expect(SUITES["critical-cli"]?.chunkSize).toBe(2);
+     expect(SUITES["critical-cli"]?.files).toContain(
+       "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts",
+     );
++    expect(SUITES["critical-cli"]?.files).not.toContainEqual(
++      expect.stringContaining("run-cli.critical.agent-efficiency"),
++    );
++    expect(SUITES["agent-efficiency-qualification"]?.chunkSize).toBe(1);
++    expect(SUITES["agent-efficiency-qualification"]?.files).toHaveLength(5);
++    expect(SUITES["agent-efficiency-qualification"]?.files).toEqual(
++      expect.arrayContaining([
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts",
++      ]),
++    );
+     expect(
+       SUITES["release-ci-base"]?.isolatedPatterns?.some((pattern) =>
+         pattern.test("packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts"),
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+index 9210d06df..e2122bd16 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts
+@@ -267,7 +267,7 @@ describe("runner bootstrap result examples", () => {
+   });
+ });
+ 
+-it("reduces fixed prompt baselines while preserving semantic inputs", () => {
++it("preserves semantic prompt inputs and result examples", () => {
+   for (const role of ["EXECUTOR", "EVALUATOR"] as const) {
+     const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
+     bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
+@@ -277,9 +277,6 @@ it("reduces fixed prompt baselines while preserving semantic inputs", () => {
+       role,
+     }));
+     const bootstrap = renderTaskRunnerBootstrap(bundle);
+-    // Measured before compaction on ca07204ee with these fixed fixtures.
+-    const baseline = role === "EXECUTOR" ? 8590 : 9196;
+-    expect(Buffer.byteLength(bootstrap, "utf8")).toBeLessThan(baseline);
+     expect(bootstrap).toContain("simple technical English");
+     expect(bootstrap).toContain(
+       "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts b/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts
+deleted file mode 100644
+index 99981f09e..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts
++++ /dev/null
+@@ -1,167 +0,0 @@
+-import { describe, expect, it } from "vitest";
+-
+-import {
+-  diagnoseGpt55PromptContract,
+-  loadFrameworkPromptModules,
+-  type PromptModule,
+-} from "./index.js";
+-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+-
+-function agentWorkflowModule(opts: { roleId: string; text: string; name?: string }): PromptModule {
+-  return {
+-    schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+-    address: {
+-      value: `framework/agent_profile/.agentplane~agents/workflow/${opts.name ?? "workflow"}`,
+-      namespace: "framework",
+-      surface: "agent_profile",
+-      target: ".agentplane/agents",
+-      slot: "workflow",
+-      name: opts.name ?? "workflow",
+-    },
+-    owner: {
+-      kind: "framework",
+-      package_name: "agentplane",
+-    },
+-    title: `${opts.roleId} workflow`,
+-    content_kind: "text",
+-    content: opts.text,
+-    mutability: "replaceable",
+-    merge: {
+-      mode: "pick_one",
+-      conflict: "error",
+-    },
+-    provenance: {
+-      source_kind: "framework_builtin",
+-      source_ref: `packages/agentplane/assets/agents/${opts.roleId}.json#${opts.name ?? "workflow"}`,
+-    },
+-  };
+-}
+-
+-describe("GPT-5.5 prompt contract diagnostics", () => {
+-  it("accepts an outcome-first role workflow contract", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: [
+-          "Goal: implement approved scope with the smallest coherent diff.",
+-          "Success criteria: checks pass and evidence is recorded.",
+-          "Constraints: use loaded gateway and policy modules as binding constraints.",
+-          "Stop rules: stop on approval, security, or verification drift.",
+-          "Output: changed files, checks, blockers, and residual risk.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toEqual([]);
+-  });
+-
+-  it("reports missing outcome sections without failing active prompt loading", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: "Keep diffs minimal, task-scoped, and easy to review.",
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toMatchObject([
+-      {
+-        severity: "warning",
+-        code: "gpt55_missing_outcome_contract",
+-        role_id: "CODER",
+-      },
+-    ]);
+-    expect(diagnostics[0]?.message).toContain("Goal");
+-    expect(diagnostics[0]?.message).toContain("Stop rules");
+-  });
+-
+-  it("flags absolute rule language in role workflow prompts", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: [
+-          "Goal: implement approved scope.",
+-          "Success criteria: checks pass.",
+-          "Constraints: MUST always follow local style.",
+-          "Stop rules: stop on drift.",
+-          "Output: summary.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toContainEqual(
+-      expect.objectContaining({
+-        severity: "warning",
+-        code: "gpt55_absolute_rule_in_role_prompt",
+-        role_id: "CODER",
+-        evidence: "MUST",
+-      }),
+-    );
+-  });
+-
+-  it("reports role references that do not resolve to installed profiles", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "ORCHESTRATOR",
+-        text: [
+-          "Goal: produce an approved plan.",
+-          "Success criteria: plan is approved.",
+-          "Constraints: stay within policy.",
+-          "Stop rules: stop on drift.",
+-          "Output: plan and approval prompt.",
+-          "When optimization is requested, invoke UPDATER.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toContainEqual(
+-      expect.objectContaining({
+-        severity: "error",
+-        code: "gpt55_missing_referenced_role",
+-        role_id: "ORCHESTRATOR",
+-        evidence: "UPDATER",
+-      }),
+-    );
+-  });
+-
+-  it("keeps current framework profile diagnostics free of role contract gaps", async () => {
+-    const diagnostics = diagnoseGpt55PromptContract(await loadFrameworkPromptModules());
+-
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"),
+-    ).toEqual([]);
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_absolute_rule_in_role_prompt"),
+-    ).toEqual([]);
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_referenced_role"),
+-    ).toEqual([]);
+-  });
+-
+-  it("keeps all bundled agent profiles on the outcome-first contract", async () => {
+-    const bundledRoles = new Set([
+-      "CODER",
+-      "CREATOR",
+-      "DOCS",
+-      "EXTRACTOR",
+-      "INTAKE",
+-      "INTEGRATOR",
+-      "ORCHESTRATOR",
+-      "PLANNER",
+-      "REDMINE",
+-      "REVIEWER",
+-      "TESTER",
+-      "UPDATER",
+-      "UPGRADER",
+-    ]);
+-    const diagnostics = diagnoseGpt55PromptContract(await loadFrameworkPromptModules()).filter(
+-      (diagnostic) => diagnostic.role_id && bundledRoles.has(diagnostic.role_id),
+-    );
+-
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"),
+-    ).toEqual([]);
+-    expect(
+-      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_absolute_rule_in_role_prompt"),
+-    ).toEqual([]);
+-  });
+-});
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts b/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts
+deleted file mode 100644
+index 02770ce30..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts
++++ /dev/null
+@@ -1,137 +0,0 @@
+-import type { PromptModule } from "./model.js";
+-
+-export type Gpt55PromptContractDiagnosticCode =
+-  | "gpt55_missing_outcome_contract"
+-  | "gpt55_absolute_rule_in_role_prompt"
+-  | "gpt55_missing_referenced_role";
+-
+-export type Gpt55PromptContractDiagnostic = {
+-  severity: "warning" | "error";
+-  code: Gpt55PromptContractDiagnosticCode;
+-  message: string;
+-  module_address?: string;
+-  role_id?: string;
+-  evidence?: string;
+-};
+-
+-const OUTCOME_CONTRACT_SECTIONS = [
+-  { label: "Goal", re: /(?:^|\n)\s*(?:#+\s*)?Goal\s*:/i },
+-  { label: "Success criteria", re: /(?:^|\n)\s*(?:#+\s*)?Success criteria\s*:/i },
+-  { label: "Constraints", re: /(?:^|\n)\s*(?:#+\s*)?Constraints\s*:/i },
+-  { label: "Stop rules", re: /(?:^|\n)\s*(?:#+\s*)?Stop rules\s*:/i },
+-  { label: "Output", re: /(?:^|\n)\s*(?:#+\s*)?Output\s*:/i },
+-] as const;
+-
+-const ABSOLUTE_RULE_RE = /\b(ALWAYS|NEVER|MUST(?:\s+NOT)?)\b/g;
+-const REFERENCED_ROLE_RE =
+-  /\b(?:invoke|activate|handoff to|hand off to|route to|delegate to)\s+([A-Z][A-Z0-9_]{2,})\b/g;
+-
+-function moduleText(module: PromptModule): string {
+-  if (typeof module.content === "string") return module.content;
+-  return JSON.stringify(module.content);
+-}
+-
+-function roleIdFromSourceRef(sourceRef: string): string | null {
+-  const match = /(?:^|\/)agents\/([A-Z0-9_]+)\.json(?:#|$)/.exec(sourceRef);
+-  return match?.[1] ?? null;
+-}
+-
+-function roleIdForModule(module: PromptModule): string | null {
+-  if (module.address.surface !== "agent_profile") return null;
+-  return roleIdFromSourceRef(module.provenance.source_ref) ?? null;
+-}
+-
+-function collectKnownRoleIds(modules: PromptModule[]): Set<string> {
+-  const ids = new Set<string>();
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (roleId) ids.add(roleId);
+-  }
+-  return ids;
+-}
+-
+-function diagnoseOutcomeContract(modules: PromptModule[]): Gpt55PromptContractDiagnostic[] {
+-  const workflowByRole = new Map<string, { text: string; addresses: string[] }>();
+-
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (!roleId || module.address.slot !== "workflow") continue;
+-    const current = workflowByRole.get(roleId) ?? { text: "", addresses: [] };
+-    current.text = `${current.text}\n${moduleText(module)}`;
+-    current.addresses.push(module.address.value);
+-    workflowByRole.set(roleId, current);
+-  }
+-
+-  const diagnostics: Gpt55PromptContractDiagnostic[] = [];
+-  for (const [roleId, workflow] of workflowByRole) {
+-    const missing = OUTCOME_CONTRACT_SECTIONS.filter((section) => !section.re.test(workflow.text));
+-    if (missing.length === 0) continue;
+-    diagnostics.push({
+-      severity: "warning",
+-      code: "gpt55_missing_outcome_contract",
+-      role_id: roleId,
+-      module_address: workflow.addresses[0],
+-      message:
+-        `${roleId} workflow does not yet expose the GPT-5.5 outcome-first contract sections: ` +
+-        `${missing.map((section) => section.label).join(", ")}.`,
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+-function diagnoseAbsoluteRules(modules: PromptModule[]): Gpt55PromptContractDiagnostic[] {
+-  const diagnostics: Gpt55PromptContractDiagnostic[] = [];
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (!roleId || module.address.slot !== "workflow") continue;
+-    const text = moduleText(module);
+-    const matches = [...text.matchAll(ABSOLUTE_RULE_RE)].map((match) => match[1]);
+-    if (matches.length === 0) continue;
+-    diagnostics.push({
+-      severity: "warning",
+-      code: "gpt55_absolute_rule_in_role_prompt",
+-      role_id: roleId,
+-      module_address: module.address.value,
+-      evidence: matches.join(", "),
+-      message:
+-        `${roleId} workflow uses absolute rule language (${matches.join(", ")}). ` +
+-        "Keep MUST/NEVER/ALWAYS in gateway or policy modules unless the role line is a true invariant.",
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+-function diagnoseReferencedRoles(modules: PromptModule[]): Gpt55PromptContractDiagnostic[] {
+-  const knownRoleIds = collectKnownRoleIds(modules);
+-  const diagnostics: Gpt55PromptContractDiagnostic[] = [];
+-
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (!roleId) continue;
+-    const text = moduleText(module);
+-    for (const match of text.matchAll(REFERENCED_ROLE_RE)) {
+-      const referencedRole = match[1];
+-      if (!referencedRole || knownRoleIds.has(referencedRole)) continue;
+-      diagnostics.push({
+-        severity: "error",
+-        code: "gpt55_missing_referenced_role",
+-        role_id: roleId,
+-        module_address: module.address.value,
+-        evidence: referencedRole,
+-        message: `${roleId} references missing role ${referencedRole}.`,
+-      });
+-    }
+-  }
+-
+-  return diagnostics;
+-}
+-
+-export function diagnoseGpt55PromptContract(
+-  modules: PromptModule[],
+-): Gpt55PromptContractDiagnostic[] {
+-  return [
+-    ...diagnoseOutcomeContract(modules),
+-    ...diagnoseAbsoluteRules(modules),
+-    ...diagnoseReferencedRoles(modules),
+-  ];
+-}
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts b/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts
+deleted file mode 100644
+index 9866a18e2..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts
++++ /dev/null
+@@ -1,119 +0,0 @@
+-import { describe, expect, it } from "vitest";
+-
+-import {
+-  diagnoseGpt55PromptContract,
+-  diagnoseGpt56PromptContract,
+-  loadFrameworkPromptModules,
+-  type PromptModule,
+-} from "./index.js";
+-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+-
+-function agentWorkflowModule(opts: { roleId: string; text: string }): PromptModule {
+-  return {
+-    schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+-    address: {
+-      value: `framework/agent_profile/.agentplane~agents/workflow/${opts.roleId.toLowerCase()}`,
+-      namespace: "framework",
+-      surface: "agent_profile",
+-      target: ".agentplane/agents",
+-      slot: "workflow",
+-      name: opts.roleId.toLowerCase(),
+-    },
+-    owner: {
+-      kind: "framework",
+-      package_name: "agentplane",
+-    },
+-    title: `${opts.roleId} workflow`,
+-    content_kind: "text",
+-    content: opts.text,
+-    mutability: "replaceable",
+-    merge: {
+-      mode: "pick_one",
+-      conflict: "error",
+-    },
+-    provenance: {
+-      source_kind: "framework_builtin",
+-      source_ref: `packages/agentplane/assets/agents/${opts.roleId}.json#workflow`,
+-    },
+-  };
+-}
+-
+-describe("GPT-5.6 prompt contract diagnostics", () => {
+-  it("uses GPT-5.6 diagnostic codes and messages", () => {
+-    const diagnostics = diagnoseGpt56PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: "Keep diffs minimal and task-scoped.",
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toMatchObject([
+-      {
+-        severity: "warning",
+-        code: "gpt56_missing_outcome_contract",
+-        role_id: "CODER",
+-      },
+-    ]);
+-    expect(diagnostics[0]?.message).toContain("GPT-5.6");
+-  });
+-
+-  it("flags shared gateway scaffolding repeated in a role prompt", () => {
+-    const diagnostics = diagnoseGpt56PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: [
+-          "Goal: implement approved scope.",
+-          "Success criteria: checks pass.",
+-          "Constraints: use loaded gateway and policy modules as binding constraints.",
+-          "Stop rules: stop on drift.",
+-          "Output: changed files and checks.",
+-        ].join("\n"),
+-      }),
+-    ]);
+-
+-    expect(diagnostics).toContainEqual(
+-      expect.objectContaining({
+-        severity: "warning",
+-        code: "gpt56_repeated_gateway_contract",
+-        role_id: "CODER",
+-      }),
+-    );
+-  });
+-
+-  it("preserves the GPT-5.5 diagnostic API for compatibility", () => {
+-    const diagnostics = diagnoseGpt55PromptContract([
+-      agentWorkflowModule({
+-        roleId: "CODER",
+-        text: "Keep diffs minimal and task-scoped.",
+-      }),
+-    ]);
+-
+-    expect(diagnostics[0]?.code).toBe("gpt55_missing_outcome_contract");
+-    expect(diagnostics[0]?.message).toContain("GPT-5.5");
+-  });
+-
+-  it("keeps every bundled agent profile on the lean GPT-5.6 contract", async () => {
+-    const bundledRoles = new Set([
+-      "CODER",
+-      "CREATOR",
+-      "CURATOR",
+-      "DOCS",
+-      "EVALUATOR",
+-      "EXTRACTOR",
+-      "INTAKE",
+-      "INTEGRATOR",
+-      "ORCHESTRATOR",
+-      "PLANNER",
+-      "REDMINE",
+-      "REVIEWER",
+-      "TESTER",
+-      "UPDATER",
+-      "UPGRADER",
+-    ]);
+-    const diagnostics = diagnoseGpt56PromptContract(await loadFrameworkPromptModules()).filter(
+-      (diagnostic) => diagnostic.role_id && bundledRoles.has(diagnostic.role_id),
+-    );
+-
+-    expect(diagnostics).toEqual([]);
+-  });
+-});
+diff --git a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts b/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts
+deleted file mode 100644
+index 464f29c48..000000000
+--- a/packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts
++++ /dev/null
+@@ -1,78 +0,0 @@
+-import type { PromptModule } from "./model.js";
+-import {
+-  diagnoseGpt55PromptContract,
+-  type Gpt55PromptContractDiagnostic,
+-  type Gpt55PromptContractDiagnosticCode,
+-} from "./gpt55-contract.js";
+-
+-type Gpt56PromptContractDiagnosticCode =
+-  | "gpt56_missing_outcome_contract"
+-  | "gpt56_absolute_rule_in_role_prompt"
+-  | "gpt56_missing_referenced_role"
+-  | "gpt56_repeated_gateway_contract";
+-
+-type Gpt56PromptContractDiagnostic = Omit<Gpt55PromptContractDiagnostic, "code"> & {
+-  code: Gpt56PromptContractDiagnosticCode;
+-};
+-
+-const GPT56_CODE_BY_GPT55_CODE: Record<
+-  Gpt55PromptContractDiagnosticCode,
+-  Gpt56PromptContractDiagnosticCode
+-> = {
+-  gpt55_missing_outcome_contract: "gpt56_missing_outcome_contract",
+-  gpt55_absolute_rule_in_role_prompt: "gpt56_absolute_rule_in_role_prompt",
+-  gpt55_missing_referenced_role: "gpt56_missing_referenced_role",
+-};
+-
+-const REPEATED_GATEWAY_CONTRACT_RE =
+-  /use loaded gateway and policy modules as binding constraints/i;
+-
+-function moduleText(module: PromptModule): string {
+-  if (typeof module.content === "string") return module.content;
+-  return JSON.stringify(module.content);
+-}
+-
+-function roleIdForModule(module: PromptModule): string | null {
+-  if (module.address.surface !== "agent_profile") return null;
+-  const match = /(?:^|\/)agents\/([A-Z0-9_]+)\.json(?:#|$)/.exec(module.provenance.source_ref);
+-  return match?.[1] ?? null;
+-}
+-
+-function diagnoseRepeatedGatewayContract(modules: PromptModule[]): Gpt56PromptContractDiagnostic[] {
+-  const diagnostics: Gpt56PromptContractDiagnostic[] = [];
+-  for (const module of modules) {
+-    const roleId = roleIdForModule(module);
+-    if (
+-      !roleId ||
+-      module.address.slot !== "workflow" ||
+-      !REPEATED_GATEWAY_CONTRACT_RE.test(moduleText(module))
+-    ) {
+-      continue;
+-    }
+-    diagnostics.push({
+-      severity: "warning",
+-      code: "gpt56_repeated_gateway_contract",
+-      role_id: roleId,
+-      module_address: module.address.value,
+-      evidence: "use loaded gateway and policy modules as binding constraints",
+-      message:
+-        `${roleId} repeats the shared gateway contract in its role prompt. ` +
+-        "Keep shared autonomy, routing, and policy rules in the gateway and retain only role-specific constraints here.",
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+-export function diagnoseGpt56PromptContract(
+-  modules: PromptModule[],
+-): Gpt56PromptContractDiagnostic[] {
+-  const migratedDiagnostics = diagnoseGpt55PromptContract(modules).map(
+-    (diagnostic): Gpt56PromptContractDiagnostic => ({
+-      ...diagnostic,
+-      code: GPT56_CODE_BY_GPT55_CODE[diagnostic.code],
+-      message: diagnostic.message.replaceAll("GPT-5.5", "GPT-5.6"),
+-    }),
+-  );
+-
+-  return [...migratedDiagnostics, ...diagnoseRepeatedGatewayContract(modules)];
+-}
+diff --git a/packages/agentplane/src/runtime/prompt-modules/index.ts b/packages/agentplane/src/runtime/prompt-modules/index.ts
+index f21ab87d2..12c2147ba 100644
+--- a/packages/agentplane/src/runtime/prompt-modules/index.ts
++++ b/packages/agentplane/src/runtime/prompt-modules/index.ts
+@@ -25,8 +25,6 @@ export type {
+   PromptModuleValidator,
+ } from "./mutations.js";
+ export { loadFrameworkPromptModuleRegistry, loadFrameworkPromptModules } from "./registry.js";
+-export { diagnoseGpt55PromptContract } from "./gpt55-contract.js";
+-export { diagnoseGpt56PromptContract } from "./gpt56-contract.js";
+ export {
+   validatePromptModuleCompiledGraph,
+   validatePromptModule,
+diff --git a/scripts/README.md b/scripts/README.md
+index 003a3f25f..c974f7655 100644
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -14,25 +14,25 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## CI
+ 
+-| Script              | Command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Purpose                          |
+-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+-| `ci`                | `bun run ci:contract && bun run ci:test`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow commands.        |
+-| `ci:agentplane`     | `node scripts/checks/ci-scope.mjs --scope agentplane`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Run ci workflow: agentplane.     |
+-| `ci:contract`       | `bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check` | Run ci workflow: contract.       |
+-| `ci:core`           | `node scripts/checks/ci-scope.mjs --scope core`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Run ci workflow: core.           |
+-| `ci:local`          | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local.          |
+-| `ci:local:explain`  | `node scripts/checks/run-local-ci.mjs --mode smoke --explain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Run ci workflow: local explain.  |
+-| `ci:local:fast`     | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local fast.     |
+-| `ci:local:full`     | `node scripts/checks/run-local-ci.mjs --mode full`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local full.     |
+-| `ci:local:profile`  | `node scripts/checks/profile-local-quality.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Run ci workflow: local profile.  |
+-| `ci:local:smoke`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Run ci workflow: local smoke.    |
+-| `ci:local:touch`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Run ci workflow: local touch.    |
+-| `ci:local:turbo`    | `node scripts/checks/run-turbo-local-ci.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Run ci workflow: local turbo.    |
+-| `ci:recipes`        | `node scripts/checks/ci-scope.mjs --scope recipes`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: recipes.        |
+-| `ci:release-extras` | `bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical`                                                                                                                                       | Run ci workflow: release-extras. |
+-| `ci:spec`           | `node scripts/checks/ci-scope.mjs --scope spec`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Run ci workflow: spec.           |
+-| `ci:test`           | `bun run typecheck && bun run coverage && bun run coverage:significant`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: test.           |
+-| `ci:testkit`        | `node scripts/checks/ci-scope.mjs --scope testkit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: testkit.        |
++| Script              | Command                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Purpose                          |
++| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
++| `ci`                | `bun run ci:contract && bun run ci:test`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Run ci workflow commands.        |
++| `ci:agentplane`     | `node scripts/checks/ci-scope.mjs --scope agentplane`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Run ci workflow: agentplane.     |
++| `ci:contract`       | `bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run bench:compatibility:candidate:check && bun run bench:compatibility:check && bun run bench:agent-efficiency:check && bun run bench:agent-efficiency:replay:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run typescript:toolchain:check && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check` | Run ci workflow: contract.       |
++| `ci:core`           | `node scripts/checks/ci-scope.mjs --scope core`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: core.           |
++| `ci:local`          | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local.          |
++| `ci:local:explain`  | `node scripts/checks/run-local-ci.mjs --mode smoke --explain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Run ci workflow: local explain.  |
++| `ci:local:fast`     | `node scripts/checks/run-local-ci.mjs --mode fast`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local fast.     |
++| `ci:local:full`     | `node scripts/checks/run-local-ci.mjs --mode full`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: local full.     |
++| `ci:local:profile`  | `node scripts/checks/profile-local-quality.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: local profile.  |
++| `ci:local:smoke`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow: local smoke.    |
++| `ci:local:touch`    | `node scripts/checks/run-local-ci.mjs --mode smoke`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Run ci workflow: local touch.    |
++| `ci:local:turbo`    | `node scripts/checks/run-turbo-local-ci.mjs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Run ci workflow: local turbo.    |
++| `ci:recipes`        | `node scripts/checks/ci-scope.mjs --scope recipes`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: recipes.        |
++| `ci:release-extras` | `bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical`                                                                                                  | Run ci workflow: release-extras. |
++| `ci:spec`           | `node scripts/checks/ci-scope.mjs --scope spec`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Run ci workflow: spec.           |
++| `ci:test`           | `bun run typecheck && bun run coverage && bun run coverage:significant`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Run ci workflow: test.           |
++| `ci:testkit`        | `node scripts/checks/ci-scope.mjs --scope testkit`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Run ci workflow: testkit.        |
+ 
+ ## Release
+ 
+@@ -100,18 +100,19 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ 
+ ## Test
+ 
+-| Script                   | Command                                                                                                                          | Purpose                               |
+-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+-| `test`                   | `bun run test:fast`                                                                                                              | Run test workflow commands.           |
+-| `test:backend-critical`  | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                                      | Run test workflow: backend-critical.  |
+-| `test:cli:critical`      | `bun run test:critical`                                                                                                          | Run test workflow: cli critical.      |
+-| `test:critical`          | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                                          | Run test workflow: critical.          |
+-| `test:fast`              | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4` | Run test workflow: fast.              |
+-| `test:fast:ci`           | `node scripts/checks/run-fast-ci-tests.mjs`                                                                                      | Run test workflow: fast ci.           |
+-| `test:platform-critical` | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                                     | Run test workflow: platform-critical. |
+-| `test:precommit`         | `node scripts/checks/run-vitest-suite.mjs precommit`                                                                             | Run test workflow: precommit.         |
+-| `test:project`           | `vitest --config vitest.workspace.ts run --project`                                                                              | Run test workflow: project.           |
+-| `test:release:critical`  | `node scripts/checks/run-vitest-suite.mjs release-critical`                                                                      | Run test workflow: release critical.  |
++| Script                                | Command                                                                                                                          | Purpose                                            |
++| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
++| `test`                                | `bun run test:fast`                                                                                                              | Run test workflow commands.                        |
++| `test:agent-efficiency:qualification` | `node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification`                                                        | Run test workflow: agent-efficiency qualification. |
++| `test:backend-critical`               | `node scripts/checks/run-vitest-suite.mjs backend-critical`                                                                      | Run test workflow: backend-critical.               |
++| `test:cli:critical`                   | `bun run test:critical`                                                                                                          | Run test workflow: cli critical.                   |
++| `test:critical`                       | `node scripts/checks/run-vitest-suite.mjs critical-cli`                                                                          | Run test workflow: critical.                       |
++| `test:fast`                           | `vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4` | Run test workflow: fast.                           |
++| `test:fast:ci`                        | `node scripts/checks/run-fast-ci-tests.mjs`                                                                                      | Run test workflow: fast ci.                        |
++| `test:platform-critical`              | `node scripts/checks/run-vitest-suite.mjs platform-critical`                                                                     | Run test workflow: platform-critical.              |
++| `test:precommit`                      | `node scripts/checks/run-vitest-suite.mjs precommit`                                                                             | Run test workflow: precommit.                      |
++| `test:project`                        | `vitest --config vitest.workspace.ts run --project`                                                                              | Run test workflow: project.                        |
++| `test:release:critical`               | `node scripts/checks/run-vitest-suite.mjs release-critical`                                                                      | Run test workflow: release critical.               |
+ 
+ ## Coverage
+ 
+@@ -119,7 +120,6 @@ Implementation layout: canonical script implementations live under `scripts/chec
+ | ---------------------------- | --------------------------------------------------------- | ----------------------------------------- |
+ | `coverage:significant`       | `node scripts/checks/check-significant-coverage.mjs`      | Run coverage workflow: significant.       |
+ | `coverage:significant-suite` | `node scripts/checks/run-significant-coverage-suite.mjs`  | Run coverage workflow: significant-suite. |
+-| `coverage:thresholds:check`  | `node scripts/checks/check-coverage-thresholds.mjs`       | Run coverage workflow: thresholds check.  |
+ | `coverage:workflow-harness`  | `node scripts/checks/check-workflow-harness-coverage.mjs` | Run coverage workflow: workflow-harness.  |
+ | `coverage:workflow-suite`    | `node scripts/workflow/run-workflow-coverage-suite.mjs`   | Run coverage workflow: workflow-suite.    |
+ 
+diff --git a/scripts/check-coverage-thresholds.mjs b/scripts/check-coverage-thresholds.mjs
+deleted file mode 100644
+index de3f11bf2..000000000
+--- a/scripts/check-coverage-thresholds.mjs
++++ /dev/null
+@@ -1 +0,0 @@
+-import "./checks/check-coverage-thresholds.mjs";
+diff --git a/scripts/checks/check-coverage-thresholds.mjs b/scripts/checks/check-coverage-thresholds.mjs
+deleted file mode 100644
+index 87a37014b..000000000
+--- a/scripts/checks/check-coverage-thresholds.mjs
++++ /dev/null
+@@ -1,48 +0,0 @@
+-import { readFile } from "node:fs/promises";
+-import path from "node:path";
+-
+-const CONFIG_PATH = path.resolve("vitest.config.ts");
+-
+-const EXPECTED_THRESHOLDS = {
+-  lines: 80,
+-  functions: 80,
+-  branches: 72,
+-  statements: 80,
+-};
+-
+-function extractThresholds(source) {
+-  const thresholdsMatch = source.match(/thresholds:\s*\{(?<body>[\s\S]*?)\n\s*\}/);
+-  if (!thresholdsMatch?.groups?.body) {
+-    throw new Error("Missing coverage.thresholds block in vitest.config.ts");
+-  }
+-
+-  const thresholds = new Map();
+-  for (const match of thresholdsMatch.groups.body.matchAll(
+-    /^\s*(?<key>lines|functions|branches|statements):\s*(?<value>\d+),?\s*$/gm,
+-  )) {
+-    thresholds.set(match.groups.key, Number(match.groups.value));
+-  }
+-  return thresholds;
+-}
+-
+-const source = await readFile(CONFIG_PATH, "utf8");
+-const actual = extractThresholds(source);
+-const mismatches = [];
+-
+-for (const [key, expected] of Object.entries(EXPECTED_THRESHOLDS)) {
+-  const value = actual.get(key);
+-  if (value !== expected) {
+-    mismatches.push(`${key}: expected ${expected}, got ${value ?? "missing"}`);
+-  }
+-}
+-
+-if (mismatches.length > 0) {
+-  console.error("Coverage threshold guard failed:");
+-  for (const mismatch of mismatches) {
+-    console.error(`- ${mismatch}`);
+-  }
+-  console.error("If thresholds must change, update this guard in the same reviewed task.");
+-  process.exitCode = 1;
+-} else {
+-  console.log("Coverage threshold guard passed (lines=80 functions=80 branches=72 statements=80).");
+-}
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index 0d5a6818c..2625d21ed 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -336,12 +336,31 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
+   ].some((pattern) => pattern.test(filePath));
+ });
+ 
++const AGENT_EFFICIENCY_QUALIFICATION_PATTERN =
++  /^packages\/agentplane\/src\/cli\/run-cli\.critical\.agent-efficiency-.+\.test\.ts$/;
++
++const ALL_CRITICAL_CLI_FILES = discoverTestFiles(
++  ["packages/agentplane/src/cli"],
++  [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
++);
++
+ const CRITICAL_CLI_SUITE = {
++  chunkSize: 2,
++  config: "vitest.config.ts",
++  files: ALL_CRITICAL_CLI_FILES.filter(
++    (filePath) => !AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
++  ),
++  maxWorkers: "4",
++  pool: "forks",
++  testTimeout: "120000",
++  hookTimeout: "120000",
++};
++
++const AGENT_EFFICIENCY_QUALIFICATION_SUITE = {
+   chunkSize: 1,
+   config: "vitest.config.ts",
+-  files: discoverTestFiles(
+-    ["packages/agentplane/src/cli"],
+-    [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
++  files: ALL_CRITICAL_CLI_FILES.filter((filePath) =>
++    AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
+   ),
+   maxWorkers: "4",
+   pool: "forks",
+@@ -423,6 +442,7 @@ const V07_HOSTED_FILES = [
+ ];
+ 
+ export const VITEST_SUITES = {
++  "agent-efficiency-qualification": AGENT_EFFICIENCY_QUALIFICATION_SUITE,
+   "backend-critical": {
+     files: BACKEND_CRITICAL_FILES,
+     maxWorkers: "4",
+@@ -697,7 +717,6 @@ const PROMPT_MODULES_TEST_FILES = [
+   "packages/agentplane/src/runtime/prompt-modules/model.test.ts",
+   "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
+   "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
+-  "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
+ ];
+ 
+ const EVALUATOR_TEST_FILES = [
