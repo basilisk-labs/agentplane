@@ -4,7 +4,7 @@ title: "Make AgentPlane-managed GitLab MRs remove source branches"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -445,22 +445,94 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 6
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-12T21:57:06.826Z"
+    updated_at: "2026-09-12T21:57:15.990Z"
     work_items:
       gitlab-remove-source-branch:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "gitlab-remove-source-branch"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "READY"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:b5f507fa75ffd15569580d8b956c3292250179aa39449ec1f6286752990390ce"
+            id: "Updated GitLab MR payload behavior"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609122147-5F5WP0"
+              work_item_id: "gitlab-remove-source-branch"
+            provenance:
+              - "sha256:469484379458be54cb5b8bdee2aee848cb8cdc463d65487c9bfe93628f11f6f0"
+              - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:543f190e949f36f18fd14850387f08d02a322dfb49e5aeea3a95541bc9b45beb"
+            id: "Regression tests for create and update payloads"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609122147-5F5WP0"
+              work_item_id: "gitlab-remove-source-branch"
+            provenance:
+              - "sha256:469484379458be54cb5b8bdee2aee848cb8cdc463d65487c9bfe93628f11f6f0"
+              - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
+              check_id: "focused-tests"
+              command_identity: "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
+              detail: "Observed by bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T21:57:15.981Z"
+              repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609122147-5F5WP0/supervision/declared-checks.json"
+              check_id: "typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Observed by bun run typecheck."
+              exit_code: 0
+              observed_at: "2026-09-12T21:57:15.981Z"
+              repository_snapshot_digest: "sha256:51eb04eb5790424b7bb6387cf8b5fabcc28eceb4205ae886d7ffc7106cf6d85d"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
-    events: []
+    events:
+      -
+        at: "2026-09-12T21:57:15.990Z"
+        from: "READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:42afbefae0f70b98b1eacf8636c52f21174f50024478f39e0f4cceda9f3781a0"
+        entity: "work_item"
+        id: "event_7de045f9bb51b217c02585be"
+        mutation_id: "external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7"
+        plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609122147-5F5WP0"
+        task_revision: 6
+        work_item_id: "gitlab-remove-source-branch"
     leases: []
     mutation_receipts:
       compatibility:sha256:2a86a1a96a4eeb0ab65523090734a34fba72ab2429c1af3a86fc6a7604109896:
@@ -557,6 +629,30 @@ extensions:
         mutation_id: "compatibility:sha256:bff552d7f1e47b343adc98cca07bb6457daaccb47a97b82d3bf0ceebeaf75787"
         next_revision: 4
         previous_revision: 3
+        schema_version: 1
+        task_id: "202609122147-5F5WP0"
+      external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7:
+        aggregate_digest: "sha256:e9d4fc2c2bad86beb5daab935041792b2413470b71f41c4a0c0dc427962b9197"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T21:57:15.990Z"
+          cause_refs:
+            - "semantic-result:sha256:42afbefae0f70b98b1eacf8636c52f21174f50024478f39e0f4cceda9f3781a0"
+          entity: "work_item"
+          from: "READY"
+          id: "event_7de045f9bb51b217c02585be"
+          mutation_id: "external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7"
+          plan_digest: "sha256:a5787118704719d11d2c8e2c212ae6ea6c2ee76015e896bae3a13c69d6165d3b"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122147-5F5WP0"
+          task_revision: 6
+          to: "COMPLETED"
+          work_item_id: "gitlab-remove-source-branch"
+        mutation_id: "external-result:work-order-202609122147-5F5WP0-executor-3e98ca755f142624199194e7"
+        next_revision: 7
+        previous_revision: 6
         schema_version: 1
         task_id: "202609122147-5F5WP0"
     pending_effects: []
