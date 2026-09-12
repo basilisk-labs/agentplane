@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 58048a4e1ff97030d3fa86447c739397f0e0936b..975024bffcf97db745d0c7bdcf274b922bb99bae",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 58048a4e1ff97030d3fa86447c739397f0e0936b..975024bffcf97db745d0c7bdcf274b922bb99bae",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609122236-JFNN6B/README.md",
+        "A\t.agentplane/tasks/202609122236-JFNN6B/blueprint/resolved-snapshot.json",
+        "A\t.agentplane/tasks/202609122236-JFNN6B/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609122236-JFNN6B/pr/github-body.md",
+        "A\t.agentplane/tasks/202609122236-JFNN6B/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609122236-JFNN6B/pr/meta.json",
+        "A\t.agentplane/tasks/202609122236-JFNN6B/pr/review.md",
+        "M\tpackage.json",
+        "M\tpackages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+        "D\tpackages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
+        "D\tpackages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts",
+        "D\tpackages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts",
+        "D\tpackages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts",
+        "M\tpackages/agentplane/src/runtime/prompt-modules/index.ts",
+        "M\tscripts/README.md",
+        "D\tscripts/checks/check-coverage-thresholds.mjs",
+        "M\tscripts/lib/test-route-registry.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "58048a4e1ff97030d3fa86447c739397f0e0936b",
+  "implementation_commit": "975024bffcf97db745d0c7bdcf274b922bb99bae",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609122236-JFNN6B/README.md",
+      "?? .agentplane/tasks/202609122236-JFNN6B/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/github-body.md",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/github-title.txt",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/meta.json",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/review.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/blueprint/resolved-snapshot.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/pr/diffstat.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/pr/github-title.txt"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609122236-JFNN6B/pr/review.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609122236-JFNN6B/README.md",
+      "?? .agentplane/tasks/202609122236-JFNN6B/blueprint/resolved-snapshot.json",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/diffstat.txt",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/github-body.md",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/github-title.txt",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/meta.json",
+      "?? .agentplane/tasks/202609122236-JFNN6B/pr/review.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609122236-JFNN6B"
+}
