@@ -4,7 +4,7 @@ title: "Fix branch_pr dependency readiness after a dependency merges into the ca
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -998,54 +998,48 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121932-MAT0V1"
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-12T20:11:05.123Z"
+    updated_at: "2026-09-12T20:21:02.785Z"
     work_items:
       WI-01:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "WI-01"
-        last_failure:
-          cause_refs:
-            - "recovery-revision-invariant"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Reconfirmed the recorded implementation and its focused verification without further source changes."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:bd2d5f9a1c017571dad52c0cbd9c80e0c1d3a0a2ee80e6e6fc10ee899de5cac7"
+            digest: "sha256:9ab80cd1635d3029cc5c46013f6896c5eda1cbc5dce9bab54139cc783dce2315"
             id: "Revision-aligned planning-base recovery publication."
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 3
               task_id: "202609121932-MAT0V1"
               work_item_id: "WI-01"
             provenance:
-              - "sha256:f111807a99afedb8d48945c0dcb353a7db2e883cbf26a0e2b39b3dbe05d30f7e"
+              - "sha256:345eb903a7682add6c36bc3734b0f230ac3ba636269a21736542565d3fa3082b"
               - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+            repository_snapshot_digest: "sha256:4332496c8b797cb3edab1ae731ce6c71dbf16f3fd6a42217388c05e1eb636201"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:91c590492f229f1d53582f8b226ddab010ce5bd888729624639be7f8c5360f42"
+            digest: "sha256:ab79082f50e3f230262ea2dd33d02ee9bcb999e4f3002741e9f7fa444d69f07a"
             id: "Focused regression coverage for the first lifecycle mutation after recovery and fail-closed dependency states."
             kind: "semantic_output"
             producer:
-              attempt: 1
+              attempt: 2
               plan_revision: 3
               task_id: "202609121932-MAT0V1"
               work_item_id: "WI-01"
             provenance:
-              - "sha256:f111807a99afedb8d48945c0dcb353a7db2e883cbf26a0e2b39b3dbe05d30f7e"
+              - "sha256:345eb903a7682add6c36bc3734b0f230ac3ba636269a21736542565d3fa3082b"
               - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+            repository_snapshot_digest: "sha256:4332496c8b797cb3edab1ae731ce6c71dbf16f3fd6a42217388c05e1eb636201"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 3
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -1053,46 +1047,45 @@ extensions:
                 - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
               check_id: "focused-regression"
               command_identity: "node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts --pool=forks --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000."
               exit_code: 0
-              observed_at: "2026-09-12T20:05:51.607Z"
-              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              observed_at: "2026-09-12T20:21:02.771Z"
+              repository_snapshot_digest: "sha256:4332496c8b797cb3edab1ae731ce6c71dbf16f3fd6a42217388c05e1eb636201"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
               check_id: "typecheck"
               command_identity: "bun run typecheck"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run typecheck."
               exit_code: 0
-              observed_at: "2026-09-12T20:05:51.607Z"
-              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              observed_at: "2026-09-12T20:21:02.771Z"
+              repository_snapshot_digest: "sha256:4332496c8b797cb3edab1ae731ce6c71dbf16f3fd6a42217388c05e1eb636201"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
               check_id: "critical"
               command_identity: "bun run test:critical"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run test:critical."
               exit_code: 0
-              observed_at: "2026-09-12T20:05:51.607Z"
-              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
+              observed_at: "2026-09-12T20:21:02.771Z"
+              repository_snapshot_digest: "sha256:4332496c8b797cb3edab1ae731ce6c71dbf16f3fd6a42217388c05e1eb636201"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121932-MAT0V1/supervision/declared-checks.json"
               check_id: "full-ci"
               command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-09-12T20:05:51.607Z"
-              repository_snapshot_digest: "sha256:c7aa2c562d92b0b7667eb6ca7d28d530df8d574958ea954ceabeb7201500cbc6"
-              status: "failed"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-12T20:21:02.771Z"
+              repository_snapshot_digest: "sha256:4332496c8b797cb3edab1ae731ce6c71dbf16f3fd6a42217388c05e1eb636201"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "recovery-revision-invariant"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1148,6 +1141,23 @@ extensions:
         schema_version: 1
         task_id: "202609121932-MAT0V1"
         task_revision: 15
+        work_item_id: "WI-01"
+      -
+        at: "2026-09-12T20:21:02.785Z"
+        from: "REWORK_READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:ef3dd7689f5edd466515e5febc9b713e21f92a3bf16e885f52245878ff44fe0d"
+        entity: "work_item"
+        id: "event_d4c6b92f597895cf7e310f18"
+        mutation_id: "external-result:work-order-202609121932-MAT0V1-executor-15e0100962c4b4547d755aa9"
+        plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+        plan_revision: 3
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+        task_revision: 18
         work_item_id: "WI-01"
     leases: []
     mutation_receipts:
@@ -1413,6 +1423,30 @@ extensions:
         mutation_id: "compatibility:sha256:f8827162dbbb476df2b1c9907ad242c139a1b972cc59f140de3dc2e5c52371a3"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609121932-MAT0V1"
+      external-result:work-order-202609121932-MAT0V1-executor-15e0100962c4b4547d755aa9:
+        aggregate_digest: "sha256:afec0164c559a3d4b77f595fc2f45aef6e84261765ad8ae6a4de264780b36494"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T20:21:02.785Z"
+          cause_refs:
+            - "semantic-result:sha256:ef3dd7689f5edd466515e5febc9b713e21f92a3bf16e885f52245878ff44fe0d"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_d4c6b92f597895cf7e310f18"
+          mutation_id: "external-result:work-order-202609121932-MAT0V1-executor-15e0100962c4b4547d755aa9"
+          plan_digest: "sha256:f6eee473a1d7c1663ce94f01e6a2efa4c7ba9d84e518d9ac78cac73de8eaddbc"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121932-MAT0V1"
+          task_revision: 18
+          to: "COMPLETED"
+          work_item_id: "WI-01"
+        mutation_id: "external-result:work-order-202609121932-MAT0V1-executor-15e0100962c4b4547d755aa9"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609121932-MAT0V1"
       external-result:work-order-202609121932-MAT0V1-executor-542106585c046f44923824d8:
