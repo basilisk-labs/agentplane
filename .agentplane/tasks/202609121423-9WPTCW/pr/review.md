@@ -29,10 +29,11 @@ Created: 2026-09-12T14:30:55.296Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/baselines/architecture-inventory.json  | 159 +++++++++++++++++++++++++
- scripts/checks/architecture-inventory.mjs      | 113 ++++++++++++++++++
- scripts/checks/architecture-inventory.test.mjs |  47 ++++++++
- 3 files changed, 319 insertions(+)
+ .../src/cli/run-cli.core.roadmap-direct.test.ts    |  34 +++++
+ scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
+ scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
+ scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
+ 4 files changed, 353 insertions(+)
 ```
 
 </details>

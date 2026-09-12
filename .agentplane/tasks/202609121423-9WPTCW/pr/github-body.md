@@ -27,10 +27,11 @@ Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/baselines/architecture-inventory.json  | 159 +++++++++++++++++++++++++
- scripts/checks/architecture-inventory.mjs      | 113 ++++++++++++++++++
- scripts/checks/architecture-inventory.test.mjs |  47 ++++++++
- 3 files changed, 319 insertions(+)
+ .../src/cli/run-cli.core.roadmap-direct.test.ts    |  34 +++++
+ scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
+ scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
+ scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
+ 4 files changed, 353 insertions(+)
 ```
 
 </details>
