@@ -4,7 +4,7 @@ title: "Allow an approved repository-effect-only scope extension to recover a le
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: "host_user_decision=sha256:3930e46c72abef10d21cfda7f2921700141030e4cc5c157cb76bdcaff9aa22c1"
 verification:
   state: "ok"
-  updated_at: "2026-09-12T14:36:20.257Z"
+  updated_at: "2026-09-12T14:49:27.288Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -376,8 +376,14 @@ events:
     to: "DOING"
     note: "Implementation committed: e000d63deb14. CLI accepted one state-bound external-agent semantic result."
     commit: "e000d63deb14c4403120357b9c4030178e7d4adb"
+  -
+    type: "verify"
+    at: "2026-09-12T14:49:27.288Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-09-12T14:40:05.294Z"
+doc_updated_at: "2026-09-12T14:49:28.738Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -538,6 +544,96 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:6ed5793801e1e6d55d018cac33d29201395173830d52795351f8ee14e510143e
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check task_outcome (3/3)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+    - old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-09-12T14:49:27.288Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:13a1a3c4b9a1c071b1be69e2d516c0eb802898899cc676b28c4a474e9b688892
 
     Details:
 
@@ -807,7 +903,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 21
+    event_cursor: 22
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -832,9 +928,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 24
+    revision: 25
     schema_version: 1
-    updated_at: "2026-09-12T14:40:05.294Z"
+    updated_at: "2026-09-12T14:49:28.736Z"
     work_items:
       preserve-legacy-effect-only-scope:
         attempt: 1
@@ -1217,6 +1313,30 @@ extensions:
         mutation_id: "compatibility:sha256:645ecda69ad09c16d006eec4e0c78ad6f06aede99f1854df0075b9a3e1be79e9"
         next_revision: 6
         previous_revision: 5
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:76636d9d74ae59a1bcceee5b18d37692f21982daa8d5cbf5dff30735042a01ba:
+        aggregate_digest: "sha256:c3cdea1c5c1348b905cc5a54dc179486ef3cd5162471f69097ef49e8075be73c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:49:28.736Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ea317377da8bf4135505e497"
+          mutation_id: "compatibility:sha256:76636d9d74ae59a1bcceee5b18d37692f21982daa8d5cbf5dff30735042a01ba"
+          plan_digest: "sha256:7fc277f120476836b7d4dde39048359f4d0c7d4862462506ebe45ad3a8b43a0d"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:76636d9d74ae59a1bcceee5b18d37692f21982daa8d5cbf5dff30735042a01ba"
+        next_revision: 25
+        previous_revision: 24
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:772564c1836d45f084a31eb6ec199b75bc9807ae5e180c5f8ec7fabfbecb9d53:
@@ -1618,6 +1738,96 @@ Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review i
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:6ed5793801e1e6d55d018cac33d29201395173830d52795351f8ee14e510143e
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx --no-install vitest run packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts --maxWorkers=1
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609111943-GH8BV2 Verification Contract check task_outcome (3/3)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202609111943-GH8BV2-allow-an-approved-repository-effect-only-scope-e/.agentplane/tasks/202609111943-GH8BV2/blueprint/resolved-snapshot.json
+- old_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- current_digest: 700ec36b764920edfb4de80d78f0e7febb1e428f41224499814bc4e07118648e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609111943-GH8BV2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609111943-GH8BV2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-09-12T14:49:27.288Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:f9e51c699616750c23550f0514ef0d2e4ecfaa496d4651c06be6534ea1148dc7, input_digest=sha256:13a1a3c4b9a1c071b1be69e2d516c0eb802898899cc676b28c4a474e9b688892
 
 Details:
 
