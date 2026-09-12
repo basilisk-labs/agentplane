@@ -1,10 +1,10 @@
 ---
 id: "202609121423-9WPTCW"
 title: "Implement the 0.7.9 baseline inventory and lifecycle characterization for ST-01 through ST-05 and ST-21"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -228,9 +228,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "9682e698fa35ac8a042e2a220612263bb303fd15"
-  message: "🚧 9WPTCW task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -253,6 +251,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9682e698fa35. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Framework-owned validation artifacts are dirty and outside this implementation packet. Recommended action: Commit the framework-owned task artifacts, then recompute the ST-03 rework packet from the clean worktree. Agentplane receipt: external-agent-blocker/tr_a7cb444da636ccc28e48eff4d66375ef/sha256:c710fe5dc100f21359eaf03cf5477ecc2ce52ad6337c445c2aee68cb48a84b97."
 events:
   -
     type: "status"
@@ -300,8 +301,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 9682e698fa35. CLI accepted one state-bound external-agent semantic result."
     commit: "9682e698fa35ac8a042e2a220612263bb303fd15"
+  -
+    type: "status"
+    at: "2026-09-12T16:39:15.664Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. Framework-owned validation artifacts are dirty and outside this implementation packet. Recommended action: Commit the framework-owned task artifacts, then recompute the ST-03 rework packet from the clean worktree. Agentplane receipt: external-agent-blocker/tr_a7cb444da636ccc28e48eff4d66375ef/sha256:c710fe5dc100f21359eaf03cf5477ecc2ce52ad6337c445c2aee68cb48a84b97."
 doc_version: 3
-doc_updated_at: "2026-09-12T16:38:37.201Z"
+doc_updated_at: "2026-09-12T16:39:15.664Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -1089,7 +1097,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 15
+    event_cursor: 16
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -1106,7 +1114,7 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks.
       task_id: "202609121423-9WPTCW"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments:
       -
         actor_id: "external:EXECUTOR"
@@ -1857,9 +1865,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 20
+    revision: 22
     schema_version: 1
-    updated_at: "2026-09-12T16:38:37.201Z"
+    updated_at: "2026-09-12T16:39:15.664Z"
     work_items:
       ST-01:
         attempt: 1
@@ -1955,14 +1963,51 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-03:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-03"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "c-branch"
+          code: "validation_failed"
+          kind: "validation"
+          message: "The uncommitted branch characterization is intended task work and is ready for framework-owned recording."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:7948b101829c884d5a8cb833c350719ffbbaa66703cfb89bc538d4aa4a1ca522"
+            id: "branch-characterization"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 2
+              task_id: "202609121423-9WPTCW"
+              work_item_id: "ST-03"
+            provenance:
+              - "sha256:62186fb834571fbc54d6d0567abfe1d6b4fc57a6b4c715bcd223729459fed342"
+              - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:ecb3ef61c8f0c4c9e45bec99f077296ca23556456927d5d4c61b1ce51353921b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121423-9WPTCW/supervision/declared-checks.json"
+              check_id: "check-branch"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
+              detail: "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
+              exit_code: 1
+              observed_at: "2026-09-12T16:38:40.583Z"
+              repository_snapshot_digest: "sha256:ecb3ef61c8f0c4c9e45bec99f077296ca23556456927d5d4c61b1ce51353921b"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "c-branch"
       ST-04:
         attempt: 0
         claim_id: null
@@ -2060,6 +2105,23 @@ extensions:
         task_id: "202609121423-9WPTCW"
         task_revision: 17
         work_item_id: "ST-02"
+      -
+        at: "2026-09-12T16:38:40.595Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:5411044b1026ebc81f7d970e4c36ce6b83bd1405790e13f149e10a5764aefc74"
+        entity: "work_item"
+        id: "event_9dde277a6b38c2bc48739611"
+        mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-d9569943ad552dd007334d81"
+        plan_digest: "sha256:b0ece49ff2eb33e8520274d3f338393f64f1cfc4982244182f4bb700754b8fed"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+        task_revision: 20
+        work_item_id: "ST-03"
     leases: []
     mutation_receipts:
       compatibility:sha256:43aa0b17696420e3442bca98821ec3c715524fcb92ec7d2e1a2d4b4d6de5e3fe:
@@ -2278,6 +2340,30 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:c800a85b6e4da27a4db94fea75a895eeba60e260cd86cb410c470949fa0a5b95:
+        aggregate_digest: "sha256:0ef3368be0b0d570989d05dc063b3854e431eb151cfbc52fd0c6ab08c246ba06"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:39:15.664Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_7048cbe7cc954d848855991e"
+          mutation_id: "compatibility:sha256:c800a85b6e4da27a4db94fea75a895eeba60e260cd86cb410c470949fa0a5b95"
+          plan_digest: "sha256:b0ece49ff2eb33e8520274d3f338393f64f1cfc4982244182f4bb700754b8fed"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 21
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c800a85b6e4da27a4db94fea75a895eeba60e260cd86cb410c470949fa0a5b95"
+        next_revision: 22
+        previous_revision: 21
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:cd41ab14f729cef097810b149c9ad15d17514c48a909bac33d1bd4280eeb66fb:
         aggregate_digest: "sha256:98a5e8e87730b36aab2f748a867ebd5580433ba5aa6f4d0952d5f541a0027145"
         event:
@@ -2444,6 +2530,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-8fc6e35760a58ecf192e9698"
         next_revision: 8
         previous_revision: 7
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      external-result:work-order-202609121423-9WPTCW-executor-d9569943ad552dd007334d81:
+        aggregate_digest: "sha256:bf6a42eb147838b37543d2046b4d4c98f16c793bb4f49a98479ec726eb980e3c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:38:40.595Z"
+          cause_refs:
+            - "semantic-result:sha256:5411044b1026ebc81f7d970e4c36ce6b83bd1405790e13f149e10a5764aefc74"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_9dde277a6b38c2bc48739611"
+          mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-d9569943ad552dd007334d81"
+          plan_digest: "sha256:b0ece49ff2eb33e8520274d3f338393f64f1cfc4982244182f4bb700754b8fed"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 20
+          to: "REWORK_READY"
+          work_item_id: "ST-03"
+        mutation_id: "external-result:work-order-202609121423-9WPTCW-executor-d9569943ad552dd007334d81"
+        next_revision: 21
+        previous_revision: 20
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       external-result:work-order-202609121423-9WPTCW-executor-de2c46e3a39fe817d6ebee47:
