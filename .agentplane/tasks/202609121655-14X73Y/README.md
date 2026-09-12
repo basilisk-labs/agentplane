@@ -4,7 +4,7 @@ title: "Fix exact WorkItem-only scope extension when the global contract is alre
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -80,10 +80,16 @@ execution_contract:
       - "packages/agentplane/src/commands/task/scope-extend.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -117,16 +123,22 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:19f4ca62a6ba18eb461a8aef7c08bbf94851df3ac7fb8e430f99cd2ae08d3266"
+      digest: "sha256:3269d81a5d47eafd008f69443b824c701ecfd0be0e5c7ead89314df289174d0e"
       escalation_reasons: []
       execution_groups:
         - "core"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/scope-extend.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -157,11 +169,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "a974bdef9d52bba58b584dd6de411c18e311336c"
+  message: "🚧 14X73Y task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: a974bdef9d52. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -170,9 +187,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-12T16:58:17.153Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: a974bdef9d52. CLI accepted one state-bound external-agent semantic result."
+    commit: "a974bdef9d52bba58b584dd6de411c18e311336c"
 doc_version: 3
-doc_updated_at: "2026-09-12T16:56:50.728Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T16:58:17.153Z"
+doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
   Summary: |-
@@ -542,7 +567,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609121655-14X73Y"
     intent:
@@ -567,9 +592,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-12T16:56:50.728Z"
+    updated_at: "2026-09-12T16:58:17.153Z"
     work_items:
       WI-01:
         attempt: 0
@@ -633,6 +658,54 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609121655-14X73Y"
+      compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144:
+        aggregate_digest: "sha256:6f300f77f86a806eecbb6d2e7ac5d7459544036caca408b33c5b22bbb10328c1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:58:17.153Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_80dd2ab49142feab6648d26e"
+          mutation_id: "compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:612d50b2295b01a9a08e986bc3dec0eb695dac85df0a1ac1e6b2268d21b1a144"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:ec9b126c0964079130542946c3ab5cf2c0f00511efb865f859d77939d6ef634d:
+        aggregate_digest: "sha256:3b2d1c87c1a7d1920ccca9cc332d92be9190cba8674b7e841ed7737a183cd4ac"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T16:58:17.153Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_b592f7d9ba25a33264659652"
+          mutation_id: "compatibility:sha256:ec9b126c0964079130542946c3ab5cf2c0f00511efb865f859d77939d6ef634d"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:ec9b126c0964079130542946c3ab5cf2c0f00511efb865f859d77939d6ef634d"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
       compatibility:sha256:ffd6b338f5ea30175ffbe52d656691e18c9eb3142896baab5f4bb110b9baa0e6:
         aggregate_digest: "sha256:8498592bb1ad0bfcb32bf3094f73a1f31f31e7927fccae199c97f06b889cdd2d"
         event:
@@ -660,6 +733,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "a974bdef9d52bba58b584dd6de411c18e311336c"
   task_execution_context:
     base_ref: "main"
     base_sha: "ab3a8e251ad17e8dae00fbe070767fb01f1fae57"
