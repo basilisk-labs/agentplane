@@ -120,6 +120,8 @@ function validateEnumArray<T extends string>(flag: string, values: T[], allowed:
 }
 
 const CONTROLLED_OPS_RISK_FLAGS = new Set(["credentials", "deploy", "security", "external_system"]);
+const CONTROLLED_OPS_INTENT_TEMPLATE =
+  "--task-kind ops --mutation-scope ops --risk external_system --blueprint-request ops.approval";
 
 function assertCompleteControlledOpsIntent(
   task: Pick<
@@ -151,7 +153,8 @@ function assertCompleteControlledOpsIntent(
     message:
       "Incomplete controlled ops intent. Tasks tagged or declared as ops must provide " +
       "--task-kind ops --mutation-scope ops, at least one controlled ops --risk, and " +
-      `--blueprint-request ops.approval. Missing or incompatible: ${missing.join(", ")}.`,
+      `--blueprint-request ops.approval. Missing or incompatible: ${missing.join(", ")}. ` +
+      `Example: ${CONTROLLED_OPS_INTENT_TEMPLATE}.`,
   });
 }
 

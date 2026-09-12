@@ -32,8 +32,8 @@ Make task new reject or materialize incomplete controlled ops intent before life
  .../agentplane/src/commands/task/brief-model.ts    |   9 ++
  .../agentplane/src/commands/task/brief-render.ts   |   7 ++
  packages/agentplane/src/commands/task/new.spec.ts  |   5 +
- packages/agentplane/src/commands/task/new.ts       |  44 +++++++++
- 6 files changed, 171 insertions(+)
+ packages/agentplane/src/commands/task/new.ts       |  47 ++++++++++
+ 6 files changed, 174 insertions(+)
 ```
 
 </details>

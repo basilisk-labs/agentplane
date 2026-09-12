@@ -1,10 +1,10 @@
 ---
 id: "202609120744-G5Q9V0"
 title: "Fail fast on incomplete ops task intent"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ verify:
   - "node scripts/checks/run-typescript-build.mjs"
 plan_approval:
   state: "approved"
-  updated_at: "2026-09-12T07:48:31.808Z"
-  updated_by: "HOST:codex-desktop:USER"
-  note: "host_user_decision=sha256:2739a30261ee4b7fc5e8153314187987bd4644c0fc163bfe83ec7f0f14780fa3"
+  updated_at: "2026-09-12T08:03:16.400Z"
+  updated_by: "USER"
+  note: "Refresh execution grant after supervisor-observed test effect."
 verification:
   state: "pending"
   updated_at: null
@@ -262,9 +262,9 @@ sections:
   Findings: ""
 extensions:
   agentplane.execution_grant:
-    actor: "HOST:codex-desktop:USER"
-    approval_evidence_digest: "sha256:2739a30261ee4b7fc5e8153314187987bd4644c0fc163bfe83ec7f0f14780fa3"
-    approval_kind: "host_user_decision"
+    actor: "USER"
+    approval_evidence_digest: null
+    approval_kind: "manual_operator"
     capabilities:
       - "provider.merge"
       - "provider.pr"
@@ -272,13 +272,13 @@ extensions:
       - "repository.write"
       - "task.lifecycle"
       - "task.scope.extend"
-    completion_contract_digest: "sha256:fba971ef6a121384c40c5fc93d8592325723d6d58911d7f1df7633db663de72c"
-    digest: "sha256:eb8eec37a6662dd5d84a0b3f90ab4fb665b45d1f014fcb8e2680236d951f87a7"
-    grant_id: "7d14bc74-43af-4598-97d6-404629965c2c"
-    issued_at: "2026-09-12T07:48:31.808Z"
+    completion_contract_digest: "sha256:a18e1366f802e14001cd307a12aee83912fec47feade8d43d32d55353fdc8510"
+    digest: "sha256:378ceea919aae1ff41b2ad4c7b0747c43e5c00d8e15000c02131e8565a168662"
+    grant_id: "8494408d-2e46-4d28-8248-307ccce7db57"
+    issued_at: "2026-09-12T08:03:16.400Z"
     kind: "agentplane.execution_grant"
     plan_digest: "sha256:98923d15d05add36f3736bc7590302dac54e4947904b1de94c0b9786eb2af386"
-    plan_revision: 3
+    plan_revision: 14
     repository_identity: "sha256:4d4f122365e3b382519a58a42f4021d908a09e93d8b2a5709639f1843429d339"
     schema_version: 1
     scope_digest: "sha256:f2597e379e84d7b1cabc5d1fe65f4cdc98cc2387e3b61c1b60d7ce1c79cf0131"
@@ -436,7 +436,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609120744-G5Q9V0"
-    event_cursor: 12
+    event_cursor: 13
     final_validation: null
     id: "202609120744-G5Q9V0"
     intent:
@@ -463,10 +463,10 @@ extensions:
 
         Make task new reject or materialize incomplete controlled ops intent before lifecycle approval, and expose structured intent fields in task brief so downstream host-operation guards are not the first failure point.
       task_id: "202609120744-G5Q9V0"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 14
+    revision: 15
     schema_version: 1
     updated_at: "2026-09-12T08:00:43.716Z"
     work_items:
@@ -484,6 +484,30 @@ extensions:
     events: []
     leases: []
     mutation_receipts:
+      compatibility:sha256:0c232da930175d3a8c7d5faf5c9bb6ff46942eb5970ba46ffd7bfe8a5fb1a836:
+        aggregate_digest: "sha256:fb38b274185b4fc902ca2eca84e856346940ceb6ea747dcd1e778f5b6d07a2ad"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:00:43.716Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_c3021deac405d66ea3ed95c7"
+          mutation_id: "compatibility:sha256:0c232da930175d3a8c7d5faf5c9bb6ff46942eb5970ba46ffd7bfe8a5fb1a836"
+          plan_digest: "sha256:545c3e90e67cd00c8e9e3b6ee8fcf7ced55e80a8e5f70b8575b2cc25aa5494e6"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0c232da930175d3a8c7d5faf5c9bb6ff46942eb5970ba46ffd7bfe8a5fb1a836"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
       compatibility:sha256:297c270e218ef6af261f319c6dca5315cd17010ad57af7ac657d92d2cbd2c3f7:
         aggregate_digest: "sha256:b35ebf964bf7c82553be2349c492d6e0f59ecf1d28006532240ea0a7e7207230"
         event:
