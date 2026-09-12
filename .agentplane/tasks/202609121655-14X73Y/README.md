@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -128,6 +128,7 @@ execution_contract:
     changed_components:
       - "packages/agentplane"
     changed_paths:
+      - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.ts"
     external_effects: []
@@ -169,7 +170,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:85a99c49f3c8acc2305b5404464ffd4c281d94cea550ef1340cd5f55a78dcd58"
+      digest: "sha256:268c38e5baa30198ad6cdaf1b1dbeb64475b3fea5e64b49663ba30b2373fec34"
       escalation_reasons: []
       execution_groups:
         - "core"
@@ -178,6 +179,7 @@ execution_contract:
         changed_components:
           - "packages/agentplane"
         changed_files:
+          - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.ts"
         external_effects: []
@@ -215,7 +217,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "1d703105c56e7a949f6b4c078e558e3e6791c301"
+  message: "🚧 14X73Y task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -247,6 +251,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/scope-extend.command.test.ts; repository effects: repository_write, tests."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 1d703105c56e. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -322,8 +329,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The hosted hotspot failure requires one additional focused test file outside the current writable roots. Recommended action: Approve the exact test-file scope extension, then reissue the implementation episode. Requested scope: roots=packages/agentplane/src/commands/task/scope-extend.command.test.ts; repository effects=repository_write,tests; request digest=sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243. Agentplane receipt: external-agent-blocker/tr_5795a26c0c2ebf9b17adc399ea1b5b09/sha256:6b4530e6858336faaff40ea3edbd0734572e7a64eb4164e3784b7d136a329099/sha256:c226d0b8ade1bd6d95781635a912c7f7867c5531cce7d769d895c6c305d56243."
+  -
+    type: "status"
+    at: "2026-09-12T17:26:32.919Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 1d703105c56e. CLI accepted one state-bound external-agent semantic result."
+    commit: "1d703105c56e7a949f6b4c078e558e3e6791c301"
 doc_version: 3
-doc_updated_at: "2026-09-12T17:23:20.462Z"
+doc_updated_at: "2026-09-12T17:26:32.985Z"
 doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
@@ -844,7 +859,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 20
+    event_cursor: 22
     final_validation: null
     id: "202609121655-14X73Y"
     intent:
@@ -869,9 +884,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 24
+    revision: 26
     schema_version: 1
-    updated_at: "2026-09-12T17:23:20.462Z"
+    updated_at: "2026-09-12T17:26:32.933Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1039,6 +1054,30 @@ extensions:
         mutation_id: "compatibility:sha256:16868a76cea2be1ad7446a55e6d8843f8efafe45f124b44a0733aaa642a39e4b"
         next_revision: 12
         previous_revision: 11
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:20cd21d0120bdb8409d152e89de828aef9ac67413f9f2bc107a58fad6ff2342f:
+        aggregate_digest: "sha256:5ecc04ebfc477ce851903cace5dcb12f7778270434da8aea3403b221f092da9d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:26:32.933Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_09933879604e77124c6d827e"
+          mutation_id: "compatibility:sha256:20cd21d0120bdb8409d152e89de828aef9ac67413f9f2bc107a58fad6ff2342f"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 25
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:20cd21d0120bdb8409d152e89de828aef9ac67413f9f2bc107a58fad6ff2342f"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:26c4c33061a327b4ec12f20437c21e1852b0ce911f67d91bb05f34607b9823c5:
@@ -1377,6 +1416,30 @@ extensions:
         previous_revision: 8
         schema_version: 1
         task_id: "202609121655-14X73Y"
+      compatibility:sha256:e4b015538eab089184edeecd28197676654d94501e776b9fa3bcaf9e25e8aad5:
+        aggregate_digest: "sha256:74d7e42b13ab701c5a454176a011e1f39eadf5b28ba768f33a3147d17667acab"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:26:32.919Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_abab3bd4276c36cbed6b6e6e"
+          mutation_id: "compatibility:sha256:e4b015538eab089184edeecd28197676654d94501e776b9fa3bcaf9e25e8aad5"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 24
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e4b015538eab089184edeecd28197676654d94501e776b9fa3bcaf9e25e8aad5"
+        next_revision: 25
+        previous_revision: 24
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
       compatibility:sha256:ec564e45c701bf2baa11e00eeae61c37945759551553fa6cdb455dc188c1e271:
         aggregate_digest: "sha256:917e0ee0bebf87a6d461835e8d8eabb10daf122947ea06c4f254de8fd753282b"
         event:
@@ -1502,8 +1565,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "4ce33c3431655c6350d002d85cd531f9a0e17f86"
-    message: "🚧 14X73Y task: apply external agent result"
+    hash: "1d703105c56e7a949f6b4c078e558e3e6791c301"
   task_execution_context:
     base_ref: "main"
     base_sha: "ab3a8e251ad17e8dae00fbe070767fb01f1fae57"
