@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -488,6 +488,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The provider branch update applied, but the task worktree contains unrelated generated bun.lock drift that the read-only recovery episode cannot remove."
+  -
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The classified bun.lock drift remains the only dirty path, and this read-only episode cannot restore it."
 events:
   -
     type: "status"
@@ -621,8 +624,13 @@ events:
     at: "2026-09-12T18:26:15.731Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The provider branch update applied, but the task worktree contains unrelated generated bun.lock drift that the read-only recovery episode cannot remove."
+  -
+    type: "comment"
+    at: "2026-09-12T18:27:38.702Z"
+    author: "SUPERVISOR"
+    body: "Read-only worktree observation (blocked): The classified bun.lock drift remains the only dirty path, and this read-only episode cannot restore it."
 doc_version: 3
-doc_updated_at: "2026-09-12T18:26:15.756Z"
+doc_updated_at: "2026-09-12T18:27:38.727Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -1834,7 +1842,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 34
+    event_cursor: 35
     final_validation:
       evidence:
         -
@@ -3467,9 +3475,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 45
+    revision: 46
     schema_version: 1
-    updated_at: "2026-09-12T18:26:15.731Z"
+    updated_at: "2026-09-12T18:27:38.702Z"
     work_items:
       ST-01:
         attempt: 1
@@ -4117,6 +4125,30 @@ extensions:
         mutation_id: "compatibility:sha256:44102d247fa1aa9f4ccb0044f525f5d15dfda0c75b3cddb30548e459c5ae4f78"
         next_revision: 23
         previous_revision: 22
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      compatibility:sha256:454d77e46f4e90da3f87c5e81b7e8bce9cdb689729b55e787d545d97553df11c:
+        aggregate_digest: "sha256:f77c82cbc16edca88c4015a5e4092f63fc4b638023d5dc308de19bffa19a8931"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:27:38.702Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_84611b3df10ce719b7a0c7f2"
+          mutation_id: "compatibility:sha256:454d77e46f4e90da3f87c5e81b7e8bce9cdb689729b55e787d545d97553df11c"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 45
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:454d77e46f4e90da3f87c5e81b7e8bce9cdb689729b55e787d545d97553df11c"
+        next_revision: 46
+        previous_revision: 45
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       compatibility:sha256:45c9994db343e95112de2153d63f28045656acfeda9bfb1d284041e46eb446cc:
