@@ -4,7 +4,7 @@ title: "Simplify the test suite without weakening safety-critical coverage"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -116,6 +116,7 @@ execution_contract:
       - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts"
       - "packages/agentplane/src/runtime/prompt-modules/index.ts"
       - "scripts/README.md"
+      - "scripts/check-coverage-thresholds.mjs"
       - "scripts/checks/check-coverage-thresholds.mjs"
       - "scripts/lib/test-route-registry.mjs"
     external_effects: []
@@ -172,7 +173,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ac53d194fadd40532588dece4a4f88a19904dba40ed74cc5c72ca3201e84375d"
+      digest: "sha256:7291a180dc73f968d8655ba173deccd071db06ac80eb49527f145bdb59639933"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:scripts/checks/check-coverage-thresholds.mjs"
@@ -202,6 +203,7 @@ execution_contract:
           - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts"
           - "packages/agentplane/src/runtime/prompt-modules/index.ts"
           - "scripts/README.md"
+          - "scripts/check-coverage-thresholds.mjs"
           - "scripts/checks/check-coverage-thresholds.mjs"
           - "scripts/lib/test-route-registry.mjs"
         external_effects: []
@@ -246,7 +248,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+  message: "🚧 JFNN6B task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -263,6 +267,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: scripts/check-coverage-thresholds.mjs; repository effects: dependencies."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: dcf9451c10d6. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -293,8 +300,16 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: external EXECUTOR could not complete the scoped implementation. The committed implementation still needs the approved wrapper deletion and conservative package.json dependency effect. Recommended action: Apply the exact user-approved scope extension and issue a freshly scoped implementation packet. Requested scope: roots=scripts/check-coverage-thresholds.mjs; repository effects=dependencies; request digest=sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad. Agentplane receipt: external-agent-blocker/tr_0a82a1d806e742c481ecbac6642f63d1/sha256:cacdbd4fd319aee797cde23053bf02e90f346cd4b928f6a0cdaedc56f9d2e51a/sha256:516e1a981070008e091076fb2f8418bffc4785476ea545e370912e14cddfa5ad."
+  -
+    type: "status"
+    at: "2026-09-12T22:55:07.693Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: dcf9451c10d6. CLI accepted one state-bound external-agent semantic result."
+    commit: "dcf9451c10d6690c92589e711ea4cba0bd4c0957"
 doc_version: 3
-doc_updated_at: "2026-09-12T22:53:30.285Z"
+doc_updated_at: "2026-09-12T22:55:07.693Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
@@ -945,7 +960,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 11
+    event_cursor: 13
     final_validation: null
     id: "202609122236-JFNN6B"
     intent:
@@ -1559,9 +1574,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 13
+    revision: 15
     schema_version: 1
-    updated_at: "2026-09-12T22:53:30.285Z"
+    updated_at: "2026-09-12T22:55:07.693Z"
     work_items:
       work-item-cleanup:
         attempt: 0
@@ -1608,6 +1623,30 @@ extensions:
         mutation_id: "compatibility:sha256:1592e434d9fd7539732652499193cc310fbc04d00595744bf4bb59e03d2d420d"
         next_revision: 10
         previous_revision: 9
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
+      compatibility:sha256:2692b2b79cc57a810e4fa98044815c850c779164b88a6ca913a117f235453741:
+        aggregate_digest: "sha256:7428b2ae5b11a80562f2f113c58e2c56f93d390c895bf1729b448bee754fe02d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:55:07.693Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_24549d5b17be85ea0b48aef0"
+          mutation_id: "compatibility:sha256:2692b2b79cc57a810e4fa98044815c850c779164b88a6ca913a117f235453741"
+          plan_digest: "sha256:fb867df4f960d822988129146b60df8c385282a3be4e8079409235778611d401"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 13
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:2692b2b79cc57a810e4fa98044815c850c779164b88a6ca913a117f235453741"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609122236-JFNN6B"
       compatibility:sha256:49590b7a17ee04b84aa13cb1da694ef646ba3c9465a83393fc5913ebb54eaf4a:
@@ -1850,11 +1889,35 @@ extensions:
         previous_revision: 6
         schema_version: 1
         task_id: "202609122236-JFNN6B"
+      compatibility:sha256:feaf1188a39dec63147730bc10b75ac49a8c36c89d7d737bcc220c5fa7bd74b6:
+        aggregate_digest: "sha256:f645a4204509331e8f010e66bde3b57ecd127bde323783b6779a41c2c0afb79c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:55:07.693Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_836e019907dca95a86ef0995"
+          mutation_id: "compatibility:sha256:feaf1188a39dec63147730bc10b75ac49a8c36c89d7d737bcc220c5fa7bd74b6"
+          plan_digest: "sha256:fb867df4f960d822988129146b60df8c385282a3be4e8079409235778611d401"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 14
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:feaf1188a39dec63147730bc10b75ac49a8c36c89d7d737bcc220c5fa7bd74b6"
+        next_revision: 15
+        previous_revision: 14
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "975024bffcf97db745d0c7bdcf274b922bb99bae"
+    hash: "dcf9451c10d6690c92589e711ea4cba0bd4c0957"
   task_execution_context:
     base_ref: "main"
     base_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
