@@ -33,9 +33,9 @@ Created: 2026-09-12T07:48:41.870Z
  .../src/cli/run-cli.core.tasks.create.test.ts      | 102 +++++++++++++++++++++
  .../agentplane/src/commands/task/brief-model.ts    |   9 ++
  .../agentplane/src/commands/task/brief-render.ts   |   7 ++
- packages/agentplane/src/commands/task/new.spec.ts  |   5 +
+ packages/agentplane/src/commands/task/new.spec.ts  |   8 +-
  packages/agentplane/src/commands/task/new.ts       |  47 ++++++++++
- 6 files changed, 174 insertions(+)
+ 6 files changed, 176 insertions(+), 1 deletion(-)
 ```
 
 </details>

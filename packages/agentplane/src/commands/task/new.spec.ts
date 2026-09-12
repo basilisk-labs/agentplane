@@ -80,7 +80,8 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
         "security",
         "external_system",
       ],
-      description: "Structured risk flag used by blueprint resolution. Repeatable.",
+      description:
+        "Structured risk flag used by blueprint resolution. Repeatable. Controlled ops requires credentials, deploy, security, or external_system.",
     },
     {
       kind: "string",
