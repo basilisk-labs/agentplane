@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -246,9 +246,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "0a6612ae197108023d7d4927b0e0042167bc2a56"
-  message: "🚧 T83XJA task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1104,9 +1102,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 13
+    revision: 14
     schema_version: 1
-    updated_at: "2026-09-12T21:53:34.658Z"
+    updated_at: "2026-09-12T21:53:42.691Z"
     work_items:
       ST-08:
         attempt: 1
@@ -1163,14 +1161,69 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-09-17:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-09-17"
         last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        output_manifests:
+          -
+            digest: "sha256:4c6e71adb5e77144c9f63c91276045faf18e80b482a5279b6c8f1d1a87e9c144"
+            id: "failure-safe evaluator usage receipt"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-09-17"
+            provenance:
+              - "sha256:2a960a08d4ee70bc17666931d557ce40e96d402e79948bfdd391883c95fc9613"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:20f9eeb1fb858a63ae5a086faefd7c817235634d7469d430e969cb2b27c7963b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:edab740c578f18cd566e6ea43524a1ddc1567d796f732408ea40259fb2061a26"
+            id: "distinct telemetry and spend-admission disposition"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-09-17"
+            provenance:
+              - "sha256:2a960a08d4ee70bc17666931d557ce40e96d402e79948bfdd391883c95fc9613"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:20f9eeb1fb858a63ae5a086faefd7c817235634d7469d430e969cb2b27c7963b"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "COMPLETED"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-failed-usage"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T21:53:42.683Z"
+              repository_snapshot_digest: "sha256:20f9eeb1fb858a63ae5a086faefd7c817235634d7469d430e969cb2b27c7963b"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-telemetry-disposition"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts."
+              exit_code: 0
+              observed_at: "2026-09-12T21:53:42.683Z"
+              repository_snapshot_digest: "sha256:20f9eeb1fb858a63ae5a086faefd7c817235634d7469d430e969cb2b27c7963b"
+              status: "passed"
+          schema_version: 1
+          stale_evidence: []
+          status: "passed"
+          unsatisfied_criteria: []
       ST-10-11:
         attempt: 0
         claim_id: null
@@ -1218,6 +1271,23 @@ extensions:
         task_id: "202609121424-T83XJA"
         task_revision: 10
         work_item_id: "ST-08"
+      -
+        at: "2026-09-12T21:53:42.691Z"
+        from: "PLANNED"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:e6a50c28446db10fafff812c6b61fd52f46589966508bdcaf7d9b6ca12bbf543"
+        entity: "work_item"
+        id: "event_6cee0461548645ab8b7a1522"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-e2514641c03ece278ea1d416"
+        plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+        task_revision: 13
+        work_item_id: "ST-09-17"
     leases: []
     mutation_receipts:
       compatibility:sha256:1d87dc53ea2b6bcc2dab3735027c416e17d4d12335c5d63beb0800076b6f22b4:
@@ -1434,6 +1504,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-T83XJA-executor-884458ec85c3b7ccb98fa5d5"
         next_revision: 11
         previous_revision: 10
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      external-result:work-order-202609121424-T83XJA-executor-e2514641c03ece278ea1d416:
+        aggregate_digest: "sha256:b34b3529784d11045837a9c7d52549a1c9bd80e4e9441ebc5f174112bc38776e"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T21:53:42.691Z"
+          cause_refs:
+            - "semantic-result:sha256:e6a50c28446db10fafff812c6b61fd52f46589966508bdcaf7d9b6ca12bbf543"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_6cee0461548645ab8b7a1522"
+          mutation_id: "external-result:work-order-202609121424-T83XJA-executor-e2514641c03ece278ea1d416"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 13
+          to: "COMPLETED"
+          work_item_id: "ST-09-17"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-e2514641c03ece278ea1d416"
+        next_revision: 14
+        previous_revision: 13
         schema_version: 1
         task_id: "202609121424-T83XJA"
     pending_effects: []
