@@ -1,10 +1,10 @@
 ---
 id: "202609121424-T83XJA"
 title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 through ST-13 and ST-17"
-status: "DOING"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -288,9 +288,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "51921b94664b03b40996e97b27be54e62c1d9b8b"
-  message: "🚧 T83XJA task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -313,6 +311,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 51921b94664b. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized ST-13 rework is complete, but full CI requires splitting an oversized ST-09 evaluator test outside the current writable roots. Recommended action: Extend the writable scope to the evaluator command tests and split the ST-09 cases into a focused neighboring file. Requested scope: roots=packages/agentplane/src/commands/evaluator; repository effects=tests; request digest=sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb. Agentplane receipt: external-agent-blocker/tr_a08ada226739537f9e1d448ec5defcdd/sha256:0d65aba75bbe22e792bd850d3b58a78870db0bf3cb15e3c7e1b500e63587e869/sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb."
 events:
   -
     type: "status"
@@ -369,8 +370,15 @@ events:
     to: "DOING"
     note: "Implementation committed: 51921b94664b. CLI accepted one state-bound external-agent semantic result."
     commit: "51921b94664b03b40996e97b27be54e62c1d9b8b"
+  -
+    type: "status"
+    at: "2026-09-12T23:19:42.844Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The authorized ST-13 rework is complete, but full CI requires splitting an oversized ST-09 evaluator test outside the current writable roots. Recommended action: Extend the writable scope to the evaluator command tests and split the ST-09 cases into a focused neighboring file. Requested scope: roots=packages/agentplane/src/commands/evaluator; repository effects=tests; request digest=sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb. Agentplane receipt: external-agent-blocker/tr_a08ada226739537f9e1d448ec5defcdd/sha256:0d65aba75bbe22e792bd850d3b58a78870db0bf3cb15e3c7e1b500e63587e869/sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb."
 doc_version: 3
-doc_updated_at: "2026-09-12T23:02:09.750Z"
+doc_updated_at: "2026-09-12T23:19:42.844Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -427,6 +435,21 @@ extensions:
     scope_digest: "sha256:e13ba8c0744eed7d60b25a07a3199dd41df0d148b1545b18b4b55b3ba6ce9144"
     status: "active"
     task_id: "202609121424-T83XJA"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:0d65aba75bbe22e792bd850d3b58a78870db0bf3cb15e3c7e1b500e63587e869"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Earlier in-scope ST-09 coverage made the evaluator test exceed the enforced 1000-line baseline. A behavior-preserving test split is required by c-regression."
+      repository_effects:
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/evaluator"
+    request_digest: "sha256:baf7fb7f76c4f840e1fdd97a90122eee987e3723c5abe2cf6ff91cb5a803dcfb"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_a08ada226739537f9e1d448ec5defcdd"
+    work_item_id: "ST-13"
   agentplane.task_centric:
     current_plan:
       approval:
@@ -1170,7 +1193,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 16
+    event_cursor: 18
     final_validation: null
     id: "202609121424-T83XJA"
     intent:
@@ -1187,12 +1210,12 @@ extensions:
 
         Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks.
       task_id: "202609121424-T83XJA"
-    lifecycle: "ACTIVE"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 25
+    revision: 28
     schema_version: 1
-    updated_at: "2026-09-12T23:02:09.750Z"
+    updated_at: "2026-09-12T23:19:42.844Z"
     work_items:
       ST-08:
         attempt: 1
@@ -1431,14 +1454,116 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-13:
-        attempt: 0
+        attempt: 1
         claim_id: null
         id: "ST-13"
-        last_failure: null
-        output_manifests: []
-        revision: 1
-        state: "PLANNED"
-        validation_result: null
+        last_failure:
+          cause_refs:
+            - "c-regression"
+          code: "validation_failed"
+          kind: "validation"
+          message: "Added durable monotonic lifecycle stage timing to supervisor operations and integrated it into shared, branch, direct, and kernel-managed execution paths without fabricating cross-process durations."
+          retryable: true
+        output_manifests:
+          -
+            digest: "sha256:fd7741046707309288a53420345fa28639eeeb77b78bd09ed794a0f1c9783eda"
+            id: "lifecycle stage timing observations"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-13"
+            provenance:
+              - "sha256:c0c3f12f2f461ae4e63de4fc7f20b6b5481d8f28afe56c90078197efb06baf40"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+          -
+            digest: "sha256:a432acfb619cfcd51b8ecd43168d6f1b95cc04ee12629ffdbb2dc0ec953dfecc"
+            id: "clock and overlap regression coverage"
+            kind: "semantic_output"
+            producer:
+              attempt: 1
+              plan_revision: 1
+              task_id: "202609121424-T83XJA"
+              work_item_id: "ST-13"
+            provenance:
+              - "sha256:c0c3f12f2f461ae4e63de4fc7f20b6b5481d8f28afe56c90078197efb06baf40"
+              - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+            repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+            schema: "agentplane.semantic-output.v1"
+            schema_version: 1
+        revision: 2
+        state: "REWORK_READY"
+        validation_result:
+          evidence:
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-stage-timing"
+              command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T23:11:32.511Z"
+              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-typecheck"
+              command_identity: "bun run typecheck"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T23:11:32.511Z"
+              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-schemas"
+              command_identity: "bun run schemas:check"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T23:11:32.511Z"
+              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-artifacts"
+              command_identity: "bun run artifacts:check"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T23:11:32.511Z"
+              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-critical"
+              command_identity: "bun run test:critical"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 0
+              observed_at: "2026-09-12T23:11:32.511Z"
+              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              status: "passed"
+            -
+              artifact_refs:
+                - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
+              check_id: "check-full-ci"
+              command_identity: "bun run ci:local:full"
+              detail: "Declared check failed: bun run ci:local:full"
+              exit_code: 1
+              observed_at: "2026-09-12T23:11:32.511Z"
+              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              status: "failed"
+          schema_version: 1
+          stale_evidence: []
+          status: "failed"
+          unsatisfied_criteria:
+            - "c-regression"
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -1527,6 +1652,23 @@ extensions:
         task_id: "202609121424-T83XJA"
         task_revision: 22
         work_item_id: "ST-12"
+      -
+        at: "2026-09-12T23:11:32.540Z"
+        from: "PLANNED"
+        to: "REWORK_READY"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:8b24029e36c683f73a643b9b48cda8f7a229bc83e2925add0802b37bfe53f5ff"
+        entity: "work_item"
+        id: "event_c66a0186e91801182817042e"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-8496819b2c3ab2274d6d8a87"
+        plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+        plan_revision: 1
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+        task_revision: 25
+        work_item_id: "ST-13"
     leases: []
     mutation_receipts:
       compatibility:sha256:1d87dc53ea2b6bcc2dab3735027c416e17d4d12335c5d63beb0800076b6f22b4:
@@ -1817,6 +1959,30 @@ extensions:
         previous_revision: 4
         schema_version: 1
         task_id: "202609121424-T83XJA"
+      compatibility:sha256:a2913137d5ff3984dc483e80431aa6640afaaf1187a70ab03921ebe01a376706:
+        aggregate_digest: "sha256:c8b6d0eda9ccb7f258c7a003adeb8e6331990113e76945a932139a33405cebef"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:19:42.844Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_faf23c4b892449886466a510"
+          mutation_id: "compatibility:sha256:a2913137d5ff3984dc483e80431aa6640afaaf1187a70ab03921ebe01a376706"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 26
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a2913137d5ff3984dc483e80431aa6640afaaf1187a70ab03921ebe01a376706"
+        next_revision: 27
+        previous_revision: 26
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       compatibility:sha256:d75e1378750895149a188c2f38782a52ee3f8f7cb2e8a5ba1423551701b958d8:
         aggregate_digest: "sha256:18b15077d91cdc62faae07ca85aa0b3a1b9c6c9a5dca0a12135af41dc173fc90"
         event:
@@ -1913,6 +2079,30 @@ extensions:
         previous_revision: 21
         schema_version: 1
         task_id: "202609121424-T83XJA"
+      compatibility:sha256:fed086caef8b63774fb474eeff036fa5de0c846c724e18191857550b8c09e20f:
+        aggregate_digest: "sha256:075eba8fd3c7b3356167aca1d6bed8525ef0011b11b164e7f8fda5490b5f3a95"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:19:42.844Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_9238730c360bd79dfc1e613f"
+          mutation_id: "compatibility:sha256:fed086caef8b63774fb474eeff036fa5de0c846c724e18191857550b8c09e20f"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 27
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fed086caef8b63774fb474eeff036fa5de0c846c724e18191857550b8c09e20f"
+        next_revision: 28
+        previous_revision: 27
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       external-result:work-order-202609121424-T83XJA-executor-1212c92464f1353ec83d5de3:
         aggregate_digest: "sha256:b607a50e53474abfb1bbe7d627505b62b43ab6867bb493468653a57b46f16d68"
         event:
@@ -1935,6 +2125,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-T83XJA-executor-1212c92464f1353ec83d5de3"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      external-result:work-order-202609121424-T83XJA-executor-8496819b2c3ab2274d6d8a87:
+        aggregate_digest: "sha256:0aeca9cf6add7adf098751b9665a933008bbf08845ed816529ce3a4c029144f5"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:11:32.540Z"
+          cause_refs:
+            - "semantic-result:sha256:8b24029e36c683f73a643b9b48cda8f7a229bc83e2925add0802b37bfe53f5ff"
+          entity: "work_item"
+          from: "PLANNED"
+          id: "event_c66a0186e91801182817042e"
+          mutation_id: "external-result:work-order-202609121424-T83XJA-executor-8496819b2c3ab2274d6d8a87"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 25
+          to: "REWORK_READY"
+          work_item_id: "ST-13"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-8496819b2c3ab2274d6d8a87"
+        next_revision: 26
+        previous_revision: 25
         schema_version: 1
         task_id: "202609121424-T83XJA"
       external-result:work-order-202609121424-T83XJA-executor-858b1ed0b118fea6c8303ea3:
