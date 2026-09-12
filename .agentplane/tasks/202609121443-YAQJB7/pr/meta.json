@@ -8,10 +8,10 @@
   "pr_number": 5935,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5935",
   "pre_merge_closure": {
-    "basis_commit": "f76e4491352c6854ee7a2fd83559cc742553010e",
+    "basis_commit": "d49a811d9eb4b4a2f3b1ff7b7304fdd568b9751f",
     "branch": "task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when",
     "pr_number": 5935,
-    "recorded_at": "2026-09-12T15:27:19.661Z",
+    "recorded_at": "2026-09-12T16:00:06.134Z",
     "state": "closed_before_merge"
   },
   "provider": {
