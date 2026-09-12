@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3706d4ddb28aa84637fe83c5a128cb7b7055531d..e000d63deb14c4403120357b9c4030178e7d4adb",
+      "command": "git diff --check 08dec7de94535e6058b3f7360dfd3d5e1c906eca..84126d23d5ac571fbab9b8a59ee5a9f7cd79ab16",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,11 +13,13 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3706d4ddb28aa84637fe83c5a128cb7b7055531d..e000d63deb14c4403120357b9c4030178e7d4adb",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 08dec7de94535e6058b3f7360dfd3d5e1c906eca..84126d23d5ac571fbab9b8a59ee5a9f7cd79ab16",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "M\tpackages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "M\t.agentplane/tasks/202609111943-GH8BV2/README.md",
+        "M\t.agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202609111943-GH8BV2/verification/20260912170602795-8e09966ea040ee5c.json",
         "M\tscripts/checks/run-local-ci.mjs"
       ]
     },
@@ -28,15 +30,42 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3706d4ddb28aa84637fe83c5a128cb7b7055531d",
-  "implementation_commit": "e000d63deb14c4403120357b9c4030178e7d4adb",
+  "execution_base_commit": "08dec7de94535e6058b3f7360dfd3d5e1c906eca",
+  "implementation_commit": "84126d23d5ac571fbab9b8a59ee5a9f7cd79ab16",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      " M .agentplane/tasks/202609111943-GH8BV2/README.md",
+      " M .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json",
+      " M scripts/checks/run-local-ci.mjs",
+      "?? .agentplane/tasks/202609111943-GH8BV2/verification/20260912170602795-8e09966ea040ee5c.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609111943-GH8BV2/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/run-local-ci.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609111943-GH8BV2/verification/20260912170602795-8e09966ea040ee5c.json"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609111943-GH8BV2/README.md",
+      " M .agentplane/tasks/202609111943-GH8BV2/supervision/declared-checks.json",
+      " M scripts/checks/run-local-ci.mjs",
+      "?? .agentplane/tasks/202609111943-GH8BV2/verification/20260912170602795-8e09966ea040ee5c.json"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
