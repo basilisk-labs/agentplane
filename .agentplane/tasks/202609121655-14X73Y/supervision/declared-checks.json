@@ -8,10 +8,10 @@
         "task_outcome"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts",
-      "duration_ms": 1613,
+      "duration_ms": 1640,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
@@ -19,7 +19,7 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/scope-extend.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the\n\n\n Test Files  1 passed (1)\n      Tests  48 passed (48)\n   Start at  19:58:36\n   Duration  1.27s (transform 900ms, setup 0ms, import 1.18s, tests 37ms, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the\n\n\n Test Files  1 passed (1)\n      Tests  49 passed (49)\n   Start at  20:01:27\n   Duration  1.27s (transform 898ms, setup 0ms, import 1.17s, tests 38ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [
@@ -29,10 +29,10 @@
         "task_outcome"
       ],
       "command": "bun run typecheck",
-      "duration_ms": 229,
+      "duration_ms": 242,
       "exit_code": 0,
       "runtime": {
-        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
         "kind": "local_runtime_resolution",
         "status": "resolved",
