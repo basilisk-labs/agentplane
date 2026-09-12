@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5517327a3aae5104e396e0ad65a36057f4ea27242db29466c5574013d3d50235",
   "pr_number": 5931,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5931",
+  "pre_merge_closure": {
+    "basis_commit": "bcec61ab675d60fd2e64a348937f0c06f3707eec",
+    "branch": "task/202609111943-GH8BV2/allow-an-approved-repository-effect-only-scope-e",
+    "pr_number": 5931,
+    "recorded_at": "2026-09-12T16:07:32.243Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
