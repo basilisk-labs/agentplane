@@ -15,14 +15,14 @@ Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run ci:local:full
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T14:30:55.296Z
+- Updated: 2026-09-12T17:57:52.207Z
 - Branch: task/202609121423-9WPTCW/implement-the-0-7-9-baseline-inventory-and-lifec
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
