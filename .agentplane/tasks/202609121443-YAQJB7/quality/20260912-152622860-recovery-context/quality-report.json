@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121443-YAQJB7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T15:27:12.938Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "a7234fc30d705ad7246276932622601c73031c92",
+  "blueprint_digest": "9947e66ef95512fbd2abaf3c8f4405374ddd604288b7360683f50e1f44e4f454",
+  "findings": [
+    "Pass: the persisted issued WorkItem identity replaces ambiguous scheduler selection for new requests, while legacy requests retain the previous fail-closed unique-selection rule."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121443-YAQJB7/quality/objects/sha256/4fb577afddfa23e48934d3fd97b5d4eed6a268c09f2a99b2757a787f772524c9.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
