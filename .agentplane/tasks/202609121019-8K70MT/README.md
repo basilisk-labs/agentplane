@@ -1,10 +1,11 @@
 ---
 id: "202609121019-8K70MT"
 title: "Make verification rework exhaustion atomically project BLOCKED into the task-centric aggregate, with focused regression coverage, so supervisor verification failures cannot leave a partial task-centric projection"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -54,6 +55,22 @@ quality_review:
   findings:
     - "The required local full regression gate passed all runtime, docs-schema, core, and cli groups without a product failure."
     - "Residual risk: Hosted checks and integration have not yet completed."
+token_usage:
+  agent_runs: 8
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:d2674add64e2240643964a0b7a1530def8c50002a53b5981a3182d8222aa965b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T14:03:06.410Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -244,8 +261,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "9bd82d62ce901f7962c650aa3e64577968b953c9"
-  message: "🚧 8K70MT task: apply external agent result"
+  hash: "09cc5447a01fc482e655d2329fc6073441806cfd"
+  message: "🚧 8K70MT task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -262,6 +279,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 9bd82d62ce90. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -326,9 +346,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-12T14:03:06.410Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "09cc5447a01fc482e655d2329fc6073441806cfd"
 doc_version: 3
-doc_updated_at: "2026-09-12T13:40:40.281Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T14:03:06.410Z"
+doc_updated_by: "CODER"
 description: "When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests."
 sections:
   Summary: |-
@@ -832,7 +860,56 @@ extensions:
       schema_version: 1
       task_id: "202609121019-8K70MT"
     event_cursor: 17
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609121019-8K70MT"
+            - "git:9bd82d62ce901f7962c650aa3e64577968b953c9"
+          check_id: "projection-regressions"
+          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts --maxWorkers=1"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T13:40:38.604Z"
+          repository_snapshot_digest: "sha256:b8cfabf1bfed767fa14b1ae525555bfc26bf99e70a3479e45af61efa42432d9f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121019-8K70MT"
+            - "git:9bd82d62ce901f7962c650aa3e64577968b953c9"
+          check_id: "typecheck"
+          command_identity: "bun run typecheck"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T13:40:38.604Z"
+          repository_snapshot_digest: "sha256:b8cfabf1bfed767fa14b1ae525555bfc26bf99e70a3479e45af61efa42432d9f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121019-8K70MT"
+            - "git:9bd82d62ce901f7962c650aa3e64577968b953c9"
+          check_id: "diff-check"
+          command_identity: "git diff --check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T13:40:38.604Z"
+          repository_snapshot_digest: "sha256:b8cfabf1bfed767fa14b1ae525555bfc26bf99e70a3479e45af61efa42432d9f"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609121019-8K70MT"
+            - "git:9bd82d62ce901f7962c650aa3e64577968b953c9"
+          check_id: "full-regression"
+          command_identity: "bun run ci:local:full"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T13:40:38.604Z"
+          repository_snapshot_digest: "sha256:b8cfabf1bfed767fa14b1ae525555bfc26bf99e70a3479e45af61efa42432d9f"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609121019-8K70MT"
     intent:
       acceptance_criteria:
@@ -853,7 +930,7 @@ extensions:
 
         When a needs_rework verification exceeds evaluator.max_rework_attempts, compatibility mutation currently sets the legacy task status to BLOCKED while leaving the canonical task-centric lifecycle ACTIVE, triggering task_centric_projection_mismatch and preventing recovery. Preserve normal ACTIVE rework behavior, atomically project terminal exhaustion to BLOCKED, and cover the boundary with focused tests.
       task_id: "202609121019-8K70MT"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -1041,9 +1118,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121019-8K70MT"
-    revision: 23
+    revision: 24
     schema_version: 1
-    updated_at: "2026-09-12T13:40:40.281Z"
+    updated_at: "2026-09-12T14:03:06.410Z"
     work_items:
       project-terminal-verification-block:
         attempt: 1
@@ -1631,6 +1708,31 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609121019-8K70MT"
+      legacy-finish:202609121019-8K70MT:2026-09-12T13:40:38.604Z:9bd82d62ce901f7962c650aa3e64577968b953c9:
+        aggregate_digest: "sha256:efd9d801c405258c51b24e26e0f8de11e540a63b204094c20a0184180a0b654b"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T14:03:06.410Z"
+          cause_refs:
+            - "task-verification:202609121019-8K70MT"
+            - "git:9bd82d62ce901f7962c650aa3e64577968b953c9"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2c461df87fe12d194ef3a6e0"
+          mutation_id: "legacy-finish:202609121019-8K70MT:2026-09-12T13:40:38.604Z:9bd82d62ce901f7962c650aa3e64577968b953c9"
+          plan_digest: "sha256:93e7f3a2d314dd2cb370893f494cf41377a615bc4c9dee65bf408270a3a33a9e"
+          plan_revision: 2
+          repository_fingerprint: "sha256:b8cfabf1bfed767fa14b1ae525555bfc26bf99e70a3479e45af61efa42432d9f"
+          schema_version: 1
+          task_id: "202609121019-8K70MT"
+          task_revision: 23
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609121019-8K70MT:2026-09-12T13:40:38.604Z:9bd82d62ce901f7962c650aa3e64577968b953c9"
+        next_revision: 24
+        previous_revision: 23
+        schema_version: 1
+        task_id: "202609121019-8K70MT"
       plan-refinement:work-order-202609121019-8K70MT-executor-1119fee01124128d064340a4:
         aggregate_digest: "sha256:ab0d003cbb3536df5374803d3355c6ac9be2a440cb3670eb6807363d04779684"
         event:
@@ -1660,6 +1762,7 @@ extensions:
     schema_version: 1
   implementation_commit:
     hash: "9bd82d62ce901f7962c650aa3e64577968b953c9"
+    message: "🚧 8K70MT task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
@@ -1961,3 +2064,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/8` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d2674add64e2240643964a0b7a1530def8c50002a53b5981a3182d8222aa965b`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T14:03:06.410Z`
