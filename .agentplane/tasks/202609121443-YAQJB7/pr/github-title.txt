@@ -1,1 +1,1 @@
-🚧 YAQJB7 task: Fix task-centric scope extension targeting when multiple WorkItems are schedulable [202609121443-YAQJB7]
+✅ YAQJB7 task: Fix task-centric scope extension targeting when multiple WorkItems are schedulable [202609121443-YAQJB7]
