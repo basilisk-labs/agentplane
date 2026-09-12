@@ -676,6 +676,7 @@ describe("runCli task advance blocked results", { timeout: 180_000 }, () => {
         "utf8",
       ),
     ) as { task: { work_item_id?: string | null } };
+    expect(pending.work_item_id).not.toBeNull();
     expect(pending.work_item_id).toBe(issuedWorkOrder.task.work_item_id ?? null);
     const baseCommand = await loadCommandContext({ cwd: root, rootOverride: root });
     const authorizedDecision = await buildTaskRouteDecision({

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when",
   "created_at": "2026-09-12T14:45:48.622Z",
-  "diffstat_sha256": "sha256:986c13d65c9eb2676e21839260d15f630cc1dad7103170cd4e6c825219a9a53e",
+  "diffstat_sha256": "sha256:96f4f15da9f1d4aea11147806b61911985a7ae81cfb7536a5cfaa5458e2bda3f",
   "last_verified_at": "2026-09-12T15:01:45.007Z",
   "last_verified_diffstat_sha256": "sha256:dea1e5856ccb18f0ea946112bcc67621889fb9190c89787c624d6ddee50dcf10",
   "pr_number": 5935,
