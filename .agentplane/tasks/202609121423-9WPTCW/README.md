@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -92,10 +92,17 @@ execution_contract:
       - "scripts/checks"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "scripts"
+    changed_paths:
+      - "scripts/baselines/architecture-inventory.json"
+      - "scripts/checks/architecture-inventory.mjs"
+      - "scripts/checks/architecture-inventory.test.mjs"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -136,29 +143,41 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:320dc45de9aa871aba09ccf7eee6bcd291e3f5547ef7aadabe37d500dabf8e6a"
-      escalation_reasons: []
+      digest: "sha256:703b29e1cc59dc22f508eef7daa988f15efc7d7f17539fe60529cc8ccae7cc92"
+      escalation_reasons:
+        - "central_path:scripts/checks/architecture-inventory.mjs"
+        - "central_path:scripts/checks/architecture-inventory.test.mjs"
+        - "unknown_path:scripts/baselines/architecture-inventory.json"
       execution_groups:
         - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "scripts"
+        changed_files:
+          - "scripts/baselines/architecture-inventory.json"
+          - "scripts/checks/architecture-inventory.mjs"
+          - "scripts/checks/architecture-inventory.test.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
         - "docs_contract"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -179,11 +198,16 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "920a6d95418455d87c02e00ad387395c0b91ca13"
+  message: "🚧 9WPTCW task: apply external agent result"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 920a6d954184. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -192,9 +216,17 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-09-12T14:34:45.208Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 920a6d954184. CLI accepted one state-bound external-agent semantic result."
+    commit: "920a6d95418455d87c02e00ad387395c0b91ca13"
 doc_version: 3
-doc_updated_at: "2026-09-12T14:30:55.182Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-12T14:34:45.208Z"
+doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
   Summary: |-
@@ -975,7 +1007,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 3
+    event_cursor: 5
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -995,9 +1027,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 5
+    revision: 7
     schema_version: 1
-    updated_at: "2026-09-12T14:30:55.182Z"
+    updated_at: "2026-09-12T14:34:45.208Z"
     work_items:
       ST-01:
         attempt: 0
@@ -1130,9 +1162,59 @@ extensions:
         previous_revision: 3
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:cd41ab14f729cef097810b149c9ad15d17514c48a909bac33d1bd4280eeb66fb:
+        aggregate_digest: "sha256:98a5e8e87730b36aab2f748a867ebd5580433ba5aa6f4d0952d5f541a0027145"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:34:45.208Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ea7fe4d3a1b20b34c23c342f"
+          mutation_id: "compatibility:sha256:cd41ab14f729cef097810b149c9ad15d17514c48a909bac33d1bd4280eeb66fb"
+          plan_digest: "sha256:ae5b71eb9074bffca3ca705501e2d78bdd0fbc90b257e5d157332c9845bbbbdf"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 6
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:cd41ab14f729cef097810b149c9ad15d17514c48a909bac33d1bd4280eeb66fb"
+        next_revision: 7
+        previous_revision: 6
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5:
+        aggregate_digest: "sha256:50fc66b03e7932389264cf3a3317ffa2176eb58bcf1d89762ea63a5703452e54"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T14:34:45.208Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_f2d5c657f3902f1781f5d1f9"
+          mutation_id: "compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5"
+          plan_digest: "sha256:ae5b71eb9074bffca3ca705501e2d78bdd0fbc90b257e5d157332c9845bbbbdf"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 5
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:fec9aec4a5a80fb9104dbf30edc652dd9866fc7e58c753d6e25ad91420992eb5"
+        next_revision: 6
+        previous_revision: 5
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "920a6d95418455d87c02e00ad387395c0b91ca13"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
