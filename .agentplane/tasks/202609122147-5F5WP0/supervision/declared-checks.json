@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "focused-tests"
+      ],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts",
+      "duration_ms": 2044,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:43f7e28886a5a889c2b8781067adff4ecfa6664b91e7c7447864895b70e757aa",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:b0442f22f0f60a5f05239995b3921d93a899858aa8529e64800e17f73da7fd8a"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Github/agentplane-XHHSBK-recovery/.agentplane/worktrees/202609122147-5F5WP0-make-agentplane-managed-gitlab-mrs-remove-source\n\n\n Test Files  2 passed (2)\n      Tests  9 passed (9)\n   Start at  00:57:14\n   Duration  429ms (transform 249ms, setup 0ms, import 474ms, tests 65ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "typecheck"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 495,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:43f7e28886a5a889c2b8781067adff4ecfa6664b91e7c7447864895b70e757aa",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:b0442f22f0f60a5f05239995b3921d93a899858aa8529e64800e17f73da7fd8a"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609122147-5F5WP0"
+}
