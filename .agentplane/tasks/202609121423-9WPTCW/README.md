@@ -4,7 +4,7 @@ title: "Implement the 0.7.9 baseline inventory and lifecycle characterization fo
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -280,7 +280,9 @@ execution_contract:
       - "task_outcome"
       - "verification_recovery:recorded-check-12"
       - "verification_recovery:verification-record"
-commit: null
+commit:
+  hash: "ac856fe3cc89dea00266576286e9733694802e58"
+  message: "🚧 9WPTCW task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -327,6 +329,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 63bf9e174984. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: ac856fe3cc89. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -433,8 +438,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-12T18:08:55.855Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ac856fe3cc89. CLI accepted one state-bound external-agent semantic result."
+    commit: "ac856fe3cc89dea00266576286e9733694802e58"
 doc_version: 3
-doc_updated_at: "2026-09-12T18:04:10.706Z"
+doc_updated_at: "2026-09-12T18:08:55.855Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, and ST-21. Reproduce a source-bound lifecycle and Blueprint consumer/writer inventory, freeze ordinary direct and branch-PR completion, rework versus infrastructure retry, admission/crash/context-role invariants, and local/remote-backend serialization, staleness, conflict, and unsupported-format behavior. Preserve I01-I12 and C01-C08. Do not introduce a new runtime registry, sync subsystem, provider access, or lifecycle format. The roadmap directory is source-only and must never be committed. Required checks: node --test scripts/checks/architecture-inventory.test.mjs; focused AgentPlane characterization tests for direct, branch, rework, recovery, and backend round trips with nonzero discovery; relevant critical suites, typecheck, schema and mirror checks."
 sections:
@@ -1322,7 +1335,7 @@ extensions:
       revision: 3
       schema_version: 1
       task_id: "202609121423-9WPTCW"
-    event_cursor: 29
+    event_cursor: 31
     final_validation: null
     id: "202609121423-9WPTCW"
     intent:
@@ -2829,9 +2842,9 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609121423-9WPTCW"
-    revision: 39
+    revision: 41
     schema_version: 1
-    updated_at: "2026-09-12T18:04:10.702Z"
+    updated_at: "2026-09-12T18:08:55.855Z"
     work_items:
       ST-01:
         attempt: 1
@@ -3409,6 +3422,30 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609121423-9WPTCW"
+      compatibility:sha256:43bdd0306e8892be382569231e8b18380045223d24c60035f95bcd31962541a5:
+        aggregate_digest: "sha256:1f02d0ef5b0a6b6fa75043ad8d965e649818562d002817b3d36d9767ba192ff1"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:08:55.855Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e2da8628e96f6ff4aec0048a"
+          mutation_id: "compatibility:sha256:43bdd0306e8892be382569231e8b18380045223d24c60035f95bcd31962541a5"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 40
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:43bdd0306e8892be382569231e8b18380045223d24c60035f95bcd31962541a5"
+        next_revision: 41
+        previous_revision: 40
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
       compatibility:sha256:44102d247fa1aa9f4ccb0044f525f5d15dfda0c75b3cddb30548e459c5ae4f78:
         aggregate_digest: "sha256:12274faa9982c9faae010ba2e2d523e931301d288e473a59717b36e6fa2c7b9a"
         event:
@@ -3575,6 +3612,30 @@ extensions:
         mutation_id: "compatibility:sha256:71b7344157552560446ca2ef247f6fd0c01346b37954097fb00da7b586d9a706"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609121423-9WPTCW"
+      compatibility:sha256:72ac8fd31bff0f3dece93ec1408f4ce505e691f79927b05d56674c443fa82de2:
+        aggregate_digest: "sha256:1e67d9e35fcceed0e5568dd5bbce472969cc0101f87b09f66d69e7baf5f8c77d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:08:55.855Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_e1aa33e28e2300c42c638aec"
+          mutation_id: "compatibility:sha256:72ac8fd31bff0f3dece93ec1408f4ce505e691f79927b05d56674c443fa82de2"
+          plan_digest: "sha256:a9ccea53ee91bda02540f559528bdce316d1a1154bdbc4da00b22a47189a40e8"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121423-9WPTCW"
+          task_revision: 39
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:72ac8fd31bff0f3dece93ec1408f4ce505e691f79927b05d56674c443fa82de2"
+        next_revision: 40
+        previous_revision: 39
         schema_version: 1
         task_id: "202609121423-9WPTCW"
       compatibility:sha256:865cae9a397965e8e1fe18d8e30fe996d2baedd02dd49b97874be43e62f94b17:
@@ -4179,6 +4240,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "ac856fe3cc89dea00266576286e9733694802e58"
   task_execution_context:
     base_ref: "main"
     base_sha: "f3c1991ddd92943775b6b4b4688009afc3d523bc"
