@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 74aedd161518f1916d4e5163210a11fd69d2e9e2..cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d",
+      "command": "git diff --check 0c0657ff2c2bc4a5f47eadefa5c3d5fdf953e22d..9682e698fa35ac8a042e2a220612263bb303fd15",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 74aedd161518f1916d4e5163210a11fd69d2e9e2..cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0c0657ff2c2bc4a5f47eadefa5c3d5fdf953e22d..9682e698fa35ac8a042e2a220612263bb303fd15",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,8 +21,7 @@
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/github-body.md",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/meta.json",
         "M\t.agentplane/tasks/202609121423-9WPTCW/pr/review.md",
-        "M\tscripts/lib/test-route-registry.mjs",
-        "A\tscripts/lib/test-route-registry.test.mjs"
+        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
       ]
     },
     {
@@ -32,15 +31,24 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "74aedd161518f1916d4e5163210a11fd69d2e9e2",
-  "implementation_commit": "cd631dfb671cfdb7d599ce8a5a2a673a0d59cc1d",
+  "execution_base_commit": "0c0657ff2c2bc4a5f47eadefa5c3d5fdf953e22d",
+  "implementation_commit": "9682e698fa35ac8a042e2a220612263bb303fd15",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [],
-    "classification": [],
+    "baseline": [
+      "?? packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
+      }
+    ],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts"
+    ],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
