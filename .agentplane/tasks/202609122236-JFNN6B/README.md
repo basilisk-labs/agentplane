@@ -1,10 +1,11 @@
 ---
 id: "202609122236-JFNN6B"
 title: "Simplify the test suite without weakening safety-critical coverage"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,22 @@ quality_review:
   findings:
     - "No blocking findings. The frozen diff removes only the approved model-specific diagnostics and duplicate coverage guard, preserves model-neutral prompt assertions, keeps all nine safety-critical CLI files, and isolates all five agent-efficiency files in the qualification route."
     - "Residual risk: Hosted CI and integration remain pending until the separately authorized PR lifecycle begins."
+token_usage:
+  agent_runs: 14
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:665ea18dbdfa2dec00bf5f52862a2495b21689fc33e0bf73093c7aa21205a009"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-09-12T23:38:53.265Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -345,8 +362,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656"
-  message: "🚧 JFNN6B task: apply external agent result"
+  hash: "89f2f1c91f1de2bd7bafc65abc607eb6ef4d7aae"
+  message: "🚧 JFNN6B task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -369,6 +386,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 3dde6bc3b229. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -435,9 +455,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-09-12T23:38:53.265Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+    commit: "89f2f1c91f1de2bd7bafc65abc607eb6ef4d7aae"
 doc_version: 3
-doc_updated_at: "2026-09-12T23:36:35.621Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-12T23:38:53.265Z"
+doc_updated_by: "CODER"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
   Summary: |-
@@ -1095,7 +1123,56 @@ extensions:
       schema_version: 1
       task_id: "202609122236-JFNN6B"
     event_cursor: 22
-    final_validation: null
+    final_validation:
+      evidence:
+        -
+          artifact_refs:
+            - "task-verification:202609122236-JFNN6B"
+            - "git:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+          check_id: "check-projects"
+          command_identity: "bun run vitest:projects:check"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T23:36:34.529Z"
+          repository_snapshot_digest: "sha256:72c2e766c3fb867630514303ff3ca370889a0e2278a1fc479edc021cadfa1f3b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609122236-JFNN6B"
+            - "git:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+          check_id: "check-critical"
+          command_identity: "bun run test:critical"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T23:36:34.529Z"
+          repository_snapshot_digest: "sha256:72c2e766c3fb867630514303ff3ca370889a0e2278a1fc479edc021cadfa1f3b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609122236-JFNN6B"
+            - "git:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+          check_id: "check-qualification"
+          command_identity: "bun run test:agent-efficiency:qualification"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T23:36:34.529Z"
+          repository_snapshot_digest: "sha256:72c2e766c3fb867630514303ff3ca370889a0e2278a1fc479edc021cadfa1f3b"
+          status: "passed"
+        -
+          artifact_refs:
+            - "task-verification:202609122236-JFNN6B"
+            - "git:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+          check_id: "check-focused"
+          command_identity: "bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2"
+          detail: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+          exit_code: 0
+          observed_at: "2026-09-12T23:36:34.529Z"
+          repository_snapshot_digest: "sha256:72c2e766c3fb867630514303ff3ca370889a0e2278a1fc479edc021cadfa1f3b"
+          status: "passed"
+      schema_version: 1
+      stale_evidence: []
+      status: "passed"
+      unsatisfied_criteria: []
     id: "202609122236-JFNN6B"
     intent:
       acceptance_criteria:
@@ -1126,7 +1203,7 @@ extensions:
 
         Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation.
       task_id: "202609122236-JFNN6B"
-    lifecycle: "ACTIVE"
+    lifecycle: "COMPLETED"
     plan_amendments: []
     plan_history:
       -
@@ -2726,9 +2803,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 31
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-12T23:36:35.621Z"
+    updated_at: "2026-09-12T23:38:53.265Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -3558,6 +3635,31 @@ extensions:
         previous_revision: 15
         schema_version: 1
         task_id: "202609122236-JFNN6B"
+      legacy-finish:202609122236-JFNN6B:2026-09-12T23:36:34.529Z:dcf9451c10d6690c92589e711ea4cba0bd4c0957:
+        aggregate_digest: "sha256:4cc5a56e529d869d1f6bb7771525523a040117c94e1eaf84393abd465c4ab297"
+        event:
+          actor_id: "CODER"
+          at: "2026-09-12T23:38:53.265Z"
+          cause_refs:
+            - "task-verification:202609122236-JFNN6B"
+            - "git:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_91d29a9ccab10c5d28ad50cd"
+          mutation_id: "legacy-finish:202609122236-JFNN6B:2026-09-12T23:36:34.529Z:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: "sha256:72c2e766c3fb867630514303ff3ca370889a0e2278a1fc479edc021cadfa1f3b"
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 31
+          to: "COMPLETED"
+          work_item_id: null
+        mutation_id: "legacy-finish:202609122236-JFNN6B:2026-09-12T23:36:34.529Z:dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+        next_revision: 32
+        previous_revision: 31
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
       plan-refinement:work-order-202609122236-JFNN6B-executor-3fae01fd95f1a502e5cb7b42:
         aggregate_digest: "sha256:b83ff2597c0bcc49c33b51f210241d6ebc1f13d83fa1d039d89ffb8e5fc2e726"
         event:
@@ -3610,7 +3712,8 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656"
+    hash: "dcf9451c10d6690c92589e711ea4cba0bd4c0957"
+    message: "🚧 JFNN6B task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "58048a4e1ff97030d3fa86447c739397f0e0936b"
@@ -3812,3 +3915,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/14` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:665ea18dbdfa2dec00bf5f52862a2495b21689fc33e0bf73093c7aa21205a009`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-09-12T23:38:53.265Z`
