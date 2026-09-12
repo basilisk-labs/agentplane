@@ -24,6 +24,20 @@ import type {
   RunnerSupervisionState,
 } from "./types.js";
 
+export type RunnerProviderUsageObservation = {
+  schema_version: 1;
+  kind: "runner_provider_usage_observation";
+  provider: string;
+  status: "observed" | "partial" | "unavailable";
+  dispatch_id: string;
+  run_id: string;
+  work_order_id: string;
+  thread_id: string | null;
+  turn_id: string | null;
+  usage: Record<string, number> | null;
+  observed_at: string;
+};
+
 function sha256(text: string): string {
   return createHash("sha256").update(text).digest("hex");
 }
@@ -261,6 +275,21 @@ export async function appendRunnerEvent(opts: {
     `${JSON.stringify(opts.event)}\n`,
     "runner events file",
   );
+}
+
+export async function appendRunnerProviderUsageObservation(opts: {
+  events_path: string;
+  observation: RunnerProviderUsageObservation;
+}): Promise<void> {
+  await appendRunnerEvent({
+    events_path: opts.events_path,
+    event: {
+      at: opts.observation.observed_at,
+      type: "runner_provider_usage_observation",
+      message: `runner provider usage is ${opts.observation.status}`,
+      data: { ...opts.observation },
+    },
+  });
 }
 
 export async function readRunnerRunState(

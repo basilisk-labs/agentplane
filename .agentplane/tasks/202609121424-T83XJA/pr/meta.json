@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609121424-T83XJA/implement-durable-0-7-9-usage-cost-and-latency-a",
+  "created_at": "2026-09-12T20:52:29.086Z",
+  "diffstat_sha256": "sha256:615945796ab859663731f1acbcbe829907f5cdd1e22ef1ed55227eba04d78ae5",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609121424-T83XJA",
+  "updated_at": "2026-09-12T20:52:29.086Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
