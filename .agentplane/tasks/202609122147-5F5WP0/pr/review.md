@@ -6,7 +6,7 @@ Created: 2026-09-12T21:52:47.977Z
 
 - Task: `202609122147-5F5WP0`
 - Title: Make AgentPlane-managed GitLab MRs remove source branches
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609122147-5F5WP0/make-agentplane-managed-gitlab-mrs-remove-source`
 - Canonical task record: `.agentplane/tasks/202609122147-5F5WP0/README.md`
 
