@@ -4,7 +4,7 @@ title: "Simplify the test suite without weakening safety-critical coverage"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -25,10 +25,10 @@ plan_approval:
   updated_by: "HOST:codex-local:USER"
   note: "host_user_decision=sha256:bd41129ccd808ff564f0cb5675d68edfed787646c2fce8cd4129a649c8744e69"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-09-12T23:36:34.529Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 execution_route:
   frozen: true
@@ -105,14 +105,96 @@ execution_contract:
   observed:
     authority_violations: []
     changed_components:
+      - "package.json"
+      - "packages/agentplane"
       - "scripts"
     changed_paths:
+      - "package.json"
+      - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts"
+      - "packages/agentplane/src/runtime/prompt-modules/index.ts"
+      - "scripts/README.md"
       - "scripts/check-coverage-thresholds.mjs"
+      - "scripts/checks/check-coverage-thresholds.mjs"
+      - "scripts/lib/test-route-registry.mjs"
     external_effects: []
     repository_effects:
+      - "dependencies"
+      - "documentation"
       - "repository_write"
       - "source_code"
-    verification_results: []
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -160,11 +242,14 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:3bb48f1af5716e286afa35b69c9af83d7bc9150024c11bc1c3d3ed79c803f3d6"
+      digest: "sha256:0b9bdb0cdef2d4021e0a26c41212c4288f9b85ee5698f2d156af0457d10cd637"
       escalation_reasons:
         - "central_component:package.json"
         - "central_component:scripts/checks/check-coverage-thresholds.mjs"
         - "central_component:scripts/lib/test-route-registry.mjs"
+        - "central_path:package.json"
+        - "central_path:scripts/checks/check-coverage-thresholds.mjs"
+        - "central_path:scripts/lib/test-route-registry.mjs"
         - "effect_ci"
         - "effect_dependencies"
       execution_groups:
@@ -174,13 +259,29 @@ execution_contract:
         - "cli"
       observed:
         changed_components:
+          - "package.json"
+          - "packages/agentplane"
           - "scripts"
         changed_files:
+          - "package.json"
+          - "packages/agentplane/src/commands/release/release-ci-contract.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/gpt56-contract.ts"
+          - "packages/agentplane/src/runtime/prompt-modules/index.ts"
+          - "scripts/README.md"
           - "scripts/check-coverage-thresholds.mjs"
+          - "scripts/checks/check-coverage-thresholds.mjs"
+          - "scripts/lib/test-route-registry.mjs"
         external_effects: []
         repository_effects:
+          - "dependencies"
+          - "documentation"
           - "repository_write"
           - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -301,8 +402,14 @@ events:
     to: "DOING"
     note: "Implementation committed: 3dde6bc3b229. CLI accepted one state-bound external-agent semantic result."
     commit: "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656"
+  -
+    type: "verify"
+    at: "2026-09-12T23:36:34.529Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-09-12T23:22:03.229Z"
+doc_updated_at: "2026-09-12T23:36:35.621Z"
 doc_updated_by: "SUPERVISOR"
 description: "Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation."
 sections:
@@ -322,6 +429,162 @@ sections:
     5. Review the final diff and repository status. Expected: no benchmark fixture, semantic gateway implementation, active refactor file, or unrelated user change is modified.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-12T23:36:34.529Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c565b7b34407bc6dcf48a72567ac572ac23cbb8bd5310c19241704fe64023686, input_digest=sha256:a61c6a02340369ec1ea3bbc41200e88a57f3456062782639b6ea1a83c2183806
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (5/5)
+
+    Check: docs_contract
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (1/5)
+
+    Check: docs_contract
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (2/5)
+
+    Check: docs_contract
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (3/5)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (4/5)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run vitest:projects:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: bun run test:agent-efficiency:qualification
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (5/5)
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609122236-JFNN6B-simplify-the-test-suite-without-weakening-safety/.agentplane/tasks/202609122236-JFNN6B/blueprint/resolved-snapshot.json
+    - old_digest: ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585
+    - current_digest: ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202609122236-JFNN6B
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609122236-JFNN6B
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -804,7 +1067,7 @@ extensions:
       revision: 4
       schema_version: 1
       task_id: "202609122236-JFNN6B"
-    event_cursor: 20
+    event_cursor: 21
     final_validation: null
     id: "202609122236-JFNN6B"
     intent:
@@ -2436,9 +2699,9 @@ extensions:
         revision: 3
         schema_version: 1
         task_id: "202609122236-JFNN6B"
-    revision: 29
+    revision: 30
     schema_version: 1
-    updated_at: "2026-09-12T23:23:34.185Z"
+    updated_at: "2026-09-12T23:36:35.617Z"
     work_items:
       work-item-cleanup:
         attempt: 1
@@ -2884,6 +3147,30 @@ extensions:
         previous_revision: 7
         schema_version: 1
         task_id: "202609122236-JFNN6B"
+      compatibility:sha256:a7f5b88729a88ceb8894347e1f151463b6955f13a9a9e69e2b479cb48b9087f1:
+        aggregate_digest: "sha256:d963e357c95fcb3536d00b658d1535b1d7c0040c18ecb5a8bf3e873865ca1835"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:36:35.617Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_2405132840ebd499f3322485"
+          mutation_id: "compatibility:sha256:a7f5b88729a88ceb8894347e1f151463b6955f13a9a9e69e2b479cb48b9087f1"
+          plan_digest: "sha256:395e3263f50efcbc3a42c35b2389f51b3b009827549efdcdd70afb70473535f1"
+          plan_revision: 4
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609122236-JFNN6B"
+          task_revision: 29
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:a7f5b88729a88ceb8894347e1f151463b6955f13a9a9e69e2b479cb48b9087f1"
+        next_revision: 30
+        previous_revision: 29
+        schema_version: 1
+        task_id: "202609122236-JFNN6B"
       compatibility:sha256:a8e3564b3f694d4d8e9dfa09080cb75c9f420ad34eaeb9830f9266f4090174d8:
         aggregate_digest: "sha256:e83865d05c1936ceb630662670c661067d6e8ff653474e1f3372a4e0ea04883d"
         event:
@@ -3310,6 +3597,162 @@ Aligned the cleanup WorkItem with the approved implementation scope and retained
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-12T23:36:34.529Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c565b7b34407bc6dcf48a72567ac572ac23cbb8bd5310c19241704fe64023686, input_digest=sha256:a61c6a02340369ec1ea3bbc41200e88a57f3456062782639b6ea1a83c2183806
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check critical_paths (5/5)
+
+Check: docs_contract
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (1/5)
+
+Check: docs_contract
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (2/5)
+
+Check: docs_contract
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (3/5)
+
+Check: docs_contract
+Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (4/5)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check docs_contract (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run vitest:projects:check
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: bun run test:agent-efficiency:qualification
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609122236-JFNN6B/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609122236-JFNN6B Verification Contract check task_outcome (5/5)
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609122236-JFNN6B-simplify-the-test-suite-without-weakening-safety/.agentplane/tasks/202609122236-JFNN6B/blueprint/resolved-snapshot.json
+- old_digest: ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585
+- current_digest: ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202609122236-JFNN6B
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609122236-JFNN6B
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

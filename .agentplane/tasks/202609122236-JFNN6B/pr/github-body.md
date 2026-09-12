@@ -15,14 +15,14 @@ Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T22:42:33.380Z
+- Updated: 2026-09-12T23:23:45.211Z
 - Branch: task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
