@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import path from "node:path";
 import { gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
-
 import {
   validateSupervisorExecutionEpisodeJournal,
   type AgentSemanticResultScopeExtensionRequest,
@@ -20,7 +19,6 @@ import {
   type TaskAggregate,
   type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
-
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "./task-backend.js";
 import {
@@ -38,9 +36,7 @@ import {
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
-
 export const TASK_SCOPE_EXTENSION_REQUEST_KEY = "agentplane.scope_extension_request";
-
 export function requiresImplementationReworkReopen(opts: {
   purpose: string;
   task_status: string;
@@ -60,7 +56,6 @@ type NormalizedTaskScopeExtensionRequest = {
   repository_effects: TaskRepositoryEffect[];
   rationale: string;
 };
-
 export type TaskScopeExtensionRequestState = {
   schema_version: 1;
   kind: "task_scope_extension_request";
@@ -307,13 +302,18 @@ function extendTaskCentricWorkItemScope(opts: {
     .filter((item) => !item.optional)
     .every((item) => aggregate.work_items[item.id]?.state === "COMPLETED");
   if (allRequiredCompleted) return aggregate;
+  const legacyRework = Object.values(aggregate.work_items).filter(
+    (item) => item.state === "REWORK_READY",
+  );
   const selected = opts.workItemId
     ? [{ id: opts.workItemId }]
-    : new WorkItemScheduler(2).select({
-        graph: currentPlan.proposal.work_items,
-        runtime: aggregate.work_items,
-        active_leases: [],
-      });
+    : legacyRework.length === 1
+      ? legacyRework
+      : new WorkItemScheduler(2).select({
+          graph: currentPlan.proposal.work_items,
+          runtime: aggregate.work_items,
+          active_leases: [],
+        });
   const selectedState = aggregate.work_items[selected[0]?.id ?? ""]?.state;
   if (selected.length !== 1 || !["PLANNED", "READY", "REWORK_READY"].includes(selectedState ?? ""))
     throw new CliError({

@@ -636,10 +636,10 @@ describe("blocked task execution scope extension", () => {
       }),
     ).toThrow("exactly one schedulable WorkItem");
   });
-
   it("creates an approved plan revision for only the selected task-centric WorkItem", () => {
     const { command, pending, task } = fixture();
-    const aggregate = taskCentricAggregate(task.id);
+    const aggregate = structuredClone(taskCentricAggregate(task.id, true));
+    aggregate.work_items.active!.state = "REWORK_READY";
     task.extensions = {
       ...withTaskCentricAggregate(task.extensions, aggregate),
       [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
