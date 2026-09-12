@@ -2,10 +2,10 @@
 id: "202609121655-14X73Y"
 title: "Fix exact WorkItem-only scope extension when the global contract is already satisfied"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "BLOCKED"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -254,6 +254,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree has a supervisor-generated task-document projection change that this read-only episode cannot resolve."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator blocker cannot be addressed through the scoped source files without the missing hosted-check evidence. Recommended action: Provide the failing hosted check name, conclusion, and log for the current PR head, then request a fresh remote packet. Agentplane receipt: external-agent-blocker/tr_abbe960ff72fbaf47094f2b62884d145/sha256:9e9883c84248f2138530b925f82b953f49c459392ef4a1e689afa310605f8701."
 events:
   -
     type: "status"
@@ -308,8 +311,15 @@ events:
     at: "2026-09-12T17:17:54.691Z"
     author: "SUPERVISOR"
     body: "Read-only worktree observation (blocked): The task worktree has a supervisor-generated task-document projection change that this read-only episode cannot resolve."
+  -
+    type: "status"
+    at: "2026-09-12T17:19:30.116Z"
+    author: "SUPERVISOR"
+    from: "DONE"
+    to: "BLOCKED"
+    note: "Blocked: external EXECUTOR could not complete the scoped implementation. The evaluator blocker cannot be addressed through the scoped source files without the missing hosted-check evidence. Recommended action: Provide the failing hosted check name, conclusion, and log for the current PR head, then request a fresh remote packet. Agentplane receipt: external-agent-blocker/tr_abbe960ff72fbaf47094f2b62884d145/sha256:9e9883c84248f2138530b925f82b953f49c459392ef4a1e689afa310605f8701."
 doc_version: 3
-doc_updated_at: "2026-09-12T17:18:46.104Z"
+doc_updated_at: "2026-09-12T17:19:30.125Z"
 doc_updated_by: "SUPERVISOR"
 description: "Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03."
 sections:
@@ -812,46 +822,8 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121655-14X73Y"
-    event_cursor: 14
-    final_validation:
-      evidence:
-        -
-          artifact_refs:
-            - "task-verification:202609121655-14X73Y"
-            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
-          check_id: "focused"
-          command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-12T17:01:28.631Z"
-          repository_snapshot_digest: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121655-14X73Y"
-            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
-          check_id: "typecheck"
-          command_identity: "bun run typecheck"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-12T17:01:28.631Z"
-          repository_snapshot_digest: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
-          status: "passed"
-        -
-          artifact_refs:
-            - "task-verification:202609121655-14X73Y"
-            - "git:4ce33c3431655c6350d002d85cd531f9a0e17f86"
-          check_id: "hosted"
-          command_identity: "task.verify"
-          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
-          exit_code: 0
-          observed_at: "2026-09-12T17:01:28.631Z"
-          repository_snapshot_digest: "sha256:14153454594a2fdfcd57fa50fc0fe453f1011e592b5bee2f44d2ba61eaaee865"
-          status: "passed"
-      schema_version: 1
-      stale_evidence: []
-      status: "passed"
-      unsatisfied_criteria: []
+    event_cursor: 15
+    final_validation: null
     id: "202609121655-14X73Y"
     intent:
       acceptance_criteria:
@@ -872,12 +844,12 @@ extensions:
 
         Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id, require a real missing WorkItem root in a schedulable state, keep no-op and ambiguity rejection fail-closed, and include focused regression tests. This unblocks release task 202609121423-9WPTCW ST-03.
       task_id: "202609121655-14X73Y"
-    lifecycle: "COMPLETED"
+    lifecycle: "BLOCKED"
     plan_amendments: []
     plan_history: []
-    revision: 18
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-12T17:17:54.707Z"
+    updated_at: "2026-09-12T17:19:30.116Z"
     work_items:
       WI-01:
         attempt: 1
@@ -1189,6 +1161,30 @@ extensions:
         mutation_id: "compatibility:sha256:6806cdc0d0d59d75c4714048e42ac4c8f4003c9c02e30ee7d7cbad6427717b7c"
         next_revision: 13
         previous_revision: 12
+        schema_version: 1
+        task_id: "202609121655-14X73Y"
+      compatibility:sha256:c3a894d025e8c9ddbb4a3f33540f7710cd0f7a9effdd8eddc4eb3f8f1b121e87:
+        aggregate_digest: "sha256:6b40cbeb321ef1d039f1b641c21fe83a10e90a7a5741df92a6a2fe463be72c29"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T17:19:30.116Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "COMPLETED"
+          id: "event_7aa5d054624a60db486baa72"
+          mutation_id: "compatibility:sha256:c3a894d025e8c9ddbb4a3f33540f7710cd0f7a9effdd8eddc4eb3f8f1b121e87"
+          plan_digest: "sha256:408730a0702f2c28471447c875a390aed6c8eaeb0b4f3367500a097172b904e8"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121655-14X73Y"
+          task_revision: 18
+          to: "BLOCKED"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:c3a894d025e8c9ddbb4a3f33540f7710cd0f7a9effdd8eddc4eb3f8f1b121e87"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609121655-14X73Y"
       compatibility:sha256:d000d5ae5c6ade89e6e99017d26feda07a2ba20f5bde876b1b3626092bc54803:
