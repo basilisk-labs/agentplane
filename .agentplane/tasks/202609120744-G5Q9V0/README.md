@@ -1,10 +1,10 @@
 ---
 id: "202609120744-G5Q9V0"
 title: "Fail fast on incomplete ops task intent"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -26,7 +26,7 @@ plan_approval:
   note: "host_user_decision=sha256:c692f296bdb4783310a04c64f76206fde3a0a4b19676e73babba4bd3ff405f6f"
 verification:
   state: "pending"
-  updated_at: "2026-09-12T08:10:49.792Z"
+  updated_at: "2026-09-12T08:16:16.251Z"
   updated_by: "USER"
   note: "Invalidated by USER-approved execution scope extension."
   attempts: 0
@@ -34,10 +34,6 @@ execution_route:
   frozen: true
   reason_codes:
     - "agent_preferred_branch_pr"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/brief-model.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/brief-render.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/new.spec.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/new.ts"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   requested_mode: "branch_pr"
@@ -67,12 +63,14 @@ execution_contract:
       - "security_boundary"
     writable_roots:
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/task"
   declaration:
     external_effects: []
     implementation_uncertainty: "bounded"
     preferred_mode: "branch_pr"
     rationale:
       - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/cli; repository_effects=tests"
+      - "USER-approved blocked-result scope extension: roots=packages/agentplane/src/commands/task"
       - "legacy structured task fields mapped to the execution contract"
     repository_effects:
       - "repository_write"
@@ -83,12 +81,9 @@ execution_contract:
     schema_version: 2
     scope_roots:
       - "packages/agentplane/src/cli"
+      - "packages/agentplane/src/commands/task"
   observed:
-    authority_violations:
-      - "writable_scope:packages/agentplane/src/commands/task/brief-model.ts"
-      - "writable_scope:packages/agentplane/src/commands/task/brief-render.ts"
-      - "writable_scope:packages/agentplane/src/commands/task/new.spec.ts"
-      - "writable_scope:packages/agentplane/src/commands/task/new.ts"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -106,10 +101,6 @@ execution_contract:
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/brief-model.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/brief-render.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/new.spec.ts"
-    - "observed_path_outside_scope:packages/agentplane/src/commands/task/new.ts"
     - "repository_branch_pr_floor"
   repository_mode: "branch_pr"
   safety:
@@ -124,6 +115,7 @@ execution_contract:
       declared:
         components:
           - "packages/agentplane/src/cli"
+          - "packages/agentplane/src/commands/task"
         evidence_requirements:
           - "hosted_integration"
           - "repository_effect:repository_write"
@@ -139,7 +131,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:1cdf7a481a275e116bedeff4d568c62b6a4abf2d0e363350fd8c0f6b833051d5"
+      digest: "sha256:b404272aab4983a5867acdfe2f79205df12635945e07d1d00cbbe5250113880a"
       escalation_reasons:
         - "central_path:packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
         - "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
@@ -194,9 +186,7 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "b33d46246d80d5c19f728b5223ba052ecac897b3"
-  message: "🚧 G5Q9V0 task: apply external agent result"
+commit: null
 comments:
   -
     author: "CODER"
@@ -231,6 +221,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Supervisor acceptance uses a narrower persisted writable scope than the approved WorkItem and issued WorkOrder. Recommended action: Approve the exact structured scope extension, then reuse the already passing implementation and checks. Requested scope: roots=packages/agentplane/src/commands/task; repository effects=unchanged; request digest=sha256:4f5253f4f530be20a7bd3c68759be09eef4afa065aa799f85361882de58ff0a3. Agentplane receipt: external-agent-blocker/tr_997fd71e493d938c5ef5854d84031367/sha256:18f6eb1daeb17138074520d614bc19676e07756cd614c1366ea8f22368b8d419/sha256:4f5253f4f530be20a7bd3c68759be09eef4afa065aa799f85361882de58ff0a3."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task; repository effects: unchanged."
 events:
   -
     type: "status"
@@ -358,6 +351,8 @@ extensions:
     status: "active"
     task_id: "202609120744-G5Q9V0"
   agentplane.scope_extension_request:
+    applied_at: "2026-09-12T08:16:16.251Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:18f6eb1daeb17138074520d614bc19676e07756cd614c1366ea8f22368b8d419"
     kind: "task_scope_extension_request"
     request:
@@ -368,19 +363,19 @@ extensions:
         - "packages/agentplane/src/commands/task"
     request_digest: "sha256:4f5253f4f530be20a7bd3c68759be09eef4afa065aa799f85361882de58ff0a3"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_997fd71e493d938c5ef5854d84031367"
   agentplane.task_centric:
     current_plan:
       approval:
-        approved_at: "2026-09-12T08:10:49.792Z"
+        approved_at: "2026-09-12T08:16:16.251Z"
         approved_by: "USER"
-        approved_digest: "sha256:a211468373da1232e1bf60c443e8e2b161ec0f2d104855e8c1a6d7a9af47daeb"
+        approved_digest: "sha256:04750bbfdf44a859ccd2ca64c92d80897aefc72ab921abb21e3a0743e7f1cf97"
         policy_facts:
-          - "state_bound_scope_extension:sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f"
+          - "state_bound_scope_extension:sha256:4f5253f4f530be20a7bd3c68759be09eef4afa065aa799f85361882de58ff0a3"
         state: "approved"
-      created_at: "2026-09-12T08:10:49.792Z"
-      digest: "sha256:a211468373da1232e1bf60c443e8e2b161ec0f2d104855e8c1a6d7a9af47daeb"
+      created_at: "2026-09-12T08:16:16.251Z"
+      digest: "sha256:04750bbfdf44a859ccd2ca64c92d80897aefc72ab921abb21e3a0743e7f1cf97"
       proposal:
         assumptions: []
         planning_baseline:
@@ -463,10 +458,15 @@ extensions:
                   kind: "path"
                   mode: "write"
                   resource: "packages/agentplane/src/cli"
+                -
+                  kind: "path"
+                  mode: "write"
+                  resource: "packages/agentplane/src/commands/task"
               risk: "medium"
               scope_roots:
                 - "packages/agentplane/src"
                 - "packages/agentplane/src/cli"
+                - "packages/agentplane/src/commands/task"
               validation:
                 checks:
                   -
@@ -509,10 +509,10 @@ extensions:
                     required: true
                 evidence_fingerprint: "sha256:2c20194336be356c89b2038800c3b31c42a31d5857ecb4d3079c149d64da7806"
                 schema_version: 1
-      revision: 3
+      revision: 4
       schema_version: 1
       task_id: "202609120744-G5Q9V0"
-    event_cursor: 25
+    event_cursor: 26
     final_validation: null
     id: "202609120744-G5Q9V0"
     intent:
@@ -539,7 +539,7 @@ extensions:
 
         Make task new reject or materialize incomplete controlled ops intent before lifecycle approval, and expose structured intent fields in task brief so downstream host-operation guards are not the first failure point.
       task_id: "202609120744-G5Q9V0"
-    lifecycle: "BLOCKED"
+    lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history:
       -
@@ -815,7 +815,148 @@ extensions:
         revision: 2
         schema_version: 1
         task_id: "202609120744-G5Q9V0"
-    revision: 30
+      -
+        approval:
+          approved_at: "2026-09-12T08:10:49.792Z"
+          approved_by: "USER"
+          approved_digest: "sha256:a211468373da1232e1bf60c443e8e2b161ec0f2d104855e8c1a6d7a9af47daeb"
+          policy_facts:
+            - "state_bound_scope_extension:sha256:c96fbe6e38572acaa458aeaa7b8107d047b92ca9f32f6c6dee7a390287f1243f"
+          state: "approved"
+        created_at: "2026-09-12T08:10:49.792Z"
+        digest: "sha256:a211468373da1232e1bf60c443e8e2b161ec0f2d104855e8c1a6d7a9af47daeb"
+        proposal:
+          assumptions: []
+          planning_baseline:
+            captured_at: "2026-09-12T08:06:52.565Z"
+            config_digest: null
+            context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
+            digest: "sha256:2c20194336be356c89b2038800c3b31c42a31d5857ecb4d3079c149d64da7806"
+            dirty_paths:
+              - ".agentplane/tasks/202609120744-G5Q9V0/README.md"
+              - ".agentplane/tasks/202609120744-G5Q9V0/supervision/declared-checks.json"
+            git:
+              kind: "commit"
+              ref: null
+              sha: "d0aeb5a04eb51b2a988ef4ca96730a0bdb524c46"
+            policy_digest: null
+            schema_version: 1
+            task_history_cursor: "task-revision:20"
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          top_level_validation:
+            checks: []
+            criteria: []
+            evidence_fingerprint: "sha256:2c20194336be356c89b2038800c3b31c42a31d5857ecb4d3079c149d64da7806"
+            schema_version: 1
+          unresolved_questions: []
+          work_items:
+            schema_version: 1
+            work_items:
+              -
+                acceptance_criteria:
+                  -
+                    check_ids:
+                      - "create-tests"
+                    description: "task new rejects incomplete ops.approval intent before any task artifact is written, while a complete controlled ops declaration remains accepted."
+                    id: "ops-intent-create"
+                    required: true
+                  -
+                    check_ids:
+                      - "brief-tests"
+                    description: "task brief prints task_kind, mutation_scope, risk_flags, blueprint_request, and the resolved blueprint."
+                    id: "ops-intent-brief"
+                    required: true
+                  -
+                    check_ids:
+                      - "create-tests"
+                      - "typecheck"
+                    description: "Non-ops task creation behavior and TypeScript type safety remain intact."
+                    id: "compatibility"
+                    required: true
+                capabilities:
+                  - "task.verify"
+                context:
+                  max_bytes: 200000
+                  optional_sources:
+                    - "packages/agentplane/src/commands/task/create.command.ts"
+                    - "packages/agentplane/src/commands/blueprint/task-input.ts"
+                  required_sources:
+                    - "packages/agentplane/src/commands/task/new.ts"
+                    - "packages/agentplane/src/commands/task/brief-render.ts"
+                  symbol_hints:
+                    - "sanitizeTaskNewParsed"
+                    - "runTaskNewParsed"
+                    - "reportTaskBriefText"
+                depends_on: []
+                expected_outputs:
+                  - "ops-intent-validation"
+                  - "structured-task-brief"
+                  - "focused-regressions"
+                id: "implement-ops-intent-gate"
+                objective: "Validate controlled ops intent before task creation, render the structured intent in task brief, and preserve focused CLI regressions."
+                optional: false
+                priority: 100
+                required_inputs: []
+                resource_claims:
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src"
+                  -
+                    kind: "path"
+                    mode: "write"
+                    resource: "packages/agentplane/src/cli"
+                risk: "medium"
+                scope_roots:
+                  - "packages/agentplane/src"
+                  - "packages/agentplane/src/cli"
+                validation:
+                  checks:
+                    -
+                      capability: "task.verify"
+                      command: "node_modules/.bin/vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts"
+                      id: "create-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "node_modules/.bin/vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts"
+                      id: "brief-tests"
+                      kind: "deterministic"
+                      required: true
+                    -
+                      capability: "task.verify"
+                      command: "node scripts/checks/run-typescript-build.mjs"
+                      id: "typecheck"
+                      kind: "deterministic"
+                      required: true
+                  criteria:
+                    -
+                      check_ids:
+                        - "create-tests"
+                      description: "Validate early ops intent handling."
+                      id: "ops-intent-create"
+                      required: true
+                    -
+                      check_ids:
+                        - "brief-tests"
+                      description: "Validate structured brief output."
+                      id: "ops-intent-brief"
+                      required: true
+                    -
+                      check_ids:
+                        - "create-tests"
+                        - "typecheck"
+                      description: "Validate compatibility and type safety."
+                      id: "compatibility"
+                      required: true
+                  evidence_fingerprint: "sha256:2c20194336be356c89b2038800c3b31c42a31d5857ecb4d3079c149d64da7806"
+                  schema_version: 1
+        revision: 3
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
+    revision: 31
     schema_version: 1
     updated_at: "2026-09-12T08:16:03.373Z"
     work_items:
@@ -883,6 +1024,30 @@ extensions:
         work_item_id: null
     leases: []
     mutation_receipts:
+      compatibility:sha256:0159271769d104eca9730a1c0e6daf5b330448ce885170edb1c9d4338e6e3b98:
+        aggregate_digest: "sha256:0a53f412f86db4fee349d84e991108415c362dbbe09445adb2c88d0982f127bf"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T08:16:03.373Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "BLOCKED"
+          id: "event_2c48524dd0faca567936a3ff"
+          mutation_id: "compatibility:sha256:0159271769d104eca9730a1c0e6daf5b330448ce885170edb1c9d4338e6e3b98"
+          plan_digest: "sha256:a211468373da1232e1bf60c443e8e2b161ec0f2d104855e8c1a6d7a9af47daeb"
+          plan_revision: 3
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609120744-G5Q9V0"
+          task_revision: 30
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:0159271769d104eca9730a1c0e6daf5b330448ce885170edb1c9d4338e6e3b98"
+        next_revision: 31
+        previous_revision: 30
+        schema_version: 1
+        task_id: "202609120744-G5Q9V0"
       compatibility:sha256:02bd0e970ba8d808afbc7a09d9c6ad53f9c254f985c3cf6bd7f6c0bff91f7194:
         aggregate_digest: "sha256:8e8e311dde6ebf59ecd602d3b8a3120a8331a5eb593990ca1e7cad87199b17ff"
         event:
