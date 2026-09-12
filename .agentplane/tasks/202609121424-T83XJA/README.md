@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -1984,9 +1984,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609121424-T83XJA"
-    revision: 31
+    revision: 32
     schema_version: 1
-    updated_at: "2026-09-12T23:34:08.316Z"
+    updated_at: "2026-09-12T23:45:00.565Z"
     work_items:
       ST-08:
         attempt: 1
@@ -2225,49 +2225,43 @@ extensions:
           status: "passed"
           unsatisfied_criteria: []
       ST-13:
-        attempt: 1
+        attempt: 2
         claim_id: null
         id: "ST-13"
-        last_failure:
-          cause_refs:
-            - "c-regression"
-          code: "validation_failed"
-          kind: "validation"
-          message: "Added durable monotonic lifecycle stage timing to supervisor operations and integrated it into shared, branch, direct, and kernel-managed execution paths without fabricating cross-process durations."
-          retryable: true
+        last_failure: null
         output_manifests:
           -
-            digest: "sha256:fd7741046707309288a53420345fa28639eeeb77b78bd09ed794a0f1c9783eda"
+            digest: "sha256:2917633ff85375d8d9e40b4df772c1b006b7e76ccdf11d83ba1e18f09aef1520"
             id: "lifecycle stage timing observations"
             kind: "semantic_output"
             producer:
-              attempt: 1
-              plan_revision: 1
+              attempt: 2
+              plan_revision: 2
               task_id: "202609121424-T83XJA"
               work_item_id: "ST-13"
             provenance:
-              - "sha256:c0c3f12f2f461ae4e63de4fc7f20b6b5481d8f28afe56c90078197efb06baf40"
+              - "sha256:7c86b584a54379bd046353a1aa29fbce05f0627bf6b9ad2e6b467c47e55c5dd0"
               - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+            repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
           -
-            digest: "sha256:a432acfb619cfcd51b8ecd43168d6f1b95cc04ee12629ffdbb2dc0ec953dfecc"
+            digest: "sha256:57f016bafc0c94fadd27706c006cef888d3753335598449492a6bf6b28289bae"
             id: "clock and overlap regression coverage"
             kind: "semantic_output"
             producer:
-              attempt: 1
-              plan_revision: 1
+              attempt: 2
+              plan_revision: 2
               task_id: "202609121424-T83XJA"
               work_item_id: "ST-13"
             provenance:
-              - "sha256:c0c3f12f2f461ae4e63de4fc7f20b6b5481d8f28afe56c90078197efb06baf40"
+              - "sha256:7c86b584a54379bd046353a1aa29fbce05f0627bf6b9ad2e6b467c47e55c5dd0"
               - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
-            repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+            repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
             schema: "agentplane.semantic-output.v1"
             schema_version: 1
-        revision: 2
-        state: "REWORK_READY"
+        revision: 3
+        state: "COMPLETED"
         validation_result:
           evidence:
             -
@@ -2275,66 +2269,65 @@ extensions:
                 - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
               check_id: "check-stage-timing"
               command_identity: "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts."
               exit_code: 0
-              observed_at: "2026-09-12T23:11:32.511Z"
-              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              observed_at: "2026-09-12T23:45:00.528Z"
+              repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
               check_id: "check-typecheck"
               command_identity: "bun run typecheck"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run typecheck."
               exit_code: 0
-              observed_at: "2026-09-12T23:11:32.511Z"
-              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              observed_at: "2026-09-12T23:45:00.528Z"
+              repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
               check_id: "check-schemas"
               command_identity: "bun run schemas:check"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run schemas:check."
               exit_code: 0
-              observed_at: "2026-09-12T23:11:32.511Z"
-              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              observed_at: "2026-09-12T23:45:00.528Z"
+              repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
               check_id: "check-artifacts"
               command_identity: "bun run artifacts:check"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run artifacts:check."
               exit_code: 0
-              observed_at: "2026-09-12T23:11:32.511Z"
-              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              observed_at: "2026-09-12T23:45:00.528Z"
+              repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
               check_id: "check-critical"
               command_identity: "bun run test:critical"
-              detail: "Declared check failed: bun run ci:local:full"
+              detail: "Observed by bun run test:critical."
               exit_code: 0
-              observed_at: "2026-09-12T23:11:32.511Z"
-              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
+              observed_at: "2026-09-12T23:45:00.528Z"
+              repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
               status: "passed"
             -
               artifact_refs:
                 - ".agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
               check_id: "check-full-ci"
               command_identity: "bun run ci:local:full"
-              detail: "Declared check failed: bun run ci:local:full"
-              exit_code: 1
-              observed_at: "2026-09-12T23:11:32.511Z"
-              repository_snapshot_digest: "sha256:f865cf1ed349342b6493005e5797ec93be932580ef3fb15e1e00f69b28b6bbad"
-              status: "failed"
+              detail: "Observed by bun run ci:local:full."
+              exit_code: 0
+              observed_at: "2026-09-12T23:45:00.528Z"
+              repository_snapshot_digest: "sha256:5cf8214c34a973f59970e77e461ad83584a8f0befb993685ff70f24ef080f79a"
+              status: "passed"
           schema_version: 1
           stale_evidence: []
-          status: "failed"
-          unsatisfied_criteria:
-            - "c-regression"
+          status: "passed"
+          unsatisfied_criteria: []
   agentplane.task_centric_runtime:
     checkpoints: []
     events:
@@ -2439,6 +2432,23 @@ extensions:
         schema_version: 1
         task_id: "202609121424-T83XJA"
         task_revision: 25
+        work_item_id: "ST-13"
+      -
+        at: "2026-09-12T23:45:00.565Z"
+        from: "REWORK_READY"
+        to: "COMPLETED"
+        actor_id: "agentplane"
+        cause_refs:
+          - "semantic-result:sha256:20865a8f4b632998cf0466f0025d69cb180dda6dccec0c5c026c2a133d509fe9"
+        entity: "work_item"
+        id: "event_755a6367f3a3abd63b91fc70"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-3083aea5bcb3b6478ce3d38b"
+        plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+        plan_revision: 2
+        repository_fingerprint: null
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+        task_revision: 31
         work_item_id: "ST-13"
     leases: []
     mutation_receipts:
@@ -2968,6 +2978,30 @@ extensions:
         mutation_id: "external-result:work-order-202609121424-T83XJA-executor-1212c92464f1353ec83d5de3"
         next_revision: 20
         previous_revision: 19
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      external-result:work-order-202609121424-T83XJA-executor-3083aea5bcb3b6478ce3d38b:
+        aggregate_digest: "sha256:1e14e7460b4912d92caf18804d3f0897ba94ebb7446506dfedf35045a8bf655d"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T23:45:00.565Z"
+          cause_refs:
+            - "semantic-result:sha256:20865a8f4b632998cf0466f0025d69cb180dda6dccec0c5c026c2a133d509fe9"
+          entity: "work_item"
+          from: "REWORK_READY"
+          id: "event_755a6367f3a3abd63b91fc70"
+          mutation_id: "external-result:work-order-202609121424-T83XJA-executor-3083aea5bcb3b6478ce3d38b"
+          plan_digest: "sha256:47ee22d77ca7385f412a8a1da0d53ac32e469d13030f22fdc8fc03c8804e40a4"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 31
+          to: "COMPLETED"
+          work_item_id: "ST-13"
+        mutation_id: "external-result:work-order-202609121424-T83XJA-executor-3083aea5bcb3b6478ce3d38b"
+        next_revision: 32
+        previous_revision: 31
         schema_version: 1
         task_id: "202609121424-T83XJA"
       external-result:work-order-202609121424-T83XJA-executor-8496819b2c3ab2274d6d8a87:
