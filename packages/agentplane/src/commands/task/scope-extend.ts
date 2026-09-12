@@ -50,7 +50,15 @@ function hasExactSchedulableWorkItemScopeDelta(opts: {
   const workItem = plan?.proposal.work_items.work_items.find(
     (item) => item.id === opts.work_item_id,
   );
-  if (!runtime || !workItem || !["PLANNED", "READY", "REWORK_READY"].includes(runtime.state))
+  const allRequiredCompleted = plan?.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate?.work_items[item.id]?.state === "COMPLETED");
+  if (
+    !runtime ||
+    !workItem ||
+    allRequiredCompleted !== false ||
+    !["PLANNED", "READY", "REWORK_READY"].includes(runtime.state)
+  )
     return false;
   return opts.scope_roots.some((root) => !workItem.scope_roots.includes(root));
 }

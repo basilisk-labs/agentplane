@@ -27,9 +27,9 @@ Supersedes blocked task 202609121643-1PV2X7. Preserve exact pending work_item_id
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/scope-extend.test.ts         | 85 ++++++++++++++++++++++
- .../agentplane/src/commands/task/scope-extend.ts   | 29 +++++++-
- 2 files changed, 112 insertions(+), 2 deletions(-)
+ .../src/commands/task/scope-extend.test.ts         | 110 +++++++++++++++++++++
+ .../agentplane/src/commands/task/scope-extend.ts   |  37 ++++++-
+ 2 files changed, 145 insertions(+), 2 deletions(-)
 ```
 
 </details>

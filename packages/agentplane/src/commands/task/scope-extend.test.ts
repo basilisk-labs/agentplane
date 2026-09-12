@@ -1041,6 +1041,31 @@ describe("blocked task execution scope extension", () => {
     },
   );
 
+  it("rejects a WorkItem-only delta after every required WorkItem is completed", () => {
+    const noOp = fixture(
+      {},
+      { scope_roots: ["docs/releases"], repository_effects: ["documentation"] },
+    );
+    noOp.pending.work_item_id = "later";
+    const aggregate = structuredClone(taskCentricAggregate(noOp.task.id, true, true));
+    aggregate.work_items.active!.state = "COMPLETED";
+    noOp.task.extensions = {
+      ...withTaskCentricAggregate(noOp.task.extensions, aggregate),
+      [TASK_SCOPE_EXTENSION_REQUEST_KEY]: noOp.pending,
+    };
+
+    expect(() =>
+      extendBlockedTaskExecutionContract({
+        command: noOp.command,
+        task: noOp.task,
+        scope_roots: noOp.pending.request.scope_roots,
+        repository_effects: noOp.pending.request.repository_effects,
+        request_digest: noOp.pending.request_digest,
+        by: "USER",
+      }),
+    ).toThrow(/must add a new scope root or repository effect/u);
+  });
+
   it("rejects unsafe roots and no-op extensions", () => {
     const { command, pending, task } = fixture();
 
