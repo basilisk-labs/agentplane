@@ -16,7 +16,7 @@ Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, 
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,7 +31,9 @@ Source contract: agentplane-roadmap-r2 cards ST-01, ST-02, ST-03, ST-04, ST-05, 
  scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
  scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
  scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
- 4 files changed, 353 insertions(+)
+ scripts/lib/test-route-registry.mjs                |   2 +-
+ scripts/lib/test-route-registry.test.mjs           |  14 ++
+ 6 files changed, 368 insertions(+), 1 deletion(-)
 ```
 
 </details>

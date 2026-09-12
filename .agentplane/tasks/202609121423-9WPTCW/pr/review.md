@@ -13,7 +13,7 @@ Created: 2026-09-12T14:30:55.296Z
 ## Verification
 
 - State: pending
-- Note: Not recorded yet.
+- Note: Invalidated by USER-approved execution scope extension.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,7 +33,9 @@ Created: 2026-09-12T14:30:55.296Z
  scripts/baselines/architecture-inventory.json      | 159 +++++++++++++++++++++
  scripts/checks/architecture-inventory.mjs          | 113 +++++++++++++++
  scripts/checks/architecture-inventory.test.mjs     |  47 ++++++
- 4 files changed, 353 insertions(+)
+ scripts/lib/test-route-registry.mjs                |   2 +-
+ scripts/lib/test-route-registry.test.mjs           |  14 ++
+ 6 files changed, 368 insertions(+), 1 deletion(-)
 ```
 
 </details>
