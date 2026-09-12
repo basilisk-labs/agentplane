@@ -9,6 +9,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
@@ -298,6 +299,71 @@ describe("persisted supervisor execution episodes", () => {
       budget: { max_episodes: 51 },
       usage: { episodes: 1 },
       cursor: { episode: 1, phase: "ready", operation_key: null },
+    });
+  });
+
+  it("recovers a persisted telemetry-only stop without changing budget or history", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const created = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget: {
+        ...UNMETERED_TOKEN_BUDGET,
+        max_input_tokens: 100,
+        max_output_tokens: 100,
+        max_total_tokens: 200,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: created,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { id: "legacy-unattributed-run" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (started.status !== "started") throw new Error("expected started fixture episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { status: "success" },
+    });
+    const ready = advanceSupervisorExecutionEpisodeState({
+      journal: completed,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: ready,
+      reason: "budget_exhausted",
+      exhausted_dimensions: [
+        "input_tokens_telemetry",
+        "output_tokens_telemetry",
+        "total_tokens_telemetry",
+      ],
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(stopped);
+
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        budget_only: true,
+      }),
+    ).resolves.toBe("telemetry_recovered");
+    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+      status: "running",
+      stop: null,
+      budget: stopped.budget,
+      usage: stopped.usage,
+      operations: stopped.operations,
+      cursor: { episode: 1, phase: "ready", operation_key: null },
+      previous_digest: stopped.digest,
     });
   });
 

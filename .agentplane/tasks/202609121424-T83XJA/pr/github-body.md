@@ -31,15 +31,18 @@ Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, 
  .../evaluator/evaluator-execute-supervisor.ts      |  66 ++++--
  .../evaluator/evaluator-execute.command.test.ts    |  70 +++++-
  .../evaluator/roadmap-failed-usage.test.ts         | 175 +++++++++++++++
- .../roadmap-telemetry-disposition.test.ts          |  72 +++++++
- .../shared/supervisor-execution-episode.test.ts    |  13 ++
+ .../roadmap-telemetry-disposition.test.ts          |  79 +++++++
+ .../shared/supervisor-execution-budget-renewal.ts  |  49 +++++
+ .../shared/supervisor-execution-episode.test.ts    |  79 +++++++
+ .../shared/supervisor-execution-episode.ts         |  19 +-
+ .../src/commands/task/advance.command.ts           |   4 +-
  .../src/runner/adapters/codex-result-transport.ts  |  42 +++-
  packages/agentplane/src/runner/adapters/codex.ts   |  81 ++++++-
  .../adapters/roadmap-usage-durability.test.ts      | 159 ++++++++++++++
  packages/agentplane/src/runner/artifacts.ts        |  29 +++
  .../runner/supervisor-execution-episode.test.ts    |   6 +-
- .../src/runner/supervisor-execution-episode.ts     |  24 ++-
- 12 files changed, 898 insertions(+), 75 deletions(-)
+ .../src/runner/supervisor-execution-episode.ts     |  37 +++-
+ 15 files changed, 1053 insertions(+), 78 deletions(-)
 ```
 
 </details>
