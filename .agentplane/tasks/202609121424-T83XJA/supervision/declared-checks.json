@@ -5,8 +5,8 @@
         "check-managed-accounting"
       ],
       "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts",
-      "duration_ms": 348,
-      "exit_code": 1,
+      "duration_ms": 772,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
         "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
@@ -15,13 +15,31 @@
         "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
       },
       "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts\nNo test files found, exiting with code 1\n\nfilter: packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts\nprojects: agentplane\n\n|agentplane| \n\ninclude: packages/agentplane/src/**/*.test.ts\nexclude:  **/node_modules/**, **/.git/**, **/cli-smoke.test.ts, **/run-cli!(*.roadmap-*).test.ts\n\nerror: script \"test:project\" exited with code 1\n",
-      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a\n\n"
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a\n\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  01:35:33\n   Duration  291ms (transform 120ms, setup 0ms, import 211ms, tests 9ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "check-external-accounting"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts",
+      "duration_ms": 784,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:580499540be906b9b540517e18ba7ba8a568cf4d9341bee3f90b17eed615937e",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-T83XJA-implement-durable-0-7-9-usage-cost-and-latency-a\n\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  01:35:33\n   Duration  403ms (transform 208ms, setup 0ms, import 341ms, tests 3ms, environment 0ms)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202609121424-T83XJA"
 }
