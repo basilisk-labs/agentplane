@@ -1,0 +1,3 @@
+ .../task-centric-backend-projection.ts             | 11 +++-
+ .../src/commands/shared/task-mutation.test.ts      | 67 ++++++++++++++++++++++
+ 2 files changed, 75 insertions(+), 3 deletions(-)

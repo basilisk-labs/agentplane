@@ -138,9 +138,14 @@ export function projectTaskCentricCompatibilityMutation(opts: {
     opts.current.verification?.state === "ok" &&
     opts.next.verification?.state === "needs_rework" &&
     opts.next.status === "DOING";
-  const projectedLifecycle = verificationRework
-    ? legacyStatusToTaskLifecycle(opts.next.status)
-    : nextAggregate.lifecycle;
+  const verificationBlocked =
+    currentAggregate.lifecycle === "ACTIVE" &&
+    opts.next.verification?.state === "blocked_external" &&
+    opts.next.status === "BLOCKED";
+  const projectedLifecycle =
+    verificationRework || verificationBlocked
+      ? legacyStatusToTaskLifecycle(opts.next.status)
+      : nextAggregate.lifecycle;
   const mutationId = `compatibility:${taskCentricDigest({
     task_id: opts.current.id,
     previous_revision: currentRevision,
