@@ -24,7 +24,7 @@ Created: 2026-09-12T14:45:48.622Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-12T14:53:13.365Z
+- Updated: 2026-09-12T16:06:08.064Z
 - Branch: task/202609121443-YAQJB7/fix-task-centric-scope-extension-targeting-when
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
