@@ -1,0 +1,91 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check f15334b96d43138c17f3a0fe61ff42eabc5dd14c..1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB f15334b96d43138c17f3a0fe61ff42eabc5dd14c..1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609071413-GESADH/README.md",
+        "M\t.agentplane/tasks/202609071413-GESADH/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609071413-GESADH/pr/github-body.md",
+        "M\t.agentplane/tasks/202609071413-GESADH/pr/meta.json",
+        "M\t.agentplane/tasks/202609071413-GESADH/pr/review.md",
+        "M\t.agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202609071413-GESADH/verification/20260907143640801-bf7b393b7864bb02.json",
+        "M\tpackages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/quality-review-target.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "f15334b96d43138c17f3a0fe61ff42eabc5dd14c",
+  "implementation_commit": "1bb30cf8640ca2cf7aea27469b11f0ff9cd159b6",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609071413-GESADH/README.md",
+      " M .agentplane/tasks/202609071413-GESADH/pr/github-body.md",
+      " M .agentplane/tasks/202609071413-GESADH/pr/meta.json",
+      " M .agentplane/tasks/202609071413-GESADH/pr/review.md",
+      " M .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202609071413-GESADH/verification/20260907143640801-bf7b393b7864bb02.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609071413-GESADH/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609071413-GESADH/pr/github-body.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609071413-GESADH/pr/meta.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609071413-GESADH/pr/review.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609071413-GESADH/verification/20260907143640801-bf7b393b7864bb02.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609071413-GESADH/README.md",
+      " M .agentplane/tasks/202609071413-GESADH/pr/github-body.md",
+      " M .agentplane/tasks/202609071413-GESADH/pr/meta.json",
+      " M .agentplane/tasks/202609071413-GESADH/pr/review.md",
+      " M .agentplane/tasks/202609071413-GESADH/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202609071413-GESADH/verification/20260907143640801-bf7b393b7864bb02.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609071413-GESADH"
+}

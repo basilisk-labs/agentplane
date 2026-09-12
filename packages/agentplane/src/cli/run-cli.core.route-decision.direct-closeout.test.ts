@@ -3,12 +3,24 @@ import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schema
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe } from "vitest";
+import { readTask } from "@agentplaneorg/core/tasks";
+import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { applyTaskMutation } from "../commands/shared/task-mutation.js";
+import { setTaskFieldsIntent } from "../commands/shared/task-store.js";
+import { resolveQualityReviewTargetSha } from "../commands/shared/quality-review-target.js";
+import { runEvaluatorRun } from "../commands/evaluator/evaluator.command.js";
+import { addTask, commitPath } from "../commands/evaluator/evaluator-test-helpers.js";
 import {
   approveRouteTaskPlan,
   completeRouteWorkItem,
   recordRouteVerification,
 } from "./route-decision.testkit.js";
-import { mkGitRepoRootWithCommit, withEvaluatorPolicyFixture } from "@agentplane/testkit";
+import {
+  mkGitRepoRoot,
+  mkGitRepoRootWithCommit,
+  writeDefaultConfig,
+  withEvaluatorPolicyFixture,
+} from "@agentplane/testkit";
 
 import {
   captureStdIO,
@@ -133,6 +145,110 @@ async function completeDirectRunner(root: string, taskId: string): Promise<void>
 }
 
 describe("runCli route decision direct closeout", () => {
+  it.each([false, true])(
+    "keeps a recorded direct target across other-task artifacts (metadata=%s)",
+    async (withMetadata) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202609070900-DIRECT";
+      const implementationSha = await commitPath(
+        root,
+        "src/direct.ts",
+        "export const value = 1;\n",
+        "feat: direct implementation",
+      );
+      let expectedSha = implementationSha;
+      if (withMetadata) {
+        expectedSha = await commitPath(
+          root,
+          `.agentplane/tasks/${taskId}/manual-note.md`,
+          "reviewable task metadata\n",
+          "docs: current task metadata",
+        );
+      }
+      await commitPath(
+        root,
+        ".agentplane/tasks/202609070900-OTHER/manual-note.md",
+        "other task metadata\n",
+        "docs: other task metadata",
+      );
+      await expect(
+        resolveQualityReviewTargetSha({
+          gitRoot: root,
+          workflowDir: ".agentplane/tasks",
+          taskId,
+          previousEvaluatedSha: implementationSha,
+          workflowMode: "direct",
+        }),
+      ).resolves.toBe(expectedSha);
+      await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/quality/review.json`,
+        "{}\n",
+        "test: record generated review",
+      );
+      await commitPath(
+        root,
+        ".agentplane/tasks/202609070900-OTHER/manual-note.md",
+        "more other task metadata\n",
+        "docs: update other task metadata",
+      );
+      await expect(
+        resolveQualityReviewTargetSha({
+          gitRoot: root,
+          workflowDir: ".agentplane/tasks",
+          taskId,
+          previousEvaluatedSha: expectedSha,
+          workflowMode: "direct",
+        }),
+      ).resolves.toBe(expectedSha);
+      await expect(
+        resolveQualityReviewTargetSha({
+          gitRoot: root,
+          workflowDir: ".agentplane/tasks",
+          taskId,
+          previousEvaluatedSha: "f".repeat(40),
+          workflowMode: "direct",
+        }),
+      ).resolves.toBeNull();
+    },
+  );
+
+  it("does not anchor an unrelated task artifact when the current task has no committed work", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV03";
+    await addTask(root, taskId);
+    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
+    await commitPath(
+      root,
+      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
+      "unrelated task artifact",
+      "chore: unrelated task artifact",
+    );
+
+    await expect(
+      runEvaluatorRun(
+        { cwd: root, rootOverride: undefined },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          provenance: "human_supplied",
+          verdict: "pass",
+          summary: "No current committed work unit",
+          findings: ["Unrelated workflow history is not a valid review target."],
+          evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      ),
+    ).rejects.toThrow("passing evaluator review requires a committed review target");
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review?.state).not.toBe("pass");
+  });
+
   it("routes approved direct tasks to current-agent start-ready before execution", async () => {
     const root = await mkGitRepoRootWithCommit();
     const config = defaultConfig();
@@ -480,6 +596,112 @@ describe("runCli route decision direct closeout", () => {
       activeIo.restore();
     }
   });
+
+  it("closes a verified direct implementation after another task artifact commit", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await writeFile(path.join(root, ".gitignore"), "\n.agentplane/cache/\n", { flag: "a" });
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+    const taskId = await createBranchPrTask(root);
+    await approveRouteTaskPlan(
+      root,
+      taskId,
+      "Review and close direct implementation across other task artifacts.",
+    );
+    const startIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: reproduce direct review identity across interleaved task artifacts.",
+          "--root",
+          root,
+        ]),
+        startIo.stderr,
+      ).toBe(0);
+    } finally {
+      startIo.restore();
+    }
+    await completeRouteWorkItem(root, taskId);
+    await commitAll(root, "test: establish direct task");
+    await writeFile(path.join(root, "feature.txt"), "implemented\n");
+    await commitAll(root, "feat: implement direct task");
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const implementationSha = stdout.trim();
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    await applyTaskMutation({
+      ctx,
+      taskId,
+      build: () => ({
+        intents: setTaskFieldsIntent({
+          commit: { hash: implementationSha, message: "feat: implement direct task" },
+        }),
+      }),
+    });
+    expect(await runCliSilent(["blueprint", "snapshot", taskId, "--root", root])).toBe(0);
+    await recordRouteVerification(
+      root,
+      taskId,
+      "Verified direct implementation before unrelated artifacts.",
+    );
+    await commitAll(root, "test: record direct verification artifacts");
+    const otherTaskId = await createBranchPrTask(root);
+    const otherDir = path.join(root, `.agentplane/tasks/${otherTaskId}`);
+    await mkdir(otherDir, { recursive: true });
+    await writeFile(path.join(otherDir, "manual-note.md"), "other task work\n");
+    await commitAll(root, "docs: unrelated task artifacts");
+    const unrelatedDiff = await execFileAsync("git", ["show", "--format=", "--name-only", "HEAD"], {
+      cwd: root,
+    });
+    expect(
+      unrelatedDiff.stdout
+        .trim()
+        .split("\n")
+        .every((name) => name.startsWith(`.agentplane/tasks/${otherTaskId}/`)),
+      unrelatedDiff.stdout,
+    ).toBe(true);
+    await recordEvaluatorReview(root, taskId);
+    const reviewed = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(reviewed.frontmatter.quality_review?.evaluated_sha).toBe(implementationSha);
+    await commitAll(root, "test: commit generated evaluator artifacts");
+    const io = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: direct review identity remains bound across task artifacts.",
+          "--result",
+          "Direct implementation reviewed and completed",
+          "--commit",
+          implementationSha,
+          "--implementation-commit",
+          implementationSha,
+          "--close-commit",
+          "--root",
+          root,
+        ]),
+        io.stderr,
+      ).toBe(0);
+    } finally {
+      io.restore();
+    }
+    const closed = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(closed.frontmatter.status).toBe("DONE");
+    const status = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+      cwd: root,
+    });
+    expect(status.stdout.trim()).toBe("");
+  }, 120_000);
 
   it(
     "routes done direct tasks with dirty tracked task artifacts to a cleanup commit",
