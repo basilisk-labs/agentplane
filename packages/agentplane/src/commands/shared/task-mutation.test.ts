@@ -440,7 +440,11 @@ describe("applyTaskMutation", () => {
       commit: null,
       verification: { state: "blocked_external", attempts: 4 },
     });
-    expect(projected).toMatchObject({ revision: 5, lifecycle: "BLOCKED" });
+    expect(projected).toMatchObject({
+      revision: 5,
+      lifecycle: "BLOCKED",
+      final_validation: null,
+    });
     expect(Object.values(runtime.mutation_receipts)).toEqual([
       expect.objectContaining({ next_revision: 5 }),
     ]);

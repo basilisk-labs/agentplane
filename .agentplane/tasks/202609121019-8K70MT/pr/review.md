@@ -30,8 +30,8 @@ Created: 2026-09-12T10:28:09.228Z
 
 ```text
  .../task-centric-backend-projection.ts             | 11 +++-
- .../src/commands/shared/task-mutation.test.ts      | 67 ++++++++++++++++++++++
- 2 files changed, 75 insertions(+), 3 deletions(-)
+ .../src/commands/shared/task-mutation.test.ts      | 71 ++++++++++++++++++++++
+ 2 files changed, 79 insertions(+), 3 deletions(-)
 ```
 
 </details>
