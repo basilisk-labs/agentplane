@@ -7,6 +7,7 @@
  .../src/runtime/prompt-modules/gpt56-contract.ts   |  78 ----------
  .../agentplane/src/runtime/prompt-modules/index.ts |   2 -
  scripts/README.md                                  |  64 ++++----
+ scripts/check-coverage-thresholds.mjs              |   1 -
  scripts/checks/check-coverage-thresholds.mjs       |  48 ------
  scripts/lib/test-route-registry.mjs                |  27 +++-
- 11 files changed, 76 insertions(+), 594 deletions(-)
+ 12 files changed, 76 insertions(+), 595 deletions(-)
