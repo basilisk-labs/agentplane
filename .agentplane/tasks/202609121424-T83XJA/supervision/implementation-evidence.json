@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check d37d8eff15ff1794d8fc3128fdad4da5bd971926..a3ee9fe467038a030796157c5047394db064386e",
+      "command": "git diff --check a85e338c33a3fee2726f2a7bcba2f20e0a92a7ca..dfb6233b0d620206154325e9f40433e6c9f04756",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,18 +13,26 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB d37d8eff15ff1794d8fc3128fdad4da5bd971926..a3ee9fe467038a030796157c5047394db064386e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a85e338c33a3fee2726f2a7bcba2f20e0a92a7ca..dfb6233b0d620206154325e9f40433e6c9f04756",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
+        "M\t.agentplane/tasks/202609121424-T83XJA/README.md",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/diffstat.txt",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/github-body.md",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/meta.json",
         "M\t.agentplane/tasks/202609121424-T83XJA/pr/review.md",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts",
-        "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
+        "M\t.agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json",
+        "A\tpackages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts",
         "M\tpackages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts"
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-usage.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-exchange.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
+        "A\tpackages/agentplane/src/commands/task/roadmap-external-accounting.test.ts",
+        "M\tpackages/agentplane/src/commands/task/task-token-usage.ts",
+        "M\tpackages/core/src/runner/supervisor-execution-episode.ts"
       ]
     },
     {
@@ -34,53 +42,29 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "d37d8eff15ff1794d8fc3128fdad4da5bd971926",
-  "implementation_commit": "a3ee9fe467038a030796157c5047394db064386e",
+  "execution_base_commit": "a85e338c33a3fee2726f2a7bcba2f20e0a92a7ca",
+  "implementation_commit": "dfb6233b0d620206154325e9f40433e6c9f04756",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.ts",
-      " M packages/core/src/schemas/index.ts"
+      " M .agentplane/tasks/202609121424-T83XJA/README.md",
+      " M .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
+        "line": " M .agentplane/tasks/202609121424-T83XJA/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/runner/supervisor-execution-episode.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/runner/supervisor-execution-episode.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/schemas/index.ts"
+        "line": " M .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
-      " M packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
-      " M packages/agentplane/src/commands/task/advance.command.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.test.ts",
-      " M packages/core/src/runner/supervisor-execution-episode.ts",
-      " M packages/core/src/schemas/index.ts"
+      " M .agentplane/tasks/202609121424-T83XJA/README.md",
+      " M .agentplane/tasks/202609121424-T83XJA/supervision/declared-checks.json"
     ],
     "unchanged_from_execution_baseline": []
   },

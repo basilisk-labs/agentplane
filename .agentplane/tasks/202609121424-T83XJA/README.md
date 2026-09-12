@@ -4,7 +4,7 @@ title: "Implement durable 0.7.9 usage, cost, and latency accounting for ST-08 th
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -112,10 +112,18 @@ execution_contract:
       - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
       - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
       - "packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
+      - "packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
       - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
       - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts"
+      - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+      - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+      - "packages/agentplane/src/commands/task/kernel-run.ts"
+      - "packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
+      - "packages/agentplane/src/commands/task/task-token-usage.ts"
       - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
       - "packages/agentplane/src/runner/adapters/codex.ts"
       - "packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
@@ -176,12 +184,13 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:e2971186b7aae0944cd6d31bf9f7ddb8302a0bf7d94733a9c2f7fe17382b2444"
+      digest: "sha256:57a03bd1096fdecf9a24f35a2df4f4506468156c8169128313c74be0c6518e4c"
       escalation_reasons:
         - "central_component:packages/core/src/runner"
         - "central_component:scripts/lib/agent-efficiency-repository-snapshot.mjs"
         - "central_component:scripts/lib/test-route-registry.mjs"
         - "central_component:scripts/lib/test-route-registry.test.mjs"
+        - "central_path:packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
         - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
@@ -205,10 +214,18 @@ execution_contract:
           - "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
           - "packages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
           - "packages/agentplane/src/commands/evaluator/roadmap-telemetry-disposition.test.ts"
+          - "packages/agentplane/src/commands/shared/roadmap-managed-accounting.test.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts"
           - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
           - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-usage.ts"
+          - "packages/agentplane/src/commands/task/external-agent-exchange.ts"
+          - "packages/agentplane/src/commands/task/external-agent-supervisor.ts"
+          - "packages/agentplane/src/commands/task/kernel-run.ts"
+          - "packages/agentplane/src/commands/task/roadmap-external-accounting.test.ts"
+          - "packages/agentplane/src/commands/task/task-token-usage.ts"
           - "packages/agentplane/src/runner/adapters/codex-result-transport.ts"
           - "packages/agentplane/src/runner/adapters/codex.ts"
           - "packages/agentplane/src/runner/adapters/roadmap-usage-durability.test.ts"
@@ -254,7 +271,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "dfb6233b0d620206154325e9f40433e6c9f04756"
+  message: "🚧 T83XJA task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -268,6 +287,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: a3ee9fe46703. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: dfb6233b0d62. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -300,8 +322,16 @@ events:
     to: "DOING"
     note: "Implementation committed: a3ee9fe46703. CLI accepted one state-bound external-agent semantic result."
     commit: "a3ee9fe467038a030796157c5047394db064386e"
+  -
+    type: "status"
+    at: "2026-09-12T22:35:29.697Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: dfb6233b0d62. CLI accepted one state-bound external-agent semantic result."
+    commit: "dfb6233b0d620206154325e9f40433e6c9f04756"
 doc_version: 3
-doc_updated_at: "2026-09-12T22:11:36.053Z"
+doc_updated_at: "2026-09-12T22:35:29.697Z"
 doc_updated_by: "SUPERVISOR"
 description: "Source contract: agentplane-roadmap-r2 cards ST-08, ST-09, ST-10, ST-11, ST-12, ST-13, and ST-17. Capture Codex usage durably before semantic-result validation, preserve evaluator charges on failure, connect managed observations to the existing journal, account for external episodes without trusting self-reported tokens, roll up task cost from source observations, partition lifecycle latency without double counting, and separate missing telemetry from semantic quality and further-spend admission. Missing usage is unknown, never zero. A valid saved verdict is reused, while unknown budget blocks additional paid dispatch. Preserve I01-I12 and C01-C08. Do not create a second accounting store or trust model-supplied usage. The roadmap directory is source-only and must never be committed. Required checks: the focused ST-08 through ST-13 and ST-17 test commands, related runner/evaluator/task critical suites, typecheck, schema/mirror checks."
 sections:
@@ -1101,7 +1131,7 @@ extensions:
       revision: 1
       schema_version: 1
       task_id: "202609121424-T83XJA"
-    event_cursor: 10
+    event_cursor: 12
     final_validation: null
     id: "202609121424-T83XJA"
     intent:
@@ -1121,9 +1151,9 @@ extensions:
     lifecycle: "ACTIVE"
     plan_amendments: []
     plan_history: []
-    revision: 17
+    revision: 19
     schema_version: 1
-    updated_at: "2026-09-12T22:11:39.491Z"
+    updated_at: "2026-09-12T22:35:29.697Z"
     work_items:
       ST-08:
         attempt: 1
@@ -1556,6 +1586,30 @@ extensions:
         previous_revision: 14
         schema_version: 1
         task_id: "202609121424-T83XJA"
+      compatibility:sha256:8079be6bf15c813938fc9742a585af744b8bffe37671d5e9625eb0529b0b6b8f:
+        aggregate_digest: "sha256:e1dcb8bdc5af726eaff35d12fdcfaf588d116f26016f857437e0f05a9c836a50"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:35:29.697Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_d586ac1f434ec8fe3d311c91"
+          mutation_id: "compatibility:sha256:8079be6bf15c813938fc9742a585af744b8bffe37671d5e9625eb0529b0b6b8f"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 17
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:8079be6bf15c813938fc9742a585af744b8bffe37671d5e9625eb0529b0b6b8f"
+        next_revision: 18
+        previous_revision: 17
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
       compatibility:sha256:a142cb7e9a87850293d82114cf1b8f81581ef826623b118d686407b4f0dd65b3:
         aggregate_digest: "sha256:31fb6f46940b58dd392bec69efd1ae24f3e279d9b176712116ec6c7e070b4d8e"
         event:
@@ -1602,6 +1656,30 @@ extensions:
         mutation_id: "compatibility:sha256:d75e1378750895149a188c2f38782a52ee3f8f7cb2e8a5ba1423551701b958d8"
         next_revision: 7
         previous_revision: 6
+        schema_version: 1
+        task_id: "202609121424-T83XJA"
+      compatibility:sha256:e196c30f7bab790e78d61ebdd034b07dd2ab43f53bf287976fd41e5bb70cb24a:
+        aggregate_digest: "sha256:7233e1d52a7284772cf8084a6d48cfdf5eebd2e73e665a3852c9f1e5f1e0a9ec"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T22:35:29.697Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_4abc0743c07f401a54a8b36c"
+          mutation_id: "compatibility:sha256:e196c30f7bab790e78d61ebdd034b07dd2ab43f53bf287976fd41e5bb70cb24a"
+          plan_digest: "sha256:106b3c2da2bc74b7f6f834e120c1d7a3337e9bf54034809cf9f4af86f6d2ee92"
+          plan_revision: 1
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609121424-T83XJA"
+          task_revision: 18
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:e196c30f7bab790e78d61ebdd034b07dd2ab43f53bf287976fd41e5bb70cb24a"
+        next_revision: 19
+        previous_revision: 18
         schema_version: 1
         task_id: "202609121424-T83XJA"
       compatibility:sha256:f8b5d4517e4d07b36165caab592c7815c8ea3834fc0369384f140d2bedb25638:
@@ -1704,7 +1782,7 @@ extensions:
     retry_budgets: []
     schema_version: 1
   implementation_commit:
-    hash: "a3ee9fe467038a030796157c5047394db064386e"
+    hash: "dfb6233b0d620206154325e9f40433e6c9f04756"
   task_execution_context:
     base_ref: "main"
     base_sha: "1f8b58d52ade59dd6185af72b00f70bb6194bdb0"
