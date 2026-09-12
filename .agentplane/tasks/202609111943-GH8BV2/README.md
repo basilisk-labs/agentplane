@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 39
 origin:
   system: "manual"
 depends_on: []
@@ -135,10 +135,16 @@ execution_contract:
       - "scripts/checks/run-local-ci.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+    changed_paths:
+      - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
     external_effects: []
-    repository_effects: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
     verification_results: []
   reason_codes:
     - "agent_preferred_branch_pr"
@@ -181,7 +187,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:52c5bee020f3a6105872676e81290bc4f725440c5ddc84c7895ba01f277a0f2c"
+      digest: "sha256:1eee95e117fcca44d3c8a106ede2a64df37b08933b803ae6d7cb6d446ce839ab"
       escalation_reasons:
         - "central_component:packages/agentplane/src/runtime/task-routing/resolve.test.ts"
         - "central_component:packages/agentplane/src/runtime/task-routing/resolve.ts"
@@ -193,10 +199,16 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+        changed_files:
+          - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -229,7 +241,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "6a168f4159eab497e5a35d8f7d88c7674f521df5"
+  message: "🚧 GH8BV2 task: apply external agent result"
 comments:
   -
     author: "CODER"
@@ -264,6 +278,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Implementation committed: 60f726ebd273. CLI accepted one state-bound external-agent semantic result."
+  -
+    author: "SUPERVISOR"
+    body: "Implementation committed: 6a168f4159ea. CLI accepted one state-bound external-agent semantic result."
 events:
   -
     type: "status"
@@ -391,8 +408,16 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "status"
+    at: "2026-09-12T18:32:40.777Z"
+    author: "SUPERVISOR"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: 6a168f4159ea. CLI accepted one state-bound external-agent semantic result."
+    commit: "6a168f4159eab497e5a35d8f7d88c7674f521df5"
 doc_version: 3
-doc_updated_at: "2026-09-12T18:30:55.407Z"
+doc_updated_at: "2026-09-12T18:32:40.931Z"
 doc_updated_by: "SUPERVISOR"
 description: "Reproduce the blocked recovery from task 202609111417-V1737V: the supervisor emits an exact scope extension containing repository_effects=[tests] and scope_roots=[], but task scope extend fails with 'Execution declaration with repository effects requires scope_roots.' Preserve exact request matching and fail-closed authority. Implement the smallest safe legacy-compatibility path and regression coverage, then use it to resume the blocked task."
 sections:
@@ -1098,7 +1123,7 @@ extensions:
       revision: 2
       schema_version: 1
       task_id: "202609111943-GH8BV2"
-    event_cursor: 31
+    event_cursor: 33
     final_validation: null
     id: "202609111943-GH8BV2"
     intent:
@@ -1286,9 +1311,9 @@ extensions:
         revision: 1
         schema_version: 1
         task_id: "202609111943-GH8BV2"
-    revision: 37
+    revision: 39
     schema_version: 1
-    updated_at: "2026-09-12T18:29:18.211Z"
+    updated_at: "2026-09-12T18:32:40.823Z"
     work_items:
       complete-legacy-recovery-and-ci-timeout-bounds:
         attempt: 0
@@ -1385,6 +1410,30 @@ extensions:
         mutation_id: "compatibility:sha256:1b7f83d0c12a0ac483cd7c87bf3ddc59389c15b7a1b56b14f9959b775e50c2fb"
         next_revision: 17
         previous_revision: 16
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:1c3356e0e6310491918358a33b5c3fe447511f0eb5d5b5677829b836b40fe3c4:
+        aggregate_digest: "sha256:33138368460000acd05997907832a40b91173419617b7b75ee35be050a435e40"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:32:40.777Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_9d5211c21bfb279f978be34f"
+          mutation_id: "compatibility:sha256:1c3356e0e6310491918358a33b5c3fe447511f0eb5d5b5677829b836b40fe3c4"
+          plan_digest: "sha256:5a8e97acd643b241f5ac20aba535e41603437672c223ae623173eeb558f20537"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 37
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:1c3356e0e6310491918358a33b5c3fe447511f0eb5d5b5677829b836b40fe3c4"
+        next_revision: 38
+        previous_revision: 37
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:1e6b772252bc5f1da0fe0dca1786f015b312a9a872bf83f7d9ff88a2b858e543:
@@ -1601,6 +1650,30 @@ extensions:
         mutation_id: "compatibility:sha256:3ac1cba4edfb9cf776ceed2dbc47df6cafc5ab173013820c7f4d1eb75a4cfc5c"
         next_revision: 3
         previous_revision: 2
+        schema_version: 1
+        task_id: "202609111943-GH8BV2"
+      compatibility:sha256:45ab986f73f59430df34236cfd46b496951c9c7a5182bb354c1119fd8594e6ae:
+        aggregate_digest: "sha256:e1b6730e2289fed78360ec4f8d023ee43166f57554b075a9712e14531b9c9a7c"
+        event:
+          actor_id: "agentplane"
+          at: "2026-09-12T18:32:40.823Z"
+          cause_refs:
+            - "compatibility_projection_mutation"
+          entity: "task"
+          from: "ACTIVE"
+          id: "event_ff360649c52c679044da47a8"
+          mutation_id: "compatibility:sha256:45ab986f73f59430df34236cfd46b496951c9c7a5182bb354c1119fd8594e6ae"
+          plan_digest: "sha256:5a8e97acd643b241f5ac20aba535e41603437672c223ae623173eeb558f20537"
+          plan_revision: 2
+          repository_fingerprint: null
+          schema_version: 1
+          task_id: "202609111943-GH8BV2"
+          task_revision: 38
+          to: "ACTIVE"
+          work_item_id: null
+        mutation_id: "compatibility:sha256:45ab986f73f59430df34236cfd46b496951c9c7a5182bb354c1119fd8594e6ae"
+        next_revision: 39
+        previous_revision: 38
         schema_version: 1
         task_id: "202609111943-GH8BV2"
       compatibility:sha256:46ec0c6112128ff73c2753601e54acd1fc06636954c9f809523be007c2f3a03e:
@@ -2160,6 +2233,8 @@ extensions:
     pending_effects: []
     retry_budgets: []
     schema_version: 1
+  implementation_commit:
+    hash: "6a168f4159eab497e5a35d8f7d88c7674f521df5"
   task_execution_context:
     base_ref: "main"
     base_sha: "50b1810dda648be0c0762b47e885c6ad0b2d42af"
